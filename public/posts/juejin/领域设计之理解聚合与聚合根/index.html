@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>领域设计之理解聚合与聚合根！ | PaperMod</title>
+<meta name="keywords" content="后端, 面试, Java">
+<meta name="description" content="文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http:">
+<meta name="author" content="程序员飞鱼">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E9%A2%86%E5%9F%9F%E8%AE%BE%E8%AE%A1%E4%B9%8B%E7%90%86%E8%A7%A3%E8%81%9A%E5%90%88%E4%B8%8E%E8%81%9A%E5%90%88%E6%A0%B9/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E9%A2%86%E5%9F%9F%E8%AE%BE%E8%AE%A1%E4%B9%8B%E7%90%86%E8%A7%A3%E8%81%9A%E5%90%88%E4%B8%8E%E8%81%9A%E5%90%88%E6%A0%B9/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="领域设计之理解聚合与聚合根！" />
+<meta property="og:description" content="文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E9%A2%86%E5%9F%9F%E8%AE%BE%E8%AE%A1%E4%B9%8B%E7%90%86%E8%A7%A3%E8%81%9A%E5%90%88%E4%B8%8E%E8%81%9A%E5%90%88%E6%A0%B9/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-21T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="领域设计之理解聚合与聚合根！"/>
+<meta name="twitter:description" content="文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http:"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "领域设计之理解聚合与聚合根！",
+      "item": "http://localhost:1313/posts/juejin/%E9%A2%86%E5%9F%9F%E8%AE%BE%E8%AE%A1%E4%B9%8B%E7%90%86%E8%A7%A3%E8%81%9A%E5%90%88%E4%B8%8E%E8%81%9A%E5%90%88%E6%A0%B9/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "领域设计之理解聚合与聚合根！",
+  "name": "领域设计之理解聚合与聚合根！",
+  "description": "文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http:",
+  "keywords": [
+    "后端", "面试", "Java"
+  ],
+  "articleBody": "文章内容收录到个人网站，方便阅读：hardyfish.top/\n文章内容收录到个人网站，方便阅读：hardyfish.top/\n文章内容收录到个人网站，方便阅读：hardyfish.top/\n先从一个简单的例子出发，进行讲解！\n数据驱动建模设计举例 ❝\n假设有如下几张表：\norder（订单）和order_detail（订单明细） product（商品）和product_comment（商品评论） 正常来说，从表的设计看，能知道：\norder与order_detail之间肯定是一对多的关系。 product与product_comment之间肯定是一对多的关系。 那么他们的关系实际是一样的吗?\n需要深入到代码，才能够发现差异：\njava\n代码解读\n复制代码\npublic class OrderService { @Transactional public void createOrder(Order order, List orderDetailList) throws Exception { // 保存订单 // 保存订单详情 } } ​ public class ProductService { @Transactional public void createProduct(Product product) throws Exception { // 保存产品 } }\n❝\n订单和订单明细是一起保存的，也就是说两者可以作为一个整体来看待（聚合）\n而产品和产品评论之间并不能被看做一个整体，所以没有在一起进行操作！ 这层逻辑，只看表设计是看不出来的，只有看到代码了，才能理清这一层关系。\n这无形中就增加了理解和使用难度。 聚合就是解决这种问题的一种方法！\n不过这里也能看出架构与代码之间的差异！\n在《程序员必读之软件架构》书中有这么一段话：\n❝\n很多人以组件来谈论软件系统，然而代码通常并未反映出这种结构。\n这就是软件架构和依据原则编码之间会脱节的原因之一。\n简单说就是：墙上的架构图说的是一回事，代码说的却是另一回事。 这也是架构与代码差异的一个原因。\n❝\n还有一个原因就是某些约束没有在设计中体现出来，而这些约束需要阅读代码才能够知道。\n这就增加了理解和使用这个组件的难度。 这个问题在基于数据建模的设计方法上比较明显（以上例子也能说明问题）。\n使用聚合前：\n❝\n可以看出依赖关系十分混乱！\n使用聚合后：\n什么是聚合和聚合根 一段简单的代码：\njava\n代码解读\n复制代码\npublic class Test { public void test() { System.out.println(\"test1\"); System.out.println(\"test2\"); } }\n❝\n上面的代码，我们如何保障在多线程情况下1和2能按顺序打印出来？\n最简单的方法就是使用synchronized关键字进行加锁操作。\njava\n代码解读\n复制代码\npublic class Test { public synchronized void test() { System.out.println(\"test1\"); System.out.println(\"test2\"); } }\n❝\nsynchronized 保证了代码的原子性执行。\n如果说，synchronized是多线程层面的锁。\n事务是数据库层面的锁，那么 聚合 可以理解为业务层面的锁。 在业务逻辑上，有些对象需要保持操作上的原子性，否则就没有任何意义。\n这些对象就组成了聚合。 ❝\n比如上面的订单与订单详情，从业务上来看，订单与订单明细需要保持业务上的原子性操作：\n订单必须要包含订单明细。 订单明细必须要属于某个订单。 订单和订单明细被视为一个整体，少了任何一个都没有意义。 所以：\n❝\n订单和订单明细组成一个 聚合\n订单是操作的主体，所以订单是这个 聚合 的 聚合根\n所有对这个 聚合 的操作，只能通过 聚合根 进行\n❝\n而产品和产品评价就不构成聚合。\n虽然在表设计时，订单和订单明细的结构关系与产品与产品评价的结构关系是一样的。 因为：\n虽然产品评价需要属于某个产品。 但是产品不一定就有产品评价。 产品评价可以独立操作。 产品和产品评论是两个聚合\n产品评论通过productId与产品聚合进行关联 如何确定聚合和聚合根 ❝\n对象在业务逻辑上是否需要保证原子性操作是确定聚合和聚合根的其中一个约束。\n还有一个约束就是 边界，即聚合多大才合适？\n过大的 聚合 会带来各种问题。 比如下面的代码：\njava\n代码解读\n复制代码\npublic class Test { public synchronized void test() { System.out.println(\"test1\"); System.out.println(\"test2\"); System.out.println(\"test3\"); System.out.println(\"test4\"); } }\n❝\n如果只希望1，2能按顺序打印出来，而3和4没有这个要求。\n上面的代码能满足要求，但是影响了性能。\n优化方式是使用同步块，缩小同步范围。 java\n代码解读\n复制代码\npublic class Test { public void test() { synchronized(Test.class) { System.out.println(\"test1\"); System.out.println(\"test2\"); } System.out.println(\"test3\"); System.out.println(\"test4\"); } }\n❝\n边界就像上面的同步块一样，只将需要的对象组合成聚合。\n假设上面的产品和产品评论构成了一个聚合。\n那会发生什么事情呢？\n当A，B两个用户同时对这个商品进行评论，A先开始评论，此时就会锁定该产品对象以及下面的所有评论。\n在A提交评论之前，B是无法操作这个产品对象的，显然这是不合理的。 如何设计聚合 ❝\n假设是一个订单管理系统。\n订单（Order）聚合是一个典型的聚合根。 步骤如下：\n确定聚合的边界：\n订单聚合包含订单、订单明细（Order Detail）和订单支付（Order Payment）等实体和值对象。 确定聚合根：\n在订单聚合中，订单（Order）被选为聚合根。 定义聚合的属性和行为：\n订单聚合可以有属性如订单号、订单日期、订单状态等，行为如修改订单状态、添加订单明细等。 聚合设计的原则\n❝\n聚合是用来封装真正的不变性，而不是简单的将对象组合在一起。\n聚合应尽量设计的小。\n聚合之间的关联通过聚合根ID，而不是对象引用。\n聚合内强一致性，聚合之间最终一致性。\n最后 觉得有收获，希望帮忙点赞，转发下哈，谢谢，谢谢\n微信搜索：月伴飞鱼，交个朋友，进面试交流群\n公众号后台回复666，可以获得免费电子书籍\n参考资料\n《领域驱动设计：软件核心复杂性应对之道》 《实现领域驱动设计》 ",
+  "wordCount" : "230",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-21T00:00:00Z",
+  "dateModified": "2024-09-21T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "程序员飞鱼"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E9%A2%86%E5%9F%9F%E8%AE%BE%E8%AE%A1%E4%B9%8B%E7%90%86%E8%A7%A3%E8%81%9A%E5%90%88%E4%B8%8E%E8%81%9A%E5%90%88%E6%A0%B9/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      领域设计之理解聚合与聚合根！
+    </h1>
+    <div class="post-description">
+      文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http://hardyfish.top/文章内容收录到个人网站，方便阅读：http:
+    </div>
+    <div class="post-meta"><span title='2024-09-21 00:00:00 +0000 UTC'>九月 21, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员飞鱼&nbsp;|&nbsp;<a href="https://github.com/adityatelange/hugo-PaperMod/tree/exampleSite/content/posts/jueJin/%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e9%a9%b1%e5%8a%a8%e5%bb%ba%e6%a8%a1%e8%ae%be%e8%ae%a1%e4%b8%be%e4%be%8b" aria-label="数据驱动建模设计举例">数据驱动建模设计举例</a></li>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%af%e8%81%9a%e5%90%88%e5%92%8c%e8%81%9a%e5%90%88%e6%a0%b9" aria-label="什么是聚合和聚合根">什么是聚合和聚合根</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e7%a1%ae%e5%ae%9a%e8%81%9a%e5%90%88%e5%92%8c%e8%81%9a%e5%90%88%e6%a0%b9" aria-label="如何确定聚合和聚合根">如何确定聚合和聚合根</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e8%ae%be%e8%ae%a1%e8%81%9a%e5%90%88" aria-label="如何设计聚合">如何设计聚合</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e5%90%8e" aria-label="最后">最后</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>文章内容收录到个人网站，方便阅读：<a href="https://link.juejin.cn?target=http%3A%2F%2Fhardyfish.top%2F" title="http://hardyfish.top/">hardyfish.top/</a></p>
+<p>文章内容收录到个人网站，方便阅读：<a href="https://link.juejin.cn?target=http%3A%2F%2Fhardyfish.top%2F" title="http://hardyfish.top/">hardyfish.top/</a></p>
+<p>文章内容收录到个人网站，方便阅读：<a href="https://link.juejin.cn?target=http%3A%2F%2Fhardyfish.top%2F" title="http://hardyfish.top/">hardyfish.top/</a></p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/6e4936c022ed477599a97313d301269d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY6aOe6bG8:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727503996&amp;x-signature=KFl9u%2BklsPpGl%2FwPwUJ4Gyh7e8s%3D" alt="image.png"  />
+</p>
+<p>先从一个简单的例子出发，进行讲解！</p>
+<h1 id="数据驱动建模设计举例"><strong>数据驱动建模设计举例</strong><a hidden class="anchor" aria-hidden="true" href="#数据驱动建模设计举例">#</a></h1>
+<blockquote>
+<p>❝</p>
+<p>假设有如下几张表：</p>
+<ul>
+<li><code>order</code>（订单）和<code>order_detail</code>（订单明细）</li>
+<li><code>product</code>（商品）和<code>product_comment</code>（商品评论）</li>
+</ul>
+<p>正常来说，从表的设计看，能知道：</p>
+<ul>
+<li><code>order</code>与<code>order_detail</code>之间肯定是一对多的关系。</li>
+<li><code>product</code>与<code>product_comment</code>之间肯定是一对多的关系。</li>
+</ul>
+<p>那么他们的关系实际是一样的吗?</p>
+</blockquote>
+<p>需要深入到代码，才能够发现差异：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class OrderService {     @Transactional     public void createOrder(Order order, List&lt;OrderDetail&gt; orderDetailList) throws Exception {         // 保存订单         // 保存订单详情     } } ​ public class ProductService {     @Transactional     public void createProduct(Product product) throws Exception {         // 保存产品     } }</code></p>
+<blockquote>
+<p>❝</p>
+<p>订单和订单明细是一起保存的，也就是说两者可以作为一个整体来看待（<strong>聚合</strong>）</p>
+<ul>
+<li>而产品和产品评论之间并不能被看做一个整体，所以没有在一起进行操作！</li>
+</ul>
+</blockquote>
+<p>这层逻辑，只看表设计是看不出来的，只有看到代码了，才能理清这一层关系。</p>
+<ul>
+<li>这无形中就增加了理解和使用难度。</li>
+</ul>
+<p><strong>聚合</strong>就是解决这种问题的一种方法！</p>
+<p>不过这里也能看出<strong>架构与代码之间的差异！</strong></p>
+<p>在《程序员必读之软件架构》书中有这么一段话：</p>
+<blockquote>
+<p>❝</p>
+<p>很多人以<strong>组件</strong>来谈论软件系统，然而代码通常并未反映出这种结构。</p>
+<p>这就是软件架构和依据原则编码之间会脱节的原因之一。</p>
+<ul>
+<li>简单说就是：墙上的<strong>架构图</strong>说的是一回事，代码说的却是另一回事。</li>
+</ul>
+</blockquote>
+<p>这也是架构与代码差异的一个原因。</p>
+<blockquote>
+<p>❝</p>
+<p>还有一个原因就是某些约束没有在设计中体现出来，而这些约束需要阅读代码才能够知道。</p>
+<ul>
+<li>这就增加了理解和使用这个<strong>组件</strong>的难度。</li>
+</ul>
+<p>这个问题在基于<strong>数据建模</strong>的设计方法上比较明显（以上例子也能说明问题）。</p>
+</blockquote>
+<p><strong>使用聚合前：</strong></p>
+<blockquote>
+<p>❝</p>
+<p>可以看出依赖关系十分混乱！</p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/d2f5e6c321284d009bb21c2005fe68e9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY6aOe6bG8:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727503996&amp;x-signature=X5KrF86NZvJZt1AnoLGDTUYYfSY%3D" alt="image.png"  />
+</p>
+<p><strong>使用聚合后：</strong></p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/132b310559664313a4fff0893606fd04~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY6aOe6bG8:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727503996&amp;x-signature=ek2%2BzGItrntb5UmiDwMpblkvjjI%3D" alt="image.png"  />
+</p>
+<h1 id="什么是聚合和聚合根"><strong>什么是聚合和聚合根</strong><a hidden class="anchor" aria-hidden="true" href="#什么是聚合和聚合根">#</a></h1>
+<p>一段简单的代码：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class Test {     public void test() {         System.out.println(&quot;test1&quot;);         System.out.println(&quot;test2&quot;);     } }</code></p>
+<blockquote>
+<p>❝</p>
+<p>上面的代码，我们如何保障在多线程情况下1和2能按顺序打印出来？</p>
+<p>最简单的方法就是使用<code>synchronized</code>关键字进行加锁操作。</p>
+</blockquote>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class Test {     public synchronized void test() {         System.out.println(&quot;test1&quot;);         System.out.println(&quot;test2&quot;);     } }</code></p>
+<blockquote>
+<p>❝</p>
+<p><code>synchronized</code> 保证了代码的原子性执行。</p>
+<p>如果说，<code>synchronized</code>是多线程层面的锁。</p>
+<ul>
+<li>事务是数据库层面的锁，那么 <strong>聚合</strong> 可以理解为业务层面的锁。</li>
+</ul>
+<p>在业务逻辑上，有些对象需要保持操作上的原子性，否则就没有任何意义。</p>
+<ul>
+<li>这些对象就组成了<strong>聚合</strong>。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>❝</p>
+<p>比如上面的订单与订单详情，从业务上来看，订单与订单明细需要保持业务上的<strong>原子性</strong>操作：</p>
+<ul>
+<li>订单必须要包含订单明细。</li>
+<li>订单明细必须要属于某个订单。</li>
+<li>订单和订单明细被视为一个整体，少了任何一个都没有意义。</li>
+</ul>
+</blockquote>
+<p><strong>所以：</strong></p>
+<blockquote>
+<p>❝</p>
+<p>订单和订单明细组成一个 <strong>聚合</strong></p>
+<p>订单是操作的主体，所以订单是这个 聚合 的 <strong>聚合根</strong></p>
+<p>所有对这个 聚合 的操作，只能通过 聚合根 进行</p>
+</blockquote>
+<blockquote>
+<p>❝</p>
+<p>而产品和产品评价就不构成<strong>聚合</strong>。</p>
+<ul>
+<li>虽然在表设计时，订单和订单明细的结构关系与产品与产品评价的结构关系是一样的。</li>
+</ul>
+<p><strong>因为：</strong></p>
+<ul>
+<li>虽然产品评价需要属于某个产品。</li>
+<li>但是产品不一定就有产品评价。</li>
+<li>产品评价可以独立操作。</li>
+</ul>
+<p>产品和产品评论是两个<strong>聚合</strong></p>
+<ul>
+<li>产品评论通过<code>productId</code>与<strong>产品聚合</strong>进行关联</li>
+</ul>
+</blockquote>
+<h1 id="如何确定聚合和聚合根"><strong>如何确定聚合和聚合根</strong><a hidden class="anchor" aria-hidden="true" href="#如何确定聚合和聚合根">#</a></h1>
+<blockquote>
+<p>❝</p>
+<p>对象在业务逻辑上是否需要保证<strong>原子性</strong>操作是确定聚合和聚合根的其中一个约束。</p>
+<p>还有一个约束就是 <strong>边界</strong>，即聚合多大才合适？</p>
+<ul>
+<li>过大的 聚合 会带来各种问题。</li>
+</ul>
+</blockquote>
+<p>比如下面的代码：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class Test {     public synchronized void test() {         System.out.println(&quot;test1&quot;);         System.out.println(&quot;test2&quot;);         System.out.println(&quot;test3&quot;);         System.out.println(&quot;test4&quot;);     } }</code></p>
+<blockquote>
+<p>❝</p>
+<p>如果只希望1，2能按顺序打印出来，而3和4没有这个要求。</p>
+<p>上面的代码能满足要求，但是影响了性能。</p>
+<ul>
+<li>优化方式是使用同步块，缩小同步范围。</li>
+</ul>
+</blockquote>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class Test {     public void test() {         synchronized(Test.class) {             System.out.println(&quot;test1&quot;);             System.out.println(&quot;test2&quot;);           }         System.out.println(&quot;test3&quot;);         System.out.println(&quot;test4&quot;);     } }</code></p>
+<blockquote>
+<p>❝</p>
+<p><strong>边界</strong>就像上面的同步块一样，只将需要的对象组合成<strong>聚合</strong>。</p>
+<p>假设上面的产品和产品评论构成了一个聚合。</p>
+<p>那会发生什么事情呢？</p>
+<p>当A，B两个用户同时对这个商品进行评论，A先开始评论，此时就会锁定该产品对象以及下面的所有评论。</p>
+<ul>
+<li>在A提交评论之前，B是无法操作这个产品对象的，显然这是不合理的。</li>
+</ul>
+</blockquote>
+<h1 id="如何设计聚合"><strong>如何设计聚合</strong><a hidden class="anchor" aria-hidden="true" href="#如何设计聚合">#</a></h1>
+<blockquote>
+<p>❝</p>
+<p>假设是一个订单管理系统。</p>
+<ul>
+<li>订单（<code>Order</code>）聚合是一个典型的聚合根。</li>
+</ul>
+<p><strong>步骤如下：</strong></p>
+<ul>
+<li>
+<p>确定聚合的边界：</p>
+<ul>
+<li>订单聚合包含订单、订单明细（<code>Order Detail</code>）和订单支付（<code>Order Payment</code>）等实体和值对象。</li>
+</ul>
+</li>
+<li>
+<p>确定聚合根：</p>
+<ul>
+<li>在订单聚合中，订单（<code>Order</code>）被选为聚合根。</li>
+</ul>
+</li>
+<li>
+<p>定义聚合的属性和行为：</p>
+<ul>
+<li>订单聚合可以有属性如订单号、订单日期、订单状态等，行为如修改订单状态、添加订单明细等。</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p><strong>聚合设计的原则</strong></p>
+<blockquote>
+<p>❝</p>
+<p>聚合是用来封装真正的<strong>不变性</strong>，而不是简单的将对象组合在一起。</p>
+<p>聚合应尽量设计的小。</p>
+<p>聚合之间的关联通过聚合根ID，而不是对象引用。</p>
+<p>聚合内<strong>强一致性</strong>，聚合之间最终一致性。</p>
+</blockquote>
+<h1 id="最后">最后<a hidden class="anchor" aria-hidden="true" href="#最后">#</a></h1>
+<p><strong>觉得有收获，希望帮忙点赞，转发下哈，谢谢，谢谢</strong></p>
+<p>微信搜索：月伴飞鱼，交个朋友，进面试交流群</p>
+<p>公众号后台回复666，可以获得免费电子书籍</p>
+<p><strong>参考资料</strong></p>
+<ul>
+<li>《领域驱动设计：软件核心复杂性应对之道》</li>
+<li>《实现领域驱动设计》</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%9C%8D%E4%BA%86%E4%B8%80%E7%BA%BF%E5%9F%8E%E5%B8%82%E7%9A%84%E5%90%8E%E7%AB%AF%E9%83%BD%E5%8D%B7%E6%88%90%E8%BF%99%E6%A0%B7%E4%BA%86%E5%90%97/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>服了，一线城市的后端都卷成这样了吗！？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8D%E5%86%8D%E9%9A%BE%E6%87%82%E5%B8%A6%E4%BD%A0%E8%BD%BB%E6%9D%BE%E6%90%9E%E5%AE%9A%E5%9B%BE/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>数据结构不再难懂：带你轻松搞定图</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 领域设计之理解聚合与聚合根！ on x"
+            href="https://x.com/intent/tweet/?text=%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2c%e9%9d%a2%e8%af%95%2cJava">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 领域设计之理解聚合与聚合根！ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f&amp;title=%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81&amp;summary=%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 领域设计之理解聚合与聚合根！ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f&title=%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 领域设计之理解聚合与聚合根！ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 领域设计之理解聚合与聚合根！ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 领域设计之理解聚合与聚合根！ on telegram"
+            href="https://telegram.me/share/url?text=%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 领域设计之理解聚合与聚合根！ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e9%a2%86%e5%9f%9f%e8%ae%be%e8%ae%a1%e4%b9%8b%e7%90%86%e8%a7%a3%e8%81%9a%e5%90%88%e4%b8%8e%e8%81%9a%e5%90%88%e6%a0%b9%ef%bc%81&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25A2%2586%25E5%259F%259F%25E8%25AE%25BE%25E8%25AE%25A1%25E4%25B9%258B%25E7%2590%2586%25E8%25A7%25A3%25E8%2581%259A%25E5%2590%2588%25E4%25B8%258E%25E8%2581%259A%25E5%2590%2588%25E6%25A0%25B9%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© <a href="https://github.com/adityatelange/hugo-PaperMod/graphs/contributors">PaperMod Contributors</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

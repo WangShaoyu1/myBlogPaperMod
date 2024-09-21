@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="article-viewer markdown-body result">
+    <h1 data-id="heading-0">SDK 设计</h1>
+    <p>
+        <img src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7d6147c58f534582b2e6c130ab4a1101~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgY3Jvc3NvdmVySmll:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727418383&amp;x-signature=4A%2B2HoCPRsVQhTb6Xj2wLHhPynE%3D"
+             alt="" loading="lazy" class="medium-zoom-image"></p>
+    <p>在之前提到了 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim"
+                       target="_blank" title="https://github.com/crossoverJie/cim" ref="nofollow noopener noreferrer">cim</a>
+        在做集成测试的时候遇到的问题，需要提供一个 SDK 来解决，于是我花了一些时间编写了 SDK，同时也将 cim-client 重构了。
+    </p>
+    <p>重构后的代码长这个样子：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1">    <span class="hljs-meta">@Bean</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2">    <span class="hljs-keyword">public</span> Client <span
+        class="hljs-title function_">buildClient</span><span class="hljs-params">(<span class="hljs-meta">@Qualifier("callBackThreadPool")</span> ThreadPoolExecutor callbackThreadPool,</span></span>
+<span class="code-block-extension-codeLine" data-line-num="3">                              Event event) {</span>
+<span class="code-block-extension-codeLine" data-line-num="4">        <span class="hljs-type">OkHttpClient</span> <span
+        class="hljs-variable">okHttpClient</span> <span class="hljs-operator">=</span> <span
+        class="hljs-keyword">new</span> <span
+        class="hljs-title class_">OkHttpClient</span>.Builder().connectTimeout(<span class="hljs-number">3</span>, TimeUnit.SECONDS)</span>
+<span class="code-block-extension-codeLine" data-line-num="5">                .readTimeout(<span
+        class="hljs-number">3</span>, TimeUnit.SECONDS)</span>
+<span class="code-block-extension-codeLine" data-line-num="6">                .writeTimeout(<span
+        class="hljs-number">3</span>, TimeUnit.SECONDS)</span>
+<span class="code-block-extension-codeLine" data-line-num="7">                .retryOnConnectionFailure(<span
+        class="hljs-literal">true</span>).build();</span>
+<span class="code-block-extension-codeLine" data-line-num="8"></span>
+<span class="code-block-extension-codeLine" data-line-num="9">        <span class="hljs-keyword">return</span> Client.builder()</span>
+<span class="code-block-extension-codeLine" data-line-num="10">                .auth(ClientConfigurationData.Auth.builder()</span>
+<span class="code-block-extension-codeLine" data-line-num="11">                        .userName(appConfiguration.getUserName())</span>
+<span class="code-block-extension-codeLine" data-line-num="12">                        .userId(appConfiguration.getUserId())</span>
+<span class="code-block-extension-codeLine" data-line-num="13">                        .build())</span>
+<span class="code-block-extension-codeLine"
+      data-line-num="14">                .routeUrl(appConfiguration.getRouteUrl())</span>
+<span class="code-block-extension-codeLine" data-line-num="15">                .loginRetryCount(appConfiguration.getReconnectCount())</span>
+<span class="code-block-extension-codeLine" data-line-num="16">                .event(event)</span>
+<span class="code-block-extension-codeLine" data-line-num="17">                .reconnectCheck(client -&gt; !shutDownSign.checkStatus())</span>
+<span class="code-block-extension-codeLine" data-line-num="18">                .okHttpClient(okHttpClient)</span>
+<span class="code-block-extension-codeLine" data-line-num="19">                .messageListener(<span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">MsgCallBackListener</span>(msgLogger))</span>
+<span class="code-block-extension-codeLine"
+      data-line-num="20">                .callbackThreadPool(callbackThreadPool)</span>
+<span class="code-block-extension-codeLine" data-line-num="21">                .build();</span>
+<span class="code-block-extension-codeLine" data-line-num="22">    }</span>
+</code></pre>
+    <p>配合 <code>springboot</code> 使用时只需要创建一个 <code>Client</code> 即可，这个 <code>Client</code> 里维护了核心的：
+    </p>
+    <ul>
+        <li>长链接创建、状态维护</li>
+        <li>心跳检测</li>
+        <li>超时、网络异常重连等</li>
+    </ul>
+    <p>同时也提供了简易的 API 可以直接收发消息：
+        <img src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/b6cdcef6924b4b9b8cba9e902ab781c3~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgY3Jvc3NvdmVySmll:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727418383&amp;x-signature=iOCfY5IeSNll4Pz20KZ9%2FKLbIq0%3D"
+             alt="" loading="lazy" class="medium-zoom-image"></p>
+    <p>这样在集成到业务代码中时会更方便。</p>
+    <p>以前的代码耦合度非常高，同时因为基础代码是 18 年写的，现在真的没有眼看了；</p>
+    <p>重构的过程中使用一些 Java8+ 的一些语法糖精简了许多代码，各个模块间的组织关系也重新梳理，现在会更易维护了。</p>
+    <p>比如由于创建客户端需要许多可选参数，于是就提供了 Builder 模式的创建选项：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-keyword">public</span> <span
+            class="hljs-keyword">interface</span> <span class="hljs-title class_">ClientBuilder</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="2">  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">    Client <span class="hljs-title function_">build</span><span
+        class="hljs-params">()</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">    ClientBuilder <span
+        class="hljs-title function_">auth</span><span class="hljs-params">(ClientConfigurationData.Auth auth)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">    ClientBuilder <span class="hljs-title function_">routeUrl</span><span
+        class="hljs-params">(String routeUrl)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    ClientBuilder <span class="hljs-title function_">loginRetryCount</span><span
+        class="hljs-params">(<span class="hljs-type">int</span> loginRetryCount)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    ClientBuilder <span
+        class="hljs-title function_">event</span><span class="hljs-params">(Event event)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">    ClientBuilder <span class="hljs-title function_">reconnectCheck</span><span
+        class="hljs-params">(ReconnectCheck reconnectCheck)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    ClientBuilder <span class="hljs-title function_">okHttpClient</span><span
+        class="hljs-params">(OkHttpClient okHttpClient)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    ClientBuilder <span class="hljs-title function_">messageListener</span><span
+        class="hljs-params">(MessageListener messageListener)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    ClientBuilder <span class="hljs-title function_">callbackThreadPool</span><span
+        class="hljs-params">(ThreadPoolExecutor callbackThreadPool)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">}</span>
+</code></pre>
+    <blockquote>
+        <p>以上部分 API 的设计借鉴了 Pulsar。</p>
+    </blockquote>
+    <h1 data-id="heading-1">Proxy 优化</h1>
+    <p>除此之外还优化了请求代理，这个 Proxy 主要是用于方便在各个服务中发起 rest 调用，我这里为了轻量也没有使用
+        Dubbo、SpringCloud 这类服务框架。</p>
+    <p>但如果都硬编码 http client 去请求时会有许多重复冗余的代码，比如创建连接、请求参数、响应解析、异常处理等。</p>
+    <p>于是在之前的版本中就提供了一个 <code>ProxyManager</code> 的基本实现：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-meta">@Override</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">public</span> List&lt;OnlineUsersResVO.DataBodyBean&gt; onlineUsers() <span
+        class="hljs-keyword">throws</span> Exception{  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">    <span class="hljs-type">RouteApi</span> <span
+        class="hljs-variable">routeApi</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span
+        class="hljs-title class_">ProxyManager</span>&lt;&gt;(RouteApi.class, routeUrl, okHttpClient).getInstance();  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">    <span class="hljs-type">Response</span> <span
+        class="hljs-variable">response</span> <span class="hljs-operator">=</span> <span
+        class="hljs-literal">null</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    <span class="hljs-type">OnlineUsersResVO</span> <span
+        class="hljs-variable">onlineUsersResVO</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-keyword">try</span> {  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="8">        response = (Response) routeApi.onlineUser();  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">        <span class="hljs-type">String</span> <span
+        class="hljs-variable">json</span> <span class="hljs-operator">=</span> response.body().string() ;  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">        onlineUsersResVO = JSON.parseObject(json, OnlineUsersResVO.class);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">    }<span class="hljs-keyword">catch</span> (Exception e){  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">        log.error(<span
+        class="hljs-string">"exception"</span>,e);  </span>
+<span class="code-block-extension-codeLine" data-line-num="14">    }<span class="hljs-keyword">finally</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">        response.body().close();  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">    }  </span>
+<span class="code-block-extension-codeLine" data-line-num="17">    <span class="hljs-keyword">return</span> onlineUsersResVO.getDataBody();  </span>
+<span class="code-block-extension-codeLine" data-line-num="18">}</span>
+</code></pre>
+    <p>虽然提供了一些连接管理和参数封装等基础功能，但只实现了一半。</p>
+    <p>从上面的代码也可以看出序列化都得自己实现，这些代码完全是冗余的。</p>
+    <p>经过重构后以上的代码可以精简到如下：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span
+            class="hljs-comment">//  声明接口</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span
+        class="hljs-meta">@Request(method = Request.GET)</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">BaseResponse&lt;Set&lt;CIMUserInfo&gt;&gt; <span
+        class="hljs-title function_">onlineUser</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception;</span>
+<span class="code-block-extension-codeLine" data-line-num="4"></span>
+<span class="code-block-extension-codeLine" data-line-num="5"><span class="hljs-comment">// 初始化</span></span>
+<span class="code-block-extension-codeLine" data-line-num="6">routeApi = RpcProxyManager.create(RouteApi.class, routeUrl, okHttpClient);</span>
+<span class="code-block-extension-codeLine" data-line-num="7"></span>
+<span class="code-block-extension-codeLine" data-line-num="8"><span class="hljs-keyword">public</span> Set&lt;CIMUserInfo&gt; <span
+        class="hljs-title function_">onlineUser</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception {  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    BaseResponse&lt;Set&lt;CIMUserInfo&gt;&gt; onlineUsersResVO = routeApi.onlineUser();  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    <span class="hljs-keyword">return</span> onlineUsersResVO.getDataBody();  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">}</span>
+</code></pre>
+    <p>这个调整之后就非常类似于 Dubbo gRPC 这类 RPC 框架的使用，只需要把接口定义好，就和调用本地函数一样的简单。</p>
+    <p>为了方便后续可能调用一些外部系统，在此基础上还支持了指定多种请求 method、指定 URL 、返回结果嵌套泛型等。</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-meta">@Request(url = "sample-request?author=beeceptor")</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="2">EchoGeneric&lt;EchoResponse.HeadersDTO&gt; echoGeneric(EchoRequest message);</span>
+<span class="code-block-extension-codeLine" data-line-num="3"></span>
+<span class="code-block-extension-codeLine" data-line-num="4"><span class="hljs-meta">@Test</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="5"><span class="hljs-keyword">public</span> <span
+        class="hljs-keyword">void</span> <span class="hljs-title function_">testGeneric</span><span class="hljs-params">()</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    <span class="hljs-type">OkHttpClient</span> <span
+        class="hljs-variable">client</span> <span class="hljs-operator">=</span> <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">OkHttpClient</span>();  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-string">"http://echo.free.beeceptor.com"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">    <span class="hljs-type">Echo</span> <span
+        class="hljs-variable">echo</span> <span class="hljs-operator">=</span> RpcProxyManager.create(Echo.class, url, client);  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    <span class="hljs-type">EchoRequest</span> <span
+        class="hljs-variable">request</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span
+        class="hljs-title class_">EchoRequest</span>();  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    request.setName(<span class="hljs-string">"crossoverJie"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    request.setAge(<span class="hljs-number">18</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">    request.setCity(<span
+        class="hljs-string">"shenzhen"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">    <span
+        class="hljs-comment">// 支持泛型解析</span></span>
+<span class="code-block-extension-codeLine" data-line-num="14">    EchoGeneric&lt;EchoResponse.HeadersDTO&gt; response = echo.echoGeneric(request);  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">    Assertions.assertEquals(response.getHeaders().getHost(), <span
+        class="hljs-string">"echo.free.beeceptor.com"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">}</span>
+</code></pre>
+    <h2 data-id="heading-2">支持动态 URL 调用</h2>
+    <p>
+        <img src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/1f2324c66b634984828eca6034bae5c8~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgY3Jvc3NvdmVySmll:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727418383&amp;x-signature=iHwN7JxyoapVL4d4axBxBe5yagI%3D"
+             alt="" loading="lazy" class="medium-zoom-image"></p>
+    <p>还有一个 todo：希望可以将 <code>ProxyManager</code> 交给 <code>Spring</code> 去管理，之前是在每次调用的地方都会创建一个
+        Proxy 对象，完全没有必要，代码也很冗余。</p>
+    <p>但有网友在实现过程中发现，有个场景的请求地址是动态的，如果是交给 Spring 管理为单例后是没法修改 URL
+        地址的，因为这个地址是在创建对象的时候初始化的。</p>
+    <p>所以我就在这里新增了一个动态 URL 的特性：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1">EchoResponse <span class="hljs-title function_">echoTarget</span><span
+            class="hljs-params">(EchoRequest message, <span
+            class="hljs-meta">@DynamicUrl(useMethodEndpoint = false)</span> String url)</span>;</span>
+<span class="code-block-extension-codeLine" data-line-num="2"></span>
+<span class="code-block-extension-codeLine" data-line-num="3"><span class="hljs-type">Echo</span> <span
+        class="hljs-variable">echo</span> <span class="hljs-operator">=</span> RpcProxyManager.create(Echo.class, client);</span>
+<span class="code-block-extension-codeLine" data-line-num="4"><span class="hljs-type">String</span> <span
+        class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-string">"http://echo.free.beeceptor.com/sample-request?author=beeceptor"</span>;</span>
+<span class="code-block-extension-codeLine" data-line-num="5"><span class="hljs-type">EchoResponse</span> <span
+        class="hljs-variable">response</span> <span class="hljs-operator">=</span> echo.echoTarget(request, url);</span>
+</code></pre>
+    <p>在声明接口的时候使用 <code>@DynamicUrl</code> 的方法参数注解，告诉代理这个参数是 URL。
+        这样就可以允许在创建 <code>Proxy</code> 对象的时候不指定 URL，而是在实际调用时候再传入具体的 URL，更方便创建单例了。
+    </p>
+    <h1 data-id="heading-3">集成测试优化</h1>
+    <p>同时还优化了集成测试，支持了 server 的集群版测试。</p>
+    <p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim%2Fblob%2F4c149f8bda78718e3ecae2c5759aa9732eff9132%2Fcim-client-sdk%2Fsrc%2Ftest%2Fjava%2Fcom%2Fcrossoverjie%2Fcim
+%2Fclient%2Fsdk%2FClientTest.java%23L210" target="_blank"
+          title="https://github.com/crossoverJie/cim/blob/4c149f8bda78718e3ecae2c5759aa9732eff9132/cim-client-sdk/src/test/java/com/crossoverjie/cim/client/sdk/ClientTest.java#L210"
+          ref="nofollow noopener noreferrer">github.com/crossoverJi…</a></p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-meta">@Test</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">public</span> <span
+        class="hljs-keyword">void</span> <span class="hljs-title function_">testReconnect</span><span
+        class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception {  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">    <span class="hljs-built_in">super</span>.startTwoServer();  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">    <span class="hljs-built_in">super</span>.startRoute();  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">routeUrl</span> <span class="hljs-operator">=</span> <span class="hljs-string">"http://localhost:8083"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">cj</span> <span class="hljs-operator">=</span> <span
+        class="hljs-string">"cj"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">zs</span> <span class="hljs-operator">=</span> <span
+        class="hljs-string">"zs"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    <span class="hljs-type">Long</span> <span
+        class="hljs-variable">cjId</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">super</span>.registerAccount(cj);  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    <span class="hljs-type">Long</span> <span
+        class="hljs-variable">zsId</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">super</span>.registerAccount(zs);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    <span class="hljs-type">var</span> <span
+        class="hljs-variable">auth1</span> <span class="hljs-operator">=</span> ClientConfigurationData.Auth.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">            .userName(cj)  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">            .userId(cjId)  </span>
+<span class="code-block-extension-codeLine" data-line-num="14">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">    <span class="hljs-type">var</span> <span
+        class="hljs-variable">auth2</span> <span class="hljs-operator">=</span> ClientConfigurationData.Auth.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">            .userName(zs)  </span>
+<span class="code-block-extension-codeLine" data-line-num="17">            .userId(zsId)  </span>
+<span class="code-block-extension-codeLine" data-line-num="18">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="19">  </span>
+<span class="code-block-extension-codeLine" data-line-num="20">    <span class="hljs-meta">@Cleanup</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="21">    <span class="hljs-type">Client</span> <span
+        class="hljs-variable">client1</span> <span class="hljs-operator">=</span> Client.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="22">            .auth(auth1)  </span>
+<span class="code-block-extension-codeLine" data-line-num="23">            .routeUrl(routeUrl)  </span>
+<span class="code-block-extension-codeLine" data-line-num="24">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="25">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">3</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="26">    ClientState.<span
+        class="hljs-type">State</span> <span class="hljs-variable">state</span> <span class="hljs-operator">=</span> client1.getState();  </span>
+<span class="code-block-extension-codeLine" data-line-num="27">    Awaitility.await().atMost(<span class="hljs-number">10</span>, TimeUnit.SECONDS)  </span>
+<span class="code-block-extension-codeLine" data-line-num="28">            .untilAsserted(() -&gt; Assertions.assertEquals(ClientState.State.Ready, state));  </span>
+<span class="code-block-extension-codeLine" data-line-num="29">  </span>
+<span class="code-block-extension-codeLine" data-line-num="30">  </span>
+<span class="code-block-extension-codeLine" data-line-num="31">    AtomicReference&lt;String&gt; client2Receive = <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicReference</span>&lt;&gt;();  </span>
+<span class="code-block-extension-codeLine" data-line-num="32">    <span class="hljs-meta">@Cleanup</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="33">    <span class="hljs-type">Client</span> <span
+        class="hljs-variable">client2</span> <span class="hljs-operator">=</span> Client.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="34">            .auth(auth2)  </span>
+<span class="code-block-extension-codeLine" data-line-num="35">            .routeUrl(routeUrl)  </span>
+<span class="code-block-extension-codeLine" data-line-num="36">            .messageListener((client, message) -&gt; client2Receive.set(message))  </span>
+<span class="code-block-extension-codeLine" data-line-num="37">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="38">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">3</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="39">    ClientState.<span
+        class="hljs-type">State</span> <span class="hljs-variable">state2</span> <span class="hljs-operator">=</span> client2.getState();  </span>
+<span class="code-block-extension-codeLine" data-line-num="40">    Awaitility.await().atMost(<span class="hljs-number">10</span>, TimeUnit.SECONDS)  </span>
+<span class="code-block-extension-codeLine" data-line-num="41">            .untilAsserted(() -&gt; Assertions.assertEquals(ClientState.State.Ready, state2));  </span>
+<span class="code-block-extension-codeLine" data-line-num="42">  </span>
+<span class="code-block-extension-codeLine" data-line-num="43">    Optional&lt;CIMServerResVO&gt; serverInfo2 = client2.getServerInfo();  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="44">    Assertions.assertTrue(serverInfo2.isPresent());  </span>
+<span class="code-block-extension-codeLine" data-line-num="45">    System.out.println(<span class="hljs-string">"client2 serverInfo = "</span> + serverInfo2.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="46">  </span>
+<span class="code-block-extension-codeLine" data-line-num="47">    <span
+        class="hljs-comment">// send msg  </span></span>
+<span class="code-block-extension-codeLine" data-line-num="48">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">msg</span> <span class="hljs-operator">=</span> <span class="hljs-string">"hello"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="49">    client1.sendGroup(msg);  </span>
+<span class="code-block-extension-codeLine" data-line-num="50">    Awaitility.await()  </span>
+<span class="code-block-extension-codeLine" data-line-num="51">            .untilAsserted(() -&gt; Assertions.assertEquals(String.format(<span
+        class="hljs-string">"cj:%s"</span>, msg), client2Receive.get()));  </span>
+<span class="code-block-extension-codeLine" data-line-num="52">    client2Receive.set(<span
+        class="hljs-string">""</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="53">  </span>
+<span class="code-block-extension-codeLine" data-line-num="54">  </span>
+<span class="code-block-extension-codeLine" data-line-num="55">    System.out.println(<span class="hljs-string">"ready to restart server"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="56">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">3</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="57">    Optional&lt;CIMServerResVO&gt; serverInfo = client1.getServerInfo();  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="58">    Assertions.assertTrue(serverInfo.isPresent());  </span>
+<span class="code-block-extension-codeLine" data-line-num="59">    System.out.println(<span class="hljs-string">"server info = "</span> + serverInfo.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="60">  </span>
+<span class="code-block-extension-codeLine" data-line-num="61">    <span class="hljs-built_in">super</span>.stopServer(serverInfo.get().getCimServerPort());  </span>
+<span class="code-block-extension-codeLine" data-line-num="62">    System.out.println(<span class="hljs-string">"stop server success! "</span> + serverInfo.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="63">  </span>
+<span class="code-block-extension-codeLine" data-line-num="64">  </span>
+<span class="code-block-extension-codeLine" data-line-num="65">    <span class="hljs-comment">// Waiting server stopped, and client reconnect.  </span></span>
+<span class="code-block-extension-codeLine" data-line-num="66">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">30</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="67">    System.out.println(<span class="hljs-string">"reconnect state: "</span> + client1.getState());  </span>
+<span class="code-block-extension-codeLine" data-line-num="68">    Awaitility.await().atMost(<span class="hljs-number">15</span>, TimeUnit.SECONDS)  </span>
+<span class="code-block-extension-codeLine" data-line-num="69">            .untilAsserted(() -&gt; Assertions.assertEquals(ClientState.State.Ready, state));  </span>
+<span class="code-block-extension-codeLine" data-line-num="70">    serverInfo = client1.getServerInfo();  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="71">    Assertions.assertTrue(serverInfo.isPresent());  </span>
+<span class="code-block-extension-codeLine" data-line-num="72">    System.out.println(<span class="hljs-string">"client1 reconnect server info = "</span> + serverInfo.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="73">  </span>
+<span class="code-block-extension-codeLine" data-line-num="74">    <span
+        class="hljs-comment">// Send message again.  </span></span>
+<span class="code-block-extension-codeLine" data-line-num="75">    log.info(<span class="hljs-string">"send message again, client2Receive = {}"</span>, client2Receive.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="76">    client1.sendGroup(msg);  </span>
+<span class="code-block-extension-codeLine" data-line-num="77">    Awaitility.await()  </span>
+<span class="code-block-extension-codeLine" data-line-num="78">            .untilAsserted(() -&gt; Assertions.assertEquals(String.format(<span
+        class="hljs-string">"cj:%s"</span>, msg), client2Receive.get()));  </span>
+<span class="code-block-extension-codeLine" data-line-num="79">    <span class="hljs-built_in">super</span>.stopTwoServer();  </span>
+<span class="code-block-extension-codeLine" data-line-num="80">}</span>
+</code></pre>
+    <p>比如在这里编写了一个客户端重连的单测，代码有点长，但它的主要流程如下：</p>
+    <ul>
+        <li>启动两个 Server：Server1，Server2</li>
+        <li>启动 Route</li>
+        <li>在启动两个 Client 发送消息
+            <ul>
+                <li>校验消息发送是否成功</li>
+            </ul>
+        </li>
+        <li><strong>停止 Client1 连接的 Server</strong></li>
+        <li><strong>等待 Client 自动重连到另一个 Server</strong></li>
+        <li>再次发送消息
+            <ul>
+                <li>校验消息发送是否成功</li>
+            </ul>
+        </li>
+    </ul>
+    <p>这样就可以验证在服务端 Server 宕机后整个服务是否可用，消息收发是否正常。</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-keyword">public</span> <span
+            class="hljs-keyword">void</span> <span class="hljs-title function_">startTwoServer</span><span
+            class="hljs-params">()</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="2">    <span class="hljs-keyword">if</span> (!zooKeeperContainer.isRunning()){  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">        zooKeeperContainer.start();  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">    }    zookeeperAddr = String.format(<span
+        class="hljs-string">"%s:%d"</span>, zooKeeperContainer.getHost(), zooKeeperContainer.getMappedPort(ZooKeeperContainer.DEFAULT_CLIENT_PORT));  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">    <span class="hljs-type">SpringApplication</span> <span
+        class="hljs-variable">server</span> <span class="hljs-operator">=</span> <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">SpringApplication</span>(CIMServerApplication.class);  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    String[] args1 = <span class="hljs-keyword">new</span> <span
+        class="hljs-title class_">String</span>[]{  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">            <span class="hljs-string">"--cim.server.port=11211"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">            <span
+        class="hljs-string">"--server.port=8081"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">            <span
+        class="hljs-string">"--app.zk.addr="</span> + zookeeperAddr,  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    };    <span class="hljs-type">ConfigurableApplicationContext</span> <span
+        class="hljs-variable">run1</span> <span class="hljs-operator">=</span> server.run(args1);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    runMap.put(Integer.parseInt(<span
+        class="hljs-string">"11211"</span>), run1);  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">  </span>
+<span class="code-block-extension-codeLine" data-line-num="14">    <span
+        class="hljs-type">SpringApplication</span> <span class="hljs-variable">server2</span> <span
+        class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpringApplication</span>(CIMServerApplication.class);  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">    String[] args2 = <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]{  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">            <span class="hljs-string">"--cim.server.port=11212"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="17">            <span class="hljs-string">"--server.port=8082"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="18">            <span
+        class="hljs-string">"--app.zk.addr="</span> + zookeeperAddr,  </span>
+<span class="code-block-extension-codeLine" data-line-num="19">    };    <span class="hljs-type">ConfigurableApplicationContext</span> <span
+        class="hljs-variable">run2</span> <span class="hljs-operator">=</span> server2.run(args2);  </span>
+<span class="code-block-extension-codeLine" data-line-num="20">    runMap.put(Integer.parseInt(<span
+        class="hljs-string">"11212"</span>), run2);  </span>
+<span class="code-block-extension-codeLine" data-line-num="21">}</span>
+<span class="code-block-extension-codeLine" data-line-num="22"></span>
+<span class="code-block-extension-codeLine" data-line-num="23"><span class="hljs-keyword">public</span> <span
+        class="hljs-keyword">void</span> <span class="hljs-title function_">stopServer</span><span class="hljs-params">(Integer port)</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="24">    runMap.get(port).close();  </span>
+<span class="code-block-extension-codeLine" data-line-num="25">    runMap.remove(port);  </span>
+<span class="code-block-extension-codeLine" data-line-num="26">}</span>
+</code></pre>
+    <p>这里的启动两个 Server 就是创建了两个 Server 应用，然后保存好端口和应用之间的映射关系。</p>
+    <p>这样就可以根据客户端连接的 Server 信息指定停止哪一个 Server，更方便做测试。</p>
+    <p>这次重启 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim" target="_blank"
+                   title="https://github.com/crossoverJie/cim" ref="nofollow noopener noreferrer">cim</a>
+        的维护后会尽量维护下去，即便更新时间慢一点。</p>
+    <p>后续还会加上消息 ack、离线消息等之前呼声很高的功能，感兴趣的完全可以一起参与。</p>
+    <p>源码地址：
+        <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim" target="_blank"
+           title="https://github.com/crossoverJie/cim" ref="nofollow noopener noreferrer">github.com/crossoverJi…</a>
+    </p></div> <!---->
+covert:
+<div class="article-viewer markdown-body result"><h1 data-id="heading-0">SDK 设计</h1>
+    <p>
+        <img src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7d6147c58f534582b2e6c130ab4a1101~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgY3Jvc3NvdmVySmll:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727418383&amp;x-signature=4A%2B2HoCPRsVQhTb6Xj2wLHhPynE%3D"
+             alt="" loading="lazy" class="medium-zoom-image"></p>
+    <p>在之前提到了 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim"
+                       target="_blank" title="https://github.com/crossoverJie/cim" ref="nofollow noopener noreferrer">cim</a>
+        在做集成测试的时候遇到的问题，需要提供一个 SDK 来解决，于是我花了一些时间编写了 SDK，同时也将 cim-client 重构了。
+    </p>
+    <p>重构后的代码长这个样子：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1">    <span class="hljs-meta">@Bean</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2">    <span class="hljs-keyword">public</span> Client <span
+        class="hljs-title function_">buildClient</span><span class="hljs-params">(<span class="hljs-meta">@Qualifier("callBackThreadPool")</span> ThreadPoolExecutor callbackThreadPool,</span></span>
+<span class="code-block-extension-codeLine" data-line-num="3">                              Event event) {</span>
+<span class="code-block-extension-codeLine" data-line-num="4">        <span class="hljs-type">OkHttpClient</span> <span
+        class="hljs-variable">okHttpClient</span> <span class="hljs-operator">=</span> <span
+        class="hljs-keyword">new</span> <span
+        class="hljs-title class_">OkHttpClient</span>.Builder().connectTimeout(<span class="hljs-number">3</span>, TimeUnit.SECONDS)</span>
+<span class="code-block-extension-codeLine" data-line-num="5">                .readTimeout(<span
+        class="hljs-number">3</span>, TimeUnit.SECONDS)</span>
+<span class="code-block-extension-codeLine" data-line-num="6">                .writeTimeout(<span
+        class="hljs-number">3</span>, TimeUnit.SECONDS)</span>
+<span class="code-block-extension-codeLine" data-line-num="7">                .retryOnConnectionFailure(<span
+        class="hljs-literal">true</span>).build();</span>
+<span class="code-block-extension-codeLine" data-line-num="8"></span>
+<span class="code-block-extension-codeLine" data-line-num="9">        <span class="hljs-keyword">return</span> Client.builder()</span>
+<span class="code-block-extension-codeLine" data-line-num="10">                .auth(ClientConfigurationData.Auth.builder()</span>
+<span class="code-block-extension-codeLine" data-line-num="11">                        .userName(appConfiguration.getUserName())</span>
+<span class="code-block-extension-codeLine" data-line-num="12">                        .userId(appConfiguration.getUserId())</span>
+<span class="code-block-extension-codeLine" data-line-num="13">                        .build())</span>
+<span class="code-block-extension-codeLine"
+      data-line-num="14">                .routeUrl(appConfiguration.getRouteUrl())</span>
+<span class="code-block-extension-codeLine" data-line-num="15">                .loginRetryCount(appConfiguration.getReconnectCount())</span>
+<span class="code-block-extension-codeLine" data-line-num="16">                .event(event)</span>
+<span class="code-block-extension-codeLine" data-line-num="17">                .reconnectCheck(client -&gt; !shutDownSign.checkStatus())</span>
+<span class="code-block-extension-codeLine" data-line-num="18">                .okHttpClient(okHttpClient)</span>
+<span class="code-block-extension-codeLine" data-line-num="19">                .messageListener(<span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">MsgCallBackListener</span>(msgLogger))</span>
+<span class="code-block-extension-codeLine"
+      data-line-num="20">                .callbackThreadPool(callbackThreadPool)</span>
+<span class="code-block-extension-codeLine" data-line-num="21">                .build();</span>
+<span class="code-block-extension-codeLine" data-line-num="22">    }</span>
+</code></pre>
+    <p>配合 <code>springboot</code> 使用时只需要创建一个 <code>Client</code> 即可，这个 <code>Client</code> 里维护了核心的：
+    </p>
+    <ul>
+        <li>长链接创建、状态维护</li>
+        <li>心跳检测</li>
+        <li>超时、网络异常重连等</li>
+    </ul>
+    <p>同时也提供了简易的 API 可以直接收发消息：
+        <img src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/b6cdcef6924b4b9b8cba9e902ab781c3~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgY3Jvc3NvdmVySmll:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727418383&amp;x-signature=iOCfY5IeSNll4Pz20KZ9%2FKLbIq0%3D"
+             alt="" loading="lazy" class="medium-zoom-image"></p>
+    <p>这样在集成到业务代码中时会更方便。</p>
+    <p>以前的代码耦合度非常高，同时因为基础代码是 18 年写的，现在真的没有眼看了；</p>
+    <p>重构的过程中使用一些 Java8+ 的一些语法糖精简了许多代码，各个模块间的组织关系也重新梳理，现在会更易维护了。</p>
+    <p>比如由于创建客户端需要许多可选参数，于是就提供了 Builder 模式的创建选项：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-keyword">public</span> <span
+            class="hljs-keyword">interface</span> <span class="hljs-title class_">ClientBuilder</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="2">  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">    Client <span class="hljs-title function_">build</span><span
+        class="hljs-params">()</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">    ClientBuilder <span
+        class="hljs-title function_">auth</span><span class="hljs-params">(ClientConfigurationData.Auth auth)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">    ClientBuilder <span class="hljs-title function_">routeUrl</span><span
+        class="hljs-params">(String routeUrl)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    ClientBuilder <span class="hljs-title function_">loginRetryCount</span><span
+        class="hljs-params">(<span class="hljs-type">int</span> loginRetryCount)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    ClientBuilder <span
+        class="hljs-title function_">event</span><span class="hljs-params">(Event event)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">    ClientBuilder <span class="hljs-title function_">reconnectCheck</span><span
+        class="hljs-params">(ReconnectCheck reconnectCheck)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    ClientBuilder <span class="hljs-title function_">okHttpClient</span><span
+        class="hljs-params">(OkHttpClient okHttpClient)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    ClientBuilder <span class="hljs-title function_">messageListener</span><span
+        class="hljs-params">(MessageListener messageListener)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    ClientBuilder <span class="hljs-title function_">callbackThreadPool</span><span
+        class="hljs-params">(ThreadPoolExecutor callbackThreadPool)</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">}</span>
+</code></pre>
+    <blockquote>
+        <p>以上部分 API 的设计借鉴了 Pulsar。</p>
+    </blockquote>
+    <h1 data-id="heading-1">Proxy 优化</h1>
+    <p>除此之外还优化了请求代理，这个 Proxy 主要是用于方便在各个服务中发起 rest 调用，我这里为了轻量也没有使用
+        Dubbo、SpringCloud 这类服务框架。</p>
+    <p>但如果都硬编码 http client 去请求时会有许多重复冗余的代码，比如创建连接、请求参数、响应解析、异常处理等。</p>
+    <p>于是在之前的版本中就提供了一个 <code>ProxyManager</code> 的基本实现：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-meta">@Override</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">public</span> List&lt;OnlineUsersResVO.DataBodyBean&gt; onlineUsers() <span
+        class="hljs-keyword">throws</span> Exception{  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">    <span class="hljs-type">RouteApi</span> <span
+        class="hljs-variable">routeApi</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span
+        class="hljs-title class_">ProxyManager</span>&lt;&gt;(RouteApi.class, routeUrl, okHttpClient).getInstance();  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">    <span class="hljs-type">Response</span> <span
+        class="hljs-variable">response</span> <span class="hljs-operator">=</span> <span
+        class="hljs-literal">null</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    <span class="hljs-type">OnlineUsersResVO</span> <span
+        class="hljs-variable">onlineUsersResVO</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-keyword">try</span> {  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="8">        response = (Response) routeApi.onlineUser();  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">        <span class="hljs-type">String</span> <span
+        class="hljs-variable">json</span> <span class="hljs-operator">=</span> response.body().string() ;  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">        onlineUsersResVO = JSON.parseObject(json, OnlineUsersResVO.class);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">    }<span class="hljs-keyword">catch</span> (Exception e){  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">        log.error(<span
+        class="hljs-string">"exception"</span>,e);  </span>
+<span class="code-block-extension-codeLine" data-line-num="14">    }<span class="hljs-keyword">finally</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">        response.body().close();  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">    }  </span>
+<span class="code-block-extension-codeLine" data-line-num="17">    <span class="hljs-keyword">return</span> onlineUsersResVO.getDataBody();  </span>
+<span class="code-block-extension-codeLine" data-line-num="18">}</span>
+</code></pre>
+    <p>虽然提供了一些连接管理和参数封装等基础功能，但只实现了一半。</p>
+    <p>从上面的代码也可以看出序列化都得自己实现，这些代码完全是冗余的。</p>
+    <p>经过重构后以上的代码可以精简到如下：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span
+            class="hljs-comment">//  声明接口</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span
+        class="hljs-meta">@Request(method = Request.GET)</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">BaseResponse&lt;Set&lt;CIMUserInfo&gt;&gt; <span
+        class="hljs-title function_">onlineUser</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception;</span>
+<span class="code-block-extension-codeLine" data-line-num="4"></span>
+<span class="code-block-extension-codeLine" data-line-num="5"><span class="hljs-comment">// 初始化</span></span>
+<span class="code-block-extension-codeLine" data-line-num="6">routeApi = RpcProxyManager.create(RouteApi.class, routeUrl, okHttpClient);</span>
+<span class="code-block-extension-codeLine" data-line-num="7"></span>
+<span class="code-block-extension-codeLine" data-line-num="8"><span class="hljs-keyword">public</span> Set&lt;CIMUserInfo&gt; <span
+        class="hljs-title function_">onlineUser</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception {  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    BaseResponse&lt;Set&lt;CIMUserInfo&gt;&gt; onlineUsersResVO = routeApi.onlineUser();  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    <span class="hljs-keyword">return</span> onlineUsersResVO.getDataBody();  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">}</span>
+</code></pre>
+    <p>这个调整之后就非常类似于 Dubbo gRPC 这类 RPC 框架的使用，只需要把接口定义好，就和调用本地函数一样的简单。</p>
+    <p>为了方便后续可能调用一些外部系统，在此基础上还支持了指定多种请求 method、指定 URL 、返回结果嵌套泛型等。</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-meta">@Request(url = "sample-request?author=beeceptor")</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="2">EchoGeneric&lt;EchoResponse.HeadersDTO&gt; echoGeneric(EchoRequest message);</span>
+<span class="code-block-extension-codeLine" data-line-num="3"></span>
+<span class="code-block-extension-codeLine" data-line-num="4"><span class="hljs-meta">@Test</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="5"><span class="hljs-keyword">public</span> <span
+        class="hljs-keyword">void</span> <span class="hljs-title function_">testGeneric</span><span class="hljs-params">()</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    <span class="hljs-type">OkHttpClient</span> <span
+        class="hljs-variable">client</span> <span class="hljs-operator">=</span> <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">OkHttpClient</span>();  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-string">"http://echo.free.beeceptor.com"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">    <span class="hljs-type">Echo</span> <span
+        class="hljs-variable">echo</span> <span class="hljs-operator">=</span> RpcProxyManager.create(Echo.class, url, client);  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    <span class="hljs-type">EchoRequest</span> <span
+        class="hljs-variable">request</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span
+        class="hljs-title class_">EchoRequest</span>();  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    request.setName(<span class="hljs-string">"crossoverJie"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    request.setAge(<span class="hljs-number">18</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">    request.setCity(<span
+        class="hljs-string">"shenzhen"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">    <span
+        class="hljs-comment">// 支持泛型解析</span></span>
+<span class="code-block-extension-codeLine" data-line-num="14">    EchoGeneric&lt;EchoResponse.HeadersDTO&gt; response = echo.echoGeneric(request);  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">    Assertions.assertEquals(response.getHeaders().getHost(), <span
+        class="hljs-string">"echo.free.beeceptor.com"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">}</span>
+</code></pre>
+    <h2 data-id="heading-2">支持动态 URL 调用</h2>
+    <p>
+        <img src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/1f2324c66b634984828eca6034bae5c8~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgY3Jvc3NvdmVySmll:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727418383&amp;x-signature=iHwN7JxyoapVL4d4axBxBe5yagI%3D"
+             alt="" loading="lazy" class="medium-zoom-image"></p>
+    <p>还有一个 todo：希望可以将 <code>ProxyManager</code> 交给 <code>Spring</code> 去管理，之前是在每次调用的地方都会创建一个
+        Proxy 对象，完全没有必要，代码也很冗余。</p>
+    <p>但有网友在实现过程中发现，有个场景的请求地址是动态的，如果是交给 Spring 管理为单例后是没法修改 URL
+        地址的，因为这个地址是在创建对象的时候初始化的。</p>
+    <p>所以我就在这里新增了一个动态 URL 的特性：</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1">EchoResponse <span class="hljs-title function_">echoTarget</span><span
+            class="hljs-params">(EchoRequest message, <span
+            class="hljs-meta">@DynamicUrl(useMethodEndpoint = false)</span> String url)</span>;</span>
+<span class="code-block-extension-codeLine" data-line-num="2"></span>
+<span class="code-block-extension-codeLine" data-line-num="3"><span class="hljs-type">Echo</span> <span
+        class="hljs-variable">echo</span> <span class="hljs-operator">=</span> RpcProxyManager.create(Echo.class, client);</span>
+<span class="code-block-extension-codeLine" data-line-num="4"><span class="hljs-type">String</span> <span
+        class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-string">"http://echo.free.beeceptor.com/sample-request?author=beeceptor"</span>;</span>
+<span class="code-block-extension-codeLine" data-line-num="5"><span class="hljs-type">EchoResponse</span> <span
+        class="hljs-variable">response</span> <span class="hljs-operator">=</span> echo.echoTarget(request, url);</span>
+</code></pre>
+    <p>在声明接口的时候使用 <code>@DynamicUrl</code> 的方法参数注解，告诉代理这个参数是 URL。
+        这样就可以允许在创建 <code>Proxy</code> 对象的时候不指定 URL，而是在实际调用时候再传入具体的 URL，更方便创建单例了。
+    </p>
+    <h1 data-id="heading-3">集成测试优化</h1>
+    <p>同时还优化了集成测试，支持了 server 的集群版测试。</p>
+    <p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim%2Fblob%2F4c149f8bda78718e3ecae2c5759aa9732eff9132%2Fcim-client-sdk%2Fsrc%2Ftest%2Fjava%2Fcom%2Fcrossoverjie%2Fcim
+%2Fclient%2Fsdk%2FClientTest.java%23L210" target="_blank"
+          title="https://github.com/crossoverJie/cim/blob/4c149f8bda78718e3ecae2c5759aa9732eff9132/cim-client-sdk/src/test/java/com/crossoverjie/cim/client/sdk/ClientTest.java#L210"
+          ref="nofollow noopener noreferrer">github.com/crossoverJi…</a></p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-meta">@Test</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">public</span> <span
+        class="hljs-keyword">void</span> <span class="hljs-title function_">testReconnect</span><span
+        class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception {  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">    <span class="hljs-built_in">super</span>.startTwoServer();  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">    <span class="hljs-built_in">super</span>.startRoute();  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">routeUrl</span> <span class="hljs-operator">=</span> <span class="hljs-string">"http://localhost:8083"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">cj</span> <span class="hljs-operator">=</span> <span
+        class="hljs-string">"cj"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">zs</span> <span class="hljs-operator">=</span> <span
+        class="hljs-string">"zs"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">    <span class="hljs-type">Long</span> <span
+        class="hljs-variable">cjId</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">super</span>.registerAccount(cj);  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    <span class="hljs-type">Long</span> <span
+        class="hljs-variable">zsId</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">super</span>.registerAccount(zs);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    <span class="hljs-type">var</span> <span
+        class="hljs-variable">auth1</span> <span class="hljs-operator">=</span> ClientConfigurationData.Auth.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">            .userName(cj)  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">            .userId(cjId)  </span>
+<span class="code-block-extension-codeLine" data-line-num="14">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">    <span class="hljs-type">var</span> <span
+        class="hljs-variable">auth2</span> <span class="hljs-operator">=</span> ClientConfigurationData.Auth.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">            .userName(zs)  </span>
+<span class="code-block-extension-codeLine" data-line-num="17">            .userId(zsId)  </span>
+<span class="code-block-extension-codeLine" data-line-num="18">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="19">  </span>
+<span class="code-block-extension-codeLine" data-line-num="20">    <span class="hljs-meta">@Cleanup</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="21">    <span class="hljs-type">Client</span> <span
+        class="hljs-variable">client1</span> <span class="hljs-operator">=</span> Client.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="22">            .auth(auth1)  </span>
+<span class="code-block-extension-codeLine" data-line-num="23">            .routeUrl(routeUrl)  </span>
+<span class="code-block-extension-codeLine" data-line-num="24">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="25">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">3</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="26">    ClientState.<span
+        class="hljs-type">State</span> <span class="hljs-variable">state</span> <span class="hljs-operator">=</span> client1.getState();  </span>
+<span class="code-block-extension-codeLine" data-line-num="27">    Awaitility.await().atMost(<span class="hljs-number">10</span>, TimeUnit.SECONDS)  </span>
+<span class="code-block-extension-codeLine" data-line-num="28">            .untilAsserted(() -&gt; Assertions.assertEquals(ClientState.State.Ready, state));  </span>
+<span class="code-block-extension-codeLine" data-line-num="29">  </span>
+<span class="code-block-extension-codeLine" data-line-num="30">  </span>
+<span class="code-block-extension-codeLine" data-line-num="31">    AtomicReference&lt;String&gt; client2Receive = <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicReference</span>&lt;&gt;();  </span>
+<span class="code-block-extension-codeLine" data-line-num="32">    <span class="hljs-meta">@Cleanup</span>  </span>
+<span class="code-block-extension-codeLine" data-line-num="33">    <span class="hljs-type">Client</span> <span
+        class="hljs-variable">client2</span> <span class="hljs-operator">=</span> Client.builder()  </span>
+<span class="code-block-extension-codeLine" data-line-num="34">            .auth(auth2)  </span>
+<span class="code-block-extension-codeLine" data-line-num="35">            .routeUrl(routeUrl)  </span>
+<span class="code-block-extension-codeLine" data-line-num="36">            .messageListener((client, message) -&gt; client2Receive.set(message))  </span>
+<span class="code-block-extension-codeLine" data-line-num="37">            .build();  </span>
+<span class="code-block-extension-codeLine" data-line-num="38">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">3</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="39">    ClientState.<span
+        class="hljs-type">State</span> <span class="hljs-variable">state2</span> <span class="hljs-operator">=</span> client2.getState();  </span>
+<span class="code-block-extension-codeLine" data-line-num="40">    Awaitility.await().atMost(<span class="hljs-number">10</span>, TimeUnit.SECONDS)  </span>
+<span class="code-block-extension-codeLine" data-line-num="41">            .untilAsserted(() -&gt; Assertions.assertEquals(ClientState.State.Ready, state2));  </span>
+<span class="code-block-extension-codeLine" data-line-num="42">  </span>
+<span class="code-block-extension-codeLine" data-line-num="43">    Optional&lt;CIMServerResVO&gt; serverInfo2 = client2.getServerInfo();  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="44">    Assertions.assertTrue(serverInfo2.isPresent());  </span>
+<span class="code-block-extension-codeLine" data-line-num="45">    System.out.println(<span class="hljs-string">"client2 serverInfo = "</span> + serverInfo2.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="46">  </span>
+<span class="code-block-extension-codeLine" data-line-num="47">    <span
+        class="hljs-comment">// send msg  </span></span>
+<span class="code-block-extension-codeLine" data-line-num="48">    <span class="hljs-type">String</span> <span
+        class="hljs-variable">msg</span> <span class="hljs-operator">=</span> <span class="hljs-string">"hello"</span>;  </span>
+<span class="code-block-extension-codeLine" data-line-num="49">    client1.sendGroup(msg);  </span>
+<span class="code-block-extension-codeLine" data-line-num="50">    Awaitility.await()  </span>
+<span class="code-block-extension-codeLine" data-line-num="51">            .untilAsserted(() -&gt; Assertions.assertEquals(String.format(<span
+        class="hljs-string">"cj:%s"</span>, msg), client2Receive.get()));  </span>
+<span class="code-block-extension-codeLine" data-line-num="52">    client2Receive.set(<span
+        class="hljs-string">""</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="53">  </span>
+<span class="code-block-extension-codeLine" data-line-num="54">  </span>
+<span class="code-block-extension-codeLine" data-line-num="55">    System.out.println(<span class="hljs-string">"ready to restart server"</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="56">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">3</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="57">    Optional&lt;CIMServerResVO&gt; serverInfo = client1.getServerInfo();  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="58">    Assertions.assertTrue(serverInfo.isPresent());  </span>
+<span class="code-block-extension-codeLine" data-line-num="59">    System.out.println(<span class="hljs-string">"server info = "</span> + serverInfo.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="60">  </span>
+<span class="code-block-extension-codeLine" data-line-num="61">    <span class="hljs-built_in">super</span>.stopServer(serverInfo.get().getCimServerPort());  </span>
+<span class="code-block-extension-codeLine" data-line-num="62">    System.out.println(<span class="hljs-string">"stop server success! "</span> + serverInfo.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="63">  </span>
+<span class="code-block-extension-codeLine" data-line-num="64">  </span>
+<span class="code-block-extension-codeLine" data-line-num="65">    <span class="hljs-comment">// Waiting server stopped, and client reconnect.  </span></span>
+<span class="code-block-extension-codeLine" data-line-num="66">    TimeUnit.SECONDS.sleep(<span
+        class="hljs-number">30</span>);  </span>
+<span class="code-block-extension-codeLine" data-line-num="67">    System.out.println(<span class="hljs-string">"reconnect state: "</span> + client1.getState());  </span>
+<span class="code-block-extension-codeLine" data-line-num="68">    Awaitility.await().atMost(<span class="hljs-number">15</span>, TimeUnit.SECONDS)  </span>
+<span class="code-block-extension-codeLine" data-line-num="69">            .untilAsserted(() -&gt; Assertions.assertEquals(ClientState.State.Ready, state));  </span>
+<span class="code-block-extension-codeLine" data-line-num="70">    serverInfo = client1.getServerInfo();  </span>
+<span class="code-block-extension-codeLine"
+      data-line-num="71">    Assertions.assertTrue(serverInfo.isPresent());  </span>
+<span class="code-block-extension-codeLine" data-line-num="72">    System.out.println(<span class="hljs-string">"client1 reconnect server info = "</span> + serverInfo.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="73">  </span>
+<span class="code-block-extension-codeLine" data-line-num="74">    <span
+        class="hljs-comment">// Send message again.  </span></span>
+<span class="code-block-extension-codeLine" data-line-num="75">    log.info(<span class="hljs-string">"send message again, client2Receive = {}"</span>, client2Receive.get());  </span>
+<span class="code-block-extension-codeLine" data-line-num="76">    client1.sendGroup(msg);  </span>
+<span class="code-block-extension-codeLine" data-line-num="77">    Awaitility.await()  </span>
+<span class="code-block-extension-codeLine" data-line-num="78">            .untilAsserted(() -&gt; Assertions.assertEquals(String.format(<span
+        class="hljs-string">"cj:%s"</span>, msg), client2Receive.get()));  </span>
+<span class="code-block-extension-codeLine" data-line-num="79">    <span class="hljs-built_in">super</span>.stopTwoServer();  </span>
+<span class="code-block-extension-codeLine" data-line-num="80">}</span>
+</code></pre>
+    <p>比如在这里编写了一个客户端重连的单测，代码有点长，但它的主要流程如下：</p>
+    <ul>
+        <li>启动两个 Server：Server1，Server2</li>
+        <li>启动 Route</li>
+        <li>在启动两个 Client 发送消息
+            <ul>
+                <li>校验消息发送是否成功</li>
+            </ul>
+        </li>
+        <li><strong>停止 Client1 连接的 Server</strong></li>
+        <li><strong>等待 Client 自动重连到另一个 Server</strong></li>
+        <li>再次发送消息
+            <ul>
+                <li>校验消息发送是否成功</li>
+            </ul>
+        </li>
+    </ul>
+    <p>这样就可以验证在服务端 Server 宕机后整个服务是否可用，消息收发是否正常。</p>
+    <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+            class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg xmlns="http://www
+.w3.org/2000/svg" viewBox="0 0 24 24"><path
+            d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+            data-name="Down"></path></svg></div><span class="code-
+block-extension-lang">java</span></div><div class="code-block-extension-headerRight"><div data-v-159ebe90=""
+                                                                                          class="render"><svg
+            data-v-159ebe90="" xmlns="http://www.w3.org/2000/svg" width="14" height=
+            "14" viewBox="0 0 14 14" fill="none" class="icon"><path data-v-159ebe90="" fill-rule="evenodd"
+                                                                    clip-rule="evenodd" d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10
+.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79
+418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756
+ 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8
+503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.516
+93C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.
+56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                                                                    fill="url(#paint0_radial_370_13481)"></path><defs
+            data-v-159
+            ebe90=""><radialGradient data-v-159ebe90="" id="paint0_radial_370_13481" cx="0" cy="0" r="1"
+                                     gradientUnits="userSpaceOnUse" gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.
+5605)"><stop data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                  stop-color="#B051B9"></stop><stop data-v-159ebe90=""
+                                                                                                    offset="0.455423"
+                                                                                                    stop-color="#672BFF"></stop
+    ><stop data-v-159ebe90="" offset="0.9999" stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+            data-v-159ebe90="" class="txt">代码解读</span></div><div class="code-block-extension-copyCodeB
+tn">复制代码</div></div></div><code class="hljs language-java code-block-extension-codeShowNum" lang="java"><span
+            class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-keyword">public</span> <span
+            class="hljs-keyword">void</span> <span class="hljs-title function_">startTwoServer</span><span
+            class="hljs-params">()</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="2">    <span class="hljs-keyword">if</span> (!zooKeeperContainer.isRunning()){  </span>
+<span class="code-block-extension-codeLine" data-line-num="3">        zooKeeperContainer.start();  </span>
+<span class="code-block-extension-codeLine" data-line-num="4">    }    zookeeperAddr = String.format(<span
+        class="hljs-string">"%s:%d"</span>, zooKeeperContainer.getHost(), zooKeeperContainer.getMappedPort(ZooKeeperContainer.DEFAULT_CLIENT_PORT));  </span>
+<span class="code-block-extension-codeLine" data-line-num="5">    <span class="hljs-type">SpringApplication</span> <span
+        class="hljs-variable">server</span> <span class="hljs-operator">=</span> <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">SpringApplication</span>(CIMServerApplication.class);  </span>
+<span class="code-block-extension-codeLine" data-line-num="6">    String[] args1 = <span class="hljs-keyword">new</span> <span
+        class="hljs-title class_">String</span>[]{  </span>
+<span class="code-block-extension-codeLine" data-line-num="7">            <span class="hljs-string">"--cim.server.port=11211"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="8">            <span
+        class="hljs-string">"--server.port=8081"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="9">            <span
+        class="hljs-string">"--app.zk.addr="</span> + zookeeperAddr,  </span>
+<span class="code-block-extension-codeLine" data-line-num="10">    };    <span class="hljs-type">ConfigurableApplicationContext</span> <span
+        class="hljs-variable">run1</span> <span class="hljs-operator">=</span> server.run(args1);  </span>
+<span class="code-block-extension-codeLine" data-line-num="11">    runMap.put(Integer.parseInt(<span
+        class="hljs-string">"11211"</span>), run1);  </span>
+<span class="code-block-extension-codeLine" data-line-num="12">  </span>
+<span class="code-block-extension-codeLine" data-line-num="13">  </span>
+<span class="code-block-extension-codeLine" data-line-num="14">    <span
+        class="hljs-type">SpringApplication</span> <span class="hljs-variable">server2</span> <span
+        class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpringApplication</span>(CIMServerApplication.class);  </span>
+<span class="code-block-extension-codeLine" data-line-num="15">    String[] args2 = <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]{  </span>
+<span class="code-block-extension-codeLine" data-line-num="16">            <span class="hljs-string">"--cim.server.port=11212"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="17">            <span class="hljs-string">"--server.port=8082"</span>,  </span>
+<span class="code-block-extension-codeLine" data-line-num="18">            <span
+        class="hljs-string">"--app.zk.addr="</span> + zookeeperAddr,  </span>
+<span class="code-block-extension-codeLine" data-line-num="19">    };    <span class="hljs-type">ConfigurableApplicationContext</span> <span
+        class="hljs-variable">run2</span> <span class="hljs-operator">=</span> server2.run(args2);  </span>
+<span class="code-block-extension-codeLine" data-line-num="20">    runMap.put(Integer.parseInt(<span
+        class="hljs-string">"11212"</span>), run2);  </span>
+<span class="code-block-extension-codeLine" data-line-num="21">}</span>
+<span class="code-block-extension-codeLine" data-line-num="22"></span>
+<span class="code-block-extension-codeLine" data-line-num="23"><span class="hljs-keyword">public</span> <span
+        class="hljs-keyword">void</span> <span class="hljs-title function_">stopServer</span><span class="hljs-params">(Integer port)</span> {  </span>
+<span class="code-block-extension-codeLine" data-line-num="24">    runMap.get(port).close();  </span>
+<span class="code-block-extension-codeLine" data-line-num="25">    runMap.remove(port);  </span>
+<span class="code-block-extension-codeLine" data-line-num="26">}</span>
+</code></pre>
+    <p>这里的启动两个 Server 就是创建了两个 Server 应用，然后保存好端口和应用之间的映射关系。</p>
+    <p>这样就可以根据客户端连接的 Server 信息指定停止哪一个 Server，更方便做测试。</p>
+    <p>这次重启 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim" target="_blank"
+                   title="https://github.com/crossoverJie/cim" ref="nofollow noopener noreferrer">cim</a>
+        的维护后会尽量维护下去，即便更新时间慢一点。</p>
+    <p>后续还会加上消息 ack、离线消息等之前呼声很高的功能，感兴趣的完全可以一起参与。</p>
+    <p>源码地址：
+        <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FcrossoverJie%2Fcim" target="_blank"
+           title="https://github.com/crossoverJie/cim" ref="nofollow noopener noreferrer">github.com/crossoverJi…</a>
+    </p></div> <!---->
+
+</body>
+</html>

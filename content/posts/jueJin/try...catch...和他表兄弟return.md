@@ -1,0 +1,82 @@
+---
+author: "小红帽的大灰狼"
+title: "try...catch...和他表兄弟return"
+date: 2024-05-31
+description: "说一个之前面试的面试题，主题就是trycatch、finally和renturn以及如果有异常他们之间的执行顺序关系，面试官很和蔼可亲，问的问题看的也不是很难，就这一个点他拆成了5、6个小点问我，我"
+tags: ["后端"]
+ShowReadingTime: "阅读3分钟"
+weight: 62
+---
+说一个之前面试的面试题，主题就是try catch、finally和renturn以及如果有异常他们之间的执行顺序关系，面试官很和蔼可亲，问的问题看的也不是很难，就这一个点他拆成了5、6个小点问我，我记得我答错了一个好像，然后我入职了，现在我要凭我仅存的记忆把他归为两三类写出来，
+
+第一问
+---
+
+这也是最简单的一个问题，try和catch中都存在return是如何返回的，答案就是如果存在异常返回catch中的return,如果不存在异常，直接返回try中的return;
+
+java
+
+ 代码解读
+
+复制代码
+
+`public static void main(String[] args) {         System.out.println(m(0));     }     public static int m(int a){         try{             return 1/a;         }catch(Exception e){             return 12;         }     }`
+
+`给1返回1，给0返回12；`
+
+第二问
+---
+
+如果存在finally情况,try、catch中存在return，finally怎么执行，复用上面代码，追加finally
+
+java
+
+ 代码解读
+
+复制代码
+
+`try{             return 1/a;         }catch(Exception e){             return 12;         }finally {             return 13;         }`
+
+`不管传什么值都会返回13`
+
+这里不是说我们的try、catch的return不执行，当我们把传入的类型换成引用类型时会发现我们的值在try中和finally中都会变化的,finally中的return是为了返回打印方便哈，后面说，我们将其改成
+
+java
+
+ 代码解读
+
+复制代码
+
+`public static int m(int a){         try{             return 1/a;         }catch(Exception e){             System.out.println("catch");         }finally {             System.out.println("finally");         }         return 14;     }`
+
+这种情况如果不抛出异常会打印`finally`和try中的return，如果抛出异常会打印`catch`,`finally`和`14`,接着面试官又问我如果我把return写在finally中呢，后面代码怎么执行，就此处我答错了，return在finally中finally之前的代码该怎么执行就怎么执行，finally之后的一概不执行，我答一般我们不建议在finally中写return语句，为什么不建议呢，因为finally中写return，后面所有的代码将黯然失色，而且不利于我们后期维护添加代码，项目上通常的传参都是引用类型传递，所以我们只用在try、catch、finally这些语句块中更改相应的引用对象类型即可，我们应该回答如果finally中写return，后面的代码编译会报错；
+
+![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/04ad95fdc0e84d1eb68c08e0f2bc8137~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=728&h=286&s=23572&e=png&b=2c2c2c)
+
+那如果没有finally呢，回到上面的代码，如果没有finally，代码要么执行try，要么执行catch，同样的如果我们这两个都写上return，我们后面的依然会变成废代码；
+
+再问一个，如果我没有catch，而我的try抛异常了，该怎么执行
+
+java
+
+ 代码解读
+
+复制代码
+
+`public static int m(int a){         try{             a = 1/a;         }finally {             System.out.println("finally");         }         return 1;     }`
+
+这个结果是：它会先执行finally，然后抛出try中的异常，也就是说，存在finally，try中的执行存在一个暂存的行为；
+
+最后
+--
+
+应该没啥了吧，那我们该如何规范写try呢？
+
+首先try就是我们的逻辑代码，将我们认为会抛异常和编译器强制我们捕获或抛出的异常代码放里面，尽量减少try的范围，我看过很多代码为了方便包括我自己，直接方法开始就try一直到结束，这样没问题但是会导致我们不知道哪里会出异常还是尽量缩小范围，我们可能捕获然后按照我们自己的方式去抛出异常，这样我们的catch里面我们就写throw或者写我们的异常处理逻辑即可，finally什么时候写呢，就是我们不管逻辑正确执行与否都要执行的逻辑就可以写在这里面或者写在这个后面，对于一些必要的执行逻辑，那么我们一定要写在finally中，毕竟我们管不住catch里的逻辑，比如我们释放锁、释放资源这种；
+
+`ok！完成`
+
+总结
+==
+
+> 我也曾是个快乐的童鞋，也有过崇高的理想，直到我面前堆了一座座山，脚下多了一道道坑，我。。。。。。！
