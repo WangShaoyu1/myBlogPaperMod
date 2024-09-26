@@ -129,53 +129,33 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">服了，一线城市的后端都卷成这样了吗！？
+    <h2 class="entry-hint-parent">只因把https改成http，带宽减少了70%！
     </h2>
   </header>
   <div class="entry-content">
-    <p> 声明：本文首发在同名公众号：王中阳Go，未经授权禁止转载。
-先听TA的故事 投稿的主人公是一名工作5年的后端开发工程师，最近2年用Golang，之前其他语言。去年春节前被裁员了，各种心酸史，好愁人啊。
-刚开始找的特别费劲，简历已读不回，也不知道怎么做准备更好。在撞了很多南墙之后，终于摸到了门道，开始能约到面试了。
-然后更难顶的事情发生了：经过各种努力和约面，我拿到了北京的两个offer，但是深圳一个都没拿到，我自己更倾向在深圳工作的，实在实在没办法才会去北京。
-深圳这边的工作很卷，越面试考察越难，刚开始那几家我还扛得住，主要是八股和算法，后来不少公司更多的是考察各种各样的场景题，甚至还有公司问我如果让我带一个5~10人小团队做项目会考虑哪些事情？
-我真是服气了，我只是一个想找20K工作的gopher程序员，要求已经这么高了吗？太卷了。。。。
-在各种学习各种突击、踏踏实实提高自己之后，目前已经成功上岸深圳的公司了，在这里真心分享一个靠谱的经验：别想着速成，踏踏实实的提高自己才是王道。
-秉承着好人有好报的原则：我授权阳哥把我最近面试了十几家公司，将近30场面试的面经和经验都分享出来，希望对大家有帮助，希望阳哥的粉丝们都能顺利上岸！把我这份好运传递下去！！！
-下面开始秀一下最新面经：
-北京外包-掌阅科技 面试题：
-自我介绍 介绍一下你参与的模块的业务以及架构设计 交易流程 说一下微信支付流程 介绍一下你最了解的业务的技术实现 做了哪些业务封装？解决了哪些问题？ mongodb的集合是什么？文档是什么？ mongodb的底层数据结构是什么？怎么实现的？怎么存储的？ 编程题写代码
-使用go实现1000个并发控制并设置执行超时时间1秒
-go
-代码解读
-复制代码
-func worker(c context.Context, wg *sync.WaitGroup, id int) { defer wg.Done() select { case &lt;-time.After(time.Second): fmt.Sprintln(&#34;执行完成 %&#34;, id) case &lt;-c.Done(): fmt.Sprintln(&#34;请求超时 %&#34;, id) } } func main() { ctx, cancel := context.WithTimeout(context.Background(), time.Second) defer cancel() var wg sync.WaitGroup wg.Add(1000) for i := 0; i &lt; 1000; i&#43;&#43; { go worker(ctx, &amp;wg, i) } wg.Wait() }
+    <p>起因 是一个高并发的采集服务上线后，100m的上行很快就被打满了。
+因为这是一条专线，并且只有这一个服务在使用，所以可以确定就是它导致的。
+但是！这个请求只是一个 GET 请求，同时并没有很大的请求体，这是为什么呢？
+于是使用 charles 重新抓包后发现，一个 request 的请求居然要占用 1.68kb 的大小!
+其中TLS Handshake 就占了 1.27kb。
+这种情况下，需要的上行带宽就是：1.68*20000/1024*8=262.5mbps
+也就说明100mbps的上行为何被轻松打满
+TLS Handshake是什么来头，竟然如此大? 首先要知道HTTPS全称是：HTTP over TLS，每次建立新的TCP连接通常需要进行一次完整的TLS Handshake。在握手过程中，客户端和服务器需要交换证书、公钥、加密算法等信息，这些数据占用了较多的字节数。
+TLS Handshake的内容主要包括：
+客户端和服务器的随机数 支持的加密算法和TLS版本信息 服务器的数字证书（包含公钥） 用于生成对称密钥的“Pre-Master Secret” 这个过程不仅耗时，还会消耗带宽和CPU资源。
+因此想到最粗暴的解决方案也比较简单，就是直接使用 HTTP，省去TLS Handshake的过程，那么自然就不会有 TLS 的传输了。
+那么是否真的有效呢？验证一下就知道。
+将请求协议改成 http 后：
+可以看到请求头确实不包含 TLS Handshake了!
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-01 00:00:00 +0000 UTC'>四月 1, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;王中阳Go</footer>
-  <a class="entry-link" aria-label="post link to 服了，一线城市的后端都卷成这样了吗！？" href="http://localhost:1313/posts/juejin/%E6%9C%8D%E4%BA%86%E4%B8%80%E7%BA%BF%E5%9F%8E%E5%B8%82%E7%9A%84%E5%90%8E%E7%AB%AF%E9%83%BD%E5%8D%B7%E6%88%90%E8%BF%99%E6%A0%B7%E4%BA%86%E5%90%97/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">深入掌握Go单元测试：从基础到进阶的完整指南
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 在软件开发中，单元测试是一项不可忽视的环节。它不仅帮助开发者在编码的早期阶段发现并解决潜在问题，还能确保代码的可靠性、可维护性和整体质量，这对于提高开发效率、减少后期维护成本非常重要。
-尤其是当你在后期对某个函数或方法进行优化时，之前编写的测试用例就显得非常重要。如果测试通过，你会感到欣慰，说明优化后的代码没有破坏现有功能；如果测试失败，那也是好事，因为你及时发现了潜在问题，避免了线上故障的风险。
-在 Go 语言中，go test 命令和 testing 包提供了简洁而强大的测试机制，使得 Gopher 能轻松编写并执行测试用例。本文将详细介绍如何使用 Go 语言中的 testing 包编写高效的单元测试，探讨 go test 命令的常用参数及其作用，并通过子测试和表格驱动测试的实践方法提升代码质量。文章还会介绍 TestMain 函数的使用场景，外部测试工具库如 testify 的应用，以及常用的断言方法。
-准备好了吗？准备一杯你最喜欢的咖啡或茶，随着本文一探究竟吧。
-基本的测试结构 Go 语言的测试文件通常放置在与被测试的源文件相同的包中，文件名以 _test.go 结尾。比如，reverse.go 文件的测试文件应命名为 reverse_test.go。这样 go test 命令将能够正确识别和执行测试。
-每个测试函数的命名必须以 Test 开头，后接大写字母开头的函数名。测试函数的签名为 func (t *testing.T)，其中 t *testing.T 是用于管理测试状态和报告测试失败的参数。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-09-20 00:00:00 +0000 UTC'>九月 20, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;陈明勇</footer>
-  <a class="entry-link" aria-label="post link to 深入掌握Go单元测试：从基础到进阶的完整指南" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1go%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E4%BB%8E%E5%9F%BA%E7%A1%80%E5%88%B0%E8%BF%9B%E9%98%B6%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97/"></a>
+  <footer class="entry-footer"><span title='2024-09-01 00:00:00 +0000 UTC'>九月 1, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;麦麦麦造</footer>
+  <a class="entry-link" aria-label="post link to 只因把https改成http，带宽减少了70%！" href="http://localhost:1313/posts/juejin/%E5%8F%AA%E5%9B%A0%E6%8A%8Ahttps%E6%94%B9%E6%88%90http%E5%B8%A6%E5%AE%BD%E5%87%8F%E5%B0%91%E4%BA%8670/"></a>
 </article>
     </main>
     
 <footer class="footer">
-        <span>© <a href="https://github.com/adityatelange/hugo-PaperMod/graphs/contributors">PaperMod Contributors</a></span> · 
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
 
     <span>
         Powered by

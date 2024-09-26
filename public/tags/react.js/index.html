@@ -129,6 +129,23 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">初体验egg-vue-singal-page
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>egg在koa框架的基础上进行了封装，并集合了现今热门的vue、react框架，支持服务端渲染，可以说是全端开发的一个优秀实践。关于demo和api，可以在官网自行查看。这里只对本人觉得比较有意思的一些点进行总结。
+打包、构建 egg为了统一前后端代码的构建，对webpack进行了进一步的封装，称之为easywebpack，内置了一些常用的loader、plugin，简化了站点的基础配置。
+代码解读
+复制代码
+module.exports = { egg: true, framework: &#39;vue&#39;, entry: { include: [&#39;app/web/page&#39;], exclude: [&#39;app/web/page/[a-z]&#43;/component&#39;], loader: { client: &#39;app/web/framework/vue/entry/client-loader.js&#39;, server: &#39;app/web/framework/vue/entry/server-loader.js&#39;, } }, alias: { }, dll: [], loaders: {}, plugins: { serviceworker: true }, done() { } };
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-03-27 00:00:00 +0000 UTC'>三月 27, 2018</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;叶知秋水</footer>
+  <a class="entry-link" aria-label="post link to 初体验egg-vue-singal-page" href="http://localhost:1313/posts/juejin/%E5%88%9D%E4%BD%93%E9%AA%8Cegg-vue-singal-page/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">面试官：假如有几十个请求，如何去控制并发？
     </h2>
   </header>
@@ -155,10 +172,80 @@ const ids = new Array(100).fill(&#39;&#39;) console.time() for (let i = 0; i &lt
   <footer class="entry-footer"><span title='2024-04-12 00:00:00 +0000 UTC'>四月 12, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;大码猴</footer>
   <a class="entry-link" aria-label="post link to 面试官：假如有几十个请求，如何去控制并发？" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E5%81%87%E5%A6%82%E6%9C%89%E5%87%A0%E5%8D%81%E4%B8%AA%E8%AF%B7%E6%B1%82%E5%A6%82%E4%BD%95%E5%8E%BB%E6%8E%A7%E5%88%B6%E5%B9%B6%E5%8F%91/"></a>
 </article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">React.ForwardRef探索：更简单的替代方案
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>理解React中的ref 当我们向一个原生HTML元素，比如&lt;input&gt;，传递一个ref时，它会自动附加到DOM节点上。这样我们就可以使用这个节点的原生DOM API。
+jsx
+代码解读
+复制代码
+import React, { useRef, useEffect } from &#39;react&#39;; const App = () =&gt; { const inputRef = useRef(null); useEffect(() =&gt; { if (inputRef.current) { // 访问DOM节点 inputRef.current.focus(); } }, []); return &lt;input ref={inputRef} /&gt;; };
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-07-06 00:00:00 +0000 UTC'>七月 6, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;叶知秋水</footer>
+  <a class="entry-link" aria-label="post link to React.ForwardRef探索：更简单的替代方案" href="http://localhost:1313/posts/juejin/react.forwardref%E6%8E%A2%E7%B4%A2%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">TypeScript很麻烦💔，不想使用！
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>本文已经授权【稀土掘金技术社区】官方公众号独家原创发布。
+前言 最近，我们部门在开发一个组件库时，我注意到一些团队成员对使用TypeScript表示出了抵触情绪，他们常常抱怨说：“TypeScript太麻烦了，我们不想用！”起初，我对此感到困惑：TypeScript真的有那么麻烦吗？然而，当我抽时间审查队伍的代码时，我终于发现了问题所在。在这篇文章中，我想和大家分享我的一些发现和解决方案。
+一、类型复用不足 在代码审查过程中，我发现了大量的重复类型定义，这显著降低了代码的复用性。
+进一步交流后，我了解到许多团队成员并不清楚如何在TypeScript中复用类型。TypeScript允许我们使用type和interface来定义类型。
+当我询问他们type与interface之间的区别时，大多数人都表示不清楚，这也就难怪他们不知道如何有效地复用类型了。
+type定义的类型可以通过交叉类型（&amp;）来进行复用，而interface定义的类型则可以通过继承（extends）来实现复用。值得注意的是，type和interface定义的类型也可以互相复用。下面是一些简单的示例：
+复用type定义的类型：
+ts
+代码解读
+复制代码
+type Point = { x: number; y: number; }; type Coordinate = Point &amp; { z: number; };
+复用interface定义的类型：
+ts
+代码解读
+复制代码
+interface Point { x: number; y: number; }; interface Coordinate extends Point { z: number; }
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-03-11 00:00:00 +0000 UTC'>三月 11, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;前端大骆</footer>
+  <a class="entry-link" aria-label="post link to TypeScript很麻烦💔，不想使用！" href="http://localhost:1313/posts/juejin/typescript%E5%BE%88%E9%BA%BB%E7%83%A6%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">基于echarts的知识图谱可视化实践（封装组件）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1.需求背景 公司是做知识图谱领域的，需要展示可视化的知识图谱，在我入职之前后端的小哥哥们写了一套 d3 版本的知识图谱，代码杂乱无章，各种嵌套，不加工具函数都有 1000 多行代码，无论从代码性能还是可维护性上说都很不友好。于是，决定重新寻找方案实现这块内容。 代码写的杂乱无章不是 d3 的锅，d3 在可视化领域绝对是有一席之地的，但是对于没有接触过 d3 的同学，如果要在此基础上再加上公司的业务逻辑，那绝对是一件令人 egg 疼的事情了，还好，现在有很多开源组件库，可以为开发者提供绝美的生产力工具。 选择 echarts，文档清晰，通俗易懂。 2.需求分析 原有的知识图谱已经实现的功能，我们不能抛弃，想要替换之前的方案，最起码原有的功能得全部保留。看下功能点：
+图谱在初始化时都会有一段时间的位置调整动画，这是力引导布局的共性，差别在于如何更快的让节点趋于稳定。（节点很少的时候，基本看不出来差别） 节点单击展示节点属性表格，表格内容动态切换 节点第一次双击拓展，第二次双击折叠，类似于按钮 toggle 过程。 节点右键可出现操作菜单，如删除节点，添加关注点等。 放大缩小清空图谱 以上为本次需求的基本功能点。
+3.着手实现组件的设计 前端组件设计原则我们应该尽量遵守，如低耦合，单一原则等等。但是对于公司内部专业开发使用的组件，一般我们都没有做到这么严格。有一个原则是好用，易于维护，大家都看得懂。我在开发这个组件的时候考虑到以下几点：
+我司后端经常参与前端项目的开发中，他们是否可以看得懂，用的好。 后面入职的前端如果要接手这块的内容是不是能很快理解。（以前版本的就很难理解，甚至无法直视） 组件应该尽量避免有更多的业务逻辑，假设某次需求要把这个组件拿到另外一个场景使用，是否做到不影响。（老版本不仅参杂复杂业务逻辑，还有 ajax 请求） 4.coding time 最开始写了一个 react hooks 版本，奈何这块不是很熟悉，开发过程中出现很多 bug，最后放弃，还是选择使用类组件。 组件的 state：
+代码解读
+复制代码
+this.state = { graphData: { nodes: [], links: [] }, // 数据源 echartInstance: null, // 图谱实体 shrink: [], // 收缩节点 clickNodes: [], // 点击的节点 option: { // 图谱的配置 tooltip: { show: true, formatter: &#34;&lt;div style=&#39;display:block;word-break: break-all;word-wrap: break-word;white-space:pre-wrap;max-width: 80px&#39;&gt;&#34; &#43; &#34;{b} &#34; &#43; &#34;&lt;/div&gt;&#34; }, animationDurationUpdate: 2000, animationEasingUpdate: &#39;quinticInOut&#39;, series: [{ type: &#39;graph&#39;, layout: &#39;force&#39;, symbolSize: 35, draggable: true, roam: true, focusNodeAdjacency: true, edgeSymbol: [&#39;&#39;, &#39;arrow&#39;], cursor: &#39;pointer&#39;, emphasis: { itemStyle: { borderWidth: 10, borderType: &#39;solid&#39;, shadowBlur: 20, shadowColor: &#39;#eee&#39;, }, label: { show: true, formatter: (record) =&gt; { if (record.name.length &gt; 10) { return record.name.substr(0, 5) &#43; &#39;...&#39; } else { return record.name } } }, edgeLabel: { width: 100 } }, edgeLabel: { normal: { show: true, textStyle: { fontSize: 14, color: &#39;#fff&#39; }, formatter(x) { return x.data.name; } } }, label: { show: true, position: &#39;bottom&#39;, color: &#39;#fff&#39;, formatter: (record) =&gt; { if (record.name.length &gt; 10) { return record.name.substr(0, 5) &#43; &#39;...&#39; } else { return record.name } } }, force: { initLayout: &#39;circular&#39;, repulsion: 80, gravity: 0.01, edgeLength: 180, layoutAnimation: true, friction: 0.2 }, data: [], links: [] }] }, visible: false, // 右键菜单是否可视 wrapStyle: { // 右键菜单样式 position: &#39;absolute&#39;, width: &#39;100px&#39;, padding: &#39;5px 0&#39;, backgroundColor: &#39;#fff&#39;, }, addSource: &#39;&#39;, // 右键选中的实体 }
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-07-13 00:00:00 +0000 UTC'>七月 13, 2020</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;蚌埠张学友</footer>
+  <a class="entry-link" aria-label="post link to 基于echarts的知识图谱可视化实践（封装组件）" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Eecharts%E7%9A%84%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E5%8F%AF%E8%A7%86%E5%8C%96%E5%AE%9E%E8%B7%B5%E5%B0%81%E8%A3%85%E7%BB%84%E4%BB%B6/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="http://localhost:1313/tags/react.js/page/2/">下一页&nbsp;2/4&nbsp;»
+    </a>
+  </nav>
+</footer>
     </main>
     
 <footer class="footer">
-        <span>© <a href="https://github.com/adityatelange/hugo-PaperMod/graphs/contributors">PaperMod Contributors</a></span> · 
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
 
     <span>
         Powered by
