@@ -1,0 +1,121 @@
+---
+author: "mysteryven"
+title: "TS中any和unknown的区别"
+date: 2021-10-30
+description: "any和unknown两个类型都是一个大容器，可以容纳其他的所有类型，但是，二者有什么区别呢？"
+tags: ["前端","TypeScript"]
+ShowReadingTime: "阅读4分钟"
+weight: 943
+---
+在 TypeScript 中， 如果有一个场景，不太好定义类型，但是你自己知道你在做什么，你自己知道它类型肯定是什么，这个时候可能就会忍不住使用 `any`。如果你有其他语言的编程经验，使用过 `Object` 来定义所有对象的类型，到了 TypeScript 中，也想给当前对象定义一个最基本的类型，可能也会错误的选用 `any`。
+
+如果你有类似的经历，你应该会理解我的意思，没有的话也没关系，我们来看一个具体的例子：
+
+sql
+
+ 代码解读
+
+复制代码
+
+`interface User {     name: string } function foo(user: User) {     console.log('hello, ' + user.name); }`
+
+上面的 `foo` 函数接受一个 `User` 类型的对象，并在运行的时候打印出它的 `name` 属性的值。
+
+如果后端给予我们一个 JSON 字符串，在调用 `foo` 函数之前，我们要先反序列化一下：
+
+ts
+
+ 代码解读
+
+复制代码
+
+`// 假设这是后端给的数据 const userData = JSON.stringify({name: 'Jany'})  // 拿到数据后反序列化一下 const user = JSON.parse(    userData );`
+
+接下来我们就可以正常调用了：
+
+ts
+
+ 代码解读
+
+复制代码
+
+`foo(user) // hello, Jany`
+
+由于 `JSON.parse` 方法是 JS 中的一个方法，并不是强类型的，当我们查看 `user` 的类型的时候，会发现是 `any` 类型的：
+
+![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/50cf55d5a40645c3a384e2baacedc0ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+
+由于 `any` 是可以赋值给任何类型的，把它传给 `User` 类型当然也不会报错的。
+
+会按照上面这么写的时候是因为：在当时，我们确信后端给我们的 JSON 字符串肯定是合法的，但是万一因为什么情况不合法了呢？就比如下面这种情况：
+
+ts
+
+ 代码解读
+
+复制代码
+
+`const userData = JSON.stringify({})  const user = JSON.parse(    userData ); foo(user) // hello, undefined`
+
+TS 在静态类型检查阶段还是不会报错，但是在代码在运行阶段就有问题了： `name` 属性是 `undefined` 。
+
+为了避免这个问题，我们要先判断一下输入的 `user` 对象是不是合法的：
+
+ts
+
+ 代码解读
+
+复制代码
+
+`function isUser(user: any): user is User {     return typeof user === 'object' &&             typeof user.name === 'string' } if (isUser(user)) {     foo(user); }`
+
+> `user` 本来是 `any` 类型， `user is User` 的意思是：当 `isUser` 函数返回值为 `true` 的时候，就把 `user` 这个值断言为 `User` 类型。
+
+如果我们加了类型校验，就不会再出现运行阶段输出 `undefined` 的情况了。但是依然有一个问题，那就是在调用 `foo` 函数之前进行 isUser 判断不够强制。我们完全可以不检测，也会通过类型检测。
+
+如果别的同学在调用 `foo` 函数的时候不知道这里坑，可能没判断 `user` 的类型就直接调用了。这时候，往往是上线的时候才能发现问题。
+
+那怎么解决这里碰到的问题呢？就是要用 `unknown` 了。
+
+在 Typescript 的类型系统中，有主要的几大类型：`Object`、`undefined`、`null`、`Never`、`void`、`string`、`number`...... 而 `unknown` 是这些类型的顶层类型，也就是说它是前面所述所有类型的父类型。基于这个特点，我们所有的类型也都能赋值为 `unknown`。
+
+接下来我们改进一下上面的代码，把反序列化得到的结果定义为 `unknown` 类型：
+
+ts
+
+ 代码解读
+
+复制代码
+
+`const user: unknown = JSON.parse(    userData );`
+
+此时如果我们直接调用 `foo` 函数就会出错了：
+
+![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/41980b8504a54bf2b8fb68b7a7b3a470~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+
+要想正常调用，必须先书写判断 `user` 是否正确的代码：
+
+js
+
+ 代码解读
+
+复制代码
+
+`if (isUser(user)) {     foo(user); }`
+
+就只简简单单的通过给序列化得到的结果指定了一个 `unknown` 类型， 我们就能让不做安全检查的数据不通过类型检测，这是一个非常划算的事。这也让我们的这段代码更健壮！
+
+总得来说，我们在不确定类型的时候，可以先指定一个它的父类型（`unknown`），然后在根据后面的判断把它转化为想要的子类型。在其他的强类型的编程语言中，也会有类似的场景，他们叫做强制类型转换，比如在 Java 中，你会看到类似这样的代码：
+
+java
+
+ 代码解读
+
+复制代码
+
+`Object a = new User(); User b; if(a instanceof User) {     b = (User) a; }`
+   
+
+在上面，我们对比了 `any` 和 `unknown` 的区别，我们再来总结一下：
+
+二者都是可以赋值给任意类型的， `any` 会绕过类型检查，直接可用，而 `unkonwn` 则必须要在判断完它是什么类型之后才能继续用。像 `any` 这个这么锋利的刀，还是能少用就少用，容易伤人。
