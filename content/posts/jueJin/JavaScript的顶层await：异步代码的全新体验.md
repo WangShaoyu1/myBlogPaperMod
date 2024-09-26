@@ -1,0 +1,130 @@
+---
+author: "前端宝哥"
+title: "JavaScript的顶层await：异步代码的全新体验"
+date: 2024-09-24
+description: "JavaScript历经多年发展，不断演变，其中最令人兴奋的新功能之一就是顶层await。这项功能在ECMAScript2022（ES13）中引入，它彻底改变了开发者编写异步代码的方式，是一"
+tags: ["JavaScript","前端"]
+ShowReadingTime: "阅读5分钟"
+weight: 987
+---
+JavaScript 历经多年发展，不断演变，其中最令人兴奋的新功能之一就是 **顶层 `await`**。这项功能在 ECMAScript 2022（ES13）中引入，它彻底改变了开发者编写异步代码的方式，是一个期待已久的改进。那么，为什么顶层 `awai t` 会如此颠覆游戏规则呢？让我们深入了解一下。
+
+#### 顶层 `await` 是什么？
+
+在 JavaScript 中，`await` 关键字传统上只能在 `async` 函数内部使用，这意味着你只能在这些函数的范围内使用它。这在你想在模块顶层（任何函数之外）编写异步代码时会带来挑战。你需要将你的代码包裹在一个 `async` 函数中，或者使用像立即调用异步函数 (IIAF) 这样的变通方法。
+
+顶层 `await` 消除了这种限制，让你可以在 ES 模块代码的顶层直接使用 `await` 关键字。这样一来，无需人为地将异步代码包裹在 `async` 函数中，简化了异步代码执行。
+
+以下是一个例子：
+
+javascript
+
+ 代码解读
+
+复制代码
+
+``// 旧方法（在顶层 `await` 之前） (async () => {     const data = await fetchData();     console.log(data); })(); // 新方法（使用顶层 `await`） const data = await fetchData(); console.log(data);``
+
+#### 趣闻 1：你知道吗？
+
+在顶层 `await` 出现之前，许多开发者会使用一种叫做 **立即调用异步函数 (IIAF)** 的方法。这个名称很拗口，它指的是将你的异步代码包裹在一个立即调用自身的函数中。虽然这种方法有效，但它给代码增加了不必要的复杂性。有了顶层 `await`，我们可以告别这些额外的层级！
+
+#### 为什么它会改变游戏规则？
+
+##### 1\. 简化异步代码
+
+顶层 `await` 使代码更简洁易读。开发者不再需要将异步逻辑包裹在匿名函数中，现在可以直接在顶层编写。这减少了样板代码，并使程序流程更容易理解，尤其是在大量依赖异步操作的模块中，比如从 API 获取数据、读取文件或执行数据库查询。
+
+例如，考虑一个从多个 API 导入数据的模块。使用顶层 `await`，你可以更自然地组织你的导入和异步逻辑：
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`import { fetchData1, fetchData2 } from './api.js'; const data1 = await fetchData1(); const data2 = await fetchData2(); console.log(data1, data2);`
+
+这种简化的方式更直观，也无需复杂的 IIAF 或回调嵌套。
+
+**你可以节省多少代码？**
+
+让我们进行对比：
+
+**没有顶层 `await` 之前：**
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`// 8 行代码 import { fetchData } from './api.js'; (async () => {     try {         const data = await fetchData();         console.log(data);     } catch (error) {         console.error('Error:', error);     } })();`
+
+**使用顶层 `await` 之后：**
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`// 5 行代码 import { fetchData } from './api.js'; const data = await fetchData(); console.log(data);`
+
+这个例子显示代码减少了 **3 行**，但在包含大量异步操作的大型项目中，代码节省量会更加可观！
+
+#### 趣闻 2：节省空间！
+
+想象一下：如果一个包含 100 个文件的项目中的每个模块都使用顶层 `await`，并且每个文件至少节省 3 行代码，那么整个代码库将 **节省 300 行代码**。更少的代码意味着更易于维护，也减少了 bug 产生的可能性！
+
+##### 2\. 改善模块交互
+
+在顶层 `await` 出现之前，管理模块之间的异步依赖关系可能很麻烦。需要异步导入数据的模块必须仔细地使用 promise 或其他 `async` 函数来协调执行。
+
+现在，有了顶层 `await`，你可以在一个模块中无缝地加载异步数据，并在另一个模块中使用它。例如：
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`// dataModule.js export const data = await fetchData(); // app.js import { data } from './dataModule.js'; console.log(data);`
+
+这种新功能大大简化了模块交互，确保依赖模块不需要实现自己的异步逻辑来处理异步导入。
+
+##### 3\. 更容易的错误处理
+
+异步编程中最重要的一方面就是错误处理。有了顶层 `await`，错误处理变得更加简单和一致。你不再需要将整个顶层代码包裹在一个匿名函数中的 `try-catch` 块中，现在可以直接在模块的顶层处理错误。
+
+例子：
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`try {     const data = await fetchData();     console.log(data); } catch (error) {     console.error('Error fetching data:', error); }`
+
+这样更容易在各个模块之间检测和管理异步错误，减少了遗漏异常或难以发现的 bug 的可能性。
+
+#### 趣闻 3：异步成为一等公民！
+
+JavaScript 通常被称为 “单线程” 语言，但它可以像专业人士一样处理异步操作。像 Promise、`async`/`await` 以及现在的顶层 `await` 这样的功能让 JavaScript 的异步能力几乎像多任务处理一样。
+
+##### 4\. 改善测试和调试
+
+由于顶层 `await` 使代码更简洁易读，因此调试变得更加直接。你无需深入不必要的 `async` 函数包装器或匿名函数来识别问题。此外，测试依赖异步操作的模块也变得更加自然，因为代码结构现在更容易理解和模拟。
+
+#### 顶层 `await` 的潜在陷阱
+
+虽然顶层 `await` 是一项令人兴奋的功能，但它也并非没有挑战。由于它会阻塞模块执行，直到等待的 promise 完成，所以存在创建性能瓶颈的风险，尤其是在你等待模块顶层多个异步操作完成的时候。
+
+例如，如果模块中的一个顶层 `await` 耗时太久才能完成，它可能会延迟依赖它的其他模块的执行。需要仔细规划异步操作，避免在代码库中引入不必要的延迟。
+
+#### 总结
+
+顶层 `await` 是 JavaScript 的一个姗姗来迟的补充，它使异步编程更加直观和高效。它简化了在模块级别管理异步操作的语法，改善了错误处理，并简化了模块交互。与任何功能一样，它也存在一些权衡，但总的来说，它使 JavaScript 的异步能力更加强大和用户友好。
+
+对于经常使用 API、数据库或其他异步服务的开发者来说，顶层 `await` 堪称改变游戏规则的功能，它降低了认知负担，使代码更简洁易维护。随着 JavaScript 生态系统的不断发展，顶层 `await` 代表着朝着更流畅的异步编程迈出的一步。

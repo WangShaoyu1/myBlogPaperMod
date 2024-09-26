@@ -5,7 +5,7 @@ date: 2024-09-04
 description: "前言就在昨天（2024-09-03），vue官方发布了vue.js3.5的稳定版本，在vue的官方英文文档上也已经能看到3.5版本更新的内容，该版本不包含重大更改，包括内部改进和实用的新功能。下文来"
 tags: ["前端","JavaScript","Vue.js"]
 ShowReadingTime: "阅读3分钟"
-weight: 719
+weight: 1019
 ---
 前言
 ==

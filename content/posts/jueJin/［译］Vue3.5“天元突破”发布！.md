@@ -5,7 +5,7 @@ date: 2024-09-04
 description: "这个小版本不包含任何破坏性更改，但包括一些内部改进和实用的新功能。我们将在这篇博客文章中介绍一些亮点。有关变更和新功能的完整列表请查阅GitHub上的完整更新日志。"
 tags: ["前端","Vue.js","掘金翻译计划"]
 ShowReadingTime: "阅读3分钟"
-weight: 706
+weight: 1039
 ---
 > 翻译自 [Vue 官方博客](https://link.juejin.cn?target=https%3A%2F%2Fblog.vuejs.org%2Fposts%2Fvue-3-5 "https://blog.vuejs.org/posts/vue-3-5")
 
@@ -16,7 +16,7 @@ weight: 706
 * * *
 
 响应式系统优化 / Reactivity System Optimizations
-=========================================
+-----------------------------------------
 
 在 3.5 版本中，Vue 的响应式系统经过了又一次重大重构，在不改变行为的前提下，实现了更好的性能和显著的内存使用优化（减少 56%）。这次重构还解决了在服务端渲染（SSR）过程中，由于悬挂的计算属性导致的过时计算值和内存问题。
 
@@ -25,7 +25,7 @@ weight: 706
 详情：[PR#10397](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fcore%2Fpull%2F10397 "https://github.com/vuejs/core/pull/10397")，[PR#9511](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fcore%2Fpull%2F9511 "https://github.com/vuejs/core/pull/9511")
 
 响应式 Props 解构 / Reactive Props Destructure
-=========================================
+-----------------------------------------
 
 在 3.5 版本中，响应式 Props 解构功能已经稳定下来。该功能现已默认启用，通过在 `<script setup>` 中使用 `defineProps` 调用解构出的变量现在是响应式的。值得注意的是，该功能通过利用 JavaScript 原生的默认值语法，大大简化了带有默认值的 props 声明过程：
 
@@ -61,7 +61,7 @@ ts
 
 对于那些更倾向于区分解构后的 props 和普通变量的开发者，`@vue/language-tools` 2.1 已推出了一项可选设置，用于为解构的 props 启用内联提示：
 
-![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/b4510f9f4d18444f9d7d9e81dc7991ee~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcGFueQ==:q75.awebp?rk3s=f64ab15b&x-expires=1727321922&x-signature=OIan%2BREQz21bt%2FxA9HkHtOujWpc%3D)
+![image.png](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/b4510f9f4d18444f9d7d9e81dc7991ee~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcGFueQ==:q75.awebp?rk3s=f64ab15b&x-expires=1727916536&x-signature=bwBstLs5u8U%2F0243F4Z7mYYN%2FLE%3D)
 
 详情：
 
@@ -69,12 +69,11 @@ ts
 *   有关此功能的历史和设计原理，请查看 [RFC#502](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Frfcs%2Fpull%2F502 "https://github.com/vuejs/rfcs/pull/502")。
 
 SSR 改进 / SSR Improvements
-=========================
+-------------------------
 
 Vue 3.5 为服务端渲染（SSR）带来了几个期待已久的改进。
 
-懒加载水合 / Lazy Hydration
-----------------------
+### 懒加载水合 / Lazy Hydration
 
 异步组件现在可以通过 `defineAsyncComponent()` API 的 `hydrate` 选项指定策略，来控制它们何时应该进行水合。比如，仅在组件可见时进行水合：
 
@@ -90,8 +89,7 @@ js
 
 详情：[PR#11458](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fcore%2Fpull%2F11458 "https://github.com/vuejs/core/pull/11458")
 
-useId()
--------
+### useId()
 
 `useId()` 是一个 API，可用于生成每个应用唯一的 ID，确保在服务端和客户端渲染之间保持稳定。它可以用于为表单元素和无障碍属性（accessibility attributes）生成 ID，并且可以在 SSR 应用中使用，不会导致水合不匹配问题。
 
@@ -105,8 +103,7 @@ html
 
 详情：[PR#11404](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fcore%2Fpull%2F11404 "https://github.com/vuejs/core/pull/11404")
 
-data-allow-mismatch
--------------------
+### data-allow-mismatch
 
 在某些情况下，客户端的值不可避免地会与服务端不同（例如日期），我们现在可以使用 `data-allow-mismatch` 属性来抑制由此产生的水合不匹配警告：
 
@@ -121,7 +118,7 @@ html
 你还可以通过为该属性提供一个值来限制允许的不匹配类型，可能的值包括 `text`、`children`、`class`、`style` 和 `attribute`。
 
 自定义元素改进 / Custom Elements Improvements
-======================================
+--------------------------------------
 
 3.5 修复了与 `defineCustomElement()` API 相关的许多长期存在的问题，并为使用 Vue 创建自定义元素添加了多项新功能：
 
@@ -141,10 +138,9 @@ js
 `import MyElement from './MyElement.ce.vue' defineCustomElements(MyElement, {   shadowRoot: false,   nonce: 'xxx',   configureApp(app) {     app.config.errorHandler = ...   } })`
 
 其他值得注意的功能 / Other Notable Features
-==================================
+----------------------------------
 
-useTemplateRef()
-----------------
+### useTemplateRef()
 
 3.5 引入了一种通过 `useTemplateRef()` API 获取[模板引用](https://link.juejin.cn?target=https%3A%2F%2Fvuejs.org%2Fguide%2Fessentials%2Ftemplate-refs.html "https://vuejs.org/guide/essentials/template-refs.html")的新方式：
 
@@ -160,10 +156,9 @@ html
 
 `@vue/language-tools` 2.1 也[为新语法提供了特殊支持](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Flanguage-tools%2Fpull%2F4644 "https://github.com/vuejs/language-tools/pull/4644")，因此在使用 `useTemplateRef()` 时，会根据模板中 ref 属性的存在提供自动补全和警告提示：
 
-![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/4a837e7fc4254d7cb3d37432297a0ba4~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcGFueQ==:q75.awebp?rk3s=f64ab15b&x-expires=1727321922&x-signature=M4w6gv%2BoGXUpqebpzDM1lDkkfr0%3D)
+![image.png](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/4a837e7fc4254d7cb3d37432297a0ba4~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcGFueQ==:q75.awebp?rk3s=f64ab15b&x-expires=1727916536&x-signature=WICnxs9UBhAP08BY4nbu09Ytzss%3D)
 
-延迟传送 / Deferred Teleport
-------------------------
+### 延迟传送 / Deferred Teleport
 
 内置的 `<Teleport>` 组件的一个已知限制是，它的目标元素必须在 `<Teleport>` 组件挂载时存在。这限制了用户将内容传送到 Vue 在传送门之后渲染的其他元素。
 
@@ -181,8 +176,7 @@ html
 
 详情：[PR#11387](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fcore%2Fissues%2F11387 "https://github.com/vuejs/core/issues/11387")
 
-onWatcherCleanup()
-------------------
+### onWatcherCleanup()
 
 3.5 引入了一个全局导入的 API `onWatcherCleanup()`，用于在 watchers 中注册清理回调：
 
