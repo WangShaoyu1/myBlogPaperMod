@@ -1,0 +1,83 @@
+---
+author: "元兮"
+title: "新书出版🎉🎉🎉，大陆首本NestJS图书《NestJS全栈开发解析：快速上手与实践》"
+date: 2024-09-18
+description: "前言对，你没看错！这的确是NestJS图书在大陆的首发，图书诞生了历经10个月，属于时间杠杆的产物，终于与大家见面了~"
+tags: ["NestJS","全栈","Node.js"]
+ShowReadingTime: "阅读6分钟"
+weight: 747
+---
+> 新书全栈实战项目：`数字门店管理平台`开源啦🎉🎉🎉
+> 
+> GitHub地址（持续更新NestJS企业级实践）：欢迎star⭐️⭐️⭐️
+> 
+> [前端React+TypeScript+Vite](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwenjianmin%2Fstore-web-frontend "https://github.com/wenjianmin/store-web-frontend")
+> 
+> [后端Nest+MySQL+Redis+Docker](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwenjianmin%2Fstore-web-backend "https://github.com/wenjianmin/store-web-backend")
+
+### 前言
+
+对，你没看错！这的确是`NestJS`图书在大陆的首发，还有一本是在台湾，一位前辈写的基础入门教程，价格不菲，可谓有价无货。
+
+### 图书诞生了
+
+粉丝：书写到哪里了? 我：写完项目实战就可以交稿了。
+
+粉丝：什么时候上市售卖啊？ 我：快了，出版社已经在审核了。
+
+粉丝：什么时候出来啊？ 我：快了，已经在印刷了。
+
+粉丝：快点写啊，村里的厕所没纸了（狗头）。 我：诶不是，朋友。。。
+
+心心念念！历经**10个月**，本书终于与大家见面了，前几天刚拿到样书一看，总体封面设计质感和风格我很喜欢，全书厚度也刚刚好，有意在设计的时候控制了章节，避免像一些权威指南教学课本，让人望而生畏。目前已在[京东](https://link.juejin.cn?target=https%3A%2F%2Fitem.jd.com%2F14283389.html "https://item.jd.com/14283389.html")、[当当](https://link.juejin.cn?target=https%3A%2F%2Fproduct.dangdang.com%2F29783482.html "https://product.dangdang.com/29783482.html")等各大平台上架，欢迎各位朋友点击围观~
+
+> 京东购买链接：[item.jd.com/14283389.ht…](https://link.juejin.cn?target=https%3A%2F%2Fitem.jd.com%2F14283389.html "https://item.jd.com/14283389.html") （已到货，可直接购买）
+> 
+> 当当购买链接：[product.dangdang.com/29783482.ht…](https://link.juejin.cn?target=https%3A%2F%2Fproduct.dangdang.com%2F29783482.html "https://product.dangdang.com/29783482.html") （已到货，可直接购买）
+> 
+> **注：购买本书后如果觉得有帮助，留下你的好评我会很开心~**
+
+### 一波三折的标题
+
+一开始起名为`《NestJS全栈开发秘籍：快速上手与实战》`，但是由于新规定在申请CIP时不能出现”秘籍“、”实战“、”指南“等敏感词汇，第二版改为了`《NestJS全栈开发揭秘：快速上手与实践》`，然鹅”揭秘“也还有一定的隐秘性，最后敲锤了`《NestJS全栈开发解析：快速上手与实践》`。但不管怎么改，本书最终的目标都是让读者可以快速上手到项目开发。
+
+### 关于前端技术选型的考虑
+
+关于项目实战中的前端部分，早期在`React`和`Vue`技术栈选型中有纠结过，由于目前国内大部分的基础开发者偏向`Vue`，而最终选择`React`的原因是我认为技术对标中大厂的主流技术栈，从一定程度上给与了想学习`React`或想写一个`React`项目但又`迟迟没有下手`的朋友一个契机，完全可以根据这个项目进行快速上手实践，其二对于我来说过去几年所在的公司都是以`Vue`为主，算是重温`React`（技多不压身），并且也符合我的人生哲学：**【不断改变**】。
+
+### 本书的故事
+
+拥有这次写作机会，归根到底还是受益于技术写作，在`2023`年`9`月中秋节我重新落笔了第一篇文章，是[28岁那年对于职业和生活的思考](https://juejin.cn/post/7283749823429247013 "https://juejin.cn/post/7283749823429247013")，那时开始便一发不可收拾，喷涌式更新了几十篇技术文章，获得了很多朋友的认同和共鸣，同时曝光了自己在技术方面的一丝感悟，也是`清华大学`的编辑结缘的契机。
+
+当与编辑谈及关于技术图书写作的意向，我爽快地答应了，原因有几个：
+
+1.  **找事情做！** 所谓`想都是问题，做全是答案`。重回职场的我需要更多的机会，虽然保持一定技术文章的更新，但我觉得这种不成体系的输入输出，很难构建自己的技术体系，同时也无法让花了时间看我文章的读者朋友从中获取最大化收益。
+2.  **尝试新的领域！** 写技术图书和写技术文章的区别在于后者需要靠意志力去维持，并且在遇到创作瓶颈时容易停滞，而有了一定的外部压力，能够在一定程度上鞭策自己尽可能在时间管理及学习计划上执行的更加顺畅。同时对于自身的`第二曲线探索`，或许会有新的答案。
+3.  **培养全局思维！** 过去我们只是站在前端的视角去看待问题和做技术优化时，难免存在视野盲区，而这种盲区会影响到日常的前后端协作沟通，技术细节的优劣选择。导致这种现象的原因是自身站的位置不够高，视野不够广阔！用于全栈思维能够让自身站在各个技术细节上进行权衡思考，对于职业生涯早期的成长是非常有利的。
+4.  **成为时间的朋友！** 坚持做一件事情很酷，保持十年如一日的状态很难。回想过去自己坚持最长的一件事情：为了获得公司年度满勤的礼品奖励并全公司通告，我坚持了一年不迟到，最后`如愿`获得了一只电动牙刷\[狗头\]。从那之后，我再也没有坚持半年以上做一件**延迟满足或长期主义**的事情，例如`早起`、`阅读`、`源码共读`、`运动瘦身`、`每日复盘`和`冥想`等等，这些事情无疑都需要坚持长期主义才能获得质的突破，然而在现在物欲横流的社会，短视频文化的冲击下，时刻在塑造的人人都是月入十万、百万的社会精英，都希望付出最少的努力快速获得反馈，天降大财予自身。所以有了这次契机，再配合思维框架的加持，我想再次刷新一下自己！
+
+### 关于杠杆的力量
+
+关于书中的最后一节 **《完结语：是终点，更是新的起点》** 提到，这本书时间杠杆的产物，每当你阅读本书遇到阻碍，或是在你的生活工作中遇到不如意，做事情坚持不下去时，请重新翻阅本节，或许它能给你方向~
+
+### 图片概览
+
+![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/b98305b976c94ca1b51ef0a7a72055c9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YWD5YWu:q75.awebp?rk3s=f64ab15b&x-expires=1727848052&x-signature=0%2BGX4B83sKNp8GC0J0wFgBPeRpc%3D)
+
+![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/6baa7089b5214bac88a4792fa2b2dabe~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YWD5YWu:q75.awebp?rk3s=f64ab15b&x-expires=1727848052&x-signature=pS%2B26jrDAWWzUuUahqgxPDuPxwA%3D)
+
+![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/c74bf8c1cf9546d68a7db147b294b964~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YWD5YWu:q75.awebp?rk3s=f64ab15b&x-expires=1727848052&x-signature=IfuPr5NjQ1FzpE4Q%2Fa7cAbivALE%3D)
+
+![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/df40d89e27c4409686bee6f5adc3ed3d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YWD5YWu:q75.awebp?rk3s=f64ab15b&x-expires=1727848052&x-signature=%2BR%2BSk%2BHuVfeeWCDRm98BDfLruZg%3D)
+
+### 送书环节🎉🎉🎉
+
+书还没出来的时候，一直有朋友就问有没有送书活动🐶，答案肯定是有的。
+
+> 参与方式：**2024.9.23**之前在本链接文章评论中抽取**高质量（走心）留言**，从中抽选**3名**粉丝进行赠送，中奖的朋友将会收到评论要求私信提供邮寄地址后发货，3天内未提供的将视为**主动放弃名额**，图书将转赠其他留言粉丝。
+
+最后，祝愿各位朋友们喜气连连，运气爆棚~
+
+\----------------------续------------------------------
+
+> 基于NestJS爱好者的热情居高不下，在阅读书籍或源码过程中遇到问题，可以加入作者微信（followJavaScript）进一步探讨，作者将尽可能解答各位读者问题。

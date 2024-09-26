@@ -1,0 +1,82 @@
+---
+author: "前端开发爱好者"
+title: "5款非常优秀的基于vue3.x和NaiveUI的中后台管理系统模板"
+date: 2021-12-16
+description: "今天给大家分享`5款`开源且非常优秀的基于`vue3.x`和`NaiveUI`的中后台管理系统模板，助力大家快速开发一个中后台管理系统"
+tags: ["前端","Vue.js"]
+ShowReadingTime: "阅读3分钟"
+weight: 702
+---
+前言
+--
+
+> 哈喽,大家好 我是`xy`👨🏻‍💻。 在上一篇文章中详细的给大家讲解了如何使用 [Vite2 + Vue3 + TypeScript + Pinia搭建一套企业级的开发脚手架](https://juejin.cn/post/7036745610954801166 "https://juejin.cn/post/7036745610954801166")。今天给大家分享`5款`开源且非常优秀的基于 `vue3.x` 和 `Naive UI` 的中后台管理系统模板，助力大家快速开发一个中后台管理系统
+
+Naive UI Admin
+--------------
+
+仓库地址: `https://github.com/jekip/naive-ui-admin`
+
+介绍: `Naive Ui Admin` 完全免费，且可商用，基于 `Vue3.0`、`Vite`、 `Naive UI`、`TypeScript` 的中后台解决方案，它使用了最新的前端技术栈，并提炼了典型的业务模型，页面，包括二次封装组件、动态菜单、权限校验、粒子化权限控制等功能，它可以帮助你快速搭建企业级中后台项目， 相信不管是从新技术使用还是其他方面，都能帮助到你。
+
+*   二次封装实用高扩展性组件
+*   响应式、多主题，多配置，快速集成，开箱即用
+*   最新技术栈，使用 Vue3、Typescript、Pinia、Vite 等前端前沿技术
+*   强大的鉴权系统，对路由、菜单、功能点等支持三种鉴权模式，满足不同的业务鉴权需求
+*   持续更新，实用性页面模板功能和交互，随意搭配组合，让构建页面变得简单化
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1cf704e729cb4bc08604f8ff1d5d882e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Admin Work
+----------
+
+仓库地址: `https://github.com/qingqingxuan/admin-work`
+
+介绍: `Admin Work`，是 `Vue Admini Work` 系列中最成熟和完善的中后台框架，全面的系统配置，优质模板，常用组件，真正一站式开箱即用 采用时下最流行的 `Vue3 UI` 库--`NaiveUI`
+
+*   使用了当今最流行的技术框架： Vue3 + Vite2 + Typescript + Navie UI
+*   支持前端控制路由权限和后端控制路由模式
+*   支持 mock ，完全独立于后台
+*   提供了非常多的 mxin 代码块，方便集成各种功能
+*   内置了大量常用的组件，比如，上传，消息提示等
+*   支持多主题、多布局切换
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6ab8a1c7584d48e0b51927ee24087d54~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Soybean Admin
+-------------
+
+仓库地址: `https://github.com/honghuangdc/soybean-admin`
+
+介绍: `Soybean Admin` 是一个基于 `Vue3`、`Vite`、`Naive UI`、`TypeScript` 的免费中后台模版，它使用了最新的前端技术栈，内置丰富的插件，有着极高的代码规范，开箱即用的中后台前端解决方案，也可用于学习参考。
+
+*   最新技术栈：使用 Vue3/vite2 等前端前沿技术开发, 使用高效率的npm包管理器pnpm
+*   TypeScript: 应用程序级 JavaScript 的语言
+*   主题：丰富可配置的主题
+*   代码规范：丰富的规范插件及极高的代码规范
+*   路由配置：简易的路由配置
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/52decb23640a4454b1d5e025b691d85d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+zce/fearless
+------------
+
+仓库地址: `https://github.com/zce/fearless`
+
+介绍: 一个基于 `Vue.js 3.x` & `TypeScript` & `Vite` 的管理平台`脚手架`，包含基本的身份认证和鉴权,相对来说比较纯净，可以直接使用
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b7e38e7ff25144579dc631c4c1b1ce11~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+tsx-naive-admin
+---------------
+
+仓库地址: `https://github.com/WalkAlone0325/tsx-naive-admin`
+
+介绍: 基于 `Vue 3` + `Naive UI` + `TSX` + `Vite` 的后台管理`基本模板`
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6e4b1d31a41545a489d563e6f2c7ecca~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+写在最后
+----
+
+> 如果你喜欢我的文章，欢迎加我wx: `xsp_web_share` 为好友，一起交流前端技术。

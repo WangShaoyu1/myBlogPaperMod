@@ -1,0 +1,135 @@
+---
+author: "JavaSouth南哥"
+title: "你写的每条SQL都是全表扫描吗"
+date: 2024-05-10
+description: "你写的每条SQL都是全表扫描吗？如果是，那MySQL可太感谢你了，每一次SQL执行都是在给MySQL上压力、上对抗。MySQL有苦难言：你不知道索引吗？你写的SQL索引都失效了不知道吗？慢查询不懂啊？"
+tags: ["后端","MySQL"]
+ShowReadingTime: "阅读5分钟"
+weight: 587
+---
+你写的每条SQL都是**全表扫描**吗？如果是，那MySQL可太感谢你了，每一次SQL执行都是在给MySQL上压力、上对抗。MySQL有苦难言：你不知道索引吗？你写的SQL索引都失效了不知道吗？慢查询不懂啊？建那么多索引干嘛呢。。。
+
+![在这里插入图片描述](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/02d85ea6aec14bb78a0346a6a68623c6~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=295&h=295&s=268780&e=gif&f=24&b=f3c968)
+
+1\. 慢查询
+-------
+
+> _**面试官：知道MySQL慢查询吗？**_
+
+MySQL的慢查询日志可以记录**执行时间超过阈值**的SQL查询语句，所以我们可以利用该日志查找出哪些SQL语句执行效率差，从而对SQL语句进行优化。
+
+MySQL5.7以上版本可以通过SET命令来开启慢查询日志。
+
+mysql
+
+ 代码解读
+
+复制代码
+
+     `SET GLOBAL slow_query_log=ON;      SET GLOBAL long_query_time=2;      SET SESSION long_query_time=2;`
+
+开启完慢查询日志，我们找到该日志的位置，打开文件即可查询慢查询的SQL。
+
+mysql
+
+ 代码解读
+
+复制代码
+
+     `＃　查询慢查询日志文件位置      SHOW VARIABLES LIKE '%slow_query_log_file%';`
+
+![在这里插入图片描述](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a176b9ab54f4650befb29d115f1fa7e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=740&h=81&s=27164&e=jpg&b=2f2f2f)
+
+打开DESKTOP-ALU4BOC-slow.log文件，找到慢查询SQL为：`select sleep(11)`。
+
+xml
+
+ 代码解读
+
+复制代码
+
+`D:\MySQL\bin\mysqld, Version: 5.5.40 (MySQL Community Server (GPL)). started with: TCP Port: 3306, Named Pipe: MySQL Time                 Id Command    Argument # Time: 220828 21:40:28 # User@Host: root[root] @ localhost [127.0.0.1] # Query_time: 11.004454  Lock_time: 0.000000 Rows_sent: 1  Rows_examined: 0 use mysql; SET timestamp=1661694028; select sleep(11);`
+
+2\. SQL优化
+---------
+
+### 2.1 表设计优化
+
+> _**面试官：在工作中你怎么优化SQL的？**_
+
+业务开发中涉及数据库的第一步是表设计，要优化SQL就要从第一步开始做起。
+
+MySQL表设计要尽可能满足数据库三大范式，帮助大家回顾下：
+
+1.  第一范式：数据库表中的每一列都是不可再分的属性，属性相近或相同的列应该**合并**。
+    
+2.  第二范式：满足第一范式的条件下，一个表只能描述一个对象。如果某些列经常出现数据重复，应该把这些列作为**另一个表**。
+    
+3.  第三范式：满足第二范式的条件下，表中的每一列都只能依赖于**主键**，即直接与主键相关。
+    
+
+我们在业务开发中遇到**反第二范式**的情况是最多的，例如以下订单明细表的设计，每一个订单明细都包含了**重复**的商品名称、商品单位、商品价格，这三个字段属于字段冗余存储。如果表的数据量级很大，那造成的冗余存储量是可想而知的，而且最要命的问题是如果要修改某一个商品名称，那所有的订单明细数据**都要修改**。
+
+![在这里插入图片描述](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b035dac2cf142658d3b14e075a9ab22~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=511&h=132&s=48413&e=jpg&b=2f2e2e)
+
+我们可以遵循第三范式，把冗余的字段抽出一个新的商品表，当要查询订单明细时只需要把两表通过商品id进行连接即可。
+
+![在这里插入图片描述](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c0870735eaef4417996bb1974ccee946~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=424&h=77&s=20956&e=jpg&b=313131)
+
+![在这里插入图片描述](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23878c64a08e4e908b5a998bf8d2b6e9~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=428&h=131&s=28473&e=jpg&b=2e2e2e)
+
+> _**面试官：遵循第二范式就一定最优？**_
+
+遵循第二范式的表设计不一定是最优的情况，还是那句话，要根据实际的业务场景权衡利弊。
+
+虽然把冗余数据抽离出去了，但却增加了表的数量，也意味着查询数据时表之间的**join连接操作**也会变多。而join连接的性能是比较低的，有可能join操作会成为数据库性能的瓶颈。
+
+### 2.2 SQL语句优化
+
+> _**面试官：还有呢？**_
+
+SQL优化除了做好表设计的优化工作，还需要对SQL语句进行优化。而SQL查询语句的优化主要从**覆盖索引**、**避免索引失效**、**减少不必要的查询**三个方面入手。
+
+一、从覆盖索引的角度。
+
+**order by排序**的字段要尽量覆盖索引。如果使用**非索引字段**进行排序，MySQL会进行额外的**文件排序**，将查询结果根据非索引列在**磁盘**中再排序一次。当我们使用explain关键字分析SQL时会发现Extra会出现`Using filesort`。
+
+**group by分组**要尽量覆盖索引。如果使用**非索引字段**进行分组，MySQL只能进行全表扫描后建立临时表才能得出分组结果。
+
+另外我们可以使用explain关键字来分析SQL语句的效率，查看SQL语句是否覆盖索引。
+
+二、从避免索引失效的角度。
+
+关于如何避免索引失效，大家可以阅读我出版的《JavaGetOffer》专栏关于【MySQL索引】的文章。
+
+三、从减少不必要的查询的角度。
+
+如果只需要查询部分列，尽量不要使用`select *`查询，防止造成不必要的资源消耗、占用过多的网络带宽。
+
+### 2.3 索引如何设计
+
+> _**面试官：在工作中，表索引你怎么设计的？**_
+
+索引的设计有以下设计原则，大家在实际业务开发中应该尽量遵循这些原则，可以帮你避开不少坑。
+
+1.  经常进行order by排序、group by分组、join多表联结查询的字段应该建立索引。
+    
+2.  经常在where子句中出现的字段应该建立索引。
+    
+3.  尽量使用数据量小的字段建立索引。例如对于char(500)和char(10)两个字段类型来说，肯定是以后者进行索引匹配的速度更快。
+    
+4.  如果需要建立索引的字段值比较长，可以使用值的部分前缀来建立索引。
+    
+    例如varchar类型的name字段，我们需要根据前三个字符来建立前缀索引，可以使用以下SQL命令：`ALTER TABLE example_table ADD INDEX index_name (name(3))`。
+    
+
+> _**面试官：那索引建立越多，查询效率就越高吗？**_
+
+另外大家记住一点，索引不是建立越多越好。合理设计的索引确实能大大提高SQL效率，但每建立一个字段索引，MySQL就要为该索引多维护一棵`B-Tree`，越多的索引会造成**表更新**效率变得低下。
+
+🌱**以【面试官面试】形式覆盖Java程序员所需掌握的Java核心知识、面试重点，本博客收录在我开源的《Java学习指南》中，会一直完善下去，希望收到大家的 ⭐ Star ⭐支持，这是我创作的最大动力：** [github.com/hdgaadd/Jav…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fhdgaadd%2FJavaGetOffer "https://github.com/hdgaadd/JavaGetOffer")
+
+未完待续。。。
+-------
+
+> **创作不易，不妨点赞、收藏、关注支持一下，各位的支持就是我创作的最大动力**❤️

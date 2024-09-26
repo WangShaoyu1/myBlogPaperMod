@@ -1,0 +1,287 @@
+---
+author: "w4ngzhen"
+title: "从源码解析Electron的安装为什么这么慢"
+date: 2021-04-10
+description: "前言Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。"
+tags: ["Electron"]
+ShowReadingTime: "阅读4分钟"
+weight: 431
+---
+前言
+==
+
+Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。
+
+然而，为什么国内使用Electron的踩坑文章数不胜数，主要原因是Electron为了支持跨平台，为不同的操作系统平台进行了适配，将chromium内核与node集成到了一起，屏蔽了底层操作系统的细节，所以在不同的平台上有着不同的二进制基座。在开发的过程中，我们必须要下载对应的平台的基座，才能正常开发。也就是说，我们`npm install electron -D`的时候，一定是下载了Electron的二进制基座的。那么这个下载的过程在哪里？为什么速度这么慢呢？本文将通过Electron的安装源码一一说明。
+
+安装Electron
+==========
+
+在安装之前，我们先模拟一下没有配置任何关于Electron二进制镜像的npm配置文件，在`~/.npmrc`里面，只有一些默认的配置：
+
+ini
+
+ 代码解读
+
+复制代码
+
+`# ~/.npmrc文件 registry=https://registry.npm.taobao.org/ prefix=D:\Programs\nodejs\global_modules cache=D:\Programs\nodejs\cache_modules python=D:\Programs\Python39\python.exe`
+
+然后，创建一个名为`electron-install-example`的文件夹作为本此测试的Demo项目目录，并在**进入**该目录后执行`npm init`初始化node项目。
+
+最后，使用命令行安装Electron：`npm install electron -D`。在短暂的npm包安装后，我们会发现会卡在一个地方：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a95d60fdf002453398291af450459ed9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+这时候，很多开发者就会开始在网络上搜索：'安装Electron卡住'，并且也很容易得到解决方案：
+
+> 在`~/.npmrc`文件中，单独设置Electron的镜像`electron_mirror="https://npm.taobao.org/mirrors/electron/"`
+
+于是我们按照搜来的解决方案重新配置我们的`.npmrc`文件：
+
+ini
+
+ 代码解读
+
+复制代码
+
+`# ~/.npmrc文件 registry=https://registry.npm.taobao.org/ prefix=D:\Programs\nodejs\global_modules cache=D:\Programs\nodejs\cache_modules python=D:\Programs\Python39\python.exe # 单独设置Electron的镜像 electron_mirror="https://npm.taobao.org/mirrors/electron/"` 
+
+设置完成后，重新进行`npm install`，发现能够很快完成下载并继续开发。通过本文，我们深入细节，看看为什么Electron设置了单独的镜像后，就能够正常且快速完成下载安装。
+
+深入下载细节
+======
+
+进入`项目根目录下/node_modules/electron/`（后续除特殊情况外，提到的目录路径都是统一相对于项目根目录）目录中，查看package.json文件中的**scripts**脚本节点：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ab8aa74fa34b464fbce62445e5927f6f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+了解npm的朋友们知道，`postinstall`中的脚本会在npm包完成安装后执行。
+
+也就是说，`npm install -D electron`完成以后，会在`node_modules/electron`目录中立刻执行`node install.js`。所以，我们进一步查看install.js文件，看看它到底执行了什么。核心代码如下：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6ba7dbd3dbe74e0cb57cbe405f9e5abf~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+代码特别容易理解：在没有缓存文件的时候，会使用`@electron/get`提供的`downloadArtifact`函数，进行Electron二进制制品的下载。
+
+于是，我们又将目标转移到`@electron/get`。这是个什么东西呢？查询官方仓库：[官方仓库](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Felectron%2Fget "https://github.com/electron/get")，就能够大概知道该工具的功能了：提供一定的参数来向远端下载文件。
+
+找到`@electron/get`的模块入口`node_modules/@electron/get/dist/cjs/index.js`，也很容易从中找到`downloadArtifact`的函数定义：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3962f2a147f64de9a6383b716f92d0ac~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+该函数的文档：下载Electron发行制品，并且返回下载后的制品的绝对路径。而函数内部主要流程如下：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcdafdad7e764c829a1396edf50f3932~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   解析要下载的制品对应的操作系统和平台。例如是Windows还是Linux，架构是x86还是AMD64。
+    
+*   解析要下载的制品的版本。
+    
+*   解析要下载的制品的具体文件名。例如要下载Windows下的64位的Electron制品，那么默认文件名称是：`electron-v11.0.2-win32-x64.zip`
+    
+*   解析要下载的制品所在的远端URL是多少（与本文相关的重点）。
+    
+*   处理本地缓存。
+    
+
+本文主要解析下载以及从本地缓存制品两个环节。
+
+远端下载的URL
+--------
+
+从上面的源码图中，我们会看到远端的URL来自于`artifact_utils_1.getArtifactRemoteURL(artifactDetails)`这个的返回，而该函数在`@electron/get/dist/cjs/artifact-utils.js`中进行定义：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c50b132b0e544deb06a17adb16fa16d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+该函数的定义也不难，主要流程如下：解析得到`base`变量，解析得到`path`变量，解析得到`file`变量，组合为`${base}${path}/${file}`。当然，你也可以在`mirrorOptions`中定义`resolveAssetURL`函数来返回自定义的地址。
+
+在上面的处理流程中，能够看到一个频繁出现的函数：`mirroVar`。该函数也在该文件中定义，其函数定义如下：
+
+js
+
+ 代码解读
+
+复制代码
+
+``function mirrorVar(name, options, defaultValue) {     // Convert camelCase to camel_case for env var reading     const lowerName = name.replace(/([a-z])([A-Z])/g, (_, a, b) => `${a}_${b}`).toLowerCase();     return (process.env[`NPM_CONFIG_ELECTRON_${lowerName.toUpperCase()}`] ||         process.env[`npm_config_electron_${lowerName}`] ||         process.env[`npm_package_config_electron_${lowerName}`] ||         process.env[`ELECTRON_${lowerName.toUpperCase()}`] ||         options[name] ||         defaultValue); }``
+
+该函数主要返回参数`name`相关的变量值，以`name = 'mirror'`为例，获取过程为：
+
+`customDir`进行下划线分割转换，得到`const lowerName = 'mirror'`（name为'customDir'则转换为'custom\_dir'）。
+
+依次检查如下环境变量值：
+
+1.  NPM\_CONFIG\_ELECTRON\_MIRROR
+2.  npm\_config\_electron\_mirror
+3.  npm\_package\_config\_electron\_mirror
+4.  ELECTRON\_MIRROR
+5.  options\['mirror'\]
+
+上述任意变量存在值则直接使用，否则，使用默认值`defaultValue`。
+
+读到这里，也许有读者疑惑了，我明明是在`.npmrc`文件中配置的`ELECTRON_MIRROR`变量，而这里读取的明明是环境变量里面的值，怎么会有呢？如果直接使用node作为入口，那么确实不会有这些变量，但是通过npm运行就不一样了。这里用一个小例子来说明。
+
+首先在一个node项目中编写一个脚本env-test.js：
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`console.log(process.env);`
+
+我们通过使用node运行该js脚本：
+
+ 代码解读
+
+复制代码
+
+`node env-test.js`
+
+看到命令行的输出，只会有当前机器的环境变量：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/54cf866a83b3447ca9ee6185b50f07ce~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+但是一旦通过npm进行运行，又会不一样：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c316e5377aff4505a6943f6446dd60d4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+运行命令`npm run dev`，会得到如下的结果，这里本人使用IDEA的断掉调试，会更加清晰的看到env的值：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eafdd68cfae942eb926f5f7b4b1f6cbe~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+通过`npm run`的方式，我们发现我们在`~/.npmrc`文件中配置的一些参数，都能在这里得到，并且是以`npm_config_`作为开头的。可能还有读者有疑惑，上面读取的变量，都是同意大小写的，这里是`npm_config_ELECTRON_MIRROR`，能读取到吗？事实上，env的读取是忽略大小写的：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e9e9bb8bc6ac454f8b8775e061bed571~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+综合目前的研究，相信读者已经清楚了为什么通过配置ELECTRON\_MIRROR在`.npmrc`能够达到加快Electron二进制基座的下载速度的目的了，至于一些其他的配置变量，可以阅读附录的官方文档翻译。
+
+本地缓存机制
+------
+
+有的读者看了上述的远端下载可能会说，我的机器就在内网环境，内网也没有镜像让我来写，我该怎么下载呢？实际上，`@electron/get`也不会完全从远端下载制品。它在下载的过程，会优先进行本地缓存文件的查找，如果已经存在了缓存好的制品，自然也就不会从远端下载了。那么这个查找缓存的过程是怎样的呢？或者说，`@electron/get`会从本地哪个目录去查找呢？让我们回到`@electron/get/dist/cjs/index.js`脚本的`downloadArtifact`函数中，看该部分：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ee68f20ac8ae40b1b67345a21cd44569~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+在`url`变量获取的下一行，构建了一个Cache缓存对象，继续往下，通过判断不进行强制从远端下载的标志，会进入`getPathForFileInCache`函数返回一个本地的缓存文件路径，如果路径不为空则使用它。所以，我们只需要让这个函数能够返回一个合法的缓存文件路径就能让`@electron/get`不进行远端下载，而是使用本地的缓存文件。所以我们跟到该函数中：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f47848f6b63421c892b5a38356feff2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+函数最终会使用上一节中的`url`变量形成一个本地的缓存路径，至于代码中的`url.format`以及`filenamify`的效果，读者可以自行编写Demo验证。
+
+最后，路径还使用到了`this.cacheRoot`，查看Cache的构造函数，发现如果没有传递`cacheRoot`，则使用`defaultCacheRoot`，该值在该脚本文件上面有定义：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6a0c172345c4393bcd3169d4d3c4eb3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+通过一段脚本输出该路径：
+
+js
+
+ 代码解读
+
+复制代码
+
+`const env_paths_1 = require("env-paths"); const defaultCacheRoot = env_paths_1.default('electron', {   suffix: '', }).cache; console.log(defaultCacheRoot); // 在本人的机器上输出： // C:\Users\w4ngzhen\AppData\Local\electron\Cache`
+
+所以在Windows机器下，默认的缓存目录在`~/AppData/Local/electron/Cache/`，在本人的机器上，已经缓存的文件如下：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2f40e15f78e64ab4a0345d061a515f1e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+源码个人认为也不用继续解析了，读者结合文件夹名称应该能够很容易分析。
+
+附录：@electron/get 官方Wiki翻译
+=========================
+
+> 下载Electron发行版制品
+
+使用
+--
+
+### 基础方式：下载一个Electron二进制ZIP
+
+typescript
+
+ 代码解读
+
+复制代码
+
+`import { download } from '@electron/get'; // NB: Use this syntax within an async function, Node does not have support for //     top-level await as of Node 12. const zipFilePath = await download('4.0.4');`
+
+### 进阶：下载macOS下带有调试符号的Electron文件
+
+typescript
+
+ 代码解读
+
+复制代码
+
+`import { downloadArtifact } from '@electron/get'; // NB: Use this syntax within an async function, Node does not have support for //     top-level await as of Node 12. const zipFilePath = await downloadArtifact({   version: '4.0.4',   platform: 'darwin',   artifactName: 'electron',   artifactSuffix: 'symbols',   arch: 'x64', });`
+
+### 指定镜像
+
+下列选项可以用来指定从其他的地方下载Electron资源：
+
+*   `mirrorOptions` Object（JavaScript对象）
+    *   `mirror` String (可选) - 下载资源的镜像地址的基础URL。
+    *   `nightlyMirror` String (可选) - Electron nightly-specific版本的镜像URL。
+    *   `customDir` String (可选) - 下载资源的目录名称，通常由版本号来设定。
+    *   `customFilename` String (可选) - 将要下载的资源的文件名称。
+    *   `resolveAssetURL` Function (可选) - 允许通过编程方式来进行资源下载的函数回调。
+
+下载资源的URL进行如下的分解，每一项都来可以映射到`mirrorOptions`:
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/46a60ae22bad4750bfe2c6d02d5a21fe~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Example:
+
+typescript
+
+ 代码解读
+
+复制代码
+
+`import { download } from '@electron/get'; const zipFilePath = await download('4.0.4', {   mirrorOptions: {     mirror: 'https://mirror.example.com/electron/',     customDir: 'custom',     customFilename: 'unofficial-electron-linux.zip'   } }); // 上述将会从如下URL下载： // https://mirror.example.com/electron/custom/unofficial-electron-linux.zip const nightlyZipFilePath = await download('8.0.0-nightly.20190901', {   mirrorOptions: {     nightlyMirror: 'https://nightly.example.com/',     customDir: 'nightlies',     customFilename: 'nightly-linux.zip'   } }); // 上述将会从如下URL下载： // https://nightly.example.com/nightlies/nightly-linux.zip`
+
+`customDir`参数可以使用`{{ version }}`占位符来设置版本（务必注意：`{}`括号之间一定要有空格，否则会解析失败，即，`{{[空格]version{空格}}}`），这个占位符将会由所下载的资源的版本（没有首字符`v`）来动态替换。例如：
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`const zipFilePath = await download('4.0.4', {   mirrorOptions: {     mirror: 'https://mirror.example.com/electron/',     customDir: 'version-{{ version }}',     platform: 'linux',     arch: 'x64'   } }); // 将会从如下的URL下载： // https://mirror.example.com/electron/version-4.0.4/electron-v4.0.4-linux-x64.zip`
+
+#### 使用环境变量来指定镜像选项
+
+镜像配置选项也可以通过如下的环境变量来指定：
+
+*   `ELECTRON_CUSTOM_DIR` - 指定资源下载的自定义目录。
+*   `ELECTRON_CUSTOM_FILENAME` - 指定资源下载的自定义文件名。
+*   `ELECTRON_MIRROR` - 指定如果版本没有使用nightly的时候，服务器的下载URL。
+*   `ELECTRON_NIGHTLY_MIRROR` - 指定如果版本使用nightly的时候，服务器的下载URL。
+
+### 重写下载的资源版本
+
+所下载的资源的版本可以通过设置\`\`ELECTRON\_CUSTOM\_VERSION `环境变量来进行覆盖。设置该版本将会覆盖传入`download`或是`downloadArtifact\`函数的version参数。
+
+它是如何运行的
+-------
+
+下载Electron资源到操作系统中已知的位置，并且缓存该资源的模块，用于便于在将来请求同一个资源的时候能够立刻完成并返回。缓存路径如下：
+
+*   Linux: `$XDG_CACHE_HOME` or `~/.cache/electron/`
+*   MacOS: `~/Library/Caches/electron/`
+*   Windows: `%LOCALAPPDATA%/electron/Cache` or `~/AppData/Local/electron/Cache/`
+
+默认情况下，该模块使用 [`got`](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsindresorhus%2Fgot "https://github.com/sindresorhus/got")作为下载器。因此，您可以通过`downloadOptions`使用与`get`相同的选项（[options](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsindresorhus%2Fgot%23options "https://github.com/sindresorhus/got#options")）来进行下载。
+
+### 进度条
+
+默认情况下，下载工件超过30秒时会显示进度条。若要禁用，请将`ELECTRON_GET_NO_PROGRESS` 环境变量设置为任何非空值，或设置`downloadOptions`中的`quiet`为`true`。如果您需要通过API自己监视进度，请设置`downloadOptions`中的`getProgressCallback` 回调，其函数签名与`got`的[`downloadProgress` event callback](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsindresorhus%2Fgot%23ondownloadprogress-progress "https://github.com/sindresorhus/got#ondownloadprogress-progress")相同。
+
+### 代理
+
+下游软件包应利用 `initializeProxy`功能来添加HTTP(S)代理支持。如果设置了环境变量`ELECTRON_GET_USE_PROXY`，则会自动调用它。根据使用的Node版本，使用不同的代理模块.因此，设置代理环境变量的方式略有不同。对于Node 10及更高版本，使用[`global-agent`](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fgajus%2Fglobal-agent%23environment-variables "https://github.com/gajus/global-agent#environment-variables")。否则，将使用[`global-tunnel-ng`](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fnp-maintain%2Fglobal-tunnel%23auto-config "https://github.com/np-maintain/global-tunnel#auto-config")。请参阅相应的链接模块以确定如何配置代理支持。
