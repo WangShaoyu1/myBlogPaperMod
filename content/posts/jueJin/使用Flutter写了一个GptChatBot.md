@@ -5,7 +5,7 @@ date: 2023-03-25
 description: "基于一个flutter脚手架,开发的一款支持全平台打包的可以和ChatGPT聊天的App！支持stream方式返回，相应速度极快！"
 tags: ["ChatGPT","GPT","Flutter"]
 ShowReadingTime: "阅读1分钟"
-weight: 781
+weight: 885
 ---
 [![](https://github.com/bravekingzhang/flutter_chat_box/raw/main/artificial/20230324_203035.gif)](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fbravekingzhang%2Fflutter_chat_box%2Fblob%2Fmain%2Fartificial%2F20230324_203035.gif "https://github.com/bravekingzhang/flutter_chat_box/blob/main/artificial/20230324_203035.gif")
 

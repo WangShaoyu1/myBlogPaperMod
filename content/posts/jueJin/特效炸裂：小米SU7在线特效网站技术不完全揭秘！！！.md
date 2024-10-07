@@ -5,7 +5,7 @@ date: 2024-04-02
 description: "最近一位叫@GameMCU的大佬用Webgl、Three.js等技术实现了一个小米SU7在线体验网站：https://gamemcu.com/su7/被广大网友疯传，效果相当炸裂！"
 tags: ["前端","JavaScript","three.js"]
 ShowReadingTime: "阅读5分钟"
-weight: 694
+weight: 773
 ---
 > 哈喽，大家好 我是 `xy`👨🏻‍💻。用 Three.js 实现 小米 SU7 在线体验，特效相当炸裂！！！
 

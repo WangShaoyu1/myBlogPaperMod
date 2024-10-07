@@ -5,7 +5,7 @@ date: 2023-11-06
 description: "之前一直使用的GitHubCopilot，虽然功能强大，但是收费相对来说有点贵，每个月收费在10美刀这样，一直想找一个免费的替代方案，之前也尝试使用Kite和TabNine等类似智能"
 tags: ["VisualStudioCode"]
 ShowReadingTime: "阅读4分钟"
-weight: 696
+weight: 774
 ---
 > 哈喽,大家好 我是 `xy`👨🏻‍💻。今天给大家推荐一款不用充钱也能让你变强的 `vscode` 插件 `通义灵码（TONGYI Lingma）`，可以称之为 `copilot` 的替代甜品 💪
 

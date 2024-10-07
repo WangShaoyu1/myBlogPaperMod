@@ -1,0 +1,92 @@
+---
+author: "程序猿DD"
+title: "IntelliJIDEA2021.3正式发布：支持远程开发、IDE故障排查等多项优化改进"
+date: 2021-12-02
+description: "![](http://blog.didispace.com/images/pasted-739.png)作者：程序猿DD博客：[https://blog.didispace.com/](htt"
+tags: ["Java"]
+ShowReadingTime: "阅读4分钟"
+weight: 471
+---
+![](http://blog.didispace.com/images/pasted-739.png)
+
+作者：程序猿DD 博客：[blog.didispace.com/](https://link.juejin.cn?target=https%3A%2F%2Fblog.didispace.com%2F "https://blog.didispace.com/")
+
+昨天刚刚跟大家聊了[Jetbrains即将推出轻量级编辑器Fleet](https://link.juejin.cn?target=https%3A%2F%2Fblog.didispace.com%2Fjetbrains-new-ide-fleet%2F "https://blog.didispace.com/jetbrains-new-ide-fleet/")，以挑战 VS Code的消息，今天又收到了IntelliJ IDEA 2021.3正式发布的推送。
+
+不说废话，下面就跟我们一起来看看这个版本带来了哪些惊艳的功能！
+
+**远程开发**
+
+在这个版本中的远程开发还不是一个正式版本，而是BETA版，但通过这个BETA版本，也可以体验IDEA“远程开发”给我们带来的全新体验。
+
+通过该功能的支持，我们可以从世界任何地方轻松连接到运行 IntelliJ IDEA 后端的远程计算机。所有处理都将在这台强大的远程计算机上进行，您将能够像在本地计算机上一样无缝地处理项目。
+
+![](http://blog.didispace.com/images/pasted-740.png)
+
+如何使用呢？如上图，我们只需要在 IntelliJ IDEA 的欢迎屏幕或通过 Toolbox App 中新增的 JetBrains Gateway 应用程序启动此功能。
+
+该远程开发功能除了完成我们日常的编码之外，还能与JetBrains Space联动，提供出色的编排支持。用户可以为项目中的任意仓库创建开发环境。也可以选择要启动的环境参数，也同时通过 Dockerfile 来创建镜像。一切开发之后的环境准备、依赖下载、项目构建等重复又无趣的操作，都能被很好的支持。
+
+![](http://blog.didispace.com/images/pasted-741.png)
+
+**IDE问题故障排查**
+
+有时候，我们的IDEA会莫名出现一些意外，然后无法正常工作了。以前我们都是根据错误搜索引擎去查找解决的办法，然后手工尝试解决，而这个功能就是优化这个过程的。
+
+我们可以在File菜单中找到这个功能，具体如下图：
+
+![](http://blog.didispace.com/images/pasted-742.png)
+
+点击Repair IDE之后，将进入一系列的步骤引导，以帮你解决出现故障的原因，并指引你完成修复操作。
+
+**字体大小的快捷调整**
+
+用惯Eclipse的小伙伴，一定知道有个按住 **Ctrl+鼠标滚轮** 或 **⌘+鼠标滚轮** （MacOS用户）的功能吧，这个在我们读代码的时候，是非常有用的快捷方式。
+
+在这次的更新中，这个功能终于被安排上了！有多顺滑？看看下面的演示：
+
+![](http://blog.didispace.com/images/pasted-745.gif)
+
+**Markdown表格优化**
+
+习惯用Markdown写文档的小伙伴应该都对表格标记比较头疼，因为需要用大量的 ｜来做拼接。这次的新功能只需要我们通过 **鼠标\*\*\*\*右键**，选择 I**nsert - Table**，就可以完成表格的快速插入；同时，在编写表格内容的时候，还可以通过 **Shift+Enter** 和 **Tab** 导航到下一个单元格。
+
+![](http://blog.didispace.com/images/pasted-746.gif)
+
+**Java中不安全字符串的检查**
+
+IntelliJ IDEA 现在会针对 SQL 注入和 XSS 缺陷、敏感数据泄漏和不安全的反序列化等危险发出警告。它还可以防止您将不安全的数据传递给安全的方法。
+
+要启用此检查，您需要将字符串加上注解 @Untainted（“安全”）或 @Tainted（“不安全”）。 这些注解将在添加 org.checkerframework.checker.tainting.qual 依赖项之后生效。具体操作如下：
+
+![](http://blog.didispace.com/images/pasted-747.gif)
+
+**Java中代码重构操作的改进**
+
+引入局部变量时，适用的设置不会再出现在弹出窗口中，这个弹出窗口之前会覆盖您编写的代码。更新后，您可以点击变量旁边的齿轮图标或者在 macOS 上使用 ⌥⇧O 快捷键或在 Windows 上使用 Alt+Shift+O 访问这些选项。
+
+![](http://blog.didispace.com/images/pasted-748.gif)
+
+这次还改进了引入形参的重构。在 macOS 上使用 ⌥⌘P 或在 Windows 和 Linux 上使用 Ctrl+Alt+P 调用此重构时，IDE 会询问您要替换匹配项的位置。完成选择后，将出现一个齿轮图标，点击该图标即可为重构配置更多设置。
+
+**一些Spring支持的改进**
+
+1.  Spring Boot 项目全新的 Run/Debug Configurations 对话框，提供更多可以调配的参数项：
+
+![](http://blog.didispace.com/images/pasted-749.png)
+
+2.  主动发现可能阻塞的情况，包括 Spring Data 的 JpaRepository 与 CrudRepository、RestTemplate 与 JdbcTemplate、Spring Feign 接口方法、JPA EntityManager 调用以及注解为 @Transactional 的方法和类。
+
+![](http://blog.didispace.com/images/pasted-750.png)
+
+3.  当 spring.config.import 键用于引用另一个文件时，IntelliJ IDEA 将在额外配置文件（properties 或 yaml 文件）中提供代码补全
+
+![](http://blog.didispace.com/images/pasted-744.png)
+
+4.  @Value、@Scheduled 和 Environment.getProperty() 中可以查找 application.yaml 中的配置，完成自动补全
+
+![](http://blog.didispace.com/images/pasted-743.png)
+
+以上仅为包含部分我们觉得不错的内容，整理出来给大家介绍，如果您想了解更多关于2021.3版本的更新内容，您也可通过下方链接查看官方文档：[www.jetbrains.com/idea/whatsn…](https://link.juejin.cn?target=https%3A%2F%2Fwww.jetbrains.com%2Fidea%2Fwhatsnew%2F "https://www.jetbrains.com/idea/whatsnew/")
+
+> 欢迎关注我的公众号：程序猿DD，分享外面看不到的干货与思考！

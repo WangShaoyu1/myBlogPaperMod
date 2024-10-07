@@ -5,7 +5,7 @@ date: 2024-05-15
 description: "最近做Java面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：我看到这问题都有点懵逼，现实项目中怎么可能会有10000个ifelse的代码，至少我工作10余年没见过样的代码。"
 tags: ["后端","面试","Java"]
 ShowReadingTime: "阅读7分钟"
-weight: 123
+weight: 53
 ---
 > 来源：[mp.weixin.qq.com/s/MlGkFx5Ei…](https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FMlGkFx5EimiLmBa5bckKoA "https://mp.weixin.qq.com/s/MlGkFx5EimiLmBa5bckKoA")
 > 

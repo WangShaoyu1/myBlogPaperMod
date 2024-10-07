@@ -5,11 +5,11 @@ date: 2024-08-29
 description: "想象一下，你正坐在办公室，准备享受周末的轻松时刻，突然，你的工作账号被停用了，各种公司相关的权限没了，无法访问公司内网。这不是电影情节，而是IBM中国研发部，被一锅端了。"
 tags: ["程序员","远程工作","面试"]
 ShowReadingTime: "阅读5分钟"
-weight: 645
+weight: 866
 ---
 大家好，我是**晓凡。**
 
-### 程序员的“黑色星期五”
+#### 程序员的“黑色星期五”
 
 想象一下，你正坐在办公室，准备享受周末的轻松时刻，突然，你的工作账号被停用了，各种公司相关的权限没了，无法访问公司内网。
 
@@ -17,9 +17,9 @@ weight: 645
 
 这件事发生得太突然，几乎没有一点点征兆和信号，看得晓凡是一脸懵逼。
 
-![----](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/8c5cb62bbdae470d9bdd88677056c22c~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727310285&x-signature=K2mzZ5B9WniCIuiu4465oRvEo%2FU%3D)
+![----](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/8c5cb62bbdae470d9bdd88677056c22c~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727915819&x-signature=7wYwI3YvRGcDMQvxphYLbZ8bAjY%3D)
 
-### IBM裁员：波及千人
+#### IBM裁员：波及千人
 
 裁员，在互联网行业并不是新鲜事。
 
@@ -31,7 +31,7 @@ weight: 645
 
 波及到了1000+人，遍布北京、上海、大连等各地的员工。赔偿方案为N+3，但具体情况可能更为复杂。
 
-![img](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/100077fef8bf484d853abc3f92abe42f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727310285&x-signature=2WZMGNbvLPr9oRyOWLQt5rXxpUc%3D)
+![img](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/100077fef8bf484d853abc3f92abe42f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727915819&x-signature=tRn2JDeuPoDWAqKjs%2B9d0cYPvco%3D)
 
 我们来看看IBM官方给出的解释
 
@@ -41,7 +41,7 @@ weight: 645
 
 下面是网传的针对此此次裁员3分钟会议纪要
 
-![3分钟会议纪要](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/2940b325c8eb47c9b15532f21833dee8~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727310285&x-signature=4MDXp29aGg93vyYESU26oOPk4zM%3D)
+![3分钟会议纪要](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/2940b325c8eb47c9b15532f21833dee8~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727915819&x-signature=tZ6MRmyRXfnbCQ8mUJlAmBOs%2Bpc%3D)
 
 我们将内容翻译过来大概如下：
 
@@ -63,9 +63,9 @@ _我是 Danny Mace，存储工程副总裁。我知道这是一个艰难的决�
 
 此外有不少网友注意到，现任 IBM CEO 是一名印度人 Arvind Krishna，自从他 2020 年上任后就曾在全球范围内进行了多轮裁员。此外根据 IBM 的招聘信息显示，目前 IBM 似乎正在印度不断增设岗位，故而部分网友猜测此次 IBM 中国研发部全体被裁或许也与此有关。
 
-![img](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/23c437f4117f42fcbb31c1e4227d803d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727310285&x-signature=GnpVaVTwxuCaVtE0pPg7rMpVG4k%3D)
+![img](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/23c437f4117f42fcbb31c1e4227d803d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727915819&x-signature=EFseOWvgKP8VU54ad2h%2ByoJ5lS8%3D)
 
-### 多轮裁员，用AI替代近8000人
+#### 多轮裁员，用AI替代近8000人
 
 裁员，往往不是单一因素的结果。IBM的裁员，背后是市场和技术的双重压力。
 
@@ -77,9 +77,9 @@ IBM CEO Arvind Krishna在采访中表示，后台职能部门，如人力资源�
 
 未来5年，我们将看到30%的人将被AI和自动化所取代。
 
-![IBM中国裁员千余人，AI即将接管8000岗位！](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7cfce4b73e0f49e1bbe03f46b274bca9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727310285&x-signature=O6r2EuEmGd35Yofl9yZvEPFWs%2BM%3D)
+![IBM中国裁员千余人，AI即将接管8000岗位！](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7cfce4b73e0f49e1bbe03f46b274bca9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56iL5bqP5ZGY5pmT5Yeh:q75.awebp?rk3s=f64ab15b&x-expires=1727915819&x-signature=L%2BWaS6GMkLnuHONSMhI9SiCUhBU%3D)
 
-### 程序员的自救
+#### 程序员的自救
 
 面对裁员，作为一名普通程序员，我们该怎么做呢？
 

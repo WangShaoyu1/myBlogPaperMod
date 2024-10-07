@@ -1,0 +1,132 @@
+---
+author: "秃了才能变得更强"
+title: "ReactNative无框架开发环境搭建"
+date: 2024-08-08
+description: "ReactNative无框架开发环境搭建，以0.74版本为例。下面介绍一些需要注意和踩坑的点，安装cocoapods，利用npxreact-nativeinit命令下载最新的开发模板。"
+tags: ["前端"]
+ShowReadingTime: "阅读3分钟"
+weight: 905
+---
+### 前言
+
+现在官网主推的是`Expo框架`进行开发，但是expo集成原生插件比较麻烦。
+
+公司用的app大多都会集成一些各种各样的第三方原生sdk（比如广告、支付类）或其它一些原生功能，这种情况下 推荐用`无框架环境`进行开发。
+
+> 如果Expo官方提供的原生插件功能满足项目需求，还是推荐用Expo框架进行开发的。
+
+### 吐槽
+
+现在`React Native`的环境是真的`繁琐且踩坑`，网络环境差一些的估计要搭建的心态爆炸。一个`无框架初始化app`安装完各种依赖能跑起来的项目大小大概是`570M`，前端项目总是被各种npm包空间占用的真难受，空间根本顶不住，而隔壁`Flutter`跟着官网教程走，用vscode搭建一个初始化项目只需要几分钟，且项目大小是`80M`左右。
+
+### 环境搭建
+
+下面以`0.74`版本为例，还是跟着官方文档来。
+
+#### Macos环境
+
+cocoapods 可以用homebrew或ruby安装(都是macos自带)，由于macos自带的ruby版本一般都比较低(cocoapods 1.15.2依赖于ruby3.3.4版本)，这里推荐用homebrew来安装。
+
+大概需要`cocoapods、watchman、node`环境，再就是 [下载xcode](https://link.juejin.cn?target=https%3A%2F%2Fxcodereleases.com%2F "https://xcodereleases.com/") 选择合适自己系统的版本。
+
+前置步骤：
+
+bash
+
+ 代码解读
+
+复制代码
+
+`# 安装cocoapods brew install cocoapods # watchman brew install watchman`
+
+无框架项目构建：
+
+bash
+
+ 代码解读
+
+复制代码
+
+``# 如果您之前安装了全局的`react-native-cli`软件包，请将其删除，因为它可能会导致意外问题： npm uninstall -g react-native-cli @react-native-community/cli``
+
+### 开始踩坑：
+
+#### 1\. 官方初始化项目命令
+
+我的本地环境为node20，现在最新的cli版本是[v14.0.0](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Freact-native-community%2Fcli%2Ftree%2Fmain "https://github.com/react-native-community/cli/tree/main")
+
+官方文档命令：`会报错`提示`Invalid Version: latest.`
+
+java
+
+ 代码解读
+
+复制代码
+
+`npx @react-native-community/cli@latest init AwesomeProject`
+
+测试后有效命令如下，需要注意如果同时安装了npm和yarn，cli会使用yarn安装依赖，我本地的yarn版本是v1，然后cli在安装依赖的过程中会设置yarn版本为v3，后面就会提示yarn-error。解决办法是命令后面加`--pm npm`的参数，然后就会使用npm安装了。
+
+`安装过程是漫长的，还需要翻墙！`
+
+[cli安装React Native文档](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Freact-native-community%2Fcli%2Fblob%2Fmain%2Fdocs%2Finit.md "https://github.com/react-native-community/cli/blob/main/docs/init.md")
+
+bash
+
+ 代码解读
+
+复制代码
+
+`npx react-native@latest init ProjectName # 使用npm安装依赖的命令 npx react-native@latest init ProjectName --pm npm`
+
+#### 2\. 安装bundle和pod依赖
+
+上面初始化模板下载完以后，如果选择了不安装cocoapods，那么项目现在还是运行不了的，需要下面命令，继续安装依赖。
+
+`安装过程是漫长的，还需要翻墙！！！`
+
+bash
+
+ 代码解读
+
+复制代码
+
+`# 1. 如果您在使用 iOS 时遇到问题，请尝试运行以下命令来重新安装依赖项： cd ios # 2. 安装bundle bundle install # 3. 安装pod依赖 bundle exec pod install`
+
+![image.png](https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/5d89500c2776479884314258fd8b13b7~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56eD5LqG5omN6IO95Y-Y5b6X5pu05by6:q75.awebp?rk3s=f64ab15b&x-expires=1728267256&x-signature=pATdXbPP7YHBLSOfuQWBNbx9eyk%3D)
+
+#### 3\. 打开xcode
+
+`注意：`打开ios文件夹内`.xcworkspace`的后缀文件，`修改签名`，然后运行到模拟器或真机
+
+![image.png](https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/74ef7bebfe88449da95b235179c0cf39~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56eD5LqG5omN6IO95Y-Y5b6X5pu05by6:q75.awebp?rk3s=f64ab15b&x-expires=1728267256&x-signature=IsNKQhSkxO066pT4PZXeUAloBd8%3D)
+
+![image.png](https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/b24c08be34d541f7969ce72355b40da4~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56eD5LqG5omN6IO95Y-Y5b6X5pu05by6:q75.awebp?rk3s=f64ab15b&x-expires=1728267256&x-signature=m21xGKl2rFlsZlHU534nUzsfcjY%3D)
+
+如果是打开的`.xcodeproj`，那么还可能会提示各种运行错误，貌似大多都是pod引起的，可以尝试下面命令
+
+sql
+
+ 代码解读
+
+复制代码
+
+`pod deintegrate pod update`
+
+#### 4\. 启动开发服务
+
+arduino
+
+ 代码解读
+
+复制代码
+
+`# 启动服务 npm run start`
+
+如果没有运行到手机或模拟器上，可以选择`i`命令 运行到ios，或者自己用xcode运行到手机或模拟器上。
+
+如果是`运行到iphone手机上 还有要注意的点`，当修改`App.tsx`内的代码后，发现手机上不会同步更新，这个时候可能是因为没有`开启本地网络`。
+
+`吐槽：`在这个问题上尝试过好多次重复的上面步骤，总怕遗漏了什么步骤或哪个包没有安装正确，不论怎么设置app内的`Configure Bundler`都无效，后来无意中点击app内的链接，提示没有网络权限，然后把app的本地网络打开后，才可以正常本地开发、更新。
+
+![image.png](https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/c01c83d898934658a153454211f73135~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg56eD5LqG5omN6IO95Y-Y5b6X5pu05by6:q75.awebp?rk3s=f64ab15b&x-expires=1728267256&x-signature=DMvQJV7xsbDH%2BMBZ1ohmJjUeP9Y%3D)

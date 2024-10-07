@@ -1,0 +1,124 @@
+---
+author: "半花"
+title: "【ES6】模块导入"
+date: 2024-10-03
+description: "在ES6（ECMAScript6）中，模块导入主要通过import关键字实现，提供了几种不同的方式来导入模块中导出的内容。以下是ES6中模块导入的几种主要方式：导出方法1.导入默认导出(默认暴"
+tags: ["前端","JavaScript"]
+ShowReadingTime: "阅读2分钟"
+weight: 259
+---
+在ES6（ECMAScript 6）中，模块导入主要通过`import`关键字实现，提供了几种不同的方式来导入模块中导出的内容。以下是ES6中模块导入的几种主要方式：
+
+导出方法
+----
+
+### 1\. 导入默认导出(默认暴露)
+
+当模块中使用了`export default`导出内容时，可以使用不加大括号的`import`语句来导入该模块。这种方式导入的内容，其名称在导入时可以是任意的，因为`export default`导出的内容被视为该模块的默认导出。
+
+module.js
+
+ 代码解读
+
+复制代码
+
+`export default function() {       console.log('default function');   }`  
+
+main.js
+
+ 代码解读
+
+复制代码
+
+`import myFunction from './module.js';   myFunction(); // 输出: default function`
+
+### 2\. 导入命名导出（分别暴露）
+
+当模块中使用了`export`（没有`default`）来导出多个内容（如变量、函数、类等）时，可以使用加大括号的`import`语句来导入特定的命名导出。
+
+module.js
+
+ 代码解读
+
+复制代码
+
+`export const name = 'John';   export function sayHello() {       console.log('Hello!');   }`  
+
+main.js
+
+ 代码解读
+
+复制代码
+
+`import { name, sayHello } from './module.js';   console.log(name); // 输出: John   sayHello(); // 输出: Hello!`
+
+### 3\. 导入整个模块的内容（统一暴露）
+
+如果希望将模块中导出的所有内容作为一个对象来导入，可以使用`import * as`语法。这样，模块中导出的所有内容都会被封装在一个对象中，对象的属性名与模块中的导出名称相同。
+
+module.js
+
+ 代码解读
+
+复制代码
+
+`//方法一 export const name = 'John';   export function sayHello() {       console.log('Hello!');   }   //方法二 const name = 'John';   function sayHello() {       console.log('Hello!');   }   export { name,sayHello }`
+
+main.js
+
+ 代码解读
+
+复制代码
+
+`import * as module from './module.js';   console.log(module.name); // 输出: John   module.sayHello(); // 输出: Hello!`
+
+打包导入
+----
+
+存在三个文件（moduel1、moduel2、moduel3）暴露出方法，如果在多个文件内使用这三个文件中暴露的方法，则使用打包导入，可以简化代码
+
+app.js
+
+ 代码解读
+
+复制代码
+
+`import * as m1 from "./moduel1.js"; import * as m2 from "./moduel2.js"; import * as m3 from "./moduel3.js";`
+
+html
+
+ 代码解读
+
+复制代码
+
+ `<script src="./src/js/app.js" type="module"></script>`
+
+相关内容
+----
+
+### 解构模式以及重命名
+
+module.js
+
+ 代码解读
+
+复制代码
+
+`export const name = 'John';   export function sayHello() {       console.log('Hello!');   }`  
+
+main.js
+
+ 代码解读
+
+复制代码
+
+`import { name as username, sayHello as printhello } from './module.js';   console.log(username); // 输出: John   printhello(); // 输出: Hello!`
+
+注意事项
+----
+
+*   `import`语句会提升（hoisting）到模块的顶部，但实际的执行会在模块解析阶段之后，这意味着在`import`语句之前不能使用被导入的模块内容。
+*   `import`语句是静态的，意味着它不能使用表达式或变量来动态地解析模块路径或导入内容。
+*   每个模块都是单例的，即无论导入多少次，都只会在第一次导入时加载一次，之后的导入都会直接从内存中读取。
+
+通过上述方式，ES6的模块导入提供了灵活且强大的功能，使得模块间的依赖管理更加清晰和方便。

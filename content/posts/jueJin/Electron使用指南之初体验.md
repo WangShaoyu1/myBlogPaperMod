@@ -5,7 +5,7 @@ date: 2022-06-27
 description: "Electron介绍1、概览想必你已经听说了可以应用electron来构建令人惊叹的桌面应用程序！单纯使用JavaScriptAPI就可以构建Mac,windows或者Linux应用程序"
 tags: ["前端"]
 ShowReadingTime: "阅读4分钟"
-weight: 413
+weight: 575
 ---
 Electron 介绍
 -----------

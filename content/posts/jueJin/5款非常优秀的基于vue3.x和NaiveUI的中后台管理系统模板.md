@@ -5,7 +5,7 @@ date: 2021-12-16
 description: "今天给大家分享`5款`开源且非常优秀的基于`vue3.x`和`NaiveUI`的中后台管理系统模板，助力大家快速开发一个中后台管理系统"
 tags: ["前端","Vue.js"]
 ShowReadingTime: "阅读3分钟"
-weight: 702
+weight: 793
 ---
 前言
 --

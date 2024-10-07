@@ -5,7 +5,7 @@ date: 2023-07-13
 description: "Electron是一个跨平台的桌面应用程序开发框架，它允许开发人员使用Web技术（如HTML、CSS和JavaScript）构建桌面应用程序，这些应用程序可以在Windows、macOS和Linux等"
 tags: ["前端"]
 ShowReadingTime: "阅读5分钟"
-weight: 418
+weight: 341
 ---
 Electron是一个跨平台的桌面应用程序开发框架，它允许开发人员使用Web技术（如HTML、CSS和JavaScript）构建桌面应用程序，这些应用程序可以在Windows、macOS和Linux等操作系统上运行。
 

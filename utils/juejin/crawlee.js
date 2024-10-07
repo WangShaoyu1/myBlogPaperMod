@@ -7,7 +7,8 @@ log.debug('Setting up crawler.');
 const crawler = new PlaywrightCrawler({
     requestHandler: router,
     maxConcurrency: 2,
-    minConcurrency: 1
+    minConcurrency: 1,
+    maxRequestsPerCrawl: 10
 })
 
 await crawler.run(['https://juejin.cn'])

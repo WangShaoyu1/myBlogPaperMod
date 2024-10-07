@@ -5,7 +5,7 @@ date: 2024-09-18
 description: "最近刚入新项目，线上出了一个bug，Leader让排查。相关代码稍显复杂，想看看git历史记录获取些线索，打开GitGraph一看，当场石化，这不都是git规范的反面教材吗？"
 tags: ["前端","JavaScript","代码规范"]
 ShowReadingTime: "阅读11分钟"
-weight: 689
+weight: 366
 ---
 最近刚入新项目，线上出了一个bug，Leader让排查。相关代码稍显复杂，想看看git历史记录获取些线索，打开`Git Graph`一看，当场石化，一堆像`task/10001`、`hotfix/0910`、`experimental/performance_web-worker`、`test1`、`test2`命名的分支，提交描述如`实现10001需求`、`修复线上bug`， 这不都是git规范的反面教材吗？作为一个`"砖家"`，我不得不写一篇Git规范，让组员看看什么叫`professional`。
 

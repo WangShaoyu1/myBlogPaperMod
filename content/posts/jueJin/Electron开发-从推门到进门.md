@@ -5,7 +5,7 @@ date: 2022-12-11
 description: "一、Electron的介绍Electron是利用web前端技术进行桌面应用开发的一套框架。是由github开发的开源框架，允许开发者使用Web技术构建跨平台的桌面应用，它的基本结构：El"
 tags: ["前端"]
 ShowReadingTime: "阅读14分钟"
-weight: 1072
+weight: 495
 ---
 ### 一、Electron 的介绍
 

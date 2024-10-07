@@ -1,0 +1,92 @@
+---
+author: "盆友圈的小可爱"
+title: "【LeetCode】67.二进制求和"
+date: 2022-03-27
+description: "Offer驾到，掘友接招！我正在参与2022春招打卡活动，点击查看活动详情。测试岗位也越来卷了，除了基本的功能测试外，还要有编程基础、脚本经验才脱颖而出。怎么才能提高我们的编程能力呢，刷Leet"
+tags: ["LeetCode"]
+ShowReadingTime: "阅读3分钟"
+weight: 668
+---
+![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/961fcf59908e44ac88590a3d2dd07161~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+
+Offer 驾到，掘友接招！我正在参与2022春招打卡活动，点击查看[活动详情](https://juejin.cn/post/7069661622012215309/ "https://juejin.cn/post/7069661622012215309/")。
+
+测试岗位也越来卷了，除了基本的功能测试外，还要有编程基础、脚本经验才脱颖而出。
+
+怎么才能提高我们的编程能力呢，刷LeetCode是最佳的途径之一，话不多数,刷题走起~
+
+一、题目描述：
+=======
+
+*   题目内容
+    ====
+    
+    ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23524bc87a114d37ad7469c978fb1e50~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+    
+*   题目示例
+    ====
+    
+    ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7de658308f2d408ca3bc9c04f6b1ddfa~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+    
+*   题目解析
+    ====
+    
+    *   本题给定两个字符串，两个字符串由“0”和“1”组成
+    *   本题要求对这个两个二进制字符串进行求和运算
+    *   输入的字符串都是非空字符串
+
+二、思路分析：
+=======
+
+我们拿到本题，第一想到与我们之前做过的**66.加一**，模拟二进制加法计算。
+
+二进制加法计算方式：**逢二进一**，计算过程中有4种可能。
+
+*   0+0=0，-> 则字符为“0”，无进位
+*   0+1=1，-> 则字符为“1”，无进位
+*   1+1=2，-> 则字符为“0”，进位为1
+*   1+1+1=3，-> 则字符为“1”，进位为1
+
+![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f2a7ecaa830c42ad8542ab51c993e7ba~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+
+由于，本次题目给出的字符串形式，我们需要对两个字符串长度进行比较，对较小的字符串进行“0”右补齐。
+
+Python中，string是不可变类型，对字符串转换成列表进行进位更改元素操作
+
+理清以上思路，我们使用Python实现如下代码：
+
+python
+
+ 代码解读
+
+复制代码
+
+`class Solution(object):     def addBinary(self, a, b):         """         :type a: str         :type b: str         :rtype: str         """         carry = 0         if len(a) > len(b):             index = len(a) - 1             b = b.rjust(len(a), "0")             Max = list(a)         else:             index = len(b) - 1             a = a.rjust(len(b), "0")             Max = list(b)         while index >= 0:             if int(a[index]) + int(b[index]) + carry == 0:                 Max[index] = "0"                 carry = 0             elif int(a[index]) + int(b[index]) + carry == 2:                                  Max[index] = "0"                 carry = 1             elif int(a[index]) + int(b[index]) + carry == 3:                 Max[index] = "1"                 carry = 1             elif int(a[index]) + int(b[index]) + carry == 1:                 Max[index] = "1"                 carry = 0             index = index - 1         if carry >= 1:             Max = ['1'] + Max         return "".join(Max)`
+
+虽然，实现题目要求，但是代码写的太过渣了，我们学习大佬们的优秀编码：
+
+不用借助任何列表和零补齐。
+
+*   第一种，在进行计算时直接拼接字符串，会得到一个反向字符，需要最后再进行翻转
+*   第二种，按照位置给结果字符赋值，最后如果有进位，则在前方进行字符串拼接添加进位
+
+js
+
+ 代码解读
+
+复制代码
+
+`class Solution(object):     def addBinary(self, a, b):         """         :type a: str         :type b: str         :rtype: str         """         ans, extra = '',0          i,j=len(a)-1,len(b)-1         while i>=0 or j>=0:             if i >= 0:                 extra += ord(a[i]) - ord('0')             if j >= 0:                 extra += ord(b[j]) - ord('0')             ans += str(extra % 2)             extra //= 2             i,j = i-1,j-1         if extra == 1:             ans += '1'         return ans[::-1]`
+
+三、总结：
+=====
+
+我们提交自己写的代码，AC结果如下： ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0b4e2c85defe48b58d0c33fffb90f558~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+
+时间复杂度O(n),空间复杂度O(n),借助一个列表。
+
+大佬写的优秀的代码，时间复杂度O(n),空间复杂度O(1).
+
+差距很明显，继续努力。
+
+以上是本期内容，欢迎大佬们点赞评论，下期见～～～

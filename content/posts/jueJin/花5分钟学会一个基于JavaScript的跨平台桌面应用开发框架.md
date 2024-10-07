@@ -5,7 +5,7 @@ date: 2024-04-11
 description: "一款由GitHub开发的开源跨平台桌面应用开发框架，允许开发者利用他们熟悉的Web技术栈——HTML、CSS和JavaScript，来创建原生桌面应用程序"
 tags: ["Electron","Node.js"]
 ShowReadingTime: "阅读3分钟"
-weight: 412
+weight: 576
 ---
 ### 框架介绍
 

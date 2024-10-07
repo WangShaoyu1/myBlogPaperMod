@@ -1,0 +1,261 @@
+---
+author: "懒人码农"
+title: "「开源项目」8款最受欢迎的地图API和javascript库"
+date: 2020-09-13
+description: "在创建您的第一个地图应用程序之前，先来了解一下主流的地图API和JavaScript库。我们今天使用的大多数应用程序都将在地图上显示实时位置和数据。例如在线商品到我们使用地图的外卖递送应用程序。地图被广泛用于表示数据，我们总是希望能有更多的交互性。有许多不同的库和插件可供地图…"
+tags: ["JavaScript"]
+ShowReadingTime: "阅读7分钟"
+weight: 567
+---
+> 作者：Sathishravi 译者：JackChen007 来源：medium.com
+
+前言
+--
+
+在创建您的第一个地图应用程序之前，先来了解一下主流的地图API和JavaScript库。
+
+我们今天使用的大多数应用程序都将在地图上显示实时位置和数据。例如在线商品到我们使用地图的外卖递送应用程序。地图被广泛用于表示数据，我们总是希望能有更多的交互性。有许多不同的库和插件可供地图使用，有的是付费的，有的是开源的。
+
+谷歌地图并不是地图应用程序的最终有效解决方案。它不提供任何定制选项，使其更方便您自己。如果您想用自己的功能实现它，就必须在市场上使用开放源码。在本文中，我们将看到不同的地图都包含用于使用地图库的JavaScript工具。
+
+使用javascript函数库对地图进行分类
+----------------------
+
+有很多工具可以使用JavaScript。我们可以根据这个来分类。
+
+*   库（Libraries）：允许公共类和函数在更高的编程级别上构建应用程序。
+*   包装器（Wrappers）：它充当调用者和包装代码之间的接口。
+*   工具包（Toolkits）：它是模块化的，很容易集成到定制的应用程序中。
+*   框架（Frameworks）：用于启用和支持服务的可重用组件，配置并与应用程序代码集成。
+*   客户端（Clients）：最终产品需要使用的Web地图应用程序。
+
+如何选择有效的解决方案
+-----------
+
+这取决于您将如何使用它们，以及您希望对其进行多大程度的定制以使其更具交互性。
+
+当您在为地图选择工具时。您必须首先选择付费或开源框架。它们都有很多功能。
+
+版本和升级
+-----
+
+以 Google Maps 和 Leaflet 这两大产品为例。谷歌地图由谷歌控制。任何可用的更新都将由谷歌安排。Leaflet更新是经常和它发布新版本的新功能。插件更新独立于整个更新。
+
+地图工具和库
+------
+
+一些工具将减少生成交互式地图的工作量。它允许您只用几行代码就可以创建一个动态地图。JS库会让你添加标记功能，绘制地图上特定点的自定义线路。
+
+CSS允许你在地图中添加自定义样式。通过考虑所有这些功能，我们整合了以下库，这些库将帮助开发人员轻松快速地创建复杂的地图。
+
+Leafletjs
+---------
+
+官方站点：[leafletjs.com/](https://link.juejin.cn?target=https%3A%2F%2Fleafletjs.com%2F "https://leafletjs.com/")
+
+GitHub stars: 28.1k, [github.com/Leaflet/Lea…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FLeaflet%2FLeaflet%2F "https://github.com/Leaflet/Leaflet/")
+
+价格：免费
+
+地图数据来源：OpenStreetMap
+
+依赖性：无
+
+类别：JS库
+
+示例：[leafletjs.com/examples.ht…](https://link.juejin.cn?target=https%3A%2F%2Fleafletjs.com%2Fexamples.html "https://leafletjs.com/examples.html")
+
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3aaf13165f2c473ab42e819c9408861a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Leaflet 是一个为建设移动设备友好的互动地图，而开发的、现代的、开源的 JavaScript 库。它是由 Vladimir Agafonkin 带领一个专业贡献者团队开发，虽然代码仅有 38 KB，但它具有开发人员开发在线地图的大部分功能。
+
+Leaflet 设计坚持简便、高性能和可用性好的思想，在所有主要桌面和移动平台能高效运作，在现代浏览器上会利用HTML5和CSS3的优势，同时也支持旧的浏览器访问。支持插件扩展，有一个友好、易于使用的API文档和一个简单的、可读的源代码。
+
+它包含强大的API文档和各种示例，方便供初学者快速查阅及上手。
+
+推荐阅读相关入门教程：
+
+[入门Leaflet之小Demo](https://juejin.cn/post/6844903566797176840 "https://juejin.cn/post/6844903566797176840")
+
+[leafletjs可视化地理位置](https://juejin.cn/post/6864860217646809096 "https://juejin.cn/post/6864860217646809096")
+
+[leafLet API中文文档参考](https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fqq_36595013%2Farticle%2Fdetails%2F83144874 "https://blog.csdn.net/qq_36595013/article/details/83144874")
+
+Openlayers
+----------
+
+官方站点：[openlayers.org/](https://link.juejin.cn?target=https%3A%2F%2Fopenlayers.org%2F "https://openlayers.org/")
+
+GitHub stars: 7.1k, [github.com/openlayers/…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fopenlayers%2Fopenlayers "https://github.com/openlayers/openlayers")
+
+价格：免费
+
+地图数据来源：OpenStreetMap
+
+依赖性：无
+
+类别：JS库
+
+示例：[openlayers.org/en/latest/e…](https://link.juejin.cn?target=https%3A%2F%2Fopenlayers.org%2Fen%2Flatest%2Fexamples%2F "https://openlayers.org/en/latest/examples/")
+
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f8c1d9e890dc4cf58eb2718120bf344a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+OpenLayers 也是创建交互式地图的最佳开源JavaScript框架。您可以使用向量贴片选择不同类型的样式地图。它还能够将矢量数据转换为GeoJson格式。它还为开发人员提供了更好的文档和工作代码示例。
+
+> 最近公司项目中有个业务需求要实现Web GIS（网络地理信息系统）功能，开发一套军用模拟指挥系统，小编特地参考了很多资料，最终选定OpenLayers这个框架。等项目完成后，会写一篇开发使用心得及经验的分享文章。如下图所示：
+
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b4cbb54c76ca49e280efd53de8173747~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+推荐阅读相关入门教程：
+
+[OpenLayers基础教程](https://link.juejin.cn?target=https%3A%2F%2Fzhuanlan.zhihu.com%2Fp%2F67549853 "https://zhuanlan.zhihu.com/p/67549853")
+
+[OpenLayers中文详解](https://link.juejin.cn?target=https%3A%2F%2Fsegmentfault.com%2Fa%2F1190000009679800 "https://segmentfault.com/a/1190000009679800")
+
+Mapbox
+------
+
+官方站点：[www.mapbox.com/](https://link.juejin.cn?target=https%3A%2F%2Fwww.mapbox.com%2F "https://www.mapbox.com/")
+
+GitHub stars: 6.1k, [github.com/mapbox/mapb…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmapbox%2Fmapbox-gl-js "https://github.com/mapbox/mapbox-gl-js")
+
+价格：部分免费
+
+地图数据来源：Mapbox
+
+依赖性：无
+
+类别：WEB应用程序
+
+示例：[docs.mapbox.com/mapbox-gl-j…](https://link.juejin.cn?target=https%3A%2F%2Fdocs.mapbox.com%2Fmapbox-gl-js%2Fexamples%2F "https://docs.mapbox.com/mapbox-gl-js/examples/")
+
+![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70f31d47c07e49d69b1c1bd765b2af63~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Mapbox 是用于创建高性能交互式地图的最先进的地图解决方案。它是由具有更多功能的开发人员构建的，比如定制标记、矢量图、静态地图和地理编码。它提供卫星图像和方向。
+
+它还提供在线编辑器，使您的自定义地图与您自己的数据快速。该文档设计良好，易于使用。
+
+推荐阅读相关入门教程：
+
+[Mapbox中文版](https://link.juejin.cn?target=https%3A%2F%2Fwww.mapbox.cn%2F "https://www.mapbox.cn/")
+
+[vue 地图可视化（2）mapbox篇](https://juejin.cn/post/6844903705410699277 "https://juejin.cn/post/6844903705410699277")
+
+Google Maps API
+---------------
+
+官方站点：[developers.google.com/maps/docume…](https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.google.com%2Fmaps%2Fdocumentation "https://developers.google.com/maps/documentation")
+
+价格：部分免费
+
+地图数据来源：Google
+
+依赖性：无
+
+类别：WEB应用程序
+
+示例：[developers.google.com/maps/docume…](https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.google.com%2Fmaps%2Fdocumentation%2Fjavascript%2Fexamples "https://developers.google.com/maps/documentation/javascript/examples")
+
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8f21dbc30e234e69bcfd5b809ee9c2b3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Google Maps API最适合所有人，无论是有经验的还是初学者。很容易将谷歌地图与任何应用程序或网站集成。此外，WordPress用户有更多的插件来添加JavaScript谷歌地图API。
+
+Datamaps
+--------
+
+官方站点：[datamaps.github.io/](https://link.juejin.cn?target=https%3A%2F%2Fdatamaps.github.io%2F "https://datamaps.github.io/")
+
+GitHub stars: 3.4k, [github.com/markmarkoh/…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmarkmarkoh%2Fdatamaps "https://github.com/markmarkoh/datamaps")
+
+价格：免费
+
+地图数据来源：D3.js
+
+依赖性：D3.js and TopoJSON
+
+类别：JS库
+
+示例：[datamaps.github.io/](https://link.juejin.cn?target=https%3A%2F%2Fdatamaps.github.io%2F "https://datamaps.github.io/")
+
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ffefd19b40e49b5b33cd4a488c85036~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Datamaps 是一种用于数据可视化的交互式地图。它被绑定到一个单独的JavaScript文件中。它以JSON格式存储，您可以使用以下结构轻松创建任何自定义地图。
+
+Bing Maps
+---------
+
+官方站点：[www.microsoft.com/en-us/maps/…](https://link.juejin.cn?target=https%3A%2F%2Fwww.microsoft.com%2Fen-us%2Fmaps%2Fchoose-your-bing-maps-api "https://www.microsoft.com/en-us/maps/choose-your-bing-maps-api")
+
+价格：免费
+
+地图数据来源：Bing Maps
+
+依赖性：无
+
+类别：WEB应用程序
+
+示例：[docs.microsoft.com/en-us/bingm…](https://link.juejin.cn?target=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fbingmaps%2Fv8-web-control%2Findex "https://docs.microsoft.com/en-us/bingmaps/v8-web-control/index")
+
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fe2e70daf6438094276a71c5807867~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+这个地图是由微软创建的，是一个非常流行的地图平台。它包含AJAX SDK，提供了示例代码和片段，供开发人员构建自定义地图。它提供多种API功能，如REST服务和空间数据服务。
+
+ArcGIS
+------
+
+官方站点：[developers.arcgis.com/](https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.arcgis.com%2F "https://developers.arcgis.com/")
+
+价格：部分免费
+
+地图数据来源：Esri
+
+依赖性：无
+
+类别：框架
+
+示例：[developers.arcgis.com/javascript/…](https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.arcgis.com%2Fjavascript%2F3%2Fjssamples%2F "https://developers.arcgis.com/javascript/3/jssamples/")
+
+![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7c2a636c304b4b2fafeb855f28f663c0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+ArcGIS 是一个轻量级的JavaScript框架，可以很容易地将地图嵌入到任何应用程序或网站中。它装载了大量的特性和示例。开发人员门户包含ArcGIS API和SDK。它为开发人员提供了很友好的文档。
+
+推荐阅读相关入门教程：
+
+[vue地图可视化（3） ArcGIS篇](https://juejin.cn/post/6844903705414729736 "https://juejin.cn/post/6844903705414729736")
+
+Zeemaps
+-------
+
+官方站点：[www.zeemaps.com/](https://link.juejin.cn?target=https%3A%2F%2Fwww.zeemaps.com%2F "https://www.zeemaps.com/")
+
+价格：部分免费
+
+依赖性：无
+
+类别：WEB应用程序
+
+示例：[www.zeemaps.com/mobile?grou…](https://link.juejin.cn?target=https%3A%2F%2Fwww.zeemaps.com%2Fmobile%3Fgroup%3D1971477 "https://www.zeemaps.com/mobile?group=1971477")
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4803b18e7e264acfa5790d0fc6bd9d7d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+Zeemaps 是一种企业级地图服务，可以让你轻松的创建、发布和共享交互式地图，你可以构建可视化动态地理位置信息地图，例如标注企业用户的地理为hi，你曾经去过的地方，销售地图等等，所有的地图搜存储在官方服务器上，用户可以在任何地点、任何时间进行访问。
+
+写在最后
+----
+
+我希望您喜欢并了解JavaScript中的地图API和库，并根据您的需要为您的应用程序或网站创建一个高度交互的地图，选择最好的框架。
+
+> 原文：[medium.com/javascript-…](https://link.juejin.cn?target=https%3A%2F%2Fmedium.com%2Fjavascript-in-plain-english%2Ftop-maps-api-and-libraries-in-javascript-e01b01ad5d2c "https://medium.com/javascript-in-plain-english/top-maps-api-and-libraries-in-javascript-e01b01ad5d2c")
+
+如有前端技术问题，请加微信好友：lazycode520，小编拉您进前端实战交流学习群。
+
+**推荐阅读相关优质文章**
+
+*   [开发一款微信小程序的个性简历，能打开大厂之门并获得门票？（附源码）](https://juejin.cn/post/6847902217371205640 "https://juejin.cn/post/6847902217371205640")
+*   [Vue+Echarts构建大数据可视化酷炫展示公司品牌实战项目分享（附源码）](https://juejin.cn/post/6845166890449371149 "https://juejin.cn/post/6845166890449371149")
+*   [前端必知必会MySQL的那些事儿 - NodeJS全栈成长之路](https://juejin.cn/post/6844904190985125901 "https://juejin.cn/post/6844904190985125901")
+*   [2020值得收藏与学习280多款H5小游戏，从入门到彻底了解它（附源码）](https://juejin.cn/post/6844904202167123982 "https://juejin.cn/post/6844904202167123982")
+
+获取更多项目实战经验及各种源码资源，请关注作者公众号：懒人码农
+
+![](//p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e5c0e2853cee41039ea658ed7e42ac1a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)

@@ -5,7 +5,7 @@ date: 2022-12-27
 description: "我们以App（ReactNative）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。"
 tags: ["WebRTC","ReactNative","React.js"]
 ShowReadingTime: "阅读10分钟"
-weight: 209
+weight: 240
 ---
 大家好，我是杨成功。
 

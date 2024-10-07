@@ -19,7 +19,7 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
     weight++
 
     // 在每次请求之间添加人为的延迟，单位为毫秒
-    await new Promise(resolve => setTimeout(resolve, getRandomDelay(20, 300))); // n 秒间隔
+    await new Promise(resolve => setTimeout(resolve, getRandomDelay(20, 120))); // n 秒间隔
 
     try {
         await page.waitForSelector('html', {timeout: 60000});
@@ -99,7 +99,7 @@ router.addDefaultHandler(async ({request, page, enqueueLinks, log}) => {
     // On this page, we just want to enqueue all the category pages.
 
     await page.waitForSelector('.entry-list', {timeout: 60000});
-    const elements = (await page.$$('.entry-list .title-row a')).slice(0, 20);
+    const elements = (await page.$$('.entry-list .title-row a'));
 
     for (const element of elements) {
         const href = await element.getAttribute('href');

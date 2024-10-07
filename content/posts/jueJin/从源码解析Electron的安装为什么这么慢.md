@@ -5,7 +5,7 @@ date: 2021-04-10
 description: "前言Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。"
 tags: ["Electron"]
 ShowReadingTime: "阅读4分钟"
-weight: 431
+weight: 563
 ---
 前言
 ==

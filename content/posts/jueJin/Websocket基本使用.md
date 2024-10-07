@@ -1,0 +1,69 @@
+---
+author: "阳树阳树"
+title: "Websocket基本使用"
+date: 2024-10-04
+description: "WebSocket详细介绍WebSocket是一种网络通信协议，它提供了一个全双工通信渠道，通过一个长期的连接允许服务器主动向客户端发送数据。WebSocket协议在2008年诞生，201"
+tags: ["前端","JavaScript","面试"]
+ShowReadingTime: "阅读3分钟"
+weight: 123
+---
+### WebSocket 详细介绍
+
+WebSocket 是一种网络通信协议，它提供了一个全双工通信渠道，通过一个长期的连接允许服务器主动向客户端发送数据。WebSocket 协议在 2008 年诞生，2011 年成为国际标准，并且所有现代浏览器都支持它。
+
+#### 特点
+
+WebSocket 的一些关键特点包括：
+
+1.  建立在 TCP 协议之上，只在握手阶段使用 HTTP 协议。
+2.  可以发送文本或二进制数据。
+3.  没有同源限制，客户端可以与任意服务器通信。
+4.  协议标识符是 `ws`（非加密）或 `wss`（加密）。
+
+**这里我们在实际去看浏览器的时候，会发现有一个 101 的网络请求，这个请求的含义就是：`Switching Protocols` 切换协议，详细解释如下：**
+
+> HTTP状态码101，也称为`101 Switching Protocols`，用于表示服务器已经理解了客户端的请求，并将通过`Upgrade`消息头通知客户端采用不同的协议来完成这个请求。这个状态码通常用于WebSocket协议的升级
+
+#### 使用场景
+
+WebSocket 常用于需要实时数据交云的应用场景，如在线游戏、实时聊天应用、股票行情更新、协作工具等。
+
+我们开发实际遇到的一个场景是实现一个 web shell 交互，这个需要 xtermjs + websocket 来实现。
+
+那么下面我们来介绍一下 Websocket 的常见用法：
+
+#### 客户端示例
+
+在客户端，WebSocket 的使用非常直接。以下是 JavaScript 中创建 WebSocket 连接的示例：
+
+ini
+
+ 代码解读
+
+复制代码
+
+`javascript var ws = new WebSocket("wss://echo.websocket.org"); ws.onopen = function(evt) {   console.log("Connection open ...");   ws.send("Hello WebSockets!"); }; ws.onmessage = function(evt) {   console.log("Received Message: " + evt.data);   ws.close(); }; ws.onclose = function(evt) {   console.log("Connection closed."); };`
+
+### WebSocket 鉴权机制
+
+WebSocket 鉴权确保只有合法的用户或服务可以进行通信。所以我们不可避免的需要了解鉴权相关的知识，我在后面写了两个示例，主要的内容都在注释里：
+
+#### 客户端代码（JavaScript）
+
+js
+
+ 代码解读
+
+复制代码
+
+`// 创建WebSocket连接 const socket = new WebSocket('ws://localhost:3000', {   headers: {   // 这里得看后端如何处理的，是自定义了一个协议   // 还是直接使用这样的鉴权机制     'Authorization': 'expected-token'  // 将Token放在请求头中   } }); // 连接打开时触发 socket.onopen = function(event) {   console.log('WebSocket connection established.');   // 可以发送消息给服务器   socket.send('Hello, server!'); }; // 接收到消息时触发 socket.onmessage = function(event) {   console.log('Message from server:', event.data); }; // 连接关闭时触发 socket.onclose = function(event) {   console.log('WebSocket connection closed.'); }; // 错误处理 socket.onerror = function(error) {   console.log('WebSocket error:', error); };`
+
+#### 服务器端代码（Node.js）
+
+js
+
+ 代码解读
+
+复制代码
+
+`const WebSocket = require('ws'); const crypto = require('crypto'); // 假设我们有一个函数来验证Token function isValidToken(token) {   // 这里应该是一些检查Token的逻辑，比如查询数据库   // 以下只是一个简单的示例，实际应用中应该使用更安全的验证方式   return token === 'expected-token'; } // 创建WebSocket服务器 const wss = new WebSocket.Server({ port: 3000 }); wss.on('connection', (ws, req) => {   // 从请求头中获取Token   const token = req.headers['authorization'];   // 检查Token是否存在   if (!token) {     console.log('No token provided.');     ws.close();     return;   }   // 验证Token   if (isValidToken(token)) {     console.log('Token is valid.');     // 鉴权通过，进行后续操作     ws.on('message', (message) => {       console.log('Received message:', message);       // 可以回复客户端消息       ws.send('Hello, you are connected!');     });   } else {     console.log('Invalid token.');     // 鉴权失败，关闭连接     ws.close();   } });`

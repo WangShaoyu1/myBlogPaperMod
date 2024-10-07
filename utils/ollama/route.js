@@ -1,7 +1,6 @@
 import {createPlaywrightRouter, Dataset} from 'crawlee';
 import {writeToFile, removeSpaces, convertToMb, getRandomDelay, readJsonFilesFromFolder} from "../util.js"
 import {spawn, exec} from 'child_process';
-import ProgressBar from 'progress';
 
 export const router = createPlaywrightRouter()
 let alarmIndex = 0, alarmIndexMax = 0, startFirstTime = 0, endLastTime = 0;
@@ -36,7 +35,8 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
 
         //获取执行命令，有的是run,有的是pull
         const commandStrMatch = commandInput.match(/ollama\s+(\w+)/);
-        const commandStr = commandStrMatch ? commandStrMatch[1] : 'run'
+        // const commandStr = commandStrMatch ? commandStrMatch[1] : 'run'
+        const commandStr = 'pull';// pull 也有下载功能，但之后不运行直接结束；run 会下载并运行模型,导致后面不好控制下一个下载进程
         log.error(`commandInput: ${commandInput}, commandStr: ${commandStr}`);
         const results = modelNames.map((modelName, index) => {
             return {
@@ -62,7 +62,7 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
             let handledModelsList = allModelsList.map((item) => Object.values(item)[0]).flat();
 
             // 并发下载模型
-            downAllModel(handledModelsList, {minSize: 500, maxSize: 600, commandStr});
+            downAllModel(handledModelsList, {minSize: 1000, maxSize: 3000, commandStr});
         }
     } catch (error) {
         log.error(`Error processing detail page: ${error}`);
@@ -108,94 +108,73 @@ export function downAllModel(modelList, options) {
     const defaultOptions = {commandStr: 'run', minSize: 0, maxSize: 500}
     options = Object.assign(defaultOptions, options);
 
-    // 工具函数，筛选出小于 options.maxSize 的模型
+    // 工具函数，筛选出小于 options.maxSize 的模型;并且过滤掉已下载的模型;并且过滤掉相同大小的模型(量下载下不动了，耗时太多。每个模型的最后10%耗时太久)
     function filterModels(models) {
-        return models.filter(model => {
-            return model.modelSize <= options.maxSize && model.modelSize >= options.minSize;
+        return getOllamaList().then((nameList) => {
+            return models.filter(model => model.modelSize <= options.maxSize && model.modelSize >= options.minSize)
+                .filter(item => !nameList.includes(item.modelName))
+                .sort((a, b) => a.modelSize - b.modelSize)
+                .filter((item, index, self) => index === self.findIndex(t => t.modelSize === item.modelSize));
         });
     }
 
-    // 创建进度条
-    function createProgressBar(total) {
-        return new ProgressBar('正在下载模型 [:bar] :current/:total :percent', {
-            total: total, width: 40, complete: '=', incomplete: ' ', renderThrottle: 16, clear: false
-        });
-    }
-
-    // 执行下载命令
-    function downloadModel(model, progressBar) {
+    // 获取已下载模型列表，下载过了就不用再下载了
+    function getOllamaList() {
         return new Promise((resolve, reject) => {
-            console.log(`开始下载模型: ${model.modelName}, 大小: ${model.modelSize}Mb`);
-            const startTime = Date.now();  // 记录开始时间
-
-            // 在新的 CMD 控制台中执行命令，通过spawn，执行 ollama 下载指令
-            const process = spawn('cmd.exe', ['/c', 'start', 'ollama', options.commandStr, model.modelName], {
-                stdio: 'inherit',
-                shell: true,
-                detached: true,
+            const process = spawn('ollama', ['list'], {
+                stdio: 'pipe', // 继承父进程的控制台，避免错误
+                shell: false, // 不使用 shell
             });
-            // 设置超时时间
-            const timeoutDuration = 9000; // 超时时间（毫秒）
-            let timeout;
-            // 创建重置超时函数
-            const resetTimeout = () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    console.log('未收到输入，关闭子进程。。。');
-                    process.kill();// 关闭子进程
-                }, timeoutDuration);
-            };
-            // 初始化超时
-            resetTimeout();
-            // 监听标准输入，重置超时
-            if (process.stdin) {
-                process.stdin.on('data', resetTimeout);
-            }
-            // 监听标准输出，查找成功标识
+            let output = ''; // 用于存储输出
+
             if (process.stdout) {
                 process.stdout.on('data', (data) => {
-                    const output = data.toString();
-                    console.log(output);  // 打印实时输出
-                    // 假设有进度信息可以提取，更新进度条
-                    if (output.includes('pulling')) {  // 替换为实际的进度标识
-                        progressBar.tick();  // 更新进度条
-                    }
-
-                    if (output.includes('success')) {
-                        const endTime = Date.now();  // 记录结束时间
-                        const timeTaken = ((endTime - startTime) / 1000).toFixed(2);  // 计算下载耗时
-                        console.log(`模型 ${model.modelName} 下载成功，耗时: ${timeTaken} 秒`);
-
-                        // 下载成功后，结束当前 Promise，更新timeout
-                        clearTimeout(timeout);
-                        setTimeout(() => {
-                            resolve();
-                        }, 1000)
-                    }
-                });
-            }
-            // 监听标准错误输出
-            if (process.stderr) {
-                // 监听标准错误输出
-                process.stderr.on('data', (data) => {
-                    console.error(`执行下载命令：ollama ${options.commandStr} ${model.modelName}下载失败:`, data.toString());
-                    // 下载失败时，结束当前 Promise 并抛出错误，更新timeout
-                    clearTimeout(timeout);
-                    setTimeout(() => {
-                        reject(data.toString());
-                    }, 1000)
+                    output += data.toString();
                 });
             }
 
             // 监听进程结束事件
             process.on('exit', (code) => {
                 if (code !== 0) {
-                    reject(`模型 ${model.modelName} 下载进程异常退出，代码: ${code}`);
+                    reject(`ollama list 进程结束事件非零，代码: ${code}`);
                 } else {
-                    console.log(`模型 ${model.modelName} 之前已经下载成功，cmd控制台正常退出，代码: ${code}`);
+                    const pattern = /^[a-zA-Z0-9\-]+:[^\s]+/gm;
+                    const nameList = output.match(pattern) || [];
+                    console.log(`列表中已下载了${nameList.length}个模型`);
+                    resolve(nameList);
+                }
+            });
+        })
+    }
+
+    // 执行下载命令
+    function downloadModel(model, retries = 5) {
+        return new Promise((resolve, reject) => {
+            console.log(`开始下载模型: ${model.modelName}, 大小: ${model.modelSize}Mb`);
+            const startTime = Date.now();  // 记录开始时间
+
+            // 在新的 CMD 控制台中执行命令，通过spawn，执行 ollama 下载指令
+            const process = spawn('ollama', [options.commandStr, model.modelName], {
+                stdio: 'inherit',
+                shell: false,
+            });
+
+            // 监听进程结束事件
+            process.on('exit', (code) => {
+                if (code !== 0) {
+                    console.error(`模型 ${model.modelName} 下载失败，退出代码为: ${code}`);
+                    if (retries > 0) {
+                        console.log(`重试中... 剩余次数: ${retries}`);
+                        // downloadModel(model, retries - 1).then(resolve).catch(reject);
+                        return resolve(downloadModel(model, retries - 1));
+                    } else {
+                        reject(`模型 ${model.modelName} 下载失败，已达到最大重试次数`);
+                    }
+                } else {
+                    console.log(`模型 ${model.modelName} 下载进程，退出代码为: ${code}。下载耗时: ${((Date.now() - startTime) / 1000).toFixed(2)} 秒`);
                     setTimeout(() => {
-                        resolve();
-                    }, 1000)
+                        resolve(`模型 ${model.modelName} 下载成功`);
+                    }, 3000);
                 }
             });
         });
@@ -203,8 +182,7 @@ export function downAllModel(modelList, options) {
 
     // 顺序下载模型
     async function downloadModelsSequentially(models) {
-        const filteredModels = filterModels(models);
-        const progressBar = createProgressBar(filteredModels.length);
+        const filteredModels = await filterModels(models);
         const startTime = Date.now();  // 记录总开始时间
 
         await writeToFile(JSON.stringify(filteredModels, null, 2), './output/ollama/filteredModels.txt', false).then(results => {
@@ -216,15 +194,14 @@ export function downAllModel(modelList, options) {
 
         for (const model of filteredModels) {
             try {
-                await downloadModel(model, progressBar);
+                await downloadModel(model);
             } catch (error) {
                 console.error(`模型 ${model.modelName} 下载出错: ${error}`);
                 // 你可以在这里决定是否继续或中断整个下载流程
             }
         }
         const endTime = Date.now();  // 记录总结束时间
-        const totalTime = ((endTime - startTime) / 1000).toFixed(2);  // 计算总耗时
-        console.log(`所有模型下载完成，总耗时: ${totalTime} 秒`);
+        console.log(`所有模型下载完成，总耗时: ${((endTime - startTime) / 1000).toFixed(2)} 秒`);
     }
 
     // 开始执行下载任务

@@ -5,7 +5,7 @@ date: 2022-07-17
 description: "最详细的Vue3+TypeScript使用教程,实践总结最近技术栈刚刚由之前的React转向Vue3了，由于之前多多少少也接触过Vue，所以这次只用了一个上午的时间就上手Vue3"
 tags: ["Vue.js","TypeScript"]
 ShowReadingTime: "阅读5分钟"
-weight: 494
+weight: 761
 ---
 > 哈喽,大家好 我是`xy`👨🏻‍💻。最近技术栈刚刚由之前的 `React` 转向 `Vue3`了，由于之前多多少少也接触过 `Vue`，所以这次只用了一个上午的时间就上手 `Vue3` 了，如果大家有关于`vue`或者`react`上的问题，欢迎来滴滴我，一起交流学习 💪
 

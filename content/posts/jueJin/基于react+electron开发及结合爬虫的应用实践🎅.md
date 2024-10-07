@@ -5,7 +5,7 @@ date: 2021-03-01
 description: "此时我们可以运行yarnstart将之前的react起始页通过桌面程序的方式打开，也可以通过执行yarnbuild将我们的桌面程序打包生成.exe文件进行安装over。ipcMain和ipcRenderer都是EventEmitter类的一个实例。而Even…"
 tags: ["React.js"]
 ShowReadingTime: "阅读2分钟"
-weight: 448
+weight: 561
 ---
 前言📝
 ----

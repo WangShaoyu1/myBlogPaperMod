@@ -5,7 +5,7 @@ date: 2022-11-28
 description: "从一道题目出发今天看到一道面试题，是关于async/await、promise和setTimeout的执行顺序，题目如下：我给出的答案：正确的答案：为什么promise1比asnyc1end"
 tags: ["前端","面试"]
 ShowReadingTime: "阅读4分钟"
-weight: 112
+weight: 72
 ---
 ### 从一道题目出发
 

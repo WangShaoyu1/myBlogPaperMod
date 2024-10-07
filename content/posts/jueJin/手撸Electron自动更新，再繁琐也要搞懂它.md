@@ -5,7 +5,7 @@ date: 2023-11-20
 description: "基于electron-updater手撸一个自动更新的服务，详细解释每一步的细节，梳理每一个环节的关键"
 tags: ["前端","JavaScript","Electron"]
 ShowReadingTime: "阅读4分钟"
-weight: 223
+weight: 219
 ---
 大家好，我是杨成功。
 

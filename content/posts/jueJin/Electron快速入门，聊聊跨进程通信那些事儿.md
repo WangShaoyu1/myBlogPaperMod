@@ -5,7 +5,7 @@ date: 2021-10-25
 description: "使用JavaScript，HTML和CSS构建跨平台的桌面应用程序。顾名思义，我们可以完全自主控制地去构建跨平台桌面应用了。成本学习，释放前端想象力。"
 tags: ["前端","Electron"]
 ShowReadingTime: "阅读15分钟"
-weight: 427
+weight: 317
 ---
 前言
 ==

@@ -5,7 +5,7 @@ date: 2024-03-04
 description: "我们都知道，VSCode是一个非常强大的代码编辑器，而AI代码提示插件可以让我们更加高效地编写代码。下面是我为大家精选的12个【免费】的VSCodeAI代码提示插件，亲测好用！！！1"
 tags: ["前端","JavaScript","VisualStudioCode"]
 ShowReadingTime: "阅读6分钟"
-weight: 700
+weight: 779
 ---
 > 哈喽,大家好 我是 `xy`👨🏻‍💻。今天给大家分享 12 个免费的 `VSCode AI` 代码提示插件 ！！！
 

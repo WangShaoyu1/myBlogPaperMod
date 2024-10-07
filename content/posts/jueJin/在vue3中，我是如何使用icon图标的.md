@@ -5,7 +5,7 @@ date: 2023-07-14
 description: "本文介绍三种使用icon的方案，分别是element-icon、svg-icon、@iconify/vue。通过这三种方式，让你不再为icon不知道怎么使用而烦恼"
 tags: ["前端","Vue.js"]
 ShowReadingTime: "阅读1分钟"
-weight: 119
+weight: 90
 ---
 本文介绍三种使用icon的方案，分别是`element-icon`、`svg-icon`、`@iconify/vue`。
 

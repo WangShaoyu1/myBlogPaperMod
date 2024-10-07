@@ -5,7 +5,7 @@ date: 2023-01-21
 description: "文章内容传统发布和现在发布的对比和区别项目案例-手动上传服务器，使用jenkins上传服务器配置不同的发布环境配置域名配置https配置钉钉机器人通知服务器购买：抢占式实例Jenkin"
 tags: ["前端","云原生","Jenkins"]
 ShowReadingTime: "阅读5分钟"
-weight: 92
+weight: 85
 ---
 **文章内容**
 

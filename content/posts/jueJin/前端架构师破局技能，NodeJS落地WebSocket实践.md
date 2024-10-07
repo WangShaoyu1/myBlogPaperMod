@@ -5,7 +5,7 @@ date: 2021-12-06
 description: "本文从网络协议，技术背景，安全和生产应用的方向，详细介绍WebSocket在Node.js中的落地实践。"
 tags: ["Node.js","WebSocket","网络协议","前端"]
 ShowReadingTime: "阅读15分钟"
-weight: 181
+weight: 217
 ---
 **本文正在参与 “[网络协议必知必会](https://juejin.cn/post/7033976124547792927 "https://juejin.cn/post/7033976124547792927")”征文活动**
 

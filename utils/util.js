@@ -118,8 +118,7 @@ export function convertToMb(input) {
 }
 
 // 生成随机时间间隔
-export function getRandomDelay(minSeconds, maxSeconds
-) {
+export function getRandomDelay(minSeconds, maxSeconds) {
     const delay = Math.floor(Math.random() * (maxSeconds - minSeconds + 1
     )) + minSeconds;
     return delay * 1000; // 转换为毫秒
@@ -145,4 +144,16 @@ export async function readJsonFilesFromFolder(folderPath) {
     }
 
     return jsonDataArray; // 返回组合后的数据
+}
+
+// 从cookie字符串中解析cookie对象
+export function parseCookies(cookieString) {
+    const domain = 'wiki.yingzi.com';
+    const expires = Math.floor(Date.now() / 1000) + 15 * 24 * 60 * 60; // 半个月后的 UNIX 时间戳（秒）,Playwright 要求的 expires字段
+    const path = '/';
+
+    return cookieString.replace(/; /g, ';').split(';').map(cookie => {
+        const [name, value] = cookie.split('=');
+        return {name, value, domain, path};
+    });
 }

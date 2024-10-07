@@ -5,7 +5,7 @@ date: 2022-10-28
 description: "前言Electron让前端使用HTML+CSS+JavaScript三驾马车就能构建美轮美奂的桌面应用，上手不可不谓简单，开发流程大大缩短..."
 tags: ["前端","JavaScript","Vue.js"]
 ShowReadingTime: "阅读3分钟"
-weight: 400
+weight: 1090
 ---
 前言
 --

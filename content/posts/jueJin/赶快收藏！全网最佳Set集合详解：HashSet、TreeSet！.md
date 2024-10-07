@@ -5,13 +5,13 @@ date: 2024-08-15
 description: "海外geeksforgeeks网站画了这么一张Set集合的层次结构图，基本把Set集合涉及的常用类关系给标明了。大家好，我是南哥。一个Java学习与进阶的领路人，相信对你通关面试、拿下Offer进"
 tags: ["后端","Java"]
 ShowReadingTime: "阅读7分钟"
-weight: 616
+weight: 505
 ---
 > _先赞后看，Java进阶马上一大半_
 
 海外`geeksforgeeks`网站画了这么一张Set集合的层次结构图，基本把Set集合涉及的常用类关系给标明了。
 
-![在这里插入图片描述](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f511eeaf83c348dfb4acf11e0bc2790f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSmF2YVNvdXRo5Y2X5ZOl:q75.awebp?rk3s=f64ab15b&x-expires=1727433025&x-signature=mhY6Fwp5QVtf2APh5n9c2w%2BiitU%3D)
+![在这里插入图片描述](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f511eeaf83c348dfb4acf11e0bc2790f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSmF2YVNvdXRo5Y2X5ZOl:q75.awebp?rk3s=f64ab15b&x-expires=1727943998&x-signature=gWzBiCq%2FD%2B6XbWda4CF4q13V8YI%3D)
 
 大家好，我是南哥。
 
@@ -27,10 +27,9 @@ weight: 616
 *   [全网把Kafka概念讲的最透彻的文章，别无二家](https://juejin.cn/post/7386967785091514387 "https://juejin.cn/post/7386967785091514387")
 *   [可能是最漂亮的Java I/O流详解](https://juejin.cn/post/7391699600761274394 "https://juejin.cn/post/7391699600761274394")
 
-1\. Set集合
----------
+### 1\. Set集合
 
-### 1.1 HashSet
+#### 1.1 HashSet
 
 > _**面试官：你说说对HashSet的理解？**_
 
@@ -104,7 +103,7 @@ java
 
     `public boolean remove(Object o) {         return map.remove(o)==PRESENT;     }`
 
-### 1.2 LinkedHashSet
+#### 1.2 LinkedHashSet
 
 > _**面试官：LinkedHashSet呢？**_
 
@@ -156,7 +155,7 @@ shell
 
 `# 运行结果 true false`
 
-### 1.3 TreeSet
+#### 1.3 TreeSet
 
 > _**TreeSet和它们比有什么特性？**_
 
@@ -234,7 +233,7 @@ java
 
     `// 返回集合中的最后一个元素。     public E last() {         return m.lastKey();     }`
 
-### 1.4 TreeSet自定义排序
+#### 1.4 TreeSet自定义排序
 
 > _**面试官：那TreeSet要怎么定制排序？**_
 
@@ -272,7 +271,7 @@ shell
 
 [戳这，《JavaProGuide》作为一份涵盖Java程序员所需掌握核心知识、面试重点的Java学习进阶指南。](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fhdgaadd%2FJavaProGuide "https://github.com/hdgaadd/JavaProGuide")
 
-![在这里插入图片描述](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/618ceef57bfa42aebd6d32b57bf5a284~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSmF2YVNvdXRo5Y2X5ZOl:q75.awebp?rk3s=f64ab15b&x-expires=1727433025&x-signature=b1HUqWEaOuG36FZA7loeF39lACQ%3D)
+![在这里插入图片描述](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/618ceef57bfa42aebd6d32b57bf5a284~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSmF2YVNvdXRo5Y2X5ZOl:q75.awebp?rk3s=f64ab15b&x-expires=1727943998&x-signature=o1C0IBheokZ8%2BefitkHx%2F5eeKLk%3D)
 
 欢迎关注南哥的公众号：**Java进阶指南针**。公众号里有南哥珍藏整理的大量优秀pdf书籍！
 

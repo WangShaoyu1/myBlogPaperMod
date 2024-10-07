@@ -1,0 +1,98 @@
+---
+author: "July_lly"
+title: "全栈基础WebSocket构建在线聊天室"
+date: 2024-10-03
+description: "WebSocket是一种在单个TCP连接上进行全双工通信的协议。它允许服务器主动向客户端推送数据，而不需要客户端发起请求。这种实时双向通信的特点使得WebSocket在前端开发中有着广"
+tags: ["前端","JavaScript","WebSocket"]
+ShowReadingTime: "阅读3分钟"
+weight: 289
+---
+前言
+--
+
+WebSocket 是一种在单个 TCP 连接上进行全双工通信的协议。它允许服务器主动向客户端推送数据，而不需要客户端发起请求。这种实时双向通信的特点使得 WebSocket 在前端开发中有着广泛的应用场景，尤其是在需要即时更新或交互性强的应用中。**在线聊天应用**：这是最直观的应用之一，用户可以即时发送和接收消息，无需频繁地轮询服务器。
+
+![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/125a5744a64e4afebe6c4cc5e7148488~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSnVseV9sbHk=:q75.awebp?rk3s=f64ab15b&x-expires=1728567583&x-signature=ucBjQUkoQbicWgtaZooyduJROYM%3D)
+
+在线聊天也是入门WebSocket必做的一个项目之一，接下来手把手教教大家怎么搭建这个一个小demo。
+
+### ws库
+
+虽然node中有内置WebSocket对象，但是我们在实际开发中大部分仍会使用`ws`模板包，用于实现 WebSocket 服务器和客户端。
+
+ 代码解读
+
+复制代码
+
+`npm install ws`
+
+服务器端
+----
+
+首先我们创建一个服务器让他运行在8080端口上：
+
+ini
+
+ 代码解读
+
+复制代码
+
+`const http = require('http'); // 创建HTTP服务器 const server = http.createServer(); // 启动HTTP服务器 server.listen(8080, () => {   console.log('WebSocket 服务器启动，监听端口 8080'); });`
+
+### 升级WebSocket请求，解析参数
+
+这里我们将用户ID参数在URL内传递进行解析
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`// 处理升级请求 server.on('upgrade', (request, socket, head) => {   // 假设通过查询参数传递了用户ID           '''ws://localhost:8080?userId=Jully'''   const { userId } = request.url.split('?')[1].split('&').reduce((params, param) => {     let [key, value] = param.split('=');     params[key] = decodeURIComponent(value);     return params;   }, {});  }`
+
+这段代码使用解析url，然后将内部传递的`userId=Jully`Jully拿到并赋值给userId,`decodeURIComponent` 是JS一个内置函数，解析url中特殊字符所用的，例如，空格会被编码为 `%20`。
+
+当完成上面的步骤后，我们便开始指令的设计了： 首先在外部，我们先建立一个连接映射表：
+
+ini
+
+ 代码解读
+
+复制代码
+
+`// 用户连接映射表 const userConnections = {};`
+
+在sever.on内部设计事件
+
+javascript
+
+ 代码解读
+
+复制代码
+
+`server.on('upgrade', (request, socket, head) => {   // 假设通过查询参数传递了用户ID   const { userId } = request.url.split('?')[1].split('&').reduce((params, param) => {     let [key, value] = param.split('=');     params[key] = decodeURIComponent(value);     return params;   }, {});   // 接受连接   wss.handleUpgrade(request, socket, head, (ws) => {     wss.emit('connection', ws, request);     // 存储用户连接     userConnections[userId] = ws;     // 当客户端断开连接时触发     ws.on('close', () => {       delete userConnections[userId];     });     // 当收到消息时     ws.on('message', (message) => {       const data = JSON.parse(message);       const { to, content } = data;       // 查找接收者连接       const receiverWs = userConnections[to];       if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {         // 发送消息给接收者         receiverWs.send(JSON.stringify({           from: userId,           content: content         }));       }     });   }); });`
+
+![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/4f99ed7d98f1494cbf9c1a4d48fc6f76~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSnVseV9sbHk=:q75.awebp?rk3s=f64ab15b&x-expires=1728567583&x-signature=GGmcwLyGUPvEdLEUqnFG4VAqGY8%3D)
+
+这里给大家画一个图来更好理解，我们在建立连接成功后哦，将这个连接对象`ws`存储进映射表。 当某个对象向映射表内的对象发送信息时，会先检查该用户是否存在，同时它的状态是否为open状态，在将信息发送。
+
+客户端
+---
+
+上面gif图的代码是React客户端制，这里我简单使用Live Sever来简单实现，原理都是一样的。
+
+javascript
+
+ 代码解读
+
+复制代码
+
+``const userId = 'wang'; // 这里的IdName为当前用户的IdName   // 创建WebSocket连接                  const ws = new WebSocket(`ws://localhost:8080?userId=${encodeURIComponent(userId)}`); //启动服务   ws.onopen = function() {     console.log('Connected to the WebSocket server.');   }; //监听   ws.onmessage = function(event) {     const message = JSON.parse(event.data);     console.log(`${message.from}: ${message.content}`);   }; //关闭连接服务   ws.onclose = function() {     console.log('Disconnected from the WebSocket server.');   };   // 发送消息给指定用户  to为发送给指定用户   function sendMessage(to, content) {     if (ws.readyState === WebSocket.OPEN) {       ws.send(JSON.stringify({ to, content }));     } else {       console.error('WebSocket connection is not open. Unable to send message.');     }   }``
+
+![image.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/c774d590ab38473db21d3491da8c10e6~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSnVseV9sbHk=:q75.awebp?rk3s=f64ab15b&x-expires=1728567583&x-signature=3u9IrnXX%2F3R%2B%2BsU6vCaJQAktcBo%3D)
+
+总结
+--
+
+WebSocket有许多的连接方法，**轮询**，**Ajax Push**，**Server-Sent Events (SSE)** ，后面遇到在写文章介绍了。

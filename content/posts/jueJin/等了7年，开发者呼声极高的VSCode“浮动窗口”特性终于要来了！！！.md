@@ -5,7 +5,7 @@ date: 2023-11-09
 description: "等了7年，开发者呼声极高的VSCode浮动窗口特性，终于实现了。其实浮动窗口的提案，早在2016年就有人提出，当时提出这个issues的目的在于可以利用大屏幕空间和/或多显示器截止到目前"
 tags: ["前端","JavaScript"]
 ShowReadingTime: "阅读3分钟"
-weight: 687
+weight: 778
 ---
 > 哈喽,大家好 我是 `xy`👨🏻‍💻。VSCode `浮动窗口` 的特性终于要来了 💪
 

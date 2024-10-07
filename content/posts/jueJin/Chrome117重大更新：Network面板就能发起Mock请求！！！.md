@@ -5,7 +5,7 @@ date: 2023-09-22
 description: "前端开发在调试过程中，经常需要各种`不同的数据`来反复调试，所以我们前端程序员会经常在脚手架中集成`mock`或者通过`代理`的方式去`hack`的实现"
 tags: ["前端","Chrome"]
 ShowReadingTime: "阅读4分钟"
-weight: 458
+weight: 763
 ---
 > 哈喽,大家好 我是`xy`👨🏻‍💻。今天给大家分享一个 `Chrome 117` 更新中最实用的一个功能：`在 Network 面板中发送 mock 请求` ！！！
 

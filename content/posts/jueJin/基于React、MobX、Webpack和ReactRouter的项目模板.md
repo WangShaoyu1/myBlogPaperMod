@@ -1,0 +1,94 @@
+---
+author: "野生程序猿江辰"
+title: "基于React、MobX、Webpack和ReactRouter的项目模板"
+date: 2020-03-16
+description: "自己利用业余时间，基于React、AntDesign、Webpack、MobX、ReactRouter、TS写了一个后台管理模板，目前已在公司内部搭建了几套项目，并都已上线，希望帮助自己梳理各技术最新知识点，同时也希望对看到的人有所帮助。"
+tags: ["前端"]
+ShowReadingTime: "阅读1分钟"
+weight: 136
+---
+前言
+--
+
+自己利用业余时间，基于 `React`、`Ant Design`、`Webpack`、`MobX`、`React Router`、`TS` 写了一个后台管理模板，目前已在公司内部搭建了几套项目，并都已上线，希望帮助自己梳理各技术最新知识点，同时也希望对看到的人有所帮助。
+
+项目效果：
+-----
+
+登录页：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e2ac91b3eb4d4b81a61d19282215459d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+404 页：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/11a03231854b445faa0c42143e3f1ec3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+列表页：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a38ed09f961140929953f7ac954b4eab~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+分支
+--
+
+[main](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fxuya227939%2Ftristana "https://github.com/xuya227939/tristana") hooks + ts
+
+[class](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fxuya227939%2Ftristana%2Ftree%2Fclass "https://github.com/xuya227939/tristana/tree/class") class + ts
+
+[js](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fxuya227939%2Ftristana%2Ftree%2Fclass "https://github.com/xuya227939/tristana/tree/class") class + js
+
+如何快上手
+-----
+
+[一个基本列表展示](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FCherry-Team%2Ftristana%2Fissues%2F7 "https://github.com/Cherry-Team/tristana/issues/7")
+
+源码地址
+----
+
+[Tristana](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fxuya227939%2Ftristana "https://github.com/xuya227939/tristana")
+
+在线预览地址
+------
+
+[Demo](https://link.juejin.cn?target=https%3A%2F%2Forder.downfuture.com "https://order.downfuture.com")
+
+技术栈
+---
+
+*   React
+*   Ant Design
+*   React Router
+*   MobX
+*   Webpack
+*   ES6
+*   Babel
+*   Axios
+*   Eslint
+*   stylelint
+*   TS
+
+项目结构
+----
+
+arduino
+
+ 代码解读
+
+复制代码
+
+`. ├── LICENSE ├── README.md ├── README2.md ├── declaration.d.ts ├── package.json ├── prettier.config.js ├── public │   └── index.html ├── script │   ├── webpack.base.conf.js │   ├── webpack.dev.js │   └── webpack.prod.js ├── src │   ├── app.tsx │   ├── assets │   ├── components │   ├── config.ts │   ├── index.tsx │   ├── locales │   ├── mobx │   ├── mock │   ├── pages │   ├── request.tsx │   ├── routeConfig.tsx │   ├── servers │   ├── styles │   ├── typings │   └── utils ├── stylelint.config.js └── tsconfig.json`
+
+库版本
+---
+
+perl
+
+ 代码解读
+
+复制代码
+
+`"dependencies": {     "@ant-design/icons": "^4.2.2",     "@babel/cli": "^7.8.0",     "@babel/core": "^7.8.0",     "@babel/plugin-proposal-class-properties": "^7.8.0",     "@babel/plugin-proposal-decorators": "^7.8.0",     "@babel/plugin-proposal-json-strings": "^7.8.0",     "@babel/plugin-proposal-optional-chaining": "^7.10.1",     "@babel/plugin-syntax-dynamic-import": "^7.8.0",     "@babel/plugin-syntax-import-meta": "^7.8.0",     "@babel/plugin-transform-runtime": "^7.8.0",     "@babel/polyfill": "^7.8.0",     "@babel/preset-env": "^7.8.2",     "@babel/preset-react": "^7.8.0",     "@babel/preset-stage-2": "^7.8.0",     "@pmmmwh/react-refresh-webpack-plugin": "^0.3.3",     "@sentry/react": "^5.18.1",     "@types/react": "^16.9.48",     "@types/react-dom": "^16.9.8",     "@typescript-eslint/eslint-plugin": "^3.10.1",     "@typescript-eslint/parser": "^3.10.1",     "antd": "^4.5.3",     "antd-dayjs-webpack-plugin": "^1.0.0",     "awesome-typescript-loader": "^5.2.1",     "axios": "^0.19.2",     "babel-eslint": "^10.0.3",     "babel-loader": "^8.0.0",     "babel-plugin-import": "^1.13.0",     "babel-plugin-react-css-modules": "^5.2.6",     "classnames": "^2.2.6",     "clean-webpack-plugin": "^3.0.0",     "compression-webpack-plugin": "^3.0.1",     "copy-webpack-plugin": "^5.1.1",     "core-js": "^3.6.4",     "cross-env": "^6.0.3",     "css-loader": "^3.2.0",     "dayjs": "^1.8.15",     "eslint": "^6.8.0",     "eslint-config-prettier": "^6.11.0",     "eslint-config-standard": "^14.1.0",     "eslint-loader": "^3.0.4",     "eslint-plugin-import": "^2.22.0",     "eslint-plugin-promise": "^4.2.1",     "eslint-plugin-react": "^7.20.6",     "eslint-plugin-standard": "^4.0.1",     "file-loader": "^5.0.2",     "history": "^4.7.2",     "html-webpack-plugin": "^3.2.0",     "install": "^0.12.2",     "is-promise": "^2.1.0",     "less": "^3.8.1",     "less-loader": "^5.0.0",     "lint-staged": "^10.0.8",     "mini-css-extract-plugin": "^0.8.0",     "mobx": "^5.15.6",     "mobx-react": "^6.1.4",     "mobx-react-router": "^4.1.0",     "mockjs": "^1.1.0",     "npm": "^6.10.2",     "optimize-css-assets-webpack-plugin": "^5.0.1",     "postcss-loader": "^3.0.0",     "pre-commit": "^1.2.2",     "progress-bar-webpack-plugin": "^1.12.1",     "prop-types": "^15.7.2",     "react": "^16.12.0",     "react-dom": "^16.12.0",     "react-intl-universal": "^2.2.5",     "react-refresh": "^0.8.3",     "react-router": "^5.1.2",     "react-router-dom": "^5.1.2",     "react-scripts": "^3.0.0",     "socket.io-client": "^2.3.0",     "source-map-loader": "^1.0.2",     "speed-measure-webpack-plugin": "^1.3.1",     "style-loader": "^1.2.1",     "stylelint": "^13.0.0",     "stylelint-config-prettier": "^8.0.2",     "stylelint-config-standard": "^19.0.0",     "terser-webpack-plugin": "^2.2.1",     "trtc-js-sdk": "^4.6.3",     "ts-import-plugin": "^1.6.6",     "typescript": "^4.0.2",     "webpack": "^4.41.2",     "webpack-bundle-analyzer": "^3.6.0",     "webpack-cli": "^3.3.10",     "webpack-dev-server": "^3.10.1" },`
+
+博客
+--
+
+[欢迎关注我的博客](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fxuya227939%2FLiuJiang-Blog "https://github.com/xuya227939/LiuJiang-Blog")
