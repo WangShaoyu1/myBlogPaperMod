@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Databend为什么能帮用户降低90%成本？ | PaperMod</title>
+<meta name="keywords" content="数据库">
+<meta name="description" content="导语近年来，随着大数据的快速发展，企业对数据存储和计算的需求日益增长。然而，随着数据量的爆炸式增长，传统数据仓库架构面临着高昂的运维和扩展成本。许多公司发现，当数据规模达到一定程度时，存储、计算和网">
+<meta name="author" content="Databend">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/databend%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%B8%AE%E7%94%A8%E6%88%B7%E9%99%8D%E4%BD%8E90%E6%88%90%E6%9C%AC/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/databend%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%B8%AE%E7%94%A8%E6%88%B7%E9%99%8D%E4%BD%8E90%E6%88%90%E6%9C%AC/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Databend为什么能帮用户降低90%成本？" />
+<meta property="og:description" content="导语近年来，随着大数据的快速发展，企业对数据存储和计算的需求日益增长。然而，随着数据量的爆炸式增长，传统数据仓库架构面临着高昂的运维和扩展成本。许多公司发现，当数据规模达到一定程度时，存储、计算和网" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/databend%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%B8%AE%E7%94%A8%E6%88%B7%E9%99%8D%E4%BD%8E90%E6%88%90%E6%9C%AC/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-25T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Databend为什么能帮用户降低90%成本？"/>
+<meta name="twitter:description" content="导语近年来，随着大数据的快速发展，企业对数据存储和计算的需求日益增长。然而，随着数据量的爆炸式增长，传统数据仓库架构面临着高昂的运维和扩展成本。许多公司发现，当数据规模达到一定程度时，存储、计算和网"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Databend为什么能帮用户降低90%成本？",
+      "item": "http://localhost:1313/posts/juejin/databend%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%B8%AE%E7%94%A8%E6%88%B7%E9%99%8D%E4%BD%8E90%E6%88%90%E6%9C%AC/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Databend为什么能帮用户降低90%成本？",
+  "name": "Databend为什么能帮用户降低90%成本？",
+  "description": "导语近年来，随着大数据的快速发展，企业对数据存储和计算的需求日益增长。然而，随着数据量的爆炸式增长，传统数据仓库架构面临着高昂的运维和扩展成本。许多公司发现，当数据规模达到一定程度时，存储、计算和网",
+  "keywords": [
+    "数据库"
+  ],
+  "articleBody": "\r导语 近年来，随着大数据的快速发展，企业对数据存储和计算的需求日益增长。然而，随着数据量的爆炸式增长，传统数据仓库架构面临着高昂的运维和扩展成本。许多公司发现，当数据规模达到一定程度时，存储、计算和网络开销会显著增加，从而导致运营成本成倍上升。\n在这个背景下，Databend 的出现提供了一种全新的解决方案。许多用户在了解了 Databend 的技术案例后，都对其显著的成本降低能力感到惊讶，甚至有人问：“你们真的能让成本降低 80% 甚至 90% 吗？这不是夸大其词吗？”事实上，这些数据并非虚夸，而是源于 Databend 的核心技术架构和设计理念。\nDatabend 的使命是通过新的技术架构，帮助用户显著降低在大数据分析和处理过程中的成本。这其中最关键的三大技术法宝是：存算分离架构、基于对象存储设计，以及高效的数据压缩策略。下面我们逐一深入分析这些技术如何为用户节省大笔开支。\n存算分离架构 存算分离是云计算领域近年来广受欢迎的一种架构设计，它将数据的存储和计算资源解耦。这意味着存储和计算可以独立扩展和部署，从而避免了传统架构下两者紧耦合带来的资源浪费。\n在传统的数据仓库架构中，存储和计算资源是紧密绑定的。当数据量增大时，用户不仅需要增加存储容量，还需要相应地扩展计算资源。即使一些计算资源可能在某些场景下不完全使用，但由于存储扩展的需求，用户仍需要为这些计算资源付费，这无疑增加了运营成本。\nDatabend 通过存算分离架构解决了这一痛点。在 Databend 中，存储层和计算层是完全独立的。用户可以根据实际需求灵活地扩展存储或计算资源，从而避免了资源的浪费。例如，当仅需要存储更多数据而不需要增加计算能力时，用户可以只扩展存储部分。这种灵活性不仅提高了资源利用率，还大幅降低了用户的基础设施成本。\n存算分离的优势：\n弹性扩展：存算分离架构允许存储和计算独立扩展，用户可以根据业务需求灵活调整资源，避免不必要的开销。\n成本优化：在许多场景下，用户不需要为计算资源付出额外的费用，仅为存储的使用买单，这显著减少了开支。\n提高资源利用率：通过解耦存储和计算资源，Databend 避免了资源的浪费，特别是在数据增长迅猛而计算需求暂时未增加的情况下。\n基于 对象存储 设计 传统数据仓库大多基于块存储设计，块存储虽然提供了高性能，但其成本也相对较高，且扩展性有限。而对象存储是一种面向海量非结构化数据的存储解决方案，具备更高的扩展性和性价比。对象存储的优势在于其天然的横向扩展能力，可以轻松存储 PB 级别甚至更大规模的数据，并且存储成本远低于传统块存储。\nDatabend 的定位是一个云原生数仓，在创立之初就将对象存储作为存储层 ，并进行了优化设计，使其能够在云环境下实现高效的存储管理。这样带来的好处是可以做到按需付费，同时也不用考虑副本的概念。你只要付出普通盘八分之一的价格，就可以享受到云上多 AZ 的容灾能力，基本上不用再担心数据会丢失。此外，它也提供数据加密功能，所有数据都是直接加密的。\n利用对象存储在公有云和私有云环境中都能够显著降低成本。在公有云上，数据仓库通过将数据存储在对象存储中，减少对昂贵的块存储依赖，有效地降低存储成本。而在私有云中，由于对象存储硬件相对便宜，利用对象存储可以在本地部署环境中同样实现成本的优化，达到高性价比的存储方案。\n在对象存储支撑方面，Databend 支持了包括 S3、Blob、MiniIO、HDFS、IPFS 在内的 20 多种对象存储协议，并且将这种能力开源了一个 OpenDAL 项目，捐给了 Apache 基金会，现在已经成为 Apache 毕业项目。\n通过利用对象存储，Databend 进一步降低了用户的存储成本，特别是在面对海量数据存储需求时，成本优势尤为明显：\n按需付费：对象存储按容量计费，用户只需为实际使用的存储空间付费，这相比传统的块存储模型节省了大量资金。\n自动扩展：无需预先购买大量存储空间，随着数据量的增加，存储空间会自动扩展，避免了资源浪费。\n高性价比：对象存储的价格通常比块存储便宜 50% 到 70%，对于海量数据的存储需求，成本优势更加明显。\n节省数据副本： 传统大数据很难做到多区数据可用，需要大量的数据副本提升数据的可用性。如果你有大量的数据需要存储，数据副本可能会更贵。但用对象存储就会大大缓解这个痛点，AWS 的 S3，阿里云的 OSS、腾讯云的 COS 等对象存储本身就有副本，可以省出来大量构建副本的费用。\n数据压缩 数据压缩是降低存储和传输成本的有效手段之一。在大数据场景下，原始数据量往往非常庞大，直接存储和传输这些数据不仅成本高昂，还会占用大量网络带宽，影响数据处理的效率。\nDatabend 通过先进的数据压缩算法，在保证数据完整性的前提下，极大地减少了存储空间的占用。这不仅减少了用户的存储开销，还降低了数据传输过程中的带宽使用成本。\nDatabend 采用了多种高效的压缩算法，根据不同的数据类型和应用场景，选择最适合的压缩方式。例如，对于文本数据，Databend 可以采用更高压缩率的算法，而对于需要频繁访问的数据，则选择解压缩速度更快的方案。这样的策略确保了在不同场景下，用户既能享受到高压缩率带来的存储成本降低，也不会牺牲数据处理的性能。\n数据压缩不仅减少了存储空间的使用，还有效降低了计算过程中的 I/O 开销。压缩后的数据体积更小，意味着在数据处理过程中，系统需要读取和写入的数据量减少，从而减少了 I/O 次数和时间。这不仅加快了数据处理速度，还进一步降低了计算资源的使用成本。\n典型案例 在实际应用中，许多企业通过使用 Databend 实现了显著的成本节约。以下是几个典型案例，展示了 Databend 在不同场景下的成本优化效果：\n案例 1：多点基于 Databend 实现海量日志实时查询服务 多点从创立伊始，就致力于以大数据、云计算、AI 等数字技术改变零售业，是一站式全渠道数字零售解决方案服务商。平台要求支持 4 个月的日志查询，目前线上只支持 1 个月。每天日志是 400 万行项，1 个月的日志量是 1.2 亿， 考虑到后续业务的增长，预计每月日志数据量会增长到 2.5亿；4 个月的日志量是 10 亿行项左右。原先采用的 MongoDB 集群因资源受限无法支持 10 亿行项存储及查询，只能支持线上存储一个月数据，数据存储已到资源极限，迁移到 Databend 后数据存储量****得到了 10 倍扩容，部署成本仅为原来的 1/10；在 10 亿数据量级下，常用查询均可做到秒级响应。\n案例 2：出海社交平台 Typing 基于 Databend，将成本降低 90% Typing（输入中科技）是一家主要面向东南亚、拉美、中东等地区的社交平台。公司对精细化运营有着强烈需求，这就需要对用户、对整个平台做到知根知底。如何基于数据得出有价值的分析和洞察变得不可或缺。为了实现这一目标，Typing 将 AWS RDS 里的数据，定时以 T+1 的方式同步到 Databend 中进行数据计算分析，为运营和产品提供数据看板。同时，用户打标数据和业务埋点数据近实时同步到 Databend Cloud 中，为业务提供时效性更强的业务决策支撑。\nDatabend 提供了统一的 SQL 接口，符合产品和研发原有数据库使用习惯，节省了适应成本；\n同时，Databend 的高性能、低成本等特性完美满足了业务需求；\n迁移到 Databend Cloud 后，在查询速度更快的基础上，成本降低至原来的 1/10；\n在服务过程中，Databend 官方提供专属工程师服务，紧急问题天级反馈修复。\n案例 3：某医药公司利用 Databend 助力 CDH 分析 某医药集团为中国具有影响力的药品零售连锁集团化企业，其零售供应链数据庞大，大表多，最大单表数量达到93亿行，原数据库无法满足数量存储需求，需对数据迁移。迁移过程中，数据备份文件导出后直接迁移到****对象存储，支持半结构化数据导入，无任何额外开发成本；迁移后，数据存储成本最高下降至原来的1/30，对大表数据的查询加载速度提升 2 倍。\n总结 Databend 的存算分离架构、基于对象存储的设计以及高效的数据压缩技术，是其帮助用户大幅降低成本的三大核心技术法宝。通过这些创新技术，用户可以在保证数据处理效率的前提下，大幅减少存储和计算资源的使用，从而实现显著的成本节约。Databend 不仅适用于中小型企业，也为大型企业在处理海量数据时提供了高性价比的解决方案，帮助他们在激烈的市场竞争中脱颖而出。\n关于 Databend Databend 是一款开源、弹性、低成本，基于对象存储也可以做实时分析的新式数仓。期待您的关注，一起探索云原生数仓解决方案，打造新一代开源 Data Cloud。 👨‍💻‍ Databend Cloud：databend.cn\n📖 Databend 文档：docs.databend.cn/\n💻 Wechat：Databend\n✨ GitHub：github.com/datafuselab…\n",
+  "wordCount" : "174",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-25T00:00:00Z",
+  "dateModified": "2024-09-25T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Databend"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/databend%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%B8%AE%E7%94%A8%E6%88%B7%E9%99%8D%E4%BD%8E90%E6%88%90%E6%9C%AC/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Databend为什么能帮用户降低90%成本？
+    </h1>
+    <div class="post-description">
+      导语近年来，随着大数据的快速发展，企业对数据存储和计算的需求日益增长。然而，随着数据量的爆炸式增长，传统数据仓库架构面临着高昂的运维和扩展成本。许多公司发现，当数据规模达到一定程度时，存储、计算和网
+    </div>
+    <div class="post-meta"><span title='2024-09-25 00:00:00 +0000 UTC'>九月 25, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;Databend&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%af%bc%e8%af%ad" aria-label="导语">导语</a></li>
+                <li>
+                    <a href="#%e5%ad%98%e7%ae%97%e5%88%86%e7%a6%bb%e6%9e%b6%e6%9e%84" aria-label="存算分离架构">存算分离架构</a></li>
+                <li>
+                    <a href="#%e5%9f%ba%e4%ba%8e-%e5%af%b9%e8%b1%a1%e5%ad%98%e5%82%a8-%e8%ae%be%e8%ae%a1" aria-label="基于 对象存储 设计">基于 对象存储 设计</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e5%8e%8b%e7%bc%a9" aria-label="数据压缩">数据压缩</a></li>
+                <li>
+                    <a href="#%e5%85%b8%e5%9e%8b%e6%a1%88%e4%be%8b" aria-label="典型案例">典型案例</a><ul>
+                        
+                <li>
+                    <a href="#%e6%a1%88%e4%be%8b-1%e5%a4%9a%e7%82%b9%e5%9f%ba%e4%ba%8e-databend-%e5%ae%9e%e7%8e%b0%e6%b5%b7%e9%87%8f%e6%97%a5%e5%bf%97%e5%ae%9e%e6%97%b6%e6%9f%a5%e8%af%a2%e6%9c%8d%e5%8a%a1" aria-label="案例 1：多点基于 Databend 实现海量日志实时查询服务">案例 1：多点基于 Databend 实现海量日志实时查询服务</a></li>
+                <li>
+                    <a href="#%e6%a1%88%e4%be%8b-2%e5%87%ba%e6%b5%b7%e7%a4%be%e4%ba%a4%e5%b9%b3%e5%8f%b0-typing-%e5%9f%ba%e4%ba%8e-databend%e5%b0%86%e6%88%90%e6%9c%ac%e9%99%8d%e4%bd%8e-90" aria-label="案例 2：出海社交平台 Typing 基于 Databend，将成本降低 90%">案例 2：出海社交平台 Typing 基于 Databend，将成本降低 90%</a></li>
+                <li>
+                    <a href="#%e6%a1%88%e4%be%8b-3%e6%9f%90%e5%8c%bb%e8%8d%af%e5%85%ac%e5%8f%b8%e5%88%a9%e7%94%a8-databend-%e5%8a%a9%e5%8a%9b-cdh-%e5%88%86%e6%9e%90" aria-label="案例 3：某医药公司利用 Databend 助力 CDH 分析">案例 3：某医药公司利用 Databend 助力 CDH 分析</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li>
+                <li>
+                    <a href="#%e5%85%b3%e4%ba%8e-databend" aria-label="关于 Databend">关于 Databend</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/a0b0a8a70f8e4d45bcba55d7434c6966~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgRGF0YWJlbmQ=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727855397&amp;x-signature=%2FWGaijCdsX1%2BIfsq5mGtwlNFqfo%3D" alt="2024 Blog.png"  />
+</p>
+<h3 id="导语"><strong>导语</strong><a hidden class="anchor" aria-hidden="true" href="#导语">#</a></h3>
+<p>近年来，随着大数据的快速发展，企业对数据存储和计算的需求日益增长。然而，随着数据量的爆炸式增长，传统数据仓库架构面临着高昂的运维和扩展成本。许多公司发现，当数据规模达到一定程度时，存储、计算和网络开销会显著增加，从而导致运营成本成倍上升。</p>
+<p>在这个背景下，Databend 的出现提供了一种全新的解决方案。许多用户在了解了 Databend 的技术案例后，都对其显著的成本降低能力感到惊讶，甚至有人问：“你们真的能让成本降低 80% 甚至 90% 吗？这不是夸大其词吗？”事实上，这些数据并非虚夸，而是源于 Databend 的核心技术架构和设计理念。</p>
+<p>Databend 的使命是通过新的技术架构，帮助用户显著降低在大数据分析和处理过程中的成本。这其中最关键的三大技术法宝是：存算分离架构、基于对象存储设计，以及高效的数据压缩策略。下面我们逐一深入分析这些技术如何为用户节省大笔开支。</p>
+<h3 id="存算分离架构"><strong>存算分离架构</strong><a hidden class="anchor" aria-hidden="true" href="#存算分离架构">#</a></h3>
+<p>存算分离是云计算领域近年来广受欢迎的一种架构设计，它将数据的存储和计算资源解耦。这意味着存储和计算可以独立扩展和部署，从而避免了传统架构下两者紧耦合带来的资源浪费。</p>
+<p>在传统的数据仓库架构中，存储和计算资源是紧密绑定的。当数据量增大时，用户不仅需要增加存储容量，还需要相应地扩展计算资源。即使一些计算资源可能在某些场景下不完全使用，但由于存储扩展的需求，用户仍需要为这些计算资源付费，这无疑增加了运营成本。</p>
+<p>Databend 通过存算分离架构解决了这一痛点。在 Databend 中，存储层和计算层是完全独立的。用户可以根据实际需求灵活地扩展存储或计算资源，从而避免了资源的浪费。例如，当仅需要存储更多数据而不需要增加计算能力时，用户可以只扩展存储部分。这种灵活性不仅提高了资源利用率，还大幅降低了用户的基础设施成本。</p>
+<p><strong>存算分离的优势：</strong></p>
+<ul>
+<li>
+<p><strong>弹性扩展</strong>：存算分离架构允许存储和计算独立扩展，用户可以根据业务需求灵活调整资源，避免不必要的开销。</p>
+</li>
+<li>
+<p><strong>成本优化</strong>：在许多场景下，用户不需要为计算资源付出额外的费用，仅为存储的使用买单，这显著减少了开支。</p>
+</li>
+<li>
+<p><strong>提高资源利用率</strong>：通过解耦存储和计算资源，Databend 避免了资源的浪费，特别是在数据增长迅猛而计算需求暂时未增加的情况下。</p>
+</li>
+</ul>
+<h3 id="基于-对象存储-设计"><strong>基于</strong> <strong>对象存储</strong> <strong>设计</strong><a hidden class="anchor" aria-hidden="true" href="#基于-对象存储-设计">#</a></h3>
+<p>传统数据仓库大多基于块存储设计，块存储虽然提供了高性能，但其成本也相对较高，且扩展性有限。而对象存储是一种面向海量非结构化数据的存储解决方案，具备更高的扩展性和性价比。对象存储的优势在于其天然的横向扩展能力，可以轻松存储 PB 级别甚至更大规模的数据，并且存储成本远低于传统块存储。</p>
+<p>Databend 的定位是一个云原生数仓，在创立之初就将对象存储作为存储层 ，并进行了优化设计，使其能够在云环境下实现高效的存储管理。这样带来的好处是可以做到按需付费，同时也不用考虑副本的概念。你只要付出普通盘八分之一的价格，就可以享受到云上多 AZ 的容灾能力，基本上不用再担心数据会丢失。此外，它也提供数据加密功能，所有数据都是直接加密的。</p>
+<p>利用对象存储在公有云和私有云环境中都能够显著降低成本。在公有云上，数据仓库通过将数据存储在对象存储中，减少对昂贵的块存储依赖，有效地降低存储成本。而在私有云中，由于对象存储硬件相对便宜，利用对象存储可以在本地部署环境中同样实现成本的优化，达到高性价比的存储方案。</p>
+<p>在对象存储支撑方面，Databend 支持了包括 S3、Blob、MiniIO、HDFS、IPFS 在内的 20 多种对象存储协议，并且将这种能力开源了一个 OpenDAL 项目，捐给了 Apache 基金会，现在已经成为 Apache 毕业项目。</p>
+<p>通过利用对象存储，Databend 进一步降低了用户的存储成本，特别是在面对海量数据存储需求时，成本优势尤为明显：</p>
+<ul>
+<li>
+<p><strong>按需付费</strong>：对象存储按容量计费，用户只需为实际使用的存储空间付费，这相比传统的块存储模型节省了大量资金。</p>
+</li>
+<li>
+<p><strong>自动扩展</strong>：无需预先购买大量存储空间，随着数据量的增加，存储空间会自动扩展，避免了资源浪费。</p>
+</li>
+<li>
+<p><strong>高性价比</strong>：对象存储的价格通常比块存储便宜 50% 到 70%，对于海量数据的存储需求，成本优势更加明显。</p>
+</li>
+<li>
+<p><strong>节省数据副本：</strong> 传统大数据很难做到多区数据可用，需要大量的数据副本提升数据的可用性。如果你有大量的数据需要存储，数据副本可能会更贵。但用对象存储就会大大缓解这个痛点，AWS 的 S3，阿里云的 OSS、腾讯云的 COS 等对象存储本身就有副本，可以省出来大量构建副本的费用。</p>
+</li>
+</ul>
+<h3 id="数据压缩"><strong>数据压缩</strong><a hidden class="anchor" aria-hidden="true" href="#数据压缩">#</a></h3>
+<p>数据压缩是降低存储和传输成本的有效手段之一。在大数据场景下，原始数据量往往非常庞大，直接存储和传输这些数据不仅成本高昂，还会占用大量网络带宽，影响数据处理的效率。</p>
+<p>Databend 通过先进的数据压缩算法，在保证数据完整性的前提下，极大地减少了存储空间的占用。这不仅减少了用户的存储开销，还降低了数据传输过程中的带宽使用成本。</p>
+<p>Databend 采用了多种高效的压缩算法，根据不同的数据类型和应用场景，选择最适合的压缩方式。例如，对于文本数据，Databend 可以采用更高压缩率的算法，而对于需要频繁访问的数据，则选择解压缩速度更快的方案。这样的策略确保了在不同场景下，用户既能享受到高压缩率带来的存储成本降低，也不会牺牲数据处理的性能。</p>
+<p>数据压缩不仅减少了存储空间的使用，还有效降低了计算过程中的 I/O 开销。压缩后的数据体积更小，意味着在数据处理过程中，系统需要读取和写入的数据量减少，从而减少了 I/O 次数和时间。这不仅加快了数据处理速度，还进一步降低了计算资源的使用成本。</p>
+<h3 id="典型案例">典型<strong>案例</strong><a hidden class="anchor" aria-hidden="true" href="#典型案例">#</a></h3>
+<p>在实际应用中，许多企业通过使用 Databend 实现了显著的成本节约。以下是几个典型案例，展示了 Databend 在不同场景下的成本优化效果：</p>
+<h4 id="案例-1多点基于-databend-实现海量日志实时查询服务"><strong>案例 1：多点基于 Databend 实现海量日志实时查询服务</strong><a hidden class="anchor" aria-hidden="true" href="#案例-1多点基于-databend-实现海量日志实时查询服务">#</a></h4>
+<p>多点从创立伊始，就致力于以大数据、<a href="https://link.juejin.cn?target=https%3A%2F%2Fzhida.zhihu.com%2Fsearch%3Fq%3D%25E4%25BA%2591%25E8%25AE%25A1%25E7%25AE%2597%26zhida_source%3Dentity%26is_preview%3D1" title="https://zhida.zhihu.com/search?q=%E4%BA%91%E8%AE%A1%E7%AE%97&amp;zhida_source=entity&amp;is_preview=1">云计算</a>、AI 等数字技术改变零售业，是一站式全渠道数字零售解决方案服务商。平台要求支持 4 个月的日志查询，目前线上只支持 1 个月。每天日志是 400 万行项，1 个月的日志量是 1.2 亿， 考虑到后续业务的增长，预计每月日志数据量会增长到 2.5亿；4 个月的日志量是 10 亿行项左右。原先采用的 MongoDB 集群因资源受限无法支持 10 亿行项存储及查询，只能支持线上存储一个月数据，数据存储已到资源极限，迁移到 Databend 后数据<strong>存储量****得到了 10 倍扩容</strong>，部署<strong>成本仅为原来的 1/10</strong>；在 10 亿数据量级下，常用查询均可做到<strong>秒级响应</strong>。</p>
+<h4 id="案例-2出海社交平台-typing-基于-databend将成本降低-90"><strong>案例 2：出海社交平台 Typing 基于 Databend，将成本降低 90%</strong><a hidden class="anchor" aria-hidden="true" href="#案例-2出海社交平台-typing-基于-databend将成本降低-90">#</a></h4>
+<p>Typing（输入中科技）是一家主要面向东南亚、拉美、中东等地区的社交平台。公司对精细化运营有着强烈需求，这就需要对用户、对整个平台做到知根知底。如何基于数据得出有价值的分析和洞察变得不可或缺。为了实现这一目标，Typing 将 AWS RDS 里的数据，定时以 T+1 的方式同步到 Databend 中进行数据计算分析，为运营和产品提供数据看板。同时，用户打标数据和业务埋点数据近实时同步到 Databend Cloud 中，为业务提供时效性更强的业务决策支撑。</p>
+<ul>
+<li>
+<p>Databend 提供了统一的 SQL 接口，符合产品和研发原有数据库使用习惯，节省了适应成本；</p>
+</li>
+<li>
+<p>同时，Databend 的高性能、低成本等特性完美满足了业务需求；</p>
+</li>
+<li>
+<p>迁移到 Databend Cloud 后，在查询速度更快的基础上，<strong>成本降低至原来的 1/10；</strong></p>
+</li>
+<li>
+<p><strong>在服务过程中，Databend 官方提供</strong>专属工程师服务，紧急问题天级反馈修复。</p>
+</li>
+</ul>
+<h4 id="案例-3某医药公司利用-databend-助力-cdh-分析"><strong>案例 3：某医药公司利用 Databend 助力 CDH 分析</strong><a hidden class="anchor" aria-hidden="true" href="#案例-3某医药公司利用-databend-助力-cdh-分析">#</a></h4>
+<p>某医药集团为中国具有影响力的药品零售连锁集团化企业，其零售供应链数据庞大，大表多，最大单表数量达到93亿行，原数据库无法满足数量存储需求，需对数据迁移。迁移过程中，数据备份文件导出后<strong>直接迁移到****对象存储</strong>，<strong>支持半结构化</strong>数据导入，无任何额外开发成本；迁移后，数据<strong>存储成本最高下降至原来的1/30</strong>，对大表数据的<strong>查询加载速度提升 2 倍。</strong></p>
+<h3 id="总结"><strong>总结</strong><a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>Databend 的存算分离架构、基于对象存储的设计以及高效的数据压缩技术，是其帮助用户大幅降低成本的三大核心技术法宝。通过这些创新技术，用户可以在保证数据处理效率的前提下，大幅减少存储和计算资源的使用，从而实现显著的成本节约。Databend 不仅适用于中小型企业，也为大型企业在处理海量数据时提供了高性价比的解决方案，帮助他们在激烈的市场竞争中脱颖而出。</p>
+<h3 id="关于-databend">关于 Databend<a hidden class="anchor" aria-hidden="true" href="#关于-databend">#</a></h3>
+<p>Databend 是一款开源、弹性、低成本，基于对象存储也可以做实时分析的新式数仓。期待您的关注，一起探索云原生数仓解决方案，打造新一代开源 Data Cloud。 👨‍💻‍ Databend Cloud：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdatabend.cn" title="https://link.juejin.cn?target=https%3A%2F%2Fdatabend.cn">databend.cn</a></p>
+<p>📖 Databend 文档：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.databend.cn%2F" title="https://link.juejin.cn?target=https%3A%2F%2Fdocs.databend.cn%2F">docs.databend.cn/</a></p>
+<p>💻 Wechat：Databend</p>
+<p>✨ GitHub：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fdatafuselabs%2Fdatabend" title="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fdatafuselabs%2Fdatabend">github.com/datafuselab…</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/iframe%E5%B5%8C%E5%85%A5%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0%E5%85%8D%E7%99%BB%E5%BD%95%E6%80%9D%E8%B7%AF%E4%BB%A5vue%E4%B8%BA%E4%BE%8B/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>iframe嵌入页面实现免登录思路（以vue为例）</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%BE%88%E6%83%B3%E5%81%9A%E5%89%AF%E4%B8%9A%E4%BD%86%E6%98%AF%E5%89%AF%E4%B8%9A%E4%B8%8D%E7%AD%89%E4%BA%8E%E8%B5%9A%E9%92%B1/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>很想做副业？但是副业不等于赚钱</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Databend为什么能帮用户降低90%成本？ on x"
+            href="https://x.com/intent/tweet/?text=Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f&amp;hashtags=%e6%95%b0%e6%8d%ae%e5%ba%93">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Databend为什么能帮用户降低90%成本？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f&amp;title=Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f&amp;summary=Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Databend为什么能帮用户降低90%成本？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f&title=Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Databend为什么能帮用户降低90%成本？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Databend为什么能帮用户降低90%成本？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Databend为什么能帮用户降低90%成本？ on telegram"
+            href="https://telegram.me/share/url?text=Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Databend为什么能帮用户降低90%成本？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Databend%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd%e5%b8%ae%e7%94%a8%e6%88%b7%e9%99%8d%e4%bd%8e90%25%e6%88%90%e6%9c%ac%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fdatabend%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%2583%25BD%25E5%25B8%25AE%25E7%2594%25A8%25E6%2588%25B7%25E9%2599%258D%25E4%25BD%258E90%25E6%2588%2590%25E6%259C%25AC%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

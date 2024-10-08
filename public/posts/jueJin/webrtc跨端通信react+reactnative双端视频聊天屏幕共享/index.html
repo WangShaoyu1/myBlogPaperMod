@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 | PaperMod</title>
+<meta name="keywords" content="WebRTC, ReactNative, React.js">
+<meta name="description" content="我们以App（ReactNative）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。">
+<meta name="author" content="杨成功">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/webrtc%E8%B7%A8%E7%AB%AF%E9%80%9A%E4%BF%A1react&#43;reactnative%E5%8F%8C%E7%AB%AF%E8%A7%86%E9%A2%91%E8%81%8A%E5%A4%A9%E5%B1%8F%E5%B9%95%E5%85%B1%E4%BA%AB/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/webrtc%E8%B7%A8%E7%AB%AF%E9%80%9A%E4%BF%A1react&#43;reactnative%E5%8F%8C%E7%AB%AF%E8%A7%86%E9%A2%91%E8%81%8A%E5%A4%A9%E5%B1%8F%E5%B9%95%E5%85%B1%E4%BA%AB/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享" />
+<meta property="og:description" content="我们以App（ReactNative）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/webrtc%E8%B7%A8%E7%AB%AF%E9%80%9A%E4%BF%A1react&#43;reactnative%E5%8F%8C%E7%AB%AF%E8%A7%86%E9%A2%91%E8%81%8A%E5%A4%A9%E5%B1%8F%E5%B9%95%E5%85%B1%E4%BA%AB/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-12-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-12-27T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享"/>
+<meta name="twitter:description" content="我们以App（ReactNative）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "【WebRTC跨端通信】React+ReactNative双端视频聊天、屏幕共享",
+      "item": "http://localhost:1313/posts/juejin/webrtc%E8%B7%A8%E7%AB%AF%E9%80%9A%E4%BF%A1react+reactnative%E5%8F%8C%E7%AB%AF%E8%A7%86%E9%A2%91%E8%81%8A%E5%A4%A9%E5%B1%8F%E5%B9%95%E5%85%B1%E4%BA%AB/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【WebRTC跨端通信】React+ReactNative双端视频聊天、屏幕共享",
+  "name": "【WebRTC跨端通信】React\u002bReactNative双端视频聊天、屏幕共享",
+  "description": "我们以App（ReactNative）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。",
+  "keywords": [
+    "WebRTC", "ReactNative", "React.js"
+  ],
+  "articleBody": "大家好，我是杨成功。\n之前介绍过 WebRTC，简单来说它是一个点对点的实时通讯技术，主要基于浏览器来实现音视频通信。这项技术目前已经被广泛应用于实时视频通话，多人会议等场景。\n不过 WebRTC 因为其过于优秀的表现，其应用范围已经不限于 Web 端，移动 App 也基本实现了 WebRTC 的 API。在跨平台框架中，Flutter 和 React Native 都实现了对 WebRTC 的支持。\n我们以 App（React Native）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。\n接收端 React 实现 React 运行在浏览器中，无需引用任何模块，可以直接使用 WebRTC API。下面分几个步骤，逐步介绍在 Web 端如何获取、发送、接受远程视频流。\n1. 获取本地摄像头流，并保存。\njs\n代码解读\n复制代码\nconst stream = null; const getMedia = async () =\u003e { let ori_stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true, }); stream = ori_stream; };\n2. 创建 video 标签用于播放视频。\n创建两个 video 标签，分别用于播放本地视频和远程视频。\njs\n代码解读\n复制代码\nconst local_video = useRef(); const remote_video = useRef(); const Player = () =\u003e { return ( ; ; ); }; // stream 是上一步获取的本地视频流 if (local_video.current) { local_video.current.srcObject = stream; }\n3. 创建 RTC 连接实例。\n每一个使用 WebRTC 通信的客户端，都要创建一个 RTCPeerConnection 连接实例，该实例是真正负责通信的角色。WebRTC 通信的实质就是 RTCPeerConnection 实例之间的通信。\njs\n代码解读\n复制代码\n// 1. 创建实例 let peer = new RTCPeerConnection(); // 2. 将本地视频流添加到实例中 stream.getTracks().forEach((track) =\u003e { peer.addTrack(track, stream); }); // 3. 接收远程视频流并播放 peer.ontrack = async (event) =\u003e { let [remoteStream] = event.streams; remote_video.current.srcObject = remoteStream; };\n实例创建之后，别忘记将上一步获取的摄像头流添加到实例中。\n当两端连接完全建立之后，在 peer.ontrack 之内就能接收到对方的视频流了。\n4. 连接信令服务器，准备与 App 端通信。\nWebRTC 的通信过程需要两个客户端实时进行数据交换。交换内容分为两大部分：\n交换 SDP（媒体信息）。 交换 ICE（网络信息）。 因此我们需要一个 WebSocket 服务器来连接两个客户端进行传输数据，该服务器在 WebRTC 中被称为信令服务器。\n我们已经基于 socket.io 搭建了信令服务器，现在需要客户端连接，方式如下。\n（1）安装 socket.io-client：\nsh\n代码解读\n复制代码\n$ yarn add socket.io-client\n（2）连接服务器，并监听消息。\n连接服务器时带上验证信息（下面的用户 ID、用户名），方便在通信时可以找到对方。\njs\n代码解读\n复制代码\nimport { io } from 'socket.io-client'; const socket = null; const socketInit = () =\u003e { let sock = io(`https://xxxx/webrtc`, { auth: { userid: '111', username: '我是接收端', role: 'reader', }, }); sock.on('connect', () =\u003e { console.log('连接成功'); }); socket = sock; }; useEffect(() =\u003e { socketInit(); }, []);\n经过上面 4 个步骤，我们的准备工作已经做好了。结下来可以进行正式的通信步骤了。\n5. 接收 offer，交换 SDP。\n监听 offer 事件（呼叫端发来的 offer 数据），然后创建 answer 并发回呼叫端。\njs\n代码解读\n复制代码\n// 接收 offer socket.on('offer', (data) =\u003e { transMedia(data); }); // 发送 answer const transMedia = async (data: any) =\u003e { let offer = new RTCSessionDescription(data.offer); await peer.setRemoteDescription(offer); let answer = await peer.createAnswer(); socket.emit('answer', { to: data.from, // 呼叫端 Socket ID answer, }); await peer.setLocalDescription(answer); };\n6. 接收 candidate，交换 ICE。\n监听 candid 事件（呼叫端发来的 candidate 数据）并添加到本地 peer 实例，然后监听本地的 candidate 数据并发回给呼叫端。\n上一步执行 peer.setLocalDescription() 之后，就会触发 peer.onicecandidate 事件。\njs\n代码解读\n复制代码\n// 接收 candidate socket.on('candid', (data) =\u003e { let candid = new RTCIceCandidate(data.candid); peer.addIceCandidate(candid); }); // 发送 candidate peer.onicecandidate = (event) =\u003e { if (event.candidate) { socket.emit('candid', { to: data.from, // 呼叫端 Socket ID candid: event.candidate, }); } };\n至此，整个通信过程就完成了。如果没有意外，此时在第 3 步的 peer.ontrack 事件内拿到的对端视频流开始传输数据，我们可以看到对端的视频画面了。\n呼叫端 React Native 实现 在 React Native 端并不能直接使用 WebRTC API，我们需要一个第三方模块 react-native-webrtc 来实现，它提供了和 Web 端几乎一致的 API。\n幸运的是，React Native 可以复用 Web 端的大多数逻辑性资源，socket.io-client 可以直接安装使用，和 Web 端完全一致。\n不幸的是，App 开发少不了原生的环境配置、权限配置，这些比较繁琐，接下来介绍如何实现吧。\n1. 创建 React Native 项目。\n创建项目之前需要配置开发环境，我们以 Android 为例，具体的配置可以看这篇文章。\n配置完成之后，直接通过 npx 命令创建项目，命名为 RnWebRTC：\nsh\n代码解读\n复制代码\n$ npx react-native init RnWebRTC --template react-native-template-typescript\n提示：如果不想使用 TypeScript，将 –template 选项和后面的内容去掉即可。\n我安装的最新版本如下：\nreact: “18.1.0” react-native: “0.70.6” 创建之后，查看根目录的 index.js 和 App.tsx 两个文件，分别是入口文件和页面组件，我们就在 App.tsx 这个组件中编写代码。\n我们以安卓为例，直接用手机数据线连接电脑，打开 USB 调试模式，然后运行以下命令：\nsh\n代码解读\n复制代码\n$ yarn run android\n执行该命令会安装 Gradle（安卓包管理）依赖，并编译打包 Android 应用。第一次运行耗时比较久，耐心等待打包完成后，手机上会提示安装该 App。\n该命令在打包的同时，还会单独启动一个终端，运行 Metro 开发服务器。Metro 的作用是监 JS 代码修改，并打包成 js bundle 交给原生 App 去渲染。\n单独启动 Metro 服务器，可运行 yarn run start。\n2. 安装 react-native-webrtc。\n直接运行安装命令：\nsh\n代码解读\n复制代码\n$ yarn add react-native-webrtc\n安装之后并不能直接使用，需要在 android 文件夹中修改两处代码。\n第一处：因为 react-native-webrtc 需要最低的安卓 SDK 版本为 24，而默认生成的最低版本是 21，所以修改 android/build.gradle 中的配置：\nini\n代码解读\n复制代码\nbuildscript { ext { minSdkVersion = 24 } }\n第二处：webrtc 需要摄像头、麦克风等权限，所以我们把权限先配齐喽。在 android/app/src/main/AndroidManifest.xml 中的 标签前添加如下配置：\nxml\n代码解读\n复制代码\n接着执行命令重新打包安卓：\nsh\n代码解读\n复制代码\n$ yarn run android\n现在就可以在 App.tsx 中导入和使用 WebRTC 的相关 API 了：\njs\n代码解读\n复制代码\nimport { ScreenCapturePickerView, RTCPeerConnection, RTCIceCandidate, RTCSessionDescription, RTCView, MediaStream, MediaStreamTrack, mediaDevices, } from 'react-native-webrtc';\n3. 连接信令服务器，准备与 Web 端通信。\n因为 React Native 可以直接使用 socket.io-client 模块，所以这一步和 Web 端的代码一致。\nsh\n代码解读\n复制代码\n$ yarn add socket.io-client\n连接信令服务器时，只是传递的验证信息不同：\njs\n代码解读\n复制代码\nimport { io } from 'socket.io-client'; const socket = null; const socketInit = () =\u003e { let sock = io(`https://xxxx/webrtc`, { auth: { userid: '222', username: '我是呼叫端', role: 'sender', }, }); sock.on('connect', () =\u003e { console.log('连接成功'); }); socket = sock; }; useEffect(() =\u003e { socketInit(); }, []);\n4. 使用 RTCView 组件播放视频。\n创建两个 RTCView 组件，分别用于播放本地视频和远程视频。\njsx\n代码解读\n复制代码\nimport { mediaDevices, RTCView } from 'react-native-webrtc'; var local_stream = null; var remote_stream = null; // 获取本地摄像头 const getMedia = async () =\u003e { local_stream = await mediaDevices.getUserMedia({ audio: true, video: true, }); }; // 播放视频组件 const Player = () =\u003e { return ( ); };\n5. 创建 RTC 连接实例。\n这一步与 Web 端基本一致，接收到远端流直接赋值。\njs\n代码解读\n复制代码\n// 1. 创建实例 let peer = new RTCPeerConnection(); // 2. 将本地视频流添加到实例中 local_stream.getTracks().forEach((track) =\u003e { peer.addTrack(track, local_stream); }); // 3. 接收远程视频流 peer.ontrack = async (event) =\u003e { let [remoteStream] = event.streams; remote_stream = remoteStream; };\n6. 创建 offer，开始交换 SDP。\nApp 端作为呼叫端，需要主动创建 offer 并发给接收端，并监听接收端发回的 answer：\njs\n代码解读\n复制代码\n// 发送 offer const peerInit = async (socket_id) =\u003e { let offer = await peer.createOffer(); peer.setLocalDescription(offer); socket.emit('offer', { to: socket_id, // 接收端 Socket ID offer: offer, }); }; // 接收 answer socket.on('answer', (data) =\u003e { let answer = new RTCSessionDescription(data.answer); peer.setRemoteDescription(answer); });\n7. 监听 candidate，交换 ICE。\n这一步依然与 Web 端一致，分别是发送本地的 candidate 和接收远程的 candidate：\njs\n代码解读\n复制代码\n// 发送 candidate peer.onicecandidate = (event) =\u003e { if (event.candidate) { socket.emit('candid', { to: socket_id, // 接收端 Socket ID candid: event.candidate, }); } }; // 接收 candidate socket.on('candid', (data) =\u003e { let candid = new RTCIceCandidate(data.candid); peer.addIceCandidate(candid); });\n至此，App 端与 Web 端的视频通话流程已经完成，现在两端可以互相看到对方的视频画面了。\n搭建 socket.io 信令服务器 在 Web 和 App 两端视频通话时用到了信令服务器，该服务使用 socket.io 实现，代码并不复杂，下面介绍下信令服务器如何编写：\n1. 创建项目，安装需要的依赖。\n创建 socket-server 文件夹，并执行以下命令生成 package.json：\ncsharp\n代码解读\n复制代码\n$ npm init\n接着安装必要的模块：\nlua\n代码解读\n复制代码\n$ npm install koa socket.io\n2. 创建入口文件，启动 socket 服务。\n创建 app.js 文件，写入以下代码：\njs\n代码解读\n复制代码\nconst Koa = require('koa'); const http = require('http'); const SocketIO = require('socket.io'); const SocketIoApi = require('./io.js'); const app = new Koa(); const server = http.createServer(app.callback()); const io = new SocketIO.Server(server, { cors: { origin: '*' }, allowEIO3: true, }); app.context.io = io; // 将socket实例存到全局 new SocketIoApi(io); server.listen(9800, () =\u003e { console.log(`listen to http://localhost:9800`); });\n代码中使用 Koa 框架运行一个服务器，并且接入了 socket.io，一个基本的 WebSocket 服务器就写好了。接着将它运行起来：\nruby\n代码解读\n复制代码\n$ node app.js\n此时 Koa 运行的 HTTP 服务器和 socket.io 运行的 WebSocket 服务器共享 9800 端口。\n3. 创建 io.js，编写信令服务器逻辑。\n上一步在入口文件 app.js 中引用了 io.js，该文件导出一个类，我们来编写具体的逻辑：\njs\n代码解读\n复制代码\n// io.js class IoServer { constructor(io) { this.io = io; this.rtcio = io.of('/webrtc'); this.rtcio.on('connection', (socket) =\u003e { this.rtcListen(socket); }); } rtcListen(socket) { // 发送端｜发送 offer socket.on('offer', (json) =\u003e { let { to, offer } = json; let target = this.rtcio.sockets.get(to); if (target) { target.emit('offer', { from: socket.id, offer, }); } else { console.error('offer 接收方未找到'); } }); // 接收端｜发送 answer socket.on('answer', (json) =\u003e { let { to, answer } = json; let target = this.rtcio.sockets.get(to); // console.log(to, socket) if (target) { target.emit('answer', { from: socket.id, answer, }); } else { console.error('answer 接收方未找到'); } }); // 发送端｜发送 candidate socket.on('candid', (json) =\u003e { let { to, candid } = json; let target = this.rtcio.sockets.get(to); // console.log(to, socket) if (target) { target.emit('candid', { from: socket.id, candid, }); } else { console.error('candid 接收方未找到'); } }); } } module.exports = IoServer;\n上面代码的逻辑中，当客户端连接到服务器，就开始监听 offer，answer，candid 三个事件。当有客户端发送消息，这里负责将消息转发给另一个客户端。\n两个客户端通过唯一的 Socket ID 找到对方。在 socket.io 中，每一次连接都会产生一个唯一的 Socket Id。\n4. 获取已连接的接收端列表。\n因为每次刷新浏览器 WebSocket 都要重新连接，因此每次的 Socket ID 都不相同。为了在呼叫端准确找到在线的接收端，我们写一个获取接收端列表的接口。\n在入口文件中通过 app.context.io = io 将 SocketIO 实例全局存储到了 Koa 中，那么获取已连接的接收端方式如下：\njs\n代码解读\n复制代码\napp.get('/io-clients', async (ctx, next) =\u003e { let { io } = ctx.app.context; try { let data = await io.of('/webrtc').fetchSockets(); let resarr = data .map((row) =\u003e ({ id: row.id, auth: row.handshake.auth, data: row.data, })) .filter((row) =\u003e row.auth.role == 'reader'); ctx.body = { code: 200, data: resarr }; } catch (error) { ctx.body = error.toString(); } });\n然后在呼叫端使用 GET 请求 https://xxxx/io-clients 可拿到在线接收端的 Socket ID 和其他信息，然后选择一个接收端发起连接。\n注意：在线上获取摄像头和屏幕时要求域名必须是 https，否则无法获取。因此切记给 Web 端和信令服务器都配置好 https 的域名，可以避免通信时发生异常。\nTURN 跨网络视频通信 前面我们实现了 App 端和 Web 端双端通信，但是通信成功有一个前提：两端必须连接同一个 WIFI。\n这是因为 WebRTC 的通信是基于 IP 地址和端口来找到对方，如果两端连接不同的 WIFI（不在同一个网段），或是 App 用流量 Web 端用 WIFI，那么两端的 IP 地址谁都不认识谁，自然无法建立通信。\n当两端不在一个局域网时，优先使用 STUN 服务器，将两端的本地 IP 转换为公网 IP 进行连接。STUN 服务器我们直接使用谷歌的就可以，但是因为防火墙等各种原因，实际测试 STUN 基本是连不通的。\n当两端不能找到对方，无法直接建立连接时，那么我们就要使用兜底方案 ——— 用一个中继服务器转发数据，将媒体流数据转发给对方。该中继服务器被称为 TURN 服务器。\nTURN 服务器因为要转发数据流，因此对带宽消耗比较大，需要我们自己搭建。目前有很多开源的 TURN 服务器方案，经过性能测试，我选择使用 Go 语言开发的 pion/turn 框架。\n1. 安装 Golang：\n使用 pion/turn 的第一步是在你的服务器上安装 Golang。我使用的是 Linux Centos7 系统，使用 yum 命令安装最方便。\nsh\n代码解读\n复制代码\n$ yum install -y epel-release # 添加 epel 源 $ yum install -y golang # 直接安装\n安装之后使用如下命令查看版本，测试是否安装成功：\nsh\n代码解读\n复制代码\n$ go version go version go1.17.7 linux/amd64\n2. 运行 pion/turn：\n直接将 pion/turn 的源码拉下来：\nsh\n代码解读\n复制代码\n$ git clone https://github.com/pion/turn ./pion-turn\n源码中提供了很多案例可以直接使用，我们使用 examples/turn-server/simple 这个目录下的代码：\nsh\n代码解读\n复制代码\n$ cd ./pion-turn/examples/turn-server/simple $ go build\n使用 go build 编译后，当前目录下会生成一个 simple 文件，该文件是可执行文件，使用该文件启动 TURN 服务器：\nsh\n代码解读\n复制代码\n$ ./simple -public-ip 123.45.67.89 -users ruidoc=123456\n上面命令中的 123.45.67.89 是你服务器的公网 IP，并配置一个用户名和密码分别为 ruidoc 和 123456，这几项配置根据你的实际情况设置。\n默认情况下该命令不会后台运行，我们用下面的方式让它后台运行：\nshell\n代码解读\n复制代码\n$ nohup ./simple -public-ip 123.45.67.89 -users ruidoc=123456 \u0026\n此时，该 TURN 服务已经在后台运行，并占用一个 3478 的 UDP 端口。我们查看一下端口占用：\nsh\n代码解读\n复制代码\n$ netstat -nplu\n从上图可以看出，该服务已经在运行中。\n3. 配置安全组、检测 TURN 是否可用。\n上一步已经启动了 TURN 服务器，但是默认情况下从外部连接不上（这里是个坑），因为阿里云需要在安全组的入方向添加一条 UPD 3478 端口（其他云服务商也差不多），表示该端口允许从外部访问。\n安全组添加后，我们就可以测试 TURN 服务器的连通性了。\n打开 Trickle ICE，添加我们的 TURN 服务器，格式为 turn:123.45.67.89:3478，然后输入上一步配置的用户名和密码：\n点击 Gather candidates 按钮，会列出以下信息。如果包含 relay 这一条，说明我们的 TURN 服务器搭建成功，可以使用了。\n4. 客户端添加 ICE 配置。\n在 App 端和 Web 端创建 RTC 实例时，加入以下配置：\njs\n代码解读\n复制代码\nvar turnConf = { iceServers: [ { urls: 'stun:stun1.l.google.com:19302', // 免费的 STUN 服务器 }, { urls: 'turn:123.45.67.89:3478', username: 'ruidoc', credential: '123456', }, ], }; var peer = new RTCPeerConnection(turnConf);\n现在关闭手机 WIFI，使用流量与 Web 端发起连接，不出意外可以正常通信，但是延迟好像高了一些（毕竟走中转肯定没有直连快）。此时再打开手机 WIFI 重新连接，发现延迟又变低了。\n这就是 WebRTC 智能的地方。它会优先尝试直连，如果直连不成功，最后才会使用 TURN 转发。\nApp 端屏幕共享 视频通话一般都是共享摄像头，然而有的时候会有共享屏幕的需求。\n在 Web 端共享屏幕很简单，将 getUserMedia 改成 getDisplayMedia 即可。然而在 App 端，可能因为隐私和安全问题，实现屏幕共享比较费劲。\n安卓原生端使用 mediaProjection 实现共享屏幕。在 Android 10+ 之后，如果想正确共享屏幕，必须要有一个持续存在的“前台进程”来保证屏幕共享的进程不被系统自动杀死。\n如果没有配置前台进程，则屏幕流无法传输。下面我们来介绍下在如何 App 端共享屏幕。\n1. 安装 Notifee。\nNotifee 是 React Native 实现通知栏消息的第三方库。我们可以启动一个持续存在的消息通知作为前台进程，从而使屏幕流正常推送。\n使用命令安装 Notifee：\nruby\n代码解读\n复制代码\n$ yarn add @notifee/react-native@5\n注意这里安装 Notifee 5.x 的版本，因为最新版的 7.x 需要 Android SDK 的 compileSdkVersion 为 33，而我们创建的项目默认为 31，使用 5.x 不需要修改 SDK 的版本号。\n2. 注册前台服务。\n在入口文件 index.js 中，我们使用 Notifee 注册一个前台服务：\njs\n代码解读\n复制代码\nimport notifee from '@notifee/react-native'; notifee.registerForegroundService((notification) =\u003e { return new Promise(() =\u003e {}); });\n这里只需要注册一下，不需要其他操作，因此比较简单。接着还需要在 Android 代码中注册一个 service，否则前台服务不生效。\n打开 android/app/src/main/AndroidManifest.xml 文件，在 标签内添加如下代码：\nxml\n代码解读\n复制代码\n3. 创建前台通知。\n注册好前台服务之后，接着我们在获取屏幕前创建前台通知，代码如下：\njs\n代码解读\n复制代码\nimport notifee from '@notifee/react-native'; const startNoti = async () =\u003e { try { let channelId = await notifee.createChannel({ id: 'default', name: 'Default Channel', }); await notifee.displayNotification({ title: '屏幕录制中...', body: '在应用中手动关闭该通知', android: { channelId, asForegroundService: true, // 通知作为前台服务，必填 }, }); } catch (err) { console.error('前台服务启动异常：', err); } };\n该方法会创建一个通知消息，具体 API 可以参考 Notifee 文档。接着在捕获屏幕之前调用该方法即可：\njs\n代码解读\n复制代码\nconst getMedia = async () =\u003e { await startNoti(); let stream = await mediaDevices.getDisplayMedia(); };\n最终经过测试，可以看到 App 端和 Web 端的屏幕都实现了共享。App 端效果如下：\nWeb 端效果如下：\n摄像头与屏幕视频混流 在一些直播教学的场景中，呼叫端会同时共享两路视频 ——— 屏幕画面和摄像头画面。在我们的经验中，一个 RTC 连接实例中只能添加一条视频流。\n如果要同时共享屏幕和摄像头，我们首先想到的方案可能是在一个客户端创建两个 peer 实例，每个实例中添加一路视频流，发起两次 RTC 连接。\n事实上这种方案是低效的，增加复杂度的同时也增加了资源的损耗。那么能不能在一个 peer 实例中添加两路视频呢？其实是可以的。\n总体思路：在呼叫端将两条流合并为一条，在接收端再将一条流拆分为两条。\n1. 呼叫端组合流。\n组合流其实很简单。因为流是由多个媒体轨道组成，我们只需要从屏幕和摄像头中拿到媒体轨道，再将它们塞到一个自定义的流中，一条包含两个视频轨道的流就组合好了。\njs\n代码解读\n复制代码\nvar stream = new MediaStream(); const getMedia = async () =\u003e { let camera_stream = await mediaDevices.getUserMedia(); let screen_stream = await mediaDevices.getDisplayMedia(); screen_stream.getVideoTracks().map((row) =\u003e stream.addTrack(row)); camera_stream.getVideoTracks().map((row) =\u003e stream.addTrack(row)); camera_stream.getAudioTracks().map((row) =\u003e stream.addTrack(row)); };\n代码中为一个自定义媒体流添加了三条媒体轨道，分别是屏幕视频、摄像头视频和摄像头音频。记住这个顺序，在接收端按照该顺序拆流。\n接着将这条媒体流添加到 peer 实例中，后面走正常的通信逻辑即可：\njs\n代码解读\n复制代码\nstream.getTracks().forEach((track) =\u003e { peer.addTrack(track, stream); });\n2. 接收端拆解流。\n接收端在 ontrack 事件中拿到组合流，进行拆解：\njs\n代码解读\n复制代码\npeer.ontrack = async (event: any) =\u003e { const [remoteStream] = event.streams; let screen_stream = new MediaStream(); let camera_stream = new MediaStream(); remoteStream.getTracks().forEach((track, ind) =\u003e { if (ind == 0) { screen_stream.addTrack(track); } else { camera_stream.addTrack(track); } }); video1.srcObject = camera_stream; // 播放摄像头音视频 video2.srcObject = screen_stream; // 播放屏幕视频 };\n这一步中，定义两条媒体流，然后将接收到的混合流中的媒体轨道拆分，分别添加到两条流中，这样屏幕流和摄像头流就拆开了，分别在两个 video 中播放即可。\n总结 本篇比较系统的介绍了 App 端和 Web 端使用 WebRTC 通信的全流程，可以看到整个流程还是比较复杂的。尤其是我们前端不擅长的地方，比如 TURN 搭建和连通，App 端的各种版本权限问题，坑还是很多的。\n不过主要代码都在文中介绍了，动手尝试一下吧。再次感谢您的阅读～\n",
+  "wordCount" : "1786",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-12-27T00:00:00Z",
+  "dateModified": "2022-12-27T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "杨成功"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/webrtc%E8%B7%A8%E7%AB%AF%E9%80%9A%E4%BF%A1react+reactnative%E5%8F%8C%E7%AB%AF%E8%A7%86%E9%A2%91%E8%81%8A%E5%A4%A9%E5%B1%8F%E5%B9%95%E5%85%B1%E4%BA%AB/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享
+    </h1>
+    <div class="post-description">
+      我们以App（ReactNative）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。
+    </div>
+    <div class="post-meta"><span title='2022-12-27 00:00:00 +0000 UTC'>十二月 27, 2022</span>&nbsp;·&nbsp;9 分钟&nbsp;·&nbsp;杨成功&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React&#43;ReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%8e%a5%e6%94%b6%e7%ab%af-react-%e5%ae%9e%e7%8e%b0" aria-label="接收端 React 实现">接收端 React 实现</a></li>
+                <li>
+                    <a href="#%e5%91%bc%e5%8f%ab%e7%ab%af-react-native-%e5%ae%9e%e7%8e%b0" aria-label="呼叫端 React Native 实现">呼叫端 React Native 实现</a></li>
+                <li>
+                    <a href="#%e6%90%ad%e5%bb%ba-socketio-%e4%bf%a1%e4%bb%a4%e6%9c%8d%e5%8a%a1%e5%99%a8" aria-label="搭建 socket.io 信令服务器">搭建 socket.io 信令服务器</a></li>
+                <li>
+                    <a href="#turn-%e8%b7%a8%e7%bd%91%e7%bb%9c%e8%a7%86%e9%a2%91%e9%80%9a%e4%bf%a1" aria-label="TURN 跨网络视频通信">TURN 跨网络视频通信</a></li>
+                <li>
+                    <a href="#app-%e7%ab%af%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab" aria-label="App 端屏幕共享">App 端屏幕共享</a></li>
+                <li>
+                    <a href="#%e6%91%84%e5%83%8f%e5%a4%b4%e4%b8%8e%e5%b1%8f%e5%b9%95%e8%a7%86%e9%a2%91%e6%b7%b7%e6%b5%81" aria-label="摄像头与屏幕视频混流">摄像头与屏幕视频混流</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>大家好，我是杨成功。</p>
+<p>之前介绍过 WebRTC，简单来说它是一个点对点的实时通讯技术，主要基于浏览器来实现音视频通信。这项技术目前已经被广泛应用于实时视频通话，多人会议等场景。</p>
+<p>不过 WebRTC 因为其过于优秀的表现，其应用范围已经不限于 Web 端，移动 App 也基本实现了 WebRTC 的 API。在跨平台框架中，Flutter 和 React Native 都实现了对 WebRTC 的支持。</p>
+<p>我们以 App（React Native）为呼叫端，Web（React）为接收端，分别介绍两端如何进行视频通话。</p>
+<h2 id="接收端-react-实现">接收端 React 实现<a hidden class="anchor" aria-hidden="true" href="#接收端-react-实现">#</a></h2>
+<p>React 运行在浏览器中，无需引用任何模块，可以直接使用 WebRTC API。下面分几个步骤，逐步介绍在 Web 端如何获取、发送、接受远程视频流。</p>
+<p><strong>1. 获取本地摄像头流，并保存。</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const stream = null; const getMedia = async () =&gt; {   let ori_stream = await navigator.mediaDevices.getUserMedia({     audio: true,     video: true,   });   stream = ori_stream; };</code></p>
+<p><strong>2. 创建 video 标签用于播放视频。</strong></p>
+<p>创建两个 video 标签，分别用于播放本地视频和远程视频。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const local_video = useRef(); const remote_video = useRef(); const Player = () =&gt; {   return (     &lt;div&gt;       &lt;video ref={local_video} autoPlay muted /&gt;;       &lt;video ref={remote_video} autoPlay muted /&gt;;     &lt;/div&gt;   ); }; // stream 是上一步获取的本地视频流 if (local_video.current) {   local_video.current.srcObject = stream; }</code></p>
+<p><strong>3. 创建 RTC 连接实例。</strong></p>
+<p>每一个使用 WebRTC 通信的客户端，都要创建一个 RTCPeerConnection 连接实例，该实例是真正负责通信的角色。WebRTC 通信的实质就是 RTCPeerConnection 实例之间的通信。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 1. 创建实例 let peer = new RTCPeerConnection(); // 2. 将本地视频流添加到实例中 stream.getTracks().forEach((track) =&gt; {   peer.addTrack(track, stream); }); // 3. 接收远程视频流并播放 peer.ontrack = async (event) =&gt; {   let [remoteStream] = event.streams;   remote_video.current.srcObject = remoteStream; };</code></p>
+<p>实例创建之后，别忘记将上一步获取的摄像头流添加到实例中。</p>
+<p>当两端连接完全建立之后，在 peer.ontrack 之内就能接收到对方的视频流了。</p>
+<p><strong>4. 连接信令服务器，准备与 App 端通信。</strong></p>
+<p>WebRTC 的通信过程需要两个客户端实时进行数据交换。交换内容分为两大部分：</p>
+<ul>
+<li>交换 SDP（媒体信息）。</li>
+<li>交换 ICE（网络信息）。</li>
+</ul>
+<p>因此我们需要一个 WebSocket 服务器来连接两个客户端进行传输数据，该服务器在 WebRTC 中被称为<code>信令服务器</code>。</p>
+<p>我们已经基于 socket.io 搭建了信令服务器，现在需要客户端连接，方式如下。</p>
+<p>（1）安装 socket.io-client：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn add socket.io-client</code></p>
+<p>（2）连接服务器，并监听消息。</p>
+<p>连接服务器时带上验证信息（下面的用户 ID、用户名），方便在通信时可以找到对方。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { io } from 'socket.io-client'; const socket = null; const socketInit = () =&gt; {   let sock = io(`https://xxxx/webrtc`, {     auth: {       userid: '111',       username: '我是接收端',       role: 'reader',     },   });   sock.on('connect', () =&gt; {     console.log('连接成功');   });   socket = sock; }; useEffect(() =&gt; {   socketInit(); }, []);</code></p>
+<p>经过上面 4 个步骤，我们的准备工作已经做好了。结下来可以进行正式的通信步骤了。</p>
+<p><strong>5. 接收 offer，交换 SDP。</strong></p>
+<p>监听 offer 事件（呼叫端发来的 offer 数据），然后创建 answer 并发回呼叫端。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 接收 offer socket.on('offer', (data) =&gt; {   transMedia(data); }); // 发送 answer const transMedia = async (data: any) =&gt; {   let offer = new RTCSessionDescription(data.offer);   await peer.setRemoteDescription(offer);   let answer = await peer.createAnswer();   socket.emit('answer', {     to: data.from, // 呼叫端 Socket ID     answer,   });   await peer.setLocalDescription(answer); };</code></p>
+<p><strong>6. 接收 candidate，交换 ICE。</strong></p>
+<p>监听 candid 事件（呼叫端发来的 candidate 数据）并添加到本地 peer 实例，然后监听本地的 candidate 数据并发回给呼叫端。</p>
+<p>上一步执行 peer.setLocalDescription() 之后，就会触发 <code>peer.onicecandidate</code> 事件。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 接收 candidate socket.on('candid', (data) =&gt; {   let candid = new RTCIceCandidate(data.candid);   peer.addIceCandidate(candid); }); // 发送 candidate peer.onicecandidate = (event) =&gt; {   if (event.candidate) {     socket.emit('candid', {       to: data.from, // 呼叫端 Socket ID       candid: event.candidate,     });   } };</code></p>
+<p>至此，整个通信过程就完成了。如果没有意外，此时在第 3 步的 peer.ontrack 事件内拿到的对端视频流开始传输数据，我们可以看到对端的视频画面了。</p>
+<h2 id="呼叫端-react-native-实现">呼叫端 React Native 实现<a hidden class="anchor" aria-hidden="true" href="#呼叫端-react-native-实现">#</a></h2>
+<p>在 React Native 端并不能直接使用 WebRTC API，我们需要一个第三方模块 <code>react-native-webrtc</code> 来实现，它提供了和 Web 端几乎一致的 API。</p>
+<p>幸运的是，React Native 可以复用 Web 端的大多数逻辑性资源，socket.io-client 可以直接安装使用，和 Web 端完全一致。</p>
+<p>不幸的是，App 开发少不了原生的环境配置、权限配置，这些比较繁琐，接下来介绍如何实现吧。</p>
+<p><strong>1. 创建 React Native 项目。</strong></p>
+<p>创建项目之前需要配置开发环境，我们以 Android 为例，具体的配置可以看<a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.ruims.top%2Fcrosspt%2Freact-native%2Fenv" title="https://blog.ruims.top/crosspt/react-native/env">这篇文章</a>。</p>
+<p>配置完成之后，直接通过 npx 命令创建项目，命名为 <code>RnWebRTC</code>：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ npx react-native init RnWebRTC --template react-native-template-typescript</code></p>
+<blockquote>
+<p>提示：如果不想使用 TypeScript，将 &ndash;template 选项和后面的内容去掉即可。</p>
+</blockquote>
+<p>我安装的最新版本如下：</p>
+<ul>
+<li>react: &ldquo;18.1.0&rdquo;</li>
+<li>react-native: &ldquo;0.70.6&rdquo;</li>
+</ul>
+<p>创建之后，查看根目录的 <code>index.js</code> 和 <code>App.tsx</code> 两个文件，分别是入口文件和页面组件，我们就在 App.tsx 这个组件中编写代码。</p>
+<p>我们以安卓为例，直接用手机数据线连接电脑，打开 USB 调试模式，然后运行以下命令：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn run android</code></p>
+<p>执行该命令会安装 Gradle（安卓包管理）依赖，并编译打包 Android 应用。第一次运行耗时比较久，耐心等待打包完成后，手机上会提示安装该 App。</p>
+<p>该命令在打包的同时，还会单独启动一个终端，运行 Metro 开发服务器。Metro 的作用是监 JS 代码修改，并打包成 js bundle 交给原生 App 去渲染。</p>
+<p>单独启动 Metro 服务器，可运行 <code>yarn run start</code>。</p>
+<p><strong>2. 安装 react-native-webrtc。</strong></p>
+<p>直接运行安装命令：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn add react-native-webrtc</code></p>
+<p>安装之后并不能直接使用，需要在 android 文件夹中修改两处代码。</p>
+<p>第一处：因为 react-native-webrtc 需要最低的安卓 SDK 版本为 <code>24</code>，而默认生成的最低版本是 21，所以修改 <code>android/build.gradle</code> 中的配置：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>buildscript {   ext {       minSdkVersion = 24   } }</code></p>
+<p>第二处：webrtc 需要摄像头、麦克风等权限，所以我们把权限先配齐喽。在 <code>android/app/src/main/AndroidManifest.xml</code> 中的 <code>&lt;application&gt;</code> 标签前添加如下配置：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;uses-feature android:name=&quot;android.hardware.camera&quot; /&gt; &lt;uses-feature android:name=&quot;android.hardware.camera.autofocus&quot; /&gt; &lt;uses-feature android:name=&quot;android.hardware.audio.output&quot; /&gt; &lt;uses-feature android:name=&quot;android.hardware.microphone&quot; /&gt; &lt;uses-permission android:name=&quot;android.permission.CAMERA&quot; /&gt; &lt;uses-permission android:name=&quot;android.permission.RECORD_AUDIO&quot; /&gt; &lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt; &lt;uses-permission android:name=&quot;android.permission.CHANGE_NETWORK_STATE&quot; /&gt; &lt;uses-permission android:name=&quot;android.permission.MODIFY_AUDIO_SETTINGS&quot; /&gt; &lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;</code></p>
+<p>接着执行命令重新打包安卓：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn run android</code></p>
+<p>现在就可以在 App.tsx 中导入和使用 WebRTC 的相关 API 了：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import {   ScreenCapturePickerView,   RTCPeerConnection,   RTCIceCandidate,   RTCSessionDescription,   RTCView,   MediaStream,   MediaStreamTrack,   mediaDevices, } from 'react-native-webrtc';</code></p>
+<p><strong>3. 连接信令服务器，准备与 Web 端通信。</strong></p>
+<p>因为 React Native 可以直接使用 <code>socket.io-client</code> 模块，所以这一步和 Web 端的代码一致。</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn add socket.io-client</code></p>
+<p>连接信令服务器时，只是传递的验证信息不同：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { io } from 'socket.io-client'; const socket = null; const socketInit = () =&gt; {   let sock = io(`https://xxxx/webrtc`, {     auth: {       userid: '222',       username: '我是呼叫端',       role: 'sender',     },   });   sock.on('connect', () =&gt; {     console.log('连接成功');   });   socket = sock; }; useEffect(() =&gt; {   socketInit(); }, []);</code></p>
+<p><strong>4. 使用 RTCView 组件播放视频。</strong></p>
+<p>创建两个 RTCView 组件，分别用于播放本地视频和远程视频。</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { mediaDevices, RTCView } from 'react-native-webrtc'; var local_stream = null; var remote_stream = null; // 获取本地摄像头 const getMedia = async () =&gt; {   local_stream = await mediaDevices.getUserMedia({     audio: true,     video: true,   }); }; // 播放视频组件 const Player = () =&gt; {   return (     &lt;View&gt;       &lt;RTCView style={{ height: 500 }} streamURL={local_stream.toURL()} /&gt;       &lt;RTCView style={{ height: 500 }} streamURL={remote_stream.toURL()} /&gt;     &lt;/View&gt;   ); };</code></p>
+<p><strong>5. 创建 RTC 连接实例。</strong></p>
+<p>这一步与 Web 端基本一致，接收到远端流直接赋值。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 1. 创建实例 let peer = new RTCPeerConnection(); // 2. 将本地视频流添加到实例中 local_stream.getTracks().forEach((track) =&gt; {   peer.addTrack(track, local_stream); }); // 3. 接收远程视频流 peer.ontrack = async (event) =&gt; {   let [remoteStream] = event.streams;   remote_stream = remoteStream; };</code></p>
+<p><strong>6. 创建 offer，开始交换 SDP。</strong></p>
+<p>App 端作为呼叫端，需要主动创建 offer 并发给接收端，并监听接收端发回的 answer：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 发送 offer const peerInit = async (socket_id) =&gt; {   let offer = await peer.createOffer();   peer.setLocalDescription(offer);   socket.emit('offer', {     to: socket_id, // 接收端 Socket ID     offer: offer,   }); }; // 接收 answer socket.on('answer', (data) =&gt; {   let answer = new RTCSessionDescription(data.answer);   peer.setRemoteDescription(answer); });</code></p>
+<p><strong>7. 监听 candidate，交换 ICE。</strong></p>
+<p>这一步依然与 Web 端一致，分别是发送本地的 candidate 和接收远程的 candidate：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 发送 candidate peer.onicecandidate = (event) =&gt; {   if (event.candidate) {     socket.emit('candid', {       to: socket_id, // 接收端 Socket ID       candid: event.candidate,     });   } }; // 接收 candidate socket.on('candid', (data) =&gt; {   let candid = new RTCIceCandidate(data.candid);   peer.addIceCandidate(candid); });</code></p>
+<p>至此，App 端与 Web 端的视频通话流程已经完成，现在两端可以互相看到对方的视频画面了。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cd5df7f38c8e404f88890095e4041ad4~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2872&amp;h=1440&amp;s=1139888&amp;e=png&amp;b=eff1f4" alt="2022-12-27-09-50-15.png"  />
+</p>
+<h2 id="搭建-socketio-信令服务器">搭建 socket.io 信令服务器<a hidden class="anchor" aria-hidden="true" href="#搭建-socketio-信令服务器">#</a></h2>
+<p>在 Web 和 App 两端视频通话时用到了信令服务器，该服务使用 socket.io 实现，代码并不复杂，下面介绍下信令服务器如何编写：</p>
+<p><strong>1. 创建项目，安装需要的依赖。</strong></p>
+<p>创建 <code>socket-server</code> 文件夹，并执行以下命令生成 package.json：</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ npm init</code></p>
+<p>接着安装必要的模块：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ npm install koa socket.io</code></p>
+<p><strong>2. 创建入口文件，启动 socket 服务。</strong></p>
+<p>创建 app.js 文件，写入以下代码：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const Koa = require('koa'); const http = require('http'); const SocketIO = require('socket.io'); const SocketIoApi = require('./io.js'); const app = new Koa(); const server = http.createServer(app.callback()); const io = new SocketIO.Server(server, {   cors: { origin: '*' },   allowEIO3: true, }); app.context.io = io; // 将socket实例存到全局 new SocketIoApi(io); server.listen(9800, () =&gt; {   console.log(`listen to http://localhost:9800`); });</code></p>
+<p>代码中使用 <code>Koa</code> 框架运行一个服务器，并且接入了 <code>socket.io</code>，一个基本的 WebSocket 服务器就写好了。接着将它运行起来：</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ node app.js</code></p>
+<p>此时 Koa 运行的 HTTP 服务器和 socket.io 运行的 WebSocket 服务器共享 9800 端口。</p>
+<p><strong>3. 创建 io.js，编写信令服务器逻辑。</strong></p>
+<p>上一步在入口文件 app.js 中引用了 io.js，该文件导出一个类，我们来编写具体的逻辑：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// io.js class IoServer {   constructor(io) {     this.io = io;     this.rtcio = io.of('/webrtc');     this.rtcio.on('connection', (socket) =&gt; {       this.rtcListen(socket);     });   }   rtcListen(socket) {     // 发送端｜发送 offer     socket.on('offer', (json) =&gt; {       let { to, offer } = json;       let target = this.rtcio.sockets.get(to);       if (target) {         target.emit('offer', {           from: socket.id,           offer,         });       } else {         console.error('offer 接收方未找到');       }     });     // 接收端｜发送 answer     socket.on('answer', (json) =&gt; {       let { to, answer } = json;       let target = this.rtcio.sockets.get(to);       // console.log(to, socket)       if (target) {         target.emit('answer', {           from: socket.id,           answer,         });       } else {         console.error('answer 接收方未找到');       }     });     // 发送端｜发送 candidate     socket.on('candid', (json) =&gt; {       let { to, candid } = json;       let target = this.rtcio.sockets.get(to);       // console.log(to, socket)       if (target) {         target.emit('candid', {           from: socket.id,           candid,         });       } else {         console.error('candid 接收方未找到');       }     });   } } module.exports = IoServer;</code></p>
+<p>上面代码的逻辑中，当客户端连接到服务器，就开始监听 <code>offer</code>，<code>answer</code>，<code>candid</code> 三个事件。当有客户端发送消息，这里负责将消息转发给另一个客户端。</p>
+<p>两个客户端通过唯一的 Socket ID 找到对方。在 socket.io 中，每一次连接都会产生一个唯一的 Socket Id。</p>
+<p><strong>4. 获取已连接的接收端列表。</strong></p>
+<p>因为每次刷新浏览器 WebSocket 都要重新连接，因此每次的 Socket ID 都不相同。为了在呼叫端准确找到在线的接收端，我们写一个获取接收端列表的接口。</p>
+<p>在入口文件中通过 <code>app.context.io = io</code> 将 SocketIO 实例全局存储到了 Koa 中，那么获取已连接的接收端方式如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>app.get('/io-clients', async (ctx, next) =&gt; {   let { io } = ctx.app.context;   try {     let data = await io.of('/webrtc').fetchSockets();     let resarr = data       .map((row) =&gt; ({         id: row.id,         auth: row.handshake.auth,         data: row.data,       }))       .filter((row) =&gt; row.auth.role == 'reader');     ctx.body = { code: 200, data: resarr };   } catch (error) {     ctx.body = error.toString();   } });</code></p>
+<p>然后在呼叫端使用 GET 请求 <code>https://xxxx/io-clients</code> 可拿到在线接收端的 Socket ID 和其他信息，然后选择一个接收端发起连接。</p>
+<blockquote>
+<p>注意：在线上获取摄像头和屏幕时要求域名必须是 https，否则无法获取。因此切记给 Web 端和信令服务器都配置好 https 的域名，可以避免通信时发生异常。</p>
+</blockquote>
+<h2 id="turn-跨网络视频通信">TURN 跨网络视频通信<a hidden class="anchor" aria-hidden="true" href="#turn-跨网络视频通信">#</a></h2>
+<p>前面我们实现了 App 端和 Web 端双端通信，但是通信成功有一个前提：<code>两端必须连接同一个 WIFI</code>。</p>
+<p>这是因为 WebRTC 的通信是基于 IP 地址和端口来找到对方，如果两端连接不同的 WIFI（不在同一个网段），或是 App 用流量 Web 端用 WIFI，那么两端的 IP 地址谁都不认识谁，自然无法建立通信。</p>
+<p>当两端不在一个局域网时，优先使用 STUN 服务器，将两端的本地 IP 转换为公网 IP 进行连接。STUN 服务器我们直接使用谷歌的就可以，但是因为防火墙等各种原因，实际测试 STUN 基本是连不通的。</p>
+<p>当两端不能找到对方，无法直接建立连接时，那么我们就要使用兜底方案 ——— 用一个中继服务器转发数据，将媒体流数据转发给对方。该中继服务器被称为 TURN 服务器。</p>
+<p>TURN 服务器因为要转发数据流，因此对带宽消耗比较大，需要我们自己搭建。目前有很多开源的 TURN 服务器方案，经过性能测试，我选择使用 Go 语言开发的 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fpion%2Fturn" title="https://github.com/pion/turn">pion/turn</a> 框架。</p>
+<p><strong>1. 安装 Golang：</strong></p>
+<p>使用 pion/turn 的第一步是在你的服务器上安装 Golang。我使用的是 Linux Centos7 系统，使用 <code>yum</code> 命令安装最方便。</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yum install -y epel-release # 添加 epel 源 $ yum install -y golang # 直接安装</code></p>
+<p>安装之后使用如下命令查看版本，测试是否安装成功：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ go version go version go1.17.7 linux/amd64</code></p>
+<p><strong>2. 运行 pion/turn：</strong></p>
+<p>直接将 pion/turn 的源码拉下来：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ git clone https://github.com/pion/turn ./pion-turn</code></p>
+<p>源码中提供了很多案例可以直接使用，我们使用 <code>examples/turn-server/simple</code> 这个目录下的代码：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ cd ./pion-turn/examples/turn-server/simple $ go build</code></p>
+<p>使用 <code>go build</code> 编译后，当前目录下会生成一个 simple 文件，该文件是可执行文件，使用该文件启动 TURN 服务器：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ ./simple -public-ip 123.45.67.89 -users ruidoc=123456</code></p>
+<p>上面命令中的 <code>123.45.67.89</code> 是你服务器的公网 IP，并配置一个用户名和密码分别为 <code>ruidoc</code> 和 <code>123456</code>，这几项配置根据你的实际情况设置。</p>
+<p>默认情况下该命令不会后台运行，我们用下面的方式让它后台运行：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ nohup ./simple -public-ip 123.45.67.89 -users ruidoc=123456 &amp;</code></p>
+<p>此时，该 TURN 服务已经在后台运行，并占用一个 <code>3478</code> 的 UDP 端口。我们查看一下端口占用：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ netstat -nplu</code></p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0591a0f83a844d3c8dc3edfc1e021b06~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=993&amp;h=251&amp;s=133131&amp;e=png&amp;b=191e22" alt="2022-12-26-15-51-20.png"  />
+</p>
+<p>从上图可以看出，该服务已经在运行中。</p>
+<p><strong>3. 配置安全组、检测 TURN 是否可用。</strong></p>
+<p>上一步已经启动了 TURN 服务器，但是默认情况下从外部连接不上（这里是个坑），因为阿里云需要在安全组的入方向添加一条 UPD 3478 端口（其他云服务商也差不多），表示该端口允许从外部访问。</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3e9101560530479f963027d1418c654e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1014&amp;h=134&amp;s=21613&amp;e=png&amp;b=fefefe" alt="2022-12-26-16-01-13.png"  />
+</p>
+<p>安全组添加后，我们就可以测试 TURN 服务器的连通性了。</p>
+<p>打开 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwebrtc.github.io%2Fsamples%2Fsrc%2Fcontent%2Fpeerconnection%2Ftrickle-ice%2F" title="https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/">Trickle ICE</a>，添加我们的 TURN 服务器，格式为 <code>turn:123.45.67.89:3478</code>，然后输入上一步配置的用户名和密码：</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5df5e01de217428fbc94ade12efb98dc~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=504&amp;h=330&amp;s=23436&amp;e=png&amp;b=fcfcfc" alt="2022-12-26-16-04-47.png"  />
+</p>
+<p>点击 Gather candidates 按钮，会列出以下信息。如果包含 <code>relay</code> 这一条，说明我们的 TURN 服务器搭建成功，可以使用了。</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1a371603cce44b46a8df4601ff43afd3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=550&amp;h=196&amp;s=22695&amp;e=png&amp;b=fdfdfd" alt="2022-12-26-16-06-09.png"  />
+</p>
+<p><strong>4. 客户端添加 ICE 配置。</strong></p>
+<p>在 App 端和 Web 端创建 RTC 实例时，加入以下配置：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var turnConf = {   iceServers: [     {       urls: 'stun:stun1.l.google.com:19302', // 免费的 STUN 服务器     },     {       urls: 'turn:123.45.67.89:3478',       username: 'ruidoc',       credential: '123456',     },   ], }; var peer = new RTCPeerConnection(turnConf);</code></p>
+<p>现在关闭手机 WIFI，使用流量与 Web 端发起连接，不出意外可以正常通信，但是延迟好像高了一些（毕竟走中转肯定没有直连快）。此时再打开手机 WIFI 重新连接，发现延迟又变低了。</p>
+<p>这就是 WebRTC 智能的地方。它会优先尝试直连，如果直连不成功，最后才会使用 TURN 转发。</p>
+<h2 id="app-端屏幕共享">App 端屏幕共享<a hidden class="anchor" aria-hidden="true" href="#app-端屏幕共享">#</a></h2>
+<p>视频通话一般都是共享摄像头，然而有的时候会有共享屏幕的需求。</p>
+<p>在 Web 端共享屏幕很简单，将 <code>getUserMedia</code> 改成 <code>getDisplayMedia</code> 即可。然而在 App 端，可能因为隐私和安全问题，实现屏幕共享比较费劲。</p>
+<p>安卓原生端使用 mediaProjection 实现共享屏幕。在 Android 10+ 之后，如果想正确共享屏幕，必须要有一个持续存在的“前台进程”来保证屏幕共享的进程不被系统自动杀死。</p>
+<p>如果没有配置前台进程，则屏幕流无法传输。下面我们来介绍下在如何 App 端共享屏幕。</p>
+<p><strong>1. 安装 Notifee。</strong></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fnotifee.app%2Freact-native%2Fdocs%2Foverview" title="https://notifee.app/react-native/docs/overview">Notifee</a> 是 React Native 实现通知栏消息的第三方库。我们可以启动一个持续存在的消息通知作为前台进程，从而使屏幕流正常推送。</p>
+<p>使用命令安装 Notifee：</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn add @notifee/react-native@5</code></p>
+<p>注意这里安装 Notifee <code>5.x</code> 的版本，因为最新版的 <code>7.x</code> 需要 Android SDK 的 <code>compileSdkVersion</code> 为 33，而我们创建的项目默认为 31，使用 5.x 不需要修改 SDK 的版本号。</p>
+<p><strong>2. 注册前台服务。</strong></p>
+<p>在入口文件 index.js 中，我们使用 Notifee 注册一个前台服务：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import notifee from '@notifee/react-native'; notifee.registerForegroundService((notification) =&gt; {   return new Promise(() =&gt; {}); });</code></p>
+<p>这里只需要注册一下，不需要其他操作，因此比较简单。接着还需要在 Android 代码中注册一个 service，否则前台服务不生效。</p>
+<p>打开 <code>android/app/src/main/AndroidManifest.xml</code> 文件，在 <code>&lt;application&gt;</code> 标签内添加如下代码：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;service    android:name=&quot;app.notifee.core.ForegroundService&quot;    android:foregroundServiceType=&quot;mediaProjection|camera|microphone&quot; /&gt;</code></p>
+<p><strong>3. 创建前台通知。</strong></p>
+<p>注册好前台服务之后，接着我们在获取屏幕前创建前台通知，代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import notifee from '@notifee/react-native'; const startNoti = async () =&gt; {   try {     let channelId = await notifee.createChannel({       id: 'default',       name: 'Default Channel',     });     await notifee.displayNotification({       title: '屏幕录制中...',       body: '在应用中手动关闭该通知',       android: {         channelId,         asForegroundService: true, // 通知作为前台服务，必填       },     });   } catch (err) {     console.error('前台服务启动异常：', err);   } };</code></p>
+<p>该方法会创建一个通知消息，具体 API 可以参考 Notifee <a href="https://link.juejin.cn?target=https%3A%2F%2Fnotifee.app%2Freact-native%2Fdocs%2Fdisplaying-a-notification" title="https://notifee.app/react-native/docs/displaying-a-notification">文档</a>。接着在捕获屏幕之前调用该方法即可：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const getMedia = async () =&gt; {   await startNoti();   let stream = await mediaDevices.getDisplayMedia(); };</code></p>
+<p>最终经过测试，可以看到 App 端和 Web 端的屏幕都实现了共享。App 端效果如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d1c31155f91c43c7ae160b1303bfdd61~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=3708&amp;h=2676&amp;s=2216413&amp;e=png&amp;b=1b1b1b" alt="2022-12-27-01-15-47.png"  />
+</p>
+<p>Web 端效果如下：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/81e9d9ca03af484eb45abc3e03a91375~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2340&amp;h=1442&amp;s=834521&amp;e=png&amp;b=eff1f4" alt="2022-12-27-01-03-37.png"  />
+</p>
+<h2 id="摄像头与屏幕视频混流">摄像头与屏幕视频混流<a hidden class="anchor" aria-hidden="true" href="#摄像头与屏幕视频混流">#</a></h2>
+<p>在一些直播教学的场景中，呼叫端会同时共享两路视频 ——— 屏幕画面和摄像头画面。在我们的经验中，一个 RTC 连接实例中只能添加一条视频流。</p>
+<p>如果要同时共享屏幕和摄像头，我们首先想到的方案可能是在一个客户端创建两个 peer 实例，每个实例中添加一路视频流，发起两次 RTC 连接。</p>
+<p>事实上这种方案是低效的，增加复杂度的同时也增加了资源的损耗。那么能不能在一个 peer 实例中添加两路视频呢？其实是可以的。</p>
+<p>总体思路：在呼叫端将两条流合并为一条，在接收端再将一条流拆分为两条。</p>
+<p><strong>1. 呼叫端组合流。</strong></p>
+<p>组合流其实很简单。因为流是由多个媒体轨道组成，我们只需要从屏幕和摄像头中拿到媒体轨道，再将它们塞到一个自定义的流中，一条包含两个视频轨道的流就组合好了。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var stream = new MediaStream(); const getMedia = async () =&gt; {   let camera_stream = await mediaDevices.getUserMedia();   let screen_stream = await mediaDevices.getDisplayMedia();   screen_stream.getVideoTracks().map((row) =&gt; stream.addTrack(row));   camera_stream.getVideoTracks().map((row) =&gt; stream.addTrack(row));   camera_stream.getAudioTracks().map((row) =&gt; stream.addTrack(row)); };</code></p>
+<p>代码中为一个自定义媒体流添加了三条媒体轨道，分别是屏幕视频、摄像头视频和摄像头音频。记住这个顺序，在接收端按照该顺序拆流。</p>
+<p>接着将这条媒体流添加到 peer 实例中，后面走正常的通信逻辑即可：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>stream.getTracks().forEach((track) =&gt; {   peer.addTrack(track, stream); });</code></p>
+<p><strong>2. 接收端拆解流。</strong></p>
+<p>接收端在 ontrack 事件中拿到组合流，进行拆解：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>peer.ontrack = async (event: any) =&gt; {   const [remoteStream] = event.streams;   let screen_stream = new MediaStream();   let camera_stream = new MediaStream();   remoteStream.getTracks().forEach((track, ind) =&gt; {     if (ind == 0) {       screen_stream.addTrack(track);     } else {       camera_stream.addTrack(track);     }   });   video1.srcObject = camera_stream; // 播放摄像头音视频   video2.srcObject = screen_stream; // 播放屏幕视频 };</code></p>
+<p>这一步中，定义两条媒体流，然后将接收到的混合流中的媒体轨道拆分，分别添加到两条流中，这样屏幕流和摄像头流就拆开了，分别在两个 video 中播放即可。</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>本篇比较系统的介绍了 App 端和 Web 端使用 WebRTC 通信的全流程，可以看到整个流程还是比较复杂的。尤其是我们前端不擅长的地方，比如 TURN 搭建和连通，App 端的各种版本权限问题，坑还是很多的。</p>
+<p>不过主要代码都在文中介绍了，动手尝试一下吧。再次感谢您的阅读～</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/webrtc/">WebRTC</a></li>
+      <li><a href="http://localhost:1313/tags/reactnative/">ReactNative</a></li>
+      <li><a href="http://localhost:1313/tags/react.js/">React.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E9%9A%8F%E6%98%93%E5%91%A8%E5%88%8A%E7%AC%AC006%E6%9C%9F-%E4%BA%91%E6%A2%A6%E7%A7%A6%E7%AE%80/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>随易周刊第006期-云梦秦简</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/nodekoa%E8%BD%AC%E5%8F%91%E8%AF%B7%E6%B1%82%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84%E9%97%AE%E9%A2%98/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>nodekoa转发请求【文件上传】的问题</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 on x"
+            href="https://x.com/intent/tweet/?text=%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React%2bReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f&amp;hashtags=WebRTC%2cReactNative%2cReact.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f&amp;title=%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React%2bReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab&amp;summary=%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React%2bReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f&title=%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React%2bReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React%2bReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 on telegram"
+            href="https://telegram.me/share/url?text=%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React%2bReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【WebRTC跨端通信】React&#43;ReactNative双端视频聊天、屏幕共享 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e3%80%90WebRTC%e8%b7%a8%e7%ab%af%e9%80%9a%e4%bf%a1%e3%80%91React%2bReactNative%e5%8f%8c%e7%ab%af%e8%a7%86%e9%a2%91%e8%81%8a%e5%a4%a9%e3%80%81%e5%b1%8f%e5%b9%95%e5%85%b1%e4%ba%ab&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebrtc%25E8%25B7%25A8%25E7%25AB%25AF%25E9%2580%259A%25E4%25BF%25A1react%2breactnative%25E5%258F%258C%25E7%25AB%25AF%25E8%25A7%2586%25E9%25A2%2591%25E8%2581%258A%25E5%25A4%25A9%25E5%25B1%258F%25E5%25B9%2595%25E5%2585%25B1%25E4%25BA%25AB%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

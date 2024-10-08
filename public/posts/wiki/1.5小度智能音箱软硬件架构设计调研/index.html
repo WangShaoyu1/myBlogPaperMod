@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>1.5、小度智能音箱软硬件架构设计调研 | PaperMod</title>
+<meta name="keywords" content="1、竞品调研">
+<meta name="description" content="1、竞品调研">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="1.5、小度智能音箱软硬件架构设计调研" />
+<meta property="og:description" content="1、竞品调研" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="1.5、小度智能音箱软硬件架构设计调研"/>
+<meta name="twitter:description" content="1、竞品调研"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "1.5、小度智能音箱软硬件架构设计调研",
+      "item": "http://localhost:1313/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "1.5、小度智能音箱软硬件架构设计调研",
+  "name": "1.5、小度智能音箱软硬件架构设计调研",
+  "description": "1、竞品调研",
+  "keywords": [
+    "1、竞品调研"
+  ],
+  "articleBody": " 1 21、调研背景 32、调研目的 43、小度智能音箱深度分析 4.13.1、硬件选型分析 4.1.13.1.1、小度音箱拆解报告 4.1.23.1.2、拆解报告总结 4.23.2、硬件框架设计分析 4.2.13.2.1、麦克风阵列是什么？有什么作用 4.2.23.2.2、麦克风阵列—-波束成形 4.33.3、软件框架设计分析 4.3.13.3.1、DuerOS系统 4.3.1.11）DuerOS是什么？ 4.3.1.22）DuerOS能干什么？ 4.3.1.33）DuerOS的优势是什么？ 4.3.1.3.1技术优势： 4.3.1.3.2灵活便捷的解决方案： 4.3.1.3.3广泛的场景适用性： 4.3.1.3.4丰富完善的内容生态： 4.3.1.44）DuerOS开放平台 4.3.1.4.1技能开放平台 4.3.1.4.2智能家居开放平台 4.3.23.3.2、软件设计 4.3.2.1爱幼 4.3.2.2敬老 4.3.2.3通用功能 4.43.4、软硬件框架设计总结 54、思考与总结 1、调研背景 当前小万虚拟人处于初期调研创建阶段，与市面上成熟语音助手相比，小万在软硬件方面都存在不少问题，因此我们急需了解市面上成熟语音助手是如何打造他们的软硬件，如何去进行结合，基于此，通过调研现在市面上比较火爆的小度智能音箱能为我们的小万提供很好的样板。\n2、调研目的 了解小度智能音箱软硬件是如何设计打造的，以及如何进行结合，整理分析它的优势，后续对小万的打造可以进行参考。\n3、小度智能音箱深度分析 在深度分析之前，我们可以看下小度智能音箱对外宣传的硬件卖点，然后我们基于这里面的内容，一条一条逐步的去进行分析：\n1、高灵敏度全频喇叭，搭配全新的声波反射锥设计，提供360°无死角听觉体验；\n2、专业级功放和调音，圆润音色，清澈透亮，即使在大空间范围内，依然清晰饱满，呈现清晰人声；\n3、采用波束成形技术，有效屏蔽干扰，远距离声控，唤醒距离达5米；\n4、低功耗、高集成，有着更快地语音识别速度，更优秀地音频处理效果；\n5、多种链接方式，Wi-Fi联网搜索、蓝牙播放、支持DLNA协议，不受约束，满足多种听觉需求。\n3.1、硬件选型分析 这一部分主要从主板和按键板与电源板去做分析\n3.1.1、小度音箱拆解报告 拆解图\n拆解信息解释\n备注\n拆解图\n拆解信息解释\n备注\n外观设计\n正面的一体性比较强，上面是显示屏，下方是扬声器。\n背面是白色的一体机身，上面有散热开孔。\n音箱底部，标签上的信息有：小度 小度在家，型号XDH-QF-A1，输入12V⎓1.5A，制造商北京百度网讯科技有限公司。前面有一长条的防滑垫，后方有两个防滑脚垫，中间内凹部分的内侧是电源输入接口。\n音箱背部有散热开孔。\n音箱顶部是按键和麦克风开孔。\n正面有一个前置摄像头。\n内部组件\n防尘网后面是一个扬声器和倒相管开孔。这里解释一下什么是倒相管以及它的作用：\n倒相管，也叫做反射管。是一种播放设备。普通倒相式音箱把扬声器振膜露在外面来发声，而扬声器的后方也会有振动，如果把扬声器向后方的振动也利用起来，就会使声波加强，重低音加强，安装倒相管之后，由于倒相管的直径比扬声器直径小，所以就会有比较强的声波从倒相管冲出，这样一来，扬声器向前方和向后方的声波都得到了利用，使音箱音质提高。\n屏幕通过排线连接到电路板上。屏幕排线分为背光排线，显示排线和触摸排线，排线上有一颗丝印FP5X的IC。\n音腔螺丝柱采用橡胶垫缓冲，音腔内部有吸音棉。这两块的设计皆是为了做更好的降噪处理。其次吸音棉还可以起隔热效果。\n主板/电路板\n按键小板，上面有四颗麦克风和四颗按钮，四颗麦克风用于远场拾音。关于远场拾音下面我会进行重点介绍。\n麦克风上面有橡胶罩。\n电路板上有两颗ADC，搭载芯智汇 AC107 低功耗双路ADC转换器。\n板背面由散热片覆盖。\nWiFi天线贴片，同轴馈线外包裹泡棉避免发出噪声。\n主板上的散热片，散热片上有两块导热胶与主板上的芯片接触。\n主板上还有一颗AC107 ADC转换器。\n主板搭载金士顿 8G EMMC存储IC、金士顿 D2516EC4BXGGB内存芯片，共计两颗512M DDR3内存组成1G内存容量。\n主控芯片，MTK联发科 MT8167A，是一个高度集成的移动计算平台，内置四核Cortex-A35核心，支持DDR3/LPDDR3 DDR4内存，集成PowerVR GE8300，最大输出分辨率为1920×1200，内置WLAN和蓝牙两种无线连接模块，WiFi支持2.4G和5G，最大支持8MP摄像头，可进行1280×720@30FPS录制。\n3.1.2、拆解报告总结 小度在家智能屏X8简洁；音**腔有低音倒相孔，内部有吸音棉；音腔螺丝柱采用橡胶垫缓冲，内部线材也有泡棉包裹，减少噪音。**这些皆为降噪处理，给我们的万得厨提供了一个很好的样本。\n音箱有四颗麦克风用于远场拾音；搭载MTK联发科 MT8167A主控芯片，金士顿 8G EMMC存储，两颗金士顿512M DDR3内存组成1G内存，可以为系统的日常运行、手势控制和看护助手等提供算力支持。综合来看，小度在智能音箱的设计和生产等方面已经愈发成熟了。\n3.2、硬件框架设计分析 上面是小度音箱的整体硬件框架图，下面我基于几个重要的模块进行分析。\n3.2.1、麦克风阵列是什么？有什么作用 麦克风阵列是由一定数目的麦克风组成，对声场的空间特性进行采样并滤波的系统。目前常用的麦克风阵列可以按布局形状分为：线性阵列，平面阵列，以及立体阵列。其几何构型是按设计已知，所有麦克风的频率响应一致，麦克风的采样时钟也是同步的。\n麦克风阵列的作用：\n1）声源定位，包括角度和距离的测量\n2）抑制背景噪声、干扰、混响、回声\n3）信号提取\n4）信号分离\n麦克风阵列\n扬声器\n回声消除\n（ACE）\n声源定位（DOA）\n抑制噪音（NR）\n混响消除（NR）\n混响消除（NR）\n%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%EF%BC%88ASR%EF%BC%89%22%20style%3D%22rounded%3D1%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22330%22%20y%3D%22-40%22%20width%3D%2290%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3CmxCell%20id%3D%223%22%20value%3D%22%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%EF%BC%88NLP%EF%BC%89%22%20style%3D%22rounded%3D1%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22330%22%20y%3D%2280%22%20width%3D%2290%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3CmxCell%20id%3D%224%22%20value%3D%22%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90%EF%BC%88TTS%EF%BC%89%22%20style%3D%22rounded%3D1%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22330%22%20y%3D%22210%22%20width%3D%2290%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E\n语音识别（ASR）\n自然语言处理（NLP）\n语音合成（TTS）\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-bc6e42b7-5aec-4ecf-8655-91b55338e9d4’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E9%BA%A6%E5%85%8B%E9%A3%8E%E9%98%B5%E5%88%97%E4%B8%8E%E7%AE%97%E6%B3%95%E5%9B%BE/97886397?revision=1’; readerOpts.imageUrl = ’’ + ‘/download/attachments/97886397/麦克风阵列与算法图.png’ + ‘?version=1\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=97886397\u0026owningPageId=97886397\u0026diagramName=%E9%BA%A6%E5%85%8B%E9%A3%8E%E9%98%B5%E5%88%97%E4%B8%8E%E7%AE%97%E6%B3%95%E5%9B%BE\u0026revision=1’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘991’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E9%BA%A6%E5%85%8B%E9%A3%8E%E9%98%B5%E5%88%97%E4%B8%8E%E7%AE%97%E6%B3%95%E5%9B%BE’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘1.5、小度智能音箱软硬件架构设计调研’; readerOpts.attVer = ‘1’; readerOpts.attId = ‘97891471’; readerOpts.lastModifierName = ‘未知用户 (limengyang)’; readerOpts.lastModified = ‘2023-03-14 16:26:06.977’; readerOpts.creatorName = ‘未知用户 (limengyang)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n3.2.2、麦克风阵列—-波束成形 波束成形技术通过使用麦克风阵列，形成一个空间滤波的效果和一个指向目标音源的波束，从而来提升SNR 和DRR. 波束成形技术能提升DRR是因为那些从不同方向杂乱反射回来的声音信号都会被当做噪声帅减掉。\n就典型的延迟\u0026求和波束成形算法而言，基于2个麦克风阵列的白噪声增益是3dB. 当麦克风数量增加到4颗，白噪声增益又会提升3dB, 从而使得4颗麦克风的SNR提升6dB. 麦克风增加到8颗，SNR提升9dB, 以此类推。因此，一个带有beamforming算法的麦克风阵列系统会使得它看上去好像使用者站的位置比实际上里麦克风的距离要近，从而使得多麦克风的使用在远距离通信上比单麦克风效果更好。\n3.3、软件框架设计分析 这一部分，主要从百度DuerOS系统和软件设计思想两大模块去介绍分析小度音箱APP。\n3.3.1、DuerOS系统 1）DuerOS是什么？ DuerOS是百度度秘事业部研发的对话式人工智能系统。整体架构如下：\n当用户发出语音指令时，DuerOS解析出用户的意图，然后向技能发送该意图相应的指令。技能收到指令时，对设备进行相应的操作。\n2）DuerOS能干什么？ 搭载DuerOS的设备可让用户以自然语言对话的交互方式，实现影音娱乐、信息查询、生活服务、出行路况等10大类目的200多项功能的操作。同时，借助云端大脑，DuerOS可以不断学习进化，变得越来越“聪明”。 DuerOS广泛适用于音箱、电视、冰箱、手机、机器人、车载、可穿戴、玩具等多种场景及设备，已与国内外多家企业达成战略合作。同时，DuerOS还为不同类型的硬件厂商打造了小度智能设备平台；为开发者推出了小度技能开放平台。极大的降低使用门槛，加速产业升级。 3）DuerOS的优势是什么？ 技术优势： 算法：拥有建立在超大规模神经网络、万亿级参数、千亿级样本上的人工智能算法； 计算：数十万服务器和中国最大GPU集群的计算能力； 数据：累计了全网万亿网页、数十亿搜索、百亿级图像视频和定位数据； 语音识别：语音识别准确率97%以上； 图像识别：人脸识别准确率99.7%； 自然语言处理：能用自然语言与用户交流，理解用户意图； 用户画像：拥有近10亿用户画像。 灵活便捷的解决方案： DuerOS拥有灵活分层的解决方案，为不同类型的企业及开发者提供一站式服务。极大降低了企业的生产、开发门槛。\n广泛的场景适用性： DuerOS可以广泛适用于家居、随身、车载等多种场景，支持音箱、电视、冰箱、手机、机器人、车载、手表等多种硬件设备。\n丰富完善的内容生态： 借助百度生态资源的优势，DuerOS能为用户提供完整的服务链条。\n（1） 免费、低成本的正版内容：音乐、有声、视频、新闻等内容资源应有尽有\n（2） 包罗万象的海量信息：百度搜索十余年来积累了海量信息，可满足用户全方位的信息查询需求。\n（3） 庞大的服务生态：借助百度地图、糯米、外卖等服务生态体系，为用户提供完整的从信息筛选到下单支付的闭环服务。且支持第三方内容或资源方的信息接入。\n4）DuerOS开放平台 DuerOS 开放平台主要面向企业级用户及个人开发者，为硬件开发者提供支持语音控制的智能家居开放平台，为软件开发者提供对话式操作的技能开放平台。整体分为技能开放平台、智能家居开放平台，架构如下图所示：\n技能开放平台 技能开放平台是DuerOS为第三方开发者提供的一整套技能开发、测试、部署工具的开放平台。第三方开发者可以在平台上，通过可视化界面，简单、高效地开发各类DuerOS技能\n智能家居开放平台 为智能家居设备厂商、酒店方案厂商和模组厂商提供基于云云对接、蓝牙Mesh直连等方式接入小度助手服务的IoT开放平台\n通过百度物联网和AI技术加持，拓展产品智能卖点，为用户提供极佳的全场景智能家居体验\n3.3.2、软件设计 当深层次的去体验小度音箱APP的时候，我们会惊讶的发现，小度音箱在这一块的设计上，也紧紧围绕敬老、爱幼两个切入点，并基于此打造它的应用生态，下面我围绕这两块进行一个介绍和分析，也为我们后续在敬老、爱幼两大切入点打个样。\n爱幼 “三岁看小，七岁看老，童年的问题影响一生”。这是小度音箱APP将家长们最大的担心作为他们产品的最大设计理念，在这里需要注意的是，结合教育部学生数据、统计局出生人口数据得出，儿童家庭是指学龄前儿童+小学生儿童家庭。小度音箱基于以下6大家长最关心的问题进行应用的开发：\n没空陪，导致孩子性格孤僻 别的孩子自信大方，自己孩子内向害羞 敷衍孩子的“为什么”影响了好奇心 网上信息混杂，孩子一不小心学坏 拿走手机孩子就哭闹 屏幕看三年，眼镜厚的像酒瓶底 针对于孩子的好奇心，小度音箱接入百度搜索，以此解决好奇心的问题，打造了一个天然的解决十万个为什么的老师\n大部分孩子性格孤僻缺少陪伴，小度音箱设计了免接通视频通话，实现了不在家也能陪孩子\n为了解决达人工作繁忙不能有效的关注孩子在家的动向，小度音箱开发了内置监控功能，打开小度app就能看到家中的情况\n为了解决对孩子的陪伴问题，小度音箱实现了声纹识别功能，可以个性化定制声音，因此小度可以模仿爸妈的声音，跟孩子进行交流，比如睡前讲故事，只需要点击小度App，点击“爸妈讲故事”即可，百度结合深度神经网络声码器技术实现\n担心孩子视力的问题，百度采用了防蓝光大屏，同时设计了距离过近的语音提醒功能、使用时间过长语音提醒功能\n针对不良内容，孩子上网学坏，小度通过内容过滤、技能禁用、家长远程控制、浏览使用记录、童脸识别、家长锁屏六大功能对孩子进行保护，儿童模式下会屏蔽不良内容\n如何解决孩子内向害羞的问题，小度从兴趣爱好上下手，比如歌唱类，百度接入了大量的正版儿歌曲库，其屏幕可以连接双麦，打造多重音效，从而激发孩子的表演欲望\n敬老 在外打拼，联系不到父母我们可以怎么做？小度音箱开发了视频通话自动接听功能\n针对于老人的安全问题，小度音箱支持呼救转接功能，在语音指令上设置：“小度小度，救救我”，然后小度音箱可根据设置的紧急联系人打电话进行拨通，也可呼叫最近的医院急救，创造白金时间\n在贴心服务上，小度音箱在老人模式里面开发了播放戏曲功能、跳广场舞功能以及丰富的电视台，皆在打造多老人的贴心服务\n通用功能 **1、随便听：**小度音箱接入了三大音乐平台，QQ音乐、酷狗音乐、酷我音乐，其次小度音箱接入很多热门有声平台，比如喜马拉雅、FM等，不仅可以听音乐，还可以听新闻视屏，做到了真正的随便听\n2、**随便问：**小度音箱内置百度，接入百度全网数据，天气、菜谱、营养、路况等问题迎刃而解\n3.4、软硬件框架设计总结 有趣的灵魂（小度助手）+设计感的外表（各种终端屏）=千变的场景（用户的体验）。\n4、思考与总结 通过对小度智能音箱的整体调研，我们可以发现，在硬件层面，小度的做工很细致，比如涉及到声学模块的组件，几乎都用了隔音棉或者保护罩之类的隔绝噪音的物品，从根源上就已经解决了降噪的一部分问题，这个值得我们去借鉴。在软件层面的设计，小度跟我们万得厨的三个切入点几乎一致，小度是从敬老、爱幼两个方面打造语音助手，这恰巧跟我们公司的切入点一致，很有参考意义。其实无论是小度还是小万，其本质上来说它们都属于人工智能产品，那么如何取衡量一个AI产品做的好不好，其实就是看它的人工智能度，那么我们可以套用百度团队对人工智能度的评判标准作为参考：人工智能度 = 听清 x 听懂 x 满足，厨房有点大？放心，小万能听的请；问题有点难？别怕，你的问题小万听的懂；要求有点多？没事，你要的食物小万能满足。\nFilter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "420",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      1.5、小度智能音箱软硬件架构设计调研
+    </h1>
+    <div class="post-description">
+      1、竞品调研
+    </div>
+    <div class="post-meta">2 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1%e8%b0%83%e7%a0%94%e8%83%8c%e6%99%af" aria-label="1、调研背景">1、调研背景</a></li>
+                <li>
+                    <a href="#2%e8%b0%83%e7%a0%94%e7%9b%ae%e7%9a%84" aria-label="2、调研目的">2、调研目的</a></li>
+                <li>
+                    <a href="#3%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e6%b7%b1%e5%ba%a6%e5%88%86%e6%9e%90" aria-label="3、小度智能音箱深度分析">3、小度智能音箱深度分析</a><ul>
+                        
+                <li>
+                    <a href="#31%e7%a1%ac%e4%bb%b6%e9%80%89%e5%9e%8b%e5%88%86%e6%9e%90" aria-label="3.1、硬件选型分析">3.1、硬件选型分析</a><ul>
+                        
+                <li>
+                    <a href="#311%e5%b0%8f%e5%ba%a6%e9%9f%b3%e7%ae%b1%e6%8b%86%e8%a7%a3%e6%8a%a5%e5%91%8a" aria-label="3.1.1、小度音箱拆解报告">3.1.1、小度音箱拆解报告</a></li>
+                <li>
+                    <a href="#312%e6%8b%86%e8%a7%a3%e6%8a%a5%e5%91%8a%e6%80%bb%e7%bb%93" aria-label="3.1.2、拆解报告总结">3.1.2、拆解报告总结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#32%e7%a1%ac%e4%bb%b6%e6%a1%86%e6%9e%b6%e8%ae%be%e8%ae%a1%e5%88%86%e6%9e%90" aria-label="3.2、硬件框架设计分析">3.2、硬件框架设计分析</a><ul>
+                        
+                <li>
+                    <a href="#321%e9%ba%a6%e5%85%8b%e9%a3%8e%e9%98%b5%e5%88%97%e6%98%af%e4%bb%80%e4%b9%88%e6%9c%89%e4%bb%80%e4%b9%88%e4%bd%9c%e7%94%a8" aria-label="3.2.1、麦克风阵列是什么？有什么作用">3.2.1、麦克风阵列是什么？有什么作用</a></li>
+                <li>
+                    <a href="#322%e9%ba%a6%e5%85%8b%e9%a3%8e%e9%98%b5%e5%88%97----%e6%b3%a2%e6%9d%9f%e6%88%90%e5%bd%a2" aria-label="3.2.2、麦克风阵列&mdash;-波束成形">3.2.2、麦克风阵列&mdash;-波束成形</a></li></ul>
+                </li>
+                <li>
+                    <a href="#33%e8%bd%af%e4%bb%b6%e6%a1%86%e6%9e%b6%e8%ae%be%e8%ae%a1%e5%88%86%e6%9e%90" aria-label="3.3、软件框架设计分析">3.3、软件框架设计分析</a><ul>
+                        
+                <li>
+                    <a href="#331dueros%e7%b3%bb%e7%bb%9f" aria-label="3.3.1、DuerOS系统">3.3.1、DuerOS系统</a><ul>
+                        
+                <li>
+                    <a href="#1dueros%e6%98%af%e4%bb%80%e4%b9%88" aria-label="1）DuerOS是什么？">1）DuerOS是什么？</a></li>
+                <li>
+                    <a href="#2dueros%e8%83%bd%e5%b9%b2%e4%bb%80%e4%b9%88" aria-label="2）DuerOS能干什么？">2）DuerOS能干什么？</a></li>
+                <li>
+                    <a href="#3dueros%e7%9a%84%e4%bc%98%e5%8a%bf%e6%98%af%e4%bb%80%e4%b9%88" aria-label="3）DuerOS的优势是什么？">3）DuerOS的优势是什么？</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8a%80%e6%9c%af%e4%bc%98%e5%8a%bf" aria-label="技术优势：">技术优势：</a></li>
+                <li>
+                    <a href="#%e7%81%b5%e6%b4%bb%e4%be%bf%e6%8d%b7%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="灵活便捷的解决方案：">灵活便捷的解决方案：</a></li>
+                <li>
+                    <a href="#%e5%b9%bf%e6%b3%9b%e7%9a%84%e5%9c%ba%e6%99%af%e9%80%82%e7%94%a8%e6%80%a7" aria-label="广泛的场景适用性：">广泛的场景适用性：</a></li>
+                <li>
+                    <a href="#%e4%b8%b0%e5%af%8c%e5%ae%8c%e5%96%84%e7%9a%84%e5%86%85%e5%ae%b9%e7%94%9f%e6%80%81" aria-label="丰富完善的内容生态：">丰富完善的内容生态：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4dueros%e5%bc%80%e6%94%be%e5%b9%b3%e5%8f%b0" aria-label="4）DuerOS开放平台">4）DuerOS开放平台</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8a%80%e8%83%bd%e5%bc%80%e6%94%be%e5%b9%b3%e5%8f%b0" aria-label="技能开放平台">技能开放平台</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e5%ae%b6%e5%b1%85%e5%bc%80%e6%94%be%e5%b9%b3%e5%8f%b0" aria-label="智能家居开放平台">智能家居开放平台</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#332%e8%bd%af%e4%bb%b6%e8%ae%be%e8%ae%a1" aria-label="3.3.2、软件设计">3.3.2、软件设计</a><ul>
+                        
+                <li>
+                    <a href="#%e7%88%b1%e5%b9%bc" aria-label="爱幼">爱幼</a></li>
+                <li>
+                    <a href="#%e6%95%ac%e8%80%81" aria-label="敬老">敬老</a></li>
+                <li>
+                    <a href="#%e9%80%9a%e7%94%a8%e5%8a%9f%e8%83%bd" aria-label="通用功能">通用功能</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#34%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%a1%86%e6%9e%b6%e8%ae%be%e8%ae%a1%e6%80%bb%e7%bb%93" aria-label="3.4、软硬件框架设计总结">3.4、软硬件框架设计总结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4%e6%80%9d%e8%80%83%e4%b8%8e%e6%80%bb%e7%bb%93" aria-label="4、思考与总结">4、思考与总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><ul>
+<li>1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-"></a></li>
+<li>2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-1、调研背景">1、调研背景</a></li>
+<li>3<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-2、调研目的">2、调研目的</a></li>
+<li>4<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3、小度智能音箱深度分析">3、小度智能音箱深度分析</a>
+<ul>
+<li>4.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.1、硬件选型分析">3.1、硬件选型分析</a>
+<ul>
+<li>4.1.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.1.1、小度音箱拆解报告">3.1.1、小度音箱拆解报告</a></li>
+<li>4.1.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.1.2、拆解报告总结">3.1.2、拆解报告总结</a></li>
+</ul>
+</li>
+<li>4.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.2、硬件框架设计分析">3.2、硬件框架设计分析</a>
+<ul>
+<li>4.2.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.2.1、麦克风阵列是什么？有什么作用">3.2.1、麦克风阵列是什么？有什么作用</a></li>
+<li>4.2.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.2.2、麦克风阵列----波束成形">3.2.2、麦克风阵列&mdash;-波束成形</a></li>
+</ul>
+</li>
+<li>4.3<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.3、软件框架设计分析">3.3、软件框架设计分析</a>
+<ul>
+<li>4.3.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.3.1、DuerOS系统">3.3.1、DuerOS系统</a>
+<ul>
+<li>4.3.1.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-1）DuerOS是什么？">1）DuerOS是什么？</a></li>
+<li>4.3.1.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-2）DuerOS能干什么？">2）DuerOS能干什么？</a></li>
+<li>4.3.1.3<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3）DuerOS的优势是什么？">3）DuerOS的优势是什么？</a>
+<ul>
+<li>4.3.1.3.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-技术优势：">技术优势：</a></li>
+<li>4.3.1.3.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-灵活便捷的解决方案：">灵活便捷的解决方案：</a></li>
+<li>4.3.1.3.3<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-广泛的场景适用性：">广泛的场景适用性：</a></li>
+<li>4.3.1.3.4<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-丰富完善的内容生态：">丰富完善的内容生态：</a></li>
+</ul>
+</li>
+<li>4.3.1.4<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-4）DuerOS开放平台">4）DuerOS开放平台</a>
+<ul>
+<li>4.3.1.4.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-技能开放平台">技能开放平台</a></li>
+<li>4.3.1.4.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-智能家居开放平台">智能家居开放平台</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>4.3.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.3.2、软件设计">3.3.2、软件设计</a>
+<ul>
+<li>4.3.2.1<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-爱幼">爱幼</a></li>
+<li>4.3.2.2<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-敬老">敬老</a></li>
+<li>4.3.2.3<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-通用功能">通用功能</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>4.4<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-3.4、软硬件框架设计总结">3.4、软硬件框架设计总结</a></li>
+</ul>
+</li>
+<li>5<a href="/posts/wiki/1.5%E5%B0%8F%E5%BA%A6%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1%E8%BD%AF%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E8%B0%83%E7%A0%94/#id-1.5、小度智能音箱软硬件架构设计调研-4、思考与总结">4、思考与总结</a></li>
+</ul>
+<hr>
+<h2 id="1调研背景">1、调研背景<a hidden class="anchor" aria-hidden="true" href="#1调研背景">#</a></h2>
+<p>当前小万虚拟人处于初期调研创建阶段，与市面上成熟语音助手相比，小万在软硬件方面都存在不少问题，因此我们急需了解市面上成熟语音助手是如何打造他们的软硬件，如何去进行结合，基于此，通过调研现在市面上比较火爆的小度智能音箱能为我们的小万提供很好的样板。</p>
+<h2 id="2调研目的">2、调研目的<a hidden class="anchor" aria-hidden="true" href="#2调研目的">#</a></h2>
+<p>了解小度智能音箱软硬件是如何设计打造的，以及如何进行结合，整理分析它的优势，后续对小万的打造可以进行参考。</p>
+<h2 id="3小度智能音箱深度分析">3、小度智能音箱深度分析<a hidden class="anchor" aria-hidden="true" href="#3小度智能音箱深度分析">#</a></h2>
+<p>在深度分析之前，我们可以看下小度智能音箱对外宣传的硬件卖点，然后我们基于这里面的内容，一条一条逐步的去进行分析：</p>
+<p>1、<strong>高灵敏度全频喇叭</strong>，搭配全新的声波反射锥设计，提供360°无死角听觉体验；</p>
+<p>2、<strong>专业级功放和调音</strong>，圆润音色，清澈透亮，即使在大空间范围内，依然清晰饱满，呈现清晰人声；</p>
+<p>3、<strong>采用波束成形技术</strong>，有效屏蔽干扰，远距离声控，唤醒距离达5米；</p>
+<p>4、<strong>低功耗、高集成</strong>，有着更快地语音识别速度，更优秀地音频处理效果；</p>
+<p>5、<strong>多种链接方式</strong>，Wi-Fi联网搜索、蓝牙播放、支持DLNA协议，不受约束，满足多种听觉需求。</p>
+<h3 id="31硬件选型分析">3.1、硬件选型分析<a hidden class="anchor" aria-hidden="true" href="#31硬件选型分析">#</a></h3>
+<p>这一部分主要从主板和按键板与电源板去做分析</p>
+<h4 id="311小度音箱拆解报告">3.1.1、小度音箱拆解报告<a hidden class="anchor" aria-hidden="true" href="#311小度音箱拆解报告">#</a></h4>
+<p>拆解图</p>
+<p>拆解信息解释</p>
+<p>备注</p>
+<p>拆解图</p>
+<p>拆解信息解释</p>
+<p>备注</p>
+<p>外观设计</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-6-51.png?version=1&amp;modificationDate=1678774011620&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-7-7.png?version=1&amp;modificationDate=1678774027624&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-8-4.png?version=1&amp;modificationDate=1678774084183&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-8-35.png?version=1&amp;modificationDate=1678774116539&amp;api=v2" alt=""  />
+</p>
+<p>正面的一体性比较强，上面是显示屏，下方是扬声器。</p>
+<p>背面是白色的一体机身，上面有散热开孔。</p>
+<p>音箱底部，标签上的信息有：小度 小度在家，型号XDH-QF-A1，输入12V⎓1.5A，制造商北京百度网讯科技有限公司。前面有一长条的防滑垫，后方有两个防滑脚垫，中间内凹部分的内侧是电源输入接口。</p>
+<p>音箱背部有散热开孔。</p>
+<p>音箱顶部是按键和麦克风开孔。</p>
+<p>正面有一个前置摄像头。</p>
+<p>内部组件</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-11-47.png?version=1&amp;modificationDate=1678774307440&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-12-57.png?version=1&amp;modificationDate=1678774377630&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-17-9.png?version=1&amp;modificationDate=1678774629739&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-18-52.png?version=1&amp;modificationDate=1678774732506&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-24-40.png?version=1&amp;modificationDate=1678775081029&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-24-51.png?version=1&amp;modificationDate=1678775093100&amp;api=v2" alt=""  />
+</p>
+<p>防尘网后面是一个扬声器和倒相管开孔。这里解释一下什么是倒相管以及它的作用：</p>
+<p>倒相管，也叫做反射管。是一种播放设备。普通倒相式音箱把扬声器振膜露在外面来发声，而扬声器的后方也会有振动，如果把扬声器向后方的振动也利用起来，就会使声波加强，重低音加强，安装倒相管之后，由于倒相管的直径比扬声器直径小，所以就会有比较强的声波从倒相管冲出，这样一来，扬声器向前方和向后方的声波都得到了利用，<strong>使音箱音质提高</strong>。</p>
+<p>屏幕通过排线连接到电路板上。屏幕排线分为背光排线，显示排线和触摸排线，排线上有一颗丝印FP5X的IC。</p>
+<p>音腔螺丝柱采用橡胶垫缓冲，音腔内部有吸音棉。这两块的设计皆是为了做更好的<strong>降噪处理</strong>。其次吸音棉还可以起隔热效果。</p>
+<p>主板/电路板</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-29-58.png?version=1&amp;modificationDate=1678775398649&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-40-11.png?version=1&amp;modificationDate=1678776012027&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-45-9.png?version=1&amp;modificationDate=1678776310102&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-45-36.png?version=1&amp;modificationDate=1678776336804&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-46-52.png?version=1&amp;modificationDate=1678776413166&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_14-50-39.png?version=1&amp;modificationDate=1678776639546&amp;api=v2" alt=""  />
+</p>
+<p>按键小板，上面有四颗麦克风和四颗按钮，四颗麦克风用于远场拾音。关于<strong>远场拾音</strong>下面我会进行重点介绍。</p>
+<p>麦克风上面有橡胶罩。</p>
+<p>电路板上有两颗ADC，搭载芯智汇 AC107 低功耗双路ADC转换器。</p>
+<p>板背面由散热片覆盖。</p>
+<p>WiFi天线贴片，同轴馈线外包裹<strong>泡棉避免发出噪声。</strong></p>
+<p>主板上的散热片，散热片上有两块导热胶与主板上的芯片接触。</p>
+<p>主板上还有一颗AC107 ADC转换器。</p>
+<p>主板搭载金士顿 8G EMMC存储IC、金士顿 D2516EC4BXGGB内存芯片，共计两颗512M DDR3内存组成1G内存容量。</p>
+<p>主控芯片，MTK联发科 MT8167A，是一个高度集成的移动计算平台，内置四核Cortex-A35核心，支持DDR3/LPDDR3 DDR4内存，集成PowerVR GE8300，最大输出分辨率为1920×1200，内置WLAN和蓝牙两种无线连接模块，WiFi支持2.4G和5G，最大支持8MP摄像头，可进行1280×720@30FPS录制。</p>
+<h4 id="312拆解报告总结">3.1.2、拆解报告总结<a hidden class="anchor" aria-hidden="true" href="#312拆解报告总结">#</a></h4>
+<p>小度在家智能屏X8简洁；音**腔有低音倒相孔，内部有吸音棉；音腔螺丝柱采用橡胶垫缓冲，内部线材也有泡棉包裹，减少噪音。**这些皆为降噪处理，给我们的万得厨提供了一个很好的样本。</p>
+<p>音箱有四颗麦克风用于远场拾音；搭载MTK联发科 MT8167A主控芯片，金士顿 8G EMMC存储，两颗金士顿512M DDR3内存组成1G内存，可以为系统的日常运行、手势控制和看护助手等提供算力支持。综合来看，小度在智能音箱的设计和生产等方面已经愈发成熟了。</p>
+<h3 id="32硬件框架设计分析">3.2、硬件框架设计分析<a hidden class="anchor" aria-hidden="true" href="#32硬件框架设计分析">#</a></h3>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_10-27-37.png?version=1&amp;modificationDate=1678760857933&amp;api=v2" alt=""  />
+</p>
+<p>上面是小度音箱的整体硬件框架图，下面我基于几个重要的模块进行分析。</p>
+<h4 id="321麦克风阵列是什么有什么作用">3.2.1、麦克风阵列是什么？有什么作用<a hidden class="anchor" aria-hidden="true" href="#321麦克风阵列是什么有什么作用">#</a></h4>
+<p>麦克风阵列是由一定数目的麦克风组成，对声场的空间特性进行采样并滤波的系统。目前常用的麦克风阵列可以按布局形状分为：线性阵列，平面阵列，以及立体阵列。其几何构型是按设计已知，所有麦克风的频率响应一致，麦克风的采样时钟也是同步的。</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-14_16-3-17.png?version=1&amp;modificationDate=1678780997509&amp;api=v2" alt=""  />
+</p>
+<p><strong>麦克风阵列的作用：</strong></p>
+<p>1）声源定位，包括角度和距离的测量</p>
+<p>2）抑制背景噪声、干扰、混响、回声</p>
+<p>3）信号提取</p>
+<p>4）信号分离</p>
+<p>麦克风阵列</p>
+<p>扬声器</p>
+<p>回声消除<br>
+（ACE）</p>
+<p>声源定位（DOA）</p>
+<p>抑制噪音（NR）</p>
+<p>混响消除（NR）</p>
+<p>混响消除（NR）</p>
+<p>%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%EF%BC%88ASR%EF%BC%89%22%20style%3D%22rounded%3D1%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22330%22%20y%3D%22-40%22%20width%3D%2290%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3CmxCell%20id%3D%223%22%20value%3D%22%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%EF%BC%88NLP%EF%BC%89%22%20style%3D%22rounded%3D1%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22330%22%20y%3D%2280%22%20width%3D%2290%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3CmxCell%20id%3D%224%22%20value%3D%22%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90%EF%BC%88TTS%EF%BC%89%22%20style%3D%22rounded%3D1%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22330%22%20y%3D%22210%22%20width%3D%2290%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</p>
+<p>语音识别（ASR）</p>
+<p>自然语言处理（NLP）</p>
+<p>语音合成（TTS）</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="Show Comments"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-bc6e42b7-5aec-4ecf-8655-91b55338e9d4&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E9%BA%A6%E5%85%8B%E9%A3%8E%E9%98%B5%E5%88%97%E4%B8%8E%E7%AE%97%E6%B3%95%E5%9B%BE/97886397?revision=1&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/97886397/麦克风阵列与算法图.png&rsquo; + &lsquo;?version=1&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=97886397&amp;owningPageId=97886397&amp;diagramName=%E9%BA%A6%E5%85%8B%E9%A3%8E%E9%98%B5%E5%88%97%E4%B8%8E%E7%AE%97%E6%B3%95%E5%9B%BE&amp;revision=1&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;991&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E9%BA%A6%E5%85%8B%E9%A3%8E%E9%98%B5%E5%88%97%E4%B8%8E%E7%AE%97%E6%B3%95%E5%9B%BE&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;1.5、小度智能音箱软硬件架构设计调研&rsquo;; readerOpts.attVer = &lsquo;1&rsquo;; readerOpts.attId = &lsquo;97891471&rsquo;; readerOpts.lastModifierName = &lsquo;未知用户 (limengyang)&rsquo;; readerOpts.lastModified = &lsquo;2023-03-14 16:26:06.977&rsquo;; readerOpts.creatorName = &lsquo;未知用户 (limengyang)&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<h4 id="322麦克风阵列----波束成形">3.2.2、麦克风阵列&mdash;-波束成形<a hidden class="anchor" aria-hidden="true" href="#322麦克风阵列----波束成形">#</a></h4>
+<p>波束成形技术通过使用麦克风阵列，形成一个空间滤波的效果和一个指向目标音源的波束，从而来提升SNR 和DRR. 波束成形技术能提升DRR是因为那些从不同方向杂乱反射回来的声音信号都会被当做噪声帅减掉。</p>
+<p>就典型的延迟&amp;求和波束成形算法而言，基于2个麦克风阵列的白噪声增益是3dB. 当麦克风数量增加到4颗，白噪声增益又会提升3dB, 从而使得4颗麦克风的SNR提升6dB. 麦克风增加到8颗，SNR提升9dB, 以此类推。因此，一个带有beamforming算法的麦克风阵列系统会使得它看上去好像使用者站的位置比实际上里麦克风的距离要近，从而使得多麦克风的使用在远距离通信上比单麦克风效果更好。</p>
+<h3 id="33软件框架设计分析">3.3、软件框架设计分析<a hidden class="anchor" aria-hidden="true" href="#33软件框架设计分析">#</a></h3>
+<p>这一部分，主要从百度DuerOS系统和软件设计思想两大模块去介绍分析小度音箱APP。</p>
+<h4 id="331dueros系统">3.3.1、DuerOS系统<a hidden class="anchor" aria-hidden="true" href="#331dueros系统">#</a></h4>
+<h5 id="1dueros是什么">1）DuerOS是什么？<a hidden class="anchor" aria-hidden="true" href="#1dueros是什么">#</a></h5>
+<p>DuerOS是百度度秘事业部研发的对话式人工智能系统。整体架构如下：</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-15_9-57-40.png?version=1&amp;modificationDate=1678845460610&amp;api=v2" alt=""  />
+</p>
+<p>当用户发出语音指令时，DuerOS解析出用户的意图，然后向技能发送该意图相应的指令。技能收到指令时，对设备进行相应的操作。</p>
+<h5 id="2dueros能干什么">2）DuerOS能干什么？<a hidden class="anchor" aria-hidden="true" href="#2dueros能干什么">#</a></h5>
+<ul>
+<li>搭载DuerOS的设备可让用户以自然语言对话的交互方式，实现影音娱乐、信息查询、生活服务、出行路况等10大类目的200多项功能的操作。同时，借助云端大脑，DuerOS可以不断学习进化，变得越来越“聪明”。</li>
+<li>DuerOS广泛适用于音箱、电视、冰箱、手机、机器人、车载、可穿戴、玩具等多种场景及设备，已与国内外多家企业达成战略合作。同时，DuerOS还为不同类型的硬件厂商打造了小度智能设备平台；为开发者推出了小度技能开放平台。极大的降低使用门槛，加速产业升级。</li>
+</ul>
+<h5 id="3dueros的优势是什么">3）DuerOS的优势是什么？<a hidden class="anchor" aria-hidden="true" href="#3dueros的优势是什么">#</a></h5>
+<h6 id="技术优势"><strong>技术优势：</strong><a hidden class="anchor" aria-hidden="true" href="#技术优势">#</a></h6>
+<ul>
+<li>算法：拥有建立在超大规模神经网络、万亿级参数、千亿级样本上的人工智能算法；</li>
+<li>计算：数十万服务器和中国最大GPU集群的计算能力；</li>
+<li>数据：累计了全网万亿网页、数十亿搜索、百亿级图像视频和定位数据；</li>
+<li>语音识别：语音识别准确率97%以上； </li>
+<li>图像识别：人脸识别准确率99.7%；</li>
+<li>自然语言处理：能用自然语言与用户交流，理解用户意图；</li>
+<li>用户画像：拥有近10亿用户画像。</li>
+</ul>
+<h6 id="灵活便捷的解决方案"><strong>灵活便捷的解决方案：</strong><a hidden class="anchor" aria-hidden="true" href="#灵活便捷的解决方案">#</a></h6>
+<p>DuerOS拥有灵活分层的解决方案，为不同类型的企业及开发者提供一站式服务。极大降低了企业的生产、开发门槛。</p>
+<h6 id="广泛的场景适用性"><strong>广泛的场景适用性：</strong><a hidden class="anchor" aria-hidden="true" href="#广泛的场景适用性">#</a></h6>
+<p>DuerOS可以广泛适用于家居、随身、车载等多种场景，支持音箱、电视、冰箱、手机、机器人、车载、手表等多种硬件设备。</p>
+<h6 id="丰富完善的内容生态"><strong>丰富完善的内容生态：</strong><a hidden class="anchor" aria-hidden="true" href="#丰富完善的内容生态">#</a></h6>
+<p>借助百度生态资源的优势，DuerOS能为用户提供完整的服务链条。</p>
+<p>（1） 免费、低成本的正版内容：音乐、有声、视频、新闻等内容资源应有尽有</p>
+<p>（2） 包罗万象的海量信息：百度搜索十余年来积累了海量信息，可满足用户全方位的信息查询需求。</p>
+<p>（3） 庞大的服务生态：借助百度地图、糯米、外卖等服务生态体系，为用户提供完整的从信息筛选到下单支付的闭环服务。且支持第三方内容或资源方的信息接入。</p>
+<h5 id="4dueros开放平台">4）DuerOS开放平台<a hidden class="anchor" aria-hidden="true" href="#4dueros开放平台">#</a></h5>
+<p>DuerOS 开放平台主要面向企业级用户及个人开发者，为硬件开发者提供支持语音控制的智能家居开放平台，为软件开发者提供对话式操作的技能开放平台。整体分为技能开放平台、智能家居开放平台，架构如下图所示：</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-15_17-10-29.png?version=1&amp;modificationDate=1678871430299&amp;api=v2" alt=""  />
+</p>
+<h6 id="技能开放平台">技能开放平台<a hidden class="anchor" aria-hidden="true" href="#技能开放平台">#</a></h6>
+<p>技能开放平台是DuerOS为第三方开发者提供的一整套技能开发、测试、部署工具的开放平台。第三方开发者可以在平台上，通过可视化界面，简单、高效地开发各类DuerOS技能</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_17-25-52.png?version=1&amp;modificationDate=1678872352896&amp;api=v2" alt=""  />
+</p>
+<h6 id="智能家居开放平台">智能家居开放平台<a hidden class="anchor" aria-hidden="true" href="#智能家居开放平台">#</a></h6>
+<p>为智能家居设备厂商、酒店方案厂商和模组厂商提供基于云云对接、蓝牙Mesh直连等方式接入小度助手服务的IoT开放平台</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-15_17-28-40.png?version=1&amp;modificationDate=1678872520555&amp;api=v2" alt=""  />
+</p>
+<p>通过百度物联网和AI技术加持，拓展产品智能卖点，为用户提供极佳的全场景智能家居体验</p>
+<h4 id="332软件设计">3.3.2、软件设计<a hidden class="anchor" aria-hidden="true" href="#332软件设计">#</a></h4>
+<p>当深层次的去体验小度音箱APP的时候，我们会惊讶的发现，小度音箱在这一块的设计上，也紧紧围绕敬老、爱幼两个切入点，并基于此打造它的应用生态，下面我围绕这两块进行一个介绍和分析，也为我们后续在敬老、爱幼两大切入点打个样。</p>
+<h5 id="爱幼">爱幼<a hidden class="anchor" aria-hidden="true" href="#爱幼">#</a></h5>
+<p>“三岁看小，七岁看老，童年的问题影响一生”。这是小度音箱APP将家长们最大的担心作为他们产品的最大设计理念，在这里需要注意的是，结合教育部学生数据、统计局出生人口数据得出，儿童家庭是指学龄前儿童+小学生儿童家庭。小度音箱基于以下6大家长最关心的问题进行应用的开发：</p>
+<ul>
+<li>没空陪，导致孩子性格孤僻</li>
+<li>别的孩子自信大方，自己孩子内向害羞</li>
+<li>敷衍孩子的“为什么”影响了好奇心</li>
+<li>网上信息混杂，孩子一不小心学坏</li>
+<li>拿走手机孩子就哭闹</li>
+<li>屏幕看三年，眼镜厚的像酒瓶底</li>
+</ul>
+<p>针对于孩子的好奇心，小度音箱接入百度搜索，以此解决好奇心的问题，打造了一个天然的解决十万个为什么的老师</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-15_10-55-7.png?version=1&amp;modificationDate=1678848908593&amp;api=v2" alt=""  />
+</p>
+<p>大部分孩子性格孤僻缺少陪伴，小度音箱设计了免接通视频通话，实现了不在家也能陪孩子</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_10-57-30.png?version=1&amp;modificationDate=1678849051082&amp;api=v2" alt=""  />
+</p>
+<p>为了解决达人工作繁忙不能有效的关注孩子在家的动向，小度音箱开发了内置监控功能，打开小度app就能看到家中的情况</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-0-56.png?version=1&amp;modificationDate=1678849257506&amp;api=v2" alt=""  />
+</p>
+<p>为了解决对孩子的陪伴问题，小度音箱实现了声纹识别功能，可以个性化定制声音，因此小度可以模仿爸妈的声音，跟孩子进行交流，比如睡前讲故事，只需要点击小度App，点击“爸妈讲故事”即可，百度结合深度神经网络声码器技术实现</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-2-58.png?version=1&amp;modificationDate=1678849378345&amp;api=v2" alt=""  />
+</p>
+<p>担心孩子视力的问题，百度采用了防蓝光大屏，同时设计了距离过近的语音提醒功能、使用时间过长语音提醒功能</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-7-2.png?version=1&amp;modificationDate=1678849623102&amp;api=v2" alt=""  />
+</p>
+<p>针对不良内容，孩子上网学坏，小度通过内容过滤、技能禁用、家长远程控制、浏览使用记录、童脸识别、家长锁屏六大功能对孩子进行保护，儿童模式下会屏蔽不良内容</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-10-2.png?version=1&amp;modificationDate=1678849802403&amp;api=v2" alt=""  />
+</p>
+<p>如何解决孩子内向害羞的问题，小度从兴趣爱好上下手，比如歌唱类，百度接入了大量的正版儿歌曲库，其屏幕可以连接双麦，打造多重音效，从而激发孩子的表演欲望</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-14-43.png?version=1&amp;modificationDate=1678850084170&amp;api=v2" alt=""  />
+</p>
+<h5 id="敬老">敬老<a hidden class="anchor" aria-hidden="true" href="#敬老">#</a></h5>
+<p>在外打拼，联系不到父母我们可以怎么做？小度音箱开发了视频通话自动接听功能</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-23-52.png?version=1&amp;modificationDate=1678850633109&amp;api=v2" alt=""  />
+</p>
+<p>针对于老人的安全问题，小度音箱支持呼救转接功能，在语音指令上设置：“小度小度，救救我”，然后小度音箱可根据设置的紧急联系人打电话进行拨通，也可呼叫最近的医院急救，创造白金时间</p>
+<p><img loading="lazy" src="/download/attachments/97886397/image2023-3-15_11-26-21.png?version=1&amp;modificationDate=1678850781619&amp;api=v2" alt=""  />
+</p>
+<p>在贴心服务上，小度音箱在老人模式里面开发了播放戏曲功能、跳广场舞功能以及丰富的电视台，皆在打造多老人的贴心服务</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-29-7.png?version=1&amp;modificationDate=1678850947637&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-29-23.png?version=1&amp;modificationDate=1678850963206&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-29-38.png?version=1&amp;modificationDate=1678850979002&amp;api=v2" alt=""  />
+</p>
+<h5 id="通用功能">通用功能<a hidden class="anchor" aria-hidden="true" href="#通用功能">#</a></h5>
+<p>**1、随便听：**小度音箱接入了三大音乐平台，QQ音乐、酷狗音乐、酷我音乐，其次小度音箱接入很多热门有声平台，比如喜马拉雅、FM等，不仅可以听音乐，还可以听新闻视屏，做到了真正的随便听</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-39-6.png?version=1&amp;modificationDate=1678851546499&amp;api=v2" alt=""  />
+</p>
+<p>2、**随便问：**小度音箱内置百度，接入百度全网数据，天气、菜谱、营养、路况等问题迎刃而解</p>
+<p><img loading="lazy" src="/download/thumbnails/97886397/image2023-3-15_11-39-49.png?version=1&amp;modificationDate=1678851591001&amp;api=v2" alt=""  />
+</p>
+<h3 id="34软硬件框架设计总结">3.4、软硬件框架设计总结<a hidden class="anchor" aria-hidden="true" href="#34软硬件框架设计总结">#</a></h3>
+<p>有趣的灵魂（小度助手）+设计感的外表（各种终端屏）=千变的场景（用户的体验）。</p>
+<h2 id="4思考与总结">4、思考与总结<a hidden class="anchor" aria-hidden="true" href="#4思考与总结">#</a></h2>
+<p>通过对小度智能音箱的整体调研，我们可以发现，在硬件层面，小度的做工很细致，比如涉及到声学模块的组件，几乎都用了隔音棉或者保护罩之类的隔绝噪音的物品，从根源上就已经解决了降噪的一部分问题，这个值得我们去借鉴。在软件层面的设计，小度跟我们万得厨的三个切入点几乎一致，小度是从敬老、爱幼两个方面打造语音助手，这恰巧跟我们公司的切入点一致，很有参考意义。其实无论是小度还是小万，其本质上来说它们都属于人工智能产品，那么如何取衡量一个AI产品做的好不好，其实就是看它的人工智能度，那么我们可以套用百度团队对人工智能度的评判标准作为参考：<strong>人工智能度 = 听清  x  听懂  x  满足</strong>，厨房有点大？放心，小万能听的请；问题有点难？别怕，你的问题小万听的懂；要求有点多？没事，你要的食物小万能满足。</p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/1%E7%AB%9E%E5%93%81%E8%B0%83%E7%A0%94/">1、竞品调研</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/try...catch...%E5%92%8C%E4%BB%96%E8%A1%A8%E5%85%84%E5%BC%9Freturn/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>try...catch...和他表兄弟return</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%88%9D%E4%BD%93%E9%AA%8Cegg-vue-singal-page/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>初体验egg-vue-singal-page</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 1.5、小度智能音箱软硬件架构设计调研 on x"
+            href="https://x.com/intent/tweet/?text=1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f&amp;hashtags=1%e3%80%81%e7%ab%9e%e5%93%81%e8%b0%83%e7%a0%94">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 1.5、小度智能音箱软硬件架构设计调研 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f&amp;title=1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94&amp;summary=1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 1.5、小度智能音箱软硬件架构设计调研 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f&title=1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 1.5、小度智能音箱软硬件架构设计调研 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 1.5、小度智能音箱软硬件架构设计调研 on whatsapp"
+            href="https://api.whatsapp.com/send?text=1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 1.5、小度智能音箱软硬件架构设计调研 on telegram"
+            href="https://telegram.me/share/url?text=1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 1.5、小度智能音箱软硬件架构设计调研 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=1.5%e3%80%81%e5%b0%8f%e5%ba%a6%e6%99%ba%e8%83%bd%e9%9f%b3%e7%ae%b1%e8%bd%af%e7%a1%ac%e4%bb%b6%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e8%b0%83%e7%a0%94&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f1.5%25E5%25B0%258F%25E5%25BA%25A6%25E6%2599%25BA%25E8%2583%25BD%25E9%259F%25B3%25E7%25AE%25B1%25E8%25BD%25AF%25E7%25A1%25AC%25E4%25BB%25B6%25E6%259E%25B6%25E6%259E%2584%25E8%25AE%25BE%25E8%25AE%25A1%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

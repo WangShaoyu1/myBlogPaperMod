@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>ReactHooks心智负担：消个抖都消不利索了 | PaperMod</title>
+<meta name="keywords" content="前端, React.js">
+<meta name="description" content="ReactHooks优势确实明显，但是随之而来的心智负担也确实存在。本文通过实例详细分析了直接用debounce消抖在hooks中存在的问题，并给出了自定义hook的实现">
+<meta name="author" content="程序员芋仔">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/reacthooks%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/reacthooks%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="ReactHooks心智负担：消个抖都消不利索了" />
+<meta property="og:description" content="ReactHooks优势确实明显，但是随之而来的心智负担也确实存在。本文通过实例详细分析了直接用debounce消抖在hooks中存在的问题，并给出了自定义hook的实现" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/reacthooks%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-05-25T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="ReactHooks心智负担：消个抖都消不利索了"/>
+<meta name="twitter:description" content="ReactHooks优势确实明显，但是随之而来的心智负担也确实存在。本文通过实例详细分析了直接用debounce消抖在hooks中存在的问题，并给出了自定义hook的实现"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "ReactHooks心智负担：消个抖都消不利索了",
+      "item": "http://localhost:1313/posts/juejin/reacthooks%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ReactHooks心智负担：消个抖都消不利索了",
+  "name": "ReactHooks心智负担：消个抖都消不利索了",
+  "description": "ReactHooks优势确实明显，但是随之而来的心智负担也确实存在。本文通过实例详细分析了直接用debounce消抖在hooks中存在的问题，并给出了自定义hook的实现",
+  "keywords": [
+    "前端", "React.js"
+  ],
+  "articleBody": "React Hooks已经有三年多的时间了，团队中也基本上已经很少看到class组件的身影，也很少再看到用不用hooks的争论，笔者认为，hooks优势确实明显，但是随之而来的心智负担也确实存在。就比如，按钮消个抖，非常常见的业务诉求，但是实际写起来，确实并不容易。\n网上也确实有一些优秀的 hooks 库已经进行了实现，但是一些分析介绍的文章，或多或少有点问题。故写此文记录下，写的不好的地方也欢迎交流指出。\n业务背景 消抖在日常的开发中遇到的场景非常常见，比如一个输入搜索的逻辑，页面中一个输入框，根据用户输入，从远程拉取结果返回。\n这个场景下，如果不对用户输入进行消抖，那么请求的频率会非常频繁。故需要对输入行为进行消抖，来达到减少请求频次的效果。\n未经消抖的简单的代码如下：\njsx\n代码解读\n复制代码\nimport React, { useCallback, useState } from 'react'; const fakeFetch = (v) =\u003e { return new Promise((resolve) =\u003e { setTimeout(() =\u003e { resolve(JSON.stringify(v)); }, 500); }); }; export default function App() { const [value, setValue] = useState(''); const [res, setRes] = useState(''); const [fakeFetchCount, setFakeFetchCount] = useState(0); const getRes = useCallback((v) =\u003e { setFakeFetchCount((pre) =\u003e pre + 1); fakeFetch({ value: v, }).then((res) =\u003e setRes(res)); }, []); const onChange = useCallback((e) =\u003e { setValue(e.target.value); getRes(e.target.value); }, []); return ( {res} fetch次数: {fakeFetchCount} ); }\n效果如图：\n上例中，当用户输入，那么便会进行请求拉取远程接口的返回。这里使用了一个mock的fetch，定时500ms后返回结果。\n可以看出来，每输入一个字母，就会发起一次请求，这在实际的业务中，显然是给服务器带来了不必要的压力。\n消抖方法 传统的消抖 正常的消抖比较简单，其本质是在执行时，设定一个延时为 waitTime 的定时函数，每次执行，都先清除上一次的定时器，再新起一个定时器，如果触发频率较快，那么上一次设定好的定时器，会一直被清除，直到该函数不再被触发，从而执行上一次设定好的定时器函数，利用这样的方法，达到消除抖动的目的。\n常见的实现如下：\njs\n代码解读\n复制代码\nfunction debounce(func, waitTime) { let timer = null; return function (...args) { if (timer) { clearTimeout(timer); } timer = setTimeout(() =\u003e { func.apply(this, args); }, waitTime); }; }\nhooks 写法 直接消抖 借助上文的 debounce 函数，很容易在组件中写下如下的消抖方案：\njsx\n代码解读\n复制代码\n// version 1： 直接消抖的代码 import React, { useCallback, useState, useEffect } from 'react'; function debounce(func, waitTime) { let timer = null; return function (...args) { if (timer) { clearTimeout(timer); } timer = setTimeout(() =\u003e { func.apply(this, args); }, waitTime); }; } const fakeFetch = (v) =\u003e { return new Promise((resolve) =\u003e { setTimeout(() =\u003e { resolve(JSON.stringify(v)); }, 500); }); }; export default function App() { const [value, setValue] = useState(''); const [res, setRes] = useState(''); const [fakeFetchCount, setFakeFetchCount] = useState(0); // 用debounce函数包裹原函数 const getRes = useCallback( debounce((v) =\u003e { setFakeFetchCount((pre) =\u003e pre + 1); fakeFetch({ value: v, }).then((res) =\u003e { setRes(res); }); }, 500), [] ); const onChange = useCallback( (e) =\u003e { setValue(e.target.value); getRes(e.target.value); }, [getRes] ); return ( {res} fetch次数: {fakeFetchCount} ); }\n关键修改点就是将原函数通过 debounce 函数包裹即可，其效果如下图：\n从结果上来看，这样写其实就已经达到了想要的效果。\n但是仔细分析下代码：\njsx\n代码解读\n复制代码\nconst getRes = useCallback( debounce((v) =\u003e { setFakeFetchCount((pre) =\u003e pre + 1); fakeFetch({ value: v, }).then((res) =\u003e { setRes(res); }); }, 500), [] );\n组件每次在渲染的时候，debounce 函数每次都会执行一次，生成一个新的经过消抖的函数，但是由于 useCallback 中的依赖为空，所以 getRes 每次都会使用第一次生成的消抖后的函数，从而在表现上是符合预期的。\n加入了依赖项 每次都执行一次 debounce 在性能上的损耗可以忽略不计，但是如果 useCallback 有依赖，那么每次 getRes 函数都会是新的消抖后的函数，抛开函数更新后引发的子组件渲染问题不谈，由于消抖函数中存在一个定时器，getRes 函数更新后，旧的消抖后的函数中的定时器无人清除，会被执行，从而缺失了消抖的效果。\n带到实例中，假设服务端的接口，除了需要用户的输入，还需要用户在页面停留的时长作为参数，修改代码如下：\njsx\n代码解读\n复制代码\n// version2: 加入了停留时长依赖的消抖 import React, { useCallback, useState, useEffect } from 'react'; function debounce(func, waitTime) { let timer = null; return function (...args) { if (timer) { clearTimeout(timer); } timer = setTimeout(() =\u003e { func.apply(this, args); }, waitTime); }; } const fakeFetch = (v) =\u003e { return new Promise((resolve) =\u003e { setTimeout(() =\u003e { resolve(JSON.stringify(v)); }, 500); }); }; export default function App() { const [value, setValue] = useState(''); const [res, setRes] = useState(''); const [fakeFetchCount, setFakeFetchCount] = useState(0); // 增加用户停留时间状态 const [duration, setDuration] = useState(0); // 用户停留时长更新 useEffect(() =\u003e { setInterval(() =\u003e { setDuration((pre) =\u003e pre + 1); }, 1000); }, []); const getRes = useCallback( debounce((v) =\u003e { setFakeFetchCount((pre) =\u003e pre + 1); fakeFetch({ value: v, // 请求时携带duration参数 duration, }).then((res) =\u003e { setRes(res); }); }, 500), // 增加对用户停留时长状态的依赖 [duration] ); const onChange = useCallback( (e) =\u003e { setValue(e.target.value); getRes(e.target.value); }, [getRes] ); return ( {res} fetch次数: {fakeFetchCount} ); }\n核心的修改在于，原来 useCallback 中的依赖为空，现在依赖了用户停留时长 duration，效果如下：\n当一直快速输入时，fetch 次数还一直在增加，这个其实就是由于 duration 这个状态每隔 1s 更新一次，此时 getRes 函数由于依赖了 duration，那么 getRes 函数也会变成新的消抖后的函数，从而导致上一个的 getRes 函数设置的定时器无人清除，从而导致 fetch 的执行。\n简单整理下，就是直接对原函数使用 debounce 消抖，在普通情况下，是能够达到预期的。\n但是当原函数对外部有依赖，同时组件在消抖函数执行的期间，触发了该依赖的修改，那么此时旧的消抖函数的定时器会无人清理，导致消抖函数还是会被执行，从而达不到预期的效果。\n当然，在上述这个例子中，其实 duration 可以用 useRef 来避免 getRes 函数对它的依赖，但是如果依赖的参数很多呢？此时每一个依赖项都改成 ref, 甚至有些依赖项的修改还需要触发组件的渲染，那么就需要为该状态同时保留 state 和 ref两个变量，即便可以通过自定义hook来封装这层逻辑，代码可读性也会变差。\n维持同一个 timer 其实通过上述分析，出现问题的核心在于：\ndebounce 函数在每次组件渲染后，都会新生成一个函数，此时如果 useCallback 中有依赖，那么上一次的消抖函数生成的定时器可能就没有清理，导致依旧执行带来预期不一致。\n了解了问题，解决方案其实也呼之欲出，核心就在于维持一个 timer，只要 timer 是同一个，那么不管多少次更新，都能保证上一次 timer 的清除，代码如下：\njsx\n代码解读\n复制代码\n// version 4： 维持同一个 timer import React, { useCallback, useState, useEffect, useRef } from 'react'; const fakeFetch = (v) =\u003e { return new Promise((resolve) =\u003e { setTimeout(() =\u003e { resolve(JSON.stringify(v)); }, 500); }); }; export default function App() { const [value, setValue] = useState(''); const [res, setRes] = useState(''); const [fakeFetchCount, setFakeFetchCount] = useState(0); const [duration, setDuration] = useState(0); useEffect(() =\u003e { setInterval(() =\u003e { setDuration((pre) =\u003e pre + 1); }, 1000); }, []); // 用 ref 维持同一个timer const timerRef = useRef(null); const getRes = useCallback( (v) =\u003e { if (timerRef.current) { clearTimeout(timerRef.current); } timerRef.current = setTimeout(() =\u003e { setFakeFetchCount((pre) =\u003e pre + 1); fakeFetch({ value: v, duration, }).then((res) =\u003e { setRes(res); }); }, 500); }, [duration] ); const onChange = useCallback( (e) =\u003e { setValue(e.target.value); getRes(e.target.value); }, [getRes] ); return ( {res} 停留时长：{duration}s fetch次数: {fakeFetchCount} ); }\n其效果如下图：\n看起来好像是符合预期的，确实是当用户停止输入后，延时一段时间才进行 fetch。\n但是这里其实还隐藏了一个 bug, 由于时延时执行的，虽然 useCallback 加入了 duration 作为依赖，当用户最后一次输入结束后，会开启一个定时器函数，该函数延时一定时间后发出 fetch 请求。\n如果 duration 在用户最后一次输入结束后发生了改变，那么定时器使用的其实是上一次的 duration，严格来讲，与预期是不符的。可以在上述例子中，将延时改成 5000ms，效果会比较明显，如下图：\n在上图中，将消抖函数延时的长度改成了5s，当用户第一次停止输入时，是5s左右，当定时器真正执行时，大约是 10s 左右，而实际传递给服务器的时间是停止输入时的 duration, 5s。当然，在这个场景下，可能是符合业务预期的，但是如果还依赖其他参数，其他参数也这延时的 5s 发生了改变，但是请求时是旧的值，很有可能会带来线上bug。\n维持同一个函数 在维持了同一个 timer 后，确实消除了上一个 timer 未清除带来的频繁执行问题，但是由于消抖函数是延迟 xxxms 执行的，那么此时如果依赖项发生变化，但是用户又没有新的行为触发生成新的消抖函数，那么就会访问到旧的依赖项，从而带来潜在的bug。\n对于延迟带来的旧依赖项问题，其实在 hooks 中非常常见，一般通过 ref 即可解决，但是在这个问题中，如果把消抖函数依赖的参数 ref 化，一方面参数数量不确定，另一方面也不好把逻辑抽离出来，换个思路，可以把函数 ref 化。代码看起来会更容易理解一些，如下：\njsx\n代码解读\n复制代码\n// version5: 维持同一个timer, func import React, { useCallback, useState, useEffect, useRef } from 'react'; const fakeFetch = (v) =\u003e { return new Promise((resolve) =\u003e { setTimeout(() =\u003e { resolve(JSON.stringify(v)); }, 500); }); }; export default function App() { const [value, setValue] = useState(''); const [res, setRes] = useState(''); const [fakeFetchCount, setFakeFetchCount] = useState(0); const [duration, setDuration] = useState(0); useEffect(() =\u003e { setInterval(() =\u003e { setDuration((pre) =\u003e pre + 1); }, 1000); }, []); const timerRef = useRef(null); // ref 维持函数 const funcRef = useRef(null); // 原函数定义 const getRes = useCallback( (v) =\u003e { setFakeFetchCount((pre) =\u003e pre + 1); fakeFetch({ value: v, duration, }).then((res) =\u003e { setRes(res); }); }, [duration] ); // 始终跟原函数保持一致 funcRef.current = getRes; // 消抖逻辑 const getResDebounced = useCallback((...args) =\u003e { if (timerRef.current) { clearTimeout(timerRef.current); } timerRef.current = setTimeout(() =\u003e { // 定时器中通过访问ref，避免闭包带来的访问旧值的问题 funcRef.current.apply(null, args); }, 5000); }, []); const onChange = useCallback( (e) =\u003e { setValue(e.target.value); getResDebounced(e.target.value); }, [getResDebounced] ); return ( {res} 停留时长：{duration}s fetch次数: {fakeFetchCount} ); }\n核心在于：\n新建funcRef，同步 getRes 函数，始终保持最新 新建 getRefDebounced 函数，该函数中使用 funcRef.current 作为定时器中执行的函数。 通过这样的方式，延时执行时，始终执行最新的函数，也就是使用了最新参数的 getRes 函数，从而解决 hooks 中，延时执行带来的用到旧依赖项的 bug（通常称为 hooks 闭包问题）。\n封装自定义hook 上述代码已经比较清晰了，但是每一次消抖都定义这么多玩意，真的吃不消，hooks 的一大好处就是逻辑的封装，那么自然是要封装一个自定义的消抖 hooks 了。如下：\njsx\n代码解读\n复制代码\nfunction useDebounceFn(fn, delay) { const timerRef = useRef(null); const fnRef = useRef(fn); fnRef.current = fn; const fnDebounced = useCallback( function (...args) { if (timerRef.current) { clearTimeout(timerRef.current); } timerRef.current = setTimeout(() =\u003e { fnRef.current.apply(this, args); }, delay); }, [delay] ); return fnDebounced; }\n通过 ref 维持同一个 timer, 再通过 fnRef, 始终保持跟外部的 fn 同步，最后返回 fnDebounced。\n这里有几个细节：\nfnRef.current = fn, 要不要用 useEffect 包裹，这里我的观点是不需要，useEffect会做一次比较，其实有比较的这个功夫，赋值也不耽误事，实际套个循环（hooks并不推荐，此处仅做实验），1000次左右的话，直接赋值会在0.1ms左右，而useEffect会在1ms左右，差别也不算大。套不套 useEffect 影响真的不大。\nfnDebounced中的 useCallback 中的函数，一定要使用 普通函数 而非 箭头函数。因为一旦使用箭头函数，那么 this 其实外面就改变不了了。虽然在函数组件中，this 变得越来越不常用，但是可以通过普通函数保留这个 this， 以便外界需要的时候自行使用。\n依赖项 deps 放在哪里？不需要放 deps 的地方，全部交由外部传递进来的fn处理，如果需要根据 deps 变化而更新消抖函数，那么直接在外部的 fn 中处理即可。\n完整的示例代码如下：\njsx\n代码解读\n复制代码\n// version5: 维持同一个timer, func import React, { useCallback, useState, useEffect, useRef } from 'react'; const fakeFetch = (v) =\u003e { return new Promise((resolve) =\u003e { setTimeout(() =\u003e { resolve(JSON.stringify(v)); }, 500); }); }; function useDebounceFn(fn, delay) { const timerRef = useRef(null); const fnRef = useRef(fn); fnRef.current = fn; const fnDebounced = useCallback( function (...args) { if (timerRef.current) { clearTimeout(timerRef.current); } timerRef.current = setTimeout(() =\u003e { fnRef.current.apply(this, args); }, delay); }, [delay] ); return fnDebounced; } export default function App() { const [value, setValue] = useState(''); const [res, setRes] = useState(''); const [fakeFetchCount, setFakeFetchCount] = useState(0); const [duration, setDuration] = useState(0); useEffect(() =\u003e { setInterval(() =\u003e { setDuration((pre) =\u003e pre + 1); }, 1000); }, []); const getRes = useCallback( (v) =\u003e { setFakeFetchCount((pre) =\u003e pre + 1); fakeFetch({ value: v, duration, }).then((res) =\u003e { setRes(res); }); }, [duration] ); const getResDebounced = useDebounceFn(getRes, 500); const onChange = useCallback( (e) =\u003e { setValue(e.target.value); getResDebounced(e.target.value); }, [getResDebounced] ); return ( {res} 停留时长：{duration}s fetch次数: {fakeFetchCount} ); }\n效果如下：\n改成 5000ms 延迟后，在调用时，也会走当下的 duration 而非上一次的值。效果如下：\n至此，一通分析下，终于得到了一个还算满意无 bug 的消抖自定义hook。\n当然这个版本下，也还有可以优化的地方，就是当组件卸载后，对 timer 的消除，来避免组件卸载后回调的执行，代码如下：\njsx\n代码解读\n复制代码\nfunction useDebounceFn(fn, delay) { const timerRef = useRef(null); const fnRef = useRef(fn); fnRef.current = fn; // 增加组件卸载时，timer 的清除 useEffect(() =\u003e { return () =\u003e { if (timerRef.current) { clearTimeout(timerRef.current); } }; }, []); const fnDebounced = useCallback( function (...args) { if (timerRef.current) { clearTimeout(timerRef.current); } timerRef.current = setTimeout(() =\u003e { fnRef.current.apply(this, args); }, delay); }, [delay] ); return fnDebounced; }\n总结 本文通过一个常见的根据用户输入发请求的消抖业务场景入手，从最基础的写法，到 hooks 写法，分析了其中的 bug 及存在的问题，并最终得出了自定义 hooks 的写法。\n整体而言，hooks 让 react 组件变的十分纯粹，每次的渲染，不过就是将函数重新执行一遍，相比于 class 组件的生命周期，函数式的组件确实纯粹了许多。\n但是由于异步操作以及依赖项的存在，还是导致了不少的闭包问题，也让消抖等一些常见的操作一不小心就掉坑里了。\n不过梳理其常见的心智负担之后，其实 hooks 还是又方便又纯粹，而消抖自定义 hooks 也充分展现了其逻辑易复用的好处。\n最后，都看到这了，点个赞吧. ╮(╯_╰)╭ ·\n",
+  "wordCount" : "1273",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-05-25T00:00:00Z",
+  "dateModified": "2022-05-25T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "程序员芋仔"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/reacthooks%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      ReactHooks心智负担：消个抖都消不利索了
+    </h1>
+    <div class="post-description">
+      ReactHooks优势确实明显，但是随之而来的心智负担也确实存在。本文通过实例详细分析了直接用debounce消抖在hooks中存在的问题，并给出了自定义hook的实现
+    </div>
+    <div class="post-meta"><span title='2022-05-25 00:00:00 +0000 UTC'>五月 25, 2022</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;程序员芋仔&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%9a%e5%8a%a1%e8%83%8c%e6%99%af" aria-label="业务背景">业务背景</a></li>
+                <li>
+                    <a href="#%e6%b6%88%e6%8a%96%e6%96%b9%e6%b3%95" aria-label="消抖方法">消抖方法</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bc%a0%e7%bb%9f%e7%9a%84%e6%b6%88%e6%8a%96" aria-label="传统的消抖">传统的消抖</a></li>
+                <li>
+                    <a href="#hooks-%e5%86%99%e6%b3%95" aria-label="hooks 写法">hooks 写法</a><ul>
+                        
+                <li>
+                    <a href="#%e7%9b%b4%e6%8e%a5%e6%b6%88%e6%8a%96" aria-label="直接消抖">直接消抖</a></li>
+                <li>
+                    <a href="#%e5%8a%a0%e5%85%a5%e4%ba%86%e4%be%9d%e8%b5%96%e9%a1%b9" aria-label="加入了依赖项">加入了依赖项</a></li>
+                <li>
+                    <a href="#%e7%bb%b4%e6%8c%81%e5%90%8c%e4%b8%80%e4%b8%aa-timer" aria-label="维持同一个 timer">维持同一个 timer</a></li>
+                <li>
+                    <a href="#%e7%bb%b4%e6%8c%81%e5%90%8c%e4%b8%80%e4%b8%aa%e5%87%bd%e6%95%b0" aria-label="维持同一个函数">维持同一个函数</a></li>
+                <li>
+                    <a href="#%e5%b0%81%e8%a3%85%e8%87%aa%e5%ae%9a%e4%b9%89hook" aria-label="封装自定义hook">封装自定义hook</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>React Hooks已经有三年多的时间了，团队中也基本上已经很少看到class组件的身影，也很少再看到用不用hooks的争论，笔者认为，hooks优势确实明显，但是随之而来的心智负担也确实存在。就比如，按钮消个抖，非常常见的业务诉求，但是实际写起来，确实并不容易。</p>
+<p>网上也确实有一些优秀的 hooks 库已经进行了实现，但是一些分析介绍的文章，或多或少有点问题。故写此文记录下，写的不好的地方也欢迎交流指出。</p>
+<h2 id="业务背景">业务背景<a hidden class="anchor" aria-hidden="true" href="#业务背景">#</a></h2>
+<p>消抖在日常的开发中遇到的场景非常常见，比如一个输入搜索的逻辑，页面中一个输入框，根据用户输入，从远程拉取结果返回。</p>
+<p>这个场景下，如果不对用户输入进行消抖，那么请求的频率会非常频繁。故需要对输入行为进行消抖，来达到减少请求频次的效果。</p>
+<p>未经消抖的简单的代码如下：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import React, { useCallback, useState } from 'react'; const fakeFetch = (v) =&gt; {   return new Promise((resolve) =&gt; {     setTimeout(() =&gt; {       resolve(JSON.stringify(v));     }, 500);   }); }; export default function App() {   const [value, setValue] = useState('');   const [res, setRes] = useState('');   const [fakeFetchCount, setFakeFetchCount] = useState(0);   const getRes = useCallback((v) =&gt; {     setFakeFetchCount((pre) =&gt; pre + 1);     fakeFetch({         value: v,     }).then((res) =&gt; setRes(res));   }, []);   const onChange = useCallback((e) =&gt; {     setValue(e.target.value);     getRes(e.target.value);   }, []);   return (     &lt;div&gt;       &lt;input value={value} onChange={onChange} /&gt;       &lt;div&gt;{res}&lt;/div&gt;       &lt;div&gt;fetch次数: {fakeFetchCount}&lt;/div&gt;     &lt;/div&gt;   ); }</code></p>
+<p>效果如图：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/aa5b44c994df405191802d5d0b688fa8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<p>上例中，当用户输入，那么便会进行请求拉取远程接口的返回。这里使用了一个mock的fetch，定时500ms后返回结果。</p>
+<p>可以看出来，每输入一个字母，就会发起一次请求，这在实际的业务中，显然是给服务器带来了不必要的压力。</p>
+<h2 id="消抖方法">消抖方法<a hidden class="anchor" aria-hidden="true" href="#消抖方法">#</a></h2>
+<h3 id="传统的消抖">传统的消抖<a hidden class="anchor" aria-hidden="true" href="#传统的消抖">#</a></h3>
+<p>正常的消抖比较简单，其本质是在执行时，设定一个延时为 waitTime 的定时函数，每次执行，都先清除上一次的定时器，再新起一个定时器，如果触发频率较快，那么上一次设定好的定时器，会一直被清除，直到该函数不再被触发，从而执行上一次设定好的定时器函数，利用这样的方法，达到消除抖动的目的。</p>
+<p>常见的实现如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function debounce(func, waitTime) {   let timer = null;   return function (...args) {     if (timer) {       clearTimeout(timer);     }     timer = setTimeout(() =&gt; {       func.apply(this, args);     }, waitTime);   }; }</code></p>
+<h3 id="hooks-写法">hooks 写法<a hidden class="anchor" aria-hidden="true" href="#hooks-写法">#</a></h3>
+<h4 id="直接消抖">直接消抖<a hidden class="anchor" aria-hidden="true" href="#直接消抖">#</a></h4>
+<p>借助上文的 debounce 函数，很容易在组件中写下如下的消抖方案：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// version 1： 直接消抖的代码 import React, { useCallback, useState, useEffect } from 'react'; function debounce(func, waitTime) {   let timer = null;   return function (...args) {     if (timer) {       clearTimeout(timer);     }     timer = setTimeout(() =&gt; {       func.apply(this, args);     }, waitTime);   }; } const fakeFetch = (v) =&gt; {   return new Promise((resolve) =&gt; {     setTimeout(() =&gt; {       resolve(JSON.stringify(v));     }, 500);   }); }; export default function App() {   const [value, setValue] = useState('');   const [res, setRes] = useState('');   const [fakeFetchCount, setFakeFetchCount] = useState(0);      // 用debounce函数包裹原函数   const getRes = useCallback(     debounce((v) =&gt; {       setFakeFetchCount((pre) =&gt; pre + 1);       fakeFetch({         value: v,       }).then((res) =&gt; {         setRes(res);       });     }, 500),     []   );   const onChange = useCallback(     (e) =&gt; {       setValue(e.target.value);       getRes(e.target.value);     },     [getRes]   );   return (     &lt;div&gt;       &lt;input value={value} onChange={onChange} /&gt;       &lt;div&gt;{res}&lt;/div&gt;       &lt;div&gt;fetch次数: {fakeFetchCount}&lt;/div&gt;     &lt;/div&gt;   ); }</code></p>
+<p>关键修改点就是将原函数通过 debounce 函数包裹即可，其效果如下图：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/957a640404214c8ab9e6be3758a85b40~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<p>从结果上来看，这样写其实就已经达到了想要的效果。</p>
+<p>但是仔细分析下代码：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const getRes = useCallback(     debounce((v) =&gt; {       setFakeFetchCount((pre) =&gt; pre + 1);       fakeFetch({         value: v,       }).then((res) =&gt; {         setRes(res);       });     }, 500),     [] );</code></p>
+<p>组件每次在渲染的时候，debounce 函数每次都会执行一次，生成一个新的经过消抖的函数，但是由于 useCallback 中的依赖为空，所以 getRes 每次都会使用第一次生成的消抖后的函数，从而在表现上是符合预期的。</p>
+<h4 id="加入了依赖项">加入了依赖项<a hidden class="anchor" aria-hidden="true" href="#加入了依赖项">#</a></h4>
+<p>每次都执行一次 debounce 在性能上的损耗可以忽略不计，但是如果 useCallback 有依赖，那么每次 getRes 函数都会是新的消抖后的函数，抛开函数更新后引发的子组件渲染问题不谈，由于消抖函数中存在一个定时器，getRes 函数更新后，旧的消抖后的函数中的定时器无人清除，会被执行，从而缺失了消抖的效果。</p>
+<p>带到实例中，假设服务端的接口，除了需要用户的输入，还需要用户在页面停留的时长作为参数，修改代码如下：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// version2: 加入了停留时长依赖的消抖 import React, { useCallback, useState, useEffect } from 'react'; function debounce(func, waitTime) {   let timer = null;   return function (...args) {     if (timer) {       clearTimeout(timer);     }     timer = setTimeout(() =&gt; {       func.apply(this, args);     }, waitTime);   }; } const fakeFetch = (v) =&gt; {   return new Promise((resolve) =&gt; {     setTimeout(() =&gt; {       resolve(JSON.stringify(v));     }, 500);   }); }; export default function App() {   const [value, setValue] = useState('');   const [res, setRes] = useState('');   const [fakeFetchCount, setFakeFetchCount] = useState(0);   // 增加用户停留时间状态   const [duration, setDuration] = useState(0);      // 用户停留时长更新   useEffect(() =&gt; {     setInterval(() =&gt; {       setDuration((pre) =&gt; pre + 1);     }, 1000);   }, []);   const getRes = useCallback(     debounce((v) =&gt; {       setFakeFetchCount((pre) =&gt; pre + 1);       fakeFetch({         value: v,         // 请求时携带duration参数         duration,       }).then((res) =&gt; {         setRes(res);       });     }, 500),     // 增加对用户停留时长状态的依赖     [duration]   );   const onChange = useCallback(     (e) =&gt; {       setValue(e.target.value);       getRes(e.target.value);     },     [getRes]   );   return (     &lt;div&gt;       &lt;input value={value} onChange={onChange} /&gt;       &lt;div&gt;{res}&lt;/div&gt;       &lt;div&gt;fetch次数: {fakeFetchCount}&lt;/div&gt;     &lt;/div&gt;   ); }</code></p>
+<p>核心的修改在于，原来 useCallback 中的依赖为空，现在依赖了用户停留时长 duration，效果如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6ea905b09bee4ee39a49d5c3aee606e8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="version3"  />
+</p>
+<p>当一直快速输入时，fetch 次数还一直在增加，这个其实就是由于 duration 这个状态每隔 1s 更新一次，此时 getRes 函数由于依赖了 duration，那么 getRes 函数也会变成新的消抖后的函数，从而导致上一个的 getRes 函数设置的定时器无人清除，从而导致 fetch 的执行。</p>
+<p>简单整理下，就是<strong>直接对原函数使用 debounce 消抖，在普通情况下，是能够达到预期的。</strong></p>
+<p><strong>但是当原函数对外部有依赖，同时组件在消抖函数执行的期间，触发了该依赖的修改，那么此时旧的消抖函数的定时器会无人清理，导致消抖函数还是会被执行，从而达不到预期的效果。</strong></p>
+<p>当然，在上述这个例子中，其实 duration 可以用 useRef 来避免 getRes 函数对它的依赖，但是如果依赖的参数很多呢？此时每一个依赖项都改成 ref, 甚至有些依赖项的修改还需要触发组件的渲染，那么就需要为该状态同时保留 state 和 ref两个变量，即便可以通过自定义hook来封装这层逻辑，代码可读性也会变差。</p>
+<h4 id="维持同一个-timer">维持同一个 timer<a hidden class="anchor" aria-hidden="true" href="#维持同一个-timer">#</a></h4>
+<p>其实通过上述分析，出现问题的核心在于：</p>
+<p>debounce 函数在每次组件渲染后，都会新生成一个函数，此时如果 useCallback 中有依赖，那么上一次的消抖函数生成的定时器可能就没有清理，导致依旧执行带来预期不一致。</p>
+<p>了解了问题，解决方案其实也呼之欲出，<strong>核心就在于维持一个 timer，只要 timer 是同一个，那么不管多少次更新，都能保证上一次 timer 的清除</strong>，代码如下：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// version 4： 维持同一个 timer import React, { useCallback, useState, useEffect, useRef } from 'react'; const fakeFetch = (v) =&gt; {   return new Promise((resolve) =&gt; {     setTimeout(() =&gt; {       resolve(JSON.stringify(v));     }, 500);   }); }; export default function App() {   const [value, setValue] = useState('');   const [res, setRes] = useState('');   const [fakeFetchCount, setFakeFetchCount] = useState(0);   const [duration, setDuration] = useState(0);   useEffect(() =&gt; {     setInterval(() =&gt; {       setDuration((pre) =&gt; pre + 1);     }, 1000);   }, []);      // 用 ref 维持同一个timer   const timerRef = useRef(null);   const getRes = useCallback(     (v) =&gt; {       if (timerRef.current) {         clearTimeout(timerRef.current);       }       timerRef.current = setTimeout(() =&gt; {         setFakeFetchCount((pre) =&gt; pre + 1);         fakeFetch({           value: v,           duration,         }).then((res) =&gt; {           setRes(res);         });       }, 500);     },     [duration]   );   const onChange = useCallback(     (e) =&gt; {       setValue(e.target.value);       getRes(e.target.value);     },     [getRes]   );   return (     &lt;div&gt;       &lt;input value={value} onChange={onChange} /&gt;       &lt;div&gt;{res}&lt;/div&gt;       &lt;div&gt;停留时长：{duration}s&lt;/div&gt;       &lt;div&gt;fetch次数: {fakeFetchCount}&lt;/div&gt;     &lt;/div&gt;   ); }</code></p>
+<p>其效果如下图：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fc4a628395ed4029809ffb1b2dfe8c53~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<p>看起来好像是符合预期的，确实是当用户停止输入后，延时一段时间才进行 fetch。</p>
+<p>但是这里其实还隐藏了一个 bug, 由于时延时执行的，虽然 useCallback 加入了 duration 作为依赖，当用户最后一次输入结束后，会开启一个定时器函数，该函数延时一定时间后发出 fetch 请求。</p>
+<p>如果 duration 在用户最后一次输入结束后发生了改变，那么定时器使用的其实是上一次的 duration，严格来讲，与预期是不符的。可以在上述例子中，将延时改成 5000ms，效果会比较明显，如下图：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a40d0f9c27ea45b39f6053f881477634~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<p>在上图中，将消抖函数延时的长度改成了5s，当用户第一次停止输入时，是5s左右，当定时器真正执行时，大约是 10s 左右，而实际传递给服务器的时间是停止输入时的 duration, 5s。当然，在这个场景下，可能是符合业务预期的，但是如果还依赖其他参数，其他参数也这延时的 5s 发生了改变，但是请求时是旧的值，很有可能会带来线上bug。</p>
+<h4 id="维持同一个函数">维持同一个函数<a hidden class="anchor" aria-hidden="true" href="#维持同一个函数">#</a></h4>
+<p>在维持了同一个 timer 后，确实消除了上一个 timer 未清除带来的频繁执行问题，但是由于消抖函数是延迟 xxxms 执行的，那么此时如果依赖项发生变化，但是用户又没有新的行为触发生成新的消抖函数，那么就会访问到旧的依赖项，从而带来潜在的bug。</p>
+<p><strong>对于延迟带来的旧依赖项问题，其实在 hooks 中非常常见，一般通过 ref 即可解决，但是在这个问题中，如果把消抖函数依赖的参数 ref 化，一方面参数数量不确定，另一方面也不好把逻辑抽离出来，换个思路，可以把函数 ref 化</strong>。代码看起来会更容易理解一些，如下：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// version5: 维持同一个timer, func import React, { useCallback, useState, useEffect, useRef } from 'react'; const fakeFetch = (v) =&gt; {   return new Promise((resolve) =&gt; {     setTimeout(() =&gt; {       resolve(JSON.stringify(v));     }, 500);   }); }; export default function App() {   const [value, setValue] = useState('');   const [res, setRes] = useState('');   const [fakeFetchCount, setFakeFetchCount] = useState(0);   const [duration, setDuration] = useState(0);   useEffect(() =&gt; {     setInterval(() =&gt; {       setDuration((pre) =&gt; pre + 1);     }, 1000);   }, []);   const timerRef = useRef(null);      // ref 维持函数   const funcRef = useRef(null);   // 原函数定义   const getRes = useCallback(     (v) =&gt; {       setFakeFetchCount((pre) =&gt; pre + 1);       fakeFetch({         value: v,         duration,       }).then((res) =&gt; {         setRes(res);       });     },     [duration]   );      // 始终跟原函数保持一致   funcRef.current = getRes;      // 消抖逻辑   const getResDebounced = useCallback((...args) =&gt; {     if (timerRef.current) {       clearTimeout(timerRef.current);     }     timerRef.current = setTimeout(() =&gt; {       // 定时器中通过访问ref，避免闭包带来的访问旧值的问题       funcRef.current.apply(null, args);     }, 5000);   }, []);   const onChange = useCallback(     (e) =&gt; {       setValue(e.target.value);       getResDebounced(e.target.value);     },     [getResDebounced]   );   return (     &lt;div&gt;       &lt;input value={value} onChange={onChange} /&gt;       &lt;div&gt;{res}&lt;/div&gt;       &lt;div&gt;停留时长：{duration}s&lt;/div&gt;       &lt;div&gt;fetch次数: {fakeFetchCount}&lt;/div&gt;     &lt;/div&gt;   ); }</code></p>
+<p>核心在于：</p>
+<ol>
+<li>新建funcRef，同步 getRes 函数，始终保持最新</li>
+<li>新建 getRefDebounced 函数，该函数中使用 funcRef.current 作为定时器中执行的函数。</li>
+</ol>
+<p>通过这样的方式，延时执行时，始终执行最新的函数，也就是使用了最新参数的 getRes 函数，从而解决 hooks 中，延时执行带来的用到旧依赖项的 bug（通常称为 hooks 闭包问题）。</p>
+<h4 id="封装自定义hook">封装自定义hook<a hidden class="anchor" aria-hidden="true" href="#封装自定义hook">#</a></h4>
+<p>上述代码已经比较清晰了，但是每一次消抖都定义这么多玩意，真的吃不消，hooks 的一大好处就是逻辑的封装，那么自然是要封装一个自定义的消抖 hooks 了。如下：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function useDebounceFn(fn, delay) {   const timerRef = useRef(null);   const fnRef = useRef(fn);   fnRef.current = fn;   const fnDebounced = useCallback(     function (...args) {       if (timerRef.current) {         clearTimeout(timerRef.current);       }       timerRef.current = setTimeout(() =&gt; {         fnRef.current.apply(this, args);       }, delay);     },     [delay]   );   return fnDebounced; }</code></p>
+<p>通过 ref 维持同一个 timer, 再通过 fnRef, 始终保持跟外部的 fn 同步，最后返回 fnDebounced。</p>
+<p>这里有几个细节：</p>
+<ol>
+<li>
+<p>fnRef.current = fn, 要不要用 useEffect 包裹，这里我的观点是不需要，useEffect会做一次比较，其实有比较的这个功夫，赋值也不耽误事，实际套个循环（hooks并不推荐，此处仅做实验），1000次左右的话，直接赋值会在0.1ms左右，而useEffect会在1ms左右，差别也不算大。套不套 useEffect 影响真的不大。</p>
+</li>
+<li>
+<p>fnDebounced中的 useCallback 中的函数，一定要使用 普通函数 而非 箭头函数。因为一旦使用箭头函数，那么 this 其实外面就改变不了了。虽然在函数组件中，this 变得越来越不常用，但是可以通过普通函数保留这个 this， 以便外界需要的时候自行使用。</p>
+</li>
+<li>
+<p>依赖项 deps 放在哪里？不需要放 deps 的地方，全部交由外部传递进来的fn处理，如果需要根据 deps 变化而更新消抖函数，那么直接在外部的 fn 中处理即可。</p>
+</li>
+</ol>
+<p>完整的示例代码如下：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// version5: 维持同一个timer, func import React, { useCallback, useState, useEffect, useRef } from 'react'; const fakeFetch = (v) =&gt; {   return new Promise((resolve) =&gt; {     setTimeout(() =&gt; {       resolve(JSON.stringify(v));     }, 500);   }); }; function useDebounceFn(fn, delay) {   const timerRef = useRef(null);   const fnRef = useRef(fn);   fnRef.current = fn;   const fnDebounced = useCallback(     function (...args) {       if (timerRef.current) {         clearTimeout(timerRef.current);       }       timerRef.current = setTimeout(() =&gt; {         fnRef.current.apply(this, args);       }, delay);     },     [delay]   );   return fnDebounced; } export default function App() {   const [value, setValue] = useState('');   const [res, setRes] = useState('');   const [fakeFetchCount, setFakeFetchCount] = useState(0);   const [duration, setDuration] = useState(0);   useEffect(() =&gt; {     setInterval(() =&gt; {       setDuration((pre) =&gt; pre + 1);     }, 1000);   }, []);   const getRes = useCallback(     (v) =&gt; {       setFakeFetchCount((pre) =&gt; pre + 1);       fakeFetch({         value: v,         duration,       }).then((res) =&gt; {         setRes(res);       });     },     [duration]   );   const getResDebounced = useDebounceFn(getRes, 500);   const onChange = useCallback(     (e) =&gt; {       setValue(e.target.value);       getResDebounced(e.target.value);     },     [getResDebounced]   );   return (     &lt;div&gt;       &lt;input value={value} onChange={onChange} /&gt;       &lt;div&gt;{res}&lt;/div&gt;       &lt;div&gt;停留时长：{duration}s&lt;/div&gt;       &lt;div&gt;fetch次数: {fakeFetchCount}&lt;/div&gt;     &lt;/div&gt;   ); }</code></p>
+<p>效果如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/11fa9fe0f70346389a26a01fec99d786~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<p>改成 5000ms 延迟后，在调用时，也会走当下的 duration 而非上一次的值。效果如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/54f7c1e7bf354d2881889db2de985676~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<p>至此，一通分析下，终于得到了一个还算满意无 bug 的消抖自定义hook。</p>
+<p>当然这个版本下，也还有可以优化的地方，就是当组件卸载后，对 timer 的消除，来避免组件卸载后回调的执行，代码如下：</p>
+<p>jsx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function useDebounceFn(fn, delay) {   const timerRef = useRef(null);   const fnRef = useRef(fn);   fnRef.current = fn;         // 增加组件卸载时，timer 的清除   useEffect(() =&gt; {     return () =&gt; {       if (timerRef.current) {         clearTimeout(timerRef.current);       }     };   }, []);   const fnDebounced = useCallback(     function (...args) {       if (timerRef.current) {         clearTimeout(timerRef.current);       }       timerRef.current = setTimeout(() =&gt; {         fnRef.current.apply(this, args);       }, delay);     },     [delay]   );   return fnDebounced; }</code></p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>本文通过一个常见的根据用户输入发请求的消抖业务场景入手，从最基础的写法，到 hooks 写法，分析了其中的 bug 及存在的问题，并最终得出了自定义 hooks 的写法。</p>
+<p>整体而言，hooks 让 react 组件变的十分纯粹，每次的渲染，不过就是将函数重新执行一遍，相比于 class 组件的生命周期，函数式的组件确实纯粹了许多。</p>
+<p>但是由于异步操作以及依赖项的存在，还是导致了不少的闭包问题，也让消抖等一些常见的操作一不小心就掉坑里了。</p>
+<p>不过梳理其常见的心智负担之后，其实 hooks 还是又方便又纯粹，而消抖自定义 hooks 也充分展现了其逻辑易复用的好处。</p>
+<p>最后，都看到这了，点个赞吧. ╮(╯_╰)╭ ·</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/react.js/">React.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/navicat%E7%A4%BE%E5%8C%BA%E7%89%88%E7%BB%88%E4%BA%8E%E6%9D%A5%E4%BA%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Navicat社区版终于来了！！！！</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%8A%9B%E6%89%A3leetcode-28.%E5%AE%9E%E7%8E%B0strstr%E5%88%B7%E9%A2%98%E6%89%93%E5%8D%A1/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>力扣(LeetCode)-28.实现strStr()｜刷题打卡</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactHooks心智负担：消个抖都消不利索了 on x"
+            href="https://x.com/intent/tweet/?text=ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cReact.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactHooks心智负担：消个抖都消不利索了 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f&amp;title=ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86&amp;summary=ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactHooks心智负担：消个抖都消不利索了 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f&title=ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactHooks心智负担：消个抖都消不利索了 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactHooks心智负担：消个抖都消不利索了 on whatsapp"
+            href="https://api.whatsapp.com/send?text=ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactHooks心智负担：消个抖都消不利索了 on telegram"
+            href="https://telegram.me/share/url?text=ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactHooks心智负担：消个抖都消不利索了 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=ReactHooks%e5%bf%83%e6%99%ba%e8%b4%9f%e6%8b%85%ef%bc%9a%e6%b6%88%e4%b8%aa%e6%8a%96%e9%83%bd%e6%b6%88%e4%b8%8d%e5%88%a9%e7%b4%a2%e4%ba%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freacthooks%25E5%25BF%2583%25E6%2599%25BA%25E8%25B4%259F%25E6%258B%2585%25E6%25B6%2588%25E4%25B8%25AA%25E6%258A%2596%25E9%2583%25BD%25E6%25B6%2588%25E4%25B8%258D%25E5%2588%25A9%25E7%25B4%25A2%25E4%25BA%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

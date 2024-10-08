@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>无敌的Arthas！ | PaperMod</title>
+<meta name="keywords" content="后端, Java">
+<meta name="description" content="前言：Arthas是一款线上监控诊断产品，通过全局视角实时查看应用load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执">
+<meta name="author" content="好看的HK">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%97%A0%E6%95%8C%E7%9A%84arthas/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%97%A0%E6%95%8C%E7%9A%84arthas/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="无敌的Arthas！" />
+<meta property="og:description" content="前言：Arthas是一款线上监控诊断产品，通过全局视角实时查看应用load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%97%A0%E6%95%8C%E7%9A%84arthas/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-07-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-07-21T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="无敌的Arthas！"/>
+<meta name="twitter:description" content="前言：Arthas是一款线上监控诊断产品，通过全局视角实时查看应用load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "无敌的Arthas！",
+      "item": "http://localhost:1313/posts/juejin/%E6%97%A0%E6%95%8C%E7%9A%84arthas/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "无敌的Arthas！",
+  "name": "无敌的Arthas！",
+  "description": "前言：Arthas是一款线上监控诊断产品，通过全局视角实时查看应用load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执",
+  "keywords": [
+    "后端", "Java"
+  ],
+  "articleBody": "前言：Arthas 是一款线上监控诊断产品，通过全局视角实时查看应用 load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执行耗时，类加载信息等，大大提升线上问题排查效率。\n为了加深理解，本文准备了两个线上发生的实际例子，与大家一起分享（已做脱敏处理）。\n一、背景 通常，本地开发环境无法访问生产环境。如果在生产环境中遇到问题，则无法使用 IDE 远程调试。更糟糕的是，在生产环境中调试是不可接受的，因为它会暂停所有线程，导致服务暂停。\n开发人员可以尝试在测试环境或者预发环境中复现生产环境中的问题。但是，某些问题无法在不同的环境中轻松复现，甚至在重新启动后就消失了。\n如果您正在考虑在代码中添加一些日志以帮助解决问题，您将必须经历以下阶段：测试、预发，然后生产。这种方法效率低下，更糟糕的是，该问题可能无法解决，因为一旦 JVM 重新启动，它可能无法复现，如上文所述。\nArthas 旨在解决这些问题。开发人员可以在线解决生产问题。无需 JVM 重启，无需代码更改。 Arthas 作为观察者永远不会暂停正在运行的线程。\n二、能为你做什么？ Arthas 是 Alibaba 开源的 Java 诊断工具，深受开发者喜爱。\n当你遇到以下类似问题而束手无策时，Arthas可以帮助你解决：\n这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？ 我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？ 遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？ 线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！ 是否有一个全局视角来查看系统的运行状况？ 有什么办法可以监控到 JVM 的实时运行状态？ 怎么快速定位应用的热点，生成火焰图？ 怎样直接从 JVM 内查找某个类的实例？ Arthas 支持 JDK 6+，支持 Linux/Mac/Windows，采用命令行交互模式，同时提供丰富的 Tab 自动补全功能，进一步方便进行问题的定位和诊断。\n三、下载安装 bash\n代码解读\n复制代码\n# 下载远程jar包，大概150kb curl -O https://arthas.aliyun.com/arthas-boot.jar # 启动jar java -jar arthas-boot.jar\n注意事项：\n底层依赖 jps 命令，如果java进程与jps进程不在同一个虚拟机里面，那么有如下提示 csharp\n代码解读\n复制代码\n[root@iZwz98tqym2w1bi7o95bo7Z arthas]# java -jar arthas-boot.jar [INFO] JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.402.b06-2.0.1.1.al8.x86_64/jre [INFO] arthas-boot version: 3.7.2 [INFO] Can not find java process. Try to run `jps` command lists the instrumented Java HotSpot VMs on the target system. Please select an available pid.\n当出现上述情况（jps无法找到java进程，但java进程确实存在），可以通过显式指定pid进行连接。 正常情况下，jps命令会发现可选的java进程，供用户选择。 四、关键命令 1、getstatic 通过 getstatic 命令可以方便的查看类的静态属性。使用方法为 getstatic class_name field_name 。\nruby\n代码解读\n复制代码\n# 需要先触发一次类加载 [arthas@17098]$ getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE No class found for: site.xiaokui.blog.util.BlogUtil # 大致结构为 key=用户id value=博客信息(复合对象，含pub、pro、pri三种类型博客详情) [arthas@17098]$ getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE field: BLOG_CACHE @HashMap[ @Long[1]:@BlogDetailList[site.xiaokui.blog.domain.BlogDetailList@4af2f154], ] Affect(row-cnt:1) cost in 14 ms. # 如果不是复合对象，这里已经能筛选出key=1的value了 [arthas@17098]$ getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE 'entrySet().iterator.{? #this.key==\"1\"}' field: BLOG_CACHE @ArrayList[ @Node[1=site.xiaokui.blog.domain.BlogDetailList@4af2f154], ] Affect(row-cnt:1) cost in 11 ms. ​ # 本质还是 ognl，这里-x后面接扩展层数 # 省略博客的详细，几乎是整个打印对象了，比toString还全 # 等同 ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE' -x 3 getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE -x 3\n2、ognl 基础用法\nscss\n代码解读\n复制代码\n# 调用静态方法 # 会在java控制台打印对应字符串 ognl '@java.lang.System@out.println(\"hello\")' # 清空缓存，这里可以通过观察日志查看是否生效 ognl '@site.xiaokui.blog.util.BlogUtil@clearBlogCache(1)' # 清空缓存map，可以查看静态字段内容观察是否生效 ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE.clear()' ​ # 查看静态字段，如果为空，则不能展开为3层 ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE' ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE' -x 3 ​ # 执行多行表达式，赋值给一个临时变量 ognl '#value1=@System@getProperty(\"java.home\"), #value2=@System@getProperty(\"java.runtime.name\"), {#value1, #value2}'\n进阶用法\nscss\n代码解读\n复制代码\n# 通过beanName获取对象 ognl '@cn.hutool.extra.spring.SpringUtil@getBean(\"indexController\")' # 查看对象值 ognl '@cn.hutool.extra.spring.SpringUtil@getBean(\"indexController\").xiaokuiProperties.enableViewRestriction' # 调用对象方法 ognl '@cn.hutool.extra.spring.SpringUtil@getBean(\"indexController\").index()' ​ # 通过class获取 ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass)' # 查看环境变量，在web环境中，实现类一般为 StandardServletEnvironment ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass).getProperty(\"app.id\")' ​ # 所有配置变量存放数组 ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass).propertySources.propertySourceList' ​ # 查看apollo配置，具体的值在 m_configProperties 字段 ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass).propertySources.get(\"ApolloBootstrapPropertySources\").propertySources' -x 3\n功能强大的一笔！\n3、trace trace 命令能主动搜索 class-pattern／method-pattern 对应的方法调用路径，渲染和统计整个调用链路上的所有性能开销和追踪调用链路。\npython\n代码解读\n复制代码\n# 基本用法 trace 类名 方法名 # 默认不包括jdk方法，不限定trace次数 # 只能追踪到最外面一层的方法耗时，里面的二级方法好使看不到 trace site.xiaokui.blog.controller.IndexController blogSpace ​ # 执行完一次就退出追踪 trace site.xiaokui.blog.controller.IndexController blogSpace -n 1 ​ # 打印jdk方法 trace --skipJDKMethod true site.xiaokui.blog.controller.IndexController blogSpace ​ # 根据执行耗时过滤，执行耗时 \u003e 5ms trace site.xiaokui.blog.controller.IndexController blogSpace '#cost \u003e 5' ​ # 追踪下层，可以间接实现子级多层trace # trace -E 类名|类名 方法名|方法名 trace -E site.xiaokui.blog.controller.IndexController|site.xiaokui.blog.service.impl.SysBlogServiceImpl| site.xiaokui.blog.service.BlogCacheService|blogSpace|getMostViewTopN ​ # 排除指定的类，模糊匹配所有方法 # 但貌似也没起筛选作用 trace site.xiaokui.blog.controller.IndexController * --exclude-class-pattern cn.hutool.StrUtil # 官方示例 trace javax.servlet.Filter * --exclude-class-pattern org.springframework.web.filter. ​ ​ # 打破砂锅问到底，我就要看看究竟是慢在哪一行 # 但貌似 '#cost \u003e 5' 没起筛选作用 # 我们可以发现最终是慢在了一下两行（arthas本身会有一定的性能损耗） # mysql查询：`---[96.62% 65.066868ms ] org.beetl.sql.core.SQLScript:select() #798 # redis查询：+---[98.00% 31.777942ms ] org.springframework.data.redis.core.ZSetOperations:reverseRangeByScoreWithScores() #113 trace -E site.xiaokui.blog.controller.IndexController|site.xiaokui.blog.service.impl.SysBlogServiceImpl|site.xiaokui.blog.service.BlogCacheService|site.xiaokui.blog.service.BaseService|org.beetl.sql.core.SQLManager blogSpace|match|getMostViewTopN|template '#cost \u003e 5' ​\n4、watch 让你能方便的观察到指定函数的调用情况。能观察到的范围为：返回值、抛出异常、入参，通过编写 OGNL 表达式进行对应变量的查看。\nbash\n代码解读\n复制代码\n# 观察函数调用返回时的参数、this 对象和返回值 # 观察表达式，默认值是{params, target, returnObj} watch site.xiaokui.blog.controller.IndexController blogSpace -x 2 ​ # 满足特定条件的表达式 # 只有当第三个入参为dir时才watch watch site.xiaokui.blog.controller.IndexController blogSpace \"{params[2],target,returnObj}\" \"params[2]=='dir'\" -x 2 ​ # 按照耗时进行过滤 # 只要当耗时大于100ms时才watch watch site.xiaokui.blog.controller.IndexController blogSpace \"{params,target,returnObj}\" '#cost\u003e100' -x 2 ​ # 观察异常信息的例子 # -e 表示抛出异常时才触发 # express中，表示异常信息的变量是throwExp watch site.xiaokui.blog.controller.TempTestController test \"{params,throwExp}\" -e -x 2 ​ # 观察入参前后值的变化 # 可以看到入参是100，但经过方法后，入参对象变成了2 # 而上面只能看到经过处理好的入参，即为2 watch site.xiaokui.blog.controller.TempTestController test \"{params,throwExp,returnObj}\" -e -b -s -x 2 ​\n5、thread 查看当前线程信息，查看线程的堆栈。\nyaml\n代码解读\n复制代码\n# 显示第一页线程 # 默认按照 CPU 增量时间降序排列 # 实现原理类似于 top -H -p # 例如top -H -p 18605，适用于linux thread ​ # 一键显示最忙的5个线程 # 没有线程 ID，包含[Internal]表示为 JVM 内部线程 # 默认统计间隔为200ms thread -n 5 # 统计最近 1000ms 内的线程 CPU 时间。 thread -i 1000 # 列出 1000ms 内最忙的 3 个线程栈 thread -n 3 -i 1000 ​ # 显示所有匹配线程信息，有时需要获取全部 JVM 的线程数据进行分析 # 慎重使用 thread --all ​ # thread id, 显示指定线程的运行堆栈 thread 130 ​ # 找出当前阻塞其他线程的线程，一键发现死锁 # 目前只支持找出 synchronized 关键字阻塞住的线程，如果是java.util.concurrent.Lock，目前还不支持 # 例如线程A，拥有A锁，阻塞于锁B；线程B拥有B锁，阻塞于锁A；此时会触发死锁 thread -b ​ # 查看指定状态的线程 # 可选项 NEW, RUNNABLE, TIMED_WAITING, WAITING, BLOCKED, TERMINATED # 分别对应 新建/就绪/等待执行、运行中、超时等待、等待、阻塞、消亡 thread --state WAITING\n6、logger 查看 logger 信息，更新 logger level。\nperl\n代码解读\n复制代码\n# 打印所有 logger 信息 logger # 查看指定名字的 logger 信息 logger -n org.springframework.web logger -n site.xiaokui # 更新 logger level # 慎用，影响面过大 # 修改成功会提示 Update logger level success. # 反之，则意味着修改失败 logger --name ROOT --level debug # 缩小一下范围，这样是很ok的 # 存在 name=site.xiaokui 的logger logger --name site.xiaokui -level warn # 再缩小一下范围，这样是很ok的 # 可以再细化一下包路径，不一定非要严格匹配logger名称 logger --name site.xiaokui.blog.config -level warn\n7、profiler profiler 命令支持生成应用热点的火焰图。本质上是通过不断的采样，然后把收集到的采样结果生成火焰图。\nini\n代码解读\n复制代码\n# 启动 profiler # 默认cpu，可以用 --event 来指定 # 可以通过 profiler list 来查看支持的event # event可选项有 cpu、alloc、lock、wall、itimer profiler start profiler start --event=cpu # 获取已采集的 sample 的数量 profiler getSamples # 查看 profiler 状态，运行了多久 profiler status # 停止采集并输出热力图到指定文件，默认格式为html profiler stop --format html # 可以显式指定文件 profiler stop --format html --file /tmp/0528result.html\n8、查询命令 bash\n代码解读\n复制代码\n# 监控大盘 dashboard # 显示虚拟机相关信息 jvm # 查看 JVM 内存信息 memory # 查看环境变量 sysenv # 查看当前 JVM 的系统属性 sysprop # 查看，更新 VM 诊断相关的参数 vmoption\n9、奇技淫巧 仅供参考，线上环境，请慎重使用！\nbash\n代码解读\n复制代码\n# 线上想临时打印gc日志 vmoption vmoption PrintGC true vmoption PrintGCDetails true # 写入控制台输出到文件 vmoption | tee /tmp/0529.txt # 以追加方式写入文件 vmoption | tee /tmp/0529.txt # 将结果保存到日志 options save-result true # 清空当前屏幕 cls # 不会写ognl表达式 请使用idea插件：Arthas-idea\n更多相关命令：命令列表。\n五、两个线上问题 1、线上接口偶尔响应时间长 线上有A、B、C共3套生产环境，同一份代码同一个接口，只有A会偶尔返回超时，时间长达5~6秒。正常情况下，接口返回在50ms之内。\n2、CPU上升明显 线上有A、B共2套生产环境，基本上还是同一份代码同一个接口，在相同QPS的情况下，B的CPU消耗是A的两倍。\n未完待续，敬请期待….\n",
+  "wordCount" : "739",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-07-21T00:00:00Z",
+  "dateModified": "2024-07-21T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "好看的HK"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%97%A0%E6%95%8C%E7%9A%84arthas/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      无敌的Arthas！
+    </h1>
+    <div class="post-description">
+      前言：Arthas是一款线上监控诊断产品，通过全局视角实时查看应用load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执
+    </div>
+    <div class="post-meta"><span title='2024-07-21 00:00:00 +0000 UTC'>七月 21, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;好看的HK&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e8%83%8c%e6%99%af" aria-label="一、背景">一、背景</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e8%83%bd%e4%b8%ba%e4%bd%a0%e5%81%9a%e4%bb%80%e4%b9%88" aria-label="二、能为你做什么？">二、能为你做什么？</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e4%b8%8b%e8%bd%bd%e5%ae%89%e8%a3%85" aria-label="三、下载安装">三、下载安装</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e5%85%b3%e9%94%ae%e5%91%bd%e4%bb%a4" aria-label="四、关键命令">四、关键命令</a><ul>
+                        
+                <li>
+                    <a href="#1getstatic" aria-label="1、getstatic">1、getstatic</a></li>
+                <li>
+                    <a href="#2ognl" aria-label="2、ognl">2、ognl</a></li>
+                <li>
+                    <a href="#3trace" aria-label="3、trace">3、trace</a></li>
+                <li>
+                    <a href="#4watch" aria-label="4、watch">4、watch</a></li>
+                <li>
+                    <a href="#5thread" aria-label="5、thread">5、thread</a></li>
+                <li>
+                    <a href="#6logger" aria-label="6、logger">6、logger</a></li>
+                <li>
+                    <a href="#7profiler" aria-label="7、profiler">7、profiler</a></li>
+                <li>
+                    <a href="#8%e6%9f%a5%e8%af%a2%e5%91%bd%e4%bb%a4" aria-label="8、查询命令">8、查询命令</a></li>
+                <li>
+                    <a href="#9%e5%a5%87%e6%8a%80%e6%b7%ab%e5%b7%a7" aria-label="9、奇技淫巧">9、奇技淫巧</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%94%e4%b8%a4%e4%b8%aa%e7%ba%bf%e4%b8%8a%e9%97%ae%e9%a2%98" aria-label="五、两个线上问题">五、两个线上问题</a><ul>
+                        
+                <li>
+                    <a href="#1%e7%ba%bf%e4%b8%8a%e6%8e%a5%e5%8f%a3%e5%81%b6%e5%b0%94%e5%93%8d%e5%ba%94%e6%97%b6%e9%97%b4%e9%95%bf" aria-label="1、线上接口偶尔响应时间长">1、线上接口偶尔响应时间长</a></li>
+                <li>
+                    <a href="#2cpu%e4%b8%8a%e5%8d%87%e6%98%8e%e6%98%be" aria-label="2、CPU上升明显">2、CPU上升明显</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>前言：Arthas 是一款线上监控诊断产品，通过全局视角实时查看应用 load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执行耗时，类加载信息等，大大提升线上问题排查效率。</p>
+<p>为了加深理解，本文准备了两个线上发生的实际例子，与大家一起分享（已做脱敏处理）。</p>
+<h2 id="一背景">一、背景<a hidden class="anchor" aria-hidden="true" href="#一背景">#</a></h2>
+<p>通常，本地开发环境无法访问生产环境。如果在生产环境中遇到问题，则无法使用 IDE 远程调试。更糟糕的是，在生产环境中调试是不可接受的，因为它会暂停所有线程，导致服务暂停。</p>
+<p>开发人员可以尝试在测试环境或者预发环境中复现生产环境中的问题。但是，某些问题无法在不同的环境中轻松复现，甚至在重新启动后就消失了。</p>
+<p>如果您正在考虑在代码中添加一些日志以帮助解决问题，您将必须经历以下阶段：测试、预发，然后生产。这种方法效率低下，更糟糕的是，该问题可能无法解决，因为一旦 JVM 重新启动，它可能无法复现，如上文所述。</p>
+<p>Arthas 旨在解决这些问题。开发人员可以在线解决生产问题。无需 JVM 重启，无需代码更改。 Arthas 作为观察者永远不会暂停正在运行的线程。</p>
+<h2 id="二能为你做什么">二、能为你做什么？<a hidden class="anchor" aria-hidden="true" href="#二能为你做什么">#</a></h2>
+<p><code>Arthas</code> 是 Alibaba 开源的 Java 诊断工具，深受开发者喜爱。</p>
+<p>当你遇到以下类似问题而束手无策时，<code>Arthas</code>可以帮助你解决：</p>
+<ol start="0">
+<li>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？</li>
+<li>我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？</li>
+<li>遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？</li>
+<li>线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！</li>
+<li>是否有一个全局视角来查看系统的运行状况？</li>
+<li>有什么办法可以监控到 JVM 的实时运行状态？</li>
+<li>怎么快速定位应用的热点，生成火焰图？</li>
+<li>怎样直接从 JVM 内查找某个类的实例？</li>
+</ol>
+<p><code>Arthas</code> 支持 JDK 6+，支持 Linux/Mac/Windows，采用命令行交互模式，同时提供丰富的 <code>Tab</code> 自动补全功能，进一步方便进行问题的定位和诊断。</p>
+<h2 id="三下载安装">三、下载安装<a hidden class="anchor" aria-hidden="true" href="#三下载安装">#</a></h2>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 下载远程jar包，大概150kb curl -O https://arthas.aliyun.com/arthas-boot.jar # 启动jar java -jar arthas-boot.jar</code></p>
+<p>注意事项：</p>
+<ul>
+<li>底层依赖 jps 命令，如果java进程与jps进程不在同一个虚拟机里面，那么有如下提示</li>
+</ul>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[root@iZwz98tqym2w1bi7o95bo7Z arthas]# java -jar arthas-boot.jar [INFO] JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.402.b06-2.0.1.1.al8.x86_64/jre [INFO] arthas-boot version: 3.7.2 [INFO] Can not find java process. Try to run `jps` command lists the instrumented Java HotSpot VMs on the target system. Please select an available pid.</code></p>
+<ul>
+<li>当出现上述情况（jps无法找到java进程，但java进程确实存在），可以通过显式指定pid进行连接。</li>
+<li>正常情况下，jps命令会发现可选的java进程，供用户选择。</li>
+</ul>
+<h2 id="四关键命令">四、关键命令<a hidden class="anchor" aria-hidden="true" href="#四关键命令">#</a></h2>
+<h3 id="1getstatic">1、getstatic<a hidden class="anchor" aria-hidden="true" href="#1getstatic">#</a></h3>
+<p>通过 getstatic 命令可以方便的查看类的静态属性。使用方法为 <code>getstatic class_name field_name</code> 。</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 需要先触发一次类加载 [arthas@17098]$ getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE No class found for: site.xiaokui.blog.util.BlogUtil # 大致结构为 key=用户id value=博客信息(复合对象，含pub、pro、pri三种类型博客详情) [arthas@17098]$ getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE field: BLOG_CACHE @HashMap[     @Long[1]:@BlogDetailList[site.xiaokui.blog.domain.BlogDetailList@4af2f154], ] Affect(row-cnt:1) cost in 14 ms. # 如果不是复合对象，这里已经能筛选出key=1的value了 [arthas@17098]$ getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE 'entrySet().iterator.{? #this.key==&quot;1&quot;}' field: BLOG_CACHE @ArrayList[     @Node[1=site.xiaokui.blog.domain.BlogDetailList@4af2f154], ] Affect(row-cnt:1) cost in 11 ms. ​ # 本质还是 ognl，这里-x后面接扩展层数 # 省略博客的详细，几乎是整个打印对象了，比toString还全 # 等同 ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE' -x 3 getstatic site.xiaokui.blog.util.BlogUtil BLOG_CACHE -x 3</code></p>
+<h3 id="2ognl">2、ognl<a hidden class="anchor" aria-hidden="true" href="#2ognl">#</a></h3>
+<p>基础用法</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 调用静态方法 # 会在java控制台打印对应字符串 ognl '@java.lang.System@out.println(&quot;hello&quot;)' # 清空缓存，这里可以通过观察日志查看是否生效 ognl '@site.xiaokui.blog.util.BlogUtil@clearBlogCache(1)' # 清空缓存map，可以查看静态字段内容观察是否生效 ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE.clear()' ​ # 查看静态字段，如果为空，则不能展开为3层 ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE' ognl '@site.xiaokui.blog.util.BlogUtil@BLOG_CACHE' -x 3 ​ # 执行多行表达式，赋值给一个临时变量 ognl '#value1=@System@getProperty(&quot;java.home&quot;), #value2=@System@getProperty(&quot;java.runtime.name&quot;), {#value1, #value2}'</code></p>
+<p>进阶用法</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 通过beanName获取对象 ognl '@cn.hutool.extra.spring.SpringUtil@getBean(&quot;indexController&quot;)'  # 查看对象值 ognl '@cn.hutool.extra.spring.SpringUtil@getBean(&quot;indexController&quot;).xiaokuiProperties.enableViewRestriction' # 调用对象方法 ognl '@cn.hutool.extra.spring.SpringUtil@getBean(&quot;indexController&quot;).index()' ​ # 通过class获取                                                                                          ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass)' # 查看环境变量，在web环境中，实现类一般为 StandardServletEnvironment ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass).getProperty(&quot;app.id&quot;)' ​ # 所有配置变量存放数组 ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass).propertySources.propertySourceList' ​ # 查看apollo配置，具体的值在 m_configProperties 字段  ognl '#EnvClass =@org.springframework.core.env.Environment@class,@cn.hutool.extra.spring.SpringUtil@getBean(#EnvClass).propertySources.get(&quot;ApolloBootstrapPropertySources&quot;).propertySources' -x 3</code></p>
+<p>功能强大的一笔！</p>
+<h3 id="3trace">3、trace<a hidden class="anchor" aria-hidden="true" href="#3trace">#</a></h3>
+<p><code>trace</code> 命令能主动搜索 <code>class-pattern</code>／<code>method-pattern</code> 对应的方法调用路径，渲染和统计整个调用链路上的所有性能开销和追踪调用链路。</p>
+<p>python</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 基本用法 trace 类名 方法名 # 默认不包括jdk方法，不限定trace次数 # 只能追踪到最外面一层的方法耗时，里面的二级方法好使看不到 trace site.xiaokui.blog.controller.IndexController blogSpace ​ # 执行完一次就退出追踪 trace site.xiaokui.blog.controller.IndexController blogSpace -n 1 ​ # 打印jdk方法 trace --skipJDKMethod true site.xiaokui.blog.controller.IndexController blogSpace ​ # 根据执行耗时过滤，执行耗时 &gt; 5ms trace site.xiaokui.blog.controller.IndexController blogSpace '#cost &gt; 5' ​ # 追踪下层，可以间接实现子级多层trace # trace -E 类名|类名 方法名|方法名 trace -E site.xiaokui.blog.controller.IndexController|site.xiaokui.blog.service.impl.SysBlogServiceImpl| site.xiaokui.blog.service.BlogCacheService|blogSpace|getMostViewTopN ​ # 排除指定的类，模糊匹配所有方法 # 但貌似也没起筛选作用 trace site.xiaokui.blog.controller.IndexController * --exclude-class-pattern cn.hutool.StrUtil # 官方示例 trace javax.servlet.Filter * --exclude-class-pattern org.springframework.web.filter. ​ ​ # 打破砂锅问到底，我就要看看究竟是慢在哪一行 # 但貌似 '#cost &gt; 5' 没起筛选作用 # 我们可以发现最终是慢在了一下两行（arthas本身会有一定的性能损耗） # mysql查询：`---[96.62% 65.066868ms ] org.beetl.sql.core.SQLScript:select() #798 # redis查询：+---[98.00% 31.777942ms ] org.springframework.data.redis.core.ZSetOperations:reverseRangeByScoreWithScores() #113 trace -E site.xiaokui.blog.controller.IndexController|site.xiaokui.blog.service.impl.SysBlogServiceImpl|site.xiaokui.blog.service.BlogCacheService|site.xiaokui.blog.service.BaseService|org.beetl.sql.core.SQLManager blogSpace|match|getMostViewTopN|template '#cost &gt; 5' ​</code></p>
+<h3 id="4watch">4、watch<a hidden class="anchor" aria-hidden="true" href="#4watch">#</a></h3>
+<p>让你能方便的观察到指定函数的调用情况。能观察到的范围为：<code>返回值</code>、<code>抛出异常</code>、<code>入参</code>，通过编写 OGNL 表达式进行对应变量的查看。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 观察函数调用返回时的参数、this 对象和返回值 # 观察表达式，默认值是{params, target, returnObj} watch site.xiaokui.blog.controller.IndexController blogSpace -x 2 ​ # 满足特定条件的表达式 # 只有当第三个入参为dir时才watch watch site.xiaokui.blog.controller.IndexController blogSpace &quot;{params[2],target,returnObj}&quot; &quot;params[2]=='dir'&quot; -x 2 ​ # 按照耗时进行过滤 # 只要当耗时大于100ms时才watch watch site.xiaokui.blog.controller.IndexController blogSpace &quot;{params,target,returnObj}&quot; '#cost&gt;100' -x 2 ​ # 观察异常信息的例子 # -e 表示抛出异常时才触发 # express中，表示异常信息的变量是throwExp watch site.xiaokui.blog.controller.TempTestController test &quot;{params,throwExp}&quot; -e -x 2 ​ # 观察入参前后值的变化 # 可以看到入参是100，但经过方法后，入参对象变成了2 # 而上面只能看到经过处理好的入参，即为2 watch site.xiaokui.blog.controller.TempTestController test &quot;{params,throwExp,returnObj}&quot; -e  -b -s -x 2 ​</code></p>
+<h3 id="5thread">5、thread<a hidden class="anchor" aria-hidden="true" href="#5thread">#</a></h3>
+<p>查看当前线程信息，查看线程的堆栈。</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 显示第一页线程 # 默认按照 CPU 增量时间降序排列 # 实现原理类似于 top -H -p &lt;pid&gt; # 例如top -H -p 18605，适用于linux thread ​ # 一键显示最忙的5个线程 # 没有线程 ID，包含[Internal]表示为 JVM 内部线程 # 默认统计间隔为200ms thread -n 5 # 统计最近 1000ms 内的线程 CPU 时间。 thread -i 1000 # 列出 1000ms 内最忙的 3 个线程栈 thread -n 3 -i 1000 ​ # 显示所有匹配线程信息，有时需要获取全部 JVM 的线程数据进行分析 # 慎重使用 thread --all ​ # thread id, 显示指定线程的运行堆栈 thread 130 ​ # 找出当前阻塞其他线程的线程，一键发现死锁 # 目前只支持找出 synchronized 关键字阻塞住的线程，如果是java.util.concurrent.Lock，目前还不支持 # 例如线程A，拥有A锁，阻塞于锁B；线程B拥有B锁，阻塞于锁A；此时会触发死锁 thread -b ​ # 查看指定状态的线程 # 可选项 NEW, RUNNABLE, TIMED_WAITING, WAITING, BLOCKED, TERMINATED # 分别对应 新建/就绪/等待执行、运行中、超时等待、等待、阻塞、消亡 thread --state WAITING</code></p>
+<h3 id="6logger">6、logger<a hidden class="anchor" aria-hidden="true" href="#6logger">#</a></h3>
+<p>查看 logger 信息，更新 logger level。</p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 打印所有 logger 信息 logger # 查看指定名字的 logger 信息 logger -n org.springframework.web logger -n site.xiaokui # 更新 logger level # 慎用，影响面过大 # 修改成功会提示 Update logger level success. # 反之，则意味着修改失败 logger --name ROOT --level debug # 缩小一下范围，这样是很ok的 # 存在 name=site.xiaokui 的logger logger --name site.xiaokui -level warn # 再缩小一下范围，这样是很ok的 # 可以再细化一下包路径，不一定非要严格匹配logger名称 logger --name site.xiaokui.blog.config -level warn</code></p>
+<h3 id="7profiler">7、profiler<a hidden class="anchor" aria-hidden="true" href="#7profiler">#</a></h3>
+<p><code>profiler</code> 命令支持生成应用热点的火焰图。本质上是通过不断的采样，然后把收集到的采样结果生成火焰图。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 启动 profiler # 默认cpu，可以用 --event 来指定 # 可以通过 profiler list 来查看支持的event # event可选项有 cpu、alloc、lock、wall、itimer profiler start profiler start --event=cpu # 获取已采集的 sample 的数量 profiler getSamples # 查看 profiler 状态，运行了多久 profiler status # 停止采集并输出热力图到指定文件，默认格式为html profiler stop --format html # 可以显式指定文件 profiler stop --format html --file /tmp/0528result.html</code></p>
+<h3 id="8查询命令">8、查询命令<a hidden class="anchor" aria-hidden="true" href="#8查询命令">#</a></h3>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 监控大盘 dashboard # 显示虚拟机相关信息 jvm # 查看 JVM 内存信息 memory # 查看环境变量 sysenv # 查看当前 JVM 的系统属性 sysprop # 查看，更新 VM 诊断相关的参数 vmoption</code></p>
+<h3 id="9奇技淫巧">9、奇技淫巧<a hidden class="anchor" aria-hidden="true" href="#9奇技淫巧">#</a></h3>
+<p>仅供参考，线上环境，请慎重使用！</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 线上想临时打印gc日志 vmoption vmoption PrintGC true vmoption PrintGCDetails true # 写入控制台输出到文件 vmoption | tee /tmp/0529.txt # 以追加方式写入文件 vmoption | tee /tmp/0529.txt # 将结果保存到日志 options save-result true # 清空当前屏幕 cls # 不会写ognl表达式 请使用idea插件：Arthas-idea</code></p>
+<p>更多相关命令：<a href="https://link.juejin.cn?target=https%3A%2F%2Farthas.aliyun.com%2Fdoc%2Fcommands.html" title="https://arthas.aliyun.com/doc/commands.html">命令列表</a>。</p>
+<h2 id="五两个线上问题">五、两个线上问题<a hidden class="anchor" aria-hidden="true" href="#五两个线上问题">#</a></h2>
+<h3 id="1线上接口偶尔响应时间长">1、线上接口偶尔响应时间长<a hidden class="anchor" aria-hidden="true" href="#1线上接口偶尔响应时间长">#</a></h3>
+<p>线上有A、B、C共3套生产环境，同一份代码同一个接口，只有A会偶尔返回超时，时间长达5~6秒。正常情况下，接口返回在50ms之内。</p>
+<h3 id="2cpu上升明显">2、CPU上升明显<a hidden class="anchor" aria-hidden="true" href="#2cpu上升明显">#</a></h3>
+<p>线上有A、B共2套生产环境，基本上还是同一份代码同一个接口，在相同QPS的情况下，B的CPU消耗是A的两倍。</p>
+<p>未完待续，敬请期待&hellip;.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E7%94%A8%E4%BA%86%E7%BA%AF%E5%B9%B2%E8%B4%A7%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>正则表达式这篇就够用了！【纯干货、查缺补漏】</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Eqiankun%E7%9A%84%E5%BE%AE%E5%89%8D%E7%AB%AF%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5-%E5%90%8C%E6%97%B6%E5%8A%A0%E8%BD%BD%E5%A4%9A%E4%B8%AA%E5%BE%AE%E5%BA%94%E7%94%A8/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>基于qiankun的微前端最佳实践-（同时加载多个微应用）</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 无敌的Arthas！ on x"
+            href="https://x.com/intent/tweet/?text=%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2cJava">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 无敌的Arthas！ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f&amp;title=%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81&amp;summary=%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 无敌的Arthas！ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f&title=%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 无敌的Arthas！ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 无敌的Arthas！ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 无敌的Arthas！ on telegram"
+            href="https://telegram.me/share/url?text=%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 无敌的Arthas！ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%97%a0%e6%95%8c%e7%9a%84Arthas%ef%bc%81&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2597%25A0%25E6%2595%258C%25E7%259A%2584arthas%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

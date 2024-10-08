@@ -2,12 +2,15 @@ import {createPlaywrightRouter, Dataset} from 'crawlee';
 import TurnDownService from 'turndown';  // 引入 Turndown 库
 import {
     writeToFile,
+    readFile,
     removeSpaces,
     mergeContentMarkdown,
     removeDomTags,
     getRandomDelay,
-    replaceDoubleWithSingleQuotes
+    replaceDoubleWithSingleQuotes,
+    readJsonFilesFromFolder
 } from "../util.js"
+import a from '../output/wiki/url/pageUrls.json'
 
 const turnDownService = new TurnDownService();  // 创建 Turndown 实例
 export const router = createPlaywrightRouter()
@@ -17,20 +20,24 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
     log.debug(`Visiting detail page: ${request.url}`);
     let startTime = Date.now(), endTime;
     weight++
+    writeToFile(JSON.stringify(`${request.url}\n`, null, 2), `./output/wiki/url/visitedUrls.txt`, true).then(() => console.log('pageUrls.json written successfully'));
 
     // 在每次请求之间添加人为的延迟，单位为毫秒
     await new Promise(resolve => setTimeout(resolve, getRandomDelay(20, 120))); // n 秒间隔
 
     try {
-        await page.waitForSelector('html', {timeout: 60000});
+        await page.waitForSelector('html', {timeout: 200000});
+
         // 并发获取页面元素的内容
         const [title, author, publishTime, readTime, metaTags, description, articleHtml] = await Promise.all([
             page.getAttribute("meta[name='ajs-latest-published-page-title']", "content").then(removeSpaces),
             page.getAttribute("meta[name='ajs-user-display-name']", "content").then(removeSpaces),
             page.locator(".page-metadata-modification-info .last-modified").textContent().then(removeSpaces),
-            page.locator(".page-metadata-modification-info .read-time").textContent().then(removeSpaces),
+            // page.locator(".page-metadata-modification-info .read-time").textContent().then(removeSpaces),
+            "12s",
             page.getAttribute("meta[name='ajs-parent-page-title']", "content").then(removeSpaces),
-            page.getAttribute("meta[name='description']", "content").then(removeSpaces).then(replaceDoubleWithSingleQuotes),
+            page.getAttribute("meta[name='ajs-parent-page-title']", "content").then(removeSpaces),
+            // page.getAttribute("meta[name='description']", "content").then(removeSpaces).then(replaceDoubleWithSingleQuotes),
             page.locator("#main-content").innerHTML()
         ]);
 
@@ -74,18 +81,13 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
 // This is a fallback route which will handle the start URL, as well as the LIST labeled URLs.
 router.addDefaultHandler(async ({request, page, enqueueLinks, log, session}) => {
     log.debug(`Enqueueing start from page: ${request.url}`);
-    // This means we're on the start page, with no label.
-    // On this page, we just want to enqueue all the category pages.
-    log.error(`:session-cookie ${JSON.stringify(session.getCookies(request.url))}`);
-    await page.waitForSelector('.ia-secondary-content', {timeout: 60000});
-    const elements = (await page.$$('.ia-secondary-content ul li a'));
+    let allUrls = (await readJsonFilesFromFolder('../output/wiki/url'))[0].urls,
+        visitedUrls = await readFile('./output/wiki/url/visitedUrls.txt'),
+        urls = allUrls.filter(url => !visitedUrls.includes(url))
 
-    for (const element of elements.slice(0, 1)) {
-        const href = await element.getAttribute('href');
-        await enqueueLinks({
-            urls: [href],
-            label: 'DETAIL',
-        });
-    }
+    await enqueueLinks({
+        urls,
+        label: 'DETAIL',
+    })
 });
 

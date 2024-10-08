@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 | PaperMod</title>
+<meta name="keywords" content="TypeScript, 前端">
+<meta name="description" content="深入讲解Typescript高级类型工具实现原理和编程技巧。全程干货、不扯闲篇，助你轻松实现Ts进阶。">
+<meta name="author" content="愣锤">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/ts%E9%AB%98%E6%89%8B%E7%AF%8722%E4%B8%AA%E7%A4%BA%E4%BE%8B%E6%B7%B1%E5%85%A5%E8%AE%B2%E8%A7%A3ts%E6%9C%80%E6%99%A6%E6%B6%A9%E9%9A%BE%E6%87%82%E7%9A%84%E9%AB%98%E7%BA%A7%E7%B1%BB%E5%9E%8B%E5%B7%A5%E5%85%B7/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/ts%E9%AB%98%E6%89%8B%E7%AF%8722%E4%B8%AA%E7%A4%BA%E4%BE%8B%E6%B7%B1%E5%85%A5%E8%AE%B2%E8%A7%A3ts%E6%9C%80%E6%99%A6%E6%B6%A9%E9%9A%BE%E6%87%82%E7%9A%84%E9%AB%98%E7%BA%A7%E7%B1%BB%E5%9E%8B%E5%B7%A5%E5%85%B7/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具" />
+<meta property="og:description" content="深入讲解Typescript高级类型工具实现原理和编程技巧。全程干货、不扯闲篇，助你轻松实现Ts进阶。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/ts%E9%AB%98%E6%89%8B%E7%AF%8722%E4%B8%AA%E7%A4%BA%E4%BE%8B%E6%B7%B1%E5%85%A5%E8%AE%B2%E8%A7%A3ts%E6%9C%80%E6%99%A6%E6%B6%A9%E9%9A%BE%E6%87%82%E7%9A%84%E9%AB%98%E7%BA%A7%E7%B1%BB%E5%9E%8B%E5%B7%A5%E5%85%B7/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-08-09T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具"/>
+<meta name="twitter:description" content="深入讲解Typescript高级类型工具实现原理和编程技巧。全程干货、不扯闲篇，助你轻松实现Ts进阶。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具",
+      "item": "http://localhost:1313/posts/juejin/ts%E9%AB%98%E6%89%8B%E7%AF%8722%E4%B8%AA%E7%A4%BA%E4%BE%8B%E6%B7%B1%E5%85%A5%E8%AE%B2%E8%A7%A3ts%E6%9C%80%E6%99%A6%E6%B6%A9%E9%9A%BE%E6%87%82%E7%9A%84%E9%AB%98%E7%BA%A7%E7%B1%BB%E5%9E%8B%E5%B7%A5%E5%85%B7/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具",
+  "name": "Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具",
+  "description": "深入讲解Typescript高级类型工具实现原理和编程技巧。全程干货、不扯闲篇，助你轻松实现Ts进阶。",
+  "keywords": [
+    "TypeScript", "前端"
+  ],
+  "articleBody": "Hello大家好，我是愣锤。随着Typescript不可阻挡的趋势，相信小伙伴们或多或少的使用过Ts开发了。而Ts的使用除了基本的类型定义外，对于Ts的泛型、内置高级类型、自定义高级类型工具等会相对陌生。本文将会通过22个类型工具例子，深入讲解Ts类型工具原理和编程技巧。不扯闲篇，全程干货，内容非常多，想提升Ts功力的小伙伴请耐心读下去。相信小伙伴们在读完此文后，能够对这块有更深入的理解。下面，我们开始吧～\n本文基本分为三部分：\n第一部分讲解一些基本的关键词的特性（比如索引查询、索引访问、映射、extends等），但是该部分更多的讲解小伙伴们不清晰的一些特性，而基本功能则不再赘述。更多的关键词及技巧将包含在后续的例子演示中再具体讲述； 第二部分讲解Ts内置的类型工具以及实现原理，比如Pick、Omit等； 第三部分讲解自定义的工具类型，该部分也是最难的部分，将通过一些复杂的类型工具示例进行逐步剖析，对于其中的晦涩的地方以及涉及的知识点逐步讲解。此部分也会包含大量Ts类型工具的编程技巧，也希望通过此部分的讲解，小伙伴的Ts功底可以进一步提升！ 第一部分 前置内容 keyof 索引查询 对应任何类型T,keyof T的结果为该类型上所有公有属性key的联合：\ntypescript\n代码解读\n复制代码\ninterface Eg1 { name: string, readonly age: number, } // T1的类型实则是name | age type T1 = keyof Eg1 class Eg2 { private name: string; public readonly age: number; protected home: string; } // T2实则被约束为 age // 而name和home不是公有属性，所以不能被keyof获取到 type T2 = keyof Eg2\nT[K] 索引访问 typescript\n代码解读\n复制代码\ninterface Eg1 { name: string, readonly age: number, } // string type V1 = Eg1['name'] // string | number type V2 = Eg1['name' | 'age'] // any type V2 = Eg1['name' | 'age2222'] // string | number type V3 = Eg1[keyof Eg1]\nT[keyof T]的方式，可以获取到T所有key的类型组成的联合类型； T[keyof K]的方式，获取到的是T中的key且同时存在于K时的类型组成的联合类型； 注意：如果[]中的key有不存在T中的，则是any；因为ts也不知道该key最终是什么类型，所以是any；且也会报错；\n\u0026 交叉类型注意点 交叉类型取的多个类型的并集，但是如果相同key但是类型不同，则该key为never。\ntypescript\n代码解读\n复制代码\ninterface Eg1 { name: string, age: number, } interface Eg2 { color: string, age: string, } /** * T的类型为 {name: string; age: never; color: string} * 注意，age因为Eg1和Eg2中的类型不一致，所以交叉后age的类型是never */ type T = Eg1 \u0026 Eg2 // 可通过如下示例验证 const val: T = { name: '', color: '', age: (function a() { throw Error() })(), }\nextends关键词特性（重点） 用于接口，表示继承 typescript\n代码解读\n复制代码\ninterface T1 { name: string, } interface T2 { sex: number, } /** * @example * T3 = {name: string, sex: number, age: number} */ interface T3 extends T1, T2 { age: number, }\n注意，接口支持多重继承，语法为逗号隔开。如果是type实现继承，则可以使用交叉类型type A = B \u0026 C \u0026 D。\n表示条件类型，可用于条件判断 表示条件判断，如果前面的条件满足，则返回问号后的第一个参数，否则第二个。类似于js的三元运算。\ntypescript\n代码解读\n复制代码\n/** * @example * type A1 = 1 */ type A1 = 'x' extends 'x' ? 1 : 2; /** * @example * type A2 = 2 */ type A2 = 'x' | 'y' extends 'x' ? 1 : 2; /** * @example * type A3 = 1 | 2 */ type P = T extends 'x' ? 1 : 2; type A3 = P\u003c'x' | 'y'\u003e\n提问：为什么A2和A3的值不一样？\n如果用于简单的条件判断，则是直接判断前面的类型是否可分配给后面的类型 若extends前面的类型是泛型，且泛型传入的是联合类型时，则会依次判断该联合类型的所有子类型是否可分配给extends后面的类型（是一个分发的过程）。 总结，就是extends前面的参数为联合类型时则会分解（依次遍历所有的子类型进行条件判断）联合类型进行判断。然后将最终的结果组成新的联合类型。\n阻止extends关键词对于联合类型的分发特性 如果不想被分解（分发），做法也很简单，可以通过简单的元组类型包裹以下：\ntypescript\n代码解读\n复制代码\ntype P = [T] extends ['x'] ? 1 : 2; /** * type A4 = 2; */ type A4 = P\u003c'x' | 'y'\u003e\n条件类型的分布式特性文档\n类型兼容性 集合论中，如果一个集合的所有元素在集合B中都存在，则A是B的子集；\n类型系统中，如果一个类型的属性更具体，则该类型是子类型。（因为属性更少则说明该类型约束的更宽泛，是父类型）\n因此，我们可以得出基本的结论：子类型比父类型更加具体,父类型比子类型更宽泛。 下面我们也将基于类型的可复制性（可分配性）、协变、逆变、双向协变等进行进一步的讲解。\n可赋值性 typescript\n代码解读\n复制代码\ninterface Animal { name: string; } interface Dog extends Animal { break(): void; } let a: Animal; let b: Dog; // 可以赋值，子类型更佳具体，可以赋值给更佳宽泛的父类型 a = b; // 反过来不行 b = a;\n可赋值性在联合类型中的特性 typescript\n代码解读\n复制代码\ntype A = 1 | 2 | 3; type B = 2 | 3; let a: A; let b: B; // 不可赋值 b = a; // 可以赋值 a = b;\n是不是A的类型更多，A就是子类型呢？恰恰相反，A此处类型更多但是其表达的类型更宽泛，所以A是父类型，B是子类型。\n因此b = a不成立（父类型不能赋值给子类型），而a = b成立（子类型可以赋值给父类型）。\n协变 typescript\n代码解读\n复制代码\ninterface Animal { name: string; } interface Dog extends Animal { break(): void; } let Eg1: Animal; let Eg2: Dog; // 兼容，可以赋值 Eg1 = Eg2; let Eg3: Array let Eg4: Array // 兼容，可以赋值 Eg3 = Eg4\n通过Eg3和Eg4来看，在Animal和Dog在变成数组后，Array依旧可以赋值给Array，因此对于type MakeArray = Array来说就是协变的。\n最后引用维基百科中的定义：\n协变与逆变(Covariance and contravariance )是在计算机科学中，描述具有父/子型别关系的多个型别通过型别构造器、构造出的多个复杂型别之间是否有父/子型别关系的用语。\n简单说就是，具有父子关系的多个类型，在通过某种构造关系构造成的新的类型，如果还具有父子关系则是协变的，而关系逆转了（子变父，父变子）就是逆变的。可能听起来有些抽象，下面我们将用更具体的例子进行演示说明：\n逆变 typescript\n代码解读\n复制代码\ninterface Animal { name: string; } interface Dog extends Animal { break(): void; } type AnimalFn = (arg: Animal) =\u003e void type DogFn = (arg: Dog) =\u003e void let Eg1: AnimalFn; let Eg2: DogFn; // 不再可以赋值了， // AnimalFn = DogFn不可以赋值了, Animal = Dog是可以的 Eg1 = Eg2; // 反过来可以 Eg2 = Eg1;\n理论上，Animal = Dog是类型安全的，那么AnimalFn = DogFn也应该类型安全才对，为什么Ts认为不安全呢？看下面的例子：\ntypescript\n代码解读\n复制代码\nlet animal: AnimalFn = (arg: Animal) =\u003e {} let dog: DogFn = (arg: Dog) =\u003e { arg.break(); } // 假设类型安全可以赋值 animal = dog; // 那么animal在调用时约束的参数，缺少dog所需的参数，此时会导致错误 animal({name: 'cat'});\n从这个例子看到，如果dog函数赋值给animal函数，那么animal函数在调用时，约束的是参数必须要为Animal类型（而不是Dog），但是animal实际为dog的调用，此时就会出现错误。\n因此，Animal和Dog在进行type Fn = (arg: T) =\u003e void构造器构造后，父子关系逆转了，此时成为“逆变”。\n双向协变 Ts在函数参数的比较中实际上默认采取的策略是双向协变：只有当源函数参数能够赋值给目标函数或者反过来时才能赋值成功。\n这是不稳定的，因为调用者可能传入了一个具有更精确类型信息的函数，但是调用这个传入的函数的时候却使用了不是那么精确的类型信息（典型的就是上述的逆变）。 但是实际上，这极少会发生错误，并且能够实现很多JavaScript里的常见模式：\ntypescript\n代码解读\n复制代码\n// lib.dom.d.ts中EventListener的接口定义 interface EventListener { (evt: Event): void; } // 简化后的Event interface Event { readonly target: EventTarget | null; preventDefault(): void; } // 简化合并后的MouseEvent interface MouseEvent extends Event { readonly x: number; readonly y: number; } // 简化后的Window接口 interface Window { // 简化后的addEventListener addEventListener(type: string, listener: EventListener) } // 日常使用 window.addEventListener('click', (e: Event) =\u003e {}); window.addEventListener('mouseover', (e: MouseEvent) =\u003e {});\n可以看到Window的listener函数要求参数是Event，但是日常使用时更多时候传入的是Event子类型。但是这里可以正常使用，正是其默认行为是双向协变的原因。可以通过tsconfig.js中修改strictFunctionType属性来严格控制协变和逆变。\n敲重点！！！敲重点！！！敲重点！！！\ninfer关键词的功能暂时先不做太详细的说明了，主要是用于extends的条件类型中让Ts自己推到类型，具体的可以查阅官网。但是关于infer的一些容易让人忽略但是非常重要的特性，这里必须要提及一下：\ninfer推导的名称相同并且都处于逆变的位置，则推导的结果将会是交叉类型。 typescript\n代码解读\n复制代码\ntype Bar = T extends { a: (x: infer U) =\u003e void; b: (x: infer U) =\u003e void; } ? U : never; // type T1 = string type T1 = Bar\u003c{ a: (x: string) =\u003e void; b: (x: string) =\u003e void }\u003e; // type T2 = never type T2 = Bar\u003c{ a: (x: string) =\u003e void; b: (x: number) =\u003e void }\u003e;\ninfer推导的名称相同并且都处于协变的位置，则推导的结果将会是联合类型。 typescript\n代码解读\n复制代码\ntype Foo = T extends { a: infer U; b: infer U; } ? U : never; // type T1 = string type T1 = Foo\u003c{ a: string; b: string }\u003e; // type T2 = string | number type T2 = Foo\u003c{ a: string; b: number }\u003e;\ninter与协变逆变的参考文档点击这里\n第二部分 Ts内置类型工具原理解析 Partial实现原理解析 Partial将T的所有属性变成可选的。\ntypescript\n代码解读\n复制代码\n/** * 核心实现就是通过映射类型遍历T上所有的属性， * 然后将每个属性设置为可选属性 */ type Partial = { [P in keyof T]?: T[P]; }\n[P in keyof T]通过映射类型，遍历T上的所有属性 ?:设置为属性为可选的 T[P]设置类型为原来的类型 扩展一下，将制定的key变成可选类型:\ntypescript\n代码解读\n复制代码\n/** * 主要通过K extends keyof T约束K必须为keyof T的子类型 * keyof T得到的是T的所有key组成的联合类型 */ type PartialOptional = { [P in K]?: T[P]; } /** * @example * type Eg1 = { key1?: string; key2?: number } */ type Eg1 = PartialOptional\u003c{ key1: string, key2: number, key3: '' }, 'key1' | 'key2'\u003e;\nReadonly原理解析 typescript\n代码解读\n复制代码\n/** * 主要实现是通过映射遍历所有key， * 然后给每个key增加一个readonly修饰符 */ type Readonly = { readonly [P in keyof T]: T[P] } /** * @example * type Eg = { * readonly key1: string; * readonly key2: number; * } */ type Eg = Readonly\u003c{ key1: string, key2: number, }\u003e\nPick 挑选一组属性并组成一个新的类型。\ntypescript\n代码解读\n复制代码\ntype Pick = { [P in K]: T[P]; };\n基本和上述同样的知识点，就不再赘述了。\nRecord 构造一个type，key为联合类型中的每个子类型，类型为T。文字不好理解，先看例子：\ntypescript\n代码解读\n复制代码\n/** * @example * type Eg1 = { * a: { key1: string; }; * b: { key1: string; }; * } * @desc 就是遍历第一个参数'a' | 'b'的每个子类型，然后将值设置为第二参数 */ type Eg1 = Record\u003c'a' | 'b', {key1: string}\u003e\nRecord具体实现：\ntypescript\n代码解读\n复制代码\n/** * 核心实现就是遍历K，将值设置为T */ type Record = { [P in K]: T } /** * @example * type Eg2 = {a: B, b: B} */ interface A { a: string, b: number, } interface B { key1: number, key2: string, } type Eg2 = Record\n值得注意的是keyof any得到的是string | number | symbol 原因在于类型key的类型只能为string | number | symbol 扩展: 同态与非同态。划重点！！！ 划重点！！！ 划重点！！！\nPartial、Readonly和Pick都属于同态的，即其实现需要输入类型T来拷贝属性，因此属性修饰符（例如readonly、?:）都会被拷贝。可从下面例子验证： typescript\n代码解读\n复制代码\n/** * @example * type Eg = {readonly a?: string} */ type Eg = Pick\u003c{readonly a?: string}, 'a'\u003e\n从Eg的结果可以看到，Pick在拷贝属性时，连带拷贝了readonly和?:的修饰符。\nRecord是非同态的，不需要拷贝属性，因此不会拷贝属性修饰符 可能到这里就有小伙伴疑惑了，为什么Pick拷贝了属性，而Record没有拷贝？我们来对比一下其实现：\ntypescript\n代码解读\n复制代码\ntype Pick = { [P in K]: T[P]; }; type Record = { [P in K]: T }\n可以看到Pick的实现中，注意P in K（本质是P in keyof T），T为输入的类型，而keyof T则遍历了输入类型；而Record的实现中，并没有遍历所有输入的类型，K只是约束为keyof any的子类型即可。\n最后再类比一下Pick、Partial、readonly这几个类型工具，无一例外，都是使用到了keyof T来辅助拷贝传入类型的属性。\nExclude原理解析 Exclude提取存在于T，但不存在于U的类型组成的联合类型。\ntypescript\n代码解读\n复制代码\n/** * 遍历T中的所有子类型，如果该子类型约束于U（存在于U、兼容于U）， * 则返回never类型，否则返回该子类型 */ type Exclude = T extends U ? never : T; /** * @example * type Eg = 'key1' */ type Eg = Exclude\u003c'key1' | 'key2', 'key2'\u003e\n敲重点！！！\nnever表示一个不存在的类型 never与其他类型的联合后，是没有never的 typescript\n代码解读\n复制代码\n/** * @example * type Eg2 = string | number */ type Eg2 = string | number | never\n因此上述Eg其实就等于key1 | never,也就是type Eg = key1\nExtract Extract提取联合类型T和联合类型U的所有交集。\ntypescript\n代码解读\n复制代码\ntype Extract = T extends U ? T : never; /** * @example * type Eg = 'key1' */ type Eg = Extract\u003c'key1' | 'key2', 'key1'\u003e\nOmit原理解析 Omit从类型T中剔除K中的所有属性。\ntypescript\n代码解读\n复制代码\n/** * 利用Pick实现Omit */ type Omit = Pick",
+  "wordCount" : "3392",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-08-09T00:00:00Z",
+  "dateModified": "2021-08-09T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "愣锤"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/ts%E9%AB%98%E6%89%8B%E7%AF%8722%E4%B8%AA%E7%A4%BA%E4%BE%8B%E6%B7%B1%E5%85%A5%E8%AE%B2%E8%A7%A3ts%E6%9C%80%E6%99%A6%E6%B6%A9%E9%9A%BE%E6%87%82%E7%9A%84%E9%AB%98%E7%BA%A7%E7%B1%BB%E5%9E%8B%E5%B7%A5%E5%85%B7/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具
+    </h1>
+    <div class="post-description">
+      深入讲解Typescript高级类型工具实现原理和编程技巧。全程干货、不扯闲篇，助你轻松实现Ts进阶。
+    </div>
+    <div class="post-meta"><span title='2021-08-09 00:00:00 +0000 UTC'>八月 9, 2021</span>&nbsp;·&nbsp;16 分钟&nbsp;·&nbsp;愣锤&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%80%e9%83%a8%e5%88%86-%e5%89%8d%e7%bd%ae%e5%86%85%e5%ae%b9" aria-label="第一部分 前置内容">第一部分 前置内容</a><ul>
+                        
+                <li>
+                    <a href="#extends%e5%85%b3%e9%94%ae%e8%af%8d%e7%89%b9%e6%80%a7%e9%87%8d%e7%82%b9" aria-label="extends关键词特性（重点）">extends关键词特性（重点）</a></li>
+                <li>
+                    <a href="#%e7%b1%bb%e5%9e%8b%e5%85%bc%e5%ae%b9%e6%80%a7" aria-label="类型兼容性">类型兼容性</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%ba%8c%e9%83%a8%e5%88%86-ts%e5%86%85%e7%bd%ae%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7%e5%8e%9f%e7%90%86%e8%a7%a3%e6%9e%90" aria-label="第二部分 Ts内置类型工具原理解析">第二部分 Ts内置类型工具原理解析</a><ul>
+                        
+                <li>
+                    <a href="#partial%e5%ae%9e%e7%8e%b0%e5%8e%9f%e7%90%86%e8%a7%a3%e6%9e%90" aria-label="Partial实现原理解析">Partial实现原理解析</a></li>
+                <li>
+                    <a href="#readonly%e5%8e%9f%e7%90%86%e8%a7%a3%e6%9e%90" aria-label="Readonly原理解析">Readonly原理解析</a></li>
+                <li>
+                    <a href="#pick" aria-label="Pick">Pick</a></li>
+                <li>
+                    <a href="#record" aria-label="Record">Record</a></li>
+                <li>
+                    <a href="#exclude%e5%8e%9f%e7%90%86%e8%a7%a3%e6%9e%90" aria-label="Exclude原理解析">Exclude原理解析</a></li>
+                <li>
+                    <a href="#extract" aria-label="Extract">Extract</a></li>
+                <li>
+                    <a href="#omit%e5%8e%9f%e7%90%86%e8%a7%a3%e6%9e%90" aria-label="Omit原理解析">Omit原理解析</a></li>
+                <li>
+                    <a href="#parameters-%e5%92%8c-returntype" aria-label="Parameters 和 ReturnType">Parameters 和 ReturnType</a></li>
+                <li>
+                    <a href="#constructorparameters" aria-label="ConstructorParameters">ConstructorParameters</a></li>
+                <li>
+                    <a href="#ts-compiler%e5%86%85%e9%83%a8%e5%ae%9e%e7%8e%b0%e7%9a%84%e7%b1%bb%e5%9e%8b" aria-label="Ts compiler内部实现的类型">Ts compiler内部实现的类型</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%89%e9%83%a8%e5%88%86-%e8%87%aa%e5%ae%9a%e4%b9%89ts%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7%e5%8f%8a%e7%b1%bb%e5%9e%8b%e7%bc%96%e7%a8%8b%e6%8a%80%e5%b7%a7" aria-label="第三部分 自定义Ts高级类型工具及类型编程技巧">第三部分 自定义Ts高级类型工具及类型编程技巧</a><ul>
+                        
+                <li>
+                    <a href="#symmetricdifference" aria-label="SymmetricDifference">SymmetricDifference</a></li>
+                <li>
+                    <a href="#functionkeys" aria-label="FunctionKeys">FunctionKeys</a></li>
+                <li>
+                    <a href="#mutablekeys" aria-label="MutableKeys">MutableKeys</a></li>
+                <li>
+                    <a href="#optionalkeys" aria-label="OptionalKeys">OptionalKeys</a></li>
+                <li>
+                    <a href="#%e5%a2%9e%e5%bc%bapick" aria-label="增强Pick">增强Pick</a></li>
+                <li>
+                    <a href="#intersection" aria-label="Intersection">Intersection</a></li>
+                <li>
+                    <a href="#overwrite-%e5%92%8c-assign" aria-label="Overwrite 和 Assign">Overwrite 和 Assign</a></li>
+                <li>
+                    <a href="#deeprequired" aria-label="DeepRequired">DeepRequired</a></li>
+                <li>
+                    <a href="#deepreadonlyarray" aria-label="DeepReadonlyArray">DeepReadonlyArray</a></li>
+                <li>
+                    <a href="#uniontointersection" aria-label="UnionToIntersection">UnionToIntersection</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e5%86%85%e5%ae%b9" aria-label="参考内容">参考内容</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Hello大家好，我是愣锤。随着Typescript不可阻挡的趋势，相信小伙伴们或多或少的使用过Ts开发了。而Ts的使用除了基本的类型定义外，对于Ts的泛型、内置高级类型、自定义高级类型工具等会相对陌生。本文将会通过22个类型工具例子，深入讲解Ts类型工具原理和编程技巧。不扯闲篇，全程干货，内容非常多，想提升Ts功力的小伙伴请耐心读下去。相信小伙伴们在读完此文后，能够对这块有更深入的理解。下面，我们开始吧～</p>
+<p>本文基本分为三部分：</p>
+<ul>
+<li>第一部分讲解一些基本的关键词的特性（比如索引查询、索引访问、映射、<code>extends</code>等），但是该部分更多的讲解小伙伴们不清晰的一些特性，而基本功能则不再赘述。更多的关键词及技巧将包含在后续的例子演示中再具体讲述；</li>
+<li>第二部分讲解Ts内置的类型工具以及实现原理，比如<code>Pick</code>、<code>Omit</code>等；</li>
+<li>第三部分讲解自定义的工具类型，该部分也是最难的部分，将通过一些复杂的类型工具示例进行逐步剖析，对于其中的晦涩的地方以及涉及的知识点逐步讲解。此部分也会包含大量Ts类型工具的编程技巧，也希望通过此部分的讲解，小伙伴的Ts功底可以进一步提升！</li>
+</ul>
+<h2 id="第一部分-前置内容">第一部分 前置内容<a hidden class="anchor" aria-hidden="true" href="#第一部分-前置内容">#</a></h2>
+<ul>
+<li><code>keyof</code> 索引查询</li>
+</ul>
+<p>对应任何类型<code>T</code>,<code>keyof T</code>的结果为该类型上所有公有属性key的联合：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>interface Eg1 {   name: string,   readonly age: number, } // T1的类型实则是name | age type T1 = keyof Eg1 class Eg2 {   private name: string;   public readonly age: number;   protected home: string; } // T2实则被约束为 age // 而name和home不是公有属性，所以不能被keyof获取到 type T2 = keyof Eg2</code></p>
+<ul>
+<li><code>T[K]</code> 索引访问</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>interface Eg1 {   name: string,   readonly age: number, } // string type V1 = Eg1['name'] // string | number type V2 = Eg1['name' | 'age'] // any type V2 = Eg1['name' | 'age2222'] // string | number type V3 = Eg1[keyof Eg1]</code></p>
+<p><code>T[keyof T]</code>的方式，可以获取到<code>T</code>所有<code>key</code>的类型组成的联合类型； <code>T[keyof K]</code>的方式，获取到的是<code>T</code>中的<code>key</code>且同时存在于<code>K</code>时的类型组成的联合类型； 注意：如果<code>[]</code>中的key有不存在T中的，则是any；因为ts也不知道该key最终是什么类型，所以是any；且也会报错；</p>
+<ul>
+<li><code>&amp;</code> 交叉类型注意点</li>
+</ul>
+<p>交叉类型取的多个类型的并集，但是如果相同<code>key</code>但是类型不同，则该<code>key</code>为<code>never</code>。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>interface Eg1 {   name: string,   age: number, } interface Eg2 {   color: string,   age: string, } /**  * T的类型为 {name: string; age: never; color: string}  * 注意，age因为Eg1和Eg2中的类型不一致，所以交叉后age的类型是never  */ type T = Eg1 &amp; Eg2 // 可通过如下示例验证 const val: T = {   name: '',   color: '',   age: (function a() {     throw Error()   })(), }</code></p>
+<h3 id="extends关键词特性重点">extends关键词特性（重点）<a hidden class="anchor" aria-hidden="true" href="#extends关键词特性重点">#</a></h3>
+<ul>
+<li>用于接口，表示继承</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>interface T1 {   name: string, } interface T2 {   sex: number, } /**  * @example  * T3 = {name: string, sex: number, age: number}  */ interface T3 extends T1, T2 {   age: number, }</code></p>
+<p>注意，接口支持多重继承，语法为逗号隔开。如果是type实现继承，则可以使用交叉类型<code>type A = B &amp; C &amp; D</code>。</p>
+<ul>
+<li>表示条件类型，可用于条件判断</li>
+</ul>
+<p>表示条件判断，如果前面的条件满足，则返回问号后的第一个参数，否则第二个。类似于js的三元运算。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @example  * type A1 = 1  */ type A1 = 'x' extends 'x' ? 1 : 2; /**  * @example  * type A2 = 2  */ type A2 = 'x' | 'y' extends 'x' ? 1 : 2; /**  * @example  * type A3 = 1 | 2  */ type P&lt;T&gt; = T extends 'x' ? 1 : 2; type A3 = P&lt;'x' | 'y'&gt;</code></p>
+<p>提问：为什么<code>A2</code>和<code>A3</code>的值不一样？</p>
+<ul>
+<li>如果用于简单的条件判断，则是直接判断前面的类型是否可分配给后面的类型</li>
+<li>若<code>extends</code>前面的类型是泛型，且泛型传入的是联合类型时，则会依次判断该联合类型的所有子类型是否可分配给extends后面的类型（是一个分发的过程）。</li>
+</ul>
+<p><strong>总结，就是<code>extends</code>前面的参数为联合类型时则会分解（依次遍历所有的子类型进行条件判断）联合类型进行判断。然后将最终的结果组成新的联合类型。</strong></p>
+<ul>
+<li>阻止extends关键词对于联合类型的分发特性</li>
+</ul>
+<p>如果不想被分解（分发），做法也很简单，可以通过简单的元组类型包裹以下：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type P&lt;T&gt; = [T] extends ['x'] ? 1 : 2; /**  * type A4 = 2;  */ type A4 = P&lt;'x' | 'y'&gt;</code></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.typescriptlang.org%2Fdocs%2Fhandbook%2F2%2Fconditional-types.html%23distributive-conditional-types" title="https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types">条件类型的分布式特性文档</a></p>
+<h3 id="类型兼容性">类型兼容性<a hidden class="anchor" aria-hidden="true" href="#类型兼容性">#</a></h3>
+<blockquote>
+<p>集合论中，如果一个集合的所有元素在集合B中都存在，则A是B的子集；</p>
+<p>类型系统中，如果一个类型的属性更具体，则该类型是子类型。（因为属性更少则说明该类型约束的更宽泛，是父类型）</p>
+</blockquote>
+<p><strong>因此，我们可以得出基本的结论：子类型比父类型更加具体,父类型比子类型更宽泛。</strong> 下面我们也将基于类型的可复制性（可分配性）、协变、逆变、双向协变等进行进一步的讲解。</p>
+<ul>
+<li>可赋值性</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>interface Animal {   name: string; } interface Dog extends Animal {   break(): void; } let a: Animal; let b: Dog; // 可以赋值，子类型更佳具体，可以赋值给更佳宽泛的父类型 a = b; // 反过来不行 b = a;</code></p>
+<ul>
+<li>可赋值性在联合类型中的特性</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type A = 1 | 2 | 3; type B = 2 | 3; let a: A; let b: B; // 不可赋值 b = a; // 可以赋值 a = b;</code></p>
+<p>是不是<code>A</code>的类型更多，<code>A</code>就是子类型呢？恰恰相反，<code>A</code>此处类型更多但是其表达的类型更宽泛，所以<code>A</code>是父类型，<code>B</code>是子类型。</p>
+<p>因此<code>b = a</code>不成立（父类型不能赋值给子类型），而<code>a = b</code>成立（子类型可以赋值给父类型）。</p>
+<ul>
+<li>协变</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>interface Animal {   name: string; } interface Dog extends Animal {   break(): void; } let Eg1: Animal; let Eg2: Dog; // 兼容，可以赋值 Eg1 = Eg2; let Eg3: Array&lt;Animal&gt; let Eg4: Array&lt;Dog&gt; // 兼容，可以赋值 Eg3 = Eg4</code></p>
+<p>通过<code>Eg3</code>和<code>Eg4</code>来看，在<code>Animal</code>和<code>Dog</code>在变成数组后，<code>Array&lt;Dog&gt;</code>依旧可以赋值给<code>Array&lt;Animal&gt;</code>，因此对于<code>type MakeArray = Array&lt;any&gt;</code>来说就是协变的。</p>
+<p>最后引用维基百科中的定义：</p>
+<blockquote>
+<p>协变与逆变(Covariance and contravariance )是在计算机科学中，描述具有父/子型别关系的多个型别通过型别构造器、构造出的多个复杂型别之间是否有父/子型别关系的用语。</p>
+</blockquote>
+<p>简单说就是，具有父子关系的多个类型，在通过某种构造关系构造成的新的类型，如果还具有父子关系则是协变的，而关系逆转了（子变父，父变子）就是逆变的。可能听起来有些抽象，下面我们将用更具体的例子进行演示说明：</p>
+<ul>
+<li>逆变</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>interface Animal {   name: string; } interface Dog extends Animal {   break(): void; } type AnimalFn = (arg: Animal) =&gt; void type DogFn = (arg: Dog) =&gt; void let Eg1: AnimalFn; let Eg2: DogFn; // 不再可以赋值了， // AnimalFn = DogFn不可以赋值了, Animal = Dog是可以的 Eg1 = Eg2; // 反过来可以 Eg2 = Eg1;</code></p>
+<p>理论上，<code>Animal = Dog</code>是类型安全的，那么<code>AnimalFn = DogFn</code>也应该类型安全才对，为什么Ts认为不安全呢？看下面的例子：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let animal: AnimalFn = (arg: Animal) =&gt; {} let dog: DogFn = (arg: Dog) =&gt; {   arg.break(); } // 假设类型安全可以赋值 animal = dog; // 那么animal在调用时约束的参数，缺少dog所需的参数，此时会导致错误 animal({name: 'cat'});</code></p>
+<p>从这个例子看到，如果dog函数赋值给animal函数，那么animal函数在调用时，约束的是参数必须要为Animal类型（而不是Dog），但是animal实际为dog的调用，此时就会出现错误。</p>
+<p>因此，<code>Animal</code>和<code>Dog</code>在进行<code>type Fn&lt;T&gt; = (arg: T) =&gt; void</code>构造器构造后，父子关系逆转了，此时成为“逆变”。</p>
+<ul>
+<li>双向协变</li>
+</ul>
+<p>Ts在函数参数的比较中实际上默认采取的策略是双向协变：只有当源函数参数能够赋值给目标函数或者反过来时才能赋值成功。</p>
+<p>这是不稳定的，因为调用者可能传入了一个具有更精确类型信息的函数，但是调用这个传入的函数的时候却使用了不是那么精确的类型信息（典型的就是上述的逆变）。 但是实际上，这极少会发生错误，并且能够实现很多JavaScript里的常见模式：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// lib.dom.d.ts中EventListener的接口定义 interface EventListener {   (evt: Event): void; } // 简化后的Event interface Event {   readonly target: EventTarget | null;   preventDefault(): void; } // 简化合并后的MouseEvent interface MouseEvent extends Event {   readonly x: number;   readonly y: number; } // 简化后的Window接口 interface Window {   // 简化后的addEventListener   addEventListener(type: string, listener: EventListener) } // 日常使用 window.addEventListener('click', (e: Event) =&gt; {}); window.addEventListener('mouseover', (e: MouseEvent) =&gt; {});</code></p>
+<p>可以看到<code>Window</code>的<code>listener</code>函数要求参数是<code>Event</code>，但是日常使用时更多时候传入的是<code>Event</code>子类型。但是这里可以正常使用，正是其默认行为是双向协变的原因。可以通过<code>tsconfig.js</code>中修改<code>strictFunctionType</code>属性来严格控制协变和逆变。</p>
+<p><strong>敲重点！！！敲重点！！！敲重点！！！</strong></p>
+<p><code>infer</code>关键词的功能暂时先不做太详细的说明了，主要是用于<code>extends</code>的条件类型中让Ts自己推到类型，具体的可以查阅官网。但是关于<code>infer</code>的一些容易让人忽略但是非常重要的特性，这里必须要提及一下：</p>
+<ul>
+<li><code>infer</code>推导的名称相同并且都处于<strong>逆变</strong>的位置，则推导的结果将会是<strong>交叉类型</strong>。</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Bar&lt;T&gt; = T extends {   a: (x: infer U) =&gt; void;   b: (x: infer U) =&gt; void; } ? U : never; // type T1 = string type T1 = Bar&lt;{ a: (x: string) =&gt; void; b: (x: string) =&gt; void }&gt;; // type T2 = never type T2 = Bar&lt;{ a: (x: string) =&gt; void; b: (x: number) =&gt; void }&gt;;</code></p>
+<ul>
+<li><code>infer</code>推导的名称相同并且都处于<strong>协变</strong>的位置，则推导的结果将会是<strong>联合类型</strong>。</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Foo&lt;T&gt; = T extends {   a: infer U;   b: infer U; } ? U : never; // type T1 = string type T1 = Foo&lt;{ a: string; b: string }&gt;; // type T2 = string | number type T2 = Foo&lt;{ a: string; b: number }&gt;;</code></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.typescriptlang.org%2Fdocs%2Fhandbook%2Frelease-notes%2Ftypescript-2-8.html%23type-inference-in-conditional-types" title="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#type-inference-in-conditional-types">inter与协变逆变的参考文档点击这里</a></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7ceedd42d490435688bf9c236a4f19ad~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="企业微信截图_8357a6f0-aa88-4faf-b21e-f1baa6bc790e.png"  />
+</p>
+<h2 id="第二部分-ts内置类型工具原理解析">第二部分 Ts内置类型工具原理解析<a hidden class="anchor" aria-hidden="true" href="#第二部分-ts内置类型工具原理解析">#</a></h2>
+<h3 id="partial实现原理解析">Partial实现原理解析<a hidden class="anchor" aria-hidden="true" href="#partial实现原理解析">#</a></h3>
+<p><code>Partial&lt;T&gt;</code>将<code>T</code>的所有属性变成可选的。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 核心实现就是通过映射类型遍历T上所有的属性，  * 然后将每个属性设置为可选属性  */ type Partial&lt;T&gt; = {   [P in keyof T]?: T[P]; }</code></p>
+<ul>
+<li><code>[P in keyof T]</code>通过映射类型，遍历<code>T</code>上的所有属性</li>
+<li><code>?:</code>设置为属性为可选的</li>
+<li><code>T[P]</code>设置类型为原来的类型</li>
+</ul>
+<p>扩展一下，将制定的<code>key</code>变成可选类型:</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 主要通过K extends keyof T约束K必须为keyof T的子类型  * keyof T得到的是T的所有key组成的联合类型  */ type PartialOptional&lt;T, K extends keyof T&gt; = {   [P in K]?: T[P]; } /**  * @example  *     type Eg1 = { key1?: string; key2?: number }  */ type Eg1 = PartialOptional&lt;{   key1: string,   key2: number,   key3: '' }, 'key1' | 'key2'&gt;;</code></p>
+<h3 id="readonly原理解析">Readonly原理解析<a hidden class="anchor" aria-hidden="true" href="#readonly原理解析">#</a></h3>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 主要实现是通过映射遍历所有key，  * 然后给每个key增加一个readonly修饰符  */ type Readonly&lt;T&gt; = {   readonly [P in keyof T]: T[P] } /**  * @example  * type Eg = {  *   readonly key1: string;  *   readonly key2: number;  * }  */ type Eg = Readonly&lt;{   key1: string,   key2: number, }&gt;</code></p>
+<h3 id="pick">Pick<a hidden class="anchor" aria-hidden="true" href="#pick">#</a></h3>
+<p>挑选一组属性并组成一个新的类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Pick&lt;T, K extends keyof T&gt; = {     [P in K]: T[P]; };</code></p>
+<p>基本和上述同样的知识点，就不再赘述了。</p>
+<h3 id="record">Record<a hidden class="anchor" aria-hidden="true" href="#record">#</a></h3>
+<p>构造一个<code>type</code>，<code>key</code>为联合类型中的每个子类型，类型为<code>T</code>。文字不好理解，先看例子：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @example  * type Eg1 = {  *   a: { key1: string; };  *   b: { key1: string; };  * }  * @desc 就是遍历第一个参数'a' | 'b'的每个子类型，然后将值设置为第二参数  */ type Eg1 = Record&lt;'a' | 'b', {key1: string}&gt;</code></p>
+<p>Record具体实现：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 核心实现就是遍历K，将值设置为T  */ type Record&lt;K extends keyof any, T&gt; = {   [P in K]: T } /**  * @example  * type Eg2 = {a: B, b: B}  */ interface A {   a: string,   b: number, } interface B {   key1: number,   key2: string, } type Eg2 = Record&lt;keyof A, B&gt;</code></p>
+<ul>
+<li>值得注意的是<code>keyof any</code>得到的是<code>string | number | symbol</code></li>
+<li>原因在于类型key的类型只能为<code>string | number | symbol</code></li>
+</ul>
+<p><strong>扩展: 同态与非同态。划重点！！！ 划重点！！！ 划重点！！！</strong></p>
+<ul>
+<li><code>Partial</code>、<code>Readonly</code>和<code>Pick</code>都属于同态的，即其实现需要输入类型T来拷贝属性，因此属性修饰符（例如readonly、?:）都会被拷贝。可从下面例子验证：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @example  * type Eg = {readonly a?: string}  */ type Eg = Pick&lt;{readonly a?: string}, 'a'&gt;</code></p>
+<p>从<code>Eg</code>的结果可以看到，Pick在拷贝属性时，连带拷贝了<code>readonly</code>和<code>?:</code>的修饰符。</p>
+<ul>
+<li><code>Record</code>是非同态的，不需要拷贝属性，因此不会拷贝属性修饰符</li>
+</ul>
+<p>可能到这里就有小伙伴疑惑了，为什么<code>Pick</code>拷贝了属性，而<code>Record</code>没有拷贝？我们来对比一下其实现：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Pick&lt;T, K extends keyof T&gt; = {     [P in K]: T[P]; }; type Record&lt;K extends keyof any, T&gt; = {   [P in K]: T }</code></p>
+<p>可以看到<code>Pick</code>的实现中，注意<code>P in K</code>（本质是<code>P in keyof T</code>），T为输入的类型，而<code>keyof T</code>则遍历了输入类型；而<code>Record</code>的实现中，并没有遍历所有输入的类型，K只是约束为<code>keyof any</code>的子类型即可。</p>
+<p>最后再类比一下<code>Pick、Partial、readonly</code>这几个类型工具，无一例外，都是使用到了<code>keyof T</code>来辅助拷贝传入类型的属性。</p>
+<h3 id="exclude原理解析">Exclude原理解析<a hidden class="anchor" aria-hidden="true" href="#exclude原理解析">#</a></h3>
+<p><code>Exclude&lt;T, U&gt;</code>提取存在于<code>T</code>，但不存在于<code>U</code>的类型组成的联合类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 遍历T中的所有子类型，如果该子类型约束于U（存在于U、兼容于U），  * 则返回never类型，否则返回该子类型  */ type Exclude&lt;T, U&gt; = T extends U ? never : T; /**  * @example  * type Eg = 'key1'  */ type Eg = Exclude&lt;'key1' | 'key2', 'key2'&gt;</code></p>
+<p>敲重点！！！</p>
+<ul>
+<li><code>never</code>表示一个不存在的类型</li>
+<li><code>never</code>与其他类型的联合后，是没有<code>never</code>的</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @example  * type Eg2 = string | number  */ type Eg2 = string | number | never</code></p>
+<p>因此上述<code>Eg</code>其实就等于<code>key1 | never</code>,也就是<code>type Eg = key1</code></p>
+<h3 id="extract">Extract<a hidden class="anchor" aria-hidden="true" href="#extract">#</a></h3>
+<p><code>Extract&lt;T, U&gt;</code>提取联合类型T和联合类型U的所有交集。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Extract&lt;T, U&gt; = T extends U ? T : never; /**  * @example  *  type Eg = 'key1'  */ type Eg = Extract&lt;'key1' | 'key2', 'key1'&gt;</code></p>
+<h3 id="omit原理解析">Omit原理解析<a hidden class="anchor" aria-hidden="true" href="#omit原理解析">#</a></h3>
+<p><code>Omit&lt;T, K&gt;</code>从类型<code>T</code>中剔除<code>K</code>中的所有属性。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 利用Pick实现Omit  */ type Omit = Pick&lt;T, Exclude&lt;keyof T, K&gt;&gt;;</code></p>
+<ul>
+<li>换种思路想一下，其实现可以是利用<code>Pick</code>提取我们需要的keys组成的类型</li>
+<li>因此也就是 <code>Omit = Pick&lt;T, 我们需要的属性联合&gt;</code></li>
+<li>而我们需要的属性联合就是，从T的属性联合中排出存在于联合类型K中的</li>
+<li>因此也就是<code>Exclude&lt;keyof T, K&gt;</code>;</li>
+</ul>
+<p>如果不利用Pick实现呢?</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 利用映射类型Omit  */ type Omit2&lt;T, K extends keyof any&gt; = {   [P in Exclude&lt;keyof T, K&gt;]: T[P] }</code></p>
+<ul>
+<li>其实现类似于Pick的原理实现</li>
+<li>区别在于是遍历的我们需要的属性不一样</li>
+<li>我们需要的属性和上面的例子一样，就是<code>Exclude&lt;keyof T, K&gt;</code></li>
+<li>因此，遍历就是<code>[P in Exclude&lt;keyof T, K&gt;]</code></li>
+</ul>
+<h3 id="parameters-和-returntype">Parameters 和 ReturnType<a hidden class="anchor" aria-hidden="true" href="#parameters-和-returntype">#</a></h3>
+<p><strong>Parameters 获取函数的参数类型，将每个参数类型放在一个元组中。</strong></p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @desc 具体实现  */ type Parameters&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: infer P) =&gt; any ? P : never; /**  * @example  * type Eg = [arg1: string, arg2: number];  */ type Eg = Parameters&lt;(arg1: string, arg2: number) =&gt; void&gt;;</code></p>
+<ul>
+<li><code>Parameters</code>首先约束参数<code>T</code>必须是个函数类型，所以<code>(...args: any) =&gt; any&gt;</code>替换成<code>Function</code>也是可以的</li>
+<li>具体实现就是，判断<code>T</code>是否是函数类型，如果是则使用<code>inter P</code>让ts自己推导出函数的参数类型，并将推导的结果存到类型<code>P</code>上，否则就返回<code>never</code>；</li>
+</ul>
+<p><strong>敲重点！！！敲重点！！！敲重点！！！</strong></p>
+<ul>
+<li><code>infer</code>关键词作用是让Ts自己推导类型，并将推导结果存储在其参数绑定的类型上。Eg:<code>infer P</code> 就是将结果存在类型<code>P</code>上，供使用。</li>
+<li><code>infer</code>关键词只能在<code>extends</code>条件类型上使用，不能在其他地方使用。</li>
+</ul>
+<p><strong>再敲重点！！！再敲重点！！！再敲重点！！！</strong></p>
+<ul>
+<li>
+<p><code>type Eg = [arg1: string, arg2: number]</code>这是一个元组，但是和我们常见的元组<code>type tuple = [string, number]</code>。官网未提到该部分文档说明，其实可以把这个作为类似命名元组，或者具名元组的意思去理解。实质上没有什么特殊的作用，比如无法通过这个具名去取值不行的。但是从语义化的角度，个人觉得多了语义化的表达罢了。</p>
+</li>
+<li>
+<p>定义元祖的可选项，只能是最后的选项</p>
+</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 普通方式  */ type Tuple1 = [string, number?]; const a: Tuple1 = ['aa', 11]; const a2: Tuple1 = ['aa']; /**  * 具名方式  */ type Tuple2 = [name: string, age?: number]; const b: Tuple2 = ['aa', 11]; const b2: Tuple2 = ['aa'];</code></p>
+<p>扩展：<code>infer</code>实现一个推导数组所有元素的类型：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 约束参数T为数组类型，  * 判断T是否为数组，如果是数组类型则推导数组元素的类型  */ type FalttenArray&lt;T extends Array&lt;any&gt;&gt; = T extends Array&lt;infer P&gt; ? P : never; /**  * type Eg1 = number | string;  */ type Eg1 = FalttenArray&lt;[number, string]&gt; /**  * type Eg2 = 1 | 'asd';  */ type Eg2 = FalttenArray&lt;[1, 'asd']&gt;</code></p>
+<p><strong>ReturnType 获取函数的返回值类型。</strong></p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @desc ReturnType的实现其实和Parameters的基本一样  * 无非是使用infer R的位置不一样。  */ type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any;</code></p>
+<h3 id="constructorparameters">ConstructorParameters<a hidden class="anchor" aria-hidden="true" href="#constructorparameters">#</a></h3>
+<p><code>ConstructorParameters</code>可以获取类的构造函数的参数类型，存在一个元组中。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 核心实现还是利用infer进行推导构造函数的参数类型  */ type ConstructorParameters&lt;T extends abstract new (...args: any) =&gt; any&gt; = T extends abstract new (...args: infer P) =&gt; any ? P : never; /**  * @example  * type Eg = string;  */ interface ErrorConstructor {   new(message?: string): Error;   (message?: string): Error;   readonly prototype: Error; } type Eg = ConstructorParameters&lt;ErrorConstructor&gt;; /**  * @example  * type Eg2 = [name: string, sex?: number];  */ class People {   constructor(public name: string, sex?: number) {} } type Eg2 = ConstructorParameters&lt;typeof People&gt;</code></p>
+<ul>
+<li>首先约束参数<code>T</code>为拥有构造函数的类。注意这里有个<code>abstract</code>修饰符，等下会说明。</li>
+<li>实现时，判断<code>T</code>是满足约束的类时，利用<code>infer P</code>自动推导构造函数的参数类型，并最终返回该类型。</li>
+</ul>
+<p><strong>敲重点！！！敲重点！！！敲重点！！！</strong></p>
+<p>那么疑问来了，为什么要对T要约束为<code>abstract</code>抽象类呢？看下面例子：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 定义一个普通类  */ class MyClass {} /**  * 定义一个抽象类  */ abstract class MyAbstractClass {} // 可以赋值 const c1: typeof MyClass = MyClass // 报错，无法将抽象构造函数类型分配给非抽象构造函数类型 const c2: typeof MyClass = MyAbstractClass // 可以赋值 const c3: typeof MyAbstractClass = MyClass // 可以赋值 const c4: typeof MyAbstractClass = MyAbstractClass</code></p>
+<p>由此看出，如果将类型定义为抽象类（抽象构造函数），则既可以赋值为抽象类，也可以赋值为普通类；而反之则不行。</p>
+<p><strong>再敲重点！！！再敲重点！！！再敲重点！！！</strong></p>
+<p>这里继续提问，直接使用类作为类型，和使用<code>typeof 类</code>作为类型，有什么区别呢？</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 定义一个类  */ class People {   name: number;   age: number;   constructor() {} } // p1可以正常赋值 const p1: People = new People(); // 等号后面的People报错，类型“typeof People”缺少类型“People”中的以下属性: name, age const p2: People = People; // p3报错，类型 &quot;People&quot; 中缺少属性 &quot;prototype&quot;，但类型 &quot;typeof People&quot; 中需要该属性 const p3: typeof People = new People(); // p4可以正常赋值 const p4: typeof People = People;</code></p>
+<p>结论是这样的：</p>
+<ul>
+<li>当把类直接作为类型时，该类型约束的是该类型必须是类的实例；即该类型获取的是该类上的实例属性和实例方法（也叫原型方法）；</li>
+<li>当把<code>typeof 类</code>作为类型时，约束的满足该类的类型；即该类型获取的是该类上的静态属性和方法。</li>
+</ul>
+<p>最后，只需要对<code>infer</code>的使用换个位置，便可以获取构造函数返回值的类型：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type InstanceType&lt;T extends abstract new (...args: any) =&gt; any&gt; = T extends abstract new (...args: any) =&gt; infer R ? R : any;</code></p>
+<h3 id="ts-compiler内部实现的类型">Ts compiler内部实现的类型<a hidden class="anchor" aria-hidden="true" href="#ts-compiler内部实现的类型">#</a></h3>
+<ul>
+<li>Uppercase</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @desc 构造一个将字符串转大写的类型  * @example  * type Eg1 = 'ABCD';  */ type Eg1 = Uppercase&lt;'abcd'&gt;;</code></p>
+<ul>
+<li>Lowercase</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @desc 构造一个将字符串转小大写的类型  * @example  * type Eg2 = 'abcd';  */ type Eg2 = Lowercase&lt;'ABCD'&gt;;</code></p>
+<ul>
+<li>Capitalize</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @desc 构造一个将字符串首字符转大写的类型  * @example  * type Eg3 = 'abcd';  */ type Eg3 = Capitalize&lt;'Abcd'&gt;;</code></p>
+<ul>
+<li>Uncapitalize</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @desc 构造一个将字符串首字符转小写的类型  * @example  * type Eg3 = 'ABCD';  */ type Eg3 = Uncapitalize&lt;'aBCD'&gt;;</code></p>
+<p>这些类型工具，在<code>lib.es5.d.ts</code>文件中是看不到具体定义的：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Uppercase&lt;S extends string&gt; = intrinsic; type Lowercase&lt;S extends string&gt; = intrinsic; type Capitalize&lt;S extends string&gt; = intrinsic; type Uncapitalize&lt;S extends string&gt; = intrinsic;</code></p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/29417b98f5bd4870bf65396992f913d8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="企业微信截图_1900dfc9-3c22-4af2-9523-6860bcf03e03.png"  />
+</p>
+<h2 id="第三部分-自定义ts高级类型工具及类型编程技巧">第三部分 自定义Ts高级类型工具及类型编程技巧<a hidden class="anchor" aria-hidden="true" href="#第三部分-自定义ts高级类型工具及类型编程技巧">#</a></h2>
+<h3 id="symmetricdifference">SymmetricDifference<a hidden class="anchor" aria-hidden="true" href="#symmetricdifference">#</a></h3>
+<p><code>SymmetricDifference&lt;T, U&gt;</code>获取没有同时存在于T和U内的类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 核心实现  */ type SymmetricDifference&lt;A, B&gt; = SetDifference&lt;A | B, A &amp; B&gt;; /**  * SetDifference的实现和Exclude一样  */ type SymmetricDifference&lt;T, U&gt; = Exclude&lt;T | U, T &amp; U&gt;; /**  * @example  * type Eg = '1' | '4';  */ type Eg = SymmetricDifference&lt;'1' | '2' | '3', '2' | '3' | '4'&gt;</code></p>
+<p>其核心实现利用了3点：分发式联合类型、交叉类型和Exclude。</p>
+<ul>
+<li>首先利用Exclude从获取存在于第一个参数但是不存在于第二个参数的类型</li>
+<li><code>Exclude</code>第2个参数是<code>T &amp; U</code>获取的是所有类型的交叉类型</li>
+<li><code>Exclude</code>第一个参数则是<code>T | U</code>，这是利用在联合类型在extends中的分发特性，可以理解为<code>Exclude&lt;T, T &amp; U&gt; | Exclude&lt;U, T &amp; U&gt;</code>;</li>
+</ul>
+<p>总结一下就是，提取存在于<code>T</code>但不存在于<code>T &amp; U</code>的类型，然后再提取存在于<code>U</code>但不存在于<code>T &amp; U</code>的，最后进行联合。</p>
+<h3 id="functionkeys">FunctionKeys<a hidden class="anchor" aria-hidden="true" href="#functionkeys">#</a></h3>
+<p>获取<code>T</code>中所有类型为函数的<code>key</code>组成的联合类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * @desc NonUndefined判断T是否为undefined  */ type NonUndefined&lt;T&gt; = T extends undefined ? never : T; /**  * @desc 核心实现  */ type FunctionKeys&lt;T extends object&gt; = {   [K in keyof T]: NonUndefined&lt;T[K]&gt; extends Function ? K : never; }[keyof T]; /**  * @example  * type Eg = 'key2' | 'key3';  */ type AType = {     key1: string,     key2: () =&gt; void,     key3: Function, }; type Eg = FunctionKeys&lt;AType&gt;;</code></p>
+<ul>
+<li>首先约束参数T类型为<code>object</code></li>
+<li>通过映射类型<code>K in keyof T</code>遍历所有的key，先通过<code>NonUndefined&lt;T[K]&gt;</code>过滤<code>T[K]</code>为<code>undefined | null</code>的类型，不符合的返回never</li>
+<li>若<code>T[K]</code>为有效类型，则判断是否为<code>Function</code>类型，是的话返回<code>K</code>,否则<code>never</code>；此时可以得到的类型，例如：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 上述的Eg在此时应该是如下类型，伪代码：  */ type TempType = {     key1: never,     key2: 'key2',     key3: 'key3', }</code></p>
+<ul>
+<li>最后经过<code>{省略}[keyof T]</code>索引访问，取到的为值类型的联合类型<code>never | key2 | key3</code>,计算后就是<code>key2 | key3</code>;</li>
+</ul>
+<p><strong>敲重点！！！敲重点！！！敲重点！！！</strong></p>
+<ul>
+<li><code>T[]</code>是索引访问操作，可以取到值的类型</li>
+<li><code>T['a' | 'b']</code>若<code>[]</code>内参数是联合类型，则也是分发索引的特性，依次取到值的类型进行联合</li>
+<li><code>T[keyof T]</code>则是获取<code>T</code>所有值的类型类型；</li>
+<li><code>never</code>和其他类型进行联合时，<code>never</code>是不存在的。例如：<code>never | number | string</code>等同于<code>number | string</code></li>
+</ul>
+<p><strong>再敲重点！！！再敲重点！！！再敲重点！！！</strong></p>
+<ul>
+<li><code>null</code>和<code>undefined</code>可以赋值给其他类型（开始该类型的严格赋值检测除外）,所以上述实现中需要使用<code>NonUndefined</code>先行判断。</li>
+<li><code>NonUndefined</code>中的实现，只判断了<code>T extends undefined</code>，其实也是因为两者可以互相兼容的。所以你换成<code>T extends null</code>或者<code>T extends null | undefined</code>都是可以的。</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// A = 1 type A = undefined extends null ? 1 : 2; // B = 1 type B = null extends undefined ? 1 : 2;</code></p>
+<p>最后，如果你想写一个获取非函数类型的key组成的联合类型，无非就是<code>K</code>和<code>never</code>的位置不一样罢了。同样，你也可以实现<code>StringKeys</code>、<code>NumberKeys</code>等等。但是记得可以抽象个工厂类型哈：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Primitive =   | string   | number   | bigint   | boolean   | symbol   | null   | undefined; /**  * @desc 用于创建获取指定类型工具的类型工厂  * @param T 待提取的类型  * @param P 要创建的类型  * @param IsCheckNon 是否要进行null和undefined检查  */ type KeysFactory&lt;T, P extends Primitive | Function | object, IsCheckNon extends boolean&gt; = {   [K in keyof T]: IsCheckNon extends true     ? (NonUndefined&lt;T[K]&gt; extends P ? K : never)     : (T[K] extends P ? K : never); }[keyof T]; /**  * @example  * 例如上述KeysFactory就可以通过工厂类型进行创建了  */ type FunctionKeys&lt;T&gt; = KeysFactory&lt;T, Function, true&gt;; type StringKeys&lt;T&gt; = KeysFactory&lt;T, string, true&gt;; type NumberKeys&lt;T&gt; = KeysFactory&lt;T, string, true&gt;;</code></p>
+<h3 id="mutablekeys">MutableKeys<a hidden class="anchor" aria-hidden="true" href="#mutablekeys">#</a></h3>
+<p><code>MutableKeys&lt;T&gt;</code>查找<code>T</code>所有非只读类型的key组成的联合类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 核心实现  */ type MutableKeys&lt;T extends object&gt; = {   [P in keyof T]-?: IfEquals&lt;     { [Q in P]: T[P] },     { -readonly [Q in P]: T[P] },     P   &gt;; }[keyof T]; /**  * @desc 一个辅助类型，判断X和Y是否类型相同，  * @returns 是则返回A，否则返回B  */ type IfEquals&lt;X, Y, A = X, B = never&gt; = (&lt;T&gt;() =&gt; T extends X ? 1 : 2) extends (&lt;T&gt;() =&gt; T extends Y ? 1 : 2)   ? A   : B;</code></p>
+<p><code>MutableKeys</code>还是有一定难度的，讲解<code>MutableKeys</code>的实现，我们要分下面几个步骤：</p>
+<p><strong>第一步，先理解只读和非只读的一些特性</strong></p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 遍历类型T，原封不动的返回，有点类似于拷贝类型的意思  */ type RType1&lt;T&gt; = {   [P in keyof T]: T[P]; } /**  * 遍历类型T，将每个key变成非只读  * 或者理解成去掉只读属性更好理解。  */ type RType2&lt;T&gt; = {   -readonly[P in keyof T]: T[P]; } // R0 = { a: string; readonly b: number } type R0 = RType1&lt;{a: string, readonly b: number}&gt; // R1 = { a: string } type R1 = RType1&lt;{a: string}&gt;; // R2 = { a: string } type R2 = RType2&lt;{a: string}&gt;; // R3 = { readonly a: string } type R3 = RType1&lt;{readonly a: string}&gt;; // R4 = { a: string } type R4 = RType2&lt;{readonly a: string}&gt;;</code></p>
+<p>可以看到：<code>RType1</code>和<code>RType2</code>的参数为<strong>非只读</strong>的属性时，<code>R1</code>和<code>R2</code>的结果是一样的；<code>RType1</code>和<code>RType2</code>的参数为<strong>只读</strong>的属性时，得到的结果R3是<strong>只读</strong>的，<code>R4</code>是<strong>非只读</strong>的。所以，这里要敲个重点了：</p>
+<ul>
+<li><code>[P in Keyof T]</code>是映射类型，而映射是同态的，同态即会拷贝原有的属性修饰符等。可以参考R0的例子。</li>
+<li>映射类型上的<code>-readonly</code>表示为<strong>非只读</strong>，或者可以理解为去掉<strong>只读</strong>。对于<strong>只读</strong>属性加上<code>-readonly</code>变成了<strong>非只读</strong>，而对<strong>非只读</strong>属性加上<code>-readonly</code>后还是<strong>非只读</strong>。一种常见的使用方式，比如你想把属性变成都是非只读的，不能前面不加修饰符（虽然不写就表示非只读），但是要考虑到同态拷贝的问题。</li>
+</ul>
+<p><strong>第二步，解析IfEquals</strong></p>
+<p><code>IfEquals</code>用于判断类型<code>X</code>和<code>Y</code>是否相同，相等则返回<code>A</code>，否则返回<code>B</code>。这个函数是比较难的，也别怕啦，下面讲完就妥妥的明白啦~</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type IfEquals&lt;X, Y, A = X, B = never&gt; =   (&lt;T&gt;() =&gt; T extends X ? 1 : 2) extends   (&lt;T&gt;() =&gt; T extends Y ? 1 : 2)     ? A : B;</code></p>
+<ul>
+<li>首先<code>IfEquals&lt;X, Y, A, B&gt;</code>的四个参数，<code>X和Y</code>是待比较的两个类型，如果相等则返回<code>A</code>，不相等返回<code>B</code>。</li>
+<li><code>IfEquals</code>的基本骨架是<code>type IfEquals&lt;&gt; = (参数1) extends (参数2) ? A : B</code>这样的，就是判断如果参数1的类型能够分配给参数2的类型，则返回<code>A</code>，否则返回<code>B</code>;</li>
+<li>参数1和参数2的基本结构是一样的，唯一区别在于X和Y不同。这里看下具体下面的例子：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// A = &lt;T&gt;() =&gt; T extends string ? 1 : 2; type A = &lt;T&gt;() =&gt; T extends string ? 1 : 2; // B = &lt;T&gt;() =&gt; T extends number ? 1 : 2; type B = &lt;T&gt;() =&gt; T extends number ? 1 : 2; // C = 2 type C = A extends B ? 1 : 2;</code></p>
+<p>是不是很奇怪，为什么能推导出<code>A</code>和<code>B</code>类型是不一样的？告诉你答案：</p>
+<ul>
+<li>这是利用了Ts编译器的一个特点，就是Ts编译器会认为如果两个类型（比如这里的<code>X</code>和<code>Y</code>）仅被用于约束两个相同的泛型函数则是相同的。这理解起来有些不可思议，或者说在逻辑上这种逻辑并不对（因为可以举出反例），但是Ts开发团队保证了这一特性今后不会变。可参考<a href="https://link.juejin.cn?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F52443276%2Fhow-to-exclude-getter-only-properties-from-type-in-typescript" title="https://stackoverflow.com/questions/52443276/how-to-exclude-getter-only-properties-from-type-in-typescript">这里</a>。</li>
+<li>注意，这里也会判断的属性修饰符，例如<code>readonly</code>, <code>可选属性</code>等，看通过下面的例子验证：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * T2比T1多了readonly修饰符  * T3比T1多了可选修饰符  * 这里控制单一变量进行验证  */ type T1 = {key1: string}; type T2 = {readonly key1: string}; type T3 = {key1?: string}; // A1 = false type A1 = IfEquals&lt;T1, T2, true , false&gt;; // A2 = false type A2 = IfEquals&lt;T1, T3, true , false&gt;;</code></p>
+<ul>
+<li><code>IfEquals</code>最后就是借助1和2来辅助判断（语法层面的），还有就是给<code>A</code>的默认值为<code>X</code>，<code>B</code>的默认值为<code>never</code>。</li>
+</ul>
+<p>最后，如果你是个爱（搞）钻（事）研（情）的小宝宝，你或许会对我发出灵魂拷问：判断类型是否相等（兼容）为什么不直接使用<code>type IfEquals&lt;X, Y, A, B&gt; = X extends Y ? A : B</code>呢？既简单有粗暴（PS：来自你的邪魅一笑~）。答案，我们看下下面的示例：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type IfEquals&lt;X, Y, A, B&gt; = X extends Y ? A : B; /**  * 还用上面的例子  */ type T1 = {key1: string}; type T2 = {readonly key1: string}; type T3 = {key1?: string}; // A1 = true type A1 = IfEquals&lt;T1, T2, true , false&gt;; // A2 = true type A2 = IfEquals&lt;T1, T3, true , false&gt;;</code></p>
+<p>答案显而易见，对readonly等这些修饰符，真的无能无力了。夸爪Kill~~~</p>
+<p><strong>第3步，解析<code>MutableKeys</code>实现逻辑</strong></p>
+<ul>
+<li><code>MutableKeys</code>首先约束T为object类型</li>
+<li>通过映射类型<code>[P in keyof T]</code>进行遍历，key对应的值则是<code>IfEquals&lt;类型1, 类型2, P&gt;</code>，如果类型1和类型2相等则返回对应的P（也就是key），否则返回never。</li>
+</ul>
+<p>而<code>P</code>其实就是一个只有一个当前key的联合类型，所以<code>[Q in P]: T[P]</code>也只是一个普通的映射类型。但是要注意的是参数1<code>{ [Q in P]: T[P] }</code>是通过<code>{}</code>构造的一个类型，参数2<code>{ -readonly [Q in P]: T[P] }</code>也是通过<code>{}</code>构造的一个类型,两者的唯一区别即使<code>-readonly</code>。</p>
+<p>所以这里就有意思了，回想一下上面的第一步的例子，是不是就理解了：如果<code>P</code>是只读的，那么参数1和参数2的<code>P</code>最终都是只读的；如果<code>P</code>是非只读的，则参数1的<code>P</code>为非只读的，而参数2的<code>P</code>被<code>-readonly</code>去掉了非只读属性从而变成了只读属性。因此就完成了筛选：<code>P</code>为非只读时<code>IfEquals</code>返回的<code>P</code>，<code>P</code>为只读时<code>IfEquals</code>返回<code>never</code>。</p>
+<ul>
+<li>所以key为非只读时，类型为<code>key</code>，否则类型为<code>never</code>，最后通过<code>[keyof T]</code>得到了所有<code>非只读key</code>的联合类型。</li>
+</ul>
+<h3 id="optionalkeys">OptionalKeys<a hidden class="anchor" aria-hidden="true" href="#optionalkeys">#</a></h3>
+<p><code>OptionalKeys&lt;T&gt;</code>提取T中所有可选类型的key组成的联合类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type OptionalKeys&lt;T&gt; = {   [P in keyof T]: {} extends Pick&lt;T, P&gt; ? P : never }[keyof T]; type Eg = OptionalKeys&lt;{key1?: string, key2: number}&gt;</code></p>
+<ul>
+<li>核心实现，用映射类型遍历所有key，通过<code>Pick&lt;T, P&gt;</code>提取当前key和类型。注意，这里也是利用了同态拷贝会拷贝可选修饰符的特性。</li>
+<li>利用<code>{} extends {当前key: 类型}</code>判断是否是可选类型。</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// Eg2 = false type Eg2 = {} extends {key1: string} ? true : false; // Eg3 = true type Eg3 = {} extends {key1?: string} ? true : false;</code></p>
+<p>利用的就是<code>{}</code>和只包含可选参数类型<code>{key?: string}</code>是兼容的这一特性。把<code>extends</code>前面的<code>{}</code>替换成<code>object</code>也是可以的。</p>
+<h3 id="增强pick">增强Pick<a hidden class="anchor" aria-hidden="true" href="#增强pick">#</a></h3>
+<ul>
+<li>PickByValue提取指定值的类型</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 辅助函数，用于获取T中类型不为never的类型组成的联合类型 type TypeKeys&lt;T&gt; = T[keyof T]; /**  * 核心实现  */ type PickByValue&lt;T, V&gt; = Pick&lt;T,   TypeKeys&lt;{[P in keyof T]: T[P] extends V ? P : never}&gt; &gt;; /**  * @example  *  type Eg = {  *    key1: number;  *    key3: number;  *  }  */ type Eg = PickByValue&lt;{key1: number, key2: string, key3: number}, number&gt;;</code></p>
+<p>Ts的类型兼容特性，所以类似<code>string</code>是可以分配给<code>string | number</code>的，因此上述并不是精准的提取方式。如果实现精准的方式，则可以考虑下面个这个类型工具。</p>
+<ul>
+<li>PickByValueExact精准的提取指定值的类型</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 核心实现  */ type PickByValueExact&lt;T, V&gt; = Pick&lt;T,   TypeKeys&lt;{[P in keyof T]: [T[P]] extends [V]     ? ([V] extends [T[P]] ? P : never)     : never;   }&gt; &gt; // type Eg1 = { b: number }; type Eg1 = PickByValueExact&lt;{a: string, b: number}, number&gt; // type Eg2 = { b: number; c: number | undefined } type Eg2 = PickByValueExact&lt;{a: string, b: number, c: number | undefined}, number&gt;</code></p>
+<p><code>PickByValueExact</code>的核心实现主要有三点：</p>
+<p>一是利用<code>Pick</code>提取我们需要的<code>key</code>对应的类型</p>
+<p>二是利用给泛型套一层元组规避<code>extends</code>的<strong>分发式联合类型</strong>的特性</p>
+<p>三是利用两个类型互相兼容的方式判断是否相同。</p>
+<p>具体可以看下下面例子：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Eq1&lt;X, Y&gt; = X extends Y ? true : false; type Eq2&lt;X, Y&gt; = [X] extends [Y] ? true : false; type Eq3&lt;X, Y&gt; = [X] extends [Y]   ? ([Y] extends [X] ? true : false)   : false; // boolean, 期望是false type Eg1 = Eq1&lt;string | number, string&gt; // false type Eg2 = Eq2&lt;string | number, string&gt; // true，期望是false type Eg3 = Eq2&lt;string, string | number&gt; // false type Eg4 = Eq3&lt;string, string | number&gt; // true，非strictNullChecks模式下的结果 type Eg5 = Eq3&lt;number | undefined, number&gt; // false，strictNullChecks模式下的结果 type Eg6 = Eq3&lt;number | undefined, number&gt;</code></p>
+<ul>
+<li>从<code>Eg1</code>和<code>Eg2</code>对比可以看出，给<code>extends</code>参数套上元组可以避免分发的特性，从而得到期望的结果；</li>
+<li>从<code>Eg3</code>和<code>Eg4</code>对比可以看出，通过判断两个类型互相是否兼容的方式，可以得到从属类型的正确相等判断。</li>
+<li>从<code>Eg5</code>和<code>Eg6</code>对比可以看出，非<code>strictNullChecks</code>模式下，undefined和null可以赋值给其他类型的特性，导致<code>number | undefined, number</code>是兼容的，因为是非<code>strictNullChecks</code>模式，所以有这个结果也是符合预期。如果不需要此兼容结果，完全可以开启<code>strictNullChecks</code>模式。</li>
+</ul>
+<p>最后，同理想得到<code>OmitByValue</code>和<code>OmitByValueExact</code>基本一样的思路就不多说了，大家可以自己思考实现。</p>
+<h3 id="intersection">Intersection<a hidden class="anchor" aria-hidden="true" href="#intersection">#</a></h3>
+<p><code>Intersection&lt;T, U&gt;</code>从<code>T</code>中提取存在于<code>U</code>中的<code>key</code>和对应的类型。（注意，最终是从<code>T</code>中提取<code>key</code>和类型）</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 核心思路利用Pick提取指定的key组成的类型  */ type Intersection&lt;T extends object, U extends object&gt; = Pick&lt;T,   Extract&lt;keyof T, keyof U&gt; &amp; Extract&lt;keyof U, keyof T&gt; &gt; type Eg = Intersection&lt;{key1: string}, {key1:string, key2: number}&gt;</code></p>
+<ul>
+<li>约束<code>T</code>和<code>U</code>都是<code>object</code>，然后利用<code>Pick</code>提取指定的<code>key</code>组成的类型</li>
+<li>通过<code>Extract&lt;keyof T, keyof U&gt;</code>提取同时存在于T和U中的key，<code>Extract&lt;keyof U, keyof T&gt;</code>也是同样的操作</li>
+</ul>
+<p>那么为什么要做<strong>2</strong>次<code>Extract</code>然后再交叉类型呢？原因还是在于处理类型的兼容推导问题，还记得<code>string</code>可分配给<code>string | number</code>的兼容吧:</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type A = {     [p: string]: 2 } type B = {     aaa: 2 } // string | number type AKEY = keyof A; // &quot;aaa&quot; type BKEY = keyof B; // 1 type D = BKEY extends AKEY ? 1 : 2; // 2 type F = AKEY extends BKEY ? 1 : 2;</code></p>
+<p>扩展：</p>
+<p>定义<code>Diff&lt;T, U&gt;</code>，从<code>T</code>中排除存在于<code>U</code>中的key和类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Diff&lt;T extends object, U extends object&gt; = Pick&lt;   T,   Exclude&lt;keyof T, keyof U&gt; &gt;;</code></p>
+<h3 id="overwrite-和-assign">Overwrite 和 Assign<a hidden class="anchor" aria-hidden="true" href="#overwrite-和-assign">#</a></h3>
+<p><code>Overwrite&lt;T, U&gt;</code>从<code>U</code>中的同名属性的类型覆盖<code>T</code>中的同名属性类型。(后者中的同名属性覆盖前者)</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * Overwrite实现  * 获取前者独有的key和类型，再取两者共有的key和该key在后者中的类型，最后合并。  */ type Overwrite&lt;   T extends object,   U extends object,   I = Diff&lt;T, U&gt; &amp; Intersection&lt;U, T&gt; &gt; = Pick&lt;I, keyof I&gt;; /**  * @example  * type Eg1 = { key1: number; }  */ type Eg1 = Overwrite&lt;{key1: string}, {key1: number, other: boolean}&gt;</code></p>
+<ul>
+<li>首先约束<code>T</code>和<code>U</code>这两个参数都是<code>object</code></li>
+<li>借助一个参数I的默认值作为实现过程，使用的时候不需要传递I参数（只是辅助实现的）</li>
+<li>通过<code>Diff&lt;T, U&gt;</code>获取到存在于<code>T</code>但是不存在于<code>U</code>中的key和其类型。（即获取<code>T</code>自己特有<code>key</code>和类型）。</li>
+<li>通过<code>Intersection&lt;U, T&gt;</code>获取<code>U</code>和<code>T</code>共有的<code>key</code>已经该key在<code>U</code>中的类型。即获取后者同名<code>key</code>已经类型。</li>
+<li>最后通过交叉类型进行合并，从而曲线救国实现了覆盖操作。</li>
+</ul>
+<p>扩展：如何实现一个<code>Assign&lt;T, U&gt;</code>（类似于<code>Object.assign()</code>）用于合并呢？</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 实现 type Assign&lt;   T extends object,   U extends object,   I = Diff&lt;T, U&gt; &amp; U &gt; = Pick&lt;I, keyof I&gt;; /**  * @example  * type Eg = {  *   name: string;  *   age: string;  *   other: string;  * }  */ type Eg = Assign&lt;   { name: string; age: number; },   { age: string; other: string; } &gt;;</code></p>
+<p>想一下，是不是就是先找到前者独有的key和类型，再和<code>U</code>交叉。</p>
+<h3 id="deeprequired">DeepRequired<a hidden class="anchor" aria-hidden="true" href="#deeprequired">#</a></h3>
+<p><code>DeepRequired&lt;T&gt;</code>将<code>T</code>转换成必须属性。如果<code>T</code>为对象，则将递归对象将所有<code>key</code>转换成<code>required</code>，类型转换为<code>NonUndefined</code>；如果<code>T</code>为数组则递归遍历数组将每一项设置为<code>NonUndefined</code>。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * DeepRequired实现  */ type DeepRequired&lt;T&gt; = T extends (...args: any[]) =&gt; any   ? T   : T extends Array&lt;any&gt;     ? _DeepRequiredArray&lt;T[number]&gt;     : T extends object       ? _DeepRequiredObject&lt;T&gt;       : T; // 辅助工具，递归遍历数组将每一项转换成必选 interface _DeepRequiredArray&lt;T&gt; extends Array&lt;DeepRequired&lt;NonUndefined&lt;T&gt;&gt;&gt; {} // 辅助工具，递归遍历对象将每一项转换成必选 type _DeepRequiredObject&lt;T extends object&gt; = {   [P in keyof T]-?: DeepRequired&lt;NonUndefined&lt;T[P]&gt;&gt; }</code></p>
+<ul>
+<li><code>DeepRequired</code>利用<code>extends</code>判断如果是函数或<code>Primitive</code>的类型，就直接返回该类型。</li>
+<li>如果是数组类型，则借助<code>_DeepRequiredArray</code>进行递归，并且传递的参数为数组所有子项类型组成的联合类型，如下：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type A = [string, number] /**  * @description 对数组进行number索引访问，  * 得到的是所有子项类型组成的联合类型  * type B = string | number  */ type B = A[number]</code></p>
+<ul>
+<li><code>_DeepRequiredArray</code>是个接口（定义成type也可以），其类型是<code>Array&lt;T&gt;</code>,完整的如下：</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Array&lt;     // DeepRequired的参数最终是个联合类型，会走DeepRequired的子类型分发逻辑进行遍历     DeepRequired&lt;         NonUndefined&lt;             // T[number]实际类似如下：             T&lt;                 a | b | c | ....             &gt;         &gt;     &gt; &gt;</code></p>
+<p>而此处的<code>T</code>则通过<code>DeepRequired&lt;T&gt;</code>进行对每一项进行递归；在<code>T</code>被使用之前，先被<code>NonUndefined&lt;T&gt;</code>处理一次，去掉无效类型。</p>
+<ul>
+<li>如果是对象类型，则借助<code>_DeepRequiredObject</code>实现对象的递归遍历。<code>_DeepRequiredObject</code>只是一个普通的映射类型进行变量，然后对每个key添加<code>-?</code>修饰符转换成<code>required</code>类型。</li>
+</ul>
+<h3 id="deepreadonlyarray">DeepReadonlyArray<a hidden class="anchor" aria-hidden="true" href="#deepreadonlyarray">#</a></h3>
+<p><code>DeepReadonlyArray&lt;T&gt;</code>将<code>T</code>的转换成只读的，如果<code>T</code>为<code>object</code>则将所有的key转换为只读的，如果<code>T</code>为数组则将数组转换成只读数组。整个过程是深度递归的。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * DeepReadonly实现  */ type DeepReadonly&lt;T&gt; = T extends ((...args: any[]) =&gt; any) | Primitive   ? T   : T extends _DeepReadonlyArray&lt;infer U&gt;   ? _DeepReadonlyArray&lt;U&gt;   : T extends _DeepReadonlyObject&lt;infer V&gt;   ? _DeepReadonlyObject&lt;V&gt;   : T; /**  * 工具类型，构造一个只读数组  */ interface _DeepReadonlyArray&lt;T&gt; extends ReadonlyArray&lt;DeepReadonly&lt;T&gt;&gt; {} /**  * 工具类型，构造一个只读对象  */ type _DeepReadonlyObject&lt;T&gt; = {   readonly [P in keyof T]: DeepReadonly&lt;T[P]&gt;; };</code></p>
+<ul>
+<li>基本实现原理和<code>DeepRequired</code>一样，但是注意<code>infer U</code>自动推导数组的类型，<code>infer V</code>推导对象的类型。</li>
+</ul>
+<h3 id="uniontointersection">UnionToIntersection<a hidden class="anchor" aria-hidden="true" href="#uniontointersection">#</a></h3>
+<p>将联合类型转变成交叉类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type UnionToIntersection&lt;T&gt; = (T extends any   ? (arg: T) =&gt; void   : never ) extends (arg: infer U) =&gt; void ? U : never type Eg = UnionToIntersection&lt;{ key1: string } | { key2: number }&gt;</code></p>
+<ul>
+<li><code>T extends any ? (arg: T) =&gt; void : never</code>该表达式一定走true分支，用此方式构造一个逆变的联合类型<code>(arg: T1) =&gt; void | (arg: T2) =&gt; void | (arg: Tn) =&gt; void</code></li>
+<li>再利用第二个<code>extends</code>配合<code>infer</code>推导得到U的类型，但是利用<code>infer</code>对<strong>协变类型的特性得到交叉类型</strong>。</li>
+</ul>
+<h2 id="参考内容">参考内容<a hidden class="anchor" aria-hidden="true" href="#参考内容">#</a></h2>
+<ul>
+<li>Ts官网 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.typescriptlang.org%2Fdocs%2Fhandbook%2Futility-types.html" title="https://www.typescriptlang.org/docs/handbook/utility-types.html">www.typescriptlang.org/docs/handbo…</a></li>
+<li>utility-types <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fpiotrwitek%2Futility-types" title="https://github.com/piotrwitek/utility-types">github.com/piotrwitek/…</a></li>
+</ul>
+<p>转载请注明作者及出处！</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/typescript/">TypeScript</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%A5%BD%E5%AE%B6%E4%BC%99%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%88%9B%E5%8A%9E%E5%85%AC%E5%8F%B8%E5%95%A6%E5%B7%B2%E8%9E%8D%E8%B5%843200%E4%B8%87/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>好家伙，尤雨溪创办公司啦！已融资3200万！</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AE%A3%E5%B8%83%E6%88%90%E7%AB%8Bvoidzero-%E4%B8%8B%E4%B8%80%E4%BB%A3javascript%E5%B7%A5%E5%85%B7%E9%93%BE/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>尤雨溪宣布成立VoidZero-下一代JavaScript工具链</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 on x"
+            href="https://x.com/intent/tweet/?text=Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f&amp;hashtags=TypeScript%2c%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f&amp;title=Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7&amp;summary=Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f&title=Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 on telegram"
+            href="https://telegram.me/share/url?text=Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Ts高手篇：22个示例深入讲解Ts最晦涩难懂的高级类型工具 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Ts%e9%ab%98%e6%89%8b%e7%af%87%ef%bc%9a22%e4%b8%aa%e7%a4%ba%e4%be%8b%e6%b7%b1%e5%85%a5%e8%ae%b2%e8%a7%a3Ts%e6%9c%80%e6%99%a6%e6%b6%a9%e9%9a%be%e6%87%82%e7%9a%84%e9%ab%98%e7%ba%a7%e7%b1%bb%e5%9e%8b%e5%b7%a5%e5%85%b7&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fts%25E9%25AB%2598%25E6%2589%258B%25E7%25AF%258722%25E4%25B8%25AA%25E7%25A4%25BA%25E4%25BE%258B%25E6%25B7%25B1%25E5%2585%25A5%25E8%25AE%25B2%25E8%25A7%25A3ts%25E6%259C%2580%25E6%2599%25A6%25E6%25B6%25A9%25E9%259A%25BE%25E6%2587%2582%25E7%259A%2584%25E9%25AB%2598%25E7%25BA%25A7%25E7%25B1%25BB%25E5%259E%258B%25E5%25B7%25A5%25E5%2585%25B7%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

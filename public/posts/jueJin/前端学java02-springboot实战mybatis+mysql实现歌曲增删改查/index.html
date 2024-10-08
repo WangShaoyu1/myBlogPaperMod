@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>[前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 | PaperMod</title>
+<meta name="keywords" content="前端">
+<meta name="description" content="1.点击头像=&gt;settings=&gt;Developersettings=&gt;OAuthApps=&gt;RegisteranewOAuthapplication=&gt;...a.携带3获得的相关parameter请求授权登陆地址，成功会扭转到redire…">
+<meta name="author" content="woow_wu7">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E5%AD%A6java02-springboot%E5%AE%9E%E6%88%98mybatis&#43;mysql%E5%AE%9E%E7%8E%B0%E6%AD%8C%E6%9B%B2%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E5%AD%A6java02-springboot%E5%AE%9E%E6%88%98mybatis&#43;mysql%E5%AE%9E%E7%8E%B0%E6%AD%8C%E6%9B%B2%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="[前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查" />
+<meta property="og:description" content="1.点击头像=&gt;settings=&gt;Developersettings=&gt;OAuthApps=&gt;RegisteranewOAuthapplication=&gt;...a.携带3获得的相关parameter请求授权登陆地址，成功会扭转到redire…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E5%AD%A6java02-springboot%E5%AE%9E%E6%88%98mybatis&#43;mysql%E5%AE%9E%E7%8E%B0%E6%AD%8C%E6%9B%B2%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-02-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-02-14T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="[前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查"/>
+<meta name="twitter:description" content="1.点击头像=&gt;settings=&gt;Developersettings=&gt;OAuthApps=&gt;RegisteranewOAuthapplication=&gt;...a.携带3获得的相关parameter请求授权登陆地址，成功会扭转到redire…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "[前端学java02-SpringBoot实战]mybatis+mysql实现歌曲增删改查",
+      "item": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E5%AD%A6java02-springboot%E5%AE%9E%E6%88%98mybatis+mysql%E5%AE%9E%E7%8E%B0%E6%AD%8C%E6%9B%B2%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "[前端学java02-SpringBoot实战]mybatis+mysql实现歌曲增删改查",
+  "name": "[前端学java02-SpringBoot实战]mybatis\u002bmysql实现歌曲增删改查",
+  "description": "1.点击头像=\u003esettings=\u003eDevelopersettings=\u003eOAuthApps=\u003eRegisteranewOAuthapplication=\u003e...a.携带3获得的相关parameter请求授权登陆地址，成功会扭转到redire…",
+  "keywords": [
+    "前端"
+  ],
+  "articleBody": "导航 [react] Hooks\n[React 从零实践01-后台] 代码分割\n[React 从零实践02-后台] 权限控制\n[React 从零实践03-后台] 自定义hooks\n[React 从零实践04-后台] docker-compose 部署react+egg+nginx+mysql\n[React 从零实践05-后台] Gitlab-CI使用Docker自动化部署\n[源码-webpack01-前置知识] AST抽象语法树\n[源码-webpack02-前置知识] Tapable\n[源码-webpack03] 手写webpack - compiler简单编译流程\n[源码] Redux React-Redux01\n[源码] axios\n[源码] vuex\n[源码-vue01] data响应式 和 初始化渲染\n[源码-vue02] computed 响应式 - 初始化，访问，更新过程\n[源码-vue03] watch 侦听属性 - 初始化和更新\n[源码-vue04] Vue.set 和 vm.$set\n[源码-vue05] Vue.extend\n[源码-vue06] Vue.nextTick 和 vm.$nextTick\n[部署01] Nginx\n[部署02] Docker 部署vue项目\n[部署03] gitlab-CI\n[数据结构和算法01] 二分查找和排序\n[深入01] 执行上下文\n[深入02] 原型链\n[深入03] 继承\n[深入04] 事件循环\n[深入05] 柯里化 偏函数 函数记忆\n[深入06] 隐式转换 和 运算符\n[深入07] 浏览器缓存机制（http缓存机制）\n[深入08] 前端安全\n[深入09] 深浅拷贝\n[深入10] Debounce Throttle\n[深入11] 前端路由\n[深入12] 前端模块化\n[深入13] 观察者模式 发布订阅模式 双向数据绑定\n[深入14] canvas\n[深入15] webSocket\n[深入16] webpack\n[深入17] http 和 https\n[深入18] CSS-interview\n[深入19] 手写Promise\n[深入20] 手写函数\n[深入21] 数据结构和算法 - 二分查找和排序\n[深入22] js和v8垃圾回收机制\n[深入23] JS设计模式 - 代理，策略，单例\n[前端学java01-SpringBoot实战] 环境配置和HelloWorld服务\n[前端学java02-SpringBoot实战] mybatis + mysql 实现歌曲增删改查\n(一) 前置知识 (1) 一些单词 matlab\n代码解读\n复制代码\npet 宠物 configuration 配置 assistant 助理，售货员 resources 资源，系统资源文件夹 amend 修正，修订 authorize 授权v authorization 授权n bio 个人描述 refactor 重构 extract 提取 // extract common part from 'if' 从if语句中提取出相同的部分 mapper 映射器，变换器 persistent 持久的 judge 判断 sign in 登入 sign out 登出 sign up 注册\n(2) 如何给类或方法添加注释 把光标停在 ( 类名或者方法名 ) 上，然后 Alt+Enter，出现几个选项，选择Add Javadoc就OK了 (3) @Controller 当给类添加了@Controller注解时，SpringBoot就会自动识别扫描该类，把它作为bean去管理，同时也识别该类是一个controller 重点注意 controller server mapper 三者的关系 (4) IDEA常用快捷键 ctrl+p 方法参数提示 ctrl+alt+l 代码格式化 ctrol+alt+o 删除没有使用到的引入的文件或依赖 sout System.out.println() (5) SpringBoot工程文件说明 src/main/java 所有的java代码 src/main/resources 配置文件和静态文件 resources/templates 模板文件 resources/static 静态文件，比如css，img文件 resources/application.properties 配置文件，当然也可以改成application.yml (6) GitHub 授权登陆 1.点击头像 =\u003e settings =\u003e Developer settings =\u003e OAuth Apps =\u003e Register a new OAuth application =\u003e ... 2.官网授权登陆教程 - [ 获取 Client ID 和 Authorization callback URL ] 3.通过上面的12两步，可以获取到 Client ID 和 Authorization callback URL 4.官网授权登陆教程 - [ 具体的跳转流程 ] a. 携带3获得的相关parameter请求授权登陆地址，成功会扭转到redirect_uri地址，同时返回 ( code ) 和 ( state ) b. 用 ( code ) 换取 ( access_token ) c. 用 ( access_token ) 访问github的 ( user ) 接口，获取用户信息 5.测试：https://api.github.com/user?access_token=xxx (7) IDEA 找不到 Database 选项卡 搜索 Plugins =\u003e Database Navigator 并安装该插件 这里我没用这个插件，而是使用 Navicat 来设计管理数据库 (8) mysql的一些基础知识 安装-免费的社区版本-最底部-MySQL Community Server 教程 常用命令教程 注意点: 最后面的分号一定要加 常用命令 连接数据库 mysql -h主机地址 -u用户名 －p用户密码 退出mysql exit 查看数据库 show databases; 创建数据库 create database 数据库名; 删除数据库 drop database 数据库名; 使用数据库 use 数据库名; 查看当前使用的数据库 select database(); 查看表 show tables; 创建表 create table 表名 (dde列名 类型); 删除表 droop table 表名; 显示表结构 desc 表名; 修改密码 mysqladmin -uroot -p123456 password 12345678; 查看数据库的安装路径 show variables like \"%char%\"; (9) @Autowired 和 new 的区别？ @Autowired 注解方式是由spring创建的对象 ( 单例 ) 对象 作用域是整个项目 项目一启动就创建了 new new出来的对象作用域只在你对应的类中 每个调用的时候都是会创建一个新的对象，是 ( 多例 ) (10) po dto entity bean 等文件夹的区别 相关资料 po entity bean 三个类似，都是持久化对象persistent，即 数据库中的一条记录对象 dto 是经过处理后的po，和ui层即前端页面对应 (11) controller层，server层，mapper层，之间的关系 controller 负责http请求，将参数等信息传递给server层，并将结果返回给客户端 server 负责处理逻辑 当需要同时处理多个表的关系时，一般都交给sever来组装处理，比如合并多个model 接收controller传递的参数，并调用mapper mapper ( DAO ) 负责对数据库增删改查 (12) java中的 ( 数组 ) 使用大括号包裹的成员 int[] a = {1, 2, 3, 4} 刚开始把我搞蒙蔽，注意不是ts中的 let a: number[] = [1,2,3,4] ini\n代码解读\n复制代码\nint[] a = {1, 2, 3, 4}\n(13) RESTful API 接口规范 RESTful API (14) Map Map 中 键和值一一映射，可以通过键来获取值 Object put(Object k, Object v) 存 Object get(Object k) 取 typescript\n代码解读\n复制代码\npublic class CollectionsDemo { public static void main(String[] args) { Map m1 = new HashMap(); // new HashMap() m1.put(\"Zara\", \"8\"); m1.put(\"Mahnaz\", \"31\"); System.out.println(\" Map Elements\"); System.out.print(\"\\t\" + m1); } } 结果： Map Elements {Mahnaz=31, Zara=8}\n(14) springboot中如何解析前端传来的json类型的参数 因为：前端在 POST 请求中，一般设置的header中的 Content-Type: application/json 所以：POST请求出入的参数被放在body中，以JSON形式传给后端 解决: 利用 @RequestBody 获取到body对象，然后通过 Map 做映射，通过get获取属性 less\n代码解读\n复制代码\n// 新增 @PostMapping(\"/musics\") public void addMusics( @RequestBody Map body ) { String name = (String) body.get(\"name\"); String album = (String) body.get(\"album\"); String singer = (String) body.get(\"singer\"); musicService.add(name, album, singer); }\n(15) String -\u003e Timestamp -\u003e datetime 三者的转换 java中的Timestamp 相当于 数据库中的datatime Timestamp.valueOf(String v) ini\n代码解读\n复制代码\npublic Boolean edit(Map body) { int id = (int) body.get(\"id\"); String name = (String) body.get(\"name\"); String album = (String) body.get(\"album\"); String singer = (String) body.get(\"singer\"); // ( Timestamp ) 类型对应的是数据库中的 ( datetime ) 类型 Timestamp startTime = Timestamp.valueOf((String) body.get(\"startTime\")); // Timestamp.valueOf(string v) 将string转成timestamp Timestamp endTime = Timestamp.valueOf((String) body.get(\"endTime\")); int status = musicMapper.editMusic(name, album, singer, startTime, endTime, id); Boolean aBoolean = judgeIsSuccess(status); return aBoolean; }\n(16) 热更新 当每次修改java代码时都必须手动 run Application 很麻烦 spring-boot-devtools 可以实现热更新 设置过程 1.引入spring-boot-devtools的maven包 2.setting =\u003e Build,Execution,Deployment =\u003e Compiler =\u003e 勾上Build project automaticallly 第2步有个缺点，就是必须在没有running或debugging的情况才热更新 3.ctrl + shift + a 调出 action 4.在 action 中搜索 Registry 5.在 Registry 中勾选 compiler.autoMake.allow.when.app.running 6.如果前端展示是直接写的html，则还可以添加一个浏览器插件 LiveReload 如果是vue或者react的单页项目就不需要了 注意：(一般情况，请忽略该注意 ) 描述：当只是修改html时，是不会再重启java程序的，因为本身并没有去修改server相关的代码 非要解决：需要配置如下 application.properties =\u003e spring.devtools.restart.exclude=static/**,public/** xml\n代码解读\n复制代码\norg.springframework.boot spring-boot-devtools true true (二) 从零开始一个项目 (1) 新建一个SpringBoot项目 ( Spring Assistant) 安装插件：file =\u003e setting =\u003e plugins =\u003e 在Marketplace中搜索并安装插件 =\u003e Spring Assistant 新建项目：file =\u003e New Project =\u003e Spring Assistant =\u003e Next =\u003e Web =\u003e Spring Web =\u003e Finish 使用 Spring Assistant 和使用 maven 创建项目的区别？ 主要就是Spring Assistant配置好了web开发的 pom.xml 中的配置项 使用maven需要自己配置 parent spring-boot-starter-web spring-boot-starter-thymeleaf 等 也可以勾选下面这四个 (2) 配置文件的分离 怎么样根据不同的环境，来读取不同的配置文件?? ( 类似于前端的环境变量，比如process.env.NODE_ENV ) springboot的配置文件有以下 application.properties application-dev.properties 开发环境 application-prod.properties 运行环境 application-test.properties 测试环境 ini\n代码解读\n复制代码\n在不同环境的配置文件中，设置同步变量的不同值即可 如下： ------- server.port = 7777 # 第一段的github起到分类的作用，便于识别 # 1. 比如： server 和 github 就是不同的两种类型 # 2. 使用时需要使用 @Value 注解来引入这里定义的属性变量 github.client.client_id = 982573d16925889ea84c github.client.client_secret = 9a2e9710af69531e51254e6902ab834905a7a755 github.client.redirect_uri = http://localhost:7777/callback\n(3) 利用 mybatis 操作 mysql 实现CURD 1. 安装相关的maven依赖 因为：是通过 Spring Assistant 创建的项目 所以：自动配好了 parent spring-boot-starter-web spring-boot-starter 等maven依赖 xml\n代码解读\n复制代码\npom.xml ------- 2022.04.19 更新 org.springframework.boot spring-boot-starter-jdbc mysql mysql-connector-java 8.0.21 runtime org.mybatis.spring.boot mybatis-spring-boot-starter 2.1.3 2. 在 application.properties 中配置数据源组件配置项 ini\n代码解读\n复制代码\napplication.properties ------- # 定义数据源组件 # 已弃用 spring.datasource.driver-class-name=com.mysql.jdbc.Driver # 注意 spring.datasource.url=\"jdbc:mysql://localhost:3306/数据库名称?时区信息\" # 注意 上面的时区信息不能少，不然会报错 # 分别是 ( 数据库url ) ( 数据库驱动 ) ( 用户名 ) ( 密码 ) spring.datasource.url=jdbc:mysql://localhost:3306/7-community-java?serverTimezone=GMT%2B8\u0026useSSL=false spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver spring.datasource.username=root spring.datasource.password=root\n3. 插入数据到数据库 3-1 新建model，通过new Model()将数据绑定到实例属性上，然后将实例传入mapper的insert方法中 model 主要是用于数据库操作相关的对象，专门命名为model model 会在 mapper 或 controller 中用到 vbnet\n代码解读\n复制代码\nmodel ------- public class UserModel { private Integer id; private String name; private String accountId; private String token; private Long gmtCreate; private Long gmtModified; getter adnd setter and toString... }\n3-2 新建mapper通过 @Mapper @Insert 将数据插入数据库 mapper 主要用于操作数据库 注意 mapper 是 interface mapper中的 UserMapper.insert() 方法是在 controller 中被调用的 java\n代码解读\n复制代码\nmapper ------- @Mapper public interface UserMapper { @Insert(\"insert into user (name, account_id, token, gmt_create, gmt_modified) values (#{name}, #{accountId}, #{token}, #{gmtCreate}, #{gmtModified})\") void insert(UserModel user); }\n3-3 新建 controller，通过 @Autowired 引入mapper，并调用mapper中的insert()方法 scss\n代码解读\n复制代码\ncontroller ------- import com.example.demo.model.UserModel; @Controller public class AuthorizeController { @Autowired private UserMapper userMapper; @GetMapping(\"/callback\") public String callback() { UserModel user = new UserModel(); // 注意区分@Autowired 和 new 的区别 user.setToken(UUID.randomUUID().toString()); user.setName(gitHubUser.getName()); ... userMapper.insert(user); // 1. 登陆后获取用户信息后，将数据写入user对象中 // 2. 调用 mapper 中的 userMapper.insert(user) 将user存入数据库 } }\n4. 增删改查数据库数据 通过4-123步就能通过接口访问到music列表数据 数据库表如下图 4.1 新建model - MusicModel typescript\n代码解读\n复制代码\nmodel - MusicModel ------- // model // model 专门用来做数据库相关的模型对象 @Data public class MusicModel { private Integer id; private String name; private String album; private String singer; private String endTime; private String startTime; getter sertter toString 等 }\n4.2 新建 mapper - MusicMapper java\n代码解读\n复制代码\nmapper - MusicMapper ------- // mapper // 1. mapper文件夹主要是用来映射数据库的相关操作 // 2. 注意：mapper 是 interface @Mapper public interface MusicMapper { @Select( \"SELECT * from music where\" + \" name like CONCAT('%',#{searchKey},'%') or \" + \" album like CONCAT('%',#{searchKey},'%') or \" + \" singer like CONCAT('%',#{searchKey},'%')\" + \" limit #{offset},#{pageSize}\" ) public List selectMusics(Integer pageSize, Integer offset, String searchKey); // 查找 - 分页 + 条件模糊查询 @Select(\"SELECT * from music limit #{offset},#{pageSize}\") public List selectMusicsOnlyPagination(Integer pageSize, Integer offset); // 查找 - 分页查询 @Select(\"SELECT * from music\") public List selectAllMusics(); // 查找 - 总数据 @Insert(\"insert into music (name, album, singer, startTime, endTime) values (#{name}, #{album}, #{singer}, #{startTime}, #{endTime})\") public int insertMusic(String name, String album, String singer, Date startTime, Date endTime); // 插入 @Update(\"update music set name=#{name},album=#{album},singer=#{singer},startTime=#{startTime},endTime=#{endTime} where id=#{id}\") public int editMusic(String name, String album, String singer, Timestamp startTime, Timestamp endTime, int id); @Delete(\"delete from music where id=#{id}\") public int deleteMusic(int id); // 删除 }\n4.3 新建 service - MusicService ini\n代码解读\n复制代码\nervice - MusicService ------- // service // 1. 主要用于处理获取请求参数后的处理逻辑 // 2. server 是连接 controller 和 mapper(DAO) 的桥梁 @Service public class MusicService { @Autowired private MusicMapper musicMapper; // 逻辑抽离 - 判断操作是否成功，比如添加，删除 private Boolean judgeIsSuccess(int status) { if (status \u003e 0) { System.out.println(\"操作成功\"); return true; } else { System.out.println(\"操作失败\"); return false; } } // 列表 public PaginationDTO list(Integer pageSize, Integer current, String searchKey) { Integer offset = pageSize * (current - 1); // 分页的偏移量 List musicModels; if (searchKey != null) { // searchKey 是否存在 musicModels = musicMapper.selectMusics(pageSize, offset, searchKey); // 分页 + 条件 } else { musicModels = musicMapper.selectMusicsOnlyPagination(pageSize, offset); // 分页 } List totalMusics = musicMapper.selectAllMusics(); // 总数据是为了获取 total PaginationDTO paginationDTO = new PaginationDTO(); // 这里之所以要new，是因为其他方法中也可能会用到paginationDTO,所以必须不能是单列 paginationDTO.musics = musicModels; paginationDTO.total = totalMusics.toArray().length; paginationDTO.current = current; paginationDTO.pageSize = pageSize; return paginationDTO; } // 新增 public Boolean add(String name, String album, String singer) { Date startTime = new Date(); // 注意：数据库中的data是 ( datetime ) 格式 Date endTime = new Date(); int status = musicMapper.insertMusic(name, album, singer, startTime, endTime); Boolean aBoolean = judgeIsSuccess(status); return aBoolean; } // 修改 public Boolean edit(Map body) { int id = (int) body.get(\"id\"); String name = (String) body.get(\"name\"); String album = (String) body.get(\"album\"); String singer = (String) body.get(\"singer\"); Timestamp startTime = Timestamp.valueOf((String) body.get(\"startTime\")); // ( Timestamp ) 类型对应的是数据库中的 ( datetime ) 类型 Timestamp endTime = Timestamp.valueOf((String) body.get(\"endTime\")); int status = musicMapper.editMusic(name, album, singer, startTime, endTime, id); Boolean aBoolean = judgeIsSuccess(status); return aBoolean; } // 删除 public Boolean delete(int id) { int status = musicMapper.deleteMusic(id); Boolean aBoolean = judgeIsSuccess(status); return aBoolean; } }\n4.4 新建 controller - Musics less\n代码解读\n复制代码\ncontroller - Musics ------- //@Controller //@ResponseBody @RestController // 是上面两个注解的合集 public class MusicController { @Autowired MusicService musicService; // 列表 // @RequestMapping(value=\"/musics\", method = {RequestMethod.GET}) @GetMapping(\"/musics\") public PaginationDTO getMusics( @RequestParam(name = \"pageSize\", defaultValue = \"10\") Integer pageSize, @RequestParam(name = \"current\", defaultValue = \"1\") Integer current, @RequestParam(name = \"searchKey\", required = false) String searchKey ) { PaginationDTO musics = musicService.list(pageSize, current, searchKey); System.out.println(musics); return musics; } // 新增 @PostMapping(\"/musics/add\") public Map addMusics( @RequestBody Map body ) { String name = (String) body.get(\"name\"); String album = (String) body.get(\"album\"); String singer = (String) body.get(\"singer\"); Boolean isSuccess = musicService.add(name, album, singer); body.put(\"isSuccess\", isSuccess); // 是否成功 return body; } // 修改 @PostMapping(\"/musics/edit\") public Map editMusics( @RequestBody Map body ) { Boolean isSuccess = musicService.edit(body); body.put(\"isSuccess\", isSuccess); // 是否成功 return body; } // 删除 @PostMapping(\"/musics/delete\") public Map deleteMusics( @RequestBody Map body ) { int id = (int) body.get(\"id\"); Boolean isSuccess = musicService.delete(id); body.put(\"isSuccess\", isSuccess); // 是否成功 return body; } }\n项目源码 项目源码 线上访问地址-歌曲增删改查 资料 注解 juejin.cn/post/684490… 常用快捷键 zhuanlan.zhihu.com/p/61690346 ",
+  "wordCount" : "1663",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-02-14T00:00:00Z",
+  "dateModified": "2021-02-14T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "woow_wu7"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E5%AD%A6java02-springboot%E5%AE%9E%E6%88%98mybatis+mysql%E5%AE%9E%E7%8E%B0%E6%AD%8C%E6%9B%B2%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查
+    </h1>
+    <div class="post-description">
+      1.点击头像=&gt;settings=&gt;Developersettings=&gt;OAuthApps=&gt;RegisteranewOAuthapplication=&gt;...a.携带3获得的相关parameter请求授权登陆地址，成功会扭转到redire…
+    </div>
+    <div class="post-meta"><span title='2021-02-14 00:00:00 +0000 UTC'>二月 14, 2021</span>&nbsp;·&nbsp;8 分钟&nbsp;·&nbsp;woow_wu7&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/[%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98]mybatis&#43;mysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%af%bc%e8%88%aa" aria-label="导航">导航</a></li>
+                <li>
+                    <a href="#%e4%b8%80-%e5%89%8d%e7%bd%ae%e7%9f%a5%e8%af%86" aria-label="(一) 前置知识">(一) 前置知识</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1-%e4%b8%80%e4%ba%9b%e5%8d%95%e8%af%8d" aria-label="(1) 一些单词">(1) 一些单词</a></li>
+                <li>
+                    <a href="#2-%e5%a6%82%e4%bd%95%e7%bb%99%e7%b1%bb%e6%88%96%e6%96%b9%e6%b3%95%e6%b7%bb%e5%8a%a0%e6%b3%a8%e9%87%8a" aria-label="(2) 如何给类或方法添加注释">(2) 如何给类或方法添加注释</a></li>
+                <li>
+                    <a href="#3-controller" aria-label="(3) @Controller">(3) @Controller</a></li>
+                <li>
+                    <a href="#4-idea%e5%b8%b8%e7%94%a8%e5%bf%ab%e6%8d%b7%e9%94%ae" aria-label="(4) IDEA常用快捷键">(4) IDEA常用快捷键</a></li>
+                <li>
+                    <a href="#5-springboot%e5%b7%a5%e7%a8%8b%e6%96%87%e4%bb%b6%e8%af%b4%e6%98%8e" aria-label="(5) SpringBoot工程文件说明">(5) SpringBoot工程文件说明</a></li>
+                <li>
+                    <a href="#6-github-%e6%8e%88%e6%9d%83%e7%99%bb%e9%99%86" aria-label="(6) GitHub 授权登陆">(6) GitHub 授权登陆</a></li>
+                <li>
+                    <a href="#7-idea-%e6%89%be%e4%b8%8d%e5%88%b0-database-%e9%80%89%e9%a1%b9%e5%8d%a1" aria-label="(7) IDEA 找不到 Database 选项卡">(7) IDEA 找不到 Database 选项卡</a></li>
+                <li>
+                    <a href="#8-mysql%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9f%ba%e7%a1%80%e7%9f%a5%e8%af%86" aria-label="(8) mysql的一些基础知识">(8) mysql的一些基础知识</a></li>
+                <li>
+                    <a href="#9-autowired-%e5%92%8c-new-%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="(9) @Autowired 和 new 的区别？">(9) @Autowired 和 new 的区别？</a></li>
+                <li>
+                    <a href="#10-po-dto-entity-bean-%e7%ad%89%e6%96%87%e4%bb%b6%e5%a4%b9%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="(10) po dto entity bean 等文件夹的区别">(10) po dto entity bean 等文件夹的区别</a></li>
+                <li>
+                    <a href="#11-controller%e5%b1%82server%e5%b1%82mapper%e5%b1%82%e4%b9%8b%e9%97%b4%e7%9a%84%e5%85%b3%e7%b3%bb" aria-label="(11) controller层，server层，mapper层，之间的关系">(11) controller层，server层，mapper层，之间的关系</a></li>
+                <li>
+                    <a href="#12-java%e4%b8%ad%e7%9a%84--%e6%95%b0%e7%bb%84-" aria-label="(12) java中的 ( 数组 )">(12) java中的 ( 数组 )</a></li>
+                <li>
+                    <a href="#13-restful-api-%e6%8e%a5%e5%8f%a3%e8%a7%84%e8%8c%83" aria-label="(13) RESTful API 接口规范">(13) RESTful API 接口规范</a></li>
+                <li>
+                    <a href="#14-map" aria-label="(14) Map">(14) Map</a></li>
+                <li>
+                    <a href="#14-springboot%e4%b8%ad%e5%a6%82%e4%bd%95%e8%a7%a3%e6%9e%90%e5%89%8d%e7%ab%af%e4%bc%a0%e6%9d%a5%e7%9a%84json%e7%b1%bb%e5%9e%8b%e7%9a%84%e5%8f%82%e6%95%b0" aria-label="(14) springboot中如何解析前端传来的json类型的参数">(14) springboot中如何解析前端传来的json类型的参数</a></li>
+                <li>
+                    <a href="#15-string---timestamp---datetime-%e4%b8%89%e8%80%85%e7%9a%84%e8%bd%ac%e6%8d%a2" aria-label="(15) String -&gt; Timestamp -&gt; datetime 三者的转换">(15) String -&gt; Timestamp -&gt; datetime 三者的转换</a></li>
+                <li>
+                    <a href="#16-%e7%83%ad%e6%9b%b4%e6%96%b0" aria-label="(16) 热更新">(16) 热更新</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8c-%e4%bb%8e%e9%9b%b6%e5%bc%80%e5%a7%8b%e4%b8%80%e4%b8%aa%e9%a1%b9%e7%9b%ae" aria-label="(二) 从零开始一个项目">(二) 从零开始一个项目</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%96%b0%e5%bb%ba%e4%b8%80%e4%b8%aaspringboot%e9%a1%b9%e7%9b%ae--spring-assistant" aria-label="(1) 新建一个SpringBoot项目 ( Spring Assistant)">(1) 新建一个SpringBoot项目 ( Spring Assistant)</a></li>
+                <li>
+                    <a href="#2-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%9a%84%e5%88%86%e7%a6%bb" aria-label="(2) 配置文件的分离">(2) 配置文件的分离</a></li>
+                <li>
+                    <a href="#3-%e5%88%a9%e7%94%a8-mybatis-%e6%93%8d%e4%bd%9c-mysql-%e5%ae%9e%e7%8e%b0curd" aria-label="(3) 利用 mybatis 操作 mysql 实现CURD">(3) 利用 mybatis 操作 mysql 实现CURD</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%ae%89%e8%a3%85%e7%9b%b8%e5%85%b3%e7%9a%84maven%e4%be%9d%e8%b5%96" aria-label="1. 安装相关的maven依赖">1. 安装相关的maven依赖</a></li>
+                <li>
+                    <a href="#2-%e5%9c%a8-applicationproperties-%e4%b8%ad%e9%85%8d%e7%bd%ae%e6%95%b0%e6%8d%ae%e6%ba%90%e7%bb%84%e4%bb%b6%e9%85%8d%e7%bd%ae%e9%a1%b9" aria-label="2. 在 application.properties 中配置数据源组件配置项">2. 在 application.properties 中配置数据源组件配置项</a></li>
+                <li>
+                    <a href="#3-%e6%8f%92%e5%85%a5%e6%95%b0%e6%8d%ae%e5%88%b0%e6%95%b0%e6%8d%ae%e5%ba%93" aria-label="3. 插入数据到数据库">3. 插入数据到数据库</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#3-1-%e6%96%b0%e5%bb%bamodel%e9%80%9a%e8%bf%87new-model%e5%b0%86%e6%95%b0%e6%8d%ae%e7%bb%91%e5%ae%9a%e5%88%b0%e5%ae%9e%e4%be%8b%e5%b1%9e%e6%80%a7%e4%b8%8a%e7%84%b6%e5%90%8e%e5%b0%86%e5%ae%9e%e4%be%8b%e4%bc%a0%e5%85%a5mapper%e7%9a%84insert%e6%96%b9%e6%b3%95%e4%b8%ad" aria-label="3-1 新建model，通过new Model()将数据绑定到实例属性上，然后将实例传入mapper的insert方法中">3-1 新建model，通过new Model()将数据绑定到实例属性上，然后将实例传入mapper的insert方法中</a></li>
+                <li>
+                    <a href="#3-2-%e6%96%b0%e5%bb%bamapper%e9%80%9a%e8%bf%87-mapper-insert-%e5%b0%86%e6%95%b0%e6%8d%ae%e6%8f%92%e5%85%a5%e6%95%b0%e6%8d%ae%e5%ba%93" aria-label="3-2 新建mapper通过 @Mapper @Insert 将数据插入数据库">3-2 新建mapper通过 @Mapper @Insert 将数据插入数据库</a></li></ul>
+                    
+                <li>
+                    <a href="#3-3-%e6%96%b0%e5%bb%ba-controller%e9%80%9a%e8%bf%87-autowired-%e5%bc%95%e5%85%a5mapper%e5%b9%b6%e8%b0%83%e7%94%a8mapper%e4%b8%ad%e7%9a%84insert%e6%96%b9%e6%b3%95" aria-label="3-3 新建 controller，通过 @Autowired 引入mapper，并调用mapper中的insert()方法">3-3 新建 controller，通过 @Autowired 引入mapper，并调用mapper中的insert()方法</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4-%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5%e6%95%b0%e6%8d%ae%e5%ba%93%e6%95%b0%e6%8d%ae" aria-label="4. 增删改查数据库数据">4. 增删改查数据库数据</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#41-%e6%96%b0%e5%bb%bamodel---musicmodel" aria-label="4.1 新建model - MusicModel">4.1 新建model - MusicModel</a></li>
+                <li>
+                    <a href="#42-%e6%96%b0%e5%bb%ba-mapper---musicmapper" aria-label="4.2 新建 mapper - MusicMapper">4.2 新建 mapper - MusicMapper</a></li>
+                <li>
+                    <a href="#43-%e6%96%b0%e5%bb%ba-service---musicservice" aria-label="4.3 新建 service - MusicService">4.3 新建 service - MusicService</a></li>
+                <li>
+                    <a href="#44-%e6%96%b0%e5%bb%ba-controller---musics" aria-label="4.4 新建 controller - Musics">4.4 新建 controller - Musics</a></li></ul>
+                    </ul>
+                </li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae%e6%ba%90%e7%a0%81" aria-label="项目源码">项目源码</a></li>
+                <li>
+                    <a href="#%e8%b5%84%e6%96%99" aria-label="资料">资料</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="导航">导航<a hidden class="anchor" aria-hidden="true" href="#导航">#</a></h1>
+<p><a href="https://juejin.im/post/6844904045342113799" title="https://juejin.im/post/6844904045342113799">[react] Hooks</a></p>
+<p><a href="https://juejin.im/post/6879020830253285384" title="https://juejin.im/post/6879020830253285384">[React 从零实践01-后台] 代码分割</a><br>
+<a href="https://juejin.im/post/6881481205657632781" title="https://juejin.im/post/6881481205657632781">[React 从零实践02-后台] 权限控制</a><br>
+<a href="https://juejin.im/post/6887132776512880654" title="https://juejin.im/post/6887132776512880654">[React 从零实践03-后台] 自定义hooks</a><br>
+<a href="https://juejin.im/post/6892390655126241287" title="https://juejin.im/post/6892390655126241287">[React 从零实践04-后台] docker-compose 部署react+egg+nginx+mysql</a><br>
+<a href="https://juejin.cn/post/6897884843275714567" title="https://juejin.cn/post/6897884843275714567">[React 从零实践05-后台] Gitlab-CI使用Docker自动化部署</a></p>
+<p><a href="https://juejin.im/post/6844904115265339406" title="https://juejin.im/post/6844904115265339406">[源码-webpack01-前置知识] AST抽象语法树</a><br>
+<a href="https://juejin.im/post/6844904115269550087" title="https://juejin.im/post/6844904115269550087">[源码-webpack02-前置知识] Tapable</a><br>
+<a href="https://juejin.im/post/6844903973002936327" title="https://juejin.im/post/6844903973002936327">[源码-webpack03] 手写webpack - compiler简单编译流程</a><br>
+<a href="https://juejin.im/post/6844904137952329742" title="https://juejin.im/post/6844904137952329742">[源码] Redux React-Redux01</a><br>
+<a href="https://juejin.im/post/6844904147532120072" title="https://juejin.im/post/6844904147532120072">[源码] axios</a><br>
+<a href="https://juejin.im/post/6844904166293241863" title="https://juejin.im/post/6844904166293241863">[源码] vuex</a><br>
+<a href="https://juejin.im/post/6844904181094957069" title="https://juejin.im/post/6844904181094957069">[源码-vue01] data响应式 和 初始化渲染</a><br>
+<a href="https://juejin.im/post/6844904184035147790" title="https://juejin.im/post/6844904184035147790">[源码-vue02] computed 响应式 - 初始化，访问，更新过程</a><br>
+<a href="https://juejin.im/post/6844904186652409863" title="https://juejin.im/post/6844904186652409863">[源码-vue03] watch 侦听属性 - 初始化和更新</a><br>
+<a href="https://juejin.im/post/6844904190918000654" title="https://juejin.im/post/6844904190918000654">[源码-vue04] Vue.set 和 vm.$set</a><br>
+<a href="https://juejin.im/post/6844904201944825863" title="https://juejin.im/post/6844904201944825863">[源码-vue05] Vue.extend</a></p>
+<p><a href="https://juejin.im/post/6847902219107303438" title="https://juejin.im/post/6847902219107303438">[源码-vue06] Vue.nextTick 和 vm.$nextTick</a><br>
+<a href="https://juejin.im/post/6844904095464030215" title="https://juejin.im/post/6844904095464030215">[部署01] Nginx</a><br>
+<a href="https://juejin.im/post/6844904099024994312" title="https://juejin.im/post/6844904099024994312">[部署02] Docker 部署vue项目</a><br>
+<a href="https://juejin.im/post/6844904103944912904" title="https://juejin.im/post/6844904103944912904">[部署03] gitlab-CI</a></p>
+<p><a href="https://juejin.cn/post/6907145602400780296/" title="https://juejin.cn/post/6907145602400780296/">[数据结构和算法01] 二分查找和排序</a></p>
+<p><a href="https://juejin.im/post/6844904046050934792" title="https://juejin.im/post/6844904046050934792">[深入01] 执行上下文</a><br>
+<a href="https://juejin.im/post/6844904048873701389" title="https://juejin.im/post/6844904048873701389">[深入02] 原型链</a><br>
+<a href="https://juejin.im/post/6844904050895372295" title="https://juejin.im/post/6844904050895372295">[深入03] 继承</a><br>
+<a href="https://juejin.im/post/6844904051562250254" title="https://juejin.im/post/6844904051562250254">[深入04] 事件循环</a><br>
+<a href="https://juejin.im/post/6844904052879261710" title="https://juejin.im/post/6844904052879261710">[深入05] 柯里化 偏函数 函数记忆</a><br>
+<a href="https://juejin.im/post/6844904052937981959" title="https://juejin.im/post/6844904052937981959">[深入06] 隐式转换 和 运算符</a><br>
+<a href="https://juejin.im/post/6844904053013479432" title="https://juejin.im/post/6844904053013479432">[深入07] 浏览器缓存机制（http缓存机制）</a><br>
+<a href="https://juejin.im/post/6844904053235793927" title="https://juejin.im/post/6844904053235793927">[深入08] 前端安全</a><br>
+<a href="https://juejin.im/post/6844904053764259854" title="https://juejin.im/post/6844904053764259854">[深入09] 深浅拷贝</a><br>
+<a href="https://juejin.im/post/6844904054330490894" title="https://juejin.im/post/6844904054330490894">[深入10] Debounce Throttle</a><br>
+<a href="https://juejin.im/post/6844904054846390279" title="https://juejin.im/post/6844904054846390279">[深入11] 前端路由</a><br>
+<a href="https://juejin.im/post/6844904056557682701" title="https://juejin.im/post/6844904056557682701">[深入12] 前端模块化</a><br>
+<a href="https://juejin.im/post/6844904058604486663" title="https://juejin.im/post/6844904058604486663">[深入13] 观察者模式 发布订阅模式 双向数据绑定</a><br>
+<a href="https://juejin.im/post/6844904063029477389" title="https://juejin.im/post/6844904063029477389">[深入14] canvas</a><br>
+<a href="https://juejin.im/post/6844904066808561677" title="https://juejin.im/post/6844904066808561677">[深入15] webSocket</a><br>
+<a href="https://juejin.im/post/6844904070201753608" title="https://juejin.im/post/6844904070201753608">[深入16] webpack</a><br>
+<a href="https://juejin.im/post/6844904085750038542" title="https://juejin.im/post/6844904085750038542">[深入17] http 和 https</a><br>
+<a href="https://juejin.im/post/6844904090644774926" title="https://juejin.im/post/6844904090644774926">[深入18] CSS-interview</a><br>
+<a href="https://juejin.im/post/6844903823429861389" title="https://juejin.im/post/6844903823429861389">[深入19] 手写Promise</a><br>
+<a href="https://juejin.im/post/6844904131577004040" title="https://juejin.im/post/6844904131577004040">[深入20] 手写函数</a><br>
+<a href="https://juejin.cn/post/6907145602400780296/" title="https://juejin.cn/post/6907145602400780296/">[深入21] 数据结构和算法 - 二分查找和排序</a><br>
+<a href="https://juejin.cn/post/6911192116651622413" title="https://juejin.cn/post/6911192116651622413">[深入22] js和v8垃圾回收机制</a><br>
+<a href="https://juejin.cn/post/6918744081460002824" title="https://juejin.cn/post/6918744081460002824">[深入23] JS设计模式 - 代理，策略，单例</a></p>
+<p><a href="https://juejin.cn/post/6927306093970325517" title="https://juejin.cn/post/6927306093970325517">[前端学java01-SpringBoot实战] 环境配置和HelloWorld服务</a><br>
+<a href="https://juejin.cn/post/6929145638898794503" title="https://juejin.cn/post/6929145638898794503">[前端学java02-SpringBoot实战] mybatis + mysql 实现歌曲增删改查</a></p>
+<h1 id="一-前置知识">(一) 前置知识<a hidden class="anchor" aria-hidden="true" href="#一-前置知识">#</a></h1>
+<h3 id="1-一些单词">(1) 一些单词<a hidden class="anchor" aria-hidden="true" href="#1-一些单词">#</a></h3>
+<p>matlab</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>pet 宠物 configuration 配置 assistant 助理，售货员 resources 资源，系统资源文件夹 amend 修正，修订 authorize 授权v authorization 授权n bio 个人描述 refactor 重构 extract 提取 // extract common part from 'if' 从if语句中提取出相同的部分 mapper 映射器，变换器 persistent 持久的 judge 判断 sign in 登入 sign out 登出 sign up 注册</code></p>
+<h3 id="2-如何给类或方法添加注释">(2) 如何给类或方法添加注释<a hidden class="anchor" aria-hidden="true" href="#2-如何给类或方法添加注释">#</a></h3>
+<ul>
+<li>把光标停在 ( 类名或者方法名 ) 上，然后 <code>Alt+Enter</code>，出现几个选项，选择<code>Add Javadoc</code>就OK了</li>
+</ul>
+<h3 id="3-controller">(3) @Controller<a hidden class="anchor" aria-hidden="true" href="#3-controller">#</a></h3>
+<ul>
+<li>当给类添加了<code>@Controller注解</code>时，SpringBoot就会自动识别扫描该类，把它作为<code>bean</code>去管理，同时也识别该类是一个<code>controller</code></li>
+<li>重点注意 controller server mapper 三者的关系</li>
+</ul>
+<h3 id="4-idea常用快捷键">(4) IDEA常用快捷键<a hidden class="anchor" aria-hidden="true" href="#4-idea常用快捷键">#</a></h3>
+<ul>
+<li><code>ctrl+p</code> 方法参数提示</li>
+<li><code>ctrl+alt+l</code> 代码格式化</li>
+<li><code>ctrol+alt+o</code> 删除没有使用到的引入的文件或依赖</li>
+<li><code>sout</code> System.out.println()</li>
+</ul>
+<h3 id="5-springboot工程文件说明">(5) SpringBoot工程文件说明<a hidden class="anchor" aria-hidden="true" href="#5-springboot工程文件说明">#</a></h3>
+<ul>
+<li><code>src/main/java</code> 所有的java代码</li>
+<li><code>src/main/resources</code> 配置文件和静态文件
+<ul>
+<li><code>resources/templates</code> 模板文件</li>
+<li><code>resources/static</code> 静态文件，比如css，img文件</li>
+<li><code>resources/application.properties</code> 配置文件，当然也可以改成<code>application.yml</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="6-github-授权登陆">(6) GitHub 授权登陆<a hidden class="anchor" aria-hidden="true" href="#6-github-授权登陆">#</a></h3>
+<ul>
+<li>1.<code>点击头像 =&gt; settings =&gt; Developer settings =&gt; OAuth Apps =&gt; Register a new OAuth application =&gt; ...</code></li>
+<li>2.<a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.github.com%2Fen%2Fdevelopers%2Fapps%2Fcreating-an-oauth-app" title="https://docs.github.com/en/developers/apps/creating-an-oauth-app">官网授权登陆教程 - [ 获取 Client ID 和 Authorization callback URL ]</a></li>
+<li>3.通过上面的12两步，可以获取到 <strong><code>Client ID</code></strong> 和 <strong><code>Authorization callback URL</code></strong></li>
+<li>4.<a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.github.com%2Fen%2Fdevelopers%2Fapps%2Fauthorizing-oauth-apps" title="https://docs.github.com/en/developers/apps/authorizing-oauth-apps">官网授权登陆教程 - [ 具体的跳转流程 ]</a>
+<ul>
+<li>a. 携带3获得的相关parameter请求授权登陆地址，成功会扭转到redirect_uri地址，同时返回 ( <strong>code</strong> ) 和 ( <strong>state</strong> )</li>
+<li>b. 用 ( <strong>code</strong> ) 换取 ( <strong>access_token</strong> )</li>
+<li>c. 用 ( <strong>access_token</strong> ) 访问github的 ( <strong>user</strong> ) 接口，获取用户信息</li>
+</ul>
+</li>
+<li>5.测试：<code>https://api.github.com/user?access_token=xxx</code></li>
+</ul>
+<h3 id="7-idea-找不到-database-选项卡">(7) IDEA 找不到 Database 选项卡<a hidden class="anchor" aria-hidden="true" href="#7-idea-找不到-database-选项卡">#</a></h3>
+<ul>
+<li>搜索 <code>Plugins =&gt; Database Navigator</code> 并安装该插件</li>
+<li>这里我没用这个插件，而是使用 <code>Navicat</code> 来设计管理数据库</li>
+</ul>
+<h3 id="8-mysql的一些基础知识">(8) mysql的一些基础知识<a hidden class="anchor" aria-hidden="true" href="#8-mysql的一些基础知识">#</a></h3>
+<ul>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fdev.mysql.com%2Fdownloads%2Fmysql%2F" title="https://dev.mysql.com/downloads/mysql/">安装-免费的社区版本-最底部-MySQL Community Server</a></li>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fqq_34889607%2Farticle%2Fdetails%2F80613028" title="https://blog.csdn.net/qq_34889607/article/details/80613028">教程</a></li>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fqq_38328378%2Farticle%2Fdetails%2F80858073" title="https://blog.csdn.net/qq_38328378/article/details/80858073">常用命令教程</a></li>
+<li>注意点: 最后面的分号一定要加</li>
+<li>常用命令
+<ul>
+<li>连接数据库 <code>mysql -h主机地址 -u用户名 －p用户密码</code></li>
+<li>退出mysql <code>exit</code></li>
+<li>查看数据库 <code>show databases;</code></li>
+<li>创建数据库 <code>create database 数据库名;</code></li>
+<li>删除数据库 <code>drop database 数据库名;</code></li>
+<li><strong>使用数据库</strong> <strong><code>use 数据库名;</code></strong></li>
+<li><strong>查看当前使用的数据库</strong> <strong><code>select database();</code></strong></li>
+<li>查看表 <code>show tables;</code></li>
+<li>创建表 <code>create table 表名 (dde列名 类型);</code></li>
+<li>删除表 <code>droop table 表名;</code></li>
+<li><strong>显示表结构</strong> <strong><code>desc 表名;</code></strong></li>
+<li>修改密码 <code>mysqladmin -uroot -p123456 password 12345678;</code></li>
+<li><strong>查看数据库的安装路径</strong> <strong><code>show variables like &quot;%char%&quot;;</code></strong> <img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3ad44b8b1d1b4eeba3c05441cf280669~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="9-autowired-和-new-的区别">(9) @Autowired 和 new 的区别？<a hidden class="anchor" aria-hidden="true" href="#9-autowired-和-new-的区别">#</a></h3>
+<ul>
+<li><code>@Autowired</code>
+<ul>
+<li>注解方式是由spring创建的对象 ( <strong>单例</strong> ) 对象 作用域是整个项目 项目一启动就创建了</li>
+</ul>
+</li>
+<li><code>new</code>
+<ul>
+<li>new出来的对象作用域只在你对应的类中 每个调用的时候都是会创建一个新的对象，是 ( <strong>多例</strong> )</li>
+</ul>
+</li>
+</ul>
+<h3 id="10-po-dto-entity-bean-等文件夹的区别">(10) po dto entity bean 等文件夹的区别<a hidden class="anchor" aria-hidden="true" href="#10-po-dto-entity-bean-等文件夹的区别">#</a></h3>
+<ul>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.cnblogs.com%2FEasonJim%2Fp%2F7967949.html" title="https://www.cnblogs.com/EasonJim/p/7967949.html">相关资料</a></li>
+<li><strong><code>po</code></strong> <code>entity bean</code> 三个类似，都是持久化对象persistent，即 <code>数据库中的一条记录对象</code></li>
+<li><strong><code>dto</code></strong> 是经过处理后的po，<code>和ui层即前端页面对应</code></li>
+</ul>
+<h3 id="11-controller层server层mapper层之间的关系">(11) controller层，server层，mapper层，之间的关系<a hidden class="anchor" aria-hidden="true" href="#11-controller层server层mapper层之间的关系">#</a></h3>
+<ul>
+<li><strong><code>controller</code></strong>
+<ul>
+<li>负责http请求，将参数等信息传递给server层，并将结果返回给客户端</li>
+</ul>
+</li>
+<li><strong><code>server</code></strong>
+<ul>
+<li>负责处理逻辑</li>
+<li>当需要同时处理多个表的关系时，一般都交给sever来组装处理，比如合并多个model</li>
+<li>接收controller传递的参数，并调用mapper</li>
+</ul>
+</li>
+<li><strong><code>mapper</code></strong> ( DAO )
+<ul>
+<li>负责对数据库增删改查</li>
+</ul>
+</li>
+</ul>
+<h3 id="12-java中的--数组-">(12) java中的 ( 数组 )<a hidden class="anchor" aria-hidden="true" href="#12-java中的--数组-">#</a></h3>
+<ul>
+<li>使用大括号包裹的成员 <code>int[] a = {1, 2, 3, 4}</code></li>
+<li>刚开始把我搞蒙蔽，注意不是ts中的 <code>let a: number[] = [1,2,3,4]</code></li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>int[] a = {1, 2, 3, 4}</code></p>
+<h3 id="13-restful-api-接口规范">(13) RESTful API 接口规范<a hidden class="anchor" aria-hidden="true" href="#13-restful-api-接口规范">#</a></h3>
+<ul>
+<li><a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ruanyifeng.com%2Fblog%2F2014%2F05%2Frestful_api.html" title="http://www.ruanyifeng.com/blog/2014/05/restful_api.html">RESTful API</a></li>
+</ul>
+<h3 id="14-map">(14) Map<a hidden class="anchor" aria-hidden="true" href="#14-map">#</a></h3>
+<ul>
+<li><code>Map</code> 中 <code>键和值一一映射，可以通过键来获取值</code></li>
+<li><code>Object put(Object k, Object v)</code> 存</li>
+<li><code>Object get(Object k)</code> 取</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class CollectionsDemo {    public static void main(String[] args) {       Map m1 = new HashMap(); // new HashMap()       m1.put(&quot;Zara&quot;, &quot;8&quot;);       m1.put(&quot;Mahnaz&quot;, &quot;31&quot;);       System.out.println(&quot; Map Elements&quot;);       System.out.print(&quot;\t&quot; + m1);    } } 结果： Map Elements         {Mahnaz=31, Zara=8}</code></p>
+<h3 id="14-springboot中如何解析前端传来的json类型的参数">(14) springboot中如何解析前端传来的json类型的参数<a hidden class="anchor" aria-hidden="true" href="#14-springboot中如何解析前端传来的json类型的参数">#</a></h3>
+<ul>
+<li><strong>因为</strong>：前端在 <code>POST</code> 请求中，一般设置的header中的 <code>Content-Type: application/json</code></li>
+<li><strong>所以</strong>：<code>POST</code>请求出入的参数被放在<code>body</code>中，以<code>JSON</code>形式传给后端</li>
+<li><strong>解决</strong>: 利用 <code>@RequestBody</code> 获取到body对象，然后通过 <code>Map</code> 做映射，通过<code>get</code>获取属性</li>
+</ul>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 新增     @PostMapping(&quot;/musics&quot;)     public void addMusics(             @RequestBody Map&lt;String, Object&gt; body     ) {         String name = (String) body.get(&quot;name&quot;);         String album = (String) body.get(&quot;album&quot;);         String singer = (String) body.get(&quot;singer&quot;);         musicService.add(name, album, singer);     }</code></p>
+<h3 id="15-string---timestamp---datetime-三者的转换">(15) String -&gt; Timestamp -&gt; datetime 三者的转换<a hidden class="anchor" aria-hidden="true" href="#15-string---timestamp---datetime-三者的转换">#</a></h3>
+<ul>
+<li><code>java中的Timestamp</code> 相当于 <code>数据库中的datatime</code></li>
+<li><strong><code>Timestamp.valueOf(String v)</code></strong></li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public Boolean edit(Map&lt;String, Object&gt; body) {     int id = (int) body.get(&quot;id&quot;);     String name = (String) body.get(&quot;name&quot;);     String album = (String) body.get(&quot;album&quot;);     String singer = (String) body.get(&quot;singer&quot;);          // ( Timestamp ) 类型对应的是数据库中的 ( datetime ) 类型     Timestamp startTime = Timestamp.valueOf((String) body.get(&quot;startTime&quot;));          // Timestamp.valueOf(string v) 将string转成timestamp     Timestamp endTime = Timestamp.valueOf((String) body.get(&quot;endTime&quot;));           int status = musicMapper.editMusic(name, album, singer, startTime, endTime, id);     Boolean aBoolean = judgeIsSuccess(status);     return aBoolean; }</code></p>
+<h3 id="16-热更新">(16) 热更新<a hidden class="anchor" aria-hidden="true" href="#16-热更新">#</a></h3>
+<ul>
+<li>当每次修改java代码时都必须手动 run Application 很麻烦</li>
+<li><code>spring-boot-devtools</code> 可以实现热更新</li>
+<li><strong>设置过程</strong>
+<ul>
+<li>1.引入<code>spring-boot-devtools</code>的maven包</li>
+<li>2.<strong><code>setting =&gt; Build,Execution,Deployment =&gt; Compiler =&gt; 勾上Build project automaticallly</code></strong>
+<ul>
+<li>第2步有个缺点，就是必须在没有running或debugging的情况才热更新</li>
+</ul>
+</li>
+<li>3.<code>ctrl + shift + a</code> 调出 <code>action</code></li>
+<li>4.在 <code>action</code> 中搜索 <code>Registry</code></li>
+<li>5.在 <code>Registry</code> 中勾选 <strong><code>compiler.autoMake.allow.when.app.running</code></strong></li>
+<li>6.如果前端展示是直接写的html，则还可以添加一个浏览器插件 <strong><code>LiveReload</code></strong>
+<ul>
+<li>如果是vue或者react的单页项目就不需要了</li>
+<li>注意：(一般情况，请忽略该注意 )
+<ul>
+<li>描述：当只是修改html时，是不会再重启java程序的，因为本身并没有去修改server相关的代码</li>
+<li>非要解决：需要配置如下</li>
+<li><code>application.properties =&gt; spring.devtools.restart.exclude=static/**,public/**</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!-- spring-boot-devtools 热更新 --&gt; &lt;dependency&gt;   &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;   &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;   &lt;optional&gt;true&lt;/optional&gt;   &lt;scope&gt;true&lt;/scope&gt; &lt;/dependency&gt;</code></p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/696c6dc7cb184e2f9c4122c5b45d685e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+<br>
+<img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ff2aaf4e7012439b8d81ab6fd4253430~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+<br>
+<img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/03dea0d9d04d453bb2131e63ba3637d0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+<br>
+<img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b0b6c27acf774e40961ae532d2fcf660~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+<br>
+<img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a30b782108fb4ef481240c9b3b3b273a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<h1 id="二-从零开始一个项目">(二) 从零开始一个项目<a hidden class="anchor" aria-hidden="true" href="#二-从零开始一个项目">#</a></h1>
+<h2 id="1-新建一个springboot项目--spring-assistant">(1) 新建一个SpringBoot项目 ( Spring Assistant)<a hidden class="anchor" aria-hidden="true" href="#1-新建一个springboot项目--spring-assistant">#</a></h2>
+<ul>
+<li><strong>安装插件</strong>：<code>file =&gt; setting =&gt; plugins =&gt; 在Marketplace中搜索并安装插件 =&gt; Spring Assistant</code></li>
+<li><strong>新建项目</strong>：<code>file =&gt; New Project =&gt; Spring Assistant =&gt; Next =&gt; Web =&gt; Spring Web =&gt; Finish</code></li>
+<li>使用 Spring Assistant 和使用 maven 创建项目的区别？
+<ul>
+<li>主要就是Spring Assistant配置好了web开发的 pom.xml 中的配置项</li>
+<li>使用maven需要自己配置 <code>parent</code> <code>spring-boot-starter-web</code> <code>spring-boot-starter-thymeleaf</code> 等</li>
+</ul>
+</li>
+</ul>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dfcb8a570d1f4e998af0626aa057a7e2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+<br>
+<img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21790cd9ba58457d9c0d2b2aef5ee94d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+<br>
+<img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3a7ab92c654c4bdaaaab179b6237e7ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+ <img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/036f46bde2b648d8bfbc643e69497b5f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+ <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0871127ec9004841aaf7aad3aefd9c75~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<ul>
+<li>也可以勾选下面这四个 <img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b1f2352480f1404c800f57bfaeb84239~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</li>
+</ul>
+<h2 id="2-配置文件的分离">(2) 配置文件的分离<a hidden class="anchor" aria-hidden="true" href="#2-配置文件的分离">#</a></h2>
+<ul>
+<li>怎么样根据不同的环境，来读取不同的配置文件?? ( 类似于前端的环境变量，比如process.env.NODE_ENV )</li>
+<li>springboot的配置文件有以下
+<ul>
+<li><strong>application.properties</strong></li>
+<li><strong>application-dev.properties 开发环境</strong></li>
+<li><strong>application-prod.properties 运行环境</strong></li>
+<li><strong>application-test.properties 测试环境</strong></li>
+</ul>
+</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>在不同环境的配置文件中，设置同步变量的不同值即可 如下： ------- server.port = 7777 # 第一段的github起到分类的作用，便于识别 # 1. 比如： server 和 github 就是不同的两种类型 # 2. 使用时需要使用 @Value 注解来引入这里定义的属性变量 github.client.client_id = 982573d16925889ea84c github.client.client_secret = 9a2e9710af69531e51254e6902ab834905a7a755 github.client.redirect_uri = http://localhost:7777/callback</code></p>
+<h2 id="3-利用-mybatis-操作-mysql-实现curd">(3) 利用 mybatis 操作 mysql 实现CURD<a hidden class="anchor" aria-hidden="true" href="#3-利用-mybatis-操作-mysql-实现curd">#</a></h2>
+<h3 id="1-安装相关的maven依赖">1. 安装相关的maven依赖<a hidden class="anchor" aria-hidden="true" href="#1-安装相关的maven依赖">#</a></h3>
+<ul>
+<li>因为：是通过 <code>Spring Assistant</code> 创建的项目</li>
+<li>所以：自动配好了 <code>parent spring-boot-starter-web spring-boot-starter</code> 等maven依赖</li>
+</ul>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>pom.xml ------- 2022.04.19 更新 &lt;!-- jdbc依赖 --&gt; &lt;!-- 该场景启动器的主要作用：具有 ( 事务，jdbc，数据源 ) --&gt; &lt;!-- 该场景启动器不包含：数据库驱动，因为SpringBoot并不知道我们使用什么数据库，所以需要安装数据库驱动 --&gt; &lt;dependency&gt;   &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;   &lt;artifactId&gt;spring-boot-starter-jdbc&lt;/artifactId&gt; &lt;/dependency&gt; &lt;!-- mysql数据库驱动, 版本需要和你安装的mysql版本保持一致 --&gt; &lt;dependency&gt;   &lt;groupId&gt;mysql&lt;/groupId&gt;   &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;   &lt;version&gt;8.0.21&lt;/version&gt;   &lt;scope&gt;runtime&lt;/scope&gt; &lt;/dependency&gt; &lt;!-- mybatis --&gt; &lt;dependency&gt;   &lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;   &lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;   &lt;version&gt;2.1.3&lt;/version&gt; &lt;/dependency&gt;</code></p>
+<h3 id="2-在-applicationproperties-中配置数据源组件配置项">2. 在 application.properties 中配置数据源组件配置项<a hidden class="anchor" aria-hidden="true" href="#2-在-applicationproperties-中配置数据源组件配置项">#</a></h3>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>application.properties ------- # 定义数据源组件 # 已弃用 spring.datasource.driver-class-name=com.mysql.jdbc.Driver # 注意 spring.datasource.url=&quot;jdbc:mysql://localhost:3306/数据库名称?时区信息&quot; # 注意 上面的时区信息不能少，不然会报错 # 分别是 ( 数据库url ) ( 数据库驱动 ) ( 用户名 ) ( 密码 ) spring.datasource.url=jdbc:mysql://localhost:3306/7-community-java?serverTimezone=GMT%2B8&amp;useSSL=false spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver spring.datasource.username=root spring.datasource.password=root</code></p>
+<h3 id="3-插入数据到数据库">3. <code>插入数据到数据库</code><a hidden class="anchor" aria-hidden="true" href="#3-插入数据到数据库">#</a></h3>
+<h5 id="3-1-新建model通过new-model将数据绑定到实例属性上然后将实例传入mapper的insert方法中">3-1 新建model，通过new Model()将数据绑定到实例属性上，然后将实例传入mapper的insert方法中<a hidden class="anchor" aria-hidden="true" href="#3-1-新建model通过new-model将数据绑定到实例属性上然后将实例传入mapper的insert方法中">#</a></h5>
+<ul>
+<li><code>model</code> 主要是用于<code>数据库操作相关</code>的<code>对象</code>，专门命名为model</li>
+<li>model 会在 mapper 或 controller 中用到</li>
+</ul>
+<p>vbnet</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>model ------- public class UserModel {     private Integer id;     private String name;     private String accountId;     private String token;     private Long gmtCreate;     private Long gmtModified;     getter adnd setter and toString... }</code></p>
+<h5 id="3-2-新建mapper通过-mapper-insert-将数据插入数据库">3-2 新建mapper通过 @Mapper @Insert 将数据插入数据库<a hidden class="anchor" aria-hidden="true" href="#3-2-新建mapper通过-mapper-insert-将数据插入数据库">#</a></h5>
+<ul>
+<li><code>mapper</code> 主要用于操作数据库</li>
+<li>注意
+<ul>
+<li>mapper 是 <strong><code>interface</code></strong></li>
+<li>mapper中的 <code>UserMapper.insert()</code> 方法是在 <code>controller</code> 中被调用的</li>
+</ul>
+</li>
+</ul>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mapper ------- @Mapper public interface UserMapper {     @Insert(&quot;insert into user (name, account_id, token, gmt_create, gmt_modified) values (#{name}, #{accountId}, #{token}, #{gmtCreate}, #{gmtModified})&quot;)     void insert(UserModel user); }</code></p>
+<h4 id="3-3-新建-controller通过-autowired-引入mapper并调用mapper中的insert方法">3-3 新建 controller，通过 @Autowired 引入mapper，并调用mapper中的insert()方法<a hidden class="anchor" aria-hidden="true" href="#3-3-新建-controller通过-autowired-引入mapper并调用mapper中的insert方法">#</a></h4>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>controller ------- import com.example.demo.model.UserModel; @Controller public class AuthorizeController {     @Autowired     private UserMapper userMapper;     @GetMapping(&quot;/callback&quot;)     public String callback() {         UserModel user = new UserModel(); // 注意区分@Autowired 和 new 的区别 	user.setToken(UUID.randomUUID().toString());         user.setName(gitHubUser.getName());         ...         userMapper.insert(user);         // 1. 登陆后获取用户信息后，将数据写入user对象中         // 2. 调用 mapper 中的 userMapper.insert(user) 将user存入数据库     } }</code></p>
+<hr>
+<hr>
+<hr>
+<h3 id="4-增删改查数据库数据">4. <code>增删改查数据库数据</code><a hidden class="anchor" aria-hidden="true" href="#4-增删改查数据库数据">#</a></h3>
+<ul>
+<li>通过4-123步就能通过接口访问到music列表数据</li>
+<li>数据库表如下图 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d0cf6df1cba24ce3972c57c4cf5cd0c9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</li>
+</ul>
+<h5 id="41-新建model---musicmodel">4.1 新建model - MusicModel<a hidden class="anchor" aria-hidden="true" href="#41-新建model---musicmodel">#</a></h5>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>model - MusicModel ------- // model // model 专门用来做数据库相关的模型对象 @Data public class MusicModel {     private Integer id;     private String name;     private String album;     private String singer;     private String endTime;     private String startTime;     getter sertter toString 等  }</code></p>
+<h5 id="42-新建-mapper---musicmapper">4.2 新建 mapper - MusicMapper<a hidden class="anchor" aria-hidden="true" href="#42-新建-mapper---musicmapper">#</a></h5>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mapper - MusicMapper  -------   // mapper // 1. mapper文件夹主要是用来映射数据库的相关操作 // 2. 注意：mapper 是 interface @Mapper public interface MusicMapper {     @Select(             &quot;SELECT * from music where&quot;                     + &quot; name like CONCAT('%',#{searchKey},'%') or &quot;                     + &quot; album like CONCAT('%',#{searchKey},'%') or &quot;                     + &quot; singer like CONCAT('%',#{searchKey},'%')&quot;                     + &quot; limit #{offset},#{pageSize}&quot;     )     public List&lt;MusicModel&gt; selectMusics(Integer pageSize, Integer offset, String searchKey); // 查找 - 分页 + 条件模糊查询     @Select(&quot;SELECT * from music limit #{offset},#{pageSize}&quot;)     public List&lt;MusicModel&gt; selectMusicsOnlyPagination(Integer pageSize, Integer offset); // 查找 - 分页查询     @Select(&quot;SELECT * from music&quot;)     public List&lt;MusicModel&gt; selectAllMusics(); // 查找 - 总数据     @Insert(&quot;insert into music (name, album, singer, startTime, endTime) values (#{name}, #{album}, #{singer}, #{startTime}, #{endTime})&quot;)     public int insertMusic(String name, String album, String singer, Date startTime, Date endTime); // 插入     @Update(&quot;update music set name=#{name},album=#{album},singer=#{singer},startTime=#{startTime},endTime=#{endTime} where id=#{id}&quot;)     public int editMusic(String name, String album, String singer, Timestamp startTime, Timestamp endTime, int id);     @Delete(&quot;delete from music where id=#{id}&quot;)     public int deleteMusic(int id); // 删除 }</code></p>
+<h5 id="43-新建-service---musicservice">4.3 新建 service - MusicService<a hidden class="anchor" aria-hidden="true" href="#43-新建-service---musicservice">#</a></h5>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ervice - MusicService ------- // service // 1. 主要用于处理获取请求参数后的处理逻辑 // 2. server 是连接 controller 和 mapper(DAO) 的桥梁 @Service public class MusicService {     @Autowired     private MusicMapper musicMapper;     // 逻辑抽离 - 判断操作是否成功，比如添加，删除     private Boolean judgeIsSuccess(int status) {         if (status &gt; 0) {             System.out.println(&quot;操作成功&quot;);             return true;         } else {             System.out.println(&quot;操作失败&quot;);             return false;         }     }     // 列表     public PaginationDTO list(Integer pageSize, Integer current, String searchKey) {         Integer offset = pageSize * (current - 1); // 分页的偏移量         List&lt;MusicModel&gt; musicModels;         if (searchKey != null) { // searchKey 是否存在             musicModels = musicMapper.selectMusics(pageSize, offset, searchKey); // 分页 + 条件         } else {             musicModels = musicMapper.selectMusicsOnlyPagination(pageSize, offset); // 分页         }         List&lt;MusicModel&gt; totalMusics = musicMapper.selectAllMusics(); // 总数据是为了获取 total         PaginationDTO paginationDTO = new PaginationDTO(); // 这里之所以要new，是因为其他方法中也可能会用到paginationDTO,所以必须不能是单列         paginationDTO.musics = musicModels;         paginationDTO.total = totalMusics.toArray().length;         paginationDTO.current = current;         paginationDTO.pageSize = pageSize;         return paginationDTO;     }     // 新增     public Boolean add(String name, String album, String singer) {         Date startTime = new Date(); // 注意：数据库中的data是 ( datetime ) 格式         Date endTime = new Date();         int status = musicMapper.insertMusic(name, album, singer, startTime, endTime);         Boolean aBoolean = judgeIsSuccess(status);         return aBoolean;     }     // 修改     public Boolean edit(Map&lt;String, Object&gt; body) {         int id = (int) body.get(&quot;id&quot;);         String name = (String) body.get(&quot;name&quot;);         String album = (String) body.get(&quot;album&quot;);         String singer = (String) body.get(&quot;singer&quot;);         Timestamp startTime = Timestamp.valueOf((String) body.get(&quot;startTime&quot;)); // ( Timestamp ) 类型对应的是数据库中的 ( datetime ) 类型         Timestamp endTime = Timestamp.valueOf((String) body.get(&quot;endTime&quot;));         int status = musicMapper.editMusic(name, album, singer, startTime, endTime, id);         Boolean aBoolean = judgeIsSuccess(status);         return aBoolean;     }     // 删除     public Boolean delete(int id) {         int status = musicMapper.deleteMusic(id);         Boolean aBoolean = judgeIsSuccess(status);         return aBoolean;     } }</code></p>
+<h5 id="44-新建-controller---musics">4.4 新建 controller - Musics<a hidden class="anchor" aria-hidden="true" href="#44-新建-controller---musics">#</a></h5>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>controller - Musics ------- //@Controller //@ResponseBody @RestController // 是上面两个注解的合集 public class MusicController {     @Autowired     MusicService musicService;     // 列表     // @RequestMapping(value=&quot;/musics&quot;, method = {RequestMethod.GET})     @GetMapping(&quot;/musics&quot;)     public PaginationDTO getMusics(             @RequestParam(name = &quot;pageSize&quot;, defaultValue = &quot;10&quot;) Integer pageSize,             @RequestParam(name = &quot;current&quot;, defaultValue = &quot;1&quot;) Integer current,             @RequestParam(name = &quot;searchKey&quot;, required = false) String searchKey     ) {         PaginationDTO musics = musicService.list(pageSize, current, searchKey);         System.out.println(musics);         return musics;     }     // 新增     @PostMapping(&quot;/musics/add&quot;)     public Map&lt;String, Object&gt; addMusics(             @RequestBody Map&lt;String, Object&gt; body     ) {         String name = (String) body.get(&quot;name&quot;);         String album = (String) body.get(&quot;album&quot;);         String singer = (String) body.get(&quot;singer&quot;);         Boolean isSuccess = musicService.add(name, album, singer);         body.put(&quot;isSuccess&quot;, isSuccess); // 是否成功         return body;     }     // 修改     @PostMapping(&quot;/musics/edit&quot;)     public Map&lt;String, Object&gt; editMusics(             @RequestBody Map&lt;String, Object&gt; body     ) {         Boolean isSuccess = musicService.edit(body);         body.put(&quot;isSuccess&quot;, isSuccess); // 是否成功         return body;     }     // 删除     @PostMapping(&quot;/musics/delete&quot;)     public Map&lt;String, Object&gt; deleteMusics(             @RequestBody Map&lt;String, Object&gt; body     ) {         int id = (int) body.get(&quot;id&quot;);         Boolean isSuccess = musicService.delete(id);         body.put(&quot;isSuccess&quot;, isSuccess); // 是否成功         return body;     } }</code></p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ede9e65dcfc94801b10313913e0c5d7b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<h1 id="项目源码">项目源码<a hidden class="anchor" aria-hidden="true" href="#项目源码">#</a></h1>
+<ul>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwoow-wu7%2F7-react-admin-java" title="https://github.com/woow-wu7/7-react-admin-java">项目源码</a></li>
+<li><a href="https://link.juejin.cn?target=http%3A%2F%2F120.53.220.141%3A81%2Fadmin-home" title="http://120.53.220.141:81/admin-home">线上访问地址-歌曲增删改查</a></li>
+</ul>
+<h1 id="资料">资料<a hidden class="anchor" aria-hidden="true" href="#资料">#</a></h1>
+<ul>
+<li>注解 <a href="https://juejin.cn/post/6844903813631983623" title="https://juejin.cn/post/6844903813631983623">juejin.cn/post/684490…</a></li>
+<li>常用快捷键 <a href="https://link.juejin.cn?target=https%3A%2F%2Fzhuanlan.zhihu.com%2Fp%2F61690346" title="https://zhuanlan.zhihu.com/p/61690346">zhuanlan.zhihu.com/p/61690346</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%B8%AD%E5%B9%B4%E5%A6%82%E6%9C%9F%E8%80%8C%E8%87%B3%E5%A6%82%E4%BD%95%E7%A0%B4%E8%8C%A7%E6%B6%85%E6%A7%83/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>中年如期而至，如何破茧涅槃</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/sqlite%E8%BF%99%E4%B9%88%E5%B0%8F%E4%BC%97%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88%E4%BA%BA%E5%9C%A8%E7%94%A8/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>SQLite这么小众的数据库，到底是什么人在用</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 on x"
+            href="https://x.com/intent/tweet/?text=%5b%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98%5dmybatis%2bmysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f&amp;hashtags=%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f&amp;title=%5b%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98%5dmybatis%2bmysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5&amp;summary=%5b%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98%5dmybatis%2bmysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f&title=%5b%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98%5dmybatis%2bmysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%5b%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98%5dmybatis%2bmysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 on telegram"
+            href="https://telegram.me/share/url?text=%5b%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98%5dmybatis%2bmysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [前端学java02-SpringBoot实战]mybatis&#43;mysql实现歌曲增删改查 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%5b%e5%89%8d%e7%ab%af%e5%ad%a6java02-SpringBoot%e5%ae%9e%e6%88%98%5dmybatis%2bmysql%e5%ae%9e%e7%8e%b0%e6%ad%8c%e6%9b%b2%e5%a2%9e%e5%88%a0%e6%94%b9%e6%9f%a5&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E5%25AD%25A6java02-springboot%25E5%25AE%259E%25E6%2588%2598mybatis%2bmysql%25E5%25AE%259E%25E7%258E%25B0%25E6%25AD%258C%25E6%259B%25B2%25E5%25A2%259E%25E5%2588%25A0%25E6%2594%25B9%25E6%259F%25A5%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

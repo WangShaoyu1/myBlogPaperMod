@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>服务重启了，如何保证线程池中的数据不丢失？ | PaperMod</title>
+<meta name="keywords" content="后端">
+<meta name="description" content="前言最近有位小伙伴在我的技术群里，问了我一个问题：服务down机了，线程池中如何保证不丢失数据？这个问题挺有意思的，今天通过这篇文章，拿出来跟大家一起探讨一下。1什么是线程池？之前没有线程池">
+<meta name="author" content="苏三说技术">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%9C%8D%E5%8A%A1%E9%87%8D%E5%90%AF%E4%BA%86%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%A2%E5%A4%B1/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%9C%8D%E5%8A%A1%E9%87%8D%E5%90%AF%E4%BA%86%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%A2%E5%A4%B1/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="服务重启了，如何保证线程池中的数据不丢失？" />
+<meta property="og:description" content="前言最近有位小伙伴在我的技术群里，问了我一个问题：服务down机了，线程池中如何保证不丢失数据？这个问题挺有意思的，今天通过这篇文章，拿出来跟大家一起探讨一下。1什么是线程池？之前没有线程池" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%9C%8D%E5%8A%A1%E9%87%8D%E5%90%AF%E4%BA%86%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%A2%E5%A4%B1/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-30T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-30T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="服务重启了，如何保证线程池中的数据不丢失？"/>
+<meta name="twitter:description" content="前言最近有位小伙伴在我的技术群里，问了我一个问题：服务down机了，线程池中如何保证不丢失数据？这个问题挺有意思的，今天通过这篇文章，拿出来跟大家一起探讨一下。1什么是线程池？之前没有线程池"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "服务重启了，如何保证线程池中的数据不丢失？",
+      "item": "http://localhost:1313/posts/juejin/%E6%9C%8D%E5%8A%A1%E9%87%8D%E5%90%AF%E4%BA%86%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%A2%E5%A4%B1/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "服务重启了，如何保证线程池中的数据不丢失？",
+  "name": "服务重启了，如何保证线程池中的数据不丢失？",
+  "description": "前言最近有位小伙伴在我的技术群里，问了我一个问题：服务down机了，线程池中如何保证不丢失数据？这个问题挺有意思的，今天通过这篇文章，拿出来跟大家一起探讨一下。1什么是线程池？之前没有线程池",
+  "keywords": [
+    "后端"
+  ],
+  "articleBody": "前言 最近有位小伙伴在我的技术群里，问了我一个问题：服务down机了，线程池中如何保证不丢失数据？\n这个问题挺有意思的，今天通过这篇文章，拿出来跟大家一起探讨一下。\n苏三的免费刷题网站：www.susan.net.cn 里面：面试八股文、BAT面试真题、工作内推、工作经验分享、技术专栏等等什么都有，欢迎收藏和转发。\n1 什么是线程池？ 之前没有线程池的时候，我们在代码中，创建一个线程有两种方式：\n继承Thread类 实现Runnable接口 虽说通过这两种方式创建一个线程，非常方便。\n但也带来了下面的问题：\n创建和销毁一个线程，都是比较耗时，频繁的创建和销毁线程，非常影响系统的性能。 无限制的创建线程，会导致内存不足。 有新任务过来时，必须要先创建好线程才能执行，不能直接复用线程。 为了解决上面的这些问题，Java中引入了：线程池。\n它相当于一个存放线程的池子。\n使用线程池带来了下面3个好处：\n降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。 提高响应速度。当任务到达时，可以直接使用已有空闲的线程，不需要的等到线程创建就能立即执行。 提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性。而如果我们使用线程池，可以对线程进行统一的分配、管理和监控。 2 线程池原理 先看看线程池的构造器：\njava\n代码解读\n复制代码\npublic ThreadPoolExecutor( int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler)\ncorePoolSize：核心线程数，线程池维护的最少线程数。 maximumPoolSize：最大线程数，线程池允许创建的最大线程数。 keepAliveTime：线程存活时间，当线程数超过核心线程数时，多余的空闲线程的存活时间。 unit：时间单位。 workQueue：任务队列，用于保存等待执行的任务。 threadFactory：线程工厂，用于创建新线程。 handler：拒绝策略，当任务无法执行时的处理策略。 线程池的核心流程图如下：\r线程池的工作过程如下：\n线程池初始化：根据corePoolSize初始化核心线程。 任务提交：当任务提交到线程池时，根据当前线程数判断： 若当前线程数小于corePoolSize，创建新的线程执行任务。 若当前线程数大于或等于corePoolSize，任务被加入workQueue队列。 任务处理：当有空闲线程时，从workQueue中取出任务执行。 线程扩展：若队列已满且当前线程数小于maximumPoolSize，创建新的线程处理任务。 线程回收：当线程空闲时间超过keepAliveTime，多余的线程会被回收，直到线程数不超过corePoolSize。 拒绝策略：若队列已满且当前线程数达到maximumPoolSize，则根据拒绝策略处理新任务。 说白了在线程池中，多余的任务会被放到workQueue任务队列中。\n这个任务队列的数据保存在内存中。\n这样就会出现一些问题。\n接下来，看看线程池有哪些问题。\n3 线程池有哪些问题？ 在JDK中为了方便大家创建线程池，专门提供了Executors这个工具类。\n3.1 队列过大 Executors.newFixedThreadPool，它可以创建固定线程数量的线程池，任务队列使用的是LinkedBlockingQueue，默认最大容量是Integer.MAX_VALUE。\narduino\n代码解读\n复制代码\npublic static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) { return new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue(), threadFactory); }\n如果向newFixedThreadPool线程池中提交的任务太多，可能会导致LinkedBlockingQueue非常大，从而出现OOM问题。\n3.2 线程太多 Executors.newCachedThreadPool，它可以创建可缓冲的线程池，最大线程数量是Integer.MAX_VALUE，任务队列使用的是SynchronousQueue。\ncsharp\n代码解读\n复制代码\npublic static ExecutorService newCachedThreadPool() { return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue()); }\n如果向newCachedThreadPool线程池中提交的任务太多，可能会导致创建大量的线程，也会出现OOM问题。\n3.3 数据丢失 如果线程池在执行过程中，服务突然被重启了，可能会导致线程池中的数据丢失。\n上面的OOM问题，我们在日常开发中，可以通过自定义线程池的方式解决。\n比如创建这样的线程池：\narduino\n代码解读\n复制代码\nnew ThreadPoolExecutor(8, 10, 30L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue(300), threadFactory);\n自定义了一个最大线程数量和任务队列都在可控范围内线程池。\n这样做基本上不会出现OOM问题。\n但线程池的数据丢失问题，光靠自身的功能很难解决。\n最近就业形势比较困难，为了感谢各位小伙伴对苏三一直以来的支持，我特地创建了一些工作内推群， 看看能不能帮助到大家。\n你可以在群里发布招聘信息，也可以内推工作，也可以在群里投递简历找工作，也可以在群里交流面试或者工作的话题。\n添加苏三的私人微信：su_san_java，备注：掘金+所在城市，即可加入。\n4 如何保证数据不丢失？ 线程池中的数据，是保存到内存中的，一旦遇到服务器重启了，数据就会丢失。\n之前的系统流程是这样的：\r用户请求过来之后，先处理业务逻辑1，它是系统的核心功能。\n然后再将任务提交到线程池，由它处理业务逻辑2，它是系统的非核心功能。\n但如果线程池在处理的过程中，服务down机了，此时，业务逻辑2的数据就会丢失。\n那么，如何保证数据不丢失呢？\n答：需要提前做持久化。\n我们优化的系统流程如下：\r用户请求过来之后，先处理业务逻辑1，紧接着向DB中写入一条任务数据，状态是：待执行。\n处理业务逻辑1和向DB写任务数据，可以在同一个事务中，方便出现异常时回滚。\n然后有一个专门的定时任务，每个一段时间，按添加时间升序，分页查询状态是待执行的任务。\n最早的任务，最先被查出来。\n然后将查出的任务提交到线程池中，由它处理业务逻辑2。\n处理成功之后，修改任务的待执行状态为：已执行。\n需要注意的是：业务逻辑2的处理过程，要做幂等性设计，同一个请求允许被执行多次，其结果不会有影响。\n如果此时，线程池在处理的过程中，服务down机了，业务逻辑2的数据会丢失。\n但此时DB中保存了任务的数据，并且丢失那些任务的状态还是：待执行。\n在下一次定时任务周期开始执行时，又会将那些任务数据重新查询出来，重新提交到线程池中。\n业务逻辑2丢失的数据，又自动回来了。\n如果要考虑失败的情况，还需要在任务表中增加一个失败次数字段。\n在定时任务的线程池中执行业务逻辑2失败了，在下定时任务执行时可以自动重试。\n但不可能无限制的一直重试下去。\n当失败超过了一定的次数，可以将任务状态改成：失败。\n这样后续可以人工处理。\n最后说一句(求关注，别白嫖我) 如果这篇文章对您有所帮助，或者有所启发的话，帮忙扫描下发二维码关注一下，您的支持是我坚持写作最大的动力。\n求一键三连：点赞、转发、在看。\n关注公众号：【苏三说技术】，在公众号中回复：面试、代码神器、开发手册、时间管理有超赞的粉丝福利，另外回复：加群，可以跟很多BAT大厂的前辈交流和学习。\n",
+  "wordCount" : "166",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-08-30T00:00:00Z",
+  "dateModified": "2024-08-30T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "苏三说技术"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%9C%8D%E5%8A%A1%E9%87%8D%E5%90%AF%E4%BA%86%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%A2%E5%A4%B1/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      服务重启了，如何保证线程池中的数据不丢失？
+    </h1>
+    <div class="post-description">
+      前言最近有位小伙伴在我的技术群里，问了我一个问题：服务down机了，线程池中如何保证不丢失数据？这个问题挺有意思的，今天通过这篇文章，拿出来跟大家一起探讨一下。1什么是线程池？之前没有线程池
+    </div>
+    <div class="post-meta"><span title='2024-08-30 00:00:00 +0000 UTC'>八月 30, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;苏三说技术&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#1-%e4%bb%80%e4%b9%88%e6%98%af%e7%ba%bf%e7%a8%8b%e6%b1%a0" aria-label="1 什么是线程池？">1 什么是线程池？</a></li>
+                <li>
+                    <a href="#2-%e7%ba%bf%e7%a8%8b%e6%b1%a0%e5%8e%9f%e7%90%86" aria-label="2 线程池原理">2 线程池原理</a></li>
+                <li>
+                    <a href="#3-%e7%ba%bf%e7%a8%8b%e6%b1%a0%e6%9c%89%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98" aria-label="3 线程池有哪些问题？">3 线程池有哪些问题？</a><ul>
+                        
+                <li>
+                    <a href="#31-%e9%98%9f%e5%88%97%e8%bf%87%e5%a4%a7" aria-label="3.1 队列过大">3.1 队列过大</a></li>
+                <li>
+                    <a href="#32-%e7%ba%bf%e7%a8%8b%e5%a4%aa%e5%a4%9a" aria-label="3.2 线程太多">3.2 线程太多</a></li>
+                <li>
+                    <a href="#33-%e6%95%b0%e6%8d%ae%e4%b8%a2%e5%a4%b1" aria-label="3.3 数据丢失">3.3 数据丢失</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4-%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1" aria-label="4 如何保证数据不丢失？">4 如何保证数据不丢失？</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%80%e5%90%8e%e8%af%b4%e4%b8%80%e5%8f%a5%e6%b1%82%e5%85%b3%e6%b3%a8%e5%88%ab%e7%99%bd%e5%ab%96%e6%88%91" aria-label="最后说一句(求关注，别白嫖我)">最后说一句(求关注，别白嫖我)</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h3>
+<p>最近有位小伙伴在我的技术群里，问了我一个问题：服务down机了，线程池中如何保证不丢失数据？</p>
+<p>这个问题挺有意思的，今天通过这篇文章，拿出来跟大家一起探讨一下。</p>
+<blockquote>
+<p>苏三的免费刷题网站：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.susan.net.cn%3Frefer%3Djuejin" title="http://www.susan.net.cn?refer=juejin">www.susan.net.cn</a> 里面：面试八股文、BAT面试真题、工作内推、工作经验分享、技术专栏等等什么都有，欢迎收藏和转发。</p>
+</blockquote>
+<h3 id="1-什么是线程池">1 什么是线程池？<a hidden class="anchor" aria-hidden="true" href="#1-什么是线程池">#</a></h3>
+<p>之前没有线程池的时候，我们在代码中，创建一个线程有两种方式：</p>
+<ol>
+<li>继承Thread类</li>
+<li>实现Runnable接口</li>
+</ol>
+<p>虽说通过这两种方式创建一个线程，非常方便。</p>
+<p>但也带来了下面的问题：</p>
+<ol>
+<li>创建和销毁一个线程，都是比较耗时，频繁的创建和销毁线程，非常影响系统的性能。</li>
+<li>无限制的创建线程，会导致内存不足。</li>
+<li>有新任务过来时，必须要先创建好线程才能执行，不能直接复用线程。</li>
+</ol>
+<p>为了解决上面的这些问题，Java中引入了：<code>线程池</code>。</p>
+<p>它相当于一个存放线程的池子。</p>
+<p>使用线程池带来了下面3个好处：</p>
+<ol>
+<li>降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。</li>
+<li>提高响应速度。当任务到达时，可以直接使用已有空闲的线程，不需要的等到线程创建就能立即执行。</li>
+<li>提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性。而如果我们使用线程池，可以对线程进行统一的分配、管理和监控。</li>
+</ol>
+<h3 id="2-线程池原理">2 线程池原理<a hidden class="anchor" aria-hidden="true" href="#2-线程池原理">#</a></h3>
+<p>先看看线程池的构造器：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public ThreadPoolExecutor(     int corePoolSize,     int maximumPoolSize,     long keepAliveTime,     TimeUnit unit,     BlockingQueue&lt;Runnable&gt; workQueue,     ThreadFactory threadFactory,     RejectedExecutionHandler handler)</code></p>
+<ul>
+<li>corePoolSize：核心线程数，线程池维护的最少线程数。</li>
+<li>maximumPoolSize：最大线程数，线程池允许创建的最大线程数。</li>
+<li>keepAliveTime：线程存活时间，当线程数超过核心线程数时，多余的空闲线程的存活时间。</li>
+<li>unit：时间单位。</li>
+<li>workQueue：任务队列，用于保存等待执行的任务。</li>
+<li>threadFactory：线程工厂，用于创建新线程。</li>
+<li>handler：拒绝策略，当任务无法执行时的处理策略。</li>
+</ul>
+<p>线程池的核心流程图如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/a2c7efa4a9f444caa35a21724a205bb6~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728002339&amp;x-signature=5mmFxQHFi%2BfKROEje1SmN6SzlsE%3D" alt="图片"  />
+</p>
+<p>线程池的工作过程如下：</p>
+<ol>
+<li>线程池初始化：根据corePoolSize初始化核心线程。</li>
+<li>任务提交：当任务提交到线程池时，根据当前线程数判断：</li>
+</ol>
+<ul>
+<li>若当前线程数小于corePoolSize，创建新的线程执行任务。</li>
+<li>若当前线程数大于或等于corePoolSize，任务被加入workQueue队列。</li>
+</ul>
+<ol start="3">
+<li>任务处理：当有空闲线程时，从workQueue中取出任务执行。</li>
+<li>线程扩展：若队列已满且当前线程数小于maximumPoolSize，创建新的线程处理任务。</li>
+<li>线程回收：当线程空闲时间超过keepAliveTime，多余的线程会被回收，直到线程数不超过corePoolSize。</li>
+<li>拒绝策略：若队列已满且当前线程数达到maximumPoolSize，则根据拒绝策略处理新任务。</li>
+</ol>
+<p>说白了在线程池中，多余的任务会被放到workQueue任务队列中。</p>
+<p>这个任务队列的数据保存在内存中。</p>
+<p>这样就会出现一些问题。</p>
+<p>接下来，看看线程池有哪些问题。</p>
+<h3 id="3-线程池有哪些问题">3 线程池有哪些问题？<a hidden class="anchor" aria-hidden="true" href="#3-线程池有哪些问题">#</a></h3>
+<p>在JDK中为了方便大家创建线程池，专门提供了Executors这个工具类。</p>
+<h4 id="31-队列过大">3.1 队列过大<a hidden class="anchor" aria-hidden="true" href="#31-队列过大">#</a></h4>
+<p>Executors.newFixedThreadPool，它可以创建固定线程数量的线程池，任务队列使用的是LinkedBlockingQueue，默认最大容量是Integer.MAX_VALUE。</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {     return new ThreadPoolExecutor(nThreads,                                 nThreads,                                      0L,                    TimeUnit.MILLISECONDS,      new LinkedBlockingQueue&lt;Runnable&gt;(),                           threadFactory); }</code></p>
+<p>如果向newFixedThreadPool线程池中提交的任务太多，可能会导致LinkedBlockingQueue非常大，从而出现OOM问题。</p>
+<h4 id="32-线程太多">3.2 线程太多<a hidden class="anchor" aria-hidden="true" href="#32-线程太多">#</a></h4>
+<p>Executors.newCachedThreadPool，它可以创建可缓冲的线程池，最大线程数量是Integer.MAX_VALUE，任务队列使用的是SynchronousQueue。</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public static ExecutorService newCachedThreadPool() {   return new ThreadPoolExecutor(0,                  Integer.MAX_VALUE,                                60L,                    TimeUnit.SECONDS,     new SynchronousQueue&lt;Runnable&gt;()); }</code></p>
+<p>如果向newCachedThreadPool线程池中提交的任务太多，可能会导致创建大量的线程，也会出现OOM问题。</p>
+<h4 id="33-数据丢失">3.3 数据丢失<a hidden class="anchor" aria-hidden="true" href="#33-数据丢失">#</a></h4>
+<p>如果线程池在执行过程中，服务突然被重启了，可能会导致线程池中的数据丢失。</p>
+<p>上面的OOM问题，我们在日常开发中，可以通过自定义线程池的方式解决。</p>
+<p>比如创建这样的线程池：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>new ThreadPoolExecutor(8,                         10,                        30L,       TimeUnit.MILLISECONDS,     new ArrayBlockingQueue&lt;Runnable&gt;(300),             threadFactory);</code></p>
+<p>自定义了一个最大线程数量和任务队列都在可控范围内线程池。</p>
+<p>这样做基本上不会出现OOM问题。</p>
+<p>但线程池的数据丢失问题，光靠自身的功能很难解决。</p>
+<p>最近就业形势比较困难，为了感谢各位小伙伴对苏三一直以来的支持，我特地创建了一些工作内推群， 看看能不能帮助到大家。</p>
+<p>你可以在群里发布招聘信息，也可以内推工作，也可以在群里投递简历找工作，也可以在群里交流面试或者工作的话题。</p>
+<p>添加苏三的<strong>私人微信</strong>：su_san_java，备注：<strong>掘金+所在城市</strong>，即可加入。</p>
+<h3 id="4-如何保证数据不丢失">4 如何保证数据不丢失？<a hidden class="anchor" aria-hidden="true" href="#4-如何保证数据不丢失">#</a></h3>
+<p>线程池中的数据，是保存到内存中的，一旦遇到服务器重启了，数据就会丢失。</p>
+<p>之前的系统流程是这样的：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/e6a3f9619edc402c95c31b9875f42967~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728002339&amp;x-signature=%2F41Wu%2F1Y2AtfS4qeOQnj8NNOrxg%3D" alt="图片"  />
+</p>
+<p>用户请求过来之后，先处理业务逻辑1，它是系统的核心功能。</p>
+<p>然后再将任务提交到线程池，由它处理业务逻辑2，它是系统的非核心功能。</p>
+<p>但如果线程池在处理的过程中，服务down机了，此时，业务逻辑2的数据就会丢失。</p>
+<p>那么，如何保证数据不丢失呢？</p>
+<p>答：需要<code>提前做持久化</code>。</p>
+<p>我们优化的系统流程如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/d36dec6b4d2d46c09384825d56302340~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728002339&amp;x-signature=e7ZLcUcZYBvB5O7Zud%2BWPzyuWI4%3D" alt="图片"  />
+</p>
+<p>用户请求过来之后，先处理业务逻辑1，紧接着向DB中写入一条任务数据，状态是：待执行。</p>
+<p>处理业务逻辑1和向DB写任务数据，可以在同一个事务中，方便出现异常时回滚。</p>
+<p>然后有一个专门的定时任务，每个一段时间，按添加时间升序，分页查询状态是待执行的任务。</p>
+<p>最早的任务，最先被查出来。</p>
+<p>然后将查出的任务提交到线程池中，由它处理业务逻辑2。</p>
+<p>处理成功之后，修改任务的待执行状态为：已执行。</p>
+<blockquote>
+<p>需要注意的是：业务逻辑2的处理过程，要做幂等性设计，同一个请求允许被执行多次，其结果不会有影响。</p>
+</blockquote>
+<p>如果此时，线程池在处理的过程中，服务down机了，业务逻辑2的数据会丢失。</p>
+<p>但此时DB中保存了任务的数据，并且丢失那些任务的状态还是：待执行。</p>
+<p>在下一次定时任务周期开始执行时，又会将那些任务数据重新查询出来，重新提交到线程池中。</p>
+<p>业务逻辑2丢失的数据，又自动回来了。</p>
+<p>如果要考虑失败的情况，还需要在任务表中增加一个<code>失败次数</code>字段。</p>
+<p>在定时任务的线程池中执行业务逻辑2失败了，在下定时任务执行时可以自动重试。</p>
+<p>但不可能无限制的一直重试下去。</p>
+<p>当失败超过了一定的次数，可以将任务状态改成：失败。</p>
+<p>这样后续可以人工处理。</p>
+<h4 id="最后说一句求关注别白嫖我">最后说一句(求关注，别白嫖我)<a hidden class="anchor" aria-hidden="true" href="#最后说一句求关注别白嫖我">#</a></h4>
+<p>如果这篇文章对您有所帮助，或者有所启发的话，帮忙扫描下发二维码关注一下，您的支持是我坚持写作最大的动力。</p>
+<p>求一键三连：点赞、转发、在看。</p>
+<p>关注公众号：【苏三说技术】，在公众号中回复：面试、代码神器、开发手册、时间管理有超赞的粉丝福利，另外回复：加群，可以跟很多BAT大厂的前辈交流和学习。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E4%B9%8B%E5%A6%82%E4%BD%95%E9%AB%98%E6%95%88%E8%A7%A3%E5%86%B3sql%E4%BA%A7%E7%94%9F%E7%9A%84%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>性能分析之如何高效解决SQL产生的内存溢出</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/mysql%E4%B8%93%E9%A2%98mysql%E7%99%BE%E4%B8%87%E7%BA%A7%E6%95%B0%E6%8D%AE%E6%8F%92%E5%85%A5%E6%95%88%E7%8E%87%E4%BC%98%E5%8C%96/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>【MySQL专题】MySQL百万级数据插入效率优化</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 服务重启了，如何保证线程池中的数据不丢失？ on x"
+            href="https://x.com/intent/tweet/?text=%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f&amp;hashtags=%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 服务重启了，如何保证线程池中的数据不丢失？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f&amp;title=%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f&amp;summary=%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 服务重启了，如何保证线程池中的数据不丢失？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f&title=%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 服务重启了，如何保证线程池中的数据不丢失？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 服务重启了，如何保证线程池中的数据不丢失？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 服务重启了，如何保证线程池中的数据不丢失？ on telegram"
+            href="https://telegram.me/share/url?text=%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 服务重启了，如何保证线程池中的数据不丢失？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%9c%8d%e5%8a%a1%e9%87%8d%e5%90%af%e4%ba%86%ef%bc%8c%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e7%ba%bf%e7%a8%8b%e6%b1%a0%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e4%b8%8d%e4%b8%a2%e5%a4%b1%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%259C%258D%25E5%258A%25A1%25E9%2587%258D%25E5%2590%25AF%25E4%25BA%2586%25E5%25A6%2582%25E4%25BD%2595%25E4%25BF%259D%25E8%25AF%2581%25E7%25BA%25BF%25E7%25A8%258B%25E6%25B1%25A0%25E4%25B8%25AD%25E7%259A%2584%25E6%2595%25B0%25E6%258D%25AE%25E4%25B8%258D%25E4%25B8%25A2%25E5%25A4%25B1%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

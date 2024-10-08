@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>现代配置指南——YAML比JSON高级在哪？ | PaperMod</title>
+<meta name="keywords" content="JavaScript, JSON, 前端">
+<meta name="description" content="新技术/新框架都是齐刷刷的Yaml配置，你还不了解它吗？本文对比Json详解Yaml文件，让你一文看懂Yaml语法的高级之处～">
+<meta name="author" content="杨成功">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E7%8E%B0%E4%BB%A3%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97yaml%E6%AF%94json%E9%AB%98%E7%BA%A7%E5%9C%A8%E5%93%AA/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E7%8E%B0%E4%BB%A3%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97yaml%E6%AF%94json%E9%AB%98%E7%BA%A7%E5%9C%A8%E5%93%AA/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="现代配置指南——YAML比JSON高级在哪？" />
+<meta property="og:description" content="新技术/新框架都是齐刷刷的Yaml配置，你还不了解它吗？本文对比Json详解Yaml文件，让你一文看懂Yaml语法的高级之处～" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E7%8E%B0%E4%BB%A3%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97yaml%E6%AF%94json%E9%AB%98%E7%BA%A7%E5%9C%A8%E5%93%AA/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-12-13T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="现代配置指南——YAML比JSON高级在哪？"/>
+<meta name="twitter:description" content="新技术/新框架都是齐刷刷的Yaml配置，你还不了解它吗？本文对比Json详解Yaml文件，让你一文看懂Yaml语法的高级之处～"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "现代配置指南——YAML比JSON高级在哪？",
+      "item": "http://localhost:1313/posts/juejin/%E7%8E%B0%E4%BB%A3%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97yaml%E6%AF%94json%E9%AB%98%E7%BA%A7%E5%9C%A8%E5%93%AA/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "现代配置指南——YAML比JSON高级在哪？",
+  "name": "现代配置指南——YAML比JSON高级在哪？",
+  "description": "新技术/新框架都是齐刷刷的Yaml配置，你还不了解它吗？本文对比Json详解Yaml文件，让你一文看懂Yaml语法的高级之处～",
+  "keywords": [
+    "JavaScript", "JSON", "前端"
+  ],
+  "articleBody": "一直以来，前端工程中的配置大多都是 .js 文件或者 .json 文件，最常见的比如：\npackage.json babel.config.js webpack.config.js 这些配置对前端非常友好，因为都是我们熟悉的 JS 对象结构。一般静态化的配置会选择 json 文件，而动态化的配置，涉及到引入其他模块，因此会选择 js 文件。\n还有现在许多新工具同时支持多种配置，比如 Eslint，两种格式的配置任你选择：\n.eslintrc.json .eslintrc.js 后来不知道什么时候，突然出现了一种以 .yaml 或 .yml 为后缀的配置文件。一开始以为是某个程序的专有配置，后来发现这个后缀的文件出现的频率越来越高，甚至 Eslint 也支持了第三种格式的配置 .eslintrc.yml。\n既然遇到了，那就探索它！\n下面我们从 YAML 的出现背景，使用场景，具体用法，高级操作四个方面，看一下这个流行的现代化配置的神秘之处。\n出现背景 一个新工具的出现避免不了有两个原因：\n旧工具在某些场景表现吃力，需要更优的替代方案 旧工具也没什么不好，只是新工具出现，比较而言显得它不太好 YAML 这种新工具就属于后者。其实在 yaml 出现之前 js+json 用的也不错，也没什么特别难以处理的问题；但是 yaml 出现以后，开始觉得它好乱呀什么东西，后来了解它后，越用越喜欢，一个字就是优雅。\n很多文章说选择 yaml 是因为 json 的各种问题，json 不适合做配置文件，这我觉得有些言过其实了。我更愿意将 yaml 看做是 json 的升级，因为 yaml 在格式简化和体验上表现确实不错，这个得承认。\n下面我们对比 YAML 和 JSON，从两方面分析：\n精简了什么？ JSON 比较繁琐的地方是它严格的格式要求。比如这个对象：\njavascript\n代码解读\n复制代码\n{ name: 'ruims' }\n在 JSON 中以下写法通通都是错的：\njavascript\n代码解读\n复制代码\n// key 没引号不行 { name: 'ruims' } // key 不是 \"\" 号不行 { 'name': 'ruims' } // value 不是 \"\" 号不行 { \"name\": 'ruims' }\n字符串的值必须 k-\u003ev 都是 \"\" 才行：\njson\n代码解读\n复制代码\n// 只能这样 { \"name\": \"ruims\" }\n虽然是统一格式，但是使用上确实有不便利的地方。比如我在浏览器上测出了接口错误。然后把参数拷贝到 Postman 里调试，这时就我要手动给每个属性和值加 \"\" 号，非常繁琐。\nYAML 则是另辟蹊径，直接把字符串符号干掉了。上面对象的同等 yaml 配置如下：\nyaml\n代码解读\n复制代码\nname: ruims\n没错，就这么简单！\n除了 \"\" 号，yaml 觉得 {} 和 [] 这种符号也是多余的，不如一起干掉。\n于是呢，以这个对象数组为例：\njson\n代码解读\n复制代码\n{ \"names\": [{ \"name\": \"ruims\" }, { \"name\": \"ruidoc\" }] }\n转换成 yaml 是这样的：\nyaml\n代码解读\n复制代码\nnames: - name: ruims - name: ruidoc\n对比一下这个精简程度，有什么理由不爱它？\n增加了什么？ 说起增加的部分，最值得一提的，是 YAML 支持了 注释。\n用 JSON 写配置是不能有注释的，这就意味着我们的配置不会有备注，配置多了会非常凌乱，这是最不人性化的地方。\n现在 yaml 支持了备注，以后配置可以是这样的：\nyaml\n代码解读\n复制代码\n# 应用名称 name: my_app # 应用端口 port: 8080\n把这种配置丢给新同事，还怕他看不懂配了啥吗？\n除注释外，还支持配置复用的相关功能，这个后面说。\n使用场景 我接触的第一个 yaml 配置是 Flutter 项目的包管理文件 pubspec.yaml，这个文件的作用和前端项目中的 package.json 一样，用于存放一些全局配置和应用依赖的包和版本。\n看一下它的基本结构：\nyaml\n代码解读\n复制代码\nname: flutter_demo description: A new Flutter project. publish_to: 'none' version: 1.0.0 dependencies: cupertino_icons: ^1.0.2 dev_dependencies: flutter_lints: ^1.0.0\n你看这个结构和 package.json 是不是基本一致？dependencies 下列出应用依赖和版本，dev_dependencies 下的则是开发依赖。\n后来在做 CI/CD 自动化部署的时候，我们用到了 GitHub Action。它需要多个 yaml 文件来定义不同的工作流，这个配置可比 flutter 复杂的多。\n其实不光 GitHub Action，其他流行的类似的构建工具如 GitLab CI/CD，circleci，全部都是齐刷刷的 yaml 配置，因此如果你的项目要做 CI/CD 持续集成，不懂 yaml 语法肯定是不行的。\n还有，接触过 Docker 的同学肯定知道 Docker Compose，它是 Docker 官方的单机编排工具，其配置文件 docker-compose.yml 也是妥妥的 yaml 格式。现在 Docker 正是如日中天的时候，使用 Docker 必然免不了编排，因此 yaml 语法早晚也要攻克。\n上面说的这 3 个案例，几乎都是现代最新最流行的框架/工具。从它们身上可以看出来，yaml 必然是下一代配置文件的标准，并且是前端-后端-运维的通用标准。\n说了这么多，你跃跃欲试了吗？下面我们详细介绍 yaml 语法。\nYAML 语法 介绍 yaml 语法会对比 json 解释，以便我们快速理解。\n先看一下 yaml 的几个特点：\n大小写敏感 使用缩进表示层级关系 缩进空格数不强制，但相同层级要对齐 # 表示注释 相比于 JSON 来说，最大的区别是用 缩进 来表示层级，这个和 Python 非常接近。还有强化的一点是支持了注释，JSON 默认是不支持的（虽然 TS 支持），这也对配置文件非常重要。\nYAML 支持以下几种数据结构：\n对象：json 中的对象 数组：json 中的数组 纯量：json 中的简单类型（字符串，数值，布尔等） 对象 先看对象，上一个 json 例子：\njson\n代码解读\n复制代码\n{ \"id\": 1, \"name\": \"杨成功\", \"isman\": true }\n转换成 yaml：\nyaml\n代码解读\n复制代码\nid: 1 name: 杨成功 isman: true\n对象是最核心的结构，key 值的表示方法是 [key]: ，注意这里冒号后面有个空格，一定不能少。value 的值就是一个纯量，且默认不需要引号。\n数组 数组和对象的结构差不多，区别是在 key 前用一个 - 符号标识这个是数组项。注意这里也有一个空格，同样也不能少。\nyaml\n代码解读\n复制代码\n- hello - world\n转换成 JSON 格式如下：\njson\n代码解读\n复制代码\n[\"hello\", \"world\"]\n了解了基本的对象和数组，我们再来看一个复杂的结构。\n众所周知，在实际项目配置中很少有简单的对象或数组，大多都是对象和数组相互嵌套而成。在 js 中我们称之为对象数组，而在 yaml 中我们叫 复合结构。\n比如这样一个稍复杂的 JSON：\njson\n代码解读\n复制代码\n{ \"name\": \"杨成功\", \"isman\": true, \"age\": 25, \"tag\": [\"阳光\", \"帅气\"], \"address\": [ { \"c\": \"北京\", \"a\": \"海淀区\" }, { \"c\": \"天津\", \"a\": \"滨海新区\" } ] }\n转换成复合结构的 YAML：\nyaml\n代码解读\n复制代码\nname: 杨成功 isman: true age: 25 tag: - 阳光 - 帅气 address: - c: 北京 a: 海淀区 - c: 天津 a: 滨海新区\n若你想尝试更复杂结构的转换，可以在 这个 网页中在线实践。\n纯量 纯量比较简单，对应的就是 js 的基本数据类型，支持如下：\n字符串 布尔 数值 null 时间 比较特殊的两个，null 用 ~ 符号表示，时间大多用 2021-12-21 这种格式表示，如：\nyaml\n代码解读\n复制代码\nwho: ~ date: 2019-09-10\n转换成 JS 后：\njavascript\n代码解读\n复制代码\n{ who: null, date: new Date('2019-09-10') }\n高级操作 在 yaml 实战过程中，遇到过一些特殊场景，可能需要一些特殊的处理。\n字符串过长 在 shell 中我们常见到一些参数很多，然后特别长的命令，如果命令都写在一行的话可读性会非常差。\n假设下面的是一条长命令：\nshell\n代码解读\n复制代码\n$ docker run --name my-nginx -d nginx\n在 linux 中可以这样处理：\nshell\n代码解读\n复制代码\n$ docker run \\ --name my-nginx \\ -d nginx\n就是在每行后加 \\ 符号标识换行。然而在 YAML 中更简单，不需要加任何符号，直接换行即可：\nyaml\n代码解读\n复制代码\ncmd: docker run --name my-nginx -d nginx\nYAML 默认会把换行符转换成空格，因此转换后 JSON 如下，正是我们需要的：\njson\n代码解读\n复制代码\n{ \"cmd\": \"docker run --name my-nginx -d nginx\" }\n然而有时候，我们的需求是保留换行符，并不是把它转换成空格，又该怎么办呢？\n这个也简单，只需要在首行加一个 | 符号：\nyaml\n代码解读\n复制代码\ncmd: | docker run --name my-nginx -d nginx\n转换成 JSON 变成了这样：\njson\n代码解读\n复制代码\n{ \"cmd\": \"docker run\\n--name my-nginx\\n-d nginx\" }\n获取配置 获取配置是指，在 YAML 文件中定义的某个配置，如何在代码（JS）里获取？\n比如前端在 package.json 里有一个 version 的配置项表示应用版本，我们要在代码中获取版本，可以这么写：\njavascript\n代码解读\n复制代码\nimport pack from './package.json' console.log(pack.version)\nJSON 是可以直接导入的，YAML 可就不行了，那怎么办呢？我们分环境解析：\n在浏览器中\n浏览器中代码用 webapck 打包，因此加一个 loader 即可：\nshell\n代码解读\n复制代码\n$ yarn add -D yaml-loader\n然后配置 loader：\njavascript\n代码解读\n复制代码\n// webpack.config.js module.exports = { module: { rules: [ { test: /\\.ya?ml$/, type: 'json', // Required by Webpack v4 use: 'yaml-loader' } ] } }\n在组件中使用：\njavascript\n代码解读\n复制代码\nimport pack from './package.yaml' console.log(pack.version)\n在 Node.js 中\nNode.js 环境下没有 Webpack，因此读取 yaml 配置的方法也不一样。\n首先安装一个 js-yaml 模块：\nshell\n代码解读\n复制代码\n$ yarn add js-yaml\n然后通过模块提供的方法获取：\njavascript\n代码解读\n复制代码\nconst yaml = require('js-yaml') const fs = require('fs') const doc = yaml.load(fs.readFileSync('./package.yaml', 'utf8')) console.log(doc.version)\n配置项复用 配置项复用的意思是，对于定义过的配置，在后面的配置直接引用，而不是再写一遍，从而达到复用的目的。\nYAML 中将定义的复用项称为锚点，用\u0026 标识；引用锚点则用 * 标识。\nyaml\n代码解读\n复制代码\nname: \u0026name my_config env: \u0026env version: 1.0 compose: key1: *name key2: *env\n对应的 JSON 如下：\njson\n代码解读\n复制代码\n{ \"name\": \"my_config\", \"env\": { \"version\": 1 }, \"compose\": { \"key1\": \"my_config\", \"key2\": { \"version\": 1 } } }\n但是锚点有个弊端，就是不能作为 变量 在字符串中使用。比如：\nyaml\n代码解读\n复制代码\nname: \u0026name my_config compose: key1: *name key2: my name is *name\n此时 key2 的值就是普通字符串 my name is *name，引用变得无效了。\n其实在实际开发中，字符串中使用变量还是很常见的。比如在复杂的命令中多次使用某个路径，这个时候这个路径就应该是一个变量，在多个命令中复用。\nGitHub Action 中有这样的支持，定义一个环境变量，然后在其他的地方复用：\nyaml\n代码解读\n复制代码\nenv: NAME: test describe: This app is called ${NAME}\n这种实现方式与 webpack 中使用环境变量类似，在构建的时候将变量替换成对应的字符串。\n我的专栏 本文首发于掘金专栏 前端 DevOps，这个专栏会长期输出前端工程与架构方向的文章，篇篇经过实践与斟酌，一如既往的保证质量。\n如果本文对你有启发，请甩手一个赞 👍\n",
+  "wordCount" : "755",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-12-13T00:00:00Z",
+  "dateModified": "2021-12-13T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "杨成功"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E7%8E%B0%E4%BB%A3%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97yaml%E6%AF%94json%E9%AB%98%E7%BA%A7%E5%9C%A8%E5%93%AA/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      现代配置指南——YAML比JSON高级在哪？
+    </h1>
+    <div class="post-description">
+      新技术/新框架都是齐刷刷的Yaml配置，你还不了解它吗？本文对比Json详解Yaml文件，让你一文看懂Yaml语法的高级之处～
+    </div>
+    <div class="post-meta"><span title='2021-12-13 00:00:00 +0000 UTC'>十二月 13, 2021</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;杨成功&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%87%ba%e7%8e%b0%e8%83%8c%e6%99%af" aria-label="出现背景">出现背景</a><ul>
+                        
+                <li>
+                    <a href="#%e7%b2%be%e7%ae%80%e4%ba%86%e4%bb%80%e4%b9%88" aria-label="精简了什么？">精简了什么？</a></li>
+                <li>
+                    <a href="#%e5%a2%9e%e5%8a%a0%e4%ba%86%e4%bb%80%e4%b9%88" aria-label="增加了什么？">增加了什么？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af" aria-label="使用场景">使用场景</a></li>
+                <li>
+                    <a href="#yaml-%e8%af%ad%e6%b3%95" aria-label="YAML 语法">YAML 语法</a><ul>
+                        
+                <li>
+                    <a href="#%e5%af%b9%e8%b1%a1" aria-label="对象">对象</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e7%bb%84" aria-label="数组">数组</a></li>
+                <li>
+                    <a href="#%e7%ba%af%e9%87%8f" aria-label="纯量">纯量</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%ab%98%e7%ba%a7%e6%93%8d%e4%bd%9c" aria-label="高级操作">高级操作</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2%e8%bf%87%e9%95%bf" aria-label="字符串过长">字符串过长</a></li>
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96%e9%85%8d%e7%bd%ae" aria-label="获取配置">获取配置</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e9%a1%b9%e5%a4%8d%e7%94%a8" aria-label="配置项复用">配置项复用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%88%91%e7%9a%84%e4%b8%93%e6%a0%8f" aria-label="我的专栏">我的专栏</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>一直以来，前端工程中的配置大多都是 <code>.js</code> 文件或者 <code>.json</code> 文件，最常见的比如：</p>
+<ul>
+<li>package.json</li>
+<li>babel.config.js</li>
+<li>webpack.config.js</li>
+</ul>
+<p>这些配置对前端非常友好，因为都是我们熟悉的 JS 对象结构。一般静态化的配置会选择 json 文件，而动态化的配置，涉及到引入其他模块，因此会选择 js 文件。</p>
+<p>还有现在许多新工具同时支持多种配置，比如 <code>Eslint</code>，两种格式的配置任你选择：</p>
+<ul>
+<li>.eslintrc.json</li>
+<li>.eslintrc.js</li>
+</ul>
+<p>后来不知道什么时候，突然出现了一种以 <code>.yaml</code> 或 <code>.yml</code> 为后缀的配置文件。一开始以为是某个程序的专有配置，后来发现这个后缀的文件出现的频率越来越高，甚至 Eslint 也支持了第三种格式的配置 <code>.eslintrc.yml</code>。</p>
+<p>既然遇到了，那就探索它！</p>
+<p>下面我们从 YAML 的<strong>出现背景</strong>，<strong>使用场景</strong>，<strong>具体用法</strong>，<strong>高级操作</strong>四个方面，看一下这个流行的现代化配置的神秘之处。</p>
+<h2 id="出现背景">出现背景<a hidden class="anchor" aria-hidden="true" href="#出现背景">#</a></h2>
+<p>一个新工具的出现避免不了有两个原因：</p>
+<ol>
+<li>旧工具在某些场景表现吃力，需要更优的替代方案</li>
+<li>旧工具也没什么不好，只是新工具出现，比较而言显得它不太好</li>
+</ol>
+<p>YAML 这种新工具就属于后者。其实在 yaml 出现之前 <code>js+json</code> 用的也不错，也没什么特别难以处理的问题；但是 yaml 出现以后，开始觉得它好乱呀什么东西，后来了解它后，越用越喜欢，一个字就是优雅。</p>
+<p>很多文章说选择 yaml 是因为 json 的各种问题，json 不适合做配置文件，这我觉得有些言过其实了。我更愿意将 yaml 看做是 json 的升级，因为 yaml 在格式简化和体验上表现确实不错，这个得承认。</p>
+<p>下面我们对比 YAML 和 JSON，从两方面分析：</p>
+<h3 id="精简了什么">精简了什么？<a hidden class="anchor" aria-hidden="true" href="#精简了什么">#</a></h3>
+<p>JSON 比较繁琐的地方是它严格的格式要求。比如这个对象：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   name: 'ruims' }</code></p>
+<p>在 JSON 中以下写法通通都是错的：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// key 没引号不行 {   name: 'ruims' } // key 不是 &quot;&quot; 号不行 {   'name': 'ruims' } // value 不是 &quot;&quot; 号不行 {   &quot;name&quot;: 'ruims' }</code></p>
+<p>字符串的值必须 k-&gt;v 都是 <code>&quot;&quot;</code> 才行：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 只能这样 {   &quot;name&quot;: &quot;ruims&quot; }</code></p>
+<p>虽然是统一格式，但是使用上确实有不便利的地方。比如我在浏览器上测出了接口错误。然后把参数拷贝到 Postman 里调试，这时就我要手动给每个属性和值加 <strong>&quot;&quot;</strong> 号，非常繁琐。</p>
+<p>YAML 则是另辟蹊径，直接把字符串符号干掉了。上面对象的同等 yaml 配置如下：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>name: ruims</code></p>
+<p>没错，就这么简单！</p>
+<p>除了 <code>&quot;&quot;</code> 号，yaml 觉得 <code>{}</code> 和 <code>[]</code> 这种符号也是多余的，不如一起干掉。</p>
+<p>于是呢，以这个对象数组为例：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   &quot;names&quot;: [{ &quot;name&quot;: &quot;ruims&quot; }, { &quot;name&quot;: &quot;ruidoc&quot; }] }</code></p>
+<p>转换成 yaml 是这样的：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>names:   - name: ruims   - name: ruidoc</code></p>
+<p>对比一下这个精简程度，有什么理由不爱它？</p>
+<h3 id="增加了什么">增加了什么？<a hidden class="anchor" aria-hidden="true" href="#增加了什么">#</a></h3>
+<p>说起增加的部分，最值得一提的，是 YAML 支持了 <code>注释</code>。</p>
+<p>用 JSON 写配置是不能有注释的，这就意味着我们的配置不会有备注，配置多了会非常凌乱，这是最不人性化的地方。</p>
+<p>现在 yaml 支持了备注，以后配置可以是这样的：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 应用名称 name: my_app # 应用端口 port: 8080</code></p>
+<p>把这种配置丢给新同事，还怕他看不懂配了啥吗？</p>
+<p>除注释外，还支持配置复用的相关功能，这个后面说。</p>
+<h2 id="使用场景">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景">#</a></h2>
+<p>我接触的第一个 yaml 配置是 Flutter 项目的包管理文件 <code>pubspec.yaml</code>，这个文件的作用和前端项目中的 <code>package.json</code> 一样，用于存放一些全局配置和应用依赖的包和版本。</p>
+<p>看一下它的基本结构：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>name: flutter_demo description: A new Flutter project. publish_to: 'none' version: 1.0.0 dependencies:   cupertino_icons: ^1.0.2 dev_dependencies:   flutter_lints: ^1.0.0</code></p>
+<p>你看这个结构和 <code>package.json</code> 是不是基本一致？<code>dependencies</code> 下列出应用依赖和版本，<code>dev_dependencies</code> 下的则是开发依赖。</p>
+<p>后来在做 CI/CD 自动化部署的时候，我们用到了 <a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.github.com%2Fen%2Factions%2Fquickstart" title="https://docs.github.com/en/actions/quickstart">GitHub Action</a>。它需要多个 yaml 文件来定义不同的工作流，这个配置可比 flutter 复杂的多。</p>
+<p>其实不光 GitHub Action，其他流行的类似的构建工具如 <a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.gitlab.com%2Fee%2Fci%2F" title="https://docs.gitlab.com/ee/ci/">GitLab CI/CD</a>，<a href="https://link.juejin.cn?target=https%3A%2F%2Fcircleci.com%2Fdeveloper" title="https://circleci.com/developer">circleci</a>，全部都是齐刷刷的 yaml 配置，因此如果你的项目要做 CI/CD 持续集成，不懂 yaml 语法肯定是不行的。</p>
+<p>还有，接触过 Docker 的同学肯定知道 Docker Compose，它是 Docker 官方的单机编排工具，其配置文件 <code>docker-compose.yml</code> 也是妥妥的 yaml 格式。现在 Docker 正是如日中天的时候，使用 Docker 必然免不了编排，因此 yaml 语法早晚也要攻克。</p>
+<p>上面说的这 3 个案例，几乎都是现代最新最流行的框架/工具。从它们身上可以看出来，yaml 必然是下一代配置文件的标准，并且是<strong>前端-后端-运维</strong>的通用标准。</p>
+<p>说了这么多，你跃跃欲试了吗？下面我们详细介绍 yaml 语法。</p>
+<h2 id="yaml-语法">YAML 语法<a hidden class="anchor" aria-hidden="true" href="#yaml-语法">#</a></h2>
+<p>介绍 yaml 语法会对比 json 解释，以便我们快速理解。</p>
+<p>先看一下 yaml 的几个特点：</p>
+<ul>
+<li>大小写敏感</li>
+<li>使用缩进表示层级关系</li>
+<li>缩进空格数不强制，但相同层级要对齐</li>
+<li><code>#</code> 表示注释</li>
+</ul>
+<p>相比于 JSON 来说，最大的区别是用 <code>缩进</code> 来表示层级，这个和 Python 非常接近。还有强化的一点是支持了注释，JSON 默认是不支持的（虽然 TS 支持），这也对配置文件非常重要。</p>
+<p>YAML 支持以下几种数据结构：</p>
+<ul>
+<li><code>对象</code>：json 中的对象</li>
+<li><code>数组</code>：json 中的数组</li>
+<li><code>纯量</code>：json 中的简单类型（字符串，数值，布尔等）</li>
+</ul>
+<h3 id="对象">对象<a hidden class="anchor" aria-hidden="true" href="#对象">#</a></h3>
+<p>先看对象，上一个 json 例子：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   &quot;id&quot;: 1,   &quot;name&quot;: &quot;杨成功&quot;,   &quot;isman&quot;: true }</code></p>
+<p>转换成 yaml：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>id: 1 name: 杨成功 isman: true</code></p>
+<p>对象是最核心的结构，key 值的表示方法是 <code>[key]:</code> ，注意这里<strong>冒号后面有个空格，一定不能少</strong>。value 的值就是一个<code>纯量</code>，且默认不需要引号。</p>
+<h3 id="数组">数组<a hidden class="anchor" aria-hidden="true" href="#数组">#</a></h3>
+<p>数组和对象的结构差不多，区别是在 key 前用一个 <code>-</code> 符号标识这个是数组项。注意这里<strong>也有一个空格</strong>，同样也不能少。</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>- hello - world</code></p>
+<p>转换成 JSON 格式如下：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[&quot;hello&quot;, &quot;world&quot;]</code></p>
+<p>了解了基本的对象和数组，我们再来看一个复杂的结构。</p>
+<p>众所周知，在实际项目配置中很少有简单的对象或数组，大多都是对象和数组相互嵌套而成。在 js 中我们称之为对象数组，而在 yaml 中我们叫 <code>复合结构</code>。</p>
+<p>比如这样一个稍复杂的 JSON：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   &quot;name&quot;: &quot;杨成功&quot;,   &quot;isman&quot;: true,   &quot;age&quot;: 25,   &quot;tag&quot;: [&quot;阳光&quot;, &quot;帅气&quot;],   &quot;address&quot;: [     { &quot;c&quot;: &quot;北京&quot;, &quot;a&quot;: &quot;海淀区&quot; },     { &quot;c&quot;: &quot;天津&quot;, &quot;a&quot;: &quot;滨海新区&quot; }   ] }</code></p>
+<p>转换成复合结构的 YAML：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>name: 杨成功 isman: true age: 25 tag:   - 阳光   - 帅气 address:   - c: 北京     a: 海淀区   - c: 天津     a: 滨海新区</code></p>
+<p>若你想尝试更复杂结构的转换，可以在 <a href="https://link.juejin.cn?target=https%3A%2F%2Fnodeca.github.io%2Fjs-yaml%2F" title="https://nodeca.github.io/js-yaml/">这个</a> 网页中在线实践。</p>
+<h3 id="纯量">纯量<a hidden class="anchor" aria-hidden="true" href="#纯量">#</a></h3>
+<p>纯量比较简单，对应的就是 js 的基本数据类型，支持如下：</p>
+<ul>
+<li>字符串</li>
+<li>布尔</li>
+<li>数值</li>
+<li>null</li>
+<li>时间</li>
+</ul>
+<p>比较特殊的两个，null 用 <code>~</code> 符号表示，时间大多用 <code>2021-12-21</code> 这种格式表示，如：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>who: ~ date: 2019-09-10</code></p>
+<p>转换成 JS 后：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   who: null,   date: new Date('2019-09-10') }</code></p>
+<h2 id="高级操作">高级操作<a hidden class="anchor" aria-hidden="true" href="#高级操作">#</a></h2>
+<p>在 yaml 实战过程中，遇到过一些特殊场景，可能需要一些特殊的处理。</p>
+<h3 id="字符串过长">字符串过长<a hidden class="anchor" aria-hidden="true" href="#字符串过长">#</a></h3>
+<p>在 shell 中我们常见到一些参数很多，然后特别长的命令，如果命令都写在一行的话可读性会非常差。</p>
+<p>假设下面的是一条长命令：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ docker run --name my-nginx -d nginx</code></p>
+<p>在 linux 中可以这样处理：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ docker run \  --name my-nginx \  -d nginx</code></p>
+<p>就是在每行后加 <code>\</code> 符号标识换行。然而在 YAML 中更简单，不需要加任何符号，直接换行即可：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cmd: docker run   --name my-nginx   -d nginx</code></p>
+<p>YAML 默认会把换行符转换成<code>空格</code>，因此转换后 JSON 如下，正是我们需要的：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{ &quot;cmd&quot;: &quot;docker run --name my-nginx -d nginx&quot; }</code></p>
+<p>然而有时候，我们的需求是<strong>保留换行符</strong>，并不是把它转换成空格，又该怎么办呢？</p>
+<p>这个也简单，只需要在首行加一个 <code>|</code> 符号：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cmd: |   docker run   --name my-nginx   -d nginx</code></p>
+<p>转换成 JSON 变成了这样：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{ &quot;cmd&quot;: &quot;docker run\n--name my-nginx\n-d nginx&quot; }</code></p>
+<h3 id="获取配置">获取配置<a hidden class="anchor" aria-hidden="true" href="#获取配置">#</a></h3>
+<p>获取配置是指，在 YAML 文件中定义的某个配置，如何在代码（JS）里获取？</p>
+<p>比如前端在 <code>package.json</code> 里有一个 <code>version</code> 的配置项表示应用版本，我们要在代码中获取版本，可以这么写：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import pack from './package.json' console.log(pack.version)</code></p>
+<p>JSON 是可以直接导入的，YAML 可就不行了，那怎么办呢？我们分环境解析：</p>
+<p><strong>在浏览器中</strong></p>
+<p>浏览器中代码用 webapck 打包，因此加一个 loader 即可：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn add -D yaml-loader</code></p>
+<p>然后配置 loader：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// webpack.config.js module.exports = {   module: {     rules: [       {         test: /\.ya?ml$/,         type: 'json', // Required by Webpack v4         use: 'yaml-loader'       }     ]   } }</code></p>
+<p>在组件中使用：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import pack from './package.yaml' console.log(pack.version)</code></p>
+<p><strong>在 Node.js 中</strong></p>
+<p>Node.js 环境下没有 Webpack，因此读取 yaml 配置的方法也不一样。</p>
+<p>首先安装一个 <code>js-yaml</code> 模块：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ yarn add js-yaml</code></p>
+<p>然后通过模块提供的方法获取：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const yaml = require('js-yaml') const fs = require('fs') const doc = yaml.load(fs.readFileSync('./package.yaml', 'utf8')) console.log(doc.version)</code></p>
+<h3 id="配置项复用">配置项复用<a hidden class="anchor" aria-hidden="true" href="#配置项复用">#</a></h3>
+<p>配置项复用的意思是，对于定义过的配置，在后面的配置直接引用，而不是再写一遍，从而达到复用的目的。</p>
+<p>YAML 中将定义的复用项称为锚点，用<code>&amp;</code> 标识；引用锚点则用 <code>*</code> 标识。</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>name: &amp;name my_config env: &amp;env   version: 1.0 compose:   key1: *name   key2: *env</code></p>
+<p>对应的 JSON 如下：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   &quot;name&quot;: &quot;my_config&quot;,   &quot;env&quot;: { &quot;version&quot;: 1 },   &quot;compose&quot;: { &quot;key1&quot;: &quot;my_config&quot;, &quot;key2&quot;: { &quot;version&quot;: 1 } } }</code></p>
+<p>但是锚点有个弊端，就是不能作为 <code>变量</code> 在字符串中使用。比如：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>name: &amp;name my_config compose:   key1: *name   key2: my name is *name</code></p>
+<p>此时 key2 的值就是普通字符串 <em>my name is *name</em>，引用变得无效了。</p>
+<p>其实在实际开发中，字符串中使用变量还是很常见的。比如在复杂的命令中多次使用某个路径，这个时候这个路径就应该是一个变量，在多个命令中复用。</p>
+<p>GitHub Action 中有这样的支持，定义一个环境变量，然后在其他的地方复用：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>env:   NAME: test describe: This app is called ${NAME}</code></p>
+<p>这种实现方式与 webpack 中使用环境变量类似，在构建的时候将变量替换成对应的字符串。</p>
+<h2 id="我的专栏">我的专栏<a hidden class="anchor" aria-hidden="true" href="#我的专栏">#</a></h2>
+<p>本文首发于掘金专栏 <a href="https://juejin.cn/column/7008034440890810398" title="https://juejin.cn/column/7008034440890810398">前端 DevOps</a>，这个专栏会长期输出前端工程与架构方向的文章，篇篇经过实践与斟酌，一如既往的保证质量。</p>
+<p>如果本文对你有启发，请甩手一个赞 👍</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+      <li><a href="http://localhost:1313/tags/json/">JSON</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E7%BB%84%E5%91%98%E8%80%81%E6%98%AF%E5%BF%98%E8%AE%B0%E6%89%93%E5%8D%A1%E6%88%91%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E6%AC%BE%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AE%A9%E5%85%A8%E7%BB%84%E4%B8%89%E4%B8%AA%E6%9C%88%E5%85%A8%E5%8B%A4/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/flutter%E5%8D%A1%E9%A1%BF%E4%BC%98%E5%8C%96%E9%94%A6%E8%BE%91/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Flutter卡顿优化锦辑</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 现代配置指南——YAML比JSON高级在哪？ on x"
+            href="https://x.com/intent/tweet/?text=%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f&amp;hashtags=JavaScript%2cJSON%2c%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 现代配置指南——YAML比JSON高级在哪？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f&amp;title=%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f&amp;summary=%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 现代配置指南——YAML比JSON高级在哪？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f&title=%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 现代配置指南——YAML比JSON高级在哪？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 现代配置指南——YAML比JSON高级在哪？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 现代配置指南——YAML比JSON高级在哪？ on telegram"
+            href="https://telegram.me/share/url?text=%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 现代配置指南——YAML比JSON高级在哪？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e7%8e%b0%e4%bb%a3%e9%85%8d%e7%bd%ae%e6%8c%87%e5%8d%97%e2%80%94%e2%80%94YAML%e6%af%94JSON%e9%ab%98%e7%ba%a7%e5%9c%a8%e5%93%aa%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%258E%25B0%25E4%25BB%25A3%25E9%2585%258D%25E7%25BD%25AE%25E6%258C%2587%25E5%258D%2597yaml%25E6%25AF%2594json%25E9%25AB%2598%25E7%25BA%25A7%25E5%259C%25A8%25E5%2593%25AA%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

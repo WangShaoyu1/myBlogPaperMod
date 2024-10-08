@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>学不动也要学，JetpackCompose写一个IMAPP（一） | PaperMod</title>
+<meta name="keywords" content="Android, Kotlin, AndroidJetpack">
+<meta name="description" content="技术的世界总是在不断变化的，新的技术总在不断涌现，我数了一下，现在一名Android应用开发工程师需要掌握的最基础技能有以下几个，有点MMP的感觉🤣🤣">
+<meta name="author" content="业志陈">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%AD%A6%E4%B8%8D%E5%8A%A8%E4%B9%9F%E8%A6%81%E5%AD%A6jetpackcompose%E5%86%99%E4%B8%80%E4%B8%AAimapp%E4%B8%80/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%AD%A6%E4%B8%8D%E5%8A%A8%E4%B9%9F%E8%A6%81%E5%AD%A6jetpackcompose%E5%86%99%E4%B8%80%E4%B8%AAimapp%E4%B8%80/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="学不动也要学，JetpackCompose写一个IMAPP（一）" />
+<meta property="og:description" content="技术的世界总是在不断变化的，新的技术总在不断涌现，我数了一下，现在一名Android应用开发工程师需要掌握的最基础技能有以下几个，有点MMP的感觉🤣🤣" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%AD%A6%E4%B8%8D%E5%8A%A8%E4%B9%9F%E8%A6%81%E5%AD%A6jetpackcompose%E5%86%99%E4%B8%80%E4%B8%AAimapp%E4%B8%80/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-08-01T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="学不动也要学，JetpackCompose写一个IMAPP（一）"/>
+<meta name="twitter:description" content="技术的世界总是在不断变化的，新的技术总在不断涌现，我数了一下，现在一名Android应用开发工程师需要掌握的最基础技能有以下几个，有点MMP的感觉🤣🤣"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "学不动也要学，JetpackCompose写一个IMAPP（一）",
+      "item": "http://localhost:1313/posts/juejin/%E5%AD%A6%E4%B8%8D%E5%8A%A8%E4%B9%9F%E8%A6%81%E5%AD%A6jetpackcompose%E5%86%99%E4%B8%80%E4%B8%AAimapp%E4%B8%80/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学不动也要学，JetpackCompose写一个IMAPP（一）",
+  "name": "学不动也要学，JetpackCompose写一个IMAPP（一）",
+  "description": "技术的世界总是在不断变化的，新的技术总在不断涌现，我数了一下，现在一名Android应用开发工程师需要掌握的最基础技能有以下几个，有点MMP的感觉🤣🤣",
+  "keywords": [
+    "Android", "Kotlin", "AndroidJetpack"
+  ],
+  "articleBody": " 公众号：字节数组\n希望对你有所帮助 🤣🤣\n在 2019 年的 Google/IO 大会上，亮相了一个全新的 Android 原生 UI 开发框架 Jetpack Compose。与 IOS 的 SwiftUI 一样，Jetpack Compose 也是一个声明式的 UI 框架，随着 Android 和 IOS 两大移动平台相继推出了自己平台专属的声明式 UI 框架，标志着整个行业已开始转向声明性界面模型，该模型大大简化了与构建和更新界面关联的工程设计\n经过两年多的打磨，到了今年七月底，Google 正式发布了 Jetpack Compose 的 1.0 版本，这是 Compose 的稳定版本，可供开发者在生产环境中使用\n引用 Google 官网对 Jetpack Compose 的介绍：Jetpack Compose 是用于构建原生 Android 界面的新工具包。它可简化并加快 Android 上的界面开发，帮助您使用更少的代码、强大的工具和直观的 Kotlin API，快速打造生动而精彩的应用\n其核心功能包括：\n互操作性：Compose 可以和既有的应用进行互操作。您可以将 Compose UI 嵌入 View，反之亦然。您可以只在屏幕上添加一个按钮，也把自己创建的自定义视图保留在现在用 Compose 打造的界面中 Jetpack 集成：Compose 和大家熟知且喜爱的 Jetpack 开发库天然整合。通过与 Navigation、Paging、LiveData (或 Flow/RxJava)、ViewModel 和 Hilt 的整合，Compose 可以与您现有的架构完美共存 Material：Compose 提供了 Material Design 组件和主题的实现，使您能够轻松构建符合您的品牌个性的美观应用。Material 主题系统更容易理解和追踪，再也不需要翻阅多个 XML 文件 列表：Compose 的 Lazy 组件为数据列表的呈现提供了一种简单扼要且功能强大的方式，而且将模版代码精简到了最少 动画：Compose 简明的动画 API 让您可以更轻松地打造出让用户眼前一亮的体验 一、compose_chat 技术的世界总是在不断变化的，新的技术总在不断涌现，我数了一下，现在一名 Android 应用开发工程师需要掌握的最基础技能有以下几个，有点 MMP 的感觉 🤣🤣\n需要掌握的 UI 开发框架：\n传统的 View 体系 跨平台的 Flutter 最新的 Jetpack Compose xxxxx 需要掌握的语言有：\nJava Dart Kotlin xxxxx 实践出真理，学不动也要学 🤣🤣 Jetpack Compose 大概率会成为以后 Android 原生应用开发时的首选技术方案，所以我也做了一次实战演练，花了两个月时间断断续续写了一个完全用 Compose 实现的 IM APP，实现了基本的好友聊天功能\n整个 APP 采用的是单 Activity 形式，内部通过 navigation 来模拟多屏幕跳转，使用了单向数据流模式，所有业务逻辑均通过 ViewModel 来完成，业务逻辑的处理结果再以可组合函数的入参参数的形式回传给 UI 层，底层通过腾讯云的 IM SDK 来实现通信\n本文主要介绍的是 Jetpack Compose 的各种重点概念和功能点，并不会涉及太多 compose_chat 的实际编码内容，但会以 compose_chat 作为讲解时的辅助例子。读者如果想要学习 Jetpack Compose 的话，compose_chat 会是一个很好的入门学习项目，希望对你有所帮助 🤣🤣\n二、命令式与声明式 长期以来，Android 的视图层次结构都可以表示为一个视图树，若干个 View 和 ViewGroup 以嵌套的关系组成整个视图树，开发者通过 XML 来声明整个视图树的层次结构，再通过 findViewById()来拿到每个控件的引用。当状态发生变化需要刷新 UI 时，就通过主动调用控件的特定方法来更新 UI\n整个过程就类似如下所示。通过 TextView 来显示用户名，在用户名发生变化时需要通过主动调用 TextView.setText 方法来刷新 UI，开发者直接持有并维护着每个视图结点，想要更新视图都需要开发者直接向控件下发“指令”，这整个过程的复杂度和出错概率随着需要维护的控件数量的增加而增加。这种方式就属于命令式\nkotlin\n代码解读\n复制代码\n`val tvUserName = findViewById(R.id.tvUserName) fun onUserNameChanged(userName: String) { tvUserName.text = userName } onUserNameChanged(\"业志陈\")` Compose 则是通过声明一系列不包含返回值的可组合（Composable）函数来构建界面的。可组合函数只负责描述所需的屏幕状态，且不提供任何视图控件的引用给到开发者。可组合函数可以包含入参参数，参数就用来参与描述屏幕状态，当需要改变屏幕状态时，也是通过生成新的入参参数并再次调用可组合函数来实现 UI 刷新的\n整个过程就类似如下所示。Compose 中对应 TextView 的 “控件” 就是 Text() 函数，Greeting 函数在拿到用户名 name 后，就通过 Text() 函数来进行显示，其接收一个 String 参数用于在屏幕上显示文本信息。在这整个过程中，开发者不持有任何视图节点的引用，而是以描述的方式来声明视图应该如何呈现，且视图并不直接持有状态，而是依赖状态来生成自身。这种方式就属于声明式\n声明式 UI 的一个很显著的特点就是：视图是否存在是根据有没有被声明过来决定的\n以 compose_chat 为例，主界面包含一个悬浮按钮 floatingActionButton\n该按钮只会在 Friendship 页面出现，HomeScreen 依靠if (screenSelected == ViewScreen.Friendship)语句来决定其出现时机，只有 if 语句为 true，FloatingActionButton() 函数才会被执行，此时才会显示悬浮按钮\n这和原生的 View 体系有很大区别，按 View 体系的做法来实现的话，FloatingActionButton 会对应一个控件对象且对象是一直存在的，只是我们选择性地通过 View.Gone() 来将其隐藏。而按 Compose 的做法，只有 FloatingActionButton() 函数被执行了悬浮按钮才会存在，否则对于当前屏幕来说，悬浮按钮就相当于从来没有出现过\nkotlin\n代码解读\n复制代码\n@Composable fun HomeScreen( navController: NavHostController, screenSelected: ViewScreen, onTabSelected: (ViewScreen) -\u003e Unit ) { ChatTheme(appTheme = appTheme) { ProvideWindowInsets { ModalBottomSheetLayout() { Scaffold( floatingActionButton = { if (screenSelected == ViewScreen.Friendship) { FloatingActionButton( backgroundColor = MaterialTheme.colors.primary, onClick = { sheetContentAnimateTo(targetValue = ModalBottomSheetValue.Expanded) }) { Icon( imageVector = Icons.Filled.Favorite, tint = Color.White, contentDescription = null, ) } } }, ) } } } }\n三、可组合函数 带有 @Composable注解的函数即可组合函数，该注解就用于告知 Compose 编译器：此函数旨在将数据转换为界面。例如，Compose 的Text() 函数就提供了 TextView 的所有功能，开箱即用，方法签名如下所示\nkotlin\n代码解读\n复制代码\n@Composable fun Text( text: String, modifier: Modifier = Modifier, color: Color = Color.Unspecified, fontSize: TextUnit = TextUnit.Unspecified, fontStyle: FontStyle? = null, fontWeight: FontWeight? = null, fontFamily: FontFamily? = null, letterSpacing: TextUnit = TextUnit.Unspecified, textDecoration: TextDecoration? = null, textAlign: TextAlign? = null, lineHeight: TextUnit = TextUnit.Unspecified, overflow: TextOverflow = TextOverflow.Clip, softWrap: Boolean = true, maxLines: Int = Int.MAX_VALUE, onTextLayout: (TextLayoutResult) -\u003e Unit = {}, style: TextStyle = LocalTextStyle.current )\n当中，最需要关注的当属 Modifier 这个入参参数了，Compose 提供了一系列开箱即用的“控件”函数，例如，对应 FrameLayout 的 Box()、对应 ImageView 的 Image()、对应 RecyclerView 的 LazyColumn() 等，这些控件都包含一个 Modifier 入参参数。Modifier 功能十分强大，每个控件的宽高大小、位置、方向、对齐、裁切、间距、背景色、点击、甚至手势识别等功能都需要通过它来完成，每个功能都通过扩展函数的方式来声明，以链式调用的方式进行使用\nkotlin\n代码解读\n复制代码\n`Text( modifier = Modifier .weight(weight = messageWidthWeight, fill = false) .padding( start = messageStartPadding, top = messageTopPadding, end = messageEndPadding ) .clip(shape = messageShape) .background(color = friendMsgBgColor) .pointerInput(key1 = Unit) { detectTapGestures( onLongPress = { onLongPressMessage(textMessage) }, ) } .padding( start = messageInnerPadding, top = messageInnerPadding, end = messageInnerPadding, bottom = messageInnerPadding ), text = textMessage.msg, style = MaterialTheme.typography.subtitle1, textAlign = TextAlign.Left, )` Compose 提供的一系列“控件”函数基本已经能够满足我们的日常开发需求了，我们在开发 Compose 应用时，就可以通过嵌套组合官方提供的控件来实现各种自定义需求\n以 compose_chat 为例，好友发送的每一条消息都通过 FriendTextMessageItem() 来显示，包括好友头像和文本消息，当中便嵌套使用到了多个官方控件\n四、状态 应用的状态（State）是指可以随时间变化的任何值，其定义十分宽泛，从函数的入参参数到应用的背景色都包括在内\n对于 Android 传统的 View 视图结构来说，控件会直接持有着 State。例如，EditText 的内部就包含一个 CharSequence 类型的全局变量 mText，用于存储 EditText 当前显示的文本。当想要改变文本内容时，就需要通过手动调用 EditText.setText 方法来改变 mText，EditText 也随之刷新，mText 即 EditText 持有的 State\n而 Compose 通过组合多个可组合函数来描述整个屏幕状态并以此来绘制屏幕，更新视图的唯一途径就是生成新的入参参数并再次调用可组合函数，新的入参参数就代表想要的屏幕状态，每当 State 更新时就会触发可组合函数进行重组，从而实现 UI 刷新。在这整个过程中，可组合函数并不直接持有 State，而是通过读取 State 来确定自身应该如何显示\nCompose 中的 OutlinedTextField 函数在功能上就类似于 EditText，但 OutlinedTextField 想要实现和 EditText 相同的效果就会显得稍微麻烦一点\n看以下示例，当用户不断向 OutlinedTextField 输入信息时，由于其 value 一直为空字符串，所以 OutlinedTextField 呈现出来的也只会一直是空空如也，因为 OutlinedTextField 只会在 value 值发生变化的时候才进行 UI 刷新\nkotlin\n代码解读\n复制代码\n@Composable fun HelloContent() { OutlinedTextField( value = \"\", onValueChange = { } ) }\n想要让 OutlinedTextField 实现和 EditText 相同的效果，就需要有一个中间值对其状态进行描述，也即以下的 name。mutableStateOf 函数返回的是与 Compose 运行时集成的可观察类型，当 mutableState 值发生变化时就会触发所有读取该值的可组合函数进行重组。而 remember 的作用就是让 Compose 在初始组合期间将由其保存的值存储在组合中，并在重组期间返回存储的值，从而使得值可以跨越重组被保留下来，当然这个保留期限也只限于可组合函数的单次生命周期内\nkotlin\n代码解读\n复制代码\n@Composable fun HelloContent() { var name by remember { mutableStateOf(\"\") } OutlinedTextField( value = name, onValueChange = { name = it } ) }\n以 compose_chat 为例，其主界面如下所示\n主界面由 HomeScreen 函数声明，内部一共包含三个子界面，对应 ConversationScreen、FriendshipScreen、UserProfileScreen 三个函数。HomeScreen 就通过 screenSelected 来控制当前需要显示哪个子界面，当 screenSelected 发生变化时，就会触发 HomeScreen 函数重组，使得 when 表达式再次执行，从而显示新的子界面\nkotlin\n代码解读\n复制代码\n@Composable fun HomeScreen( navController: NavHostController, screenSelected: HomeScreenTab, onTabSelected: (HomeScreenTab) -\u003e Unit, backDispatcher: OnBackPressedDispatcher, ) { ModalBottomSheetLayout() { Scaffold() { when (screenSelected) { HomeScreenTab.Conversation -\u003e { ConversationScreen() } HomeScreenTab.Friendship -\u003e { FriendshipScreen() } HomeScreenTab.UserProfile -\u003e { UserProfileScreen() } } } } }\n五、状态提升 看以下例子。name 的存在，相当于使得 HelloContent 这个可组合函数包含了一个内部状态，该状态对于调用方来说是完全不可见的。如果调用方不需要控制状态的变化或者是接收状态变化的通知，那么隐藏内部状态就变得十分有用，因为这样就降低了调用方的调用成本。但是，具有内部状态的可组合项往往不易重复使用，也更难测试\nkotlin\n代码解读\n复制代码\n@Composable fun HelloContent() { var name by remember { mutableStateOf(\"\") } OutlinedTextField( value = name, onValueChange = { name = it } ) }\n如果想要将 HelloContent 改造为无状态模式的话，就需要进行状态提升，状态提升是一种将状态移至可组合项的调用方以使可组合项无状态的模式。仿照 OutlinedTextField 的方式，将状态均交由外部提供，这样 name 这个状态值就交由调用方 HelloContentOwner 来进行维护并持有了\nkotlin\n代码解读\n复制代码\n@Composable fun HelloContent(name: String, onValueChange: (String) -\u003e Unit) { OutlinedTextField( value = name, onValueChange = onValueChange ) } @Composable fun HelloContentOwner() { var name by remember { mutableStateOf(\"\") } HelloContent(name = name) { name = it } }\n以 compose_chat 为例。HomeScreen 的子界面是通过点击底部的 BottomBar 来进行切换的，即切换子界面的请求是从 BottomBar 发起的。BottomBar 需要拿到 screenSelected 才能决定应该选中哪个 tab，HomeScreen 也需要拿到 screenSelected 才能知道当前应该显示哪个子界面，因此 BottomBar 就不应该直接持有 screenSelected 这个状态，而是应该交由调用方来提供，这里就使用到了状态提升这个概念\nBottomBar 不直接持有 screenSelected，而是由 HomeScreen 来提供。当用户点击 BottomBar 时，该点击事件也会从 BottomBar 向上传递给 HomeScreen（HomeScreen 再将该事件回调给更上层的调用方），由最上层的调用方来负责改变 screenSelected 的当前值，以此触发 BottomBar 和 HomeScreen 进行重组\n在这整个过程中，BottomBar 并不包含任何内部状态，而只负责将用户的点击事件传递给调用方，其本身是无状态的。而 onTabSelected 这个回调函数就相当于应用的业务逻辑，其负责对用户的点击事件进行响应并改变 screenSelected 的值，screenSelected 就相当于应用的状态。当 screenSelected 发生变化时，Compose 就会将最新的状态值传给可组合函数，以此触发屏幕重新绘制。可组合函数由于状态发生变化导致再次执行的过程就称为重组\nkotlin\n代码解读\n复制代码\n@Composable fun HomeScreen( navController: NavHostController, screenSelected: HomeScreenTab, onTabSelected: (HomeScreenTab) -\u003e Unit, backDispatcher: OnBackPressedDispatcher, ) { ChatTheme() { ProvideWindowInsets { ModalBottomSheetLayout { Scaffold( bottomBar = { HomeScreenBottomBar( screenList = ViewScreen.values().toList(), screenSelected = screenSelected, onTabSelected = onTabSelected ) }, ) { when (screenSelected) { HomeScreenTab.Conversation -\u003e { ConversationScreen() } HomeScreenTab.Friendship -\u003e { FriendshipScreen() } HomeScreenTab.UserProfile -\u003e { UserProfileScreen() } } } } } } }\n在这整个过程中，状态是向下传递的，而事件是向上传递的。状态下降、事件上升的这种模式称为“单向数据流”，通过遵循单向数据流，可以将在界面中显示状态的可组合项与应用中存储和更改状态的部分解耦。因此，应用的界面状态应该都交由可组合函数的入参参数来定义，而应用的业务逻辑应该交由 ViewModel 来容纳并处理，业务逻辑的处理结果再以新的入参参数的形式传递给可组合函数，以此对用户进行响应和界面更新。遵循这种规则后，UI 层就有了一个统一且单一的数据源，这样应用才更不容易出错\n提升状态时，有三条规则可帮助开发者弄清楚状态应去向何处：\n状态应至少提升到使用该状态（读取）的所有可组合项的最低共同父项 状态应至少提升到它可以发生变化（写入）的最高级别 如果两种状态发生变化以响应相同的事件，它们应一起提升 我认为，遵循状态提升的理念并非一定要做到所有可组合项均无状态。虽然 BottomBar 做到了无状态，但最终 screenSelected 也需要转交给上一级的调用方进行持有，调用方是有状态的。虽然可以将 screenSelected 再次提升到 ViewModel 中进行持有，但像这种不依赖外部环境（例如，网络请求，系统配置等），仅依靠用户事件进行变化的状态，我觉得将其提升到使用该状态（读取）的所有可组合项的最低共同父项即可，不必强行做到所有可组合项均无状态\n六、纯函数 在很多讲解关于程序设计最佳实践的文章或者书籍里，都会推荐一个编码原则：尽可能使用 val、不可变对象及纯函数来设计程序。这个原则在 Compose 中也同样需要遵守，因为一个合格的可组合函数就应该属于纯函数，幂等且没有副作用\n何谓纯函数？假如一个函数使用相同的入参参数重复执行时，总是能获得相同的运行结果，且运行结果不会影响任何外部状态，也不用担心重复执行会对外部造成改变，那么这个函数就称为纯函数\n纯函数不具备副作用，具有引用透明性。副作用就是指修改了某处的某些东西，比如：\n引用或修改了外部变量的值 执行了 IO 操作，比如读写了 SharedPreferences 执行了 UI 操作，比如修改了一个按钮的可操作状态 以下例子就不属于纯函数，由于受到外部变量的影响，使用相同入参参数多次执行 count 函数的结果并不全部相同，且每次执行都会影响到外部环境（使用到了 println 函数），这些都属于副作用\nkotlin\n代码解读\n复制代码\nvar count = 1 fun count(x: Int): Int { count += x println(count) return count }\n使用 Compose 时需要注意：\n可组合函数可以按任何顺序执行 可组合函数可以并行执行 重组会跳过尽可能多的可组合函数和 lambda 重组是乐观的操作，可能会被取消 可组合函数可能会像动画的每一帧一样非常频繁地运行 看以下例子。按照我们的直观理解，ButtonRow 中的三个函数是会顺序执行的，且三个函数会得到一个依次递增的 count 值，但这在 Compose 中是没有保障的。为了提升运行效率，Compose 可能会在后台线程中以并行方式来执行多个可组合函数，这也意味着可组合函数之间的先后顺序是不确定的。而且由于存在智能重组，Compose 会自动识别出哪些可组合函数并没有发生更改从而跳过重组，而仅仅重新执行发生变化的部分函数，从而仅更新屏幕的某一部分\nCompose 的这些举措都是为了提升程序的运行效率还有屏幕的绘制效率，但这也导致可组合函数在读写外部变量时是完全没有保障的，我们无法假设在执行 MiddleScreen 前 StartScreen 就已经修改了 count，两者的顺序可能完全相反甚至根本没有被执行\nkotlin\n代码解读\n复制代码\n@Composable fun ButtonRow() { StartScreen() MiddleScreen() EndScreen() } var count = 0 @Composable fun StartScreen() { Text(text = count.toString()) count += 1 } @Composable fun MiddleScreen() { Text(text = count.toString()) count += 1 } @Composable fun EndScreen() { Text(text = count.toString()) count += 1 }\n此外，由于可组合函数可能会像每一帧一样频繁地重新执行，例如在执行动画时，可组合函数会快速地执行，以避免在播放动画期间出现卡顿，这个过程中可组合函数就会不断地在被重复调用。如果可组合函数存在副作用，例如内部存在读写 SharedPreferences 的操作，可能一秒钟就会被调用几百次，这就会严重影响到屏幕的绘制效率，从而导致页面卡顿了，所以对于这类执行成本高昂的操作，需要放到后台协程中执行，并将执行结果作为参数传递给可组合函数\n所以说，可组合函数需要做到无副作用才能得到正确的期望结果。此外，对于相同的入参参数，可组合函数应该一直呈现相同的表现形式。多个可组合函数之间应该保持状态独立，不能具有互相依赖性。对于共享的状态，应该以入参参数的形式进行传递，并且将状态放在最顶级函数或者 ViewModel 中进行维护\n七、副作用 在某些情况下，可组合函数可能无法做到完全无副作用，例如，我们在切换应用主题的时候希望系统状态栏也能跟着一起改变背景色，此时就说可组合函数产生了副作用。为了处理这种情况，Compose 也提供了 Effect API，以便以可预测的方式执行这些附带效应\n以 compose_chat 为例。设置系统状态栏的颜色是通过 SetSystemBarsColor() 函数来实现的。我们希望在应用刚启动时，以及应用主题发生变化时，SetSystemBarsColor() 都能够被执行一次，这可以通过 DisposableEffect 来实现\n当 DisposableEffect 进入组合时，或者是 key 发生变化时，DisposableEffect 内的代码就会被执行，从而改变系统状态栏，除此之外每次界面重组时都不会再次执行，从而避免了无意义的调用\nkotlin\n代码解读\n复制代码\n@Composable fun SetSystemBarsColor( key: Any = Unit, statusBarColor: Color = MaterialTheme.colors.background, navigationBarColor: Color = MaterialTheme.colors.background ) { val systemUiController = rememberSystemUiController() val isLight = MaterialTheme.colors.isLight DisposableEffect(key1 = key) { systemUiController.setStatusBarColor( color = statusBarColor, darkIcons = isLight ) systemUiController.setNavigationBarColor( color = navigationBarColor, darkIcons = isLight ) systemUiController.systemBarsDarkContentEnabled = isLight onDispose { } } }\nHomeScreen 传给 SetSystemBarsColor 的 Key 也即 appTheme，因此每次切换主题后都能保证 DisposableEffect 会再次执行\nkotlin\n代码解读\n复制代码\n@Composable fun HomeScreen( navController: NavHostController, screenSelected: HomeScreenTab, onTabSelected: (HomeScreenTab) -\u003e Unit ) { val homeViewModel = viewModel() val appTheme by homeViewModel.appTheme.collectAsState() ChatTheme(appTheme = appTheme) { ProvideWindowInsets { SetSystemBarsColor( key = appTheme, statusBarColor = Color.Transparent, navigationBarColor = MaterialTheme.colors.primaryVariant ) } } }\n更多关于 Effect API 的介绍请看这里：Compose 中的附带效应\n八、布局 布局是每个 UI 框架都必须的功能，不管是 View、Flutter、还是 Compose，都必须提供一些开箱即用的布局控件，这里就介绍下 compose_chat 中使用得比较多的 ConstraintLayout 和 LazyColumn\nConstraintLayout 在以往的 Android View 视图体系下，我们都会尽量避免在布局中进行多层嵌套，因为嵌套层次越深，在测量 View 时需要的次数和时间就会越多，这就会严重影响到应用的运行性能了，因此 Google 官方也建议开发者尽量使用 ConstraintLayout 进行布局，实现扁平化布局。但 Compose 不同，由于 Compose 可以避免多次测量，因此开发者可以根据需要进行深层次嵌套，而不用担心会影响性能。同时 Compose 也提供了自己专属的 constraintlayout-compose，用于实现约束定位\n以 compose_chat 为例。每个好友列表 Item 就对应 FriendshipItem() 函数，其内部就使用到了 ConstraintLayout 进行布局，其使用思路和 View 版本的差不多。首先需要通过 createRefs() 来声明“控件”的引用，然后通过 constrainAs 将引用和“控件”绑定在一起，类似于为“控件”声明 ID，之后每个“控件”之间就可以通过 linkTo 方法进行关联定位了，当中 parent 即指 ConstraintLayout 自身\nLazyColumn 在以往的 Android View 视图体系下，我们在加载长列表时一般是通过 RecyclerView 来实现的，以便能够缓存复用 Item，RecyclerView 在滑动性能上还是很优越的，能有效地避免由于数据量过大导致滑动卡顿的情况，缺点就是需要由开发者来声明各种 Adapter 和 ViewHolder，这一点比较麻烦\nCompose 中对应 RecyclerView 的是 LazyColumn() 函数，从名字就可以猜出该函数是个竖向滑动列表，且实现了懒加载。实际上 LazyColumn 也的确实现了 Item 的缓存复用机制，重点在使用上要比 RecyclerView 简单很多，因为我们再也不用声明各种繁琐的 Adapter 和 ViewHolder 了\n以 compose_chat 为例。在拿到好友列表 friendList 后，通过 for 循环，每个 PersonProfile 就对应 LazyColumn 的一个列表项 item()，在 item() 函数中声明的 FriendshipItem() 即每个列表项要呈现的视图。通过循环调用 item() 函数，就可以完成整个滑动列表数据项的声明了，而且即使存在多种样式的 Item，也通过相同方式来声明即可，就像以下例子中我为列表添加了一个底部间距 Spacer\nkotlin\n代码解读\n复制代码\n@Composable fun FriendshipScreen( paddingValues: PaddingValues, friendList: List, onClickFriend: (PersonProfile) -\u003e Unit ) { Scaffold( modifier = Modifier .padding(bottom = paddingValues.calculateBottomPadding()) .fillMaxSize() ) { if (friendList.isEmpty()) { EmptyView() } else { LazyColumn { friendList.forEach { item(key = it.userId) { FriendshipItem(personProfile = it, onClickFriend = onClickFriend) } } item { Spacer(modifier = Modifier.height(40.dp)) } } } } }\n九、动画 \u0026 手势操作 Jetpack Compose 提供了一些功能强大且可扩展的 API，可用于在应用界面中轻松实现各种动画效果。动画在现代移动应用中至关重要，其目的是实现自然流畅、易于理解的用户体验。许多 Jetpack Compose 动画 API 可以提供可组合函数，就像布局和其他界面元素一样；它们由使用 Kotlin 协程挂起函数构建的较低级别 API 提供支持\n此外，Compose 也提供了多种 API 用于检测用户互动生成的手势。API 涵盖各种用例：\n其中一些级别较高，旨在覆盖最常用的手势。例如，clickable修饰符可用于轻松检测点击，此外它还提供无障碍功能，并在点按时显示视觉指示（例如涟漪） 还有一些不太常用的手势检测器，它们在较低级别提供更大的灵活性，例如 PointerInputScope.detectTapGestures 或 PointerInputScope.detectDragGestures，但不提供额外功能 以 compose_chat 为例。个人资料页 ProfileScreen 就同时应用到了动画和手势操作：背景图同时包含了 裁切 + 缩放 + 旋转 三种动画，用户可以拖拽头像进行移动，当松手时头像也会通过弹簧动画自动移回原位\n动画 前文很多地方都有讲到：更新视图的唯一途径就是生成新的入参参数并再次调用可组合函数，动画也是如此。想要让视图以一种连贯且自然的方式进行变换，那么意思也就是说需要有一个值生成器来连贯地改变可组合函数的参数值\nProfileScreen 使用rememberInfiniteTransition()来实现这种效果。InfiniteTransition 通过 animateFloat、animateValue、animateColor 等方式来保存子动画，这些动画一进入组合阶段就开始运行，除非被移除，否则不会停止。再为 InfiniteTransition 指定一个初始值和一个结束值，并指定动画以反转的形式来回运行，animateValue 就会在这两个值之间不断地连贯变化，之后将 animateValue 应用到背景图的布局参数上即可实现动画效果\nkotlin\n代码解读\n复制代码\n`val animateValue by rememberInfiniteTransition().animateFloat( initialValue = 1.3f, targetValue = 1.9f, animationSpec = infiniteRepeatable( animation = tween(durationMillis = 1800, easing = FastOutSlowInEasing), repeatMode = RepeatMode.Reverse, ), ) NetworkImage( data = userFaceUrl, modifier = Modifier .constrainAs(ref = background) { } .fillMaxWidth() .aspectRatio(ratio = 5f / 4f) .scrim(colors = listOf(Color(0x40000000), Color(0x40F4F4F4))) .clip(shape = BezierShape(padding = animateValue * 100)) //裁切 .scale(scale = animateValue) //缩放 .rotate(degrees = animateValue * 10.3f) //旋转 )` 手势操作 Compose 中的 Modifier 十分强大，不仅仅是用于进行布局，像点击事件、手势操作等一样需要依靠其来完成，pointerInput 函数就用于识别用户的手势操作，Modifier 同时提供了 offset 函数用于控制控件的偏移量，通过结合 pointerInput 和 offset 两个函数来动态改变控件的偏移量，就可以实现拖拽用户头像了\n拖拽 OutlinedAvatar 的过程中系统会不断回调 onDrag 函数，在回调里通过用户的拖拽值不断改变 offsetX 和 offsetY 两个值，就可以不断触发 OutlinedAvatar 进行重组，以此实现拖拽效果。当用户松手时，onDragEnd 函数会被回调，再通过 Animatable 将 OutlinedAvatar 的偏移量重置为零，这样就可以实现自动移回原位的效果了\nkotlin\n代码解读\n复制代码\n`val coroutineScope = rememberCoroutineScope() var offsetX by remember { mutableStateOf(0f) } var offsetY by remember { mutableStateOf(0f) } OutlinedAvatar( data = userFaceUrl, modifier = Modifier .offset { IntOffset( x = offsetX.roundToInt(), y = offsetY.roundToInt() ) } .pointerInput(Unit) { detectDragGestures( onDragStart = { }, onDragCancel = { }, onDragEnd = { coroutineScope.launch { Animatable( initialValue = Offset(offsetX, offsetY), typeConverter = Offset.VectorConverter ).animateTo( targetValue = Offset(x = 0f, y = 0f), animationSpec = SpringSpec(dampingRatio = Spring.DampingRatioHighBouncy), block = { offsetX = value.x offsetY = value.y } ) } }, onDrag = { change, dragAmount -\u003e change.consumeAllChanges() offsetX += dragAmount.x offsetY += dragAmount.y }, ) } )` 十、主题 在以前，Android 应用实现多主题 Theme 切换时都需要声明多个 XML 文件，例如在实现夜间模式时就需要两套 colors.xml 和 styles.xml，这种机制在性能上不能说低，但在易用性上的确不高\nCompose 的 Theme 就比较优秀了，完全基于 Kotlin 语言来实现，避免了原生实现方式的那种割裂感，相对原生的实现方式在性能和易用性上都提升了很多。Compose 提供了 MaterialTheme 这一种基于 Material Design 风格样式的主题，androidx.compose.material 包内提供的所有控件都遵循 MaterialTheme 进行设计，保证了整个应用统一的风格样式\n当使用 Android Studio 创建一个 Compose 工程时，会自动在 ui.theme 包目录下创建以下四个文件，当中就默认提供了 Dark 和 Light 两种主题样式\nDarkColorPalette 和 LightColorPalette 分别定义了在夜间模式和日间模式下使用的颜色值，通过选取不同的 colors 对象传给 MaterialTheme 就可以实现不同的主题样式\nkotlin\n代码解读\n复制代码\nprivate val DarkColorPalette = darkColors( primary = Purple200, primaryVariant = Purple700, secondary = Teal200 ) private val LightColorPalette = lightColors( primary = Purple500, primaryVariant = Purple700, secondary = Teal200 ) @Composable fun MyApplicationTheme( darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -\u003e Unit ) { val colors = if (darkTheme) { DarkColorPalette } else { LightColorPalette } MaterialTheme( colors = colors, typography = Typography, shapes = Shapes, content = content ) }\nMaterialTheme 由颜色 colors、排版 typography、形状 shapes 共同组成，当自定义这些属性后，所做的更改会自动反映在所有用来构建应用的组件中。MaterialTheme 会将不同的配置项映射保存为应用的环境变量，例如我们传入的 colors 就保存为了静态常量 LocalColors\nkotlin\n代码解读\n复制代码\ninternal val LocalColors = staticCompositionLocalOf { lightColors() } @Composable fun MaterialTheme( colors: Colors = MaterialTheme.colors, typography: Typography = MaterialTheme.typography, shapes: Shapes = MaterialTheme.shapes, content: @Composable () -\u003e Unit ) { val rememberedColors = remember { // Explicitly creating a new object here so we don't mutate the initial [colors] // provided, and overwrite the values set in it. colors.copy() }.apply { updateColorsFrom(colors) } val rippleIndication = rememberRipple() val selectionColors = rememberTextSelectionColors(rememberedColors) CompositionLocalProvider( LocalColors provides rememberedColors, LocalContentAlpha provides ContentAlpha.high, LocalIndication provides rippleIndication, LocalRippleTheme provides MaterialRippleTheme, LocalShapes provides shapes, LocalTextSelectionColors provides selectionColors, LocalTypography provides typography ) { ProvideTextStyle(value = typography.body1, content = content) } }\nCompose 中提供的各种“控件”函数默认都会来读取 LocalColors 中的颜色值来绘制自身，例如 Surface 默认就以 MaterialTheme.colors.surface作为背景色\nkotlin\n代码解读\n复制代码\n@Composable fun Surface( modifier: Modifier = Modifier, shape: Shape = RectangleShape, color: Color = MaterialTheme.colors.surface, contentColor: Color = contentColorFor(color), border: BorderStroke? = null, elevation: Dp = 0.dp, content: @Composable () -\u003e Unit )\n以 compose_chat 为例，一共提供了三套主题：Light、Dark、Pink\n三种主题类型就对应枚举类 AppTheme 和三套颜色值，根据当前选中的主题类型传给 MaterialTheme 不同的颜色值即可\nkotlin\n代码解读\n复制代码\nprivate val LightColorPalette = lightColors( background = BackgroundColorLight, primary = PrimaryColorLight, primaryVariant = PrimaryVariantColorLight, surface = SurfaceColorLight, secondary = DivideColorLight, ) private val DarkColorPalette = darkColors( background = BackgroundColorDark, primary = PrimaryColorDark, primaryVariant = PrimaryVariantColorDark, surface = SurfaceColorDark, secondary = DivideColorDark, ) private val PinkColorPalette = lightColors( background = BackgroundColorPink, primary = PrimaryColorPink, primaryVariant = PrimaryVariantColorPink, surface = SurfaceColorPink, secondary = DivideColorPink, ) @Composable fun ChatTheme( appTheme: AppTheme = AppThemeHolder.currentTheme, content: @Composable () -\u003e Unit ) { val colors = when (appTheme) { AppTheme.Light -\u003e { LightColorPalette } AppTheme.Dark -\u003e { DarkColorPalette } AppTheme.Pink -\u003e { PinkColorPalette } } val typography = if (appTheme.isDarkTheme()) { DarkTypography } else { LightTypography } MaterialTheme( colors = colors, typography = typography, shapes = AppShapes, content = content ) }\nCompose 的主题切换也依赖于可组合函数的重组操作。以 compose_chat 为例，HomeScreen 内部整体是包裹在 ChatTheme 中的，当切换了应用主题，即改变了 appTheme 时，就会触发 ChatTheme 和 HomeScreen 进行重组，重组过程就会读取到最新的主题配置，从而实现了主题切换\nkotlin\n代码解读\n复制代码\n@Composable fun HomeScreen( navController: NavHostController, screenSelected: ViewScreen, onTabSelected: (ViewScreen) -\u003e Unit ) { val homeViewModel = viewModel() val appTheme by homeViewModel.appTheme.collectAsState() ChatTheme(appTheme = appTheme) { } }\n可以看出来，Compose 的主题切换是完全依赖于内存读写的，避免了原生 Android 方式还需要通过 IO 流去读取 XML 文件的情况，在执行效率上相对会高很多，而且在定义主题时也十分方便，仅需要多声明一种 Colors 对象即可实现，类型安全且有助于减少代码量\n十一、结尾 关于 Jetpack Compose 的大部分知识点都讲完了，自我感觉 compose_chat 能很好的帮助读者入门，最后当然也少不了源码了\n项目地址：compose_chat\nAPK 下载尝鲜：compose_chat\n由于腾讯云 IM SDK 免费版最多只能注册一百个账号，因此读者如果发现注册不了的话，可以使用以下几个我预先注册好的账号，但多设备同时登陆的话会互相挤掉线 ~~\nGoogle Android Compose Flutter Java Kotlin Dart Jetpack ViewModel LiveData 十二、参考 developer.android.google.cn/jetpack/com… ",
+  "wordCount" : "2013",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-08-01T00:00:00Z",
+  "dateModified": "2021-08-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "业志陈"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%AD%A6%E4%B8%8D%E5%8A%A8%E4%B9%9F%E8%A6%81%E5%AD%A6jetpackcompose%E5%86%99%E4%B8%80%E4%B8%AAimapp%E4%B8%80/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      学不动也要学，JetpackCompose写一个IMAPP（一）
+    </h1>
+    <div class="post-description">
+      技术的世界总是在不断变化的，新的技术总在不断涌现，我数了一下，现在一名Android应用开发工程师需要掌握的最基础技能有以下几个，有点MMP的感觉🤣🤣
+    </div>
+    <div class="post-meta"><span title='2021-08-01 00:00:00 +0000 UTC'>八月 1, 2021</span>&nbsp;·&nbsp;10 分钟&nbsp;·&nbsp;业志陈&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80compose_chat" aria-label="一、compose_chat">一、compose_chat</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%91%bd%e4%bb%a4%e5%bc%8f%e4%b8%8e%e5%a3%b0%e6%98%8e%e5%bc%8f" aria-label="二、命令式与声明式">二、命令式与声明式</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e5%8f%af%e7%bb%84%e5%90%88%e5%87%bd%e6%95%b0" aria-label="三、可组合函数">三、可组合函数</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e7%8a%b6%e6%80%81" aria-label="四、状态">四、状态</a></li>
+                <li>
+                    <a href="#%e4%ba%94%e7%8a%b6%e6%80%81%e6%8f%90%e5%8d%87" aria-label="五、状态提升">五、状态提升</a></li>
+                <li>
+                    <a href="#%e5%85%ad%e7%ba%af%e5%87%bd%e6%95%b0" aria-label="六、纯函数">六、纯函数</a></li>
+                <li>
+                    <a href="#%e4%b8%83%e5%89%af%e4%bd%9c%e7%94%a8" aria-label="七、副作用">七、副作用</a></li>
+                <li>
+                    <a href="#%e5%85%ab%e5%b8%83%e5%b1%80" aria-label="八、布局">八、布局</a><ul>
+                        
+                <li>
+                    <a href="#constraintlayout" aria-label="ConstraintLayout">ConstraintLayout</a></li>
+                <li>
+                    <a href="#lazycolumn" aria-label="LazyColumn">LazyColumn</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b9%9d%e5%8a%a8%e7%94%bb--%e6%89%8b%e5%8a%bf%e6%93%8d%e4%bd%9c" aria-label="九、动画 &amp; 手势操作">九、动画 &amp; 手势操作</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8a%a8%e7%94%bb" aria-label="动画">动画</a></li>
+                <li>
+                    <a href="#%e6%89%8b%e5%8a%bf%e6%93%8d%e4%bd%9c" aria-label="手势操作">手势操作</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8d%81%e4%b8%bb%e9%a2%98" aria-label="十、主题">十、主题</a></li>
+                <li>
+                    <a href="#%e5%8d%81%e4%b8%80%e7%bb%93%e5%b0%be" aria-label="十一、结尾">十一、结尾</a></li>
+                <li>
+                    <a href="#%e5%8d%81%e4%ba%8c%e5%8f%82%e8%80%83" aria-label="十二、参考">十二、参考</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>公众号：<a href="https://link.juejin.cn?target=https%3A%2F%2Fp3-juejin.byteimg.com%2Ftos-cn-i-k3u1fbpfcp%2Fadbc507fc3704fd8955aae739a433db2~tplv-k3u1fbpfcp-zoom-1.image" title="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/adbc507fc3704fd8955aae739a433db2~tplv-k3u1fbpfcp-zoom-1.image">字节数组</a></p>
+<p>希望对你有所帮助 🤣🤣</p>
+</blockquote>
+<p>在 2019 年的 Google/IO 大会上，亮相了一个全新的 Android 原生 UI 开发框架 Jetpack Compose。与 IOS 的 SwiftUI 一样，Jetpack Compose 也是一个声明式的 UI 框架，随着 Android 和 IOS 两大移动平台相继推出了自己平台专属的声明式 UI 框架，标志着整个行业已开始转向声明性界面模型，该模型大大简化了与构建和更新界面关联的工程设计</p>
+<p>经过两年多的打磨，到了今年七月底，Google 正式发布了 Jetpack Compose 的 1.0 版本，这是 Compose 的稳定版本，可供开发者在生产环境中使用</p>
+<p>引用 Google 官网对 Jetpack Compose 的介绍：Jetpack Compose 是用于构建原生 Android 界面的新工具包。它可简化并加快 Android 上的界面开发，帮助您使用更少的代码、强大的工具和直观的 Kotlin API，快速打造生动而精彩的应用</p>
+<p>其核心功能包括：</p>
+<ul>
+<li>互操作性：Compose 可以和既有的应用进行互操作。您可以将 Compose UI 嵌入 View，反之亦然。您可以只在屏幕上添加一个按钮，也把自己创建的自定义视图保留在现在用 Compose 打造的界面中</li>
+<li>Jetpack 集成：Compose 和大家熟知且喜爱的 Jetpack 开发库天然整合。通过与 Navigation、Paging、LiveData (或 Flow/RxJava)、ViewModel 和 Hilt 的整合，Compose 可以与您现有的架构完美共存</li>
+<li>Material：Compose 提供了 Material Design 组件和主题的实现，使您能够轻松构建符合您的品牌个性的美观应用。Material 主题系统更容易理解和追踪，再也不需要翻阅多个 XML 文件</li>
+<li>列表：Compose 的 Lazy 组件为数据列表的呈现提供了一种简单扼要且功能强大的方式，而且将模版代码精简到了最少</li>
+<li>动画：Compose 简明的动画 API 让您可以更轻松地打造出让用户眼前一亮的体验</li>
+</ul>
+<h1 id="一compose_chat">一、compose_chat<a hidden class="anchor" aria-hidden="true" href="#一compose_chat">#</a></h1>
+<p>技术的世界总是在不断变化的，新的技术总在不断涌现，我数了一下，现在一名 Android 应用开发工程师需要掌握的最基础技能有以下几个，有点 MMP 的感觉 🤣🤣</p>
+<p>需要掌握的 UI 开发框架：</p>
+<ul>
+<li>传统的 View 体系</li>
+<li>跨平台的 Flutter</li>
+<li>最新的 Jetpack Compose</li>
+<li>xxxxx</li>
+</ul>
+<p>需要掌握的语言有：</p>
+<ul>
+<li>Java</li>
+<li>Dart</li>
+<li>Kotlin</li>
+<li>xxxxx</li>
+</ul>
+<p>实践出真理，学不动也要学 🤣🤣 Jetpack Compose 大概率会成为以后 Android 原生应用开发时的首选技术方案，所以我也做了一次实战演练，花了两个月时间断断续续写了一个完全用 Compose 实现的 IM APP，实现了基本的好友聊天功能</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/adbeccad79d94d0dbff85bc02d7ccf04~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=359&amp;h=781&amp;s=4108150&amp;e=gif&amp;f=275&amp;b=fdfdfd" alt=""  />
+</p>
+<p>整个 APP 采用的是单 Activity 形式，内部通过 navigation 来模拟多屏幕跳转，使用了单向数据流模式，所有业务逻辑均通过 ViewModel 来完成，业务逻辑的处理结果再以可组合函数的入参参数的形式回传给 UI 层，底层通过腾讯云的 IM SDK 来实现通信</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/28bcba206ff54bfda826e27c092fd4f8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=883&amp;h=342&amp;s=22137&amp;e=png&amp;b=fbfbfb" alt=""  />
+</p>
+<p>本文主要介绍的是 Jetpack Compose 的各种重点概念和功能点，并不会涉及太多 compose_chat 的实际编码内容，但会以 compose_chat 作为讲解时的辅助例子。读者如果想要学习 Jetpack Compose 的话，compose_chat 会是一个很好的入门学习项目，希望对你有所帮助 🤣🤣</p>
+<h1 id="二命令式与声明式">二、命令式与声明式<a hidden class="anchor" aria-hidden="true" href="#二命令式与声明式">#</a></h1>
+<p>长期以来，Android 的视图层次结构都可以表示为一个视图树，若干个 View 和 ViewGroup 以嵌套的关系组成整个视图树，开发者通过 XML 来声明整个视图树的层次结构，再通过 <code>findViewById()</code>来拿到每个控件的引用。当状态发生变化需要刷新 UI 时，就通过主动调用控件的特定方法来更新 UI</p>
+<p>整个过程就类似如下所示。通过 TextView 来显示用户名，在用户名发生变化时需要通过主动调用 <code>TextView.setText</code> 方法来刷新 UI，开发者直接持有并维护着每个视图结点，想要更新视图都需要开发者直接向控件下发“指令”，这整个过程的复杂度和出错概率随着需要维护的控件数量的增加而增加。这种方式就属于<strong>命令式</strong></p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`val tvUserName = findViewById&lt;TextView&gt;(R.id.tvUserName)     fun onUserNameChanged(userName: String) {         tvUserName.text = userName     }     onUserNameChanged(&quot;业志陈&quot;)`
+</code></pre>
+<p>Compose 则是通过声明一系列不包含返回值的<strong>可组合（Composable）函数</strong>来构建界面的。可组合函数只负责描述所需的屏幕状态，且不提供任何视图控件的引用给到开发者。可组合函数可以包含入参参数，参数就用来参与描述屏幕状态，当需要改变屏幕状态时，也是通过<strong>生成新的入参参数并再次调用可组合函数</strong>来实现 UI 刷新的</p>
+<p>整个过程就类似如下所示。Compose 中对应 TextView 的 &ldquo;控件&rdquo; 就是 <code>Text()</code> 函数，Greeting 函数在拿到用户名 name 后，就通过 <code>Text()</code> 函数来进行显示，其接收一个 String 参数用于在屏幕上显示文本信息。在这整个过程中，开发者不持有任何视图节点的引用，而是以描述的方式来声明视图应该如何呈现，且视图并不直接持有状态，而是依赖状态来生成自身。这种方式就属于<strong>声明式</strong></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d456efd9169e4d4aa64751dcd52514cc~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1999&amp;h=1125&amp;s=170549&amp;e=png&amp;b=1f2023" alt=""  />
+</p>
+<p>声明式 UI 的一个很显著的特点就是：视图是否存在是根据有没有被声明过来决定的</p>
+<p>以 compose_chat 为例，主界面包含一个悬浮按钮 floatingActionButton</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/434b51ee5b124dde91618759d5c6a116~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=424&amp;h=715&amp;s=92122&amp;e=png&amp;b=fefdfd" alt=""  />
+</p>
+<p>该按钮只会在 Friendship 页面出现，HomeScreen 依靠<code>if (screenSelected == ViewScreen.Friendship)</code>语句来决定其出现时机，只有 if 语句为 true，FloatingActionButton() 函数才会被执行，此时才会显示悬浮按钮</p>
+<p>这和原生的 View 体系有很大区别，按 View 体系的做法来实现的话，FloatingActionButton 会对应一个控件对象且对象是一直存在的，只是我们选择性地通过 <code>View.Gone()</code> 来将其隐藏。而按 Compose 的做法，只有 FloatingActionButton() 函数被执行了悬浮按钮才会存在，否则对于当前屏幕来说，悬浮按钮就相当于从来没有出现过</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HomeScreen(     navController: NavHostController,     screenSelected: ViewScreen,     onTabSelected: (ViewScreen) -&gt; Unit ) {     ChatTheme(appTheme = appTheme) {         ProvideWindowInsets {             ModalBottomSheetLayout() {                 Scaffold(                     floatingActionButton = {                         if (screenSelected == ViewScreen.Friendship) {                             FloatingActionButton(                                 backgroundColor = MaterialTheme.colors.primary,                                 onClick = {                                     sheetContentAnimateTo(targetValue = ModalBottomSheetValue.Expanded)                                 }) {                                 Icon(                                     imageVector = Icons.Filled.Favorite,                                     tint = Color.White,                                     contentDescription = null,                                 )                             }                         }                     },                 )             }         }     } }</code></p>
+<h1 id="三可组合函数">三、可组合函数<a hidden class="anchor" aria-hidden="true" href="#三可组合函数">#</a></h1>
+<p>带有 <code>@Composable</code>注解的函数即可组合函数，该注解就用于告知 Compose 编译器：此函数旨在将数据转换为界面。例如，Compose 的<code>Text()</code> 函数就提供了 TextView 的所有功能，开箱即用，方法签名如下所示</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun Text(     text: String,     modifier: Modifier = Modifier,     color: Color = Color.Unspecified,     fontSize: TextUnit = TextUnit.Unspecified,     fontStyle: FontStyle? = null,     fontWeight: FontWeight? = null,     fontFamily: FontFamily? = null,     letterSpacing: TextUnit = TextUnit.Unspecified,     textDecoration: TextDecoration? = null,     textAlign: TextAlign? = null,     lineHeight: TextUnit = TextUnit.Unspecified,     overflow: TextOverflow = TextOverflow.Clip,     softWrap: Boolean = true,     maxLines: Int = Int.MAX_VALUE,     onTextLayout: (TextLayoutResult) -&gt; Unit = {},     style: TextStyle = LocalTextStyle.current )</code></p>
+<p>当中，最需要关注的当属 Modifier 这个入参参数了，Compose 提供了一系列开箱即用的“控件”函数，例如，对应 FrameLayout 的 Box()、对应 ImageView 的 Image()、对应 RecyclerView 的 LazyColumn() 等，这些控件都包含一个 Modifier 入参参数。Modifier 功能十分强大，每个控件的<strong>宽高大小、位置、方向、对齐、裁切、间距、背景色、点击、甚至手势识别</strong>等功能都需要通过它来完成，每个功能都通过扩展函数的方式来声明，以链式调用的方式进行使用</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`Text(             modifier = Modifier                 .weight(weight = messageWidthWeight, fill = false)                 .padding(                     start = messageStartPadding,                     top = messageTopPadding,                     end = messageEndPadding                 )                 .clip(shape = messageShape)                 .background(color = friendMsgBgColor)                 .pointerInput(key1 = Unit) {                     detectTapGestures(                         onLongPress = {                             onLongPressMessage(textMessage)                         },                     )                 }                 .padding(                     start = messageInnerPadding,                     top = messageInnerPadding,                     end = messageInnerPadding,                     bottom = messageInnerPadding                 ),             text = textMessage.msg,             style = MaterialTheme.typography.subtitle1,             textAlign = TextAlign.Left,         )`
+</code></pre>
+<p>Compose 提供的一系列“控件”函数基本已经能够满足我们的日常开发需求了，我们在开发 Compose 应用时，就可以通过嵌套组合官方提供的控件来实现各种自定义需求</p>
+<p>以 compose_chat 为例，好友发送的每一条消息都通过 FriendTextMessageItem() 来显示，包括好友头像和文本消息，当中便嵌套使用到了多个官方控件</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/76dfa61a8ac544718f0677b6ce9e39ee~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1630&amp;h=741&amp;s=96421&amp;e=png&amp;b=2c2c2c" alt=""  />
+</p>
+<h1 id="四状态">四、状态<a hidden class="anchor" aria-hidden="true" href="#四状态">#</a></h1>
+<p>应用的状态（State）是指可以随时间变化的任何值，其定义十分宽泛，从函数的入参参数到应用的背景色都包括在内</p>
+<p>对于 Android 传统的 View 视图结构来说，控件会直接持有着 State。例如，EditText 的内部就包含一个 CharSequence 类型的全局变量 mText，用于存储 EditText 当前显示的文本。当想要改变文本内容时，就需要通过手动调用 <code>EditText.setText</code> 方法来改变 mText，EditText 也随之刷新，mText 即 EditText 持有的 State</p>
+<p>而 Compose 通过组合多个可组合函数来描述整个屏幕状态并以此来绘制屏幕，更新视图的唯一途径就是<strong>生成新的入参参数并再次调用可组合函数</strong>，新的入参参数就代表想要的屏幕状态，每当 State 更新时就会触发可组合函数进行重组，从而实现 UI 刷新。在这整个过程中，可组合函数并不直接持有 State，而是通过读取 State 来确定自身应该如何显示</p>
+<p>Compose 中的 OutlinedTextField 函数在功能上就类似于 EditText，但 OutlinedTextField 想要实现和 EditText 相同的效果就会显得稍微麻烦一点</p>
+<p>看以下示例，当用户不断向 OutlinedTextField 输入信息时，由于其 value 一直为空字符串，所以 OutlinedTextField 呈现出来的也只会一直是空空如也，因为 OutlinedTextField 只会在 value 值发生变化的时候才进行 UI 刷新</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HelloContent() {     OutlinedTextField(         value = &quot;&quot;,         onValueChange = {                      }     ) }</code></p>
+<p>想要让 OutlinedTextField 实现和 EditText 相同的效果，就需要有一个中间值对其状态进行描述，也即以下的 name。mutableStateOf 函数返回的是与 Compose 运行时集成的可观察类型，当 mutableState 值发生变化时就会触发所有读取该值的可组合函数进行重组。而 remember 的作用就是让 Compose 在初始组合期间将由其保存的值存储在组合中，并在重组期间返回存储的值，从而使得值可以跨越重组被保留下来，当然这个保留期限也只限于可组合函数的单次生命周期内</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HelloContent() {     var name by remember { mutableStateOf(&quot;&quot;) }     OutlinedTextField(         value = name,         onValueChange = {             name = it         }     ) }</code></p>
+<p>以 compose_chat 为例，其主界面如下所示</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/43009ac4ef25400c95c123ed47193dbb~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=424&amp;h=721&amp;s=85629&amp;e=png&amp;b=fefdfd" alt=""  />
+</p>
+<p>主界面由 HomeScreen 函数声明，内部一共包含三个子界面，对应 ConversationScreen、FriendshipScreen、UserProfileScreen 三个函数。HomeScreen 就通过 screenSelected 来控制当前需要显示哪个子界面，当 screenSelected 发生变化时，就会触发 HomeScreen 函数重组，使得 when 表达式再次执行，从而显示新的子界面</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HomeScreen(     navController: NavHostController,     screenSelected: HomeScreenTab,     onTabSelected: (HomeScreenTab) -&gt; Unit,     backDispatcher: OnBackPressedDispatcher, ) {     ModalBottomSheetLayout() {         Scaffold() {             when (screenSelected) {                 HomeScreenTab.Conversation -&gt; {                     ConversationScreen()                 }                 HomeScreenTab.Friendship -&gt; {                     FriendshipScreen()                 }                 HomeScreenTab.UserProfile -&gt; {                     UserProfileScreen()                 }             }         }     } }</code></p>
+<h1 id="五状态提升">五、状态提升<a hidden class="anchor" aria-hidden="true" href="#五状态提升">#</a></h1>
+<p>看以下例子。name 的存在，相当于使得 HelloContent 这个可组合函数包含了一个内部状态，该状态对于调用方来说是完全不可见的。如果调用方不需要控制状态的变化或者是接收状态变化的通知，那么隐藏内部状态就变得十分有用，因为这样就降低了调用方的调用成本。但是，具有内部状态的可组合项往往不易重复使用，也更难测试</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HelloContent() {     var name by remember { mutableStateOf(&quot;&quot;) }     OutlinedTextField(         value = name,         onValueChange = {             name = it         }     ) }</code></p>
+<p>如果想要将 HelloContent 改造为无状态模式的话，就需要进行<strong>状态提升</strong>，状态提升是一种将状态移至可组合项的调用方以使可组合项无状态的模式。仿照 OutlinedTextField 的方式，将状态均交由外部提供，这样 name 这个状态值就交由调用方 HelloContentOwner 来进行维护并持有了</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HelloContent(name: String, onValueChange: (String) -&gt; Unit) {     OutlinedTextField(         value = name,         onValueChange = onValueChange     ) } @Composable fun HelloContentOwner() {     var name by remember { mutableStateOf(&quot;&quot;) }     HelloContent(name = name) {         name = it     } }</code></p>
+<p>以 compose_chat 为例。HomeScreen 的子界面是通过点击底部的 BottomBar 来进行切换的，即切换子界面的请求是从 BottomBar 发起的。BottomBar 需要拿到 screenSelected 才能决定应该选中哪个 tab，HomeScreen 也需要拿到 screenSelected 才能知道当前应该显示哪个子界面，因此 BottomBar 就不应该直接持有 screenSelected 这个状态，而是应该交由调用方来提供，这里就使用到了状态提升这个概念</p>
+<p>BottomBar 不直接持有 screenSelected，而是由 HomeScreen 来提供。当用户点击 BottomBar 时，该点击事件也会从 BottomBar 向上传递给 HomeScreen（HomeScreen 再将该事件回调给更上层的调用方），由最上层的调用方来负责改变 screenSelected 的当前值，以此触发 BottomBar 和 HomeScreen 进行重组</p>
+<p>在这整个过程中，BottomBar 并不包含任何内部状态，而只负责将用户的点击事件传递给调用方，其本身是<strong>无状态</strong>的。而 onTabSelected 这个回调函数就相当于<strong>应用的业务逻辑</strong>，其负责对用户的点击事件进行响应并改变 screenSelected 的值，screenSelected 就相当于<strong>应用的状态</strong>。当 screenSelected 发生变化时，Compose 就会将最新的状态值传给可组合函数，以此触发屏幕重新绘制。可组合函数由于状态发生变化导致再次执行的过程就称为<strong>重组</strong></p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HomeScreen(     navController: NavHostController,     screenSelected: HomeScreenTab,     onTabSelected: (HomeScreenTab) -&gt; Unit,     backDispatcher: OnBackPressedDispatcher, ) {     ChatTheme() {         ProvideWindowInsets {             ModalBottomSheetLayout {                 Scaffold(                     bottomBar = {                         HomeScreenBottomBar(                             screenList = ViewScreen.values().toList(),                             screenSelected = screenSelected,                             onTabSelected = onTabSelected                         )                     },                 ) {                     when (screenSelected) {                         HomeScreenTab.Conversation -&gt; {                             ConversationScreen()                         }                         HomeScreenTab.Friendship -&gt; {                             FriendshipScreen()                         }                         HomeScreenTab.UserProfile -&gt; {                             UserProfileScreen()                         }                     }                 }             }         }     } }</code></p>
+<p>在这整个过程中，状态是向下传递的，而事件是向上传递的。状态下降、事件上升的这种模式称为“单向数据流”，通过遵循单向数据流，可以将在界面中显示状态的可组合项与应用中存储和更改状态的部分解耦。因此，应用的界面状态应该都交由可组合函数的入参参数来定义，而应用的业务逻辑应该交由 ViewModel 来容纳并处理，业务逻辑的处理结果再以新的入参参数的形式传递给可组合函数，以此对用户进行响应和界面更新。遵循这种规则后，UI 层就有了一个统一且单一的数据源，这样应用才更不容易出错</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/63441d2fd5ec4798a1207b2715db34ea~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=342&amp;h=389&amp;s=13583&amp;e=png&amp;a=1&amp;b=222222" alt=""  />
+</p>
+<p>提升状态时，有三条规则可帮助开发者弄清楚状态应去向何处：</p>
+<ol>
+<li>状态应至少提升到使用该状态（读取）的所有可组合项的<strong>最低共同父项</strong></li>
+<li>状态应至少提升到<strong>它可以发生变化（写入）的最高级别</strong></li>
+<li>如果<strong>两种状态发生变化以响应相同的事件</strong>，它们应<strong>一起提升</strong></li>
+</ol>
+<blockquote>
+<p>我认为，遵循状态提升的理念并非一定要做到所有可组合项均无状态。虽然 BottomBar 做到了无状态，但最终 screenSelected 也需要转交给上一级的调用方进行持有，调用方是有状态的。虽然可以将 screenSelected 再次提升到 ViewModel 中进行持有，但像这种不依赖外部环境（例如，网络请求，系统配置等），仅依靠用户事件进行变化的状态，我觉得将其提升到使用该状态（读取）的所有可组合项的<strong>最低共同父项</strong>即可，不必强行做到所有可组合项均无状态</p>
+</blockquote>
+<h1 id="六纯函数">六、纯函数<a hidden class="anchor" aria-hidden="true" href="#六纯函数">#</a></h1>
+<p>在很多讲解关于程序设计最佳实践的文章或者书籍里，都会推荐一个编码原则：<strong>尽可能使用 val、不可变对象及纯函数来设计程序</strong>。这个原则在 Compose 中也同样需要遵守，因为一个合格的可组合函数就应该属于<strong>纯函数</strong>，幂等且没有副作用</p>
+<p>何谓纯函数？假如一个函数使用相同的入参参数重复执行时，总是能获得相同的运行结果，且运行结果不会影响任何外部状态，也不用担心重复执行会对外部造成改变，那么这个函数就称为纯函数</p>
+<p>纯函数不具备副作用，具有引用透明性。副作用就是指修改了某处的某些东西，比如：</p>
+<ul>
+<li>引用或修改了外部变量的值</li>
+<li>执行了 IO 操作，比如读写了 SharedPreferences</li>
+<li>执行了 UI 操作，比如修改了一个按钮的可操作状态</li>
+</ul>
+<p>以下例子就不属于纯函数，由于受到外部变量的影响，使用相同入参参数多次执行 count 函数的结果并不全部相同，且每次执行都会影响到外部环境（使用到了 println 函数），这些都属于副作用</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var count = 1 fun count(x: Int): Int {     count += x     println(count)     return count }</code></p>
+<p>使用 Compose 时需要注意：</p>
+<ul>
+<li>可组合函数可以按任何顺序执行</li>
+<li>可组合函数可以并行执行</li>
+<li>重组会跳过尽可能多的可组合函数和 lambda</li>
+<li>重组是乐观的操作，可能会被取消</li>
+<li>可组合函数可能会像动画的每一帧一样非常频繁地运行</li>
+</ul>
+<p>看以下例子。按照我们的直观理解，ButtonRow 中的三个函数是会顺序执行的，且三个函数会得到一个依次递增的 count 值，但这在 Compose 中是没有保障的。为了提升运行效率，Compose 可能会在后台线程中以并行方式来执行多个可组合函数，这也意味着可组合函数之间的先后顺序是不确定的。而且由于存在<strong>智能重组</strong>，Compose 会自动识别出哪些可组合函数并没有发生更改从而跳过重组，而仅仅重新执行发生变化的部分函数，从而仅更新屏幕的某一部分</p>
+<p>Compose 的这些举措都是为了提升程序的运行效率还有屏幕的绘制效率，但这也导致可组合函数在读写外部变量时是完全没有保障的，我们无法假设在执行 MiddleScreen 前 StartScreen 就已经修改了 count，两者的顺序可能完全相反甚至根本没有被执行</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun ButtonRow() {     StartScreen()     MiddleScreen()     EndScreen() } var count = 0 @Composable fun StartScreen() {     Text(text = count.toString())     count += 1 } @Composable fun MiddleScreen() {     Text(text = count.toString())     count += 1 } @Composable fun EndScreen() {     Text(text = count.toString())     count += 1 }</code></p>
+<p>此外，由于可组合函数可能会像每一帧一样频繁地重新执行，例如在执行动画时，可组合函数会快速地执行，以避免在播放动画期间出现卡顿，这个过程中可组合函数就会不断地在被重复调用。如果可组合函数存在副作用，例如内部存在读写 SharedPreferences 的操作，可能一秒钟就会被调用几百次，这就会严重影响到屏幕的绘制效率，从而导致页面卡顿了，所以对于这类执行成本高昂的操作，需要放到后台协程中执行，并将执行结果作为参数传递给可组合函数</p>
+<p>所以说，可组合函数需要做到无副作用才能得到正确的期望结果。此外，对于相同的入参参数，可组合函数应该一直呈现相同的表现形式。多个可组合函数之间应该保持状态独立，不能具有互相依赖性。对于共享的状态，应该以入参参数的形式进行传递，并且将状态放在最顶级函数或者 ViewModel 中进行维护</p>
+<h1 id="七副作用">七、副作用<a hidden class="anchor" aria-hidden="true" href="#七副作用">#</a></h1>
+<p>在某些情况下，可组合函数可能无法做到完全无副作用，例如，我们在切换应用主题的时候希望系统状态栏也能跟着一起改变背景色，此时就说可组合函数产生了副作用。为了处理这种情况，Compose 也提供了 Effect API，以便以可预测的方式执行这些附带效应</p>
+<p>以 compose_chat 为例。设置系统状态栏的颜色是通过 SetSystemBarsColor() 函数来实现的。我们希望在应用刚启动时，以及应用主题发生变化时，SetSystemBarsColor() 都能够被执行一次，这可以通过 DisposableEffect 来实现</p>
+<p>当 DisposableEffect 进入组合时，或者是 key 发生变化时，DisposableEffect 内的代码就会被执行，从而改变系统状态栏，除此之外每次界面重组时都不会再次执行，从而避免了无意义的调用</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun SetSystemBarsColor(     key: Any = Unit,     statusBarColor: Color = MaterialTheme.colors.background,     navigationBarColor: Color = MaterialTheme.colors.background ) {     val systemUiController = rememberSystemUiController()     val isLight = MaterialTheme.colors.isLight     DisposableEffect(key1 = key) {         systemUiController.setStatusBarColor(             color = statusBarColor,             darkIcons = isLight         )         systemUiController.setNavigationBarColor(             color = navigationBarColor,             darkIcons = isLight         )         systemUiController.systemBarsDarkContentEnabled = isLight         onDispose {         }     } }</code></p>
+<p>HomeScreen 传给 SetSystemBarsColor 的 Key 也即 appTheme，因此每次切换主题后都能保证 DisposableEffect 会再次执行</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HomeScreen(     navController: NavHostController,     screenSelected: HomeScreenTab,     onTabSelected: (HomeScreenTab) -&gt; Unit ) {     val homeViewModel = viewModel&lt;HomeViewModel&gt;()     val appTheme by homeViewModel.appTheme.collectAsState()     ChatTheme(appTheme = appTheme) {         ProvideWindowInsets {             SetSystemBarsColor(                 key = appTheme,                 statusBarColor = Color.Transparent,                 navigationBarColor = MaterialTheme.colors.primaryVariant             )         }     } }</code></p>
+<blockquote>
+<p>更多关于 Effect API 的介绍请看这里：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.android.google.cn%2Fjetpack%2Fcompose%2Fside-effects" title="https://developer.android.google.cn/jetpack/compose/side-effects">Compose 中的附带效应</a></p>
+</blockquote>
+<h1 id="八布局">八、布局<a hidden class="anchor" aria-hidden="true" href="#八布局">#</a></h1>
+<p>布局是每个 UI 框架都必须的功能，不管是 View、Flutter、还是 Compose，都必须提供一些开箱即用的布局控件，这里就介绍下 compose_chat 中使用得比较多的 ConstraintLayout 和 LazyColumn</p>
+<h2 id="constraintlayout">ConstraintLayout<a hidden class="anchor" aria-hidden="true" href="#constraintlayout">#</a></h2>
+<p>在以往的 Android View 视图体系下，我们都会尽量避免在布局中进行多层嵌套，因为嵌套层次越深，在测量 View 时需要的次数和时间就会越多，这就会严重影响到应用的运行性能了，因此 Google 官方也建议开发者尽量使用 ConstraintLayout 进行布局，实现扁平化布局。但 Compose 不同，由于 Compose 可以避免多次测量，因此开发者可以根据需要进行深层次嵌套，而不用担心会影响性能。同时 Compose 也提供了自己专属的 constraintlayout-compose，用于实现约束定位</p>
+<p>以 compose_chat 为例。每个好友列表 Item 就对应 FriendshipItem() 函数，其内部就使用到了 ConstraintLayout 进行布局，其使用思路和 View 版本的差不多。首先需要通过 createRefs() 来声明“控件”的引用，然后通过 constrainAs 将引用和“控件”绑定在一起，类似于为“控件”声明 ID，之后每个“控件”之间就可以通过 linkTo 方法进行关联定位了，当中 parent 即指 ConstraintLayout 自身</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5fce8b4dc0d545a99715de767c6445d7~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1751&amp;h=798&amp;s=114002&amp;e=png&amp;b=2b2b2b" alt=""  />
+</p>
+<h2 id="lazycolumn">LazyColumn<a hidden class="anchor" aria-hidden="true" href="#lazycolumn">#</a></h2>
+<p>在以往的 Android View 视图体系下，我们在加载长列表时一般是通过 RecyclerView 来实现的，以便能够缓存复用 Item，RecyclerView 在滑动性能上还是很优越的，能有效地避免由于数据量过大导致滑动卡顿的情况，缺点就是需要由开发者来声明各种 Adapter 和 ViewHolder，这一点比较麻烦</p>
+<p>Compose 中对应 RecyclerView 的是 LazyColumn() 函数，从名字就可以猜出该函数是个竖向滑动列表，且实现了懒加载。实际上 LazyColumn 也的确实现了 Item 的缓存复用机制，重点在使用上要比 RecyclerView 简单很多，因为我们再也不用声明各种繁琐的 Adapter 和 ViewHolder 了</p>
+<p>以 compose_chat 为例。在拿到好友列表 friendList 后，通过 for 循环，每个 PersonProfile 就对应 LazyColumn 的一个列表项 item()，在 item() 函数中声明的 FriendshipItem() 即每个列表项要呈现的视图。通过循环调用 item() 函数，就可以完成整个滑动列表数据项的声明了，而且即使存在多种样式的 Item，也通过相同方式来声明即可，就像以下例子中我为列表添加了一个底部间距 Spacer</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun FriendshipScreen(     paddingValues: PaddingValues,     friendList: List&lt;PersonProfile&gt;,     onClickFriend: (PersonProfile) -&gt; Unit ) {     Scaffold(         modifier = Modifier             .padding(bottom = paddingValues.calculateBottomPadding())             .fillMaxSize()     ) {         if (friendList.isEmpty()) {             EmptyView()         } else {             LazyColumn {                 friendList.forEach {                     item(key = it.userId) {                         FriendshipItem(personProfile = it, onClickFriend = onClickFriend)                     }                 }                 item {                     Spacer(modifier = Modifier.height(40.dp))                 }             }         }     } }</code></p>
+<h1 id="九动画--手势操作">九、动画 &amp; 手势操作<a hidden class="anchor" aria-hidden="true" href="#九动画--手势操作">#</a></h1>
+<p>Jetpack Compose 提供了一些功能强大且可扩展的 API，可用于在应用界面中轻松实现各种动画效果。动画在现代移动应用中至关重要，其目的是实现自然流畅、易于理解的用户体验。许多 Jetpack Compose 动画 API 可以提供可组合函数，就像布局和其他界面元素一样；它们由使用 Kotlin 协程挂起函数构建的较低级别 API 提供支持</p>
+<p>此外，Compose 也提供了多种 API 用于检测用户互动生成的手势。API 涵盖各种用例：</p>
+<ul>
+<li>其中一些<strong>级别较高</strong>，旨在覆盖最常用的手势。例如，clickable修饰符可用于轻松检测点击，此外它还提供无障碍功能，并在点按时显示视觉指示（例如涟漪）</li>
+<li>还有一些不太常用的手势检测器，它们在<strong>较低级别</strong>提供更大的灵活性，例如 PointerInputScope.detectTapGestures 或 PointerInputScope.detectDragGestures，但不提供额外功能</li>
+</ul>
+<p>以 compose_chat 为例。个人资料页 ProfileScreen 就同时应用到了动画和手势操作：背景图同时包含了 <strong>裁切 + 缩放 + 旋转</strong> 三种动画，用户可以拖拽头像进行移动，当松手时头像也会通过<strong>弹簧动画</strong>自动移回原位</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a37c2618a7df40e496d95c56ce45441e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=420&amp;h=748&amp;s=1346234&amp;e=gif&amp;f=42&amp;b=fdfcfc" alt=""  />
+</p>
+<h2 id="动画">动画<a hidden class="anchor" aria-hidden="true" href="#动画">#</a></h2>
+<p>前文很多地方都有讲到：更新视图的唯一途径就是生成新的入参参数并再次调用可组合函数，动画也是如此。想要让视图以一种连贯且自然的方式进行变换，那么意思也就是说需要有一个值生成器来连贯地改变可组合函数的参数值</p>
+<p>ProfileScreen 使用<code>rememberInfiniteTransition()</code>来实现这种效果。InfiniteTransition 通过 animateFloat、animateValue、animateColor 等方式来保存子动画，这些动画一进入组合阶段就开始运行，除非被移除，否则不会停止。再为 InfiniteTransition 指定一个初始值和一个结束值，并指定动画以反转的形式来回运行，animateValue 就会在这两个值之间不断地连贯变化，之后将 animateValue 应用到背景图的布局参数上即可实现动画效果</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>    `val animateValue by rememberInfiniteTransition().animateFloat(             initialValue = 1.3f, targetValue = 1.9f,             animationSpec = infiniteRepeatable(                 animation = tween(durationMillis = 1800, easing = FastOutSlowInEasing),                 repeatMode = RepeatMode.Reverse,             ),         )         NetworkImage(             data = userFaceUrl,             modifier = Modifier                 .constrainAs(ref = background) {                 }                 .fillMaxWidth()                 .aspectRatio(ratio = 5f / 4f)                 .scrim(colors = listOf(Color(0x40000000), Color(0x40F4F4F4)))                 .clip(shape = BezierShape(padding = animateValue * 100)) //裁切                 .scale(scale = animateValue) //缩放                 .rotate(degrees = animateValue * 10.3f) //旋转         )`
+</code></pre>
+<h2 id="手势操作">手势操作<a hidden class="anchor" aria-hidden="true" href="#手势操作">#</a></h2>
+<p>Compose 中的 Modifier 十分强大，不仅仅是用于进行布局，像点击事件、手势操作等一样需要依靠其来完成，pointerInput 函数就用于识别用户的手势操作，Modifier 同时提供了 offset 函数用于控制控件的偏移量，通过结合 pointerInput 和 offset 两个函数来动态改变控件的偏移量，就可以实现拖拽用户头像了</p>
+<p>拖拽 OutlinedAvatar 的过程中系统会不断回调 onDrag 函数，在回调里通过用户的拖拽值不断改变 offsetX 和 offsetY 两个值，就可以不断触发 OutlinedAvatar 进行重组，以此实现拖拽效果。当用户松手时，onDragEnd 函数会被回调，再通过 Animatable 将 OutlinedAvatar 的偏移量重置为零，这样就可以实现自动移回原位的效果了</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>    `val coroutineScope = rememberCoroutineScope()         var offsetX by remember { mutableStateOf(0f) }         var offsetY by remember { mutableStateOf(0f) }         OutlinedAvatar(             data = userFaceUrl,             modifier = Modifier                 .offset {                     IntOffset(                         x = offsetX.roundToInt(),                         y = offsetY.roundToInt()                     )                 }                 .pointerInput(Unit) {                     detectDragGestures(                         onDragStart = {                         },                         onDragCancel = {                         },                         onDragEnd = {                             coroutineScope.launch {                                 Animatable(                                     initialValue = Offset(offsetX, offsetY),                                     typeConverter = Offset.VectorConverter                                 ).animateTo(                                     targetValue = Offset(x = 0f, y = 0f),                                     animationSpec = SpringSpec(dampingRatio = Spring.DampingRatioHighBouncy),                                     block = {                                         offsetX = value.x                                         offsetY = value.y                                     }                                 )                             }                         },                         onDrag = { change, dragAmount -&gt;                             change.consumeAllChanges()                             offsetX += dragAmount.x                             offsetY += dragAmount.y                         },                     )                 }         )`
+</code></pre>
+<h1 id="十主题">十、主题<a hidden class="anchor" aria-hidden="true" href="#十主题">#</a></h1>
+<p>在以前，Android 应用实现多主题 Theme 切换时都需要声明多个 XML 文件，例如在实现夜间模式时就需要两套 colors.xml 和 styles.xml，这种机制在性能上不能说低，但在易用性上的确不高</p>
+<p>Compose 的 Theme 就比较优秀了，完全基于 Kotlin 语言来实现，避免了原生实现方式的那种割裂感，相对原生的实现方式在性能和易用性上都提升了很多。Compose 提供了 MaterialTheme 这一种基于 Material Design 风格样式的主题，<code>androidx.compose.material</code> 包内提供的所有控件都遵循 MaterialTheme 进行设计，保证了整个应用统一的风格样式</p>
+<p>当使用 Android Studio 创建一个 Compose 工程时，会自动在 <code>ui.theme</code> 包目录下创建以下四个文件，当中就默认提供了 Dark 和 Light 两种主题样式</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a03f06817fc49d89ae4bba6f39bffe8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1592&amp;h=926&amp;s=113483&amp;e=png&amp;b=2b2b2b" alt=""  />
+</p>
+<p>DarkColorPalette 和 LightColorPalette 分别定义了在夜间模式和日间模式下使用的颜色值，通过选取不同的 colors 对象传给 MaterialTheme 就可以实现不同的主题样式</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>private val DarkColorPalette = darkColors(     primary = Purple200,     primaryVariant = Purple700,     secondary = Teal200 ) private val LightColorPalette = lightColors(     primary = Purple500,     primaryVariant = Purple700,     secondary = Teal200 ) @Composable fun MyApplicationTheme(     darkTheme: Boolean = isSystemInDarkTheme(),     content: @Composable() () -&gt; Unit ) {     val colors = if (darkTheme) {         DarkColorPalette     } else {         LightColorPalette     }     MaterialTheme(         colors = colors,         typography = Typography,         shapes = Shapes,         content = content     ) }</code></p>
+<p>MaterialTheme 由颜色 colors、排版 typography、形状 shapes 共同组成，当自定义这些属性后，所做的更改会自动反映在所有用来构建应用的组件中。MaterialTheme 会将不同的配置项映射保存为应用的环境变量，例如我们传入的 colors 就保存为了静态常量 LocalColors</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>internal val LocalColors = staticCompositionLocalOf { lightColors() } @Composable fun MaterialTheme(     colors: Colors = MaterialTheme.colors,     typography: Typography = MaterialTheme.typography,     shapes: Shapes = MaterialTheme.shapes,     content: @Composable () -&gt; Unit ) {     val rememberedColors = remember {         // Explicitly creating a new object here so we don't mutate the initial [colors]         // provided, and overwrite the values set in it.         colors.copy()     }.apply { updateColorsFrom(colors) }     val rippleIndication = rememberRipple()     val selectionColors = rememberTextSelectionColors(rememberedColors)     CompositionLocalProvider(         LocalColors provides rememberedColors,         LocalContentAlpha provides ContentAlpha.high,         LocalIndication provides rippleIndication,         LocalRippleTheme provides MaterialRippleTheme,         LocalShapes provides shapes,         LocalTextSelectionColors provides selectionColors,         LocalTypography provides typography     ) {         ProvideTextStyle(value = typography.body1, content = content)     } }</code></p>
+<p>Compose 中提供的各种“控件”函数默认都会来读取 LocalColors 中的颜色值来绘制自身，例如 Surface 默认就以 <code>MaterialTheme.colors.surface</code>作为背景色</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun Surface(     modifier: Modifier = Modifier,     shape: Shape = RectangleShape,     color: Color = MaterialTheme.colors.surface,     contentColor: Color = contentColorFor(color),     border: BorderStroke? = null,     elevation: Dp = 0.dp,     content: @Composable () -&gt; Unit )</code></p>
+<p>以 compose_chat 为例，一共提供了三套主题：Light、Dark、Pink</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2156aaef2d2b4fe882e51976d93c0685~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=459&amp;h=819&amp;s=1782432&amp;e=gif&amp;f=85&amp;b=fcfcfc" alt=""  />
+</p>
+<p>三种主题类型就对应枚举类 AppTheme 和三套颜色值，根据当前选中的主题类型传给 MaterialTheme 不同的颜色值即可</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>private val LightColorPalette = lightColors(     background = BackgroundColorLight,     primary = PrimaryColorLight,     primaryVariant = PrimaryVariantColorLight,     surface = SurfaceColorLight,     secondary = DivideColorLight, ) private val DarkColorPalette = darkColors(     background = BackgroundColorDark,     primary = PrimaryColorDark,     primaryVariant = PrimaryVariantColorDark,     surface = SurfaceColorDark,     secondary = DivideColorDark, ) private val PinkColorPalette = lightColors(     background = BackgroundColorPink,     primary = PrimaryColorPink,     primaryVariant = PrimaryVariantColorPink,     surface = SurfaceColorPink,     secondary = DivideColorPink, ) @Composable fun ChatTheme(     appTheme: AppTheme = AppThemeHolder.currentTheme,     content: @Composable () -&gt; Unit ) {     val colors = when (appTheme) {         AppTheme.Light -&gt; {             LightColorPalette         }         AppTheme.Dark -&gt; {             DarkColorPalette         }         AppTheme.Pink -&gt; {             PinkColorPalette         }     }     val typography = if (appTheme.isDarkTheme()) {         DarkTypography     } else {         LightTypography     }     MaterialTheme(         colors = colors,         typography = typography,         shapes = AppShapes,         content = content     ) }</code></p>
+<p>Compose 的主题切换也依赖于可组合函数的重组操作。以 compose_chat 为例，HomeScreen 内部整体是包裹在 ChatTheme 中的，当切换了应用主题，即改变了 appTheme 时，就会触发 ChatTheme 和 HomeScreen 进行重组，重组过程就会读取到最新的主题配置，从而实现了主题切换</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Composable fun HomeScreen(     navController: NavHostController,     screenSelected: ViewScreen,     onTabSelected: (ViewScreen) -&gt; Unit ) {     val homeViewModel = viewModel&lt;HomeViewModel&gt;()     val appTheme by homeViewModel.appTheme.collectAsState()     ChatTheme(appTheme = appTheme) {              } }</code></p>
+<p>可以看出来，Compose 的主题切换是完全依赖于内存读写的，避免了原生 Android 方式还需要通过 IO 流去读取 XML 文件的情况，在执行效率上相对会高很多，而且在定义主题时也十分方便，仅需要多声明一种 Colors 对象即可实现，类型安全且有助于减少代码量</p>
+<h1 id="十一结尾">十一、结尾<a hidden class="anchor" aria-hidden="true" href="#十一结尾">#</a></h1>
+<p>关于 Jetpack Compose 的大部分知识点都讲完了，自我感觉 compose_chat 能很好的帮助读者入门，最后当然也少不了源码了</p>
+<p>项目地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FleavesCZY%2Fcompose_chat" title="https://github.com/leavesCZY/compose_chat">compose_chat</a></p>
+<p>APK 下载尝鲜：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FleavesCZY%2Fcompose_chat%2Freleases" title="https://github.com/leavesCZY/compose_chat/releases">compose_chat</a></p>
+<p>由于腾讯云 IM SDK 免费版最多只能注册一百个账号，因此读者如果发现注册不了的话，可以使用以下几个我预先注册好的账号，但多设备同时登陆的话会互相挤掉线 ~~</p>
+<ul>
+<li>Google</li>
+<li>Android</li>
+<li>Compose</li>
+<li>Flutter</li>
+<li>Java</li>
+<li>Kotlin</li>
+<li>Dart</li>
+<li>Jetpack</li>
+<li>ViewModel</li>
+<li>LiveData</li>
+</ul>
+<h1 id="十二参考">十二、参考<a hidden class="anchor" aria-hidden="true" href="#十二参考">#</a></h1>
+<ul>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.android.google.cn%2Fjetpack%2Fcompose%2Fmental-model" title="https://developer.android.google.cn/jetpack/compose/mental-model">developer.android.google.cn/jetpack/com…</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/android/">Android</a></li>
+      <li><a href="http://localhost:1313/tags/kotlin/">Kotlin</a></li>
+      <li><a href="http://localhost:1313/tags/androidjetpack/">AndroidJetpack</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%B8%80%E4%B8%AAurl%E5%B0%B1%E6%8A%8A%E4%BA%BA%E5%AE%B6%E7%BD%91%E7%AB%99%E5%85%8B%E9%9A%86%E4%BA%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>一个url就把人家网站克隆了？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%B7%A5%E4%BD%9C7%E5%B9%B4%E4%BA%86%E6%89%8D%E6%98%8E%E7%99%BD%E6%8A%80%E6%9C%AF%E7%9A%84%E6%9C%AC%E8%B4%A8%E4%B8%8D%E8%BF%87%E6%98%AF%E5%B7%A5%E5%85%B7%E8%80%8C%E5%B7%B2%E9%82%A3%E4%B9%88%E6%9C%AA%E6%9D%A5%E7%9A%84%E6%96%B9%E5%90%91%E5%9C%A8%E5%93%AA%E9%87%8C/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>工作7年了，才明白技术的本质不过是工具而已，那么未来的方向在哪里？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 学不动也要学，JetpackCompose写一个IMAPP（一） on x"
+            href="https://x.com/intent/tweet/?text=%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f&amp;hashtags=Android%2cKotlin%2cAndroidJetpack">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 学不动也要学，JetpackCompose写一个IMAPP（一） on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f&amp;title=%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89&amp;summary=%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 学不动也要学，JetpackCompose写一个IMAPP（一） on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f&title=%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 学不动也要学，JetpackCompose写一个IMAPP（一） on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 学不动也要学，JetpackCompose写一个IMAPP（一） on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 学不动也要学，JetpackCompose写一个IMAPP（一） on telegram"
+            href="https://telegram.me/share/url?text=%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 学不动也要学，JetpackCompose写一个IMAPP（一） on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%ad%a6%e4%b8%8d%e5%8a%a8%e4%b9%9f%e8%a6%81%e5%ad%a6%ef%bc%8cJetpackCompose%e5%86%99%e4%b8%80%e4%b8%aaIMAPP%ef%bc%88%e4%b8%80%ef%bc%89&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25AD%25A6%25E4%25B8%258D%25E5%258A%25A8%25E4%25B9%259F%25E8%25A6%2581%25E5%25AD%25A6jetpackcompose%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AAimapp%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

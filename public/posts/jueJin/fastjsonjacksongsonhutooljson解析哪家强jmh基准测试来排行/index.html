@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 | PaperMod</title>
+<meta name="keywords" content="后端, Java, JSON">
+<meta name="description" content="以本文针对市面上主流的5种JSON解析工具使用JAVA基准测试从小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出排名，希望排名能给您在做JSON工具选型时有帮助">
+<meta name="author" content="赵侠客">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/fastjsonjacksongsonhutooljson%E8%A7%A3%E6%9E%90%E5%93%AA%E5%AE%B6%E5%BC%BAjmh%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E6%9D%A5%E6%8E%92%E8%A1%8C/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/fastjsonjacksongsonhutooljson%E8%A7%A3%E6%9E%90%E5%93%AA%E5%AE%B6%E5%BC%BAjmh%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E6%9D%A5%E6%8E%92%E8%A1%8C/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行" />
+<meta property="og:description" content="以本文针对市面上主流的5种JSON解析工具使用JAVA基准测试从小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出排名，希望排名能给您在做JSON工具选型时有帮助" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/fastjsonjacksongsonhutooljson%E8%A7%A3%E6%9E%90%E5%93%AA%E5%AE%B6%E5%BC%BAjmh%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E6%9D%A5%E6%8E%92%E8%A1%8C/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-09T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行"/>
+<meta name="twitter:description" content="以本文针对市面上主流的5种JSON解析工具使用JAVA基准测试从小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出排名，希望排名能给您在做JSON工具选型时有帮助"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行",
+      "item": "http://localhost:1313/posts/juejin/fastjsonjacksongsonhutooljson%E8%A7%A3%E6%9E%90%E5%93%AA%E5%AE%B6%E5%BC%BAjmh%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E6%9D%A5%E6%8E%92%E8%A1%8C/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行",
+  "name": "FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行",
+  "description": "以本文针对市面上主流的5种JSON解析工具使用JAVA基准测试从小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出排名，希望排名能给您在做JSON工具选型时有帮助",
+  "keywords": [
+    "后端", "Java", "JSON"
+  ],
+  "articleBody": " 首发公众号:【赵侠客】\n引言 在前面《释放你九成的带宽和内存：GZIP在解决Redis大Key方面的应用》一文中我使用GZIP算法对JSON格式数据进行了压缩，可以减小88%的空间，文中也提到了目前JSON格式在我们项目中应用的非常广泛几乎无处不在。压缩JSON格式数据可以大大降低我们的存储和带宽成本，我们知道数据格式的转换过程是需要消耗CPU计算资源的，JSON格式数据转换的快慢也会直接影响我们接口响应的快慢，甚至影响我们系统的吞吐量，所以本文针对市面上主流的5种JSON解析工具FastJson、FastJson2、JackSon、Gson、Hutool-JSON使用JAVA基准测试分别对小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出了测试排行榜，希望最后的排行榜能对您在做JSON工具选型时有一定的帮助。\n二、准备工作 2.1 JMH基准测试 平时我们做代码性能测试可能就是在代码执行前通过System.currentTimeMillis()获取一下当前时间，代码执行后再获取一个当前时间，然后两个时间相减得出代码的运行时间，这种测试是非常不准确的，包括获取时间的精度、JIT编译优化导致性能测试结果不稳定、系统当前的负载，包括CPU、内存、磁盘I/O等会影响测试结果、Java虚拟机（JVM）需要一段时间来预热也会影响测试结果。所以为了测试的准确性，本文使用JMH(Java Microbenchmark Harness)进行测试，JMH是由OpenJDK/Oracle维护的Java基准测试工具，它旨在帮助开发人员编写准确的基准测试，以避免常见的基准测试陷阱，并提供可靠的性能测试结果。因为使用的JMH基准测试所以测试结果应该是有说服力的。\n添加JMH Maven依赖：\njava\n代码解读\n复制代码\norg.openjdk.jmh jmh-core 1.36 org.openjdk.jmh jmh-generator-annprocess 1.36 JMH测试代码：\njava\n代码解读\n复制代码\n@State(Scope.Thread) public class HelloBenchmark { @Benchmark public void testMethod() throws InterruptedException { Thread.sleep(10); } @Test public void testBenchmark() throws Exception { Options options = new OptionsBuilder() .include(HelloBenchmark.class.getSimpleName()) .forks(1) //进程数 .threads(1) //线程数 .warmupIterations(1) .measurementIterations(1) .mode(Mode.Throughput) .build(); new Runner(options).run(); } }\nJMH测试结果：\nJAVA\n代码解读\n复制代码\nBenchmark Mode Score Units testMethod thrpt 64.579 ops/s\n2.2 测试JSON工具的版本 同一款工具不同的版本性能差距往往比较明显，针对被测试的5种JSON解析工具选择了目前主流的版本，本文测试的结果也仅限于以下版本：\nTool\n版本\nFastJson2\n2.0.52\nFastJson\n1.2.83\nJackson\n2.17.2\nGson\n2.11.0\nHutool\n5.8.23\n以下为各工具版本对应的Maven依赖：\njava\n代码解读\n复制代码\ncom.alibaba.fastjson2 fastjson2 2.0.52 com.alibaba fastjson 1.2.83 com.fasterxml.jackson.core jackson-core 2.17.2 com.fasterxml.jackson.core jackson-databind 2.17.2 com.google.code.gson gson 2.11.0 cn.hutool hutool-json 5.8.23 2.3 测试平台 测试代码跑出的得分是依赖于JDK版本和运行代码的机器，不同机器跑出的得分差异是很大的，以下是我的测试机器、JDK版本和IDE版本：\n硬件 : MacBook Pro 16GB 13英寸 M2 2022 macOS Ventura 13.5.1 (22G90) JDK : Azul Zulu 17.0.8 - aarch64 IDE : IntelliJ IDEA 2024.2 (Ultimate Edition 2.4 测试代码 测试中我针对小JSON、中JSON、大JSON做序列化和反序列化跑分。其中小、中、大JSON我的定义为：\n小JSON 任何一个系统都会有用户信息，我想获取用户详情接口返回的用户信息JSON应该是最能代表我们日常项目开发中对小JSON的定义，所以我选择一条用户信息做为小JSON来做序列化和反序列化测试。以下为用户对象的定义：\nJAVA\n代码解读\n复制代码\n@Data public class User { private Long id; private String name; private String trueName; private Integer age; private String sex; private Date createTime; }\n中JSON 在实际项目中我们除了有大量获取详情接口外，其次应该就是获取列表接口了，一般分页返回数据条数为10条或者20条，这里我选取20条用户信息做为我对中JSON的测试数据，我想这应该是非常具有代表性的中JSON数据。中JSON的数据定义：\nJAVA\n代码解读\n复制代码\nprivate List users; @Setup public void setup() { users = new ArrayList\u003c\u003e(); IntStream.range(1, 20).forEach(x -\u003e { User user = new User(); user.setId(1L); user.setName(RandomUtil.randomString(\"公众号:赵侠客\",100)); user.setAge(29); user.setSex(\"男\"); user.setTrueName(RandomUtil.randomString(\"公众号:赵侠客\",100)); user.setCreateTime(new Date()); users.add(user); }); }\n大JSON 每个项目中大JSON可能都不一样，我以博客系统为例，我觉得大JSON可能就是文章正文中的HTML富文本数据，所以测试数据中的大JSON我选择了公众号文章详情页中的HTML富文本数据。以下为大JSON对象定义：\njava\n代码解读\n复制代码\n@Data public class Article { private Long id; private String author; private Long tenantId; private String title; private String subTitle; private String htmlContent; private Date publishTime; } @Setup public void setup() throws IOException { article = new Article(); article.setId(10000L); article.setTenantId(10000L); article.setAuthor(\"公众号：赵侠客\"); article.setPublishTime(new Date()); article.setTitle(RandomUtil.randomString(\"主标题\", 100)); article.setSubTitle(RandomUtil.randomString(\"副标题\", 50)); article.setHtmlContent(new String(Files.readAllBytes(Paths.get(\"article.html\")))); }\n完成对小JSON,中JSON,大JSON数据的定义后，就可以使用JMH做基准测试了，以下为小JSON序列化测试代码：\njava\n代码解读\n复制代码\n@State(Scope.Thread) public class SmallJsonSerialize { private User user; private ObjectMapper mapper; private Gson gson; @Setup public void setup() { user = new User(); user.setId(1L); user.setName(\"赵侠客\"); user.setAge(29); user.setSex(\"男\"); user.setTrueName(\"公众号\"); user.setCreateTime(new Date()); mapper = new ObjectMapper(); gson = new Gson(); } @TearDown public void tearDown() { user = null; mapper = null; gson = null; } @Benchmark public void testFastJson() { String json = JSON.toJSONString(user); } @Benchmark public void testFast2Json() { String json = com.alibaba.fastjson2.JSON.toJSONString(user); } @Benchmark public void testHutoolJson() { String json = JSONUtil.toJsonStr(user); } @Benchmark public void testJackson() throws JsonProcessingException { String json = mapper.writeValueAsString(user); } @Benchmark public void testGson() { String json = gson.toJson(user); } @Test public void testBenchmark() throws Exception { Options options = new OptionsBuilder() .include(SmallJsonSerialize.class.getSimpleName()) .forks(1) .threads(1) .warmupIterations(1) .measurementIterations(1) .mode(Mode.Throughput) .build(); new Runner(options).run(); } }\n三、JSON序列化测试 3.1 小JSON序列化测试 3.1.1 小JSON序列化跑分： java\n代码解读\n复制代码\nBenchmark Score Units FastJson2 13653527.046 ops/s FastJson 8502829.931 ops/s Gson 1217934.274 ops/s HutoolJson 437293.524 ops/s Jackson 5779830.068 ops/s\n从结果的值来看小JSON序列化都是非常快的，我们的HTTP接口响应时间基本上都是在几十毫秒到几秒之间，对小JSON做一次序列化可以说对我们的接口性能没有任何影响，如果你的项目只有这些小JSON感觉可以闭眼选工具，项目中引用了哪个就用哪个或者哪个用的习惯就用哪个，把主要精力放在业务上没必要太纠结JSON工具的选型。不过今天我们是极客，要有追究极致的精神，我对5种结果做了得分的排名，Score为JMH的跑分，\n百分制：最大Score的得100分，其它为 100*(Score/最大值)\n3.1.2 小JSON序列化排名： Tool\nScore\n百分制\nFastJson2\n13653527\n100\nFastJson\n8502829\n62.3\nJackson\n5779830\n42.3\nGson\n1217934\n8.9\nHutool\n437293\n3.2\n看到这个排名后我有两点想说的：\nFastJson2，无敌是多么，多么寂寞 Hutool，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室 3.2 中JSON序列化测试 3.2.1 中JSON序列化跑分: java\n代码解读\n复制代码\nBenchmark Score Units FastJson2 236910.655 ops/s FastJson 173386.528 ops/s Gson 50937.391 ops/s HutoolJson 10928.165 ops/s Jackson 212457.203 ops/s\n对于中JSON序列化来说分值就大幅度下降了，最差的Hutool 一秒只能序列化1万多次，也就是说做一次JSON转换需要0.1毫秒，做10次也就是1毫秒，如里接口中有大量中JSON序列化调用会对我们接口响应时间有一定影响。\n3.2.2 中JSON序列化排名： Tool\nScore\n百分制\nFastJson2\n236910\n100\nJackson\n212457\n89.7\nFastJson\n173386\n73.2\nGson\n50937\n21.5\nHutool\n10928\n4.6\n看到这个排名后我有二点想说的：\nFastJson2，无敌是多么，多么空虚 Hutool，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室 3.3 大JSON序列化测试 3.3.1 大JSON序列化跑分： java\n代码解读\n复制代码\nBenchmark Score Units FastJson2 9650.211 ops/s FastJson 4791.032 ops/s Gson 5835.649 ops/s HutoolJson 1035.357 ops/s Jackson 13398.324 ops/s\n大JSON的序列化得分已经降到最差的Hutool-Json执行一次需要1毫秒了，我这还是在M2上跑的，然后我又在PC电脑上跑了一下：\nbash\n代码解读\n复制代码\nBenchmark Score Units Fast2Json 5788.067 ops/s FastJson 2480.132 ops/s Gson 2176.535 ops/s HutoolJson 455.914 ops/s Jackson 5276.439 ops/s\n上面是在 Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz跑的结果，可以看出最差了执行一次JSON序列化需要2毫秒，所参大JSON解析的快慢非常影响我们的接口性能了。\n3.3.2 大JSON序列化排名： Tool\nScore\n百分制\nJackson\n13398\n100\nFastJson2\n9650\n72.0\nGson\n5835\n43.6\nFastJson\n4791\n35.8\nHutool\n1035\n7.7\n看到这个排名后我有二点想说的：\nJackson，做为SpringBoot默认json序列化工具是有原因的 Hutool，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室 四、JSON反序列化测试 4.1 小JSON反序列化测试 4.1.1 小JSON反序列化跑分： java\n代码解读\n复制代码\nBenchmark Score Units FastJson2 11654586.191 ops/s FastJson 5980216.867 ops/s Gson 2415733.238 ops/s HutoolJson 855421.710 ops/s Jackson 3194855.332 ops/s\n4.1.2 小JSON反序化排名： Tool\nSS\nSDS\n变化\n百分制\nFastJson2\n13653527\n11654586\n-14.6%\n100\nFastJson\n8502829\n5980216\n-29.7%\n51.3\nJackson\n1217934\n3194855\n+162.3%\n27.4\nGson\n437293\n2415733\n+452.4%\n20.7\nHutool\n5779830\n855421\n-85.2%\n7.3\n其中：\nSS( Small Serialize) ，小JSON序列化跑分, SDS(Small Deserializer) ，小JSON反序列化跑分 变化，相比自身小JSON序列化跑分增减百分比 看到这个排名后我有四点想说的：\nFastJson2，无敌是多么，多么寂寞 Jackson\u0026Gson，相比于序列化反序列化快多了 FastJson\u0026FastJson2，你很强但是却输给了自己 Hutool，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室 4.2 中JSON反序列化测试 4.2.1 中JSON反序列化跑分： java\n代码解读\n复制代码\nBenchmark Score Units FastJson2 691572.756 ops/s FastJson 495493.338 ops/s Gson 174852.543 ops/s HutoolJson 37997.839 ops/s Jackson 216731.673 ops/s\n4.2.2 中JSON反序列化排名： Tool\nMS\nMDS\n变化\n百分制\nFastJson2\n236910\n691572\n+191.9%\n100\nFastJson\n173386\n495493\n+185.8%\n71.6\nJackson\n212457\n216731\n-2.0%\n31.3\nGson\n50937\n174852\n+243.3%\n25.3\nHutool\n50937\n37997\n-25.4%\n5.5\n其中：\nMS(Medium Serialize) ，中JSON序列化跑分, MDS(Medium Deserializer) ，中JSON反序列化跑分 变化，相比自身中JSON序列化跑分增减百分比 看到这个排名后我有三点想说的：\nFastJson2，无敌是多么，多么空虚 FastJson2\u0026FastJson，不但强还比自己序列化强 Hutool，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室 4.3 大JSON反序列化测试 4.3.1 大JSON反序列化跑分： java\n代码解读\n复制代码\nBenchmark Score Units FastJson2 8555.106 ops/s FastJson 9002.889 ops/s Gson 6141.212 ops/s HutoolJson 1252.990 ops/s Jackson 4614.815 ops/s\n4.3.2 大JSON反序列化排名： Tool\nBS\nBDS\n变化\n百分制\nFastJson\n4791\n9002\n+87.9\n100\nFastJson2\n9650\n8555\n-11.3\n95.0\nGson\n5835\n6141\n+5.2\n68.2\nJackson\n13398\n4614\n-65.6\n51.3\nHutool\n1035\n1252\n+20.9\n13.9\n其中：\nBS(Big Serialize) ，大JSON序列化跑分 BDS(Big Deserializer) ，大JSON反序列化跑分 变化，相比自身大JSON序列化跑分增减百分比 看到这个排名后我有三点想说的：\nFastJson2，青出于蓝而胜于蓝，可是你没想到人家还留了一手 FastJson，教会徒弟饿死师傅这个道理你是懂的 Hutool，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室 排行榜 Tool\n排名\n总分\n百分制\nSS\nMS\nBS\nSDS\nMDS\nBDS\nFastJson2\n状元\n567\n100\n100\n100\n72.0\n100\n100\n95.0\nFastJson\n榜眼\n394.2\n69.5\n62.3\n73.2\n35.8\n51.3\n71.6\n100\nJackson\n探花\n342\n60.3\n42.3\n89.7\n100\n27.4\n31.3\n51.3\nGson\n进士\n188.2\n33.2\n8.9\n21.5\n43.6\n20.7\n25.3\n68.2\nHutool\n孙山\n42.2\n7.4\n3.2\n4.6\n7.7\n7.3\n5.5\n13.9\n其中：\n排名，根据总得分降序 总分，6项得分总和 百分制，总得分最大为100分， 100*(最大总分-自己)/(最大总分) SS，小JSON序列化得分 MS，中JSON序列化得分 BS，大JSON序列化得分 SDS，小JSON反序列化得分 MDS，中JSON反序列化得分 BDS，大JSON反序列化得分 看到这个排行榜后我有5点想说的：\nFastJson2，无敌是多么，多么寂寞、无敌是多么，多么空虚 FastJson，长江后浪推前浪,前浪被拍在沙滩，你的漏洞那么多，该退休了 Jackson，SpringBoot看上的没毛病 Gson，你没存在感的原因要从别人找起，不是你不优秀，是优秀的人了太多了 Hutool， @公众号 @赵侠客 你们两个工作交接一下，明天不用来了 最后本测试纯个人自娱自乐，由于本人开发水平有限，如果怀疑测试结果，可以评论区交流或者可以下载源码自己跑分：\nGitHub：github.com/whzhaochao/…\n",
+  "wordCount" : "885",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-09T00:00:00Z",
+  "dateModified": "2024-09-09T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "赵侠客"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/fastjsonjacksongsonhutooljson%E8%A7%A3%E6%9E%90%E5%93%AA%E5%AE%B6%E5%BC%BAjmh%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E6%9D%A5%E6%8E%92%E8%A1%8C/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行
+    </h1>
+    <div class="post-description">
+      以本文针对市面上主流的5种JSON解析工具使用JAVA基准测试从小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出排名，希望排名能给您在做JSON工具选型时有帮助
+    </div>
+    <div class="post-meta"><span title='2024-09-09 00:00:00 +0000 UTC'>九月 9, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;赵侠客&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bc%95%e8%a8%80" aria-label="引言">引言</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c" aria-label="二、准备工作">二、准备工作</a><ul>
+                        
+                <li>
+                    <a href="#21-jmh%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95" aria-label="2.1 JMH基准测试">2.1 JMH基准测试</a></li>
+                <li>
+                    <a href="#22-%e6%b5%8b%e8%af%95json%e5%b7%a5%e5%85%b7%e7%9a%84%e7%89%88%e6%9c%ac" aria-label="2.2 测试JSON工具的版本">2.2 测试JSON工具的版本</a></li>
+                <li>
+                    <a href="#23-%e6%b5%8b%e8%af%95%e5%b9%b3%e5%8f%b0" aria-label="2.3 测试平台">2.3 测试平台</a></li>
+                <li>
+                    <a href="#24-%e6%b5%8b%e8%af%95%e4%bb%a3%e7%a0%81" aria-label="2.4 测试代码">2.4 测试代码</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89json%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="三、JSON序列化测试">三、JSON序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#31-%e5%b0%8fjson%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="3.1 小JSON序列化测试">3.1 小JSON序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#311-%e5%b0%8fjson%e5%ba%8f%e5%88%97%e5%8c%96%e8%b7%91%e5%88%86" aria-label="3.1.1 小JSON序列化跑分：">3.1.1 小JSON序列化跑分：</a></li>
+                <li>
+                    <a href="#312-%e5%b0%8fjson%e5%ba%8f%e5%88%97%e5%8c%96%e6%8e%92%e5%90%8d" aria-label="3.1.2 小JSON序列化排名：">3.1.2 小JSON序列化排名：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#32-%e4%b8%adjson%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="3.2 中JSON序列化测试">3.2 中JSON序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#321-%e4%b8%adjson%e5%ba%8f%e5%88%97%e5%8c%96%e8%b7%91%e5%88%86" aria-label="3.2.1 中JSON序列化跑分:">3.2.1 中JSON序列化跑分:</a></li>
+                <li>
+                    <a href="#322-%e4%b8%adjson%e5%ba%8f%e5%88%97%e5%8c%96%e6%8e%92%e5%90%8d" aria-label="3.2.2 中JSON序列化排名：">3.2.2 中JSON序列化排名：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#33-%e5%a4%a7json%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="3.3 大JSON序列化测试">3.3 大JSON序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#331-%e5%a4%a7json%e5%ba%8f%e5%88%97%e5%8c%96%e8%b7%91%e5%88%86" aria-label="3.3.1 大JSON序列化跑分：">3.3.1 大JSON序列化跑分：</a></li>
+                <li>
+                    <a href="#332-%e5%a4%a7json%e5%ba%8f%e5%88%97%e5%8c%96%e6%8e%92%e5%90%8d" aria-label="3.3.2 大JSON序列化排名：">3.3.2 大JSON序列化排名：</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9bjson%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="四、JSON反序列化测试">四、JSON反序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#41-%e5%b0%8fjson%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="4.1 小JSON反序列化测试">4.1 小JSON反序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#411-%e5%b0%8fjson%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e8%b7%91%e5%88%86" aria-label="4.1.1 小JSON反序列化跑分：">4.1.1 小JSON反序列化跑分：</a></li>
+                <li>
+                    <a href="#412-%e5%b0%8fjson%e5%8f%8d%e5%ba%8f%e5%8c%96%e6%8e%92%e5%90%8d" aria-label="4.1.2 小JSON反序化排名：">4.1.2 小JSON反序化排名：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#42-%e4%b8%adjson%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="4.2 中JSON反序列化测试">4.2 中JSON反序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#421-%e4%b8%adjson%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e8%b7%91%e5%88%86" aria-label="4.2.1 中JSON反序列化跑分：">4.2.1 中JSON反序列化跑分：</a></li>
+                <li>
+                    <a href="#422-%e4%b8%adjson%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%8e%92%e5%90%8d" aria-label="4.2.2 中JSON反序列化排名：">4.2.2 中JSON反序列化排名：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#43-%e5%a4%a7json%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%b5%8b%e8%af%95" aria-label="4.3 大JSON反序列化测试">4.3 大JSON反序列化测试</a><ul>
+                        
+                <li>
+                    <a href="#431-%e5%a4%a7json%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e8%b7%91%e5%88%86" aria-label="4.3.1 大JSON反序列化跑分：">4.3.1 大JSON反序列化跑分：</a></li>
+                <li>
+                    <a href="#432-%e5%a4%a7json%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%8e%92%e5%90%8d" aria-label="4.3.2 大JSON反序列化排名：">4.3.2 大JSON反序列化排名：</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8e%92%e8%a1%8c%e6%a6%9c" aria-label="排行榜">排行榜</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>首发公众号:<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FQTyVFWUbKsR80s-DUj6vSA" title="https://mp.weixin.qq.com/s/QTyVFWUbKsR80s-DUj6vSA">【赵侠客】</a></p>
+</blockquote>
+<h1 id="引言">引言<a hidden class="anchor" aria-hidden="true" href="#引言">#</a></h1>
+<p>在前面《<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FSydFf5KmcqOrYIX7gTzB2g" title="https://mp.weixin.qq.com/s/SydFf5KmcqOrYIX7gTzB2g">释放你九成的带宽和内存：GZIP在解决Redis大Key方面的应用</a>》一文中我使用GZIP算法对JSON格式数据进行了压缩，可以减小88%的空间，文中也提到了目前JSON格式在我们项目中应用的非常广泛几乎无处不在。压缩JSON格式数据可以大大降低我们的存储和带宽成本，我们知道数据格式的转换过程是需要消耗CPU计算资源的，JSON格式数据转换的快慢也会直接影响我们接口响应的快慢，甚至影响我们系统的吞吐量，所以本文针对市面上主流的5种JSON解析工具FastJson、FastJson2、JackSon、Gson、Hutool-JSON使用JAVA基准测试分别对小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出了测试排行榜，希望最后的排行榜能对您在做JSON工具选型时有一定的帮助。</p>
+<h1 id="二准备工作">二、准备工作<a hidden class="anchor" aria-hidden="true" href="#二准备工作">#</a></h1>
+<h2 id="21-jmh基准测试">2.1 JMH基准测试<a hidden class="anchor" aria-hidden="true" href="#21-jmh基准测试">#</a></h2>
+<p>平时我们做代码性能测试可能就是在代码执行前通过<code>System.currentTimeMillis()</code>获取一下当前时间，代码执行后再获取一个当前时间，然后两个时间相减得出代码的运行时间，这种测试是非常不准确的，包括获取时间的精度、JIT编译优化导致性能测试结果不稳定、系统当前的负载，包括CPU、内存、磁盘I/O等会影响测试结果、Java虚拟机（JVM）需要一段时间来预热也会影响测试结果。所以为了测试的准确性，本文使用<code>JMH(Java Microbenchmark Harness)</code>进行测试，<code>JMH</code>是由<code>OpenJDK/Oracle</code>维护的Java基准测试工具，它旨在帮助开发人员编写准确的基准测试，以避免常见的基准测试陷阱，并提供可靠的性能测试结果。因为使用的<code>JMH</code>基准测试所以测试结果应该是有说服力的。</p>
+<p>添加<code>JMH Maven</code>依赖：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;dependency&gt;     &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt;     &lt;artifactId&gt;jmh-core&lt;/artifactId&gt;     &lt;version&gt;1.36&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt;     &lt;artifactId&gt;jmh-generator-annprocess&lt;/artifactId&gt;     &lt;version&gt;1.36&lt;/version&gt; &lt;/dependency&gt;</code></p>
+<p>JMH测试代码：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@State(Scope.Thread) public class HelloBenchmark {     @Benchmark     public void testMethod() throws InterruptedException {         Thread.sleep(10);     }     @Test     public void testBenchmark() throws Exception {         Options options = new OptionsBuilder()                 .include(HelloBenchmark.class.getSimpleName())                 .forks(1) //进程数                 .threads(1) //线程数                 .warmupIterations(1)                  .measurementIterations(1)                 .mode(Mode.Throughput)                 .build();         new Runner(options).run();     } }</code></p>
+<p>JMH测试结果：</p>
+<p>JAVA</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark   Mode   Score    Units testMethod  thrpt  64.579   ops/s</code></p>
+<h2 id="22-测试json工具的版本">2.2 测试JSON工具的版本<a hidden class="anchor" aria-hidden="true" href="#22-测试json工具的版本">#</a></h2>
+<p>同一款工具不同的版本性能差距往往比较明显，针对被测试的5种JSON解析工具选择了目前主流的版本，本文测试的结果也仅限于以下版本：</p>
+<p>Tool</p>
+<p>版本</p>
+<p>FastJson2</p>
+<p>2.0.52</p>
+<p>FastJson</p>
+<p>1.2.83</p>
+<p>Jackson</p>
+<p>2.17.2</p>
+<p>Gson</p>
+<p>2.11.0</p>
+<p>Hutool</p>
+<p>5.8.23</p>
+<p>以下为各工具版本对应的Maven依赖：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;dependency&gt;     &lt;groupId&gt;com.alibaba.fastjson2&lt;/groupId&gt;     &lt;artifactId&gt;fastjson2&lt;/artifactId&gt;     &lt;version&gt;2.0.52&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;com.alibaba&lt;/groupId&gt;     &lt;artifactId&gt;fastjson&lt;/artifactId&gt;     &lt;version&gt;1.2.83&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;     &lt;artifactId&gt;jackson-core&lt;/artifactId&gt;     &lt;version&gt;2.17.2&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;     &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;     &lt;version&gt;2.17.2&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;com.google.code.gson&lt;/groupId&gt;     &lt;artifactId&gt;gson&lt;/artifactId&gt;     &lt;version&gt;2.11.0&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;cn.hutool&lt;/groupId&gt;     &lt;artifactId&gt;hutool-json&lt;/artifactId&gt;     &lt;version&gt;5.8.23&lt;/version&gt; &lt;/dependency&gt;</code></p>
+<h2 id="23-测试平台">2.3 测试平台<a hidden class="anchor" aria-hidden="true" href="#23-测试平台">#</a></h2>
+<p>测试代码跑出的得分是依赖于JDK版本和运行代码的机器，不同机器跑出的得分差异是很大的，以下是我的测试机器、JDK版本和IDE版本：</p>
+<ul>
+<li><strong>硬件</strong> : MacBook Pro 16GB 13英寸 M2 2022 macOS Ventura 13.5.1 (22G90)</li>
+<li><strong>JDK</strong> : Azul Zulu 17.0.8 - aarch64</li>
+<li><strong>IDE</strong> : IntelliJ IDEA 2024.2 (Ultimate Edition</li>
+</ul>
+<h2 id="24-测试代码">2.4 测试代码<a hidden class="anchor" aria-hidden="true" href="#24-测试代码">#</a></h2>
+<p>测试中我针对<code>小JSON</code>、<code>中JSON</code>、<code>大JSON</code>做序列化和反序列化跑分。其中小、中、大JSON我的定义为：</p>
+<ul>
+<li><strong>小JSON</strong></li>
+</ul>
+<p>任何一个系统都会有用户信息，我想获取用户详情接口返回的用户信息JSON应该是最能代表我们日常项目开发中对<code>小JSON</code>的定义，所以我选择一条用户信息做为<code>小JSON</code>来做序列化和反序列化测试。以下为用户对象的定义：</p>
+<p>JAVA</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Data public class User {     private Long id;     private String name;     private String trueName;     private Integer age;     private String sex;     private Date createTime; }</code></p>
+<ul>
+<li><strong>中JSON</strong></li>
+</ul>
+<p>在实际项目中我们除了有大量获取详情接口外，其次应该就是获取列表接口了，一般分页返回数据条数为10条或者20条，这里我选取20条用户信息做为我对<code>中JSON</code>的测试数据，我想这应该是非常具有代表性的<code>中JSON</code>数据。中JSON的数据定义：</p>
+<p>JAVA</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>private List&lt;User&gt; users; @Setup public void setup() {     users = new ArrayList&lt;&gt;();     IntStream.range(1, 20).forEach(x -&gt; {         User user = new User();         user.setId(1L);         user.setName(RandomUtil.randomString(&quot;公众号:赵侠客&quot;,100));         user.setAge(29);         user.setSex(&quot;男&quot;);         user.setTrueName(RandomUtil.randomString(&quot;公众号:赵侠客&quot;,100));         user.setCreateTime(new Date());         users.add(user);     }); }</code></p>
+<ul>
+<li><strong>大JSON</strong></li>
+</ul>
+<p>每个项目中<code>大JSON</code>可能都不一样，我以博客系统为例，我觉得<code>大JSON</code>可能就是文章正文中的HTML富文本数据，所以测试数据中的<code>大JSON</code>我选择了公众号文章详情页中的HTML富文本数据。以下为<code>大JSON</code>对象定义：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Data public class Article {     private Long id;     private String author;     private Long tenantId;     private String title;     private String subTitle;     private String htmlContent;     private Date publishTime; } @Setup public void setup() throws IOException {     article = new Article();     article.setId(10000L);     article.setTenantId(10000L);     article.setAuthor(&quot;公众号：赵侠客&quot;);     article.setPublishTime(new Date());     article.setTitle(RandomUtil.randomString(&quot;主标题&quot;, 100));     article.setSubTitle(RandomUtil.randomString(&quot;副标题&quot;, 50));     article.setHtmlContent(new String(Files.readAllBytes(Paths.get(&quot;article.html&quot;)))); }</code></p>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/2b122e7d423d4bbb999fcb66d23db4b2~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6LW15L6g5a6i:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727651329&amp;x-signature=izEN0lY%2Bg%2FF6JiJdMiUOCvIqaxY%3D" alt="大JSON部分数据内容"  />
+</p>
+<p>完成对<code>小JSON</code>,<code>中JSON</code>,<code>大JSON</code>数据的定义后，就可以使用<code>JMH</code>做基准测试了，以下为<code>小JSON</code>序列化测试代码：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@State(Scope.Thread) public class SmallJsonSerialize {     private User user;     private ObjectMapper mapper;     private Gson gson;     @Setup     public void setup() {         user = new User();         user.setId(1L);         user.setName(&quot;赵侠客&quot;);         user.setAge(29);         user.setSex(&quot;男&quot;);         user.setTrueName(&quot;公众号&quot;);         user.setCreateTime(new Date());         mapper = new ObjectMapper();         gson = new Gson();     }     @TearDown     public void tearDown() {         user = null;         mapper = null;         gson = null;     }     @Benchmark     public void testFastJson() {         String json = JSON.toJSONString(user);     }     @Benchmark     public void testFast2Json() {         String json = com.alibaba.fastjson2.JSON.toJSONString(user);     }     @Benchmark     public void testHutoolJson() {         String json = JSONUtil.toJsonStr(user);     }     @Benchmark     public void testJackson() throws JsonProcessingException {         String json = mapper.writeValueAsString(user);     }     @Benchmark     public void testGson() {         String json = gson.toJson(user);     }     @Test     public void testBenchmark() throws Exception {         Options options = new OptionsBuilder()                 .include(SmallJsonSerialize.class.getSimpleName())                 .forks(1)                 .threads(1)                 .warmupIterations(1)                 .measurementIterations(1)                 .mode(Mode.Throughput)                 .build();         new Runner(options).run();     } }</code></p>
+<h1 id="三json序列化测试">三、JSON序列化测试<a hidden class="anchor" aria-hidden="true" href="#三json序列化测试">#</a></h1>
+<h2 id="31-小json序列化测试">3.1 小JSON序列化测试<a hidden class="anchor" aria-hidden="true" href="#31-小json序列化测试">#</a></h2>
+<h3 id="311-小json序列化跑分">3.1.1 小JSON序列化跑分：<a hidden class="anchor" aria-hidden="true" href="#311-小json序列化跑分">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark    Score        Units FastJson2    13653527.046 ops/s FastJson     8502829.931  ops/s Gson         1217934.274  ops/s HutoolJson   437293.524   ops/s Jackson      5779830.068  ops/s</code></p>
+<p>从结果的值来看<code>小JSON</code>序列化都是非常快的，我们的HTTP接口响应时间基本上都是在几十毫秒到几秒之间，对<code>小JSON</code>做一次序列化可以说对我们的接口性能没有任何影响，如果你的项目只有这些小JSON感觉可以闭眼选工具，项目中引用了哪个就用哪个或者哪个用的习惯就用哪个，把主要精力放在业务上没必要太纠结JSON工具的选型。不过今天我们是<code>极客</code>，要有追究极致的精神，我对5种结果做了得分的排名，Score为JMH的跑分，</p>
+<blockquote>
+<p><strong>百分制</strong>：最大Score的得100分，其它为 100*(Score/最大值)</p>
+</blockquote>
+<h3 id="312-小json序列化排名">3.1.2 小JSON序列化排名：<a hidden class="anchor" aria-hidden="true" href="#312-小json序列化排名">#</a></h3>
+<p>Tool</p>
+<p>Score</p>
+<p>百分制</p>
+<p>FastJson2</p>
+<p>13653527</p>
+<p>100</p>
+<p>FastJson</p>
+<p>8502829</p>
+<p>62.3</p>
+<p>Jackson</p>
+<p>5779830</p>
+<p>42.3</p>
+<p>Gson</p>
+<p>1217934</p>
+<p>8.9</p>
+<p>Hutool</p>
+<p>437293</p>
+<p>3.2</p>
+<p>看到这个排名后我有两点想说的：</p>
+<ul>
+<li><strong>FastJson2</strong>，无敌是多么，多么寂寞</li>
+<li><strong>Hutool</strong>，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室</li>
+</ul>
+<h2 id="32-中json序列化测试">3.2 中JSON序列化测试<a hidden class="anchor" aria-hidden="true" href="#32-中json序列化测试">#</a></h2>
+<h3 id="321-中json序列化跑分">3.2.1 中JSON序列化跑分:<a hidden class="anchor" aria-hidden="true" href="#321-中json序列化跑分">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark   Score       Units FastJson2   236910.655  ops/s FastJson    173386.528  ops/s Gson        50937.391   ops/s HutoolJson  10928.165   ops/s Jackson     212457.203  ops/s</code></p>
+<p>对于<code>中JSON</code>序列化来说分值就大幅度下降了，最差的Hutool 一秒只能序列化1万多次，也就是说做一次JSON转换需要0.1毫秒，做10次也就是1毫秒，如里接口中有大量中JSON序列化调用会对我们接口响应时间有一定影响。</p>
+<h3 id="322-中json序列化排名">3.2.2 中JSON序列化排名：<a hidden class="anchor" aria-hidden="true" href="#322-中json序列化排名">#</a></h3>
+<p>Tool</p>
+<p>Score</p>
+<p>百分制</p>
+<p>FastJson2</p>
+<p>236910</p>
+<p>100</p>
+<p>Jackson</p>
+<p>212457</p>
+<p>89.7</p>
+<p>FastJson</p>
+<p>173386</p>
+<p>73.2</p>
+<p>Gson</p>
+<p>50937</p>
+<p>21.5</p>
+<p>Hutool</p>
+<p>10928</p>
+<p>4.6</p>
+<p>看到这个排名后我有二点想说的：</p>
+<ul>
+<li><strong>FastJson2</strong>，无敌是多么，多么空虚</li>
+<li><strong>Hutool</strong>，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室</li>
+</ul>
+<h2 id="33-大json序列化测试">3.3 大JSON序列化测试<a hidden class="anchor" aria-hidden="true" href="#33-大json序列化测试">#</a></h2>
+<h3 id="331-大json序列化跑分">3.3.1 大JSON序列化跑分：<a hidden class="anchor" aria-hidden="true" href="#331-大json序列化跑分">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark    Score     Units FastJson2   9650.211   ops/s FastJson    4791.032   ops/s Gson        5835.649   ops/s HutoolJson  1035.357   ops/s Jackson     13398.324  ops/s</code></p>
+<p>大JSON的序列化得分已经降到最差的Hutool-Json执行一次需要1毫秒了，我这还是在M2上跑的，然后我又在PC电脑上跑了一下：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark   Score      Units Fast2Json   5788.067   ops/s FastJson    2480.132   ops/s Gson        2176.535   ops/s HutoolJson  455.914    ops/s Jackson     5276.439   ops/s</code></p>
+<p>上面是在 Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz跑的结果，可以看出最差了执行一次JSON序列化需要2毫秒，所参<code>大JSON</code>解析的快慢非常影响我们的接口性能了。</p>
+<h3 id="332-大json序列化排名">3.3.2 大JSON序列化排名：<a hidden class="anchor" aria-hidden="true" href="#332-大json序列化排名">#</a></h3>
+<p>Tool</p>
+<p>Score</p>
+<p>百分制</p>
+<p>Jackson</p>
+<p>13398</p>
+<p>100</p>
+<p>FastJson2</p>
+<p>9650</p>
+<p>72.0</p>
+<p>Gson</p>
+<p>5835</p>
+<p>43.6</p>
+<p>FastJson</p>
+<p>4791</p>
+<p>35.8</p>
+<p>Hutool</p>
+<p>1035</p>
+<p>7.7</p>
+<p>看到这个排名后我有二点想说的：</p>
+<ul>
+<li><strong>Jackson</strong>，做为SpringBoot默认json序列化工具是有原因的</li>
+<li><strong>Hutool</strong>，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室</li>
+</ul>
+<h1 id="四json反序列化测试">四、JSON反序列化测试<a hidden class="anchor" aria-hidden="true" href="#四json反序列化测试">#</a></h1>
+<h2 id="41-小json反序列化测试">4.1 小JSON反序列化测试<a hidden class="anchor" aria-hidden="true" href="#41-小json反序列化测试">#</a></h2>
+<h3 id="411-小json反序列化跑分">4.1.1 小JSON反序列化跑分：<a hidden class="anchor" aria-hidden="true" href="#411-小json反序列化跑分">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark   Score        Units FastJson2  11654586.191  ops/s FastJson   5980216.867   ops/s Gson       2415733.238   ops/s HutoolJson 855421.710    ops/s Jackson    3194855.332   ops/s</code></p>
+<h3 id="412-小json反序化排名">4.1.2 小JSON反序化排名：<a hidden class="anchor" aria-hidden="true" href="#412-小json反序化排名">#</a></h3>
+<p>Tool</p>
+<p>SS</p>
+<p>SDS</p>
+<p>变化</p>
+<p>百分制</p>
+<p>FastJson2</p>
+<p>13653527</p>
+<p>11654586</p>
+<p>-14.6%</p>
+<p>100</p>
+<p>FastJson</p>
+<p>8502829</p>
+<p>5980216</p>
+<p>-29.7%</p>
+<p>51.3</p>
+<p>Jackson</p>
+<p>1217934</p>
+<p>3194855</p>
+<p>+162.3%</p>
+<p>27.4</p>
+<p>Gson</p>
+<p>437293</p>
+<p>2415733</p>
+<p>+452.4%</p>
+<p>20.7</p>
+<p>Hutool</p>
+<p>5779830</p>
+<p>855421</p>
+<p>-85.2%</p>
+<p>7.3</p>
+<p>其中：</p>
+<ul>
+<li><strong>SS( Small Serialize)</strong> ，小JSON序列化跑分,</li>
+<li><strong>SDS(Small Deserializer)</strong> ，小JSON反序列化跑分</li>
+<li><strong>变化</strong>，相比自身小JSON序列化跑分增减百分比</li>
+</ul>
+<p>看到这个排名后我有四点想说的：</p>
+<ul>
+<li><strong>FastJson2</strong>，无敌是多么，多么寂寞</li>
+<li><strong>Jackson&amp;Gson</strong>，相比于序列化反序列化快多了</li>
+<li><strong>FastJson&amp;FastJson2</strong>，你很强但是却输给了自己</li>
+<li><strong>Hutool</strong>，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室</li>
+</ul>
+<h2 id="42-中json反序列化测试">4.2 中JSON反序列化测试<a hidden class="anchor" aria-hidden="true" href="#42-中json反序列化测试">#</a></h2>
+<h3 id="421-中json反序列化跑分">4.2.1 中JSON反序列化跑分：<a hidden class="anchor" aria-hidden="true" href="#421-中json反序列化跑分">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark  Score         Units FastJson2   691572.756   ops/s FastJson    495493.338   ops/s Gson        174852.543   ops/s HutoolJson  37997.839    ops/s Jackson     216731.673   ops/s</code></p>
+<h3 id="422-中json反序列化排名">4.2.2 中JSON反序列化排名：<a hidden class="anchor" aria-hidden="true" href="#422-中json反序列化排名">#</a></h3>
+<p>Tool</p>
+<p>MS</p>
+<p>MDS</p>
+<p>变化</p>
+<p>百分制</p>
+<p>FastJson2</p>
+<p>236910</p>
+<p>691572</p>
+<p>+191.9%</p>
+<p>100</p>
+<p>FastJson</p>
+<p>173386</p>
+<p>495493</p>
+<p>+185.8%</p>
+<p>71.6</p>
+<p>Jackson</p>
+<p>212457</p>
+<p>216731</p>
+<p>-2.0%</p>
+<p>31.3</p>
+<p>Gson</p>
+<p>50937</p>
+<p>174852</p>
+<p>+243.3%</p>
+<p>25.3</p>
+<p>Hutool</p>
+<p>50937</p>
+<p>37997</p>
+<p>-25.4%</p>
+<p>5.5</p>
+<p>其中：</p>
+<ul>
+<li><strong>MS(Medium Serialize)</strong> ，中JSON序列化跑分,</li>
+<li><strong>MDS(Medium Deserializer)</strong> ，中JSON反序列化跑分</li>
+<li><strong>变化</strong>，相比自身中JSON序列化跑分增减百分比</li>
+</ul>
+<p>看到这个排名后我有三点想说的：</p>
+<ul>
+<li><strong>FastJson2</strong>，无敌是多么，多么空虚</li>
+<li><strong>FastJson2&amp;FastJson</strong>，不但强还比自己序列化强</li>
+<li><strong>Hutool</strong>，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室</li>
+</ul>
+<h2 id="43-大json反序列化测试">4.3 大JSON反序列化测试<a hidden class="anchor" aria-hidden="true" href="#43-大json反序列化测试">#</a></h2>
+<h3 id="431-大json反序列化跑分">4.3.1 大JSON反序列化跑分：<a hidden class="anchor" aria-hidden="true" href="#431-大json反序列化跑分">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Benchmark   Score     Units FastJson2   8555.106  ops/s FastJson    9002.889  ops/s Gson        6141.212  ops/s HutoolJson  1252.990  ops/s Jackson     4614.815  ops/s</code></p>
+<h3 id="432-大json反序列化排名">4.3.2 大JSON反序列化排名：<a hidden class="anchor" aria-hidden="true" href="#432-大json反序列化排名">#</a></h3>
+<p>Tool</p>
+<p>BS</p>
+<p>BDS</p>
+<p>变化</p>
+<p>百分制</p>
+<p>FastJson</p>
+<p>4791</p>
+<p>9002</p>
+<p>+87.9</p>
+<p>100</p>
+<p>FastJson2</p>
+<p>9650</p>
+<p>8555</p>
+<p>-11.3</p>
+<p>95.0</p>
+<p>Gson</p>
+<p>5835</p>
+<p>6141</p>
+<p>+5.2</p>
+<p>68.2</p>
+<p>Jackson</p>
+<p>13398</p>
+<p>4614</p>
+<p>-65.6</p>
+<p>51.3</p>
+<p>Hutool</p>
+<p>1035</p>
+<p>1252</p>
+<p>+20.9</p>
+<p>13.9</p>
+<p>其中：</p>
+<ul>
+<li><strong>BS(Big Serialize)</strong> ，大JSON序列化跑分</li>
+<li><strong>BDS(Big Deserializer)</strong> ，大JSON反序列化跑分</li>
+<li><strong>变化</strong>，相比自身大JSON序列化跑分增减百分比</li>
+</ul>
+<p>看到这个排名后我有三点想说的：</p>
+<ul>
+<li><strong>FastJson2</strong>，青出于蓝而胜于蓝，可是你没想到人家还留了一手</li>
+<li><strong>FastJson</strong>，教会徒弟饿死师傅这个道理你是懂的</li>
+<li><strong>Hutool</strong>，@所有人，大家看看自己在项目中有没有使用Hutool-Json，有用到的来下我办公室</li>
+</ul>
+<h1 id="排行榜">排行榜<a hidden class="anchor" aria-hidden="true" href="#排行榜">#</a></h1>
+<p>Tool</p>
+<p>排名</p>
+<p>总分</p>
+<p>百分制</p>
+<p>SS</p>
+<p>MS</p>
+<p>BS</p>
+<p>SDS</p>
+<p>MDS</p>
+<p>BDS</p>
+<p>FastJson2</p>
+<p>状元</p>
+<p>567</p>
+<p>100</p>
+<p>100</p>
+<p>100</p>
+<p>72.0</p>
+<p>100</p>
+<p>100</p>
+<p>95.0</p>
+<p>FastJson</p>
+<p>榜眼</p>
+<p>394.2</p>
+<p>69.5</p>
+<p>62.3</p>
+<p>73.2</p>
+<p>35.8</p>
+<p>51.3</p>
+<p>71.6</p>
+<p>100</p>
+<p>Jackson</p>
+<p>探花</p>
+<p>342</p>
+<p>60.3</p>
+<p>42.3</p>
+<p>89.7</p>
+<p>100</p>
+<p>27.4</p>
+<p>31.3</p>
+<p>51.3</p>
+<p>Gson</p>
+<p>进士</p>
+<p>188.2</p>
+<p>33.2</p>
+<p>8.9</p>
+<p>21.5</p>
+<p>43.6</p>
+<p>20.7</p>
+<p>25.3</p>
+<p>68.2</p>
+<p>Hutool</p>
+<p>孙山</p>
+<p>42.2</p>
+<p>7.4</p>
+<p>3.2</p>
+<p>4.6</p>
+<p>7.7</p>
+<p>7.3</p>
+<p>5.5</p>
+<p>13.9</p>
+<p>其中：</p>
+<ul>
+<li><strong>排名</strong>，根据总得分降序</li>
+<li><strong>总分</strong>，6项得分总和</li>
+<li><strong>百分制</strong>，总得分最大为100分， 100*(最大总分-自己)/(最大总分)</li>
+<li><strong>SS</strong>，小JSON序列化得分</li>
+<li><strong>MS</strong>，中JSON序列化得分</li>
+<li><strong>BS</strong>，大JSON序列化得分</li>
+<li><strong>SDS</strong>，小JSON反序列化得分</li>
+<li><strong>MDS</strong>，中JSON反序列化得分</li>
+<li><strong>BDS</strong>，大JSON反序列化得分</li>
+</ul>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/eb4dd9a5323a4c03a5e095fe0094b341~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6LW15L6g5a6i:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727651329&amp;x-signature=dlsABx3jCG4xbEvEcvswzOy9pTU%3D" alt="JSON解析性能排行榜"  />
+</p>
+<p>看到这个排行榜后我有5点想说的：</p>
+<ul>
+<li><strong>FastJson2</strong>，无敌是多么，多么寂寞、无敌是多么，多么空虚</li>
+<li><strong>FastJson</strong>，长江后浪推前浪,前浪被拍在沙滩，你的漏洞那么多，该退休了</li>
+<li><strong>Jackson</strong>，SpringBoot看上的没毛病</li>
+<li><strong>Gson</strong>，你没存在感的原因要从别人找起，不是你不优秀，是优秀的人了太多了</li>
+<li><strong>Hutool</strong>， @公众号 @赵侠客 你们两个工作交接一下，明天不用来了</li>
+</ul>
+<p>最后本测试纯个人自娱自乐，由于本人开发水平有限，如果怀疑测试结果，可以评论区交流或者可以下载源码自己跑分：</p>
+<blockquote>
+<p>GitHub：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwhzhaochao%2FJsonBenchmark" title="https://github.com/whzhaochao/JsonBenchmark">github.com/whzhaochao/…</a></p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+      <li><a href="http://localhost:1313/tags/json/">JSON</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A6%82%E4%BD%95%E6%8A%8A%E6%8E%A7%E8%87%AA%E5%B7%B1%E7%9A%84%E8%81%8C%E4%B8%9A%E9%99%88%E7%9A%93--%E5%B7%A6%E8%80%B3%E6%9C%B5%E8%80%97%E5%AD%90/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>程序员如何把控自己的职业（陈皓--左耳朵耗子）</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%A4%A7%E5%8E%82%E9%9D%A2%E8%AF%95%E4%BB%A3%E7%A0%81%E9%A2%98%E4%B8%BA%E4%BB%80%E4%B9%881511.mapparseint%E4%BC%9A%E8%BF%94%E5%9B%9E1nan3/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>大厂面试代码题：为什么[&#39;1&#39;,&#39;5&#39;,&#39;11&#39;].map(parseInt)会返回[1,NaN,3]</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 on x"
+            href="https://x.com/intent/tweet/?text=FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2cJava%2cJSON">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f&amp;title=FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c&amp;summary=FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f&title=FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 on whatsapp"
+            href="https://api.whatsapp.com/send?text=FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 on telegram"
+            href="https://telegram.me/share/url?text=FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=FastJson%e3%80%81Jackson%e3%80%81Gson%e3%80%81Hutool%ef%bc%8cJSON%e8%a7%a3%e6%9e%90%e5%93%aa%e5%ae%b6%e5%bc%ba%ef%bc%9fJMH%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95%e6%9d%a5%e6%8e%92%e8%a1%8c&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2ffastjsonjacksongsonhutooljson%25E8%25A7%25A3%25E6%259E%2590%25E5%2593%25AA%25E5%25AE%25B6%25E5%25BC%25BAjmh%25E5%259F%25BA%25E5%2587%2586%25E6%25B5%258B%25E8%25AF%2595%25E6%259D%25A5%25E6%258E%2592%25E8%25A1%258C%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

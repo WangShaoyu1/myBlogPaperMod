@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>神奇的SQL，被严重忽视的HAVING，它真的很有魅力 | PaperMod</title>
+<meta name="keywords" content="SQL, 后端">
+<meta name="description" content="集合论是SQL语言的根基，只有从集合的角度来思考，才能明白SQL的强大威力；学习HAVING子句的用法是帮助我们顺利地忘掉面向过程语言的思考方式并理解SQL面向集合特性的最为有效的方法">
+<meta name="author" content="青石路">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E7%A5%9E%E5%A5%87%E7%9A%84sql%E8%A2%AB%E4%B8%A5%E9%87%8D%E5%BF%BD%E8%A7%86%E7%9A%84having%E5%AE%83%E7%9C%9F%E7%9A%84%E5%BE%88%E6%9C%89%E9%AD%85%E5%8A%9B/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E7%A5%9E%E5%A5%87%E7%9A%84sql%E8%A2%AB%E4%B8%A5%E9%87%8D%E5%BF%BD%E8%A7%86%E7%9A%84having%E5%AE%83%E7%9C%9F%E7%9A%84%E5%BE%88%E6%9C%89%E9%AD%85%E5%8A%9B/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="神奇的SQL，被严重忽视的HAVING，它真的很有魅力" />
+<meta property="og:description" content="集合论是SQL语言的根基，只有从集合的角度来思考，才能明白SQL的强大威力；学习HAVING子句的用法是帮助我们顺利地忘掉面向过程语言的思考方式并理解SQL面向集合特性的最为有效的方法" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E7%A5%9E%E5%A5%87%E7%9A%84sql%E8%A2%AB%E4%B8%A5%E9%87%8D%E5%BF%BD%E8%A7%86%E7%9A%84having%E5%AE%83%E7%9C%9F%E7%9A%84%E5%BE%88%E6%9C%89%E9%AD%85%E5%8A%9B/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-18T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="神奇的SQL，被严重忽视的HAVING，它真的很有魅力"/>
+<meta name="twitter:description" content="集合论是SQL语言的根基，只有从集合的角度来思考，才能明白SQL的强大威力；学习HAVING子句的用法是帮助我们顺利地忘掉面向过程语言的思考方式并理解SQL面向集合特性的最为有效的方法"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "神奇的SQL，被严重忽视的HAVING，它真的很有魅力",
+      "item": "http://localhost:1313/posts/juejin/%E7%A5%9E%E5%A5%87%E7%9A%84sql%E8%A2%AB%E4%B8%A5%E9%87%8D%E5%BF%BD%E8%A7%86%E7%9A%84having%E5%AE%83%E7%9C%9F%E7%9A%84%E5%BE%88%E6%9C%89%E9%AD%85%E5%8A%9B/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "神奇的SQL，被严重忽视的HAVING，它真的很有魅力",
+  "name": "神奇的SQL，被严重忽视的HAVING，它真的很有魅力",
+  "description": "集合论是SQL语言的根基，只有从集合的角度来思考，才能明白SQL的强大威力；学习HAVING子句的用法是帮助我们顺利地忘掉面向过程语言的思考方式并理解SQL面向集合特性的最为有效的方法",
+  "keywords": [
+    "SQL", "后端"
+  ],
+  "articleBody": "开心一刻 今天下班，骑着青桔电动车高高兴兴的哼着曲回家，感觉整个世界都是我的\n刚到家门口，还未下车，老妈就气冲冲的走过来对我说道：你表哥就比你大一岁，人家都买了奔驰了，50 多万！\n我：表哥那车，舅舅出了 40 多万\n老妈：那不还有 10 多万是他自己出的\n我：那 10 几万是他丈母娘出的\n老妈：你还有脸说，你连个对象都没有！\n老妈走回家，回头望了眼我胯下的青桔，一脸不屑地说道：连个自行车都没有\n我：这是电动车！\n老妈：那也不是你的\n我低头望了望青桔，差点一脚把它踹开，可想了想，踹坏了赔不起，赶紧找个停车点把车停好吧，不然又多扣五毛钱了\nHAVING 回顾 关于 SQL 中的 HAVING，相信大家都不陌生，它往往与 GROUP BY 配合使用，为聚合操作指定条件，例如\nsql\n代码解读\n复制代码\nSELECT name, COUNT(*) FROM table GROUP BY name HAVING COUNT(*) \u003e 2\n说到指定条件，我们最先想到的往往是 WHERE 子句，但 WHERE 子句只能指定行的条件，而不能指定组的条件\n集合论 是 SQL 语言的根基，它里面有个 阶 的概念，我们必须掌握，具体可查看：神奇的 SQL 之层级 → 为什么 GROUP BY 之后不能直接引用原表中的列\n所以就有了 HAVING 子句，用来指定组的条件，我们来看案例\n现有学生班级表 tbl_student_class 以及数据\nsql\n代码解读\n复制代码\nCREATE TABLE tbl_student_class ( id int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键', sno varchar(12) NOT NULL COMMENT '学号', cno varchar(5) NOT NULL COMMENT '班级号', cname varchar(50) NOT NULL COMMENT '班级名', PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生班级表'; -- ---------------------------- -- Records of tbl_student_class -- ---------------------------- INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190607001', '0607', '影视7班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190607002', '0607', '影视7班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190608003', '0608', '影视8班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190608004', '0608', '影视8班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190609005', '0609', '影视9班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190609006', '0609', '影视9班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190609007', '0609', '影视9班');\n我们要查询 学生人数等于3 的班级，这个 SQL 该如何写，相信大家都会，用 HAVING 很容易就实现了\nsql\n代码解读\n复制代码\nSELECT cno, COUNT(*) nums FROM tbl_student_class GROUP BY cno HAVING COUNT(*) = 3;\n如果不使用 HAVING 子句，会是什么样的结果？我们来试试\n就是查询各个班的人数，能看出来吧？\n所以我们可以总结下\nWHERE 先过滤出行，然后 GROUP BY 对过滤后的行进行分组，HAVING 再对组进行过滤，筛选出我们需要的组\n因为 HAVING 操作的对象是组，所以其子句构成要素有限制，只能是 常数，聚合函数，聚合键\n聚合键： GROUP BY 子句中指定的列名，可以是一列，也可以是多列\n回到前面的案例 SQL，其中 HAVING COUNT(*) = 3，COUNT(*) 就是聚合函数，3 是常数，都在限制中；如果子句中有限制之外的条件，会是什么情况呢，我们来看个案例\nsql\n代码解读\n复制代码\nSELECT cno, COUNT(*) nums FROM tbl_student_class GROUP BY cno HAVING cname = '影视9班';\n执行报错，错误信息如下\n[Err] 1054 - Unknown column ‘cname’ in ‘having clause’\n翻译过来就是：不知道 having 子句中的 cname 列；因为 HAVING 操作的对象是组，而 cname 是 tbl_student_class 行记录的列名，而非组的属性，我们换个角度来理解下：GROUP BY 聚合后的结果（组）是 HAVING 子句的输入数据。我们回到案例，通过 cno 进行聚合后的结果如下\n聚合后的这个结果并没有 cname 这个列，那么通过这个列来进行条件处理，肯定就报错了嘛\n如果你们细心点，就会发现\nHAVING 子句的构成要素和包含 GROUP BY 子句时的 SELECT 子句的构成要素是一样的，都是只能包含 常数 、 聚合函数 和 聚合键\n被忽视的魅力 HAVING 子句是 SQL 里一个非常重要的功能，是理解 SQL 面向集合这一本质的关键，我们结合几个具体的案例，来感受下 HAVING 那些被忽略的魅力\n是否存在缺失的编号\ntbl_student_class 表中记录的 id 是连续的（id 的起始值不一定是 1），我们去掉其中 3 条\nsql\n代码解读\n复制代码\nDELETE FROM tbl_student_class WHERE id IN(2,5,6);\n此时表中数据如下\n问：是否有编号缺失\nSQL 该如何实现，你们想想，我提供一种\nsql\n代码解读\n复制代码\nSELECT '存在缺失的编号' AS gap FROM tbl_student_class HAVING COUNT(*) \u003c\u003e MAX(id) - MIN(id) + 1;\n上述 SQL 语句里没有 GROUP BY 子句，此时整张表会被聚合为一组，这种情况下 HAVING 子句也是可以使用的\nHAVING 不是一定要和 GROUP BY 一起使用\n更严谨的写法如下\nsql\n代码解读\n复制代码\n-- 无论如何都有结果返回 SELECT CASE WHEN COUNT(*) = 0 THEN '表为空' WHEN COUNT(*) \u003c\u003e MAX(id) - MIN(id) + 1 THEN '存在缺失的编号' ELSE '连续' END AS gap FROM tbl_student_class;\n延伸下问题：如果有编号缺失，如何找到那些缺失的编号？欢迎评论区留言\n众数\n有一张表： tbl_student_salary，记录着毕业生首份工作的年薪\nsql\n代码解读\n复制代码\nCREATE TABLE tbl_student_salary ( id int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键', name varchar(5) NOT NULL COMMENT '姓名', salary DECIMAL(15,2) NOT NULL COMMENT '年薪, 单位元', PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='毕业生年薪标'; insert into tbl_student_salary values (1,'李小龙', 1000000); insert into tbl_student_salary values (2,'李四', 50000); insert into tbl_student_salary values (3,'王五', 50000); insert into tbl_student_salary values (4,'赵六', 50000); insert into tbl_student_salary values (5,'张三', 70000); insert into tbl_student_salary values (6,'张一三', 70000); insert into tbl_student_salary values (7,'张二三', 70000); insert into tbl_student_salary values (8,'张三三', 60000); insert into tbl_student_salary values (9,'张三四', 40000); insert into tbl_student_salary values (10,'张三丰', 30000);\n如果光从平均工资（149000）来看，感觉毕业生都能拿到很高的工资。但这个平均工资背后却有一些玄机，因为功夫大师李小龙在这一届毕业生中，由于他出众的薪资，将大家的平均薪资拉升了一大截\n简单地求平均值有一个缺点，那就是很容易受到离群值（outlier）的影响，这种时候就必须使用更能准确反映出群体趋势的指标，众数（mode）就是其中之一；那么如何用 SQL 来求众数了，请看我表演\nsql\n代码解读\n复制代码\n-- 使用谓词 ALL 求众数 SELECT salary, COUNT(*) AS cnt FROM tbl_student_salary GROUP BY salary HAVING COUNT(*) \u003e= ALL ( SELECT COUNT(*) FROM tbl_student_salary GROUP BY salary);\n执行结果如下\nALL 谓词用于 NULL 或空集时会出现问题，我们可以用极值函数来代替；这里要求的是元素数最多的集合，因此可以用 MAX 函数\nsql\n代码解读\n复制代码\n-- 使用极值函数求众数 SELECT salary, COUNT(*) AS cnt FROM tbl_student_salary GROUP BY salary HAVING COUNT(*) \u003e= ( SELECT MAX(cnt) FROM ( SELECT COUNT(*) AS cnt FROM tbl_student_salary GROUP BY salary ) TMP ) ;\n是不是触及到你们的知识盲区了？但你们先别慌，因为后面会让你们更慌\n中位数\n当平均值不可信时，与众数一样经常被用到的另一个指标是中位数（median），它指的是将集合中的元素按升序排列后恰好位于正中间的元素。如果集合的元素个数为偶数，则取中间两个元素的平均值作为中位数\n回到表 tbl_student_salary，共有 10 条记录，那么 张三三, 60000 和 李四, 50000 的平均值 55000 就是中位数\n那么问题来了，通过 SQL 如何求中位数？实现也不复杂，将集合里的元素按照大小分为上半部分和下半部分两个子集，同时让这 2 个子集共同拥有集合正中间的元素，这样，共同部分的元素的平均值就是中位数，思路如下图所示\n像这样需要根据大小关系生成子集时，就轮到 非等值自连接 出场了\nsql\n代码解读\n复制代码\n-- 求中位数的SQL 语句：在HAVING 子句中使用非等值自连接 SELECT AVG(DISTINCT salary) FROM ( SELECT T1.salary FROM tbl_student_salary T1, tbl_student_salary T2 GROUP BY T1.salary -- S1 的条件 HAVING SUM(CASE WHEN T2.salary \u003e= T1.salary THEN 1 ELSE 0 END) \u003e= COUNT(*) / 2 -- S2 的条件 AND SUM(CASE WHEN T2.salary \u003c= T1.salary THEN 1 ELSE 0 END) \u003e= COUNT(*) / 2 ) TMP;\n这条 SQL 语句的要点在于比较条件 \u003e= COUNT(*)/2 里的等号，加上等号并不是为了清晰地分开子集 S1 和 S2，而是为了让这 2 个子集拥有共同部分；如果去掉等号，将条件改成 \u003e COUNT(*)/2 ，那么当元素个数为偶数时，S1 和 S2 就没有共同的元素了，也就无法求出中位数了；加上等号是为了写出通用性更高的 SQL\n是不是满头大汗了？但别慌，把 SQL 拆开执行，根据结果来反推每个拆分 SQL 的逻辑含义，慢慢的你们就能理解了\n不包含 NULL 的集合\n假设我们有一张学生报告提交记录表：tbl_student_submit_log\nsql\n代码解读\n复制代码\nCREATE TABLE tbl_student_submit_log ( id int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键', sno varchar(12) NOT NULL COMMENT '学号', dept varchar(50) NOT NULL COMMENT '学院', submit_date DATE COMMENT '提交日期', PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生报告提交记录表'; insert into tbl_student_submit_log values (1,'20200607001', '理学院', '2020-12-12'), (2,'20200607002', '理学院', '2020-12-13'), (3,'20200608001', '文学院', null), (4,'20200608002', '文学院', '2020-12-22'), (5,'20200608003', '文学院', '2020-12-22'), (6,'20200612001', '工学院', null), (7,'20200617001', '经济学院', '2020-12-23');\n学生提交报告后， submit_date 列会被写入日期，而提交之前是 NULL\n问：从这张表里找出哪些学院的学生全部都提交了报告，SQL 该怎么写？\n如果只是用 WHERE submit_date IS NOT NULL 条件进行查询，那文学院也会被包含进来，结果就不正确了，正确的做法应该先以 dept 进行分组，然后对组进行条件的过滤，SQL 如下\nsql\n代码解读\n复制代码\nSELECT dept FROM tbl_student_submit_log GROUP BY dept HAVING COUNT(*) = COUNT(submit_date);\n这里其实用到了 COUNT 函数，COUNT(*) 可以用于 NULL ，而 COUNT(列名) 与其他聚合函数一样，要先排除掉 NULL 的行再进行统计\n当然，更通用的实现是使用 CASE 表达式\nsql\n代码解读\n复制代码\nSELECT dept FROM tbl_student_submit_log GROUP BY dept HAVING COUNT(*) = SUM( CASE WHEN submit_date IS NOT NULL THEN 1 ELSE 0 END );\n其他\n不仅仅只是如上的那些场景适用于 HAVING，还有很多其他的场景也是需要用到 HAVING 的，有兴趣的可以去翻阅《SQL进阶教程》\n聚合键条件归属 我们来看个有趣的东西，还是用表：tbl_student_class\n我们发现，聚合键所对应的条件既可以写在 HAVING 子句当中，也可以写在 WHERE 子句当中，虽然条件分别写在 HAVING 子句和 WHERE 子句当中，但是条件的内容，以及返回的结果都完全相同，因此，很多小伙伴就会觉得两种书写方式都没问题，单从结果来看，确实没问题，但其中有一种属于偏离了 SQL 规范的非正规用法，推荐做法是： 聚合键所对应的条件应该书写在 WHERE 子句中 ，理由有二\n语义更清晰\nWHERE 子句和 HAVING 子句的作用是不同的；前面已经说过，HAVING 子句是用来指定 组 的条件的，而 行 所对应的条件应该写在 WHERE 子句中，这样一来，写出来的 SQL 语句不但可以分清两者各自的功能，而且理解起来也更容易\n执行速度更快\n使用 COUNT 等函数对表中数据进行聚合操作时，DBMS 内部进行排序处理，而排序处理会大大增加机器的负担，从而降低处理速度；因此，尽可能减少排序的行数，可以提高处理速度；通过 WHERE 子句指定条件时，由于排序之前就对数据进行了过滤，那么就减少了聚合操作时的需要排序的记录数量；而 HAVING 子句是在排序之后才对数据进行分组的，与在 WHERE 子句中指定条件比起来，需要排序的数量就会多得多\n另外，索引是 WHERE 根据速度优势的另一个有利支持，在 WHERE 子句指定条件所对应的列上创建索引，可以大大提高 WHERE 子句的处理速度\n总结 SQL 的本质是集合论\n集合论是 SQL 语言的根基，只有从集合的角度来思考，才能明白 SQL 的强大威力；学习 HAVING 子句的用法是帮助我们顺利地忘掉面向过程语言的思考方式并理解 SQL 面向集合特性的最为有效的方法\nHAVING 子句的三要素\n常数、聚合函数 和 聚合键\nHAVING 与 WHERE\nWHERE 子句是指定行所对应的条件，而 HAVING 子句是指定组所对应的条件；能放到 WHERE 子句的条件统统放到 WHERE 子句中，这样能够减少需要分组的记录数，从而提高分组后操作的效率\n",
+  "wordCount" : "880",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-18T00:00:00Z",
+  "dateModified": "2024-09-18T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "青石路"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E7%A5%9E%E5%A5%87%E7%9A%84sql%E8%A2%AB%E4%B8%A5%E9%87%8D%E5%BF%BD%E8%A7%86%E7%9A%84having%E5%AE%83%E7%9C%9F%E7%9A%84%E5%BE%88%E6%9C%89%E9%AD%85%E5%8A%9B/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      神奇的SQL，被严重忽视的HAVING，它真的很有魅力
+    </h1>
+    <div class="post-description">
+      集合论是SQL语言的根基，只有从集合的角度来思考，才能明白SQL的强大威力；学习HAVING子句的用法是帮助我们顺利地忘掉面向过程语言的思考方式并理解SQL面向集合特性的最为有效的方法
+    </div>
+    <div class="post-meta"><span title='2024-09-18 00:00:00 +0000 UTC'>九月 18, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;青石路&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bc%80%e5%bf%83%e4%b8%80%e5%88%bb" aria-label="开心一刻">开心一刻</a></li>
+                <li>
+                    <a href="#having-%e5%9b%9e%e9%a1%be" aria-label="HAVING 回顾">HAVING 回顾</a></li>
+                <li>
+                    <a href="#%e8%a2%ab%e5%bf%bd%e8%a7%86%e7%9a%84%e9%ad%85%e5%8a%9b" aria-label="被忽视的魅力">被忽视的魅力</a></li>
+                <li>
+                    <a href="#%e8%81%9a%e5%90%88%e9%94%ae%e6%9d%a1%e4%bb%b6%e5%bd%92%e5%b1%9e" aria-label="聚合键条件归属">聚合键条件归属</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="开心一刻">开心一刻<a hidden class="anchor" aria-hidden="true" href="#开心一刻">#</a></h3>
+<p>今天下班，骑着青桔电动车高高兴兴的哼着曲回家，感觉整个世界都是我的<br>
+刚到家门口，还未下车，老妈就气冲冲的走过来对我说道：你表哥就比你大一岁，人家都买了奔驰了，50 多万！<br>
+我：表哥那车，舅舅出了 40 多万<br>
+老妈：那不还有 10 多万是他自己出的<br>
+我：那 10 几万是他丈母娘出的<br>
+老妈：你还有脸说，你连个对象都没有！<br>
+老妈走回家，回头望了眼我胯下的青桔，一脸不屑地说道：连个自行车都没有<br>
+我：这是电动车！<br>
+老妈：那也不是你的<br>
+我低头望了望青桔，差点一脚把它踹开，可想了想，踹坏了赔不起，赶紧找个停车点把车停好吧，不然又多扣五毛钱了</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/df0d710b942f438dae3532f248b33ff2~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=4A%2BhZkjIML4vzg6dUtRhynBb0zU%3D" alt="达叔_少林足球.gif"  />
+</p>
+<h3 id="having-回顾">HAVING 回顾<a hidden class="anchor" aria-hidden="true" href="#having-回顾">#</a></h3>
+<p>关于 SQL 中的 <code>HAVING</code>，相信大家都不陌生，它往往与 <code>GROUP BY</code> 配合使用，为聚合操作指定条件，例如</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>SELECT name, COUNT(*) FROM table GROUP BY name HAVING COUNT(*) &gt; 2</code></p>
+<p>说到指定条件，我们最先想到的往往是 <code>WHERE</code> 子句，但 WHERE 子句只能指定行的条件，而不能指定组的条件</p>
+<blockquote>
+<p><code>集合论</code> 是 SQL 语言的根基，它里面有个 <code>阶</code> 的概念，我们必须掌握，具体可查看：<a href="https://juejin.cn/post/7359965074632998922" title="https://juejin.cn/post/7359965074632998922">神奇的 SQL 之层级 → 为什么 GROUP BY 之后不能直接引用原表中的列</a></p>
+</blockquote>
+<p>所以就有了 HAVING 子句，用来指定组的条件，我们来看案例</p>
+<p>现有学生班级表 <code>tbl_student_class</code> 以及数据</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>CREATE TABLE tbl_student_class (   id int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',   sno varchar(12) NOT NULL COMMENT '学号',   cno varchar(5) NOT NULL COMMENT '班级号',   cname varchar(50) NOT NULL COMMENT '班级名',   PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生班级表'; -- ---------------------------- -- Records of tbl_student_class -- ---------------------------- INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190607001', '0607', '影视7班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190607002', '0607', '影视7班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190608003', '0608', '影视8班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190608004', '0608', '影视8班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190609005', '0609', '影视9班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190609006', '0609', '影视9班'); INSERT INTO tbl_student_class(sno, cno, cname) VALUES ('20190609007', '0609', '影视9班');</code></p>
+<p>我们要查询 <code>学生人数等于3</code> 的班级，这个 SQL 该如何写，相信大家都会，用 HAVING 很容易就实现了</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>SELECT cno, COUNT(*) nums FROM tbl_student_class GROUP BY cno HAVING COUNT(*) = 3;</code></p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f8e0986e8a954966b61b0d7b31b26d52~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=LaYk4oormnW7eSscD%2FFfhoKjOuc%3D" alt="人数等于3的班级_SQL.png"  />
+</p>
+<p>如果不使用 HAVING 子句，会是什么样的结果？我们来试试</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/879f72416b6946e39040cb2cea611594~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=X%2B4SO5mhkU40ayq1N83s4BmPZKg%3D" alt="查询各个班的人数_SQL.png"  />
+</p>
+<p>就是查询各个班的人数，能看出来吧？</p>
+<p>所以我们可以总结下</p>
+<blockquote>
+<p>WHERE 先过滤出行，然后 GROUP BY 对过滤后的行进行分组，HAVING 再对组进行过滤，筛选出我们需要的组</p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/4f4059e3d13c4061a5055f530d6b01fc~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=KhkjOY8dxUbBzIQhKq1cr7XcSc0%3D" alt="SQL 之 HAVING-初识HAVING.png"  />
+</p>
+<p>因为 HAVING 操作的对象是组，所以其子句构成要素有限制，只能是 <code>常数</code>，<code>聚合函数</code>，<code>聚合键</code></p>
+<blockquote>
+<p>聚合键： GROUP BY 子句中指定的列名，可以是一列，也可以是多列</p>
+</blockquote>
+<p>回到前面的案例 SQL，其中 <code>HAVING COUNT(*) = 3</code>，<code>COUNT(*)</code> 就是聚合函数，<code>3</code> 是常数，都在限制中；如果子句中有限制之外的条件，会是什么情况呢，我们来看个案例</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>SELECT cno, COUNT(*) nums FROM tbl_student_class GROUP BY cno HAVING cname = '影视9班';</code></p>
+<p>执行报错，错误信息如下</p>
+<blockquote>
+<p>[Err] 1054 - Unknown column &lsquo;cname&rsquo; in &lsquo;having clause&rsquo;</p>
+</blockquote>
+<p>翻译过来就是：不知道 having 子句中的 <code>cname</code> 列；因为 HAVING 操作的对象是组，而 cname 是 tbl_student_class 行记录的列名，而非组的属性，我们换个角度来理解下：GROUP BY 聚合后的结果（组）是 HAVING 子句的输入数据。我们回到案例，通过 cno 进行聚合后的结果如下</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/80829616d05c47d3a6ab7b09453e0b52~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=c%2BsiNnCdi0tVU7KRIfx1Smy%2BS0E%3D" alt="SQL 之 HAVING-简化理解 HAVING 子句.png"  />
+</p>
+<p>聚合后的这个结果并没有 <code>cname</code> 这个列，那么通过这个列来进行条件处理，肯定就报错了嘛</p>
+<p>如果你们细心点，就会发现</p>
+<blockquote>
+<p>HAVING 子句的构成要素和包含 GROUP BY 子句时的 SELECT 子句的构成要素是一样的，都是只能包含 常数 、 聚合函数 和 聚合键</p>
+</blockquote>
+<h3 id="被忽视的魅力">被忽视的魅力<a hidden class="anchor" aria-hidden="true" href="#被忽视的魅力">#</a></h3>
+<p>HAVING 子句是 SQL 里一个非常重要的功能，是理解 SQL 面向集合这一本质的关键，我们结合几个具体的案例，来感受下 HAVING 那些被忽略的魅力</p>
+<ol>
+<li>
+<p>是否存在缺失的编号</p>
+<p>tbl_student_class 表中记录的 id 是连续的（id 的起始值不一定是 1），我们去掉其中 3 条</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>DELETE FROM tbl_student_class WHERE id IN(2,5,6);</code></p>
+<p>此时表中数据如下</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/1a7af798ee2045419fc543c41a519c2d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=KiLrYyHGNXCgi%2BDCSoIu0SrFu88%3D" alt="缺失的编号_初始数据"  />
+</p>
+<p>问：是否有编号缺失</p>
+<p>SQL 该如何实现，你们想想，我提供一种</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>SELECT '存在缺失的编号' AS gap FROM tbl_student_class HAVING COUNT(*) &lt;&gt; MAX(id) - MIN(id) + 1;</code></p>
+<p>上述 SQL 语句里没有 GROUP BY 子句，此时整张表会被聚合为一组，这种情况下 HAVING 子句也是可以使用的</p>
+<blockquote>
+<p>HAVING 不是一定要和 GROUP BY 一起使用</p>
+</blockquote>
+<p>更严谨的写法如下</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>-- 无论如何都有结果返回 SELECT CASE WHEN COUNT(*) = 0 THEN '表为空'     WHEN COUNT(*) &lt;&gt; MAX(id) - MIN(id) + 1 THEN '存在缺失的编号'     ELSE '连续' END AS gap FROM tbl_student_class;</code></p>
+<p>延伸下问题：如果有编号缺失，如何找到那些缺失的编号？欢迎评论区留言</p>
+</li>
+<li>
+<p>众数</p>
+<p>有一张表： <code>tbl_student_salary</code>，记录着毕业生首份工作的年薪</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>CREATE TABLE tbl_student_salary (   id int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',   name varchar(5) NOT NULL COMMENT '姓名',   salary DECIMAL(15,2) NOT NULL COMMENT '年薪, 单位元',   PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='毕业生年薪标'; insert into tbl_student_salary values (1,'李小龙', 1000000); insert into tbl_student_salary values (2,'李四', 50000); insert into tbl_student_salary values (3,'王五', 50000); insert into tbl_student_salary values (4,'赵六', 50000); insert into tbl_student_salary values (5,'张三', 70000); insert into tbl_student_salary values (6,'张一三', 70000); insert into tbl_student_salary values (7,'张二三', 70000); insert into tbl_student_salary values (8,'张三三', 60000); insert into tbl_student_salary values (9,'张三四', 40000); insert into tbl_student_salary values (10,'张三丰', 30000);</code></p>
+<p>如果光从平均工资（<code>149000</code>）来看，感觉毕业生都能拿到很高的工资。但这个平均工资背后却有一些玄机，因为功夫大师李小龙在这一届毕业生中，由于他出众的薪资，将大家的平均薪资拉升了一大截</p>
+<p>简单地求平均值有一个缺点，那就是很容易受到离群值（outlier）的影响，这种时候就必须使用更能准确反映出群体趋势的指标，众数（mode）就是其中之一；那么如何用 SQL 来求众数了，请看我表演</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>-- 使用谓词 ALL 求众数 SELECT salary, COUNT(*) AS cnt FROM tbl_student_salary GROUP BY salary HAVING COUNT(*) &gt;= ALL (     SELECT COUNT(*)     FROM tbl_student_salary     GROUP BY salary);</code></p>
+<p>执行结果如下</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/05e277efb3144b68b8cb36761970d4fa~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=t%2Br4%2FhmLT3hDnaPkdmcO%2FnZTvYY%3D" alt="众数结果"  />
+</p>
+<p>ALL 谓词用于 NULL 或空集时会出现问题，我们可以用极值函数来代替；这里要求的是元素数最多的集合，因此可以用 MAX 函数</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>-- 使用极值函数求众数 SELECT salary, COUNT(*) AS cnt FROM tbl_student_salary GROUP BY salary HAVING COUNT(*) &gt;= (     SELECT MAX(cnt)     FROM (         SELECT COUNT(*) AS cnt         FROM tbl_student_salary         GROUP BY salary         ) TMP     ) ;</code></p>
+<p>是不是触及到你们的知识盲区了？但你们先别慌，因为后面会让你们更慌</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/afa99ecf06924f929cc7eddd2508511e~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=Ny%2BFCIYPUMXXK7omQoBM%2B5f316I%3D" alt="来打我呀"  />
+</p>
+</li>
+<li>
+<p>中位数</p>
+<p>当平均值不可信时，与众数一样经常被用到的另一个指标是中位数（median），它指的是将集合中的元素按升序排列后恰好位于正中间的元素。如果集合的元素个数为偶数，则取中间两个元素的平均值作为中位数</p>
+<p>回到表 tbl_student_salary，共有 10 条记录，那么 <code>张三三, 60000</code> 和 <code>李四, 50000</code> 的平均值 <code>55000</code> 就是中位数</p>
+<p>那么问题来了，通过 SQL 如何求中位数？实现也不复杂，将集合里的元素按照大小分为上半部分和下半部分两个子集，同时让这 2 个子集共同拥有集合正中间的元素，这样，共同部分的元素的平均值就是中位数，思路如下图所示</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/180d73e958a14ebebbc6944554cf06b9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=JGosyR%2FZWbpjCfMEhn3xOI7CEkw%3D" alt="中位数_思路"  />
+</p>
+<p>像这样需要根据大小关系生成子集时，就轮到 <code>非等值自连接</code> 出场了</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>-- 求中位数的SQL 语句：在HAVING 子句中使用非等值自连接 SELECT AVG(DISTINCT salary) FROM (     SELECT T1.salary     FROM tbl_student_salary T1, tbl_student_salary T2     GROUP BY T1.salary     -- S1 的条件     HAVING SUM(CASE WHEN T2.salary &gt;= T1.salary THEN 1 ELSE 0 END) &gt;= COUNT(*) / 2     -- S2 的条件     AND SUM(CASE WHEN T2.salary &lt;= T1.salary THEN 1 ELSE 0 END) &gt;= COUNT(*) / 2 ) TMP;</code></p>
+<p>这条 SQL 语句的要点在于比较条件 <code>&gt;= COUNT(*)/2</code> 里的等号，加上等号并不是为了清晰地分开子集 S1 和 S2，而是为了让这 2 个子集拥有共同部分；如果去掉等号，将条件改成 <code>&gt; COUNT(*)/2</code> ，那么当元素个数为偶数时，S1 和 S2 就没有共同的元素了，也就无法求出中位数了；加上等号是为了写出通用性更高的 SQL</p>
+<p>是不是满头大汗了？但别慌，把 SQL 拆开执行，根据结果来反推每个拆分 SQL 的逻辑含义，慢慢的你们就能理解了</p>
+</li>
+<li>
+<p>不包含 NULL 的集合</p>
+<p>假设我们有一张学生报告提交记录表：<code>tbl_student_submit_log</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>CREATE TABLE tbl_student_submit_log (   id int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',   sno varchar(12) NOT NULL COMMENT '学号',   dept varchar(50) NOT NULL COMMENT '学院',   submit_date DATE COMMENT '提交日期',   PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生报告提交记录表'; insert into tbl_student_submit_log values (1,'20200607001', '理学院', '2020-12-12'), (2,'20200607002', '理学院', '2020-12-13'), (3,'20200608001', '文学院', null), (4,'20200608002', '文学院', '2020-12-22'), (5,'20200608003', '文学院', '2020-12-22'), (6,'20200612001', '工学院', null), (7,'20200617001', '经济学院', '2020-12-23');</code></p>
+<p>学生提交报告后， <code>submit_date</code> 列会被写入日期，而提交之前是 NULL</p>
+<p>问：从这张表里找出哪些学院的学生全部都提交了报告，SQL 该怎么写？</p>
+<p>如果只是用 <code>WHERE submit_date IS NOT NULL</code> 条件进行查询，那文学院也会被包含进来，结果就不正确了，正确的做法应该先以 <code>dept</code> 进行分组，然后对组进行条件的过滤，SQL 如下</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>SELECT dept FROM tbl_student_submit_log GROUP BY dept HAVING COUNT(*) = COUNT(submit_date);</code></p>
+<p>这里其实用到了 <code>COUNT</code> 函数，COUNT(*) 可以用于 NULL ，而 COUNT(列名) 与其他聚合函数一样，要先排除掉 NULL 的行再进行统计</p>
+<p>当然，更通用的实现是使用 CASE 表达式</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>SELECT dept FROM tbl_student_submit_log GROUP BY dept HAVING COUNT(*) = SUM(     CASE WHEN submit_date IS NOT NULL THEN 1         ELSE 0 END     );</code></p>
+</li>
+<li>
+<p>其他</p>
+<p>不仅仅只是如上的那些场景适用于 HAVING，还有很多其他的场景也是需要用到 HAVING 的，有兴趣的可以去翻阅《SQL进阶教程》</p>
+</li>
+</ol>
+<h3 id="聚合键条件归属">聚合键条件归属<a hidden class="anchor" aria-hidden="true" href="#聚合键条件归属">#</a></h3>
+<p>我们来看个有趣的东西，还是用表：<code>tbl_student_class</code></p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/60be6fdb1652484b957a7fbbc35f3dcd~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=3FJH1%2F0m9v7JrGNgahSKQZG4cc4%3D" alt="SQL 之 HAVING-条件归属.png"  />
+</p>
+<p>我们发现，聚合键所对应的条件既可以写在 HAVING 子句当中，也可以写在 WHERE 子句当中，虽然条件分别写在 HAVING 子句和 WHERE 子句当中，但是条件的内容，以及返回的结果都完全相同，因此，很多小伙伴就会觉得两种书写方式都没问题，单从结果来看，确实没问题，但其中有一种属于偏离了 SQL 规范的非正规用法，推荐做法是： <code>聚合键所对应的条件应该书写在 WHERE 子句中</code> ，理由有二</p>
+<ol>
+<li>
+<p>语义更清晰</p>
+<p>WHERE 子句和 HAVING 子句的作用是不同的；前面已经说过，HAVING 子句是用来指定 <code>组</code> 的条件的，而 <code>行</code> 所对应的条件应该写在 WHERE 子句中，这样一来，写出来的 SQL 语句不但可以分清两者各自的功能，而且理解起来也更容易</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/6df85e0c4b4d48fa92cd9b21c79085d9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6Z2S55-z6Lev:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728432357&amp;x-signature=NXYV88gDNQ9jADK8L6BFZg8EZj4%3D" alt="SQL 之 HAVING-HAVING 与 WHERE的语义区别"  />
+</p>
+</li>
+<li>
+<p>执行速度更快</p>
+<p>使用 COUNT 等函数对表中数据进行聚合操作时，DBMS 内部进行排序处理，而排序处理会大大增加机器的负担，从而降低处理速度；因此，尽可能减少排序的行数，可以提高处理速度；通过 WHERE 子句指定条件时，由于排序之前就对数据进行了过滤，那么就减少了聚合操作时的需要排序的记录数量；而 HAVING 子句是在排序之后才对数据进行分组的，与在 WHERE 子句中指定条件比起来，需要排序的数量就会多得多</p>
+<p>另外，索引是 WHERE 根据速度优势的另一个有利支持，在 WHERE 子句指定条件所对应的列上创建索引，可以大大提高 WHERE 子句的处理速度</p>
+</li>
+</ol>
+<h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<ol>
+<li>
+<p>SQL 的本质是集合论</p>
+<p>集合论是 SQL 语言的根基，只有从集合的角度来思考，才能明白 SQL 的强大威力；学习 HAVING 子句的用法是帮助我们顺利地忘掉面向过程语言的思考方式并理解 SQL 面向集合特性的最为有效的方法</p>
+</li>
+<li>
+<p>HAVING 子句的三要素</p>
+<p>常数、聚合函数 和 聚合键</p>
+</li>
+<li>
+<p>HAVING 与 WHERE</p>
+<p>WHERE 子句是指定行所对应的条件，而 HAVING 子句是指定组所对应的条件；能放到 WHERE 子句的条件统统放到 WHERE 子句中，这样能够减少需要分组的记录数，从而提高分组后操作的效率</p>
+</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/sql/">SQL</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%88%9D%E8%AF%86react-native%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E9%80%89%E6%8B%A9%E5%92%8C%E5%9D%91%E7%82%B9/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>初识React-Native——开发环境搭建、选择和坑点</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/vite%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E6%8F%92%E4%BB%B6%E7%AF%87/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Vite源码解读（插件篇）</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 神奇的SQL，被严重忽视的HAVING，它真的很有魅力 on x"
+            href="https://x.com/intent/tweet/?text=%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f&amp;hashtags=SQL%2c%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 神奇的SQL，被严重忽视的HAVING，它真的很有魅力 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f&amp;title=%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b&amp;summary=%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 神奇的SQL，被严重忽视的HAVING，它真的很有魅力 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f&title=%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 神奇的SQL，被严重忽视的HAVING，它真的很有魅力 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 神奇的SQL，被严重忽视的HAVING，它真的很有魅力 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 神奇的SQL，被严重忽视的HAVING，它真的很有魅力 on telegram"
+            href="https://telegram.me/share/url?text=%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 神奇的SQL，被严重忽视的HAVING，它真的很有魅力 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e7%a5%9e%e5%a5%87%e7%9a%84SQL%ef%bc%8c%e8%a2%ab%e4%b8%a5%e9%87%8d%e5%bf%bd%e8%a7%86%e7%9a%84HAVING%ef%bc%8c%e5%ae%83%e7%9c%9f%e7%9a%84%e5%be%88%e6%9c%89%e9%ad%85%e5%8a%9b&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25A5%259E%25E5%25A5%2587%25E7%259A%2584sql%25E8%25A2%25AB%25E4%25B8%25A5%25E9%2587%258D%25E5%25BF%25BD%25E8%25A7%2586%25E7%259A%2584having%25E5%25AE%2583%25E7%259C%259F%25E7%259A%2584%25E5%25BE%2588%25E6%259C%2589%25E9%25AD%2585%25E5%258A%259B%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

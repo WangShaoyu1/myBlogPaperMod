@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>使用python写一个爬虫所遇到的问题汇总，及思路参考 | PaperMod</title>
+<meta name="keywords" content="Python, 后端">
+<meta name="description" content="1、前言网页上我们能看到的东西，都是可以爬取的。富文本除外。爬取数据的过程一般来说分为2个阶段：2、发起请求2.1请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）2.2有一">
+<meta name="author" content="wjt">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%BD%BF%E7%94%A8python%E5%86%99%E4%B8%80%E4%B8%AA%E7%88%AC%E8%99%AB%E6%89%80%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB%E5%8F%8A%E6%80%9D%E8%B7%AF%E5%8F%82%E8%80%83/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%BD%BF%E7%94%A8python%E5%86%99%E4%B8%80%E4%B8%AA%E7%88%AC%E8%99%AB%E6%89%80%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB%E5%8F%8A%E6%80%9D%E8%B7%AF%E5%8F%82%E8%80%83/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="使用python写一个爬虫所遇到的问题汇总，及思路参考" />
+<meta property="og:description" content="1、前言网页上我们能看到的东西，都是可以爬取的。富文本除外。爬取数据的过程一般来说分为2个阶段：2、发起请求2.1请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）2.2有一" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%BD%BF%E7%94%A8python%E5%86%99%E4%B8%80%E4%B8%AA%E7%88%AC%E8%99%AB%E6%89%80%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB%E5%8F%8A%E6%80%9D%E8%B7%AF%E5%8F%82%E8%80%83/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-06-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-06-11T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="使用python写一个爬虫所遇到的问题汇总，及思路参考"/>
+<meta name="twitter:description" content="1、前言网页上我们能看到的东西，都是可以爬取的。富文本除外。爬取数据的过程一般来说分为2个阶段：2、发起请求2.1请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）2.2有一"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "使用python写一个爬虫所遇到的问题汇总，及思路参考",
+      "item": "http://localhost:1313/posts/juejin/%E4%BD%BF%E7%94%A8python%E5%86%99%E4%B8%80%E4%B8%AA%E7%88%AC%E8%99%AB%E6%89%80%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB%E5%8F%8A%E6%80%9D%E8%B7%AF%E5%8F%82%E8%80%83/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用python写一个爬虫所遇到的问题汇总，及思路参考",
+  "name": "使用python写一个爬虫所遇到的问题汇总，及思路参考",
+  "description": "1、前言网页上我们能看到的东西，都是可以爬取的。富文本除外。爬取数据的过程一般来说分为2个阶段：2、发起请求2.1请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）2.2有一",
+  "keywords": [
+    "Python", "后端"
+  ],
+  "articleBody": "1、前言 网页上我们能看到的东西，都是可以爬取的。富文本除外。 爬取数据的过程一般来说分为2个阶段： 第一个阶段：发起请求\n第二个阶段：使用正则表达式或第三方库解析数据（BeautifulSoup）。\n2、发起请求 2.1 请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西） python\n代码解读\n复制代码\nfrom fake_useragent import UserAgent # 爬虫请求头伪装 import json from urllib3.exceptions import InsecureRequestWarning from urllib3 import disable_warnings disable_warnings(InsecureRequestWarning) # 禁止https(ssl)问题的报错 ua = UserAgent() # 爬虫请求头伪装 proxies = { \"http\": \"http://\"+proxies_ip, # http 型的 \"https\": \"http://\"+proxies_ip # https 型的 } # 定制请求头 my_headers = { 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'User-Agent': ua.chrome, } response = requests.get(uri, headers=my_headers,proxies=proxies)\n一般来说按照以上的方式来配置请求头大部分的网站你都可以正常爬取了\n2.2 有一些网站在爬取过程中需要登录，那么你需要自定义请求头里的cookie 参考：docs.python-requests.org/zh_CN/lates…\n2.3 如果目标网站在爬取的过程中：还伴随着验证码 图形验证码可以使用一些第三方API对图片进行解析。不过，遇到这个验证码，我建议还是降低爬虫的频率吧！\n2.4 常见的异常 当你看到你的程序抛出了抛出ConnectionError错误，那一般就是因为目标网站监测出你是爬虫了。 2、内容解析find_all()使用说明（参考Beautiful Soup 4.9.0 文档） bash\n代码解读\n复制代码\nfind_all() 方法签名：find_all（name，attrs，recursive，string，limit，** kwargs） 该find_all()方法浏览标记的后代，并检索与过滤器匹配的所有后代。我在“种类的过滤器”中给出了几个示例，但这里还有更多示例： soup.find_all(\"title\") # [The Dormouse's story] soup.find_all(\"p\", \"title\") # [The Dormouse's story\n] soup.find_all(\"a\") # [Elsie, # Lacie, # Tillie] soup.find_all(id=\"link2\") # [Lacie] import re soup.find(string=re.compile(\"sisters\")) # 'Once upon a time there were three little sisters; and their names were\\n' 其中一些应该看起来很熟悉，但另一些则是新的。为string或传递值是什么意思id？为什么 找到带有CSS类“ title”的标签？让我们看看的参数。find_all(\"p\", \"title\")find_all() 该name参数 传递一个值name，您将告诉Beautiful Soup仅考虑带有特定名称的标签。文本字符串以及名称不匹配的标签都将被忽略。 这是最简单的用法： soup.find_all(\"title\") # [The Dormouse's story] 从各种过滤器中回想一下，to的值name可以是字符串，正则表达式，列表，函数或值True。 关键字参数 任何无法识别的参数将被转换为标签属性之一的过滤器。如果您为名为的参数传递值id，Beautiful Soup将根据每个标签的'id'属性进行过滤： soup.find_all(id='link2') # [Lacie] 如果您输入的值href，Beautiful Soup将根据每个标签的'href'属性进行过滤： soup.find_all(href=re.compile(\"elsie\")) # [Elsie] 您可以基于字符串，正则表达式，列表，函数或值True过滤属性。 此代码查找其id属性具有值的所有标记，而不管该值是什么： soup.find_all(id=True) # [Elsie, # Lacie, # Tillie] 您可以通过传入多个关键字参数来一次过滤多个属性： soup.find_all(href=re.compile(\"elsie\"), id='link1') # [Elsie] 某些属性（例如HTML 5中的data- *属性）具有不能用作关键字参数名称的名称： data_soup = BeautifulSoup('foo!', 'html.parser') data_soup.find_all(data-foo=\"value\") # SyntaxError: keyword can't be an expression 您可以在搜索中使用这些属性，方法是将它们放入字典中并将该字典find_all()作为 attrs参数传递： data_soup.find_all(attrs={\"data-foo\": \"value\"}) # [foo!] 您不能使用关键字参数来搜索HTML的“名称”元素，因为Beautiful Soup使用该name参数来包含标签本身的名称。相反，您可以在attrs参数中为'name'赋值 ： name_soup = BeautifulSoup('', 'html.parser') name_soup.find_all(name=\"email\") # [] name_soup.find_all(attrs={\"name\": \"email\"}) # []\n3、源码参考 3.1、获取代理（白嫖代理） 无忧代理-可白嫖3个小时 快代理-白嫖4小时\n我的demo里使用的是快代理，目标网站貌似反爬虫机制不是特强，所以我就没做请求头伪装。不过，抓下来的代理100个里面只有1-2个可以用。就算是做成了多线程，也是满得要死。 bash\n代码解读\n复制代码\n#!/usr/bin/env python # _*_ coding:utf-8 _*_ # # @Version : 1.0 # @Time : 20120/10/24 # @Author : wjt # @File : parsing_html # @Description: 获取快代理IP 集合 from bs4 import BeautifulSoup import requests import re import time def get_html(url): \"\"\" 获取页面的html文件 :param url: 待获取页面的链接 :param open_proxy: 是否开启代理，默认为False :param ip_proxies: 若开启，代理地址 :return: \"\"\" try: pattern = re.compile(r'//(.*?)/') host_url = pattern.findall(url)[0] headers = { \"Host\": host_url, \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0\", \"Accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\", \"Accept-Language\": \"zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2\", \"Accept-Encoding\": \"gzip, deflate\", \"Connection\": \"keep-alive\", } res = requests.get(url, headers=headers, timeout=5) # res.encoding = res.apparent_encoding # 自动确定html编码,由于这里可能导致乱码，先注释掉 print(\"抓取代理IP Html页面获取成功 \" + url) return res.text # 只返回页面的源码 except Exception as e: print(\"抓取代理IP Html页面获取失败 \" + url) print(e) def get_kuaidaili_free_ip(begin_page_number): \"\"\" 获取快代理的免费ip,一次只获取100个 :param ip_proxies: 要使用的代理ip（这里是用代理ip去爬代理ip） :param save_path: 代理ip保存路径 :param open_proxy: 是否开启代理，默认为False :return: \"\"\" ip_list_sum = [] # 代理ip列表 a = 1 while a\u003c=1: # 获取页数 #开始爬取 r = get_html(\"https://www.kuaidaili.com/free/inha/\" + str(begin_page_number+a) + \"/\") # print(\"-10\"+\"\\\\\"+\"n\") if(r == \"-10\\n\"): return print(\"爬取代理IP操作太频繁！\") # 页面解析 soup = BeautifulSoup(r, \"html.parser\") tags_ip = soup.tbody.find_all(attrs={\"data-title\": \"IP\"} ) tags_port = soup.tbody.find_all(attrs={\"data-title\": \"PORT\"} ) min_index =0 max_index = len(tags_ip)-1 while min_index\u003c=max_index: ip_info = tags_ip[min_index].get_text()+\":\"+tags_port[min_index].get_text() ip_list_sum.append(ip_info) min_index+=1 a+=1 return ip_list_sum # if __name__ == \"__main__\": # get_kuaidaili_free_ip(1)\n3.2、爬取目标网站：根据百度关键词搜索 bash\n代码解读\n复制代码\n#!/usr/bin/env python # _*_ coding:utf-8 _*_ # # @Version : 1.0 # @Time : 20120/10/24 # @Author : wjt # @File : my_reptiles.py # @Description: 爬取目标网站百度关键词搜索 import requests from bs4 import BeautifulSoup import re import json import time import datetime import threading # 多线程 import os # 文件操作 import parsing_html #引入获取代理的类 from fake_useragent import UserAgent #爬虫请求头伪装 ip_list =[] #代理IP集合 begin_page_number = 0 #代理IP源开始爬取页码 # 根据关键字搜索 def get_baidu_wd(my_wd,proxies_ip): # 构建查询条件 my_params = {'wd': my_wd} proxies = { \"http\": \"http://\"+proxies_ip, # http 型的 \"https\": \"http://\"+proxies_ip # https 型的 } try: ua = UserAgent() #爬虫请求头伪装 # 定制请求头 my_headers = { \"User-Agent\":ua.random, \"Accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\", \"Accept-Language\": \"zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2\", \"Accept-Encoding\": \"gzip, deflate\", \"Connection\": \"close\", } r = requests.get('https://www.baidu.com/s?ie=UTF-8', params=my_params, headers=my_headers,proxies = proxies,timeout=2, verify=False) except (requests.exceptions.ConnectTimeout,requests.exceptions.ProxyError,Exception): print(proxies_ip+\"超时！\") else: if r.status_code == 200: print(proxies_ip+\"成功！\") finally: pass #开始抓取任务的 def newmethod304(): global ip_list global begin_page_number while 1==1: if len(ip_list) == 0: time.sleep(1) ip_list = parsing_html.get_kuaidaili_free_ip(begin_page_number) while len(ip_list) !=0: proxies_ip = ip_list.pop().replace('\\n','') #移除列表中的一个元素（默认最后一个元素），并且返回该元素的值 # 创建新线程 myThread1(proxies_ip).start() begin_page_number+=1 #线程任务 class myThread1(threading.Thread): def __init__(self,proxies_ip): threading.Thread.__init__(self) self.proxies_ip = proxies_ip def run(self): print(\"开始线程：\" + self.proxies_ip) get_baidu_wd('周杰伦',self.proxies_ip) if __name__ == '__main__': newmethod304()\n4、参考 Requests官方参考文档\nBeautiful Soup 4.9.0 文档，内容解析参考\nfake-useragent参考\n",
+  "wordCount" : "618",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-06-11T00:00:00Z",
+  "dateModified": "2021-06-11T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "wjt"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%BD%BF%E7%94%A8python%E5%86%99%E4%B8%80%E4%B8%AA%E7%88%AC%E8%99%AB%E6%89%80%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB%E5%8F%8A%E6%80%9D%E8%B7%AF%E5%8F%82%E8%80%83/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      使用python写一个爬虫所遇到的问题汇总，及思路参考
+    </h1>
+    <div class="post-description">
+      1、前言网页上我们能看到的东西，都是可以爬取的。富文本除外。爬取数据的过程一般来说分为2个阶段：2、发起请求2.1请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）2.2有一
+    </div>
+    <div class="post-meta"><span title='2021-06-11 00:00:00 +0000 UTC'>六月 11, 2021</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;wjt&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1%e5%89%8d%e8%a8%80" aria-label="1、前言">1、前言</a></li>
+                <li>
+                    <a href="#2%e5%8f%91%e8%b5%b7%e8%af%b7%e6%b1%82" aria-label="2、发起请求">2、发起请求</a><ul>
+                        
+                <li>
+                    <a href="#21-%e8%af%b7%e6%b1%82%e5%a4%b4%e7%9a%84%e4%bc%aa%e8%a3%85%e6%af%94%e8%be%83%e5%b8%b8%e8%a7%81%e7%9a%84%e5%8f%8d%e7%88%ac%e8%99%ab%e7%ad%96%e7%95%a5%e4%bc%9a%e9%aa%8c%e8%af%81%e8%af%b7%e6%b1%82%e5%a4%b4%e9%87%8c%e7%9a%84%e5%93%aa%e4%ba%9b%e4%b8%9c%e8%a5%bf" aria-label="2.1 请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）">2.1 请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#22-%e6%9c%89%e4%b8%80%e4%ba%9b%e7%bd%91%e7%ab%99%e5%9c%a8%e7%88%ac%e5%8f%96%e8%bf%87%e7%a8%8b%e4%b8%ad%e9%9c%80%e8%a6%81%e7%99%bb%e5%bd%95%e9%82%a3%e4%b9%88%e4%bd%a0%e9%9c%80%e8%a6%81%e8%87%aa%e5%ae%9a%e4%b9%89%e8%af%b7%e6%b1%82%e5%a4%b4%e9%87%8c%e7%9a%84cookie" aria-label="2.2 有一些网站在爬取过程中需要登录，那么你需要自定义请求头里的cookie">2.2 有一些网站在爬取过程中需要登录，那么你需要自定义请求头里的cookie</a></li>
+                <li>
+                    <a href="#23-%e5%a6%82%e6%9e%9c%e7%9b%ae%e6%a0%87%e7%bd%91%e7%ab%99%e5%9c%a8%e7%88%ac%e5%8f%96%e7%9a%84%e8%bf%87%e7%a8%8b%e4%b8%ad%e8%bf%98%e4%bc%b4%e9%9a%8f%e7%9d%80%e9%aa%8c%e8%af%81%e7%a0%81" aria-label="2.3 如果目标网站在爬取的过程中：还伴随着验证码">2.3 如果目标网站在爬取的过程中：还伴随着验证码</a><ul>
+                        
+                <li>
+                    <a href="#24-%e5%b8%b8%e8%a7%81%e7%9a%84%e5%bc%82%e5%b8%b8" aria-label="2.4 常见的异常">2.4 常见的异常</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2%e5%86%85%e5%ae%b9%e8%a7%a3%e6%9e%90find_all%e4%bd%bf%e7%94%a8%e8%af%b4%e6%98%8e%e5%8f%82%e8%80%83beautiful-soup-490-%e6%96%87%e6%a1%a3" aria-label="2、内容解析find_all()使用说明（参考Beautiful Soup 4.9.0 文档）">2、内容解析find_all()使用说明（参考Beautiful Soup 4.9.0 文档）</a></li>
+                <li>
+                    <a href="#3%e6%ba%90%e7%a0%81%e5%8f%82%e8%80%83" aria-label="3、源码参考">3、源码参考</a><ul>
+                        
+                <li>
+                    <a href="#31%e8%8e%b7%e5%8f%96%e4%bb%a3%e7%90%86%e7%99%bd%e5%ab%96%e4%bb%a3%e7%90%86" aria-label="3.1、获取代理（白嫖代理）">3.1、获取代理（白嫖代理）</a></li>
+                <li>
+                    <a href="#32%e7%88%ac%e5%8f%96%e7%9b%ae%e6%a0%87%e7%bd%91%e7%ab%99%e6%a0%b9%e6%8d%ae%e7%99%be%e5%ba%a6%e5%85%b3%e9%94%ae%e8%af%8d%e6%90%9c%e7%b4%a2" aria-label="3.2、爬取目标网站：根据百度关键词搜索">3.2、爬取目标网站：根据百度关键词搜索</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4%e5%8f%82%e8%80%83" aria-label="4、参考">4、参考</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="1前言">1、前言<a hidden class="anchor" aria-hidden="true" href="#1前言">#</a></h1>
+<ul>
+<li>网页上我们能看到的东西，都是可以爬取的。富文本除外。</li>
+<li>爬取数据的过程一般来说分为2个阶段：</li>
+</ul>
+<blockquote>
+<p>第一个阶段：发起请求</p>
+</blockquote>
+<blockquote>
+<p>第二个阶段：使用正则表达式或第三方库解析数据（BeautifulSoup）。</p>
+</blockquote>
+<h1 id="2发起请求">2、发起请求<a hidden class="anchor" aria-hidden="true" href="#2发起请求">#</a></h1>
+<h2 id="21-请求头的伪装比较常见的反爬虫策略会验证请求头里的哪些东西">2.1 请求头的伪装（比较常见的反爬虫策略，会验证请求头里的哪些东西）<a hidden class="anchor" aria-hidden="true" href="#21-请求头的伪装比较常见的反爬虫策略会验证请求头里的哪些东西">#</a></h2>
+<p>python</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>from fake_useragent import UserAgent  # 爬虫请求头伪装 import json from urllib3.exceptions import InsecureRequestWarning from urllib3 import disable_warnings disable_warnings(InsecureRequestWarning)  # 禁止https(ssl)问题的报错 ua = UserAgent()  # 爬虫请求头伪装 proxies = { &quot;http&quot;: &quot;http://&quot;+proxies_ip,   # http  型的 &quot;https&quot;: &quot;http://&quot;+proxies_ip   # https 型的 } # 定制请求头 my_headers = { 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'User-Agent': ua.chrome, } response = requests.get(uri,  headers=my_headers,proxies=proxies)</code></p>
+<blockquote>
+<p>一般来说按照以上的方式来配置请求头大部分的网站你都可以正常爬取了</p>
+</blockquote>
+<h1 id="22-有一些网站在爬取过程中需要登录那么你需要自定义请求头里的cookie">2.2 有一些网站在爬取过程中需要登录，那么你需要自定义请求头里的cookie<a hidden class="anchor" aria-hidden="true" href="#22-有一些网站在爬取过程中需要登录那么你需要自定义请求头里的cookie">#</a></h1>
+<blockquote>
+<p>参考：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.python-requests.org%2Fzh_CN%2Flatest%2Fuser%2Fquickstart.html%23cookie" title="https://docs.python-requests.org/zh_CN/latest/user/quickstart.html#cookie">docs.python-requests.org/zh_CN/lates…</a></p>
+</blockquote>
+<h1 id="23-如果目标网站在爬取的过程中还伴随着验证码">2.3 如果目标网站在爬取的过程中：还伴随着验证码<a hidden class="anchor" aria-hidden="true" href="#23-如果目标网站在爬取的过程中还伴随着验证码">#</a></h1>
+<blockquote>
+<p>图形验证码可以使用一些第三方API对图片进行解析。不过，遇到这个验证码，我建议还是降低爬虫的频率吧！</p>
+</blockquote>
+<h2 id="24-常见的异常">2.4 常见的异常<a hidden class="anchor" aria-hidden="true" href="#24-常见的异常">#</a></h2>
+<ul>
+<li>当你看到你的程序抛出了抛出<code>ConnectionError</code>错误，那一般就是因为目标网站监测出你是爬虫了。</li>
+</ul>
+<h1 id="2内容解析find_all使用说明参考beautiful-soup-490-文档">2、内容解析find_all()使用说明（参考Beautiful Soup 4.9.0 文档）<a hidden class="anchor" aria-hidden="true" href="#2内容解析find_all使用说明参考beautiful-soup-490-文档">#</a></h1>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>find_all() 方法签名：find_all（name，attrs，recursive，string，limit，** kwargs） 该find_all()方法浏览标记的后代，并检索与过滤器匹配的所有后代。我在“种类的过滤器”中给出了几个示例，但这里还有更多示例： soup.find_all(&quot;title&quot;) # [&lt;title&gt;The Dormouse's story&lt;/title&gt;] soup.find_all(&quot;p&quot;, &quot;title&quot;) # [&lt;p class=&quot;title&quot;&gt;&lt;b&gt;The Dormouse's story&lt;/b&gt;&lt;/p&gt;] soup.find_all(&quot;a&quot;) # [&lt;a class=&quot;sister&quot; href=&quot;http://example.com/elsie&quot; id=&quot;link1&quot;&gt;Elsie&lt;/a&gt;, #  &lt;a class=&quot;sister&quot; href=&quot;http://example.com/lacie&quot; id=&quot;link2&quot;&gt;Lacie&lt;/a&gt;, #  &lt;a class=&quot;sister&quot; href=&quot;http://example.com/tillie&quot; id=&quot;link3&quot;&gt;Tillie&lt;/a&gt;] soup.find_all(id=&quot;link2&quot;) # [&lt;a class=&quot;sister&quot; href=&quot;http://example.com/lacie&quot; id=&quot;link2&quot;&gt;Lacie&lt;/a&gt;] import re soup.find(string=re.compile(&quot;sisters&quot;)) # 'Once upon a time there were three little sisters; and their names were\n' 其中一些应该看起来很熟悉，但另一些则是新的。为string或传递值是什么意思id？为什么 找到带有CSS类“ title”的&lt;p&gt;标签？让我们看看的参数。find_all(&quot;p&quot;, &quot;title&quot;)find_all() 该name参数 传递一个值name，您将告诉Beautiful Soup仅考虑带有特定名称的标签。文本字符串以及名称不匹配的标签都将被忽略。 这是最简单的用法： soup.find_all(&quot;title&quot;) # [&lt;title&gt;The Dormouse's story&lt;/title&gt;] 从各种过滤器中回想一下，to的值name可以是字符串，正则表达式，列表，函数或值True。 关键字参数 任何无法识别的参数将被转换为标签属性之一的过滤器。如果您为名为的参数传递值id，Beautiful Soup将根据每个标签的'id'属性进行过滤： soup.find_all(id='link2') # [&lt;a class=&quot;sister&quot; href=&quot;http://example.com/lacie&quot; id=&quot;link2&quot;&gt;Lacie&lt;/a&gt;] 如果您输入的值href，Beautiful Soup将根据每个标签的'href'属性进行过滤： soup.find_all(href=re.compile(&quot;elsie&quot;)) # [&lt;a class=&quot;sister&quot; href=&quot;http://example.com/elsie&quot; id=&quot;link1&quot;&gt;Elsie&lt;/a&gt;] 您可以基于字符串，正则表达式，列表，函数或值True过滤属性。 此代码查找其id属性具有值的所有标记，而不管该值是什么： soup.find_all(id=True) # [&lt;a class=&quot;sister&quot; href=&quot;http://example.com/elsie&quot; id=&quot;link1&quot;&gt;Elsie&lt;/a&gt;, #  &lt;a class=&quot;sister&quot; href=&quot;http://example.com/lacie&quot; id=&quot;link2&quot;&gt;Lacie&lt;/a&gt;, #  &lt;a class=&quot;sister&quot; href=&quot;http://example.com/tillie&quot; id=&quot;link3&quot;&gt;Tillie&lt;/a&gt;] 您可以通过传入多个关键字参数来一次过滤多个属性： soup.find_all(href=re.compile(&quot;elsie&quot;), id='link1') # [&lt;a class=&quot;sister&quot; href=&quot;http://example.com/elsie&quot; id=&quot;link1&quot;&gt;Elsie&lt;/a&gt;] 某些属性（例如HTML 5中的data- *属性）具有不能用作关键字参数名称的名称： data_soup = BeautifulSoup('&lt;div data-foo=&quot;value&quot;&gt;foo!&lt;/div&gt;', 'html.parser') data_soup.find_all(data-foo=&quot;value&quot;) # SyntaxError: keyword can't be an expression 您可以在搜索中使用这些属性，方法是将它们放入字典中并将该字典find_all()作为 attrs参数传递： data_soup.find_all(attrs={&quot;data-foo&quot;: &quot;value&quot;}) # [&lt;div data-foo=&quot;value&quot;&gt;foo!&lt;/div&gt;] 您不能使用关键字参数来搜索HTML的“名称”元素，因为Beautiful Soup使用该name参数来包含标签本身的名称。相反，您可以在attrs参数中为'name'赋值 ： name_soup = BeautifulSoup('&lt;input name=&quot;email&quot;/&gt;', 'html.parser') name_soup.find_all(name=&quot;email&quot;) # [] name_soup.find_all(attrs={&quot;name&quot;: &quot;email&quot;}) # [&lt;input name=&quot;email&quot;/&gt;]</code></p>
+<h1 id="3源码参考">3、源码参考<a hidden class="anchor" aria-hidden="true" href="#3源码参考">#</a></h1>
+<h2 id="31获取代理白嫖代理">3.1、获取代理（白嫖代理）<a hidden class="anchor" aria-hidden="true" href="#31获取代理白嫖代理">#</a></h2>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.data5u.com%2F%3Fdeveloper%3Dbc69f7732907c4350b796dd2b806b9e1" title="http://www.data5u.com/?developer=bc69f7732907c4350b796dd2b806b9e1">无忧代理-可白嫖3个小时</a> <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.kuaidaili.com%2Ffree%2F" title="https://www.kuaidaili.com/free/">快代理-白嫖4小时</a></p>
+<ul>
+<li>我的demo里使用的是快代理，目标网站貌似反爬虫机制不是特强，所以我就没做请求头伪装。不过，抓下来的代理100个里面只有1-2个可以用。就算是做成了多线程，也是满得要死。</li>
+</ul>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>#!/usr/bin/env python   # _*_ coding:utf-8 _*_   #   # @Version : 1.0   # @Time    : 20120/10/24 # @Author  : wjt # @File    : parsing_html # @Description: 获取快代理IP 集合 from bs4 import BeautifulSoup import requests import re import time def get_html(url):     &quot;&quot;&quot;     获取页面的html文件     :param url: 待获取页面的链接     :param open_proxy: 是否开启代理，默认为False     :param ip_proxies: 若开启，代理地址     :return:     &quot;&quot;&quot;     try:         pattern = re.compile(r'//(.*?)/')         host_url = pattern.findall(url)[0]         headers = {             &quot;Host&quot;: host_url,             &quot;User-Agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0&quot;,             &quot;Accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&quot;,             &quot;Accept-Language&quot;: &quot;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&quot;,             &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;,             &quot;Connection&quot;: &quot;keep-alive&quot;,         }         res = requests.get(url, headers=headers, timeout=5)         # res.encoding = res.apparent_encoding  # 自动确定html编码,由于这里可能导致乱码，先注释掉         print(&quot;抓取代理IP Html页面获取成功 &quot; + url)         return res.text     # 只返回页面的源码     except Exception as e:         print(&quot;抓取代理IP Html页面获取失败 &quot; + url)         print(e) def get_kuaidaili_free_ip(begin_page_number):     &quot;&quot;&quot;     获取快代理的免费ip,一次只获取100个     :param ip_proxies: 要使用的代理ip（这里是用代理ip去爬代理ip）     :param save_path: 代理ip保存路径     :param open_proxy: 是否开启代理，默认为False     :return:     &quot;&quot;&quot;     ip_list_sum = []    # 代理ip列表     a = 1     while a&lt;=1:  # 获取页数         #开始爬取         r = get_html(&quot;https://www.kuaidaili.com/free/inha/&quot; + str(begin_page_number+a) + &quot;/&quot;)         # print(&quot;-10&quot;+&quot;\\&quot;+&quot;n&quot;)         if(r == &quot;-10\n&quot;):             return print(&quot;爬取代理IP操作太频繁！&quot;)         # 页面解析         soup = BeautifulSoup(r, &quot;html.parser&quot;)         tags_ip = soup.tbody.find_all(attrs={&quot;data-title&quot;: &quot;IP&quot;} )         tags_port = soup.tbody.find_all(attrs={&quot;data-title&quot;: &quot;PORT&quot;} )         min_index =0         max_index = len(tags_ip)-1         while min_index&lt;=max_index:             ip_info = tags_ip[min_index].get_text()+&quot;:&quot;+tags_port[min_index].get_text()             ip_list_sum.append(ip_info)             min_index+=1         a+=1     return ip_list_sum      # if __name__ == &quot;__main__&quot;: #    get_kuaidaili_free_ip(1)</code></p>
+<h2 id="32爬取目标网站根据百度关键词搜索">3.2、爬取目标网站：根据百度关键词搜索<a hidden class="anchor" aria-hidden="true" href="#32爬取目标网站根据百度关键词搜索">#</a></h2>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>#!/usr/bin/env python   # _*_ coding:utf-8 _*_   #   # @Version : 1.0   # @Time    : 20120/10/24 # @Author  : wjt # @File    : my_reptiles.py # @Description: 爬取目标网站百度关键词搜索 import requests from bs4 import BeautifulSoup import re import json import time import datetime import threading  # 多线程 import os  # 文件操作 import parsing_html   #引入获取代理的类 from fake_useragent import UserAgent #爬虫请求头伪装 ip_list =[]  #代理IP集合 begin_page_number = 0  #代理IP源开始爬取页码 # 根据关键字搜索 def get_baidu_wd(my_wd,proxies_ip):     # 构建查询条件     my_params = {'wd': my_wd}          proxies = {         &quot;http&quot;: &quot;http://&quot;+proxies_ip,   # http  型的         &quot;https&quot;: &quot;http://&quot;+proxies_ip   # https 型的     }     try:         ua = UserAgent() #爬虫请求头伪装         # 定制请求头         my_headers = {             &quot;User-Agent&quot;:ua.random,             &quot;Accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&quot;,             &quot;Accept-Language&quot;: &quot;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&quot;,             &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;,             &quot;Connection&quot;: &quot;close&quot;,         }           r = requests.get('https://www.baidu.com/s?ie=UTF-8',                            params=my_params, headers=my_headers,proxies = proxies,timeout=2, verify=False)     except (requests.exceptions.ConnectTimeout,requests.exceptions.ProxyError,Exception):         print(proxies_ip+&quot;超时！&quot;)     else:         if r.status_code == 200:             print(proxies_ip+&quot;成功！&quot;)     finally:         pass           #开始抓取任务的 def newmethod304():     global ip_list     global begin_page_number     while 1==1:         if len(ip_list) == 0:             time.sleep(1)             ip_list = parsing_html.get_kuaidaili_free_ip(begin_page_number)         while len(ip_list) !=0:             proxies_ip = ip_list.pop().replace('\n','') #移除列表中的一个元素（默认最后一个元素），并且返回该元素的值             # 创建新线程             myThread1(proxies_ip).start()             begin_page_number+=1    #线程任务 class myThread1(threading.Thread):     def __init__(self,proxies_ip):         threading.Thread.__init__(self)         self.proxies_ip = proxies_ip     def run(self):         print(&quot;开始线程：&quot; + self.proxies_ip)         get_baidu_wd('周杰伦',self.proxies_ip)   if __name__ == '__main__':     newmethod304()</code></p>
+<h1 id="4参考">4、参考<a hidden class="anchor" aria-hidden="true" href="#4参考">#</a></h1>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Frequests.readthedocs.io%2Fzh_CN%2Flatest%2F" title="https://requests.readthedocs.io/zh_CN/latest/">Requests官方参考文档</a></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.crummy.com%2Fsoftware%2FBeautifulSoup%2Fbs4%2Fdoc%2F" title="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">Beautiful Soup 4.9.0 文档，内容解析参考</a></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fqq_29186489%2Farticle%2Fdetails%2F78496747" title="https://blog.csdn.net/qq_29186489/article/details/78496747">fake-useragent参考</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/python/">Python</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%8E%A8%E8%8D%90java%E5%A3%B0%E6%98%8E%E5%BC%8Fhttp%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5%E6%A1%86%E6%9E%B6unihttp/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>【推荐】Java声明式Http接口对接框架UniHttp</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%AF%B9%E4%BA%8Edocker%E5%92%8Cpodman%E7%9A%84%E4%B8%80%E7%82%B9%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>对于Docker和Podman的一点使用经验</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 使用python写一个爬虫所遇到的问题汇总，及思路参考 on x"
+            href="https://x.com/intent/tweet/?text=%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f&amp;hashtags=Python%2c%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 使用python写一个爬虫所遇到的问题汇总，及思路参考 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f&amp;title=%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83&amp;summary=%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 使用python写一个爬虫所遇到的问题汇总，及思路参考 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f&title=%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 使用python写一个爬虫所遇到的问题汇总，及思路参考 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 使用python写一个爬虫所遇到的问题汇总，及思路参考 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 使用python写一个爬虫所遇到的问题汇总，及思路参考 on telegram"
+            href="https://telegram.me/share/url?text=%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 使用python写一个爬虫所遇到的问题汇总，及思路参考 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%bd%bf%e7%94%a8python%e5%86%99%e4%b8%80%e4%b8%aa%e7%88%ac%e8%99%ab%e6%89%80%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e6%b1%87%e6%80%bb%ef%bc%8c%e5%8f%8a%e6%80%9d%e8%b7%af%e5%8f%82%e8%80%83&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BD%25BF%25E7%2594%25A8python%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E7%2588%25AC%25E8%2599%25AB%25E6%2589%2580%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%25E6%25B1%2587%25E6%2580%25BB%25E5%258F%258A%25E6%2580%259D%25E8%25B7%25AF%25E5%258F%2582%25E8%2580%2583%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

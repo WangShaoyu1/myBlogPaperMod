@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 | PaperMod</title>
+<meta name="keywords" content="敏捷开发, HarmonyOS, 编程语言">
+<meta name="description" content="本文分享自华为云社区《【华为鸿蒙开发技术】仓颉编程语言技术指南【嵌套函数、Lambda表达式、闭包】》，仓颉编程语言通过嵌套函数、Lambda表达式和闭包为开发者提供了灵活和强大的编程工具。">
+<meta name="author" content="华为云开发者联盟">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E6%8A%80%E6%9C%AF%E6%8C%87%E5%8D%97%E5%B5%8C%E5%A5%97%E5%87%BD%E6%95%B0lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AD%E5%8C%85/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E6%8A%80%E6%9C%AF%E6%8C%87%E5%8D%97%E5%B5%8C%E5%A5%97%E5%87%BD%E6%95%B0lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AD%E5%8C%85/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包" />
+<meta property="og:description" content="本文分享自华为云社区《【华为鸿蒙开发技术】仓颉编程语言技术指南【嵌套函数、Lambda表达式、闭包】》，仓颉编程语言通过嵌套函数、Lambda表达式和闭包为开发者提供了灵活和强大的编程工具。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E6%8A%80%E6%9C%AF%E6%8C%87%E5%8D%97%E5%B5%8C%E5%A5%97%E5%87%BD%E6%95%B0lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AD%E5%8C%85/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-07-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-07-26T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包"/>
+<meta name="twitter:description" content="本文分享自华为云社区《【华为鸿蒙开发技术】仓颉编程语言技术指南【嵌套函数、Lambda表达式、闭包】》，仓颉编程语言通过嵌套函数、Lambda表达式和闭包为开发者提供了灵活和强大的编程工具。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包",
+      "item": "http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E6%8A%80%E6%9C%AF%E6%8C%87%E5%8D%97%E5%B5%8C%E5%A5%97%E5%87%BD%E6%95%B0lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AD%E5%8C%85/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包",
+  "name": "仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包",
+  "description": "本文分享自华为云社区《【华为鸿蒙开发技术】仓颉编程语言技术指南【嵌套函数、Lambda表达式、闭包】》，仓颉编程语言通过嵌套函数、Lambda表达式和闭包为开发者提供了灵活和强大的编程工具。",
+  "keywords": [
+    "敏捷开发", "HarmonyOS", "编程语言"
+  ],
+  "articleBody": "本文分享自华为云社区《【华为鸿蒙开发技术】仓颉编程语言技术指南【嵌套函数、Lambda 表达式、闭包】》，作者：柠檬味拥抱。\n仓颉编程语言（Cangjie）是一种面向全场景应用开发的通用编程语言，旨在兼顾开发效率和运行性能，并提供良好的编程体验。本文将深入探讨仓颉语言的主要特点和功能，包括其简明高效的语法、多范式编程支持、类型安全性、内存安全性、高效并发、兼容性、领域扩展能力、UI 开发支持和内置库功能。\n1. 语法简明高效 仓颉编程语言提供了一系列简明高效的语法特性，旨在减少冗余书写、提升开发效率。以下是一些关键特性：\n1.1 嵌套函数 仓颉语言允许在函数体内定义嵌套函数，这些函数可以在外部函数内部调用，也可以作为返回值返回：\nscss\n代码解读\n复制代码\nfunc foo() { func nestAdd(a: Int64, b: Int64) { a + b + 3 } println(nestAdd(1, 2)) // 输出：6 return nestAdd } main() { let f = foo() let x = f(1, 2) println(\"result: ${x}\") // 输出：result: 6 }\n1.2 Lambda 表达式 仓颉语言支持简洁的 lambda 表达式，使函数式编程变得更加方便：\njavascript\n代码解读\n复制代码\nlet f1 = { a: Int64, b: Int64 =\u003e a + b } var display = { =\u003e println(\"Hello\") } func f(a1: (Int64) -\u003e Int64): Int64 { a1(1) } main() { let sum1 = { a: Int64, b: Int64 =\u003e a + b } let r1 = { a: Int64, b: Int64 =\u003e a + b }(1, 2) // r1 = 3 let r2 = { =\u003e 123 }() // r2 = 123 let f2Res = f({ a2 =\u003e a2 + 10 }) // 使用 lambda 表达式 }\n2. 多范式编程 仓颉编程语言支持函数式、命令式和面向对象等多范式编程。开发者可以根据需求选择不同的编程范式：\n函数式编程：支持高阶函数、代数数据类型、模式匹配等特性。 面向对象编程：支持封装、接口、继承等特性。 命令式编程：支持值类型、全局函数等特性。 3. 类型安全 仓颉语言是静态强类型语言，通过编译时类型检查来尽早识别程序错误，降低运行时风险。编译器提供了强大的类型推断能力，减少类型标注工作：\ncss\n代码解读\n复制代码\nvar sum1: (Int64, Int64) -\u003e Int64 = { a, b =\u003e a + b } var sum2: (Int64, Int64) -\u003e Int64 = { a: Int64, b =\u003e a + b }\n4. 内存安全 仓颉语言提供自动内存管理，并在运行时进行数组下标越界检查、溢出检查等，以确保内存安全：\nswift\n代码解读\n复制代码\nfunc safeArrayAccess(arr: [Int64], index: Int64): Int64 { if index \u003c arr.length { return arr[index] } else { println(\"Index out of bounds\") return -1 } }\n5. 高效并发 仓颉语言提供用户态轻量化线程（原生协程）以及简单易用的并发编程机制，适用于高效的并发场景：\ncsharp\n代码解读\n复制代码\nfunc concurrentTask() { let task = async { // 执行异步任务 } await task }\n6. 兼容语言生态 仓颉语言支持与 C 等主流编程语言的互操作，采用声明式编程范式以实现对其他语言库的高效复用和生态兼容：\nscss\n代码解读\n复制代码\nextern func cFunction(arg: Int64) -\u003e Int64 func callCFunction() { let result = cFunction(10) println(result) }\n7. 领域易扩展 仓颉语言支持基于词法宏的元编程能力，允许在编译时变换代码，支持构建内嵌式领域专用语言（EDSL）：\nscss\n代码解读\n复制代码\nmacro square(x: Int64) =\u003e x * x func useMacro() { let result = square(4) // 结果为 16 println(result) }\n8. 助力 UI 开发 仓颉语言的元编程和尾随 lambda 等特性可以用来搭建声明式 UI 开发框架，提升 UI 开发效率和体验：\nless\n代码解读\n复制代码\nfunc createUI() { let button = Button(text: \"Click Me\", onClick: { =\u003e println(\"Button clicked\") }) // 创建并显示 UI 组件 }\n9. 内置库功能丰富 仓颉语言提供了丰富的内置库，涵盖数据结构、常用算法、数学计算、正则匹配、系统交互、文件操作、网络通信、数据库访问等功能：\njavascript\n代码解读\n复制代码\nimport stdlib func exampleUsage() { let numbers = [1, 2, 3, 4, 5] let sum = numbers.reduce(0, { a, b =\u003e a + b }) println(\"Sum: ${sum}\") }\n仓颉编程语言凭借其简洁高效的语法、多范式编程支持、类型和内存安全、高效并发能力以及广泛的内置库功能，为开发者提供了一个强大且灵活的编程平台。无论是进行高效的应用开发、构建复杂的 UI 组件，还是进行领域特定的编程，仓颉语言都能满足开发者的需求。\n仓颉编程语言的嵌套函数、Lambda 表达式与闭包解析 1. 嵌套函数 在仓颉编程语言中，嵌套函数指的是定义在另一个函数内部的函数。这种函数在外部函数的作用域内是可见的，但其作用域仅限于外部函数。嵌套函数可以访问外部函数的局部变量，并且可以作为返回值返回，使得函数式编程更加灵活。\n示例：\nscss\n代码解读\n复制代码\nfunc foo() { func nestAdd(a: Int64, b: Int64) { a + b + 3 } println(nestAdd(1, 2)) // 6 return nestAdd } main() { let f = foo() let x = f(1, 2) println(\"result: ${x}\") }\n在上述示例中，nestAdd 是一个定义在 foo 函数内部的嵌套函数。它不仅可以在 foo 内部被调用，还可以作为返回值返回，供外部使用。运行结果为：\nmakefile\n代码解读\n复制代码\n6 result: 6\n2. Lambda 表达式 Lambda 表达式是仓颉编程语言中一种简洁的函数定义方式，用于定义匿名函数。Lambda 表达式的语法为 { p1: T1, ..., pn: Tn =\u003e expressions | declarations }。其中，=\u003e 之前为参数列表，=\u003e 之后为表达式或声明序列。Lambda 表达式可以赋值给变量，也可以作为函数的实参或返回值使用。\n示例：\njavascript\n代码解读\n复制代码\nlet f1 = { a: Int64, b: Int64 =\u003e a + b } var display = { =\u003e println(\"Hello\") } // 无参数的 lambda 表达式 // Lambda 表达式的调用 let r1 = { a: Int64, b: Int64 =\u003e a + b }(1, 2) // r1 = 3 let r2 = { =\u003e 123 }() // r2 = 123 func f2(lam: () -\u003e Unit) { } let f2Res = f2{ println(\"World\") } // OK to omit the =\u003e\n在上述示例中，f1 是一个接受两个参数并返回它们和的 Lambda 表达式。display 是一个无参数的 Lambda 表达式。Lambda 表达式可以直接调用，也可以赋值给变量再调用。\n3. 闭包 闭包是指函数或 Lambda 表达式在定义时捕获了其外部作用域中的变量，即使在外部作用域之外执行，闭包仍然能够访问这些捕获的变量。闭包的变量捕获遵循一定的规则：\n变量捕获的规则： 捕获的变量必须在闭包定义时可见，并且在闭包定义时已经完成初始化。 闭包与变量捕获： 函数或 Lambda 内访问外部函数的局部变量称为变量捕获。被捕获的变量的生命周期由闭包决定，这使得闭包可以在其外部作用域被调用时，仍然保持对这些变量的访问。 示例 1：\nscss\n代码解读\n复制代码\nfunc returnAddNum(): (Int64) -\u003e Int64 { let num: Int64 = 10 func add(a: Int64) { return a + num } add } main() { let f = returnAddNum() println(f(10)) // 输出 20 }\n在这个示例中，add 函数捕获了 num 变量。即使 num 的定义作用域已经结束，add 函数仍然能够访问 num。\n示例 2：\nscss\n代码解读\n复制代码\nfunc f() { let x = 99 func f1() { println(x) } let f2 = { =\u003e println(y) // 错误，y 在闭包定义时未定义 } let y = 88 f1() // 打印 99. f2() // 错误 }\n在这个示例中，f2 尝试捕获 y 变量，但 y 在 f2 定义时尚未定义，因此会导致编译错误。\n示例 3：\nscss\n代码解读\n复制代码\nfunc f() { let x: Int64 func f1() { println(x) // 错误，x 尚未初始化 } x = 99 f1() }\n在此示例中，f1 尝试访问尚未初始化的 x，这也是一个编译错误。\n示例 4：\ncsharp\n代码解读\n复制代码\nclass C { public var num: Int64 = 0 } func returnIncrementer(): () -\u003e Unit { let c: C = C() func incrementer() { c.num++ } incrementer } main() { let f = returnIncrementer() f() // c.num 增加 1 }\n在这个示例中，incrementer 捕获了 c 对象，并可以修改 c 的 num 成员变量。闭包可以正常访问并修改捕获的引用类型变量。\n仓颉编程语言中的高阶函数与函数式编程特性 1. 高阶函数 高阶函数是指接受其他函数作为参数或返回函数的函数。高阶函数能够提高代码的复用性和可读性。在仓颉编程语言中，你可以创建和使用高阶函数以便在不同的上下文中灵活地操作函数。\n示例 1：高阶函数的基本使用\nscss\n代码解读\n复制代码\nfunc applyFunction(x: Int64, func f: (Int64) -\u003e Int64): Int64 { return f(x) } func square(n: Int64): Int64 { return n * n } main() { let result = applyFunction(4, square) println(result) // 输出 16 }\n在这个示例中，applyFunction 是一个高阶函数，它接受一个整数 x 和一个函数 f 作为参数，并将 x 传递给 f。square 函数计算平方值，并作为参数传递给 applyFunction。\n示例 2：函数返回函数\nscss\n代码解读\n复制代码\nfunc makeMultiplier(factor: Int64): (Int64) -\u003e Int64 { func multiplier(x: Int64) -\u003e Int64 { return x * factor } return multiplier } main() { let double = makeMultiplier(2) let triple = makeMultiplier(3) println(double(5)) // 输出 10 println(triple(5)) // 输出 15 }\n在这个示例中，makeMultiplier 函数返回了一个新的函数 multiplier，该函数可以将输入的整数乘以 factor。你可以创建不同的乘法器（如 double 和 triple），并应用于不同的输入值。\n2. 函数式编程特性 仓颉编程语言支持函数式编程特性，如不可变数据、函数组合、柯里化等，这些特性能够使代码更加简洁和模块化。\n示例 1：不可变数据\nscss\n代码解读\n复制代码\nfunc modifyValue(x: Int64) -\u003e Int64 { let y = x + 1 return y } main() { let value = 5 let newValue = modifyValue(value) println(value) // 输出 5（原值未改变） println(newValue) // 输出 6（新值） }\n在这个示例中，value 变量的值不会被 modifyValue 函数所改变，这体现了不可变数据的特性。原始值保持不变，而函数返回一个新的值。\n示例 2：函数组合\nswift\n代码解读\n复制代码\nfunc addOne(x: Int64) -\u003e Int64 { return x + 1 } func multiplyByTwo(x: Int64) -\u003e Int64 { return x * 2 } func compose(f: (Int64) -\u003e Int64, g: (Int64) -\u003e Int64): (Int64) -\u003e Int64 { return { x: Int64 =\u003e f(g(x)) } } main() { let addThenMultiply = compose(multiplyByTwo, addOne) println(addThenMultiply(3)) // 输出 8（(3 + 1) * 2） }\n在这个示例中，compose 函数将两个函数 f 和 g 组合成一个新的函数，新的函数先应用 g，然后应用 f。通过组合 addOne 和 multiplyByTwo 函数，我们得到了一个新的函数 addThenMultiply，它先将输入加一，然后乘以二。\n示例 3：柯里化\nscss\n代码解读\n复制代码\nfunc add(a: Int64) -\u003e (Int64) -\u003e Int64 { func inner(b: Int64) -\u003e Int64 { return a + b } return inner } main() { let addFive = add(5) println(addFive(10)) // 输出 15 }\n在这个示例中，add 函数是一个柯里化函数，它返回一个新的函数 inner。这个新函数可以将一个整数 b 加到 a 上。通过柯里化，我们可以创建特定的加法函数（如 addFive），并用于后续的计算。\n3. 函数式编程的最佳实践 a. 尽量使用不可变数据： 不可变数据可以减少副作用，使代码更容易理解和测试。\nb. 充分利用高阶函数： 高阶函数能够让你更灵活地操作函数，提高代码的复用性和模块化程度。\nc. 关注函数组合和柯里化： 函数组合和柯里化能够帮助你创建更简洁和灵活的函数，提高代码的表达能力。\nd. 避免副作用： 尽量减少函数中的副作用，使函数更具纯粹性，增强代码的可预测性。\n通过理解和应用这些函数式编程特性，你可以编写更高效、灵活和可维护的代码。如果你有其他关于仓颉编程语言或函数式编程的问题，请继续讨论！\n总结 仓颉编程语言通过嵌套函数、Lambda 表达式和闭包为开发者提供了灵活和强大的编程工具。嵌套函数支持函数内部的局部定义和返回，Lambda 表达式简化了匿名函数的定义，而闭包则允许函数访问其定义时的上下文变量。掌握这些功能能够帮助开发者更好地进行函数式编程，提高代码的灵活性和表达能力。\n如果你有其他关于仓颉编程语言的问题或想了解更多高级功能，欢迎继续讨论！\n点击关注，第一时间了解华为云新鲜技术~\n",
+  "wordCount" : "1007",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-07-26T00:00:00Z",
+  "dateModified": "2024-07-26T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "华为云开发者联盟"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E6%8A%80%E6%9C%AF%E6%8C%87%E5%8D%97%E5%B5%8C%E5%A5%97%E5%87%BD%E6%95%B0lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AD%E5%8C%85/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包
+    </h1>
+    <div class="post-description">
+      本文分享自华为云社区《【华为鸿蒙开发技术】仓颉编程语言技术指南【嵌套函数、Lambda表达式、闭包】》，仓颉编程语言通过嵌套函数、Lambda表达式和闭包为开发者提供了灵活和强大的编程工具。
+    </div>
+    <div class="post-meta"><span title='2024-07-26 00:00:00 +0000 UTC'>七月 26, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;华为云开发者联盟&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e8%af%ad%e6%b3%95%e7%ae%80%e6%98%8e%e9%ab%98%e6%95%88" aria-label="1. 语法简明高效">1. 语法简明高效</a><ul>
+                        
+                <li>
+                    <a href="#11-%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0" aria-label="1.1 嵌套函数">1.1 嵌套函数</a></li>
+                <li>
+                    <a href="#12-lambda-%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="1.2 Lambda 表达式">1.2 Lambda 表达式</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-%e5%a4%9a%e8%8c%83%e5%bc%8f%e7%bc%96%e7%a8%8b" aria-label="2. 多范式编程">2. 多范式编程</a></li>
+                <li>
+                    <a href="#3-%e7%b1%bb%e5%9e%8b%e5%ae%89%e5%85%a8" aria-label="3. 类型安全">3. 类型安全</a></li>
+                <li>
+                    <a href="#4-%e5%86%85%e5%ad%98%e5%ae%89%e5%85%a8" aria-label="4. 内存安全">4. 内存安全</a></li>
+                <li>
+                    <a href="#5-%e9%ab%98%e6%95%88%e5%b9%b6%e5%8f%91" aria-label="5. 高效并发">5. 高效并发</a></li>
+                <li>
+                    <a href="#6-%e5%85%bc%e5%ae%b9%e8%af%ad%e8%a8%80%e7%94%9f%e6%80%81" aria-label="6. 兼容语言生态">6. 兼容语言生态</a></li>
+                <li>
+                    <a href="#7-%e9%a2%86%e5%9f%9f%e6%98%93%e6%89%a9%e5%b1%95" aria-label="7. 领域易扩展">7. 领域易扩展</a></li>
+                <li>
+                    <a href="#8-%e5%8a%a9%e5%8a%9b-ui-%e5%bc%80%e5%8f%91" aria-label="8. 助力 UI 开发">8. 助力 UI 开发</a></li>
+                <li>
+                    <a href="#9-%e5%86%85%e7%bd%ae%e5%ba%93%e5%8a%9f%e8%83%bd%e4%b8%b0%e5%af%8c" aria-label="9. 内置库功能丰富">9. 内置库功能丰富</a></li>
+                <li>
+                    <a href="#%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e7%9a%84%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0lambda-%e8%a1%a8%e8%be%be%e5%bc%8f%e4%b8%8e%e9%97%ad%e5%8c%85%e8%a7%a3%e6%9e%90" aria-label="仓颉编程语言的嵌套函数、Lambda 表达式与闭包解析">仓颉编程语言的嵌套函数、Lambda 表达式与闭包解析</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0" aria-label="1. 嵌套函数">1. 嵌套函数</a></li>
+                <li>
+                    <a href="#2-lambda-%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="2. Lambda 表达式">2. Lambda 表达式</a></li>
+                <li>
+                    <a href="#3-%e9%97%ad%e5%8c%85" aria-label="3. 闭包">3. 闭包</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e4%b8%ad%e7%9a%84%e9%ab%98%e9%98%b6%e5%87%bd%e6%95%b0%e4%b8%8e%e5%87%bd%e6%95%b0%e5%bc%8f%e7%bc%96%e7%a8%8b%e7%89%b9%e6%80%a7" aria-label="仓颉编程语言中的高阶函数与函数式编程特性">仓颉编程语言中的高阶函数与函数式编程特性</a><ul>
+                        
+                <li>
+                    <a href="#1-%e9%ab%98%e9%98%b6%e5%87%bd%e6%95%b0" aria-label="1. 高阶函数">1. 高阶函数</a></li>
+                <li>
+                    <a href="#2-%e5%87%bd%e6%95%b0%e5%bc%8f%e7%bc%96%e7%a8%8b%e7%89%b9%e6%80%a7" aria-label="2. 函数式编程特性">2. 函数式编程特性</a></li>
+                <li>
+                    <a href="#3-%e5%87%bd%e6%95%b0%e5%bc%8f%e7%bc%96%e7%a8%8b%e7%9a%84%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5" aria-label="3. 函数式编程的最佳实践">3. 函数式编程的最佳实践</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本文分享自华为云社区<a href="https://link.juejin.cn?target=https%3A%2F%2Fbbs.huaweicloud.com%2Fblogs%2F431299%3Futm_source%3Djuejin%26utm_medium%3Dbbs-ex%26utm_campaign%3Dother%26utm_content%3Dcontent" title="https://bbs.huaweicloud.com/blogs/431299?utm_source=juejin&amp;utm_medium=bbs-ex&amp;utm_campaign=other&amp;utm_content=content">《【华为鸿蒙开发技术】仓颉编程语言技术指南【嵌套函数、Lambda 表达式、闭包】》</a>，作者：柠檬味拥抱。</p>
+<p>仓颉编程语言（Cangjie）是一种面向全场景应用开发的通用编程语言，旨在兼顾开发效率和运行性能，并提供良好的编程体验。本文将深入探讨仓颉语言的主要特点和功能，包括其简明高效的语法、多范式编程支持、类型安全性、内存安全性、高效并发、兼容性、领域扩展能力、UI 开发支持和内置库功能。</p>
+<h1 id="1-语法简明高效">1. 语法简明高效<a hidden class="anchor" aria-hidden="true" href="#1-语法简明高效">#</a></h1>
+<p>仓颉编程语言提供了一系列简明高效的语法特性，旨在减少冗余书写、提升开发效率。以下是一些关键特性：</p>
+<h2 id="11-嵌套函数">1.1 嵌套函数<a hidden class="anchor" aria-hidden="true" href="#11-嵌套函数">#</a></h2>
+<p>仓颉语言允许在函数体内定义嵌套函数，这些函数可以在外部函数内部调用，也可以作为返回值返回：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func foo() {     func nestAdd(a: Int64, b: Int64) {         a + b + 3     }     println(nestAdd(1, 2))  // 输出：6     return nestAdd } main() {     let f = foo()     let x = f(1, 2)     println(&quot;result: ${x}&quot;)  // 输出：result: 6 }</code></p>
+<h2 id="12-lambda-表达式">1.2 Lambda 表达式<a hidden class="anchor" aria-hidden="true" href="#12-lambda-表达式">#</a></h2>
+<p>仓颉语言支持简洁的 lambda 表达式，使函数式编程变得更加方便：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let f1 = { a: Int64, b: Int64 =&gt; a + b } var display = { =&gt; println(&quot;Hello&quot;) } func f(a1: (Int64) -&gt; Int64): Int64 {     a1(1) } main() {     let sum1 = { a: Int64, b: Int64 =&gt; a + b }     let r1 = { a: Int64, b: Int64 =&gt; a + b }(1, 2)  // r1 = 3     let r2 = { =&gt; 123 }()  // r2 = 123     let f2Res = f({ a2 =&gt; a2 + 10 })  // 使用 lambda 表达式 }</code></p>
+<h1 id="2-多范式编程">2. 多范式编程<a hidden class="anchor" aria-hidden="true" href="#2-多范式编程">#</a></h1>
+<p>仓颉编程语言支持函数式、命令式和面向对象等多范式编程。开发者可以根据需求选择不同的编程范式：</p>
+<ul>
+<li><strong>函数式编程</strong>：支持高阶函数、代数数据类型、模式匹配等特性。</li>
+<li><strong>面向对象编程</strong>：支持封装、接口、继承等特性。</li>
+<li><strong>命令式编程</strong>：支持值类型、全局函数等特性。</li>
+</ul>
+<h1 id="3-类型安全">3. 类型安全<a hidden class="anchor" aria-hidden="true" href="#3-类型安全">#</a></h1>
+<p>仓颉语言是静态强类型语言，通过编译时类型检查来尽早识别程序错误，降低运行时风险。编译器提供了强大的类型推断能力，减少类型标注工作：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var sum1: (Int64, Int64) -&gt; Int64 = { a, b =&gt; a + b } var sum2: (Int64, Int64) -&gt; Int64 = { a: Int64, b =&gt; a + b }</code></p>
+<h1 id="4-内存安全">4. 内存安全<a hidden class="anchor" aria-hidden="true" href="#4-内存安全">#</a></h1>
+<p>仓颉语言提供自动内存管理，并在运行时进行数组下标越界检查、溢出检查等，以确保内存安全：</p>
+<p>swift</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func safeArrayAccess(arr: [Int64], index: Int64): Int64 {     if index &lt; arr.length {         return arr[index]     } else {         println(&quot;Index out of bounds&quot;)         return -1     } }</code></p>
+<h1 id="5-高效并发">5. 高效并发<a hidden class="anchor" aria-hidden="true" href="#5-高效并发">#</a></h1>
+<p>仓颉语言提供用户态轻量化线程（原生协程）以及简单易用的并发编程机制，适用于高效的并发场景：</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func concurrentTask() {     let task = async {          // 执行异步任务     }     await task }</code></p>
+<h1 id="6-兼容语言生态">6. 兼容语言生态<a hidden class="anchor" aria-hidden="true" href="#6-兼容语言生态">#</a></h1>
+<p>仓颉语言支持与 C 等主流编程语言的互操作，采用声明式编程范式以实现对其他语言库的高效复用和生态兼容：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>extern func cFunction(arg: Int64) -&gt; Int64 func callCFunction() {     let result = cFunction(10)     println(result) }</code></p>
+<h1 id="7-领域易扩展">7. 领域易扩展<a hidden class="anchor" aria-hidden="true" href="#7-领域易扩展">#</a></h1>
+<p>仓颉语言支持基于词法宏的元编程能力，允许在编译时变换代码，支持构建内嵌式领域专用语言（EDSL）：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>macro square(x: Int64) =&gt; x * x func useMacro() {     let result = square(4)  // 结果为 16     println(result) }</code></p>
+<h1 id="8-助力-ui-开发">8. 助力 UI 开发<a hidden class="anchor" aria-hidden="true" href="#8-助力-ui-开发">#</a></h1>
+<p>仓颉语言的元编程和尾随 lambda 等特性可以用来搭建声明式 UI 开发框架，提升 UI 开发效率和体验：</p>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func createUI() {     let button = Button(text: &quot;Click Me&quot;, onClick: { =&gt; println(&quot;Button clicked&quot;) })     // 创建并显示 UI 组件 }</code></p>
+<h1 id="9-内置库功能丰富">9. 内置库功能丰富<a hidden class="anchor" aria-hidden="true" href="#9-内置库功能丰富">#</a></h1>
+<p>仓颉语言提供了丰富的内置库，涵盖数据结构、常用算法、数学计算、正则匹配、系统交互、文件操作、网络通信、数据库访问等功能：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import stdlib func exampleUsage() {     let numbers = [1, 2, 3, 4, 5]     let sum = numbers.reduce(0, { a, b =&gt; a + b })     println(&quot;Sum: ${sum}&quot;) }</code></p>
+<p>仓颉编程语言凭借其简洁高效的语法、多范式编程支持、类型和内存安全、高效并发能力以及广泛的内置库功能，为开发者提供了一个强大且灵活的编程平台。无论是进行高效的应用开发、构建复杂的 UI 组件，还是进行领域特定的编程，仓颉语言都能满足开发者的需求。</p>
+<h1 id="仓颉编程语言的嵌套函数lambda-表达式与闭包解析">仓颉编程语言的嵌套函数、Lambda 表达式与闭包解析<a hidden class="anchor" aria-hidden="true" href="#仓颉编程语言的嵌套函数lambda-表达式与闭包解析">#</a></h1>
+<h2 id="1-嵌套函数">1. 嵌套函数<a hidden class="anchor" aria-hidden="true" href="#1-嵌套函数">#</a></h2>
+<p>在仓颉编程语言中，嵌套函数指的是定义在另一个函数内部的函数。这种函数在外部函数的作用域内是可见的，但其作用域仅限于外部函数。嵌套函数可以访问外部函数的局部变量，并且可以作为返回值返回，使得函数式编程更加灵活。</p>
+<p><strong>示例：</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func foo() {     func nestAdd(a: Int64, b: Int64) {         a + b + 3     }     println(nestAdd(1, 2))  // 6     return nestAdd } main() {     let f = foo()     let x = f(1, 2)     println(&quot;result: ${x}&quot;) }</code></p>
+<p>在上述示例中，<code>nestAdd</code> 是一个定义在 <code>foo</code> 函数内部的嵌套函数。它不仅可以在 <code>foo</code> 内部被调用，还可以作为返回值返回，供外部使用。运行结果为：</p>
+<p>makefile</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>6 result: 6</code></p>
+<h2 id="2-lambda-表达式">2. Lambda 表达式<a hidden class="anchor" aria-hidden="true" href="#2-lambda-表达式">#</a></h2>
+<p>Lambda 表达式是仓颉编程语言中一种简洁的函数定义方式，用于定义匿名函数。Lambda 表达式的语法为 <code>{ p1: T1, ..., pn: Tn =&gt; expressions | declarations }</code>。其中，<code>=&gt;</code> 之前为参数列表，<code>=&gt;</code> 之后为表达式或声明序列。Lambda 表达式可以赋值给变量，也可以作为函数的实参或返回值使用。</p>
+<p><strong>示例：</strong></p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let f1 = { a: Int64, b: Int64 =&gt; a + b } var display = { =&gt; println(&quot;Hello&quot;) }   // 无参数的 lambda 表达式 // Lambda 表达式的调用 let r1 = { a: Int64, b: Int64 =&gt; a + b }(1, 2) // r1 = 3 let r2 = { =&gt; 123 }()                          // r2 = 123 func f2(lam: () -&gt; Unit) { } let f2Res = f2{ println(&quot;World&quot;) } // OK to omit the =&gt;</code></p>
+<p>在上述示例中，<code>f1</code> 是一个接受两个参数并返回它们和的 Lambda 表达式。<code>display</code> 是一个无参数的 Lambda 表达式。Lambda 表达式可以直接调用，也可以赋值给变量再调用。</p>
+<h2 id="3-闭包">3. 闭包<a hidden class="anchor" aria-hidden="true" href="#3-闭包">#</a></h2>
+<p>闭包是指函数或 Lambda 表达式在定义时捕获了其外部作用域中的变量，即使在外部作用域之外执行，闭包仍然能够访问这些捕获的变量。闭包的变量捕获遵循一定的规则：</p>
+<ul>
+<li><strong>变量捕获的规则：</strong> 捕获的变量必须在闭包定义时可见，并且在闭包定义时已经完成初始化。</li>
+<li><strong>闭包与变量捕获：</strong> 函数或 Lambda 内访问外部函数的局部变量称为变量捕获。被捕获的变量的生命周期由闭包决定，这使得闭包可以在其外部作用域被调用时，仍然保持对这些变量的访问。</li>
+</ul>
+<p><strong>示例 1：</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func returnAddNum(): (Int64) -&gt; Int64 {     let num: Int64 = 10     func add(a: Int64) {         return a + num     }     add } main() {     let f = returnAddNum()     println(f(10))  // 输出 20 }</code></p>
+<p>在这个示例中，<code>add</code> 函数捕获了 <code>num</code> 变量。即使 <code>num</code> 的定义作用域已经结束，<code>add</code> 函数仍然能够访问 <code>num</code>。</p>
+<p><strong>示例 2：</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func f() {     let x = 99     func f1() {         println(x)     }     let f2 = { =&gt;         println(y)      // 错误，y 在闭包定义时未定义     }     let y = 88     f1()          // 打印 99.     f2()          // 错误 }</code></p>
+<p>在这个示例中，<code>f2</code> 尝试捕获 <code>y</code> 变量，但 <code>y</code> 在 <code>f2</code> 定义时尚未定义，因此会导致编译错误。</p>
+<p><strong>示例 3：</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func f() {     let x: Int64     func f1() {         println(x)    // 错误，x 尚未初始化     }     x = 99     f1() }</code></p>
+<p>在此示例中，<code>f1</code> 尝试访问尚未初始化的 <code>x</code>，这也是一个编译错误。</p>
+<p><strong>示例 4：</strong></p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>class C {     public var num: Int64 = 0 } func returnIncrementer(): () -&gt; Unit {     let c: C = C()     func incrementer() {         c.num++     }     incrementer } main() {     let f = returnIncrementer()     f() // c.num 增加 1 }</code></p>
+<p>在这个示例中，<code>incrementer</code> 捕获了 <code>c</code> 对象，并可以修改 <code>c</code> 的 <code>num</code> 成员变量。闭包可以正常访问并修改捕获的引用类型变量。</p>
+<h1 id="仓颉编程语言中的高阶函数与函数式编程特性">仓颉编程语言中的高阶函数与函数式编程特性<a hidden class="anchor" aria-hidden="true" href="#仓颉编程语言中的高阶函数与函数式编程特性">#</a></h1>
+<h2 id="1-高阶函数">1. 高阶函数<a hidden class="anchor" aria-hidden="true" href="#1-高阶函数">#</a></h2>
+<p>高阶函数是指接受其他函数作为参数或返回函数的函数。高阶函数能够提高代码的复用性和可读性。在仓颉编程语言中，你可以创建和使用高阶函数以便在不同的上下文中灵活地操作函数。</p>
+<p><strong>示例 1：高阶函数的基本使用</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func applyFunction(x: Int64, func f: (Int64) -&gt; Int64): Int64 {     return f(x) } func square(n: Int64): Int64 {     return n * n } main() {     let result = applyFunction(4, square)     println(result)  // 输出 16 }</code></p>
+<p>在这个示例中，<code>applyFunction</code> 是一个高阶函数，它接受一个整数 <code>x</code> 和一个函数 <code>f</code> 作为参数，并将 <code>x</code> 传递给 <code>f</code>。<code>square</code> 函数计算平方值，并作为参数传递给 <code>applyFunction</code>。</p>
+<p><strong>示例 2：函数返回函数</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func makeMultiplier(factor: Int64): (Int64) -&gt; Int64 {     func multiplier(x: Int64) -&gt; Int64 {         return x * factor     }     return multiplier } main() {     let double = makeMultiplier(2)     let triple = makeMultiplier(3)     println(double(5))  // 输出 10     println(triple(5))  // 输出 15 }</code></p>
+<p>在这个示例中，<code>makeMultiplier</code> 函数返回了一个新的函数 <code>multiplier</code>，该函数可以将输入的整数乘以 <code>factor</code>。你可以创建不同的乘法器（如 <code>double</code> 和 <code>triple</code>），并应用于不同的输入值。</p>
+<h2 id="2-函数式编程特性">2. 函数式编程特性<a hidden class="anchor" aria-hidden="true" href="#2-函数式编程特性">#</a></h2>
+<p>仓颉编程语言支持函数式编程特性，如不可变数据、函数组合、柯里化等，这些特性能够使代码更加简洁和模块化。</p>
+<p><strong>示例 1：不可变数据</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func modifyValue(x: Int64) -&gt; Int64 {     let y = x + 1     return y } main() {     let value = 5     let newValue = modifyValue(value)     println(value)     // 输出 5（原值未改变）     println(newValue) // 输出 6（新值） }</code></p>
+<p>在这个示例中，<code>value</code> 变量的值不会被 <code>modifyValue</code> 函数所改变，这体现了不可变数据的特性。原始值保持不变，而函数返回一个新的值。</p>
+<p><strong>示例 2：函数组合</strong></p>
+<p>swift</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func addOne(x: Int64) -&gt; Int64 {     return x + 1 } func multiplyByTwo(x: Int64) -&gt; Int64 {     return x * 2 } func compose(f: (Int64) -&gt; Int64, g: (Int64) -&gt; Int64): (Int64) -&gt; Int64 {     return { x: Int64 =&gt; f(g(x)) } } main() {     let addThenMultiply = compose(multiplyByTwo, addOne)     println(addThenMultiply(3))  // 输出 8（(3 + 1) * 2） }</code></p>
+<p>在这个示例中，<code>compose</code> 函数将两个函数 <code>f</code> 和 <code>g</code> 组合成一个新的函数，新的函数先应用 <code>g</code>，然后应用 <code>f</code>。通过组合 <code>addOne</code> 和 <code>multiplyByTwo</code> 函数，我们得到了一个新的函数 <code>addThenMultiply</code>，它先将输入加一，然后乘以二。</p>
+<p><strong>示例 3：柯里化</strong></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>func add(a: Int64) -&gt; (Int64) -&gt; Int64 {     func inner(b: Int64) -&gt; Int64 {         return a + b     }     return inner } main() {     let addFive = add(5)     println(addFive(10))  // 输出 15 }</code></p>
+<p>在这个示例中，<code>add</code> 函数是一个柯里化函数，它返回一个新的函数 <code>inner</code>。这个新函数可以将一个整数 <code>b</code> 加到 <code>a</code> 上。通过柯里化，我们可以创建特定的加法函数（如 <code>addFive</code>），并用于后续的计算。</p>
+<h2 id="3-函数式编程的最佳实践">3. 函数式编程的最佳实践<a hidden class="anchor" aria-hidden="true" href="#3-函数式编程的最佳实践">#</a></h2>
+<p><strong>a. 尽量使用不可变数据：</strong> 不可变数据可以减少副作用，使代码更容易理解和测试。</p>
+<p><strong>b. 充分利用高阶函数：</strong> 高阶函数能够让你更灵活地操作函数，提高代码的复用性和模块化程度。</p>
+<p><strong>c. 关注函数组合和柯里化：</strong> 函数组合和柯里化能够帮助你创建更简洁和灵活的函数，提高代码的表达能力。</p>
+<p><strong>d. 避免副作用：</strong> 尽量减少函数中的副作用，使函数更具纯粹性，增强代码的可预测性。</p>
+<p>通过理解和应用这些函数式编程特性，你可以编写更高效、灵活和可维护的代码。如果你有其他关于仓颉编程语言或函数式编程的问题，请继续讨论！</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>仓颉编程语言通过嵌套函数、Lambda 表达式和闭包为开发者提供了灵活和强大的编程工具。嵌套函数支持函数内部的局部定义和返回，Lambda 表达式简化了匿名函数的定义，而闭包则允许函数访问其定义时的上下文变量。掌握这些功能能够帮助开发者更好地进行函数式编程，提高代码的灵活性和表达能力。</p>
+<p>如果你有其他关于仓颉编程语言的问题或想了解更多高级功能，欢迎继续讨论！</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fbbs.huaweicloud.com%2Fblogs%3Futm_source%3Djuejin%26utm_medium%3Dbbs-ex%26utm_campaign%3Dother%26utm_content%3Dcontent" title="https://bbs.huaweicloud.com/blogs?utm_source=juejin&amp;utm_medium=bbs-ex&amp;utm_campaign=other&amp;utm_content=content"><strong>点击关注，第一时间了解华为云新鲜技术~</strong></a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91/">敏捷开发</a></li>
+      <li><a href="http://localhost:1313/tags/harmonyos/">HarmonyOS</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E5%85%B3%E7%B3%BB%E8%BF%90%E7%AE%97%E7%AC%A6%E9%81%BF%E5%85%8D%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>深入理解Java关系运算符，避免常见错误！</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E4%B8%80%E9%81%93java%E9%9D%A2%E8%AF%95%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>一道Java面试题引发的思考</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 on x"
+            href="https://x.com/intent/tweet/?text=%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f&amp;hashtags=%e6%95%8f%e6%8d%b7%e5%bc%80%e5%8f%91%2cHarmonyOS%2c%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f&amp;title=%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85&amp;summary=%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f&title=%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 on telegram"
+            href="https://telegram.me/share/url?text=%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仓颉编程语言技术指南：嵌套函数、Lambda表达式、闭包 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%bb%93%e9%a2%89%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8a%80%e6%9c%af%e6%8c%87%e5%8d%97%ef%bc%9a%e5%b5%8c%e5%a5%97%e5%87%bd%e6%95%b0%e3%80%81Lambda%e8%a1%a8%e8%be%be%e5%bc%8f%e3%80%81%e9%97%ad%e5%8c%85&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%25E6%258A%2580%25E6%259C%25AF%25E6%258C%2587%25E5%258D%2597%25E5%25B5%258C%25E5%25A5%2597%25E5%2587%25BD%25E6%2595%25B0lambda%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E9%2597%25AD%25E5%258C%2585%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

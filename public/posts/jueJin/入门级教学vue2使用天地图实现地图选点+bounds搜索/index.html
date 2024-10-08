@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 | PaperMod</title>
+<meta name="keywords" content="前端, Vue.js">
+<meta name="description" content="前言此篇文章灵感来自于最近在工作中所遇到的地图上的需求。由于好奇心的驱使，我在4月参与了部门的地图专业化团队，此团队负责对有地图功能的项目遇见的地图问题进行问题排查以及功能实现。最近在这个团队中，">
+<meta name="author" content="爱泡澡的小萝卜">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%85%A5%E9%97%A8%E7%BA%A7%E6%95%99%E5%AD%A6vue2%E4%BD%BF%E7%94%A8%E5%A4%A9%E5%9C%B0%E5%9B%BE%E5%AE%9E%E7%8E%B0%E5%9C%B0%E5%9B%BE%E9%80%89%E7%82%B9&#43;bounds%E6%90%9C%E7%B4%A2/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%85%A5%E9%97%A8%E7%BA%A7%E6%95%99%E5%AD%A6vue2%E4%BD%BF%E7%94%A8%E5%A4%A9%E5%9C%B0%E5%9B%BE%E5%AE%9E%E7%8E%B0%E5%9C%B0%E5%9B%BE%E9%80%89%E7%82%B9&#43;bounds%E6%90%9C%E7%B4%A2/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索" />
+<meta property="og:description" content="前言此篇文章灵感来自于最近在工作中所遇到的地图上的需求。由于好奇心的驱使，我在4月参与了部门的地图专业化团队，此团队负责对有地图功能的项目遇见的地图问题进行问题排查以及功能实现。最近在这个团队中，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%85%A5%E9%97%A8%E7%BA%A7%E6%95%99%E5%AD%A6vue2%E4%BD%BF%E7%94%A8%E5%A4%A9%E5%9C%B0%E5%9B%BE%E5%AE%9E%E7%8E%B0%E5%9C%B0%E5%9B%BE%E9%80%89%E7%82%B9&#43;bounds%E6%90%9C%E7%B4%A2/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-05-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-16T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索"/>
+<meta name="twitter:description" content="前言此篇文章灵感来自于最近在工作中所遇到的地图上的需求。由于好奇心的驱使，我在4月参与了部门的地图专业化团队，此团队负责对有地图功能的项目遇见的地图问题进行问题排查以及功能实现。最近在这个团队中，"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "入门级教学！vue2使用天地图实现地图选点+Bounds搜索",
+      "item": "http://localhost:1313/posts/juejin/%E5%85%A5%E9%97%A8%E7%BA%A7%E6%95%99%E5%AD%A6vue2%E4%BD%BF%E7%94%A8%E5%A4%A9%E5%9C%B0%E5%9B%BE%E5%AE%9E%E7%8E%B0%E5%9C%B0%E5%9B%BE%E9%80%89%E7%82%B9+bounds%E6%90%9C%E7%B4%A2/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "入门级教学！vue2使用天地图实现地图选点+Bounds搜索",
+  "name": "入门级教学！vue2使用天地图实现地图选点\u002bBounds搜索",
+  "description": "前言此篇文章灵感来自于最近在工作中所遇到的地图上的需求。由于好奇心的驱使，我在4月参与了部门的地图专业化团队，此团队负责对有地图功能的项目遇见的地图问题进行问题排查以及功能实现。最近在这个团队中，",
+  "keywords": [
+    "前端", "Vue.js"
+  ],
+  "articleBody": "前言 此篇文章灵感来自于最近在工作中所遇到的地图上的需求。\n由于好奇心的驱使，我在4月参与了部门的地图专业化团队，此团队负责对有地图功能的项目遇见的地图问题进行问题排查以及功能实现。最近在这个团队中，我遇到了这样的一个需求，秉着对知识渴望的原则，并且通过查阅文章并没有查到准确的解决方案，所以写下此篇文章，希望给遇到这种问题的大佬们提供一个\"避风港\"。\n需求分析 整体的需求大概是这样：\n用户需要提交一个表单，表单项有一项为类似所选地址字段 点击地址选择跳转地图页面，可以进行地图选点以及搜索地点 将选择的点位信息返回给表单页 那么笔者想对第二点功能进行重点的介绍并实现这个功能，地图所选种类为天地图，所以在项目中使用天地图的大佬们可以仔细地看一下噢~\n前期准备 在实现这个功能之前，我们要到天地图-\u003e控制台，注册账号并申请自己的key，想必熟悉地图开发的你们都很熟悉这个步骤，这里就不多说了，贴上一张图叭~\n然后我来说下实现这个功能我的大致思路叭：\n首先我们要了解在vue中如何初始化一个天地图 既然有选择点位，那么就要了解地图的点击事件以及如何在地图添加和删除点标记的方法 根据bounds搜索点位，emm暂且不知道如何实现，看看文档怎么说的 由于文档都是用html形式呈现的例子，而且阅读文档还需要花费一些时间，功能还是要转换到vue中使用，所以我就为大佬们写好在vue中功能的代码，方便大家查阅吧~\n功能实现 初始化地图 查阅一番，天地图的引入方式需要我们到_vue_项目中的_index.html_通过_script_标签引入外部链接,key值换成申请的key即可。\n新建Map.vue文件，给定一个container容器并赋予宽高，按照如下方式即可初始化一个天地图\njs\n代码解读\n复制代码\n这样，一个天地图就初始化成功了！\n地图选点获取地址 我们要注册地图点击事件，点击后在所选的经纬度添加点位，获取地址我们要借助_天地图_的引擎接口工具中逆地理编码api进行经纬度转换。\n当我们注册好地图点击事件后，所获取的信息如图展示\n当我们获取到地图返回的经纬度之后就可以进行点位添加 那么我们在选点时还要清空上一次选择的点位，选点功能就实现了\n当我们获取到点位后可通过天地图提供的Geocoder逆地理编码进行地址转换 这样，地图选点并获取点位信息的功能就完成了，下面贴上代码，供大佬们 “食用” ！\njs\n代码解读\n复制代码\nBounds搜索点位获取信息 首先我们要知道所选城市的四角点坐标，也是天地图提供的根据城市名称获取行政区划信息方法\n有了这组数据我们就可以使用bounds搜索的方法了，实现效果如图\n这样，地图搜索点位信息的功能就完成了，下面贴上代码，供大佬们 “食用” ！\njs\n代码解读\n复制代码\n搜索 总结一下 其实功能实现的难度不大，就是调用文档给出的一些api方法，但是查阅文档阅读起来想实现两种功能确实耗费一些时间，而且对于新手来讲，功能的关联性有时候会摸不到头脑；当然感兴趣的小伙伴可以阅读下官方文档（提倡阅读文档哦！）\n",
+  "wordCount" : "426",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-05-16T00:00:00Z",
+  "dateModified": "2023-05-16T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "爱泡澡的小萝卜"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%85%A5%E9%97%A8%E7%BA%A7%E6%95%99%E5%AD%A6vue2%E4%BD%BF%E7%94%A8%E5%A4%A9%E5%9C%B0%E5%9B%BE%E5%AE%9E%E7%8E%B0%E5%9C%B0%E5%9B%BE%E9%80%89%E7%82%B9+bounds%E6%90%9C%E7%B4%A2/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索
+    </h1>
+    <div class="post-description">
+      前言此篇文章灵感来自于最近在工作中所遇到的地图上的需求。由于好奇心的驱使，我在4月参与了部门的地图专业化团队，此团队负责对有地图功能的项目遇见的地图问题进行问题排查以及功能实现。最近在这个团队中，
+    </div>
+    <div class="post-meta"><span title='2023-05-16 00:00:00 +0000 UTC'>五月 16, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;爱泡澡的小萝卜&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9&#43;Bounds%e6%90%9c%e7%b4%a2.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a><ul>
+                        
+                <li>
+                    <a href="#%e9%9c%80%e6%b1%82%e5%88%86%e6%9e%90" aria-label="需求分析">需求分析</a></li>
+                <li>
+                    <a href="#%e5%89%8d%e6%9c%9f%e5%87%86%e5%a4%87" aria-label="前期准备">前期准备</a></li>
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd%e5%ae%9e%e7%8e%b0" aria-label="功能实现">功能实现</a><ul>
+                        
+                <li>
+                    <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96%e5%9c%b0%e5%9b%be" aria-label="初始化地图">初始化地图</a></li>
+                <li>
+                    <a href="#%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%e8%8e%b7%e5%8f%96%e5%9c%b0%e5%9d%80" aria-label="地图选点获取地址">地图选点获取地址</a></li>
+                <li>
+                    <a href="#bounds%e6%90%9c%e7%b4%a2%e7%82%b9%e4%bd%8d%e8%8e%b7%e5%8f%96%e4%bf%a1%e6%81%af" aria-label="Bounds搜索点位获取信息">Bounds搜索点位获取信息</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93%e4%b8%80%e4%b8%8b" aria-label="总结一下">总结一下</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>此篇文章灵感来自于最近在工作中所遇到的地图上的需求。<br>
+由于好奇心的驱使，我在4月参与了部门的地图专业化团队，此团队负责对有地图功能的项目遇见的地图问题进行问题排查以及功能实现。最近在这个团队中，我遇到了这样的一个需求，秉着对知识渴望的原则，并且通过查阅文章并没有查到准确的解决方案，所以写下此篇文章，希望给遇到这种问题的大佬们提供一个&quot;避风港&quot;。</p>
+<h2 id="需求分析">需求分析<a hidden class="anchor" aria-hidden="true" href="#需求分析">#</a></h2>
+<p>整体的需求大概是这样：</p>
+<ol>
+<li>用户需要提交一个表单，表单项有一项为类似所选地址字段</li>
+<li>点击地址选择跳转地图页面，可以进行地图选点以及搜索地点</li>
+<li>将选择的点位信息返回给表单页</li>
+</ol>
+<p>那么笔者想对第二点功能进行重点的介绍并实现这个功能，地图所选种类为天地图，所以在项目中使用天地图的大佬们可以仔细地看一下噢~</p>
+<h2 id="前期准备">前期准备<a hidden class="anchor" aria-hidden="true" href="#前期准备">#</a></h2>
+<p>在实现这个功能之前，我们要到<a href="https://link.juejin.cn?target=http%3A%2F%2Flbs.tianditu.gov.cn%2Fapi%2Fjs4.0%2Fguide.html" title="http://lbs.tianditu.gov.cn/api/js4.0/guide.html">天地图</a>-&gt;控制台，注册账号并申请自己的key，想必熟悉地图开发的你们都很熟悉这个步骤，这里就不多说了，贴上一张图叭~</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/40a7b7de38654f1894eb784880658b55~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+ 然后我来说下实现这个功能我的大致思路叭：</p>
+<ul>
+<li>首先我们要了解在vue中如何初始化一个天地图</li>
+<li>既然有选择点位，那么就要了解地图的点击事件以及如何在地图添加和删除点标记的方法</li>
+<li>根据bounds搜索点位，emm暂且不知道如何实现，看看文档怎么说的</li>
+</ul>
+<p>由于文档都是用html形式呈现的例子，而且阅读文档还需要花费一些时间，功能还是要转换到vue中使用，所以我就为大佬们写好在vue中功能的代码，方便大家查阅吧~</p>
+<h2 id="功能实现">功能实现<a hidden class="anchor" aria-hidden="true" href="#功能实现">#</a></h2>
+<h3 id="初始化地图">初始化地图<a hidden class="anchor" aria-hidden="true" href="#初始化地图">#</a></h3>
+<p>查阅一番，天地图的引入方式需要我们到_vue_项目中的_index.html_通过_script_标签引入外部链接,key值换成申请的key即可。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cd5016946e0740c9a160e80a6e3df29e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+ 新建Map.vue文件，给定一个container容器并赋予宽高，按照如下方式即可初始化一个天地图</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div id=&quot;container&quot;&gt;&lt;/div&gt; &lt;/template&gt; &lt;script&gt;     export default {       name: 'MapComponent',       mounted() {         this.initMap()       },       data() {         return {           map: null,         }       },       methods: {         // 初始化地图         initMap() {           this.map = new T.Map('container', {             projection: 'EPSG:4326',           })           this.map.centerAndZoom(new T.LngLat(116.40769, 39.89945), 12)         },       },     } &lt;/script&gt; &lt;style scoped&gt;     #container {       width: 100%;       height: 400px;     } &lt;/style&gt;</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8998c1f9027447fd8540bd0ce1934748~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt=""  />
+ 这样，一个天地图就初始化成功了！</p>
+<h3 id="地图选点获取地址">地图选点获取地址<a hidden class="anchor" aria-hidden="true" href="#地图选点获取地址">#</a></h3>
+<p>我们要注册地图点击事件，点击后在所选的经纬度添加点位，获取地址我们要借助_天地图_的引擎接口工具中<strong>逆地理编码</strong>api进行经纬度转换。</p>
+<hr>
+<p>当我们注册好地图点击事件后，所获取的信息如图展示</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cb44c87e61ce4ab1b476aa37ded02493~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="Kapture 2023-05-16 at 15.22.00.gif"  />
+ 当我们获取到地图返回的经纬度之后就可以进行点位添加 <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d3ace1bae6054155973a488d76fbfe23~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt=""  />
+</p>
+<p>那么我们在选点时还要清空上一次选择的点位，选点功能就实现了</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/38fe9104a58c4b17bb893f0298fb6d21~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt=""  />
+ 当我们获取到点位后可通过天地图提供的Geocoder逆地理编码进行地址转换 <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8fa1e3a302cd42149834b133f7f0db07~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt=""  />
+ 这样，地图选点并获取点位信息的功能就完成了，下面贴上代码，供大佬们 &ldquo;食用&rdquo; ！</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div id=&quot;container&quot;&gt;&lt;/div&gt; &lt;/template&gt; &lt;script&gt; export default {   name: 'MapComponent',   mounted() {     this.initMap()   },   data() {     return {       map: null,       marker: null,       geocode: null,     }   },   methods: {     // 初始化地图     initMap() {       this.map = new T.Map('container', {         projection: 'EPSG:4326',       })       this.map.centerAndZoom(new T.LngLat(116.40769, 39.89945), 14)       //创建对象       this.geocode = new T.Geocoder()       this.handleClick()     },     // 地图选点     handleClick() {       let self = this       self.map.on('click', function (ev) {         // 逆地理编码解析点位         self.geocode.getLocation(ev.lnglat, function (res) {           if (res.status == 0) console.log(res.formatted_address)         })         if (self.marker) {           self.map.clearOverLays()         }         const { lng, lat } = ev.lnglat         //创建标注对象         self.marker = new T.Marker(new T.LngLat(lng, lat))         //向地图上添加标注         self.map.addOverLay(self.marker)       })     },   }, } &lt;/script&gt; &lt;style scoped&gt; #container {   width: 100%;   height: 600px; } &lt;/style&gt;</code></p>
+<h3 id="bounds搜索点位获取信息">Bounds搜索点位获取信息<a hidden class="anchor" aria-hidden="true" href="#bounds搜索点位获取信息">#</a></h3>
+<p>首先我们要知道所选城市的四角点坐标，也是天地图提供的根据城市名称获取行政区划信息方法</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e61a120723594a69837ece4212b5aed0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+ 有了这组数据我们就可以使用bounds搜索的方法了，实现效果如图</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/324431ec29674ed29898b8257e853334~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>这样，地图搜索点位信息的功能就完成了，下面贴上代码，供大佬们 &ldquo;食用&rdquo; ！</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;     &lt;div id=&quot;container&quot;&gt;&lt;/div&gt;     &lt;input type=&quot;text&quot; v-model=&quot;searchValue&quot; /&gt;     &lt;button @click=&quot;handleSearch&quot;&gt;搜索&lt;/button&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script&gt; export default {   name: 'MapComponent',   mounted() {     this.initMap()   },   data() {     return {       map: null,       marker: null,       geocode: null,       searchValue: '',       localsearch: null,       addressArr: [],       bounds: null,     }   },   methods: {     // 初始化地图     initMap() {       this.map = new T.Map('container', {         projection: 'EPSG:4326',       })       this.map.centerAndZoom(new T.LngLat(116.40769, 39.89945), 11)       //创建对象       this.geocode = new T.Geocoder()       this.handleClick()     },     // 地图选点     handleClick() {       let self = this       self.map.on('click', function (ev) {         // 逆地理编码解析点位         self.geocode.getLocation(ev.lnglat, function (res) {           if (res.status == 0) console.log(res.formatted_address)         })         if (self.marker) {           self.map.clearOverLays()         }         const { lng, lat } = ev.lnglat         //创建标注对象         self.marker = new T.Marker(new T.LngLat(lng, lat))         //向地图上添加标注         self.map.addOverLay(self.marker)       })     },     // 点位搜索     handleSearch() {       let config = {         pageCapacity: 10, //每页显示的数量         onSearchComplete: this.localSearchResult, //接收数据的回调函数       }       this.localsearch = new T.LocalSearch(this.map, config)       this.bounds = new T.LngLatBounds(         new T.LngLat(115.422051, 40.978643),         new T.LngLat(117.383319, 39.455766)       )       this.localsearch.searchInBounds(this.searchValue, this.bounds)     },     localSearchResult(res) {       const { pois } = res       console.log(pois)       if (pois === false) {         this.addressArr === []       } else {         this.addressArr = pois         for (let i = 0; i &lt; pois.length; i++) {           let lnglatArr = pois[i].lonlat.split(' ')           let lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1])           let marker = new T.Marker(lnglat)           this.map.addOverLay(marker)         }       }     },   }, } &lt;/script&gt; &lt;style scoped&gt; #container {   width: 100%;   height: 400px; } &lt;/style&gt;</code></p>
+<h2 id="总结一下">总结一下<a hidden class="anchor" aria-hidden="true" href="#总结一下">#</a></h2>
+<p>其实功能实现的难度不大，就是调用文档给出的一些api方法，但是查阅文档阅读起来想实现两种功能确实耗费一些时间，而且对于新手来讲，功能的关联性有时候会摸不到头脑；当然感兴趣的小伙伴可以阅读下官方文档（提倡阅读文档哦！）</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/harmonyosnext%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>HarmonyOSNEXT实践指南</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E7%BA%AF%E8%A1%80%E9%B8%BF%E8%92%99%E5%88%B0%E6%9D%A5%E5%AF%B9%E5%BC%80%E5%8F%91%E8%80%85%E6%98%AF%E6%9C%BA%E4%BC%9A%E5%90%97/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>“纯血”鸿蒙到来，对开发者是机会吗？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 on x"
+            href="https://x.com/intent/tweet/?text=%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%2bBounds%e6%90%9c%e7%b4%a2&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f&amp;title=%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%2bBounds%e6%90%9c%e7%b4%a2&amp;summary=%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%2bBounds%e6%90%9c%e7%b4%a2&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f&title=%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%2bBounds%e6%90%9c%e7%b4%a2">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%2bBounds%e6%90%9c%e7%b4%a2%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 on telegram"
+            href="https://telegram.me/share/url?text=%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%2bBounds%e6%90%9c%e7%b4%a2&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 入门级教学！vue2使用天地图实现地图选点&#43;Bounds搜索 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%85%a5%e9%97%a8%e7%ba%a7%e6%95%99%e5%ad%a6%ef%bc%81vue2%e4%bd%bf%e7%94%a8%e5%a4%a9%e5%9c%b0%e5%9b%be%e5%ae%9e%e7%8e%b0%e5%9c%b0%e5%9b%be%e9%80%89%e7%82%b9%2bBounds%e6%90%9c%e7%b4%a2&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25A5%25E9%2597%25A8%25E7%25BA%25A7%25E6%2595%2599%25E5%25AD%25A6vue2%25E4%25BD%25BF%25E7%2594%25A8%25E5%25A4%25A9%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259E%25E7%258E%25B0%25E5%259C%25B0%25E5%259B%25BE%25E9%2580%2589%25E7%2582%25B9%2bbounds%25E6%2590%259C%25E7%25B4%25A2%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

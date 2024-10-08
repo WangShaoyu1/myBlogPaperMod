@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>前端架构师破局技能，NodeJS落地WebSocket实践 | PaperMod</title>
+<meta name="keywords" content="Node.js, WebSocket, 网络协议, 前端">
+<meta name="description" content="本文从网络协议，技术背景，安全和生产应用的方向，详细介绍WebSocket在Node.js中的落地实践。">
+<meta name="author" content="杨成功">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E5%B8%88%E7%A0%B4%E5%B1%80%E6%8A%80%E8%83%BDnodejs%E8%90%BD%E5%9C%B0websocket%E5%AE%9E%E8%B7%B5/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E5%B8%88%E7%A0%B4%E5%B1%80%E6%8A%80%E8%83%BDnodejs%E8%90%BD%E5%9C%B0websocket%E5%AE%9E%E8%B7%B5/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="前端架构师破局技能，NodeJS落地WebSocket实践" />
+<meta property="og:description" content="本文从网络协议，技术背景，安全和生产应用的方向，详细介绍WebSocket在Node.js中的落地实践。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E5%B8%88%E7%A0%B4%E5%B1%80%E6%8A%80%E8%83%BDnodejs%E8%90%BD%E5%9C%B0websocket%E5%AE%9E%E8%B7%B5/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-12-06T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="前端架构师破局技能，NodeJS落地WebSocket实践"/>
+<meta name="twitter:description" content="本文从网络协议，技术背景，安全和生产应用的方向，详细介绍WebSocket在Node.js中的落地实践。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "前端架构师破局技能，NodeJS落地WebSocket实践",
+      "item": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E5%B8%88%E7%A0%B4%E5%B1%80%E6%8A%80%E8%83%BDnodejs%E8%90%BD%E5%9C%B0websocket%E5%AE%9E%E8%B7%B5/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "前端架构师破局技能，NodeJS落地WebSocket实践",
+  "name": "前端架构师破局技能，NodeJS落地WebSocket实践",
+  "description": "本文从网络协议，技术背景，安全和生产应用的方向，详细介绍WebSocket在Node.js中的落地实践。",
+  "keywords": [
+    "Node.js", "WebSocket", "网络协议", "前端"
+  ],
+  "articleBody": "本文正在参与 “网络协议必知必会”征文活动\n本文从网络协议，技术背景，安全和生产应用的方向，详细介绍 WebSocket 在 Node.js 中的落地实践。\n大纲预览 本文介绍的内容包括以下方面：\n网络协议进化 Socket.IO？ ws 模块实现 Express 集成 WebSocket 实例 消息广播 安全与认证 BFF 应用 网络协议进化 HTTP 协议是前端最熟悉的网络通信协议。我们通常的打开网页，请求接口，都属于 HTTP 请求。\nHTTP 请求的特点是：请求-\u003e 响应。客户端发起请求，服务端收到请求后进行响应，一次请求就完成了。也就是说，HTTP 请求必须由客户端发起，服务端才能被动响应。\n除此之外，发起 HTTP 请求之前，还需要通过三次握手建立 TCP 连接。HTTP/1.0 的特点是，每通信一次，都要经历 “三步走” 的过程 —— TCP 连接 -\u003e HTTP 通信 -\u003e 断开 TCP 连接。\n这样的每一次请求都是独立的，一次请求完成连接就会断开。\nHTTP1.1 对请求过程做了优化。TCP 连接建立之后，我们可以进行多次 HTTP 通信，等到一个时间段无 HTTP 请求发起 TCP 才会断开连接，这就是 HTTP/1.1 带来的长连接技术。\n但是即便如此，通信方式依然是客户端发起，服务端响应，这个根本逻辑不会变。\n随着应用交互的复杂，我们发现，有一些场景是必须要实时获取服务端消息的。\n比如即时聊天，比如消息推送，用户并不会主动发起请求，但是当服务器有了新消息，客户端需要立刻知道并且反馈给用户。\nHTTP 不支持服务端主动推送，但是这些场景又急需解决方案，于是早期出现了轮询（polling）。轮询是客户端定时向服务器发起请求，检测服务端是否有更新，如果有则返回新数据。\n这种轮询方式虽然简单粗暴，但很显然有两个弊端：\n请求消耗太大。客户端不断请求，浪费流量和服务器资源，给服务器造成压力。 不能保证及时。客户端需要平衡及时性和性能，请求间隔必然不能太小，因此会有延迟。 随着 HTML5 推出 WebSocket，即时通讯场景终于迎来了根本解决方案。WebSocket 是全双工通信协议，当客户端与服务端建立连接之后，双方可以互相发送数据，这样的话就不需要客户端通过轮询这种低效的方式获取数据，服务端有新消息直接推送给客户端即可。\n传统 HTTP 连接方式如下：\nshell\n代码解读\n复制代码\n## 普通连接 http://localhost:80/test ## 安全连接 https://localhost:80/test\nWebSocket 是另一种协议，连接方式如下：\nshell\n代码解读\n复制代码\n## 普通连接 ws://localhost:80/test ## 安全连接 wss://localhost:80/test\n但是 WebSocket 也不是完全脱离 HTTP 的，若要建立 WebSocket 连接，则必须要客户端主动发起一个建立连接的 HTTP 请求，连接成功之后客户端与服务端才能进行双向通信。\nSocket.IO？ 提起用 Node.js 实现 WebSocket，大家一定会想到一个库：Socket.IO\n没错，Socket.IO 是目前 Node.js 在生产环境中开发 WebSocket 应用最好的选择。它功能强大，高性能，低延迟，并且可以一步集成到 express 框架中。\n但是也许你不清楚，Socket.IO 并不是一个纯粹的 WebSocket 框架。它是将 Websocket 和轮询机制以及其它的实时通信方式封装成了通用的接口，以实现更高效的双向通信。\n严格来说，Websocket 只是 Socket.IO 的一部分。\n也许你会问：既然 Socket.IO 在 WebSocket 的基础上做了那么多的优化，并且非常成熟，那为什么还要搭一个原生 WebSocket 服务？\n首先，Socket.IO 不能通过原生的 ws 协议连接。比如你在浏览器试图通过 ws://localhost:8080/test-socket 这种方式连接 Socket.IO 服务，是连接不上的。因为 Socket.IO 的服务端必须通过 Socket.IO 的客户端连接，不支持默认的 WebSocket 方式连接。\n其次，Socket.IO 封装程度非常高，使用它可能不利于你了解 WebSocket 建立连接的原理。\n因此，我们本篇就用 Node.js 中基础的 ws 模块，从头开始实现一个原生的 WebSocket 服务，并且在前端用 ws 协议直接连接，体验一把双向通信的感觉！\nws 模块实现 ws 是 Node.js 下一个简单快速，并且定制程度极高的 WebSocket 实现方案，同时包含了服务端和客户端。\n用 ws 搭建起来的服务端，浏览器可以通过原生 WebSocket 构造函数直接连接，非常便捷。ws 客户端则是模拟浏览器的 WebSocket 构造函数，用于连接其他 WebSocket 服务器进行通信。\n注意一点：ws 只能在 Node.js 环境中使用，浏览器中不可用，浏览器请直接使用原生 WebSocket 构造函数。\n下面开始接入，第一步，安装 ws：\nsh\n代码解读\n复制代码\n$ npm install ws\n安装好后，我们先搭建一个 ws 服务端。\n服务端 搭建 websocket 服务器需要用 WebSocketServer 构造函数。\njs\n代码解读\n复制代码\nconst { WebSocketServer } = require('ws') const wss = new WebSocketServer({ port: 8080 }) wss.on('connection', (ws, req) =\u003e { console.log('客户端已连接：', req.socket.remoteAddress) ws.on('message', data =\u003e { console.log('收到客户端发送的消息：', data) }) ws.send('我是服务端') // 向当前客户端发送消息 })\n把这段代码写进 ws-server.js 然后运行：\nsh\n代码解读\n复制代码\n$ node ws-server.js\n这样一个监听 8080 端口的 WebSocket 服务器就已经跑起来了。\n客户端 上一步建好了 WebSocket 服务器，现在我们在前端连接并监听消息：\njs\n代码解读\n复制代码\nvar ws = new WebSocket('ws://localhost:8080') ws.onopen = function(mevt) { console.log('客户端已连接') } ws.onmessage = function(mevt) { console.log('客户端收到消息: ' + evt.data) ws.close() } ws.onclose = function(mevt) { console.log('连接关闭') }\n将代码写入 wsc.html 然后用浏览器打开，看到打印如下：\n可以看到，浏览器连接成功后，收到服务端主动推送过来的消息，然后浏览器可以主动关闭连接。\nNode.js 环境下我们看 ws 模块如何发起连接：\njs\n代码解读\n复制代码\nconst WebSocket = require('ws') var ws = new WebSocket('ws://localhost:8080') ws.on('open', () =\u003e { console.log('客户端已连接') }) ws.on('message', data =\u003e { console.log('客户端收到消息: ' + data) ws.close() }) ws.on('close', () =\u003e { console.log('连接关闭') })\n代码与浏览器的逻辑一摸一样，只是写法稍有些不同，注意区别。\n需要特殊说明的一点，浏览器端监听 message 事件的回调函数，参数是一个 MessageEvent 的实例对象，服务端发来的实际数据需要通过 mevt.data 获取。\n而在 ws 客户端，这个参数就是服务端的实际数据，直接获取即可。\nExpress 集成 ws 模块一般不会单独使用，更优的方案是集成到现有的框架中。这节我们将 ws 模块集成到 Express 框架。\n集成到 Express 框架的优点是，我们不需要单独监听一个端口，使用框架启动的端口即可，并且我们还可以指定访问到某个路由，才发起 WebSocket 连接。\n幸运的是这一切不需要手动实现，express-ws 模块已经帮我们做好了大部分的集成工作。\n首先安装，然后在入口文件引入：\njavascript\n代码解读\n复制代码\nvar expressWs = require('express-ws')(app)\n和 Express 的 Router 一样，express-ws 也支持注册全局路由和局部路由。\n先看全局路由，通过 [host]/test-ws 连接：\njavascript\n代码解读\n复制代码\napp.ws('/test-ws', (ws, req) =\u003e { ws.on('message', msg =\u003e { ws.send(msg) }) })\n局部路由则是注册在一个路由组下面的子路由。配置一个名为 websocket 的路由组并指向 websocket.js 文件，代码如下：\njavascript\n代码解读\n复制代码\n// websocket.js var router = express.Router() router.ws('/test-ws', (ws, req) =\u003e { ws.on('message', msg =\u003e { ws.send(msg) }) }) module.exports = router\n连接 [host]/websocket/test-ws 就可以访问到这个子路由。\n路由组的作用是定义一个 websocket 连接组，不同需求连接这个组下的不同子路由。比如可以将 单聊 和 群聊 设置为两个子路由，分别处理各自的连接通信逻辑。\n完整代码如下：\njavascript\n代码解读\n复制代码\nvar express = require('express') var app = express() var wsServer = require('express-ws')(app) var webSocket = require('./websocket.js') app.ws('/test-ws', (ws, req) =\u003e { ws.on('message', msg =\u003e { ws.send(msg) }) }) app.use('/websocket', webSocket) app.listen(3000)\n实际开发中获取常用信息的小方法：\njavascript\n代码解读\n复制代码\n// 客户端的IP地址 req.socket.remoteAddress // 连接参数 req.query\nWebSocket 实例 WebSocket 实例是指客户端连接对象，以及服务端连接的第一个参数。\njavascript\n代码解读\n复制代码\nvar ws = new WebSocket('ws://localhost:8080') app.ws('/test-ws', (ws, req) =\u003e {}\n代码中的 ws 就是 WebSocket 实例，表示建立的连接。\n浏览器 浏览器的 ws 对象中包含的信息如下：\njavascript\n代码解读\n复制代码\n{ binaryType: 'blob' bufferedAmount: 0 extensions: '' onclose: null onerror: null onmessage: null onopen: null protocol: '' readyState: 3 url: 'ws://localhost:8080/' }\n首先非常关键的是四个监听属性，用于定义函数：\nonopen：连接建立后的函数 onmessage：收到服务端推送消息的函数 onclose：连接关闭的函数 onerror：连接异常的函数 其中最常用的是 onmessage 属性，赋值为一个函数来监听服务端消息：\njavascript\n代码解读\n复制代码\nws.onmessage = mevt =\u003e { console.log('消息：', mevt.data) }\n还有一个关键属性是 readyState，表示连接状态，值为一个数字。并且每个值都可以用常量表示，对应关系和含义如下：\n0: 常量 WebSocket.CONNECTING，表示正在连接 1: 常量 WebSocket.OPEN，表示已连接 2: 常量 WebSocket.CLOSING，表示正在关闭 3: 常量 WebSocket.CLOSED，表示已关闭 当然最重要的还有 send 方法用于发送信息，向服务端发送数据：\njavascript\n代码解读\n复制代码\nws.send('要发送的信息')\n服务端 服务端的 ws 对象表示当前发起连接的一个客户端，基本属性与浏览器大致相同。\n比如上面客户端的四个监听属性，readyState 属性，以及 send 方法都是一致的。不过因为服务端是 Node.js 实现，因此会有更丰富的支持。\n比如下面两种监听事件的写法效果是一样的：\njavascript\n代码解读\n复制代码\n// Node.js 环境 ws.onmessage = str =\u003e { console.log('消息：', str) } ws.on('message', str =\u003e { console.log('消息：', mevt.data) })\n详细的属性和介绍可以查阅官方文档\n消息广播 WebSocket 服务器不会只有一个客户端连接，消息广播的意思就是把信息发给所有已连接的客户端，像一个大喇叭一样，所有人都听得到，经典场景就是热点推送。\n那么广播之前，就必须要解决一个问题，如何获取当前已连接（在线）的客户端？\n其实 ws 模块提供了快捷的获取方法：\njavascript\n代码解读\n复制代码\nvar wss = new WebSocketServer({ port: 8080 }) // 获取所有已连接客户端 wss.clients\n方便吧。再看 express-ws 怎么获取：\njavascript\n代码解读\n复制代码\nvar wsServer = expressWebSocket(app) var wss = wsServer.getWss() // 获取所有已连接客户端 wss.clients\n拿到 wss.clients 后，我们看看它到底是什么样子。经过打印，发现它的数据结构比想象到还要简单，就是由所有在线客户端的 WebSocket 实例组成的一个 Set 集合。\n那么，获取当前在线客户端的数量：\njavascript\n代码解读\n复制代码\nwss.clients.size\n简单粗暴的实现广播：\njavascript\n代码解读\n复制代码\nwss.clients.forEach(client =\u003e { if (client.readyState === 1) { client.send('广播数据') } })\n这是非常简单，基础的实现方式。试想一下如果此刻在线客户有 10000 个，那么这个循环多半会卡死吧。因此才会有像 socket.io 这样的库，对基础功能做了大量优化和封装，提高并发性能。\n上面的广播属于全局广播，就是将消息发给所有人。然而还有另一种场景，比如一个 5 人的群聊小组聊天，这时的广播只是给这 5 人小团体发消息，因此这也叫 局部广播。\n局部广播的实现要复杂一些，一般会揉合具体的业务场景。这就需要我们在客户端连接时，对客户端数据做持久化处理了。比如用 Redis 存储在线客户端的状态和数据，这样检索分类更快，效率更高。\n局部广播实现，那一对一私聊就更容易了。找到两个客户端对应的 WebSocket 实例互发消息就行。\n安全与认证 前面搭建好的 WebSocket 服务器，默认任何客户端都可以连接，这在生产环境肯定是不行的。我们要对 WebSocket 服务器做安全保障，主要是从两个方面入手：\nToken 连接认证 wss 支持 下面说一说我的实现思路。\nToken 连接认证 HTTP 请求接口我们一般会做 JWT 认证，在请求头中带一个指定 Header，将一个 token 字符串传过去，后端会拿这个 token 做校验，校验失败则返回 401 错误阻止请求。\n我们上面说过，WebSocket 建立连接的第一步是客户端发起一个 HTTP 的连接请求，那么我们在这个 HTTP 请求上做验证，如果验证失败，则中段 WebSocket 的连接创建，不就可以了？\n顺着这个思路，我们来改造一下服务端代码。\n因为要在 HTTP 层做校验，所以用 http 模块创建服务器，关掉 WebSocket 服务的端口。\njavascript\n代码解读\n复制代码\nvar server = http.createServer() var wss = new WebSocketServer({ noServer: true }) server.listen(8080)\n当客户端通过 ws:// 连接服务端时，服务端会进行协议升级，也就是将 http 协议升级成 websocket 协议，此时会触发 upgrade 事件：\njavascript\n代码解读\n复制代码\nserver.on('upgrade', (request, socket) =\u003e { // 用 request 获取参数做验证 // 1. 验证不通过判断 if ('验证失败') { socket.write('HTTP/1.1 401 Unauthorized\\r\\n\\r\\n') socket.destroy() return } // 2. 验证通过，继续建立连接 wss.handleUpgrade(request, socket, _, ws =\u003e { wss.emit('connection', ws, request) }) }) // 3. 监听连接 wss.on('connection', (ws, request) =\u003e { console.log('客户端已连接') ws.send('服务端信息') })\n这样服务端认证添加完毕，具体的认证方法结合客户端的传参方式来定。\nWebSocket 客户端连接不支持自定义 Header，因此不能用 JWT 的方案，可用方案有两种：\nBasic Auth Quary 传参 Basic Auth 认证简单说就是账号+密码认证，而且账号密码是带在 URL 里的。\n假设我有账号是 ruims，密码是 123456，那么客户端连接是这样：\njavascript\n代码解读\n复制代码\nvar ws = new WebSocket('ws://ruims:123456@localhost:8080')\n那么服务端就会收到这样一个请求头：\njavascript\n代码解读\n复制代码\nwss.on('connection', (ws, req) =\u003e { if(req.headers['authorization']) { let auth = req.headers['authorization'] console.log(auth) // 打印的值：Basic cnVpbXM6MTIzNDU2 } }\n其中 cnVpbXM6MTIzNDU2 就是 ruims:123456 的 base64 编码，服务端可以获取到这个编码来做认证。\nQuary 传参比较简单，就是普通的 URL 传参，可以带一个短一点的加密字符串过去，服务端获取到该字符串然后做认证：\njavascript\n代码解读\n复制代码\nvar ws = new WebSocket('ws://localhost:8080?token=cnVpbXM6MTIzNDU2')\n服务端获取参数：\njavascript\n代码解读\n复制代码\nwss.on('connection', (ws, req) =\u003e { console.log(req.query.token) }\nwss 支持 WebSocket 客户端使用 ws:// 协议连接，那 wss 是什么意思？\n其实非常简单，和 https 原理一摸一样。\nhttps 表示安全的 http 协议，组成是 HTTP + SSL\nwss 则表示安全的 ws 协议，组成是 WS + SSL\n那为什么一定要用 wss 呢？除了安全性，还有一个关键原因是：如果你的 web 应用是 https 协议，你在当前应用中使用 WebSocket 就必须是 wss 协议，否则浏览器拒绝连接。\n配置 wss 直接在 https 配置中加一个 location 即可，直接上 nginx 配置：\nnginx\n代码解读\n复制代码\nlocation /websocket { proxy_pass http://127.0.0.1:8080; proxy_redirect off; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection upgrade; }\n然后客户端连接就变成了这样：\njavascript\n代码解读\n复制代码\nvar ws = new WebSocket('wss://[host]/websocket')\nBFF 应用 BFF 或许你听说过，全称是 Backend For Frontend，意思是为前端服务的后端，在实际应用架构中属于前端和后端的一个 中间层。\n这个中间层一般是由 Node.js 实现，那么它有什么作用呢？\n众所周知，现在后端的主流架构是微服务，微服务情况下 API 会划分的非常细，商品服务就是商品服务，通知服务就是通知服务。当你想在商品上架时给用户发一个通知，可能至少需要调两个接口。\n这样的话对前端其实是不友好的，于是后来出现了 BFF 中间层，相当于一个后端请求的中间代理站，前端可以直接请求 BFF 的接口，然后 BFF 再向后端接口请求，将需要的数据组合起来，一次返回前端。\n那我们在上面讲的一大堆 WebSocket 的知识，在 BFF 层如何应用呢？\n我想到的应用场景至少有 4 个：\n查看当前在线人数，在线用户信息 登录新设备，其他设备退出登录 检测网络连接/断开 站内消息，小圆点提示 这些功能以前是在后端实现的，并且会与其他业务功能耦合。现在有了 BFF，那么 WebSocket 完全可以在这一层实现，让后端可以专注核心数据逻辑。\n由此可见，掌握了 WebSocket 在 Node.js 中的实践应用，作为前端的我们可以破除内卷，在另一个领域继续发挥价值，岂不美哉？\n源码+答疑 本文所有的代码都是经过我亲自实践，为了便于小伙伴们查阅和试验，我建了一个 GitHub 仓库专门存放本文的完整源码，以及之后文章的完整源码。\n仓库地址在这里：杨成功的博客源码\n欢迎大家查阅和试验，如果碰到疑惑的地方，欢迎加我微信 ruidoc 咨询，以及所有有关 WebSocket 实践过程中的心得想法问题都欢迎和我交流～\n我的专栏 本文首发于掘金专栏前端 DevOps，这个专栏会长期输出前端工程与架构方向的文章，一如既往的保障质量。\n这里再推荐一下我之前的一篇文章前端架构师神技，三招统一代码风格，这篇详细介绍了如何一步一步制定代码规范，代码校验，代码格式化，对统一团队代码风格的前端人员非常有用。\n不知道为什么掘金的推荐算法给这篇文章的曝光非常少，我觉得可惜，那就手动推荐一下吧，感谢 🙏\n",
+  "wordCount" : "999",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-12-06T00:00:00Z",
+  "dateModified": "2021-12-06T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "杨成功"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E5%B8%88%E7%A0%B4%E5%B1%80%E6%8A%80%E8%83%BDnodejs%E8%90%BD%E5%9C%B0websocket%E5%AE%9E%E8%B7%B5/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      前端架构师破局技能，NodeJS落地WebSocket实践
+    </h1>
+    <div class="post-description">
+      本文从网络协议，技术背景，安全和生产应用的方向，详细介绍WebSocket在Node.js中的落地实践。
+    </div>
+    <div class="post-meta"><span title='2021-12-06 00:00:00 +0000 UTC'>十二月 6, 2021</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;杨成功&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%a4%a7%e7%ba%b2%e9%a2%84%e8%a7%88" aria-label="大纲预览">大纲预览</a></li>
+                <li>
+                    <a href="#%e7%bd%91%e7%bb%9c%e5%8d%8f%e8%ae%ae%e8%bf%9b%e5%8c%96" aria-label="网络协议进化">网络协议进化</a></li>
+                <li>
+                    <a href="#socketio" aria-label="Socket.IO？">Socket.IO？</a></li>
+                <li>
+                    <a href="#ws-%e6%a8%a1%e5%9d%97%e5%ae%9e%e7%8e%b0" aria-label="ws 模块实现">ws 模块实现</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e7%ab%af" aria-label="服务端">服务端</a></li>
+                <li>
+                    <a href="#%e5%ae%a2%e6%88%b7%e7%ab%af" aria-label="客户端">客户端</a></li></ul>
+                </li>
+                <li>
+                    <a href="#express-%e9%9b%86%e6%88%90" aria-label="Express 集成">Express 集成</a></li>
+                <li>
+                    <a href="#websocket-%e5%ae%9e%e4%be%8b" aria-label="WebSocket 实例">WebSocket 实例</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b5%8f%e8%a7%88%e5%99%a8" aria-label="浏览器">浏览器</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e7%ab%af-1" aria-label="服务端">服务端</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af%e5%b9%bf%e6%92%ad" aria-label="消息广播">消息广播</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e4%b8%8e%e8%ae%a4%e8%af%81" aria-label="安全与认证">安全与认证</a><ul>
+                        
+                <li>
+                    <a href="#token-%e8%bf%9e%e6%8e%a5%e8%ae%a4%e8%af%81" aria-label="Token 连接认证">Token 连接认证</a></li>
+                <li>
+                    <a href="#wss-%e6%94%af%e6%8c%81" aria-label="wss 支持">wss 支持</a></li></ul>
+                </li>
+                <li>
+                    <a href="#bff-%e5%ba%94%e7%94%a8" aria-label="BFF 应用">BFF 应用</a></li>
+                <li>
+                    <a href="#%e6%ba%90%e7%a0%81%e7%ad%94%e7%96%91" aria-label="源码&#43;答疑">源码+答疑</a></li>
+                <li>
+                    <a href="#%e6%88%91%e7%9a%84%e4%b8%93%e6%a0%8f" aria-label="我的专栏">我的专栏</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>本文正在参与 “<a href="https://juejin.cn/post/7033976124547792927" title="https://juejin.cn/post/7033976124547792927">网络协议必知必会</a>”征文活动</strong></p>
+<p>本文从网络协议，技术背景，安全和生产应用的方向，详细介绍 WebSocket 在 Node.js 中的落地实践。</p>
+<h2 id="大纲预览">大纲预览<a hidden class="anchor" aria-hidden="true" href="#大纲预览">#</a></h2>
+<p>本文介绍的内容包括以下方面：</p>
+<ul>
+<li>网络协议进化</li>
+<li>Socket.IO？</li>
+<li>ws 模块实现</li>
+<li>Express 集成</li>
+<li>WebSocket 实例</li>
+<li>消息广播</li>
+<li>安全与认证</li>
+<li>BFF 应用</li>
+</ul>
+<h2 id="网络协议进化">网络协议进化<a hidden class="anchor" aria-hidden="true" href="#网络协议进化">#</a></h2>
+<p>HTTP 协议是前端最熟悉的网络通信协议。我们通常的打开网页，请求接口，都属于 HTTP 请求。</p>
+<p>HTTP 请求的特点是：<code>请求-&gt; 响应</code>。客户端发起请求，服务端收到请求后进行响应，一次请求就完成了。也就是说，HTTP 请求必须由客户端发起，服务端才能被动响应。</p>
+<p>除此之外，发起 HTTP 请求之前，还需要通过三次握手建立 TCP 连接。HTTP/1.0 的特点是，每通信一次，都要经历 “三步走” 的过程 —— <code>TCP 连接 -&gt; HTTP 通信 -&gt; 断开 TCP 连接</code>。</p>
+<p>这样的每一次请求都是独立的，一次请求完成连接就会断开。</p>
+<p>HTTP1.1 对请求过程做了优化。TCP 连接建立之后，我们可以进行多次 HTTP 通信，等到一个时间段无 HTTP 请求发起 TCP 才会断开连接，这就是 HTTP/1.1 带来的<strong>长连接</strong>技术。</p>
+<p>但是即便如此，通信方式依然是客户端发起，服务端响应，这个根本逻辑不会变。</p>
+<p>随着应用交互的复杂，我们发现，有一些场景是必须要实时获取服务端消息的。</p>
+<p>比如即时聊天，比如消息推送，用户并不会主动发起请求，但是当服务器有了新消息，客户端需要立刻知道并且反馈给用户。</p>
+<p>HTTP 不支持服务端主动推送，但是这些场景又急需解决方案，于是早期出现了<strong>轮询</strong>（polling）。轮询是客户端定时向服务器发起请求，检测服务端是否有更新，如果有则返回新数据。</p>
+<p>这种轮询方式虽然简单粗暴，但很显然有两个弊端：</p>
+<ol>
+<li><strong>请求消耗太大</strong>。客户端不断请求，浪费流量和服务器资源，给服务器造成压力。</li>
+<li><strong>不能保证及时</strong>。客户端需要平衡及时性和性能，请求间隔必然不能太小，因此会有延迟。</li>
+</ol>
+<p>随着 HTML5 推出 <code>WebSocket</code>，即时通讯场景终于迎来了根本解决方案。<code>WebSocket</code> 是全双工通信协议，当客户端与服务端建立连接之后，双方可以互相发送数据，这样的话就不需要客户端通过轮询这种低效的方式获取数据，服务端有新消息直接推送给客户端即可。</p>
+<p>传统 HTTP 连接方式如下：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>## 普通连接 http://localhost:80/test ## 安全连接 https://localhost:80/test</code></p>
+<p>WebSocket 是另一种协议，连接方式如下：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>## 普通连接 ws://localhost:80/test ## 安全连接 wss://localhost:80/test</code></p>
+<p>但是 WebSocket 也不是完全脱离 HTTP 的，若要建立 WebSocket 连接，则必须要客户端主动发起一个建立连接的 HTTP 请求，连接成功之后客户端与服务端才能进行双向通信。</p>
+<h2 id="socketio">Socket.IO？<a hidden class="anchor" aria-hidden="true" href="#socketio">#</a></h2>
+<p>提起用 Node.js 实现 WebSocket，大家一定会想到一个库：<a href="https://link.juejin.cn?target=https%3A%2F%2Fsocket.io%2F" title="https://socket.io/">Socket.IO</a></p>
+<p>没错，Socket.IO 是目前 Node.js 在生产环境中开发 WebSocket 应用最好的选择。它功能强大，高性能，低延迟，并且可以一步集成到 <code>express</code> 框架中。</p>
+<p>但是也许你不清楚，Socket.IO 并不是一个纯粹的 WebSocket 框架。它是将 Websocket 和轮询机制以及其它的实时通信方式封装成了通用的接口，以实现更高效的双向通信。</p>
+<p>严格来说，Websocket 只是 Socket.IO 的一部分。</p>
+<p>也许你会问：既然 Socket.IO 在 WebSocket 的基础上做了那么多的优化，并且非常成熟，那为什么还要搭一个原生 WebSocket 服务？</p>
+<p>首先，Socket.IO 不能通过原生的 <code>ws</code> 协议连接。比如你在浏览器试图通过 <code>ws://localhost:8080/test-socket</code> 这种方式连接 Socket.IO 服务，是连接不上的。因为 Socket.IO 的服务端必须通过 Socket.IO 的客户端连接，不支持默认的 WebSocket 方式连接。</p>
+<p>其次，Socket.IO 封装程度非常高，使用它可能不利于你了解 WebSocket 建立连接的原理。</p>
+<p>因此，我们本篇就用 Node.js 中基础的 <code>ws</code> 模块，从头开始实现一个原生的 WebSocket 服务，并且在前端用 ws 协议直接连接，体验一把双向通信的感觉！</p>
+<h2 id="ws-模块实现">ws 模块实现<a hidden class="anchor" aria-hidden="true" href="#ws-模块实现">#</a></h2>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwebsockets%2Fws" title="https://github.com/websockets/ws">ws</a> 是 Node.js 下一个简单快速，并且定制程度极高的 WebSocket 实现方案，同时包含了服务端和客户端。</p>
+<p>用 <code>ws</code> 搭建起来的服务端，浏览器可以通过原生 <code>WebSocket</code> 构造函数直接连接，非常便捷。ws 客户端则是模拟浏览器的 WebSocket 构造函数，用于连接其他 WebSocket 服务器进行通信。</p>
+<p>注意一点：<code>ws</code> 只能在 Node.js 环境中使用，浏览器中不可用，<strong>浏览器请直接使用原生 WebSocket 构造函数</strong>。</p>
+<p>下面开始接入，第一步，安装 ws：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ npm install ws</code></p>
+<p>安装好后，我们先搭建一个 ws 服务端。</p>
+<h3 id="服务端">服务端<a hidden class="anchor" aria-hidden="true" href="#服务端">#</a></h3>
+<p>搭建 websocket 服务器需要用 WebSocketServer 构造函数。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const { WebSocketServer } = require('ws') const wss = new WebSocketServer({   port: 8080 }) wss.on('connection', (ws, req) =&gt; {   console.log('客户端已连接：', req.socket.remoteAddress)   ws.on('message', data =&gt; {     console.log('收到客户端发送的消息：', data)   })   ws.send('我是服务端') // 向当前客户端发送消息 })</code></p>
+<p>把这段代码写进 <code>ws-server.js</code> 然后运行：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ node ws-server.js</code></p>
+<p>这样一个监听 <code>8080</code> 端口的 WebSocket 服务器就已经跑起来了。</p>
+<h3 id="客户端">客户端<a hidden class="anchor" aria-hidden="true" href="#客户端">#</a></h3>
+<p>上一步建好了 WebSocket 服务器，现在我们在前端连接并监听消息：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var ws = new WebSocket('ws://localhost:8080') ws.onopen = function(mevt) {   console.log('客户端已连接') } ws.onmessage = function(mevt) {   console.log('客户端收到消息: ' + evt.data)   ws.close() } ws.onclose = function(mevt) {   console.log('连接关闭') }</code></p>
+<p>将代码写入 <code>wsc.html</code> 然后用浏览器打开，看到打印如下：</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/43400da7f64e4c309140da77015975c2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="WX20211202.png"  />
+</p>
+<p>可以看到，浏览器连接成功后，收到服务端主动推送过来的消息，然后浏览器可以主动关闭连接。</p>
+<p>Node.js 环境下我们看 ws 模块如何发起连接：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const WebSocket = require('ws') var ws = new WebSocket('ws://localhost:8080') ws.on('open', () =&gt; {   console.log('客户端已连接') }) ws.on('message', data =&gt; {   console.log('客户端收到消息: ' + data)   ws.close() }) ws.on('close', () =&gt; {   console.log('连接关闭') })</code></p>
+<p>代码与浏览器的逻辑一摸一样，只是写法稍有些不同，注意区别。</p>
+<p>需要特殊说明的一点，浏览器端监听 <code>message</code> 事件的回调函数，参数是一个 <a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FAPI%2FMessageEvent" title="https://developer.mozilla.org/zh-CN/docs/Web/API/MessageEvent">MessageEvent</a> 的实例对象，服务端发来的实际数据需要通过 <code>mevt.data</code> 获取。</p>
+<p>而在 ws 客户端，这个参数就是服务端的实际数据，直接获取即可。</p>
+<h2 id="express-集成">Express 集成<a hidden class="anchor" aria-hidden="true" href="#express-集成">#</a></h2>
+<p>ws 模块一般不会单独使用，更优的方案是集成到现有的框架中。这节我们将 ws 模块集成到 <a href="https://link.juejin.cn?target=https%3A%2F%2Fexpressjs.com%2Fzh-cn%2F" title="https://expressjs.com/zh-cn/">Express</a> 框架。</p>
+<p>集成到 Express 框架的优点是，我们不需要单独监听一个端口，使用框架启动的端口即可，并且我们还可以指定访问到某个路由，才发起 WebSocket 连接。</p>
+<p>幸运的是这一切不需要手动实现，<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FHenningM%2Fexpress-ws" title="https://github.com/HenningM/express-ws">express-ws</a> 模块已经帮我们做好了大部分的集成工作。</p>
+<p>首先安装，然后在入口文件引入：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var expressWs = require('express-ws')(app)</code></p>
+<p>和 Express 的 Router 一样，express-ws 也支持注册全局路由和局部路由。</p>
+<p>先看全局路由，通过 <code>[host]/test-ws</code> 连接：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>app.ws('/test-ws', (ws, req) =&gt; {   ws.on('message', msg =&gt; {     ws.send(msg)   }) })</code></p>
+<p>局部路由则是注册在一个<strong>路由组</strong>下面的子路由。配置一个名为 <code>websocket</code> 的路由组并指向 <code>websocket.js</code> 文件，代码如下：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// websocket.js var router = express.Router() router.ws('/test-ws', (ws, req) =&gt; {   ws.on('message', msg =&gt; {     ws.send(msg)   }) }) module.exports = router</code></p>
+<p>连接 <code>[host]/websocket/test-ws</code> 就可以访问到这个子路由。</p>
+<p>路由组的作用是定义一个 websocket 连接组，不同需求连接这个组下的不同子路由。比如可以将 <code>单聊</code> 和 <code>群聊</code> 设置为两个子路由，分别处理各自的连接通信逻辑。</p>
+<p>完整代码如下：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var express = require('express') var app = express() var wsServer = require('express-ws')(app) var webSocket = require('./websocket.js') app.ws('/test-ws', (ws, req) =&gt; {   ws.on('message', msg =&gt; {     ws.send(msg)   }) }) app.use('/websocket', webSocket) app.listen(3000)</code></p>
+<p>实际开发中获取常用信息的小方法：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 客户端的IP地址 req.socket.remoteAddress // 连接参数 req.query</code></p>
+<h2 id="websocket-实例">WebSocket 实例<a hidden class="anchor" aria-hidden="true" href="#websocket-实例">#</a></h2>
+<p>WebSocket 实例是指客户端连接对象，以及服务端连接的第一个参数。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var ws = new WebSocket('ws://localhost:8080') app.ws('/test-ws', (ws, req) =&gt; {}</code></p>
+<p>代码中的 <code>ws</code> 就是 WebSocket 实例，表示建立的连接。</p>
+<h3 id="浏览器">浏览器<a hidden class="anchor" aria-hidden="true" href="#浏览器">#</a></h3>
+<p>浏览器的 ws 对象中包含的信息如下：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   binaryType: 'blob'   bufferedAmount: 0   extensions: ''   onclose: null   onerror: null   onmessage: null   onopen: null   protocol: ''   readyState: 3   url: 'ws://localhost:8080/' }</code></p>
+<p>首先非常关键的是四个监听属性，用于定义函数：</p>
+<ul>
+<li><code>onopen</code>：连接建立后的函数</li>
+<li><code>onmessage</code>：收到服务端推送消息的函数</li>
+<li><code>onclose</code>：连接关闭的函数</li>
+<li><code>onerror</code>：连接异常的函数</li>
+</ul>
+<p>其中最常用的是 <code>onmessage</code> 属性，赋值为一个函数来监听服务端消息：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ws.onmessage = mevt =&gt; {   console.log('消息：', mevt.data) }</code></p>
+<p>还有一个关键属性是 <code>readyState</code>，表示连接状态，值为一个数字。并且每个值都可以用<code>常量</code>表示，对应关系和含义如下：</p>
+<ul>
+<li><code>0</code>: 常量 <code>WebSocket.CONNECTING</code>，表示正在连接</li>
+<li><code>1</code>: 常量 <code>WebSocket.OPEN</code>，表示已连接</li>
+<li><code>2</code>: 常量 <code>WebSocket.CLOSING</code>，表示正在关闭</li>
+<li><code>3</code>: 常量 <code>WebSocket.CLOSED</code>，表示已关闭</li>
+</ul>
+<p>当然最重要的还有 <code>send</code> 方法用于发送信息，向服务端发送数据：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ws.send('要发送的信息')</code></p>
+<h3 id="服务端-1">服务端<a hidden class="anchor" aria-hidden="true" href="#服务端-1">#</a></h3>
+<p>服务端的 ws 对象表示当前发起连接的一个客户端，基本属性与浏览器大致相同。</p>
+<p>比如上面客户端的四个监听属性，<code>readyState</code> 属性，以及 <code>send</code> 方法都是一致的。不过因为服务端是 Node.js 实现，因此会有更丰富的支持。</p>
+<p>比如下面两种监听事件的写法效果是一样的：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// Node.js 环境 ws.onmessage = str =&gt; {   console.log('消息：', str) } ws.on('message', str =&gt; {   console.log('消息：', mevt.data) })</code></p>
+<p>详细的属性和介绍可以查阅<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwebsockets%2Fws%2Fblob%2Fmaster%2Fdoc%2Fws.md%23class-websocket" title="https://github.com/websockets/ws/blob/master/doc/ws.md#class-websocket">官方文档</a></p>
+<h2 id="消息广播">消息广播<a hidden class="anchor" aria-hidden="true" href="#消息广播">#</a></h2>
+<p>WebSocket 服务器不会只有一个客户端连接，消息广播的意思就是把信息发给所有已连接的客户端，像一个大喇叭一样，所有人都听得到，经典场景就是热点推送。</p>
+<p>那么广播之前，就必须要解决一个问题，<strong>如何获取当前已连接（在线）的客户端</strong>？</p>
+<p>其实 <code>ws</code> 模块提供了快捷的获取方法：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var wss = new WebSocketServer({ port: 8080 }) // 获取所有已连接客户端 wss.clients</code></p>
+<p>方便吧。再看 <code>express-ws</code> 怎么获取：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var wsServer = expressWebSocket(app) var wss = wsServer.getWss() // 获取所有已连接客户端 wss.clients</code></p>
+<p>拿到 <code>wss.clients</code> 后，我们看看它到底是什么样子。经过打印，发现它的数据结构比想象到还要简单，就是由所有在线客户端的 WebSocket 实例组成的一个 <code>Set</code> 集合。</p>
+<p>那么，获取当前在线客户端的数量：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>wss.clients.size</code></p>
+<p>简单粗暴的实现广播：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>wss.clients.forEach(client =&gt; {   if (client.readyState === 1) {     client.send('广播数据')   } })</code></p>
+<p>这是非常简单，基础的实现方式。试想一下如果此刻在线客户有 10000 个，那么这个循环多半会卡死吧。因此才会有像 socket.io 这样的库，对基础功能做了大量优化和封装，提高并发性能。</p>
+<p>上面的广播属于<code>全局广播</code>，就是将消息发给所有人。然而还有另一种场景，比如一个 5 人的群聊小组聊天，这时的广播只是给这 5 人小团体发消息，因此这也叫 <code>局部广播</code>。</p>
+<p>局部广播的实现要复杂一些，一般会揉合具体的业务场景。这就需要我们在客户端连接时，对客户端数据做持久化处理了。比如用 <code>Redis</code> 存储在线客户端的状态和数据，这样检索分类更快，效率更高。</p>
+<p>局部广播实现，那一对一私聊就更容易了。找到两个客户端对应的 WebSocket 实例互发消息就行。</p>
+<h2 id="安全与认证">安全与认证<a hidden class="anchor" aria-hidden="true" href="#安全与认证">#</a></h2>
+<p>前面搭建好的 WebSocket 服务器，默认任何客户端都可以连接，这在生产环境肯定是不行的。我们要对 WebSocket 服务器做安全保障，主要是从两个方面入手：</p>
+<ol>
+<li>Token 连接认证</li>
+<li>wss 支持</li>
+</ol>
+<p>下面说一说我的实现思路。</p>
+<h3 id="token-连接认证">Token 连接认证<a hidden class="anchor" aria-hidden="true" href="#token-连接认证">#</a></h3>
+<p>HTTP 请求接口我们一般会做 <a href="https://link.juejin.cn?target=https%3A%2F%2Fjwt.io%2F" title="https://jwt.io/">JWT</a> 认证，在请求头中带一个指定 Header，将一个 token 字符串传过去，后端会拿这个 token 做校验，校验失败则返回 401 错误阻止请求。</p>
+<p>我们上面说过，<code>WebSocket</code> 建立连接的第一步是客户端发起一个 HTTP 的连接请求，那么我们在这个 HTTP 请求上做验证，如果验证失败，则中段 WebSocket 的连接创建，不就可以了？</p>
+<p>顺着这个思路，我们来改造一下服务端代码。</p>
+<p>因为要在 HTTP 层做校验，所以用 <code>http</code> 模块创建服务器，关掉 WebSocket 服务的端口。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var server = http.createServer() var wss = new WebSocketServer({ noServer: true }) server.listen(8080)</code></p>
+<p>当客户端通过 <code>ws://</code> 连接服务端时，服务端会进行协议升级，也就是将 http 协议升级成 websocket 协议，此时会触发 <code>upgrade</code> 事件：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>server.on('upgrade', (request, socket) =&gt; {   // 用 request 获取参数做验证   // 1. 验证不通过判断   if ('验证失败') {     socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')     socket.destroy()     return   }   // 2. 验证通过，继续建立连接   wss.handleUpgrade(request, socket, _, ws =&gt; {     wss.emit('connection', ws, request)   }) }) // 3. 监听连接 wss.on('connection', (ws, request) =&gt; {   console.log('客户端已连接')   ws.send('服务端信息') })</code></p>
+<p>这样服务端认证添加完毕，具体的认证方法结合客户端的传参方式来定。</p>
+<p>WebSocket 客户端连接不支持自定义 Header，因此不能用 JWT 的方案，可用方案有两种：</p>
+<ul>
+<li>Basic Auth</li>
+<li>Quary 传参</li>
+</ul>
+<p><code>Basic Auth</code> 认证简单说就是账号+密码认证，而且账号密码是带在 URL 里的。</p>
+<p>假设我有账号是 <strong>ruims</strong>，密码是 <strong>123456</strong>，那么客户端连接是这样：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var ws = new WebSocket('ws://ruims:123456@localhost:8080')</code></p>
+<p>那么服务端就会收到这样一个请求头：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>wss.on('connection', (ws, req) =&gt; {   if(req.headers['authorization']) {     let auth = req.headers['authorization']     console.log(auth)     // 打印的值：Basic cnVpbXM6MTIzNDU2   } }</code></p>
+<p>其中 <strong>cnVpbXM6MTIzNDU2</strong> 就是 <code>ruims:123456</code> 的 base64 编码，服务端可以获取到这个编码来做认证。</p>
+<p><code>Quary</code> 传参比较简单，就是普通的 URL 传参，可以带一个短一点的加密字符串过去，服务端获取到该字符串然后做认证：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var ws = new WebSocket('ws://localhost:8080?token=cnVpbXM6MTIzNDU2')</code></p>
+<p>服务端获取参数：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>wss.on('connection', (ws, req) =&gt; {   console.log(req.query.token) }</code></p>
+<h3 id="wss-支持">wss 支持<a hidden class="anchor" aria-hidden="true" href="#wss-支持">#</a></h3>
+<p>WebSocket 客户端使用 <code>ws://</code> 协议连接，那 wss 是什么意思？</p>
+<p>其实非常简单，和 https 原理一摸一样。</p>
+<p><code>https</code> 表示安全的 http 协议，组成是 <strong>HTTP + SSL</strong></p>
+<p><code>wss</code> 则表示安全的 ws 协议，组成是 <strong>WS + SSL</strong></p>
+<p>那为什么一定要用 wss 呢？除了安全性，还有一个关键原因是：如果你的 web 应用是 https 协议，你在当前应用中使用 WebSocket 就必须是 wss 协议，否则浏览器拒绝连接。</p>
+<p>配置 wss 直接在 https 配置中加一个 <code>location</code> 即可，直接上 nginx 配置：</p>
+<p>nginx</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>location /websocket {   proxy_pass http://127.0.0.1:8080;   proxy_redirect off;   proxy_http_version 1.1;   proxy_set_header Upgrade $http_upgrade;   proxy_set_header Connection upgrade; }</code></p>
+<p>然后客户端连接就变成了这样：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var ws = new WebSocket('wss://[host]/websocket')</code></p>
+<h2 id="bff-应用">BFF 应用<a hidden class="anchor" aria-hidden="true" href="#bff-应用">#</a></h2>
+<p>BFF 或许你听说过，全称是 <code>Backend For Frontend</code>，意思是为前端服务的后端，在实际应用架构中属于前端和后端的一个 <code>中间层</code>。</p>
+<p>这个中间层一般是由 Node.js 实现，那么它有什么作用呢？</p>
+<p>众所周知，现在后端的主流架构是微服务，微服务情况下 API 会划分的非常细，商品服务就是商品服务，通知服务就是通知服务。当你想在商品上架时给用户发一个通知，可能至少需要调两个接口。</p>
+<p>这样的话对前端其实是不友好的，于是后来出现了 BFF 中间层，相当于一个后端请求的中间代理站，前端可以直接请求 BFF 的接口，然后 BFF 再向后端接口请求，将需要的数据组合起来，一次返回前端。</p>
+<p>那我们在上面讲的一大堆 WebSocket 的知识，在 BFF 层如何应用呢？</p>
+<p>我想到的应用场景至少有 4 个：</p>
+<ol>
+<li>查看当前在线人数，在线用户信息</li>
+<li>登录新设备，其他设备退出登录</li>
+<li>检测网络连接/断开</li>
+<li>站内消息，小圆点提示</li>
+</ol>
+<p>这些功能以前是在后端实现的，并且会与其他业务功能耦合。现在有了 BFF，那么 WebSocket 完全可以在这一层实现，让后端可以专注核心数据逻辑。</p>
+<p>由此可见，掌握了 WebSocket 在 Node.js 中的实践应用，作为前端的我们可以破除内卷，在另一个领域继续发挥价值，岂不美哉？</p>
+<h2 id="源码答疑">源码+答疑<a hidden class="anchor" aria-hidden="true" href="#源码答疑">#</a></h2>
+<p>本文所有的代码都是经过我亲自实践，为了便于小伙伴们查阅和试验，我建了一个 GitHub 仓库专门存放本文的完整源码，以及之后文章的完整源码。</p>
+<p>仓库地址在这里：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fruidoc%2Fblog-codes" title="https://github.com/ruidoc/blog-codes">杨成功的博客源码</a></p>
+<p>欢迎大家查阅和试验，如果碰到疑惑的地方，欢迎加我微信 <code>ruidoc</code> 咨询，以及所有有关 WebSocket 实践过程中的心得想法问题都欢迎和我交流～</p>
+<h2 id="我的专栏">我的专栏<a hidden class="anchor" aria-hidden="true" href="#我的专栏">#</a></h2>
+<p>本文首发于掘金专栏<a href="https://juejin.cn/column/7008034440890810398" title="https://juejin.cn/column/7008034440890810398">前端 DevOps</a>，这个专栏会长期输出前端工程与架构方向的文章，一如既往的保障质量。</p>
+<p>这里再推荐一下我之前的一篇文章<a href="https://juejin.cn/post/7029512357428592648" title="https://juejin.cn/post/7029512357428592648">前端架构师神技，三招统一代码风格</a>，这篇详细介绍了如何一步一步制定代码规范，代码校验，代码格式化，对统一团队代码风格的前端人员非常有用。</p>
+<p>不知道为什么掘金的推荐算法给这篇文章的曝光非常少，我觉得可惜，那就手动推荐一下吧，感谢 🙏</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/node.js/">Node.js</a></li>
+      <li><a href="http://localhost:1313/tags/websocket/">WebSocket</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">网络协议</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E8%AE%B0%E5%BD%95%E5%89%8D%E7%AB%AF%E7%94%9F%E6%B6%AF%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%9D%A2%E8%AF%95%E6%89%93%E6%B6%88%E4%BA%86%E6%88%91%E5%AF%B9%E9%9D%A2%E8%AF%95%E7%9A%84%E6%81%90%E6%83%A7/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>记录前端生涯的第一次面试，打消了我对面试的恐惧。</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%89%8B%E6%92%B8electron%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0%E5%86%8D%E7%B9%81%E7%90%90%E4%B9%9F%E8%A6%81%E6%90%9E%E6%87%82%E5%AE%83/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>手撸Electron自动更新，再繁琐也要搞懂它</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端架构师破局技能，NodeJS落地WebSocket实践 on x"
+            href="https://x.com/intent/tweet/?text=%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f&amp;hashtags=Node.js%2cWebSocket%2c%e7%bd%91%e7%bb%9c%e5%8d%8f%e8%ae%ae%2c%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端架构师破局技能，NodeJS落地WebSocket实践 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f&amp;title=%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5&amp;summary=%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端架构师破局技能，NodeJS落地WebSocket实践 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f&title=%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端架构师破局技能，NodeJS落地WebSocket实践 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端架构师破局技能，NodeJS落地WebSocket实践 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端架构师破局技能，NodeJS落地WebSocket实践 on telegram"
+            href="https://telegram.me/share/url?text=%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端架构师破局技能，NodeJS落地WebSocket实践 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%89%8d%e7%ab%af%e6%9e%b6%e6%9e%84%e5%b8%88%e7%a0%b4%e5%b1%80%e6%8a%80%e8%83%bd%ef%bc%8cNodeJS%e8%90%bd%e5%9c%b0WebSocket%e5%ae%9e%e8%b7%b5&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%259E%25B6%25E6%259E%2584%25E5%25B8%2588%25E7%25A0%25B4%25E5%25B1%2580%25E6%258A%2580%25E8%2583%25BDnodejs%25E8%2590%25BD%25E5%259C%25B0websocket%25E5%25AE%259E%25E8%25B7%25B5%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>10000000条弹幕数据循环怎么优化？ | PaperMod</title>
+<meta name="keywords" content="前端">
+<meta name="description" content="最近做了直播相关的业务，然后对于大数据相关的优化做了一下复盘。为了了解我是怎么做这个优化的，我们先从如何按照特定的条件删除一个数组说起。1、如何删除数组中的元素场景：有一个数组，需要删除满足条件">
+<meta name="author" content="白哥学前端">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/10000000%E6%9D%A1%E5%BC%B9%E5%B9%95%E6%95%B0%E6%8D%AE%E5%BE%AA%E7%8E%AF%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/10000000%E6%9D%A1%E5%BC%B9%E5%B9%95%E6%95%B0%E6%8D%AE%E5%BE%AA%E7%8E%AF%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="10000000条弹幕数据循环怎么优化？" />
+<meta property="og:description" content="最近做了直播相关的业务，然后对于大数据相关的优化做了一下复盘。为了了解我是怎么做这个优化的，我们先从如何按照特定的条件删除一个数组说起。1、如何删除数组中的元素场景：有一个数组，需要删除满足条件" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/10000000%E6%9D%A1%E5%BC%B9%E5%B9%95%E6%95%B0%E6%8D%AE%E5%BE%AA%E7%8E%AF%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-04-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-04-18T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="10000000条弹幕数据循环怎么优化？"/>
+<meta name="twitter:description" content="最近做了直播相关的业务，然后对于大数据相关的优化做了一下复盘。为了了解我是怎么做这个优化的，我们先从如何按照特定的条件删除一个数组说起。1、如何删除数组中的元素场景：有一个数组，需要删除满足条件"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "10000000条弹幕数据循环怎么优化？",
+      "item": "http://localhost:1313/posts/juejin/10000000%E6%9D%A1%E5%BC%B9%E5%B9%95%E6%95%B0%E6%8D%AE%E5%BE%AA%E7%8E%AF%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "10000000条弹幕数据循环怎么优化？",
+  "name": "10000000条弹幕数据循环怎么优化？",
+  "description": "最近做了直播相关的业务，然后对于大数据相关的优化做了一下复盘。为了了解我是怎么做这个优化的，我们先从如何按照特定的条件删除一个数组说起。1、如何删除数组中的元素场景：有一个数组，需要删除满足条件",
+  "keywords": [
+    "前端"
+  ],
+  "articleBody": "最近做了直播相关的业务，然后对于大数据相关的优化做了一下复盘。\n为了了解我是怎么做这个优化的，我们先从如何按照特定的条件删除一个数组说起。\n1、如何删除数组中的元素 场景：有一个数组，需要删除满足条件的数组。\n示例：\nJavaScript\n代码解读\n复制代码\nconst arr = [1,2,3,4,5,6,7,8]\n删除小于5的元素,删除后的元素为\nJavaScript\n代码解读\n复制代码\nconst arr2 = [5, 6, 7, 8]\n代码实现：\nJavaScript\n代码解读\n复制代码\nconst arr = [1,2,3,4,5,6,7,8] for(let i = 0, len = arr.length; i \u003c len; i++) { if(arr[i] \u003c 5) { arr.splice(i, 1) } }\n结果如下\nJavaScript\n代码解读\n复制代码\narr = [2, 4, 5, 6, 7, 8]\n不是我们预期的结果\n分析原因：删除操作会使得对应索引值位上的元素清空，整个数组中的元素向前移动一位，补位的元素会填充到执行删除操作的索引值位置上，移位之后如果不进行任何操作继续下一个循环，会导致补位元素跳过遍历，为了防止这种补位元素跳过遍历现象，应该在删除操作后将索引值减1，对执行删除操作的索引值位置再进行一次遍历 。\n改进：\nJavaScript\n代码解读\n复制代码\nconst arr = [1,2,3,4,5,6,7,8] for(let i = 0, len = arr.length; i \u003c len; i++) { if(arr[i] \u003c 5) { arr.splice(i, 1) i--; } } // arr = [5, 6, 7, 8] 符合预期\n这个是做了正序循环删除，也可以使用倒序循环删除：\nJavaScript\n代码解读\n复制代码\nconst arr = [1,2,3,4,5,6,7,8] for(let i = arr.length - 1; i \u003e= 0; i--) { if(arr[i] \u003c 5) { arr.splice(i, 1) } } // arr = [5, 6, 7, 8] 符合预期\n2、10000,000条消息如何优化？ 场景 弹幕消息发送场景模拟（伪直播形式，没有进度条）：假设我们有10000,000条消息，根据视频播放的进度展示对应的消息，不展示历史消息。\n常规思路： 循环遍历整个消息列表，时刻监听视频播放的进度，根据视频播放的时间戳和消息发送的时间戳先相等，然后展示消息，依次循环。\n产生的问题 每次视频进度变化都会循环整个消息列表，当循环还没完成，下一个播放进度监听触发了，又开始下一个循环，这样就会造成性能的损耗。\n优化策略 我们从上面的分析可以看出，当消息发送了一条，就可以从原始数据删除这条消息，然后跳出循环，这样循环的次数始终控制在几次（或者几十次）的范围（有可能同一个时间段同时有几条消息甚至几十条消息）等下一个播放进度监听触发，开始循环原始数据，这是之前以后发送过得数据删除了，就不会再循环删除过的数据，始终循环需要发送的那几条，找到了就直接跳出循环。\n代码实现 JavaScript\n代码解读\n复制代码\n// 模拟原始消息列表， const newList = new Array(10000000).fill(1).map((item, index) =\u003e { return { time: (index + 1) * 1000, // 消息发送的时间，一秒一个 content: `这是第${index + 1}s发送的消息` // 消息发送的内容 } }) // 发送的消息列表 const sendList = []; function getMessage(time) { let j = 0; // 循环次数 for(let i = 0, len = newList.length; i \u003c len; i++) { const item = newList[i]; j++; // 这里的time如果不是1000、2000，而是1234、1214这种，就需要取一个浮动范围 // 我这里就是简单用了定时器，所以比较简单 if(item.time === time) { sendList.push(newList[i]) newList.splice(i, 1) i--; } else if(sendList.length \u003e 0) { break; } } console.log('播放进度', time) console.log('循环的次数', j); console.log('接收的消息的长度', sendList.length, sendList); console.log('原始消息的长度', newList.length); } let time = 0; // 定时器,1s触发一次 setInterval(() =\u003e { time += 1000; getMessage(time); }, 1000)\nJavaScript\n代码解读\n复制代码\n// 消息格式 newList = [ {time: 1000, content: '这是第1s发送的消息'}, {time: 2000, content: '这是第2s发送的消息'}, ... ]\n效果展示 总结 上面优化策略只有两条\n发送过的消息删除，下次少循环。 当找到满足条件的数据，直接跳出循环，后面的数据不再循环。 缺点：使用slice也会消耗性能，不可取，并且操作繁琐。\n游标法代替splice 我们这里不再使用slice的方案，设置一个游标，记录循环的初始位置，下次循环直接从游标记录的位置开始循环，然后满足查找的条件就break，这样既不破坏原来的数组，也能有效的减少循环的次数。\njavascript\n代码解读\n复制代码\nlet index = 0， sendList =[]; function getMessage(time) { for(let i = 0, len = newList.length; i \u003c len; i++) { const item = newList[i]; // 这里的time如果不是1000、2000，而是1234、1214这种，就需要取一个浮动范围 // 我这里就是简单用了定时器，所以比较简单 if(item.time === time) { index = i; sendList.push(newList[i]) } else if(sendList.length \u003e 0) { // 这里的查询结束条件为，对应的时间范围之外没有消息了，并且需要发送的消息列表有消息，才break // 这里的结束条件想不到什么更好的方案了 break; } } }\n上面我们只对视频播放的时候做了优化，如果下次用户进来进度直接接近尾声了，这时候首次查找尾部消息的时候，就需要把前面所有的消息都循环一遍，所以还需要继续优化。\n二分查找 当首次加载的时候，采用二分法查找到消息开始的位置，当视频播放的时候再根据查找到的index去循环消息体。\njs\n代码解读\n复制代码\nfunction binarySearch(arr, time) { let upperBound = arr.length - 1; // 记录长度 let lowerBound = 0; // 记录上次二分的位置 let mid; // 切半分的位置 小于或等于 1就停止循环了 while (lowerBound \u003c= upperBound) { // (当前总长度 + 当前中间点位置长度) / 2 = 实际的中间点位置 mid = Math.floor((upperBound + lowerBound) / 2); const item = arr[mid]; const maxTime = time +　500; const minTime = time + 500; // 当输入的值大于中间值时，向后移动一位 if (time \u003e maxTime) { lowerBound = mid + 1; } else if (time \u003c minTime) { // 当输入值小于中间值时，向前移动一位 upperBound = mid - 1; } else { return mid; // 找到指定数据位置 } } return -1; }\nJS\n代码解读\n复制代码\nfunction findIndex(startPlayTime: number) { const searchIndex = binarySearch(this.messageList, time); // 赋值索引，用于快速发送消息 if (searchIndex !== -1) { index = searchIndex; } }\n完结撒花 写到这里本篇文章就不再会更新了，从最开始的splice方法，然后到后面的游标法和二分法，做了逐渐的优化。这个也是在项目中每次迭代去做的优化（前提是给你的排期你能有时间去做）。本文涉及的知识点可能并不是很重要，在这里我要跟大家说的是，我们平时在写代码的时候，要善于发现代码的可优化空间，如果你发现了并且实事求是的去做了，你的能力就会有更大的提高，而且这个发现的过程你可以找同事，找leader去给你review代码，在业务中沉淀出来的代码比你自己平时写个小demo写的代码更能让你成长。\n",
+  "wordCount" : "467",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-04-18T00:00:00Z",
+  "dateModified": "2022-04-18T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "白哥学前端"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/10000000%E6%9D%A1%E5%BC%B9%E5%B9%95%E6%95%B0%E6%8D%AE%E5%BE%AA%E7%8E%AF%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      10000000条弹幕数据循环怎么优化？
+    </h1>
+    <div class="post-description">
+      最近做了直播相关的业务，然后对于大数据相关的优化做了一下复盘。为了了解我是怎么做这个优化的，我们先从如何按照特定的条件删除一个数组说起。1、如何删除数组中的元素场景：有一个数组，需要删除满足条件
+    </div>
+    <div class="post-meta"><span title='2022-04-18 00:00:00 +0000 UTC'>四月 18, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;白哥学前端&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1%e5%a6%82%e4%bd%95%e5%88%a0%e9%99%a4%e6%95%b0%e7%bb%84%e4%b8%ad%e7%9a%84%e5%85%83%e7%b4%a0" aria-label="1、如何删除数组中的元素">1、如何删除数组中的元素</a></li>
+                <li>
+                    <a href="#210000000%e6%9d%a1%e6%b6%88%e6%81%af%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96" aria-label="2、10000,000条消息如何优化？">2、10000,000条消息如何优化？</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af" aria-label="场景">场景</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%84%e6%80%9d%e8%b7%af" aria-label="常规思路：">常规思路：</a></li>
+                <li>
+                    <a href="#%e4%ba%a7%e7%94%9f%e7%9a%84%e9%97%ae%e9%a2%98" aria-label="产生的问题">产生的问题</a></li>
+                <li>
+                    <a href="#%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5" aria-label="优化策略">优化策略</a></li>
+                <li>
+                    <a href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0" aria-label="代码实现">代码实现</a></li>
+                <li>
+                    <a href="#%e6%95%88%e6%9e%9c%e5%b1%95%e7%a4%ba" aria-label="效果展示">效果展示</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li>
+                <li>
+                    <a href="#%e6%b8%b8%e6%a0%87%e6%b3%95%e4%bb%a3%e6%9b%bfsplice" aria-label="游标法代替splice">游标法代替splice</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%88%86%e6%9f%a5%e6%89%be" aria-label="二分查找">二分查找</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%8c%e7%bb%93%e6%92%92%e8%8a%b1" aria-label="完结撒花">完结撒花</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>最近做了直播相关的业务，然后对于大数据相关的优化做了一下复盘。</p>
+<p>为了了解我是怎么做这个优化的，我们先从如何按照特定的条件删除一个数组说起。</p>
+<h2 id="1如何删除数组中的元素">1、如何删除数组中的元素<a hidden class="anchor" aria-hidden="true" href="#1如何删除数组中的元素">#</a></h2>
+<p><strong>场景</strong>：有一个数组，需要删除满足条件的数组。</p>
+<p><strong>示例</strong>：</p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr = [1,2,3,4,5,6,7,8]</code></p>
+<p>删除小于5的元素,删除后的元素为</p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr2 = [5, 6, 7, 8]</code></p>
+<p><strong>代码实现：</strong></p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr = [1,2,3,4,5,6,7,8] for(let i = 0, len = arr.length; i &lt; len; i++) { 	if(arr[i] &lt; 5) { 		arr.splice(i, 1) 	} }</code></p>
+<p><strong>结果如下</strong></p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>arr = [2, 4, 5, 6, 7, 8]</code></p>
+<p>不是我们预期的结果</p>
+<p><strong>分析原因</strong>：删除操作会使得对应索引值位上的元素清空，整个数组中的元素向前移动一位，补位的元素会填充到执行删除操作的索引值位置上，移位之后如果不进行任何操作继续下一个循环，会导致补位元素跳过遍历，为了防止这种补位元素跳过遍历现象，应该在删除操作后将索引值减1，对执行删除操作的索引值位置再进行一次遍历 。</p>
+<p><strong>改进：</strong></p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr = [1,2,3,4,5,6,7,8] for(let i = 0, len = arr.length; i &lt; len; i++) { 	if(arr[i] &lt; 5) { 		arr.splice(i, 1)     i--; 	} } // arr = [5, 6, 7, 8] 符合预期</code></p>
+<p>这个是做了正序循环删除，也可以使用倒序循环删除：</p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr = [1,2,3,4,5,6,7,8] for(let i = arr.length - 1; i &gt;= 0; i--) { 	if(arr[i] &lt; 5) { 		arr.splice(i, 1) 	} } // arr = [5, 6, 7, 8] 符合预期</code></p>
+<h2 id="210000000条消息如何优化">2、10000,000条消息如何优化？<a hidden class="anchor" aria-hidden="true" href="#210000000条消息如何优化">#</a></h2>
+<h3 id="场景">场景<a hidden class="anchor" aria-hidden="true" href="#场景">#</a></h3>
+<p>弹幕消息发送场景模拟（伪直播形式，没有进度条）：假设我们有10000,000条消息，根据视频播放的进度展示对应的消息，不展示历史消息。</p>
+<h3 id="常规思路">常规思路：<a hidden class="anchor" aria-hidden="true" href="#常规思路">#</a></h3>
+<p>循环遍历整个消息列表，时刻监听视频播放的进度，根据视频播放的时间戳和消息发送的时间戳先相等，然后展示消息，依次循环。</p>
+<h3 id="产生的问题">产生的问题<a hidden class="anchor" aria-hidden="true" href="#产生的问题">#</a></h3>
+<p>每次视频进度变化都会循环整个消息列表，当循环还没完成，下一个播放进度监听触发了，又开始下一个循环，这样就会造成性能的损耗。</p>
+<h3 id="优化策略">优化策略<a hidden class="anchor" aria-hidden="true" href="#优化策略">#</a></h3>
+<p>我们从上面的分析可以看出，当消息发送了一条，就可以<strong>从原始数据删除这条消息</strong>，然后<strong>跳出循环</strong>，这样循环的次数始终控制在几次（或者几十次）的范围（有可能同一个时间段同时有几条消息甚至几十条消息）等下一个播放进度监听触发，开始循环原始数据，这是之前以后发送过得数据删除了，就不会再循环删除过的数据，始终循环需要发送的那几条，找到了就直接跳出循环。</p>
+<h3 id="代码实现">代码实现<a hidden class="anchor" aria-hidden="true" href="#代码实现">#</a></h3>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 模拟原始消息列表， const newList = new Array(10000000).fill(1).map((item, index) =&gt; {   return {     time: (index + 1) * 1000,       // 消息发送的时间，一秒一个     content: `这是第${index + 1}s发送的消息` // 消息发送的内容   } }) // 发送的消息列表 const sendList = []; function getMessage(time) {   let j = 0; // 循环次数   for(let i = 0, len = newList.length; i &lt; len; i++) {     const item = newList[i];     j++;     // 这里的time如果不是1000、2000，而是1234、1214这种，就需要取一个浮动范围     // 我这里就是简单用了定时器，所以比较简单     if(item.time === time) {       sendList.push(newList[i])       newList.splice(i, 1)       i--;     } else if(sendList.length &gt; 0) {         break;     }   }   console.log('播放进度', time)   console.log('循环的次数', j);   console.log('接收的消息的长度', sendList.length, sendList);   console.log('原始消息的长度', newList.length);    } let time = 0; // 定时器,1s触发一次 setInterval(() =&gt; {   time += 1000;   getMessage(time); }, 1000)</code></p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 消息格式 newList = [   {time: 1000, content: '这是第1s发送的消息'},   {time: 2000, content: '这是第2s发送的消息'},   ... ]</code></p>
+<h3 id="效果展示">效果展示<a hidden class="anchor" aria-hidden="true" href="#效果展示">#</a></h3>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7471fc97eac04310aa2399b82c3af43d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<blockquote>
+<p>上面优化策略只有两条</p>
+<ol>
+<li>发送过的消息删除，下次少循环。</li>
+<li>当找到满足条件的数据，直接跳出循环，后面的数据不再循环。</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>缺点：使用slice也会消耗性能，不可取，并且操作繁琐。</p>
+</blockquote>
+<h3 id="游标法代替splice">游标法代替splice<a hidden class="anchor" aria-hidden="true" href="#游标法代替splice">#</a></h3>
+<p>我们这里不再使用slice的方案，设置一个游标，记录循环的初始位置，下次循环直接从游标记录的位置开始循环，然后满足查找的条件就break，这样既不破坏原来的数组，也能有效的减少循环的次数。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let index = 0， sendList =[];   function getMessage(time) {     for(let i = 0, len = newList.length; i &lt; len; i++) {         const item = newList[i];         // 这里的time如果不是1000、2000，而是1234、1214这种，就需要取一个浮动范围         // 我这里就是简单用了定时器，所以比较简单         if(item.time === time) {           index = i;           sendList.push(newList[i])         } else if(sendList.length &gt; 0) {             // 这里的查询结束条件为，对应的时间范围之外没有消息了，并且需要发送的消息列表有消息，才break         // 这里的结束条件想不到什么更好的方案了         break;     }   } }</code></p>
+<p>上面我们只对视频播放的时候做了优化，如果下次用户进来进度直接接近尾声了，这时候首次查找尾部消息的时候，就需要把前面所有的消息都循环一遍，所以还需要继续优化。</p>
+<h3 id="二分查找">二分查找<a hidden class="anchor" aria-hidden="true" href="#二分查找">#</a></h3>
+<p>当首次加载的时候，采用二分法查找到消息开始的位置，当视频播放的时候再根据查找到的index去循环消息体。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function binarySearch(arr, time) {     let upperBound = arr.length - 1; // 记录长度     let lowerBound = 0; // 记录上次二分的位置     let mid;     // 切半分的位置 小于或等于 1就停止循环了     while (lowerBound &lt;= upperBound) {       // (当前总长度 + 当前中间点位置长度) / 2 = 实际的中间点位置       mid = Math.floor((upperBound + lowerBound) / 2);       const item = arr[mid];       const maxTime = time +　500;       const minTime = time + 500;       // 当输入的值大于中间值时，向后移动一位       if (time &gt; maxTime) {         lowerBound = mid + 1;       } else if (time &lt; minTime) {         // 当输入值小于中间值时，向前移动一位         upperBound = mid - 1;       } else {         return mid; // 找到指定数据位置       }     }     return -1;   }</code></p>
+<p>JS</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function findIndex(startPlayTime: number) {     const searchIndex = binarySearch(this.messageList, time);     // 赋值索引，用于快速发送消息     if (searchIndex !== -1) {       index = searchIndex;     }   }</code></p>
+<h2 id="完结撒花">完结撒花<a hidden class="anchor" aria-hidden="true" href="#完结撒花">#</a></h2>
+<p>写到这里本篇文章就不再会更新了，从最开始的splice方法，然后到后面的游标法和二分法，做了逐渐的优化。这个也是在项目中每次迭代去做的优化（前提是给你的排期你能有时间去做）。本文涉及的知识点可能并不是很重要，在这里我要跟大家说的是，我们平时在写代码的时候，要善于发现代码的可优化空间，如果你发现了并且实事求是的去做了，你的能力就会有更大的提高，而且这个发现的过程你可以找同事，找leader去给你review代码，在业务中沉淀出来的代码比你自己平时写个小demo写的代码更能让你成长。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E7%AE%97%E6%B3%95%E6%90%9C%E7%B4%A2%E4%BA%8C%E7%BB%B4%E7%9F%A9%E9%98%B5/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>【算法】搜索二维矩阵</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/40%E4%BA%BFqq%E5%8F%B7%E5%A6%82%E4%BD%95%E5%8E%BB%E9%87%8D/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>40亿QQ号，如何去重？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10000000条弹幕数据循环怎么优化？ on x"
+            href="https://x.com/intent/tweet/?text=10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f&amp;hashtags=%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10000000条弹幕数据循环怎么优化？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f&amp;title=10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f&amp;summary=10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10000000条弹幕数据循环怎么优化？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f&title=10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10000000条弹幕数据循环怎么优化？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10000000条弹幕数据循环怎么优化？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10000000条弹幕数据循环怎么优化？ on telegram"
+            href="https://telegram.me/share/url?text=10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10000000条弹幕数据循环怎么优化？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=10000000%e6%9d%a1%e5%bc%b9%e5%b9%95%e6%95%b0%e6%8d%ae%e5%be%aa%e7%8e%af%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f10000000%25E6%259D%25A1%25E5%25BC%25B9%25E5%25B9%2595%25E6%2595%25B0%25E6%258D%25AE%25E5%25BE%25AA%25E7%258E%25AF%25E6%2580%258E%25E4%25B9%2588%25E4%25BC%2598%25E5%258C%2596%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

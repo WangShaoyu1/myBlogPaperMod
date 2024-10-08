@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 | PaperMod</title>
+<meta name="keywords" content="前端, JavaScript, Vue.js">
+<meta name="description" content="作为一名开发，npm包大家肯定用的多了，但不知道大家有没有自己开发过，这篇文章带你从零到一去发布一个插件，超级详细的。">
+<meta name="author" content="天天鸭">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%B8%89%E5%B9%B4%E5%89%8D%E7%AB%AF%E8%BF%9Enpm%E5%8C%85%E9%83%BD%E4%B8%8D%E4%BC%9A%E5%BC%80%E5%8F%91%E5%B8%A6%E4%BD%A0%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E5%8F%91%E5%B8%83%E4%B8%80%E4%B8%AAnpm%E5%8C%855%E5%88%86%E9%92%9F%E5%B0%B1%E8%83%BD%E5%AD%A6%E4%BC%9A/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%B8%89%E5%B9%B4%E5%89%8D%E7%AB%AF%E8%BF%9Enpm%E5%8C%85%E9%83%BD%E4%B8%8D%E4%BC%9A%E5%BC%80%E5%8F%91%E5%B8%A6%E4%BD%A0%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E5%8F%91%E5%B8%83%E4%B8%80%E4%B8%AAnpm%E5%8C%855%E5%88%86%E9%92%9F%E5%B0%B1%E8%83%BD%E5%AD%A6%E4%BC%9A/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会" />
+<meta property="og:description" content="作为一名开发，npm包大家肯定用的多了，但不知道大家有没有自己开发过，这篇文章带你从零到一去发布一个插件，超级详细的。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%B8%89%E5%B9%B4%E5%89%8D%E7%AB%AF%E8%BF%9Enpm%E5%8C%85%E9%83%BD%E4%B8%8D%E4%BC%9A%E5%BC%80%E5%8F%91%E5%B8%A6%E4%BD%A0%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E5%8F%91%E5%B8%83%E4%B8%80%E4%B8%AAnpm%E5%8C%855%E5%88%86%E9%92%9F%E5%B0%B1%E8%83%BD%E5%AD%A6%E4%BC%9A/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-05T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会"/>
+<meta name="twitter:description" content="作为一名开发，npm包大家肯定用的多了，但不知道大家有没有自己开发过，这篇文章带你从零到一去发布一个插件，超级详细的。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会",
+      "item": "http://localhost:1313/posts/juejin/%E4%B8%89%E5%B9%B4%E5%89%8D%E7%AB%AF%E8%BF%9Enpm%E5%8C%85%E9%83%BD%E4%B8%8D%E4%BC%9A%E5%BC%80%E5%8F%91%E5%B8%A6%E4%BD%A0%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E5%8F%91%E5%B8%83%E4%B8%80%E4%B8%AAnpm%E5%8C%855%E5%88%86%E9%92%9F%E5%B0%B1%E8%83%BD%E5%AD%A6%E4%BC%9A/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会",
+  "name": "三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会",
+  "description": "作为一名开发，npm包大家肯定用的多了，但不知道大家有没有自己开发过，这篇文章带你从零到一去发布一个插件，超级详细的。",
+  "keywords": [
+    "前端", "JavaScript", "Vue.js"
+  ],
+  "articleBody": "前言: 回想当初项目需求要写vue的插件，由于对这方面没有了解，所以当时听到头都大了毕竟听着就高大上，后来硬着头皮去了解学习后发现也就那么回事啊挺简单的，距离现在也有一段时间没写过插件了今天就从零到一写个文章，当是复习一下流程。以下是基于vue3+vite创建一个防抖函数插件为例，从编写到发布上线流程去说明。\n一、创建项目 （1）先创建一个文件夹初始化项目 bash\n代码解读\n复制代码\nmkdir tty-debounce-plugin cd tty-debounce-plugin npm init -y\n执行完上面命令之后：\n当前工作目录会有一个名为 tty-debounce-plugin 的文件夹。 tty-debounce-plugin 文件夹内会有一个 package.json文件，其中包含了默认的项目配置相关信息。 （2）然后使用指令去安装vue3和vite的依赖 lua\n代码解读\n复制代码\nnpm install vite vue@next --save\n二、vite配置 由于是基于vue3+vite开发的插件，所以要创建 vite.config.js文件\nphp\n代码解读\n复制代码\nexport default defineConfig({ build: { lib: { entry: './src/index.js', name: 'ttyDebouncePlugin', fileName: 'tty-debounce-plugin', }, rollupOptions: { external: ['vue'], output: { globals: { vue: 'Vue' } } } } });\n上面配置几个核心大概意思如下：\nentry: 指定了库的入口文，例如这里入口是 ./src/index.js。 name: 库的名称是什么，例如这里设置为 ttyDebouncePlugin。 fileName: 构建完成后的文件名是什么，例如这里设置为 tty-debounce-plugin。 external: 哪些模块会被外部化处理，例如这里设置了 vue 。 output.globals: 如何将外部化的模块映射到全局变量上，这里将 vue 映射为 Vue。 三、插件代码编写 由于上面vite配置了entry: './src/index.js'作为入口，所以要在文件夹里面创建src文件夹，然后在里，创建index.js文件，然后在文件中编写具体的防抖函数。具体代码如下所示。\nini\n代码解读\n复制代码\nimport { createApp } from 'vue'; function ttydebounce(func, wait, immediate) { let timeout; return function(...args) { const context = this; const later = function() { timeout = null; if (!immediate) func.apply(context, args); }; const callNow = immediate \u0026\u0026 !timeout; clearTimeout(timeout); timeout = setTimeout(later, wait); if (callNow) func.apply(context, args); }; } export default { install(app, options) { app.config.globalProperties.$ttydebounce = ttydebounce; } };\n上面代码中ttydebounce为防抖函数，最后用export default导出vue插件，并且用vue的全局属性globalProperties把 ttydebounce 函数绑定在 Vue 的全局属性 $ttydebounce 上方便全局使用。\n注意：其中一定要用 install 方法，这是用来安装插件到 Vue 实例的。\n四、打包构建插件 按上面流程配置好环境并且写好代码自行测试没有问题之后，就可以输入法如下指令打包项目了。\n代码解读\n复制代码\nvite build\n由于vite配置了fileName: 'tty-debounce-plugin'，打包后会输出一个 tty-debounce-plugin文件。\n五、配置 package.json文件 发布前要修改 package.json 文件，里面会配置插件对应的各种信息，如下所示\nperl\n代码解读\n复制代码\n{ \"name\": \"tty-debounce-plugin\", \"version\": \"1.0.0\", \"description\": \"这是天天肉鸭的文章示例代码\", \"main\": \"dist/tty-debounce-plugin.js\", \"module\": \"dist/tty-debounce-plugin.js\", \"exports\": { \".\": { \"import\": \"./dist/tty-debounce-plugin.js\", \"require\": \"./dist/tty-debounce-plugin.js\" } }, \"scripts\": { \"build\": \"vite build\", \"test\": \"jest\" }, \"author\": \"tty \", \"license\": \"MIT\", \"repository\": { \"type\": \"git\", \"url\": \"https://github.com/......\" }, \"keywords\": [ \"vue\", \"plugin\", \"vue3\", \"debounce\", \"vite\" ], \"peerDependencies\": { \"vue\": \"^3.3.6\" } }\n上面配置的核心内容意思如下：\nname: 项目名称。 version: 项目版本号。 description: 项目描述 license: 项目的许可协议。 repository: 项目的仓库信息。 keywords: 项目的关键词列表。 main: 指定项目主入口文件。 module: 指定 ES 模块的入口文件。 exports: 指定不同环境下的导出文件路径。 peerDependencies: 指定项目兼容版本范围。例如这里是 ^3.3.6。即表示该插件只能和 Vue 3.3.6 及其后续版本兼容。 六、连接远程 Git 仓库 一切配置都完成之后就要先初始化再连接远程仓库了。\n（1）初始化仓库 csharp\n代码解读\n复制代码\ngit init git add . git commit -m \"tty-dome\"\n（2）连接远程仓库 先前往 GitHub 创建一个新的仓库，然后开始关联。\ncsharp\n代码解读\n复制代码\ngit remote add origin https://github.com/yourname/tty-debounce-plugin.git git push -u origin main\n上面指令是将远程仓库添加到本地 Git 仓库，然后远程推送。\n七、注册 npm 账号并且登录发布 发布npm包肯定需要有npm的帐号啦，直接前往官网注册。然后按以下步骤操作。\n（1）登录 输入npm login后会要你输入帐号，再输入密码的。\n代码解读\n复制代码\nnpm login\n注意：输入密码时控制台看着没有反应，其实是正常的生效的。\n（2）发布 发布前先看看包名有没有被使用了\nsql\n代码解读\n复制代码\nnpm search tty-debounce-plugin\n然后发布指令如下，发布完成后，可以直接访问 npm 官方网站查看是否成功。\n代码解读\n复制代码\nnpm publish\n八、发布成功后在项目中使用 终于发布成功，肯定就是使用包了，使用其实都差不多，步骤如下。\n（1）安装插件 代码解读\n复制代码\nnpm install tty-debounce-plugin\n（2）在main.js 或 main.ts 文件引入使用插件。 javascript\n代码解读\n复制代码\nimport ttyDebouncePlugin from 'tty-debounce-plugin'; app.use(ttyDebouncePlugin);\n然后就可以在页面直接$ttydebounce使用了。\n小结： 至此一个插件就开发完成了，是不是真的很简单。其实就是组件封装然后走一个配置、打包、发布的流程。但和日常组件有点不同的是需要更加重视兼容性的问题，具体还是针对插件的应用场景而定。如果上面那里写的不对或者有更好的建议欢迎大佬批出。\n",
+  "wordCount" : "350",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-08-05T00:00:00Z",
+  "dateModified": "2024-08-05T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "天天鸭"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%B8%89%E5%B9%B4%E5%89%8D%E7%AB%AF%E8%BF%9Enpm%E5%8C%85%E9%83%BD%E4%B8%8D%E4%BC%9A%E5%BC%80%E5%8F%91%E5%B8%A6%E4%BD%A0%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E5%8F%91%E5%B8%83%E4%B8%80%E4%B8%AAnpm%E5%8C%855%E5%88%86%E9%92%9F%E5%B0%B1%E8%83%BD%E5%AD%A6%E4%BC%9A/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会
+    </h1>
+    <div class="post-description">
+      作为一名开发，npm包大家肯定用的多了，但不知道大家有没有自己开发过，这篇文章带你从零到一去发布一个插件，超级详细的。
+    </div>
+    <div class="post-meta"><span title='2024-08-05 00:00:00 +0000 UTC'>八月 5, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;天天鸭&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言:">前言:</a></li>
+                <li>
+                    <a href="#%e4%b8%80%e5%88%9b%e5%bb%ba%e9%a1%b9%e7%9b%ae" aria-label="一、创建项目">一、创建项目</a><ul>
+                        <ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1%e5%85%88%e5%88%9b%e5%bb%ba%e4%b8%80%e4%b8%aa%e6%96%87%e4%bb%b6%e5%a4%b9%e5%88%9d%e5%a7%8b%e5%8c%96%e9%a1%b9%e7%9b%ae" aria-label="（1）先创建一个文件夹初始化项目">（1）先创建一个文件夹初始化项目</a></li>
+                <li>
+                    <a href="#2%e7%84%b6%e5%90%8e%e4%bd%bf%e7%94%a8%e6%8c%87%e4%bb%a4%e5%8e%bb%e5%ae%89%e8%a3%85vue3%e5%92%8cvite%e7%9a%84%e4%be%9d%e8%b5%96" aria-label="（2）然后使用指令去安装vue3和vite的依赖">（2）然后使用指令去安装vue3和vite的依赖</a></li></ul>
+                    </ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8cvite%e9%85%8d%e7%bd%ae" aria-label="二、vite配置">二、vite配置</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e6%8f%92%e4%bb%b6%e4%bb%a3%e7%a0%81%e7%bc%96%e5%86%99" aria-label="三、插件代码编写">三、插件代码编写</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e6%89%93%e5%8c%85%e6%9e%84%e5%bb%ba%e6%8f%92%e4%bb%b6" aria-label="四、打包构建插件">四、打包构建插件</a></li>
+                <li>
+                    <a href="#%e4%ba%94%e9%85%8d%e7%bd%ae-packagejson%e6%96%87%e4%bb%b6" aria-label="五、配置 package.json文件">五、配置 package.json文件</a></li>
+                <li>
+                    <a href="#%e5%85%ad%e8%bf%9e%e6%8e%a5%e8%bf%9c%e7%a8%8b-git-%e4%bb%93%e5%ba%93" aria-label="六、连接远程 Git 仓库">六、连接远程 Git 仓库</a><ul>
+                        <ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1%e5%88%9d%e5%a7%8b%e5%8c%96%e4%bb%93%e5%ba%93" aria-label="（1）初始化仓库">（1）初始化仓库</a></li>
+                <li>
+                    <a href="#2%e8%bf%9e%e6%8e%a5%e8%bf%9c%e7%a8%8b%e4%bb%93%e5%ba%93" aria-label="（2）连接远程仓库">（2）连接远程仓库</a></li></ul>
+                    </ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%83%e6%b3%a8%e5%86%8c-npm-%e8%b4%a6%e5%8f%b7%e5%b9%b6%e4%b8%94%e7%99%bb%e5%bd%95%e5%8f%91%e5%b8%83" aria-label="七、注册 npm 账号并且登录发布">七、注册 npm 账号并且登录发布</a><ul>
+                        <ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1%e7%99%bb%e5%bd%95" aria-label="（1）登录">（1）登录</a></li>
+                <li>
+                    <a href="#2%e5%8f%91%e5%b8%83" aria-label="（2）发布">（2）发布</a></li></ul>
+                    </ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%ab%e5%8f%91%e5%b8%83%e6%88%90%e5%8a%9f%e5%90%8e%e5%9c%a8%e9%a1%b9%e7%9b%ae%e4%b8%ad%e4%bd%bf%e7%94%a8" aria-label="八、发布成功后在项目中使用">八、发布成功后在项目中使用</a><ul>
+                        <ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1%e5%ae%89%e8%a3%85%e6%8f%92%e4%bb%b6" aria-label="（1）安装插件">（1）安装插件</a></li>
+                <li>
+                    <a href="#2%e5%9c%a8mainjs-%e6%88%96-maints-%e6%96%87%e4%bb%b6%e5%bc%95%e5%85%a5%e4%bd%bf%e7%94%a8%e6%8f%92%e4%bb%b6" aria-label="（2）在main.js 或 main.ts 文件引入使用插件。">（2）在main.js 或 main.ts 文件引入使用插件。</a></li></ul>
+                    </ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e5%b0%8f%e7%bb%93" aria-label="小结：">小结：</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="前言">前言:<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>回想当初项目需求要写<code>vue</code>的插件，由于对这方面没有了解，所以当时听到头都大了毕竟听着就高大上，后来硬着头皮去了解学习后发现也就那么回事啊挺简单的，距离现在也有一段时间没写过插件了今天就从零到一写个文章，当是复习一下流程。以下是基于<code>vue3+vite</code>创建一个防抖函数插件为例，从编写到发布上线流程去说明。</p>
+<h1 id="一创建项目">一、创建项目<a hidden class="anchor" aria-hidden="true" href="#一创建项目">#</a></h1>
+<h4 id="1先创建一个文件夹初始化项目">（1）先创建一个文件夹初始化项目<a hidden class="anchor" aria-hidden="true" href="#1先创建一个文件夹初始化项目">#</a></h4>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mkdir tty-debounce-plugin cd tty-debounce-plugin npm init -y</code></p>
+<blockquote>
+<p>执行完上面命令之后：</p>
+<ul>
+<li>当前工作目录会有一个名为 <code>tty-debounce-plugin</code> 的文件夹。</li>
+<li><code>tty-debounce-plugin</code> 文件夹内会有一个 <code>package.json</code>文件，其中包含了默认的项目配置相关信息。</li>
+</ul>
+</blockquote>
+<h4 id="2然后使用指令去安装vue3和vite的依赖">（2）然后使用指令去安装<code>vue3</code>和<code>vite</code>的依赖<a hidden class="anchor" aria-hidden="true" href="#2然后使用指令去安装vue3和vite的依赖">#</a></h4>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install vite vue@next --save</code></p>
+<h1 id="二vite配置">二、vite配置<a hidden class="anchor" aria-hidden="true" href="#二vite配置">#</a></h1>
+<p>由于是基于<code>vue3+vite</code>开发的插件，所以要创建 <code>vite.config.js</code>文件</p>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>export default defineConfig({   build: {     lib: {       entry: './src/index.js',       name: 'ttyDebouncePlugin',       fileName: 'tty-debounce-plugin',     },     rollupOptions: {       external: ['vue'],       output: {         globals: {           vue: 'Vue'         }       }     }   } });</code></p>
+<blockquote>
+<p><strong>上面配置几个核心大概意思如下：</strong></p>
+<ul>
+<li>entry: 指定了库的入口文，例如这里入口是 ./src/index.js。</li>
+<li>name: 库的名称是什么，例如这里设置为 ttyDebouncePlugin。</li>
+<li>fileName: 构建完成后的文件名是什么，例如这里设置为 tty-debounce-plugin。</li>
+<li>external: 哪些模块会被外部化处理，例如这里设置了 vue 。</li>
+<li>output.globals: 如何将外部化的模块映射到全局变量上，这里将 vue 映射为 Vue。</li>
+</ul>
+</blockquote>
+<h1 id="三插件代码编写">三、插件代码编写<a hidden class="anchor" aria-hidden="true" href="#三插件代码编写">#</a></h1>
+<p>由于上面<code>vite</code>配置了<code>entry: './src/index.js'</code>作为入口，所以要在文件夹里面创建<code>src</code>文件夹，然后在里，创建<code>index.js</code>文件，然后在文件中编写具体的防抖函数。具体代码如下所示。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { createApp } from 'vue'; function ttydebounce(func, wait, immediate) {   let timeout;   return function(...args) {     const context = this;     const later = function() {       timeout = null;       if (!immediate) func.apply(context, args);     };     const callNow = immediate &amp;&amp; !timeout;     clearTimeout(timeout);     timeout = setTimeout(later, wait);     if (callNow) func.apply(context, args);   }; } export default {   install(app, options) {     app.config.globalProperties.$ttydebounce = ttydebounce;   } };</code></p>
+<p>上面代码中<code>ttydebounce</code>为防抖函数，最后用<code>export default</code>导出<code>vue</code>插件，并且用<code>vue</code>的全局属性<code>globalProperties</code>把 <code>ttydebounce</code> 函数绑定在 <code>Vue</code> 的全局属性 <code>$ttydebounce</code> 上方便全局使用。</p>
+<p><strong>注意：其中一定要用 <code>install</code> 方法，这是用来安装插件到 <code>Vue</code> 实例的。</strong></p>
+<h1 id="四打包构建插件">四、打包构建插件<a hidden class="anchor" aria-hidden="true" href="#四打包构建插件">#</a></h1>
+<p>按上面流程配置好环境并且写好代码自行测试没有问题之后，就可以输入法如下指令打包项目了。</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>vite build</code></p>
+<p>由于<code>vite</code>配置了<code>fileName: 'tty-debounce-plugin'</code>，打包后会输出一个 <code>tty-debounce-plugin</code>文件。</p>
+<h1 id="五配置-packagejson文件">五、配置 package.json文件<a hidden class="anchor" aria-hidden="true" href="#五配置-packagejson文件">#</a></h1>
+<p>发布前要修改 <code>package.json</code> 文件，里面会配置插件对应的各种信息，如下所示</p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   &quot;name&quot;: &quot;tty-debounce-plugin&quot;,   &quot;version&quot;: &quot;1.0.0&quot;,   &quot;description&quot;: &quot;这是天天肉鸭的文章示例代码&quot;,   &quot;main&quot;: &quot;dist/tty-debounce-plugin.js&quot;,   &quot;module&quot;: &quot;dist/tty-debounce-plugin.js&quot;,   &quot;exports&quot;: {     &quot;.&quot;: {       &quot;import&quot;: &quot;./dist/tty-debounce-plugin.js&quot;,       &quot;require&quot;: &quot;./dist/tty-debounce-plugin.js&quot;     }   },   &quot;scripts&quot;: {     &quot;build&quot;: &quot;vite build&quot;,     &quot;test&quot;: &quot;jest&quot;   },   &quot;author&quot;: &quot;tty &lt;my.email@tty.com&gt;&quot;,   &quot;license&quot;: &quot;MIT&quot;,   &quot;repository&quot;: {     &quot;type&quot;: &quot;git&quot;,     &quot;url&quot;: &quot;https://github.com/......&quot;   },   &quot;keywords&quot;: [     &quot;vue&quot;,     &quot;plugin&quot;,     &quot;vue3&quot;,     &quot;debounce&quot;,     &quot;vite&quot;   ],   &quot;peerDependencies&quot;: {     &quot;vue&quot;: &quot;^3.3.6&quot;   } }</code></p>
+<blockquote>
+<p><strong>上面配置的核心内容意思如下：</strong></p>
+<ul>
+<li><code>name</code>: 项目名称。</li>
+<li><code>version</code>: 项目版本号。</li>
+<li><code>description</code>: 项目描述</li>
+<li><code>license</code>: 项目的许可协议。</li>
+<li><code>repository</code>: 项目的仓库信息。</li>
+<li><code>keywords</code>: 项目的关键词列表。</li>
+<li><code>main</code>: 指定项目主入口文件。</li>
+<li><code>module</code>: 指定 <code>ES</code> 模块的入口文件。</li>
+<li><code>exports</code>: 指定不同环境下的导出文件路径。</li>
+<li><code>peerDependencies</code>: 指定项目兼容版本范围。例如这里是 <code>^3.3.6</code>。即表示该插件只能和 <code>Vue 3.3.6</code> 及其后续版本兼容。</li>
+</ul>
+</blockquote>
+<h1 id="六连接远程-git-仓库">六、连接远程 Git 仓库<a hidden class="anchor" aria-hidden="true" href="#六连接远程-git-仓库">#</a></h1>
+<p>一切配置都完成之后就要先初始化再连接远程仓库了。</p>
+<h4 id="1初始化仓库">（1）初始化仓库<a hidden class="anchor" aria-hidden="true" href="#1初始化仓库">#</a></h4>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>git init git add . git commit -m &quot;tty-dome&quot;</code></p>
+<h4 id="2连接远程仓库">（2）连接远程仓库<a hidden class="anchor" aria-hidden="true" href="#2连接远程仓库">#</a></h4>
+<p>先前往 <code>GitHub</code> 创建一个新的仓库，然后开始关联。</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>git remote add origin https://github.com/yourname/tty-debounce-plugin.git git push -u origin main</code></p>
+<p>上面指令是将远程仓库添加到本地 <code>Git</code> 仓库，然后远程推送。</p>
+<h1 id="七注册-npm-账号并且登录发布">七、注册 npm 账号并且登录发布<a hidden class="anchor" aria-hidden="true" href="#七注册-npm-账号并且登录发布">#</a></h1>
+<p>发布<code>npm</code>包肯定需要有<code>npm</code>的帐号啦，直接前往官网注册。然后按以下步骤操作。</p>
+<h4 id="1登录">（1）登录<a hidden class="anchor" aria-hidden="true" href="#1登录">#</a></h4>
+<p>输入<code>npm login</code>后会要你输入帐号，再输入密码的。</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm login</code></p>
+<p><strong>注意：输入密码时控制台看着没有反应，其实是正常的生效的。</strong></p>
+<h4 id="2发布">（2）发布<a hidden class="anchor" aria-hidden="true" href="#2发布">#</a></h4>
+<p>发布前先看看包名有没有被使用了</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm search tty-debounce-plugin</code></p>
+<p>然后发布指令如下，发布完成后，可以直接访问 <code>npm</code> 官方网站查看是否成功。</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm publish</code></p>
+<h1 id="八发布成功后在项目中使用">八、发布成功后在项目中使用<a hidden class="anchor" aria-hidden="true" href="#八发布成功后在项目中使用">#</a></h1>
+<p>终于发布成功，肯定就是使用包了，使用其实都差不多，步骤如下。</p>
+<h4 id="1安装插件">（1）安装插件<a hidden class="anchor" aria-hidden="true" href="#1安装插件">#</a></h4>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install tty-debounce-plugin</code></p>
+<h4 id="2在mainjs-或-maints-文件引入使用插件">（2）在<code>main.js</code> 或 <code>main.ts</code> 文件引入使用插件。<a hidden class="anchor" aria-hidden="true" href="#2在mainjs-或-maints-文件引入使用插件">#</a></h4>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import ttyDebouncePlugin from 'tty-debounce-plugin'; app.use(ttyDebouncePlugin);</code></p>
+<p>然后就可以在页面直接<code>$ttydebounce</code>使用了。</p>
+<h1 id="小结">小结：<a hidden class="anchor" aria-hidden="true" href="#小结">#</a></h1>
+<p>至此一个插件就开发完成了，是不是真的很简单。其实就是组件封装然后走一个配置、打包、发布的流程。但和日常组件有点不同的是需要更加重视兼容性的问题，具体还是针对插件的应用场景而定。如果上面那里写的不对或者有更好的建议欢迎大佬批出。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93vue3%E7%9A%8413%E7%A7%8D%E4%BC%A0%E5%8F%82%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E9%9D%9E%E5%B8%B8%E9%BD%90%E5%85%A8/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>总结Vue3的13种传参通信方式，非常齐全</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E8%AE%A9%E4%BD%A0%E7%9A%84%E5%8D%9A%E5%AE%A2%E6%94%AF%E6%8C%81%E4%BB%BF%E7%99%BE%E5%BA%A6%E5%85%A8%E6%96%87%E6%90%9C%E7%B4%A2/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>让你的博客支持仿百度全文搜索！</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 on x"
+            href="https://x.com/intent/tweet/?text=%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cJavaScript%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f&amp;title=%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a&amp;summary=%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f&title=%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 on telegram"
+            href="https://telegram.me/share/url?text=%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%b8%89%e5%b9%b4%e5%89%8d%e7%ab%af%e8%bf%9enpm%e5%8c%85%e9%83%bd%e4%b8%8d%e4%bc%9a%e5%bc%80%e5%8f%91%ef%bc%9f%e5%b8%a6%e4%bd%a0%e4%bb%8e%e9%9b%b6%e5%88%b0%e4%b8%80%e5%8f%91%e5%b8%83%e4%b8%80%e4%b8%aanpm%e5%8c%85%ef%bc%8c5%e5%88%86%e9%92%9f%e5%b0%b1%e8%83%bd%e5%ad%a6%e4%bc%9a&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2589%25E5%25B9%25B4%25E5%2589%258D%25E7%25AB%25AF%25E8%25BF%259Enpm%25E5%258C%2585%25E9%2583%25BD%25E4%25B8%258D%25E4%25BC%259A%25E5%25BC%2580%25E5%258F%2591%25E5%25B8%25A6%25E4%25BD%25A0%25E4%25BB%258E%25E9%259B%25B6%25E5%2588%25B0%25E4%25B8%2580%25E5%258F%2591%25E5%25B8%2583%25E4%25B8%2580%25E4%25B8%25AAnpm%25E5%258C%25855%25E5%2588%2586%25E9%2592%259F%25E5%25B0%25B1%25E8%2583%25BD%25E5%25AD%25A6%25E4%25BC%259A%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

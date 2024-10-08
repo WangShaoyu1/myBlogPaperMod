@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 | PaperMod</title>
+<meta name="keywords" content="运维, 安全">
+<meta name="description" content="2024年1.20凌晨睡了一觉，早上起来用termux远程ssh登录小主机发现密码没法登录了，一直显示密码错误，到了晚上用电脑ssh连接小主机，发现小主机真的没法登录了，直接把小主机接上屏幕查看，发现">
+<meta name="author" content="Sinvon">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/linuxssh%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E4%BA%BA%E4%BD%BF%E7%94%A8ssh%E5%AD%97%E5%85%B8%E7%88%86%E7%A0%B4/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/linuxssh%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E4%BA%BA%E4%BD%BF%E7%94%A8ssh%E5%AD%97%E5%85%B8%E7%88%86%E7%A0%B4/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破" />
+<meta property="og:description" content="2024年1.20凌晨睡了一觉，早上起来用termux远程ssh登录小主机发现密码没法登录了，一直显示密码错误，到了晚上用电脑ssh连接小主机，发现小主机真的没法登录了，直接把小主机接上屏幕查看，发现" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/linuxssh%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E4%BA%BA%E4%BD%BF%E7%94%A8ssh%E5%AD%97%E5%85%B8%E7%88%86%E7%A0%B4/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-06-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-06-29T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破"/>
+<meta name="twitter:description" content="2024年1.20凌晨睡了一觉，早上起来用termux远程ssh登录小主机发现密码没法登录了，一直显示密码错误，到了晚上用电脑ssh连接小主机，发现小主机真的没法登录了，直接把小主机接上屏幕查看，发现"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破",
+      "item": "http://localhost:1313/posts/juejin/linuxssh%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E4%BA%BA%E4%BD%BF%E7%94%A8ssh%E5%AD%97%E5%85%B8%E7%88%86%E7%A0%B4/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破",
+  "name": "【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破",
+  "description": "2024年1.20凌晨睡了一觉，早上起来用termux远程ssh登录小主机发现密码没法登录了，一直显示密码错误，到了晚上用电脑ssh连接小主机，发现小主机真的没法登录了，直接把小主机接上屏幕查看，发现",
+  "keywords": [
+    "运维", "安全"
+  ],
+  "articleBody": " 半年前的写的文章了，今天有了兴致发一下，记录一个运维小白服务器被攻击的经历。\n2024年1.20凌晨睡了一觉，早上起来用termux远程ssh登录小主机发现密码没法登录了，一直显示密码错误，到了晚上用电脑ssh连接小主机，发现小主机真的没法登录了，直接把小主机接上屏幕查看，发现密码被人修改了，系统都进不去，而且主机风扇一直呼呼转，估计是cpu使用率上来了，\n这下只能进到linux的安全模式进行密码修改了\n重启ubuntu，开机的时候同时按住shift+esc键进入安全模式\n选择ubuntu高级选项然后enter进入\n向下选择括号内有recovery mode的选项，然后按e进入编辑模式\n光标移动到前面单词为linux的那一行， 将那一行的ro recovery nomodeset 以及本行他后面的都删掉（比如图中的dis_ucode_ldr）\n改为quiet splash rw init=/bin/bash,改完如下\n按’F10’键,数秒后,进入界面如下:\r输入命令passwd 用户名 ,如下\nyaml\n代码解读\n复制代码\n这样的 ：passwd 用户名 ：密码 ：确认密码 这样就好了，不加的话你的执行步骤是对的但用户密码有可能还是原来的 --- 比如我用户名是 root，要修改的目标密码是123456。 输入passwd root 输入12345 确认输入12345\n然后输入命令保存重启\nbash\n代码解读\n复制代码\nreboot -f #此处只输入reboot是没用的，必须加-f\n重启之后就可以登录小主机了\n开机之后， 发现cpu一直居高不下， 开机几分钟cpu直顶99%\n但是top命令查看了一下进程，发现没有进程占用过高，表现十分正常\n使用netstat -napt命令查看tcp进程服务，发现一个可疑的IP地址\n查一下ip来源\nkill掉ntools进程之后第二次查看， 发现原来的可疑IP地址变了，但是用shodan查了一下还是香港的服务器\r使用shodan查询ip地址的方法：\nwww.shodan.io/\n使用sysdig查看隐藏进程\nr\n代码解读\n复制代码\nsysdig -c topprocs_cpu # 该命令可以输出cpu占用的排行，经测试可以显示出被隐藏的进程\nsysdig安装教程www.yundongfang.com/Yun6123.htm…\n安装sysdig排错教程：zhuanlan.zhihu.com/p/112788242\n使用sysdig查看到的隐藏进程 :\n有一个隐藏的进程占用率看起来十分离谱\n百度了一下这个工具, 果然是挖矿软件\n使用命令搜索隐藏进程的更多信息\nruby\n代码解读\n复制代码\nunhide proc # 自助搜索隐藏进程，linux系统中一切皆文件，proc目录下保存的就是所有正在运行程序的进程ID，即PID\n发现以下结果， 全都是这个tmp/ntools， 跟百度上的石锤了\n先把他kill掉看看，不过感觉是有定时任务的\n直接kill ！！！！\nkill掉了之后发现机子风扇变慢了， 但是过了一会又转了\n没错他又启动了！那么可以判断这一定是定时任务了!\n挖矿程序一般都设置了定时任务启动脚本程序，查看定时任务，crontab -l查看是找不到的。得看/etc/crontab文件，执行 cat /etc/crontab 。果然有任务在启动程序脚本 /var/log/oneav/cron.lock\n不过后来查了一下这个是宝塔面板的定时任务, 初步判断应该不是这个原因引起的\n查看ssh是否被暴力破解\nbash\n代码解读\n复制代码\nfind /var/log -name 'secure*' -type f | while read line;do awk '/Failed/{print $(NF-3)}' $line;done | awk '{a[$0]++}END{for (j in a) if(a[j] \u003e 20) print j\"=\"a[j]}' | sort -n -t'=' -k 2\n查看防火墙状态\nlua\n代码解读\n复制代码\nsudo ufw status\n发现防火墙是不活动的\n将防火墙开启\nbash\n代码解读\n复制代码\nsudo ufw enable sudo systemctl start ufw # 并且设置开机自启动 或者用sudo service ufw start\n同时修改防火墙配置，确保万无一失\nbash\n代码解读\n复制代码\nsudo vim /etc/ufw/ufw.conf\n将防火墙的enabled改为yes\n但是过了十秒钟左右配置文件中的ENABLED又被改成no了\n并且sudo ufw status查看防火墙状态也是未激活状态\n如下\n不管怎么改他都能将防火墙关闭\n于是我想到了一个方法：\n在修改防火墙之后直接将防火墙的配置文件/etc/ufw/ufw.conf修改权限为“只读”\n在修改防火墙的配置文件后随即修改权限为“只读”\nbash\n代码解读\n复制代码\nchmod 400 /etc/ufw/ufw.conf\n4（读权限）： 表示对文件或目录有读权限。 2（写权限）： 表示对文件或目录有写权限。 1（执行权限）： 对于文件，表示可以执行；对于目录，表示可以进入。 数字1（第一个数字）：所有者权限。\n数字2（第二个数字）：组权限。\n数字3（第三个数字）：其他用户权限。\n这样就可以有效阻止攻击者的程序修改防火墙的配置文件\n接着我们查看系统的日志\n代码解读\n复制代码\njournalctl -e\n一条一条日志进行检查\n通过查看日志发现有一个unix系统（也是linux）似乎在与我们的主机建立会话\n蓝色框内似乎是在执行一个命令行\n绿色框可以知道这个pam_unix尝试使用root用户与我们的主机建立会话但是被关闭了\n连续对比了几次日志,发现这个cmd命令输入很稳定的一分钟执行一次, 而且有一次是用名称为smmsp的user发送邮件测试, 邮件程序被放在了以下三个文件夹里面, 猜测攻击者做了备用的邮件发送系统, 并且做了软链接\n/etc/init.d/sendmail\n/usr/share/sendmail/sendmail\n/usr/libexec/sendmail/sendmail\n经百度发现这个邮件系统其实是linux自带的\n那么我们接着往下探\n想到攻击者想要访问我们的服务器进行命令行输入，那应该是用到了ssh进行远程登录的\n我们看一下ssh的日志， 查询ssh的日志\nbash\n代码解读\n复制代码\njournalctl -u ssh -e #参数-e是直接将日志输出全部到底\n好家伙，我们发现上面一台unix机器一直在尝试用不同的user登录我们的机子，而且每次使用的IP地址都是不一样的，猜测这位攻击者在使用字典进行ssh爆破攻击\n查了一下这些IP地址，都是国外的，联系到上面的几次可疑IP地址的归属地都不是大陆的，可以确定这就是攻击者使用梯子匿名攻击我们的服务器\n还好刚刚把防火墙立起来了而且加了只读权限,才重新把防火墙立起来，现在攻击者被拦截在外面无法通过ssh进行登录我们的机子\n查看系统邮件是否有对外订阅\nbash\n代码解读\n复制代码\ncat var/mail/root\n发现有几条可疑的邮件\n发现邮件通知了防火墙自动禁用的通知而且还有一个可疑的/bin/dtjbdjkw 1 1\n前面有个单词cron(定时任务的全称是crontab)那么初步猜测这东西可能跟定时任务有关，查看定时任务的配置文件，看到都是很常规的定时任务，那我们直接进入到系统的这四个定时任务的文件中去查看是否有可疑文件:\n/etc/cron.hourly\n/etc/cron.daily\n/etc/cron.weekly\n/etc/cron.monthly\n这四个文件夹就是系统专门存放定时任务的地方, 分别查看这四个文件夹内部的异样\n观察这几个定时任务的执行时间和 journalctl -e 日志中异常脚本的启动时间间隔是否相似可以进行判断 相关程度\n接着查看后发现，有一个定时任务的文件名字很可疑，使用ls -al可以看到创建时间就是1.20号凌晨的时候\n观察了三个定时任务目录后可以确认这个Wsqsg3Wo就是一个可疑文件, 我们直接rm -rf Wsqsg3Wo 将其删掉, 同时使用 kill -9 pid 结束掉ntools进程, 然后开启新的终端观察系统日志\n代码解读\n复制代码\njournalctl -e\n最终cpu不再处于高占用状态, 并且攻击者包ntools不再再生 但是还是能看到攻击者在不断地进行ssh字典爆破, 真是穷追不舍啊,\n又过了几天之后使用journalctl -e查看日志\n发现清除了定时任务后还有个自启动任务在以间隔一分钟的频率执行,但是因为我把它的脚本(定时任务)给移除了, 所以他每次执行的时候都找不到脚本, 就以执行失败告终\n那么我们现在cd 到自启动目录下查看这个日志中出现的 DJI2YwVz.service\nbash\n代码解读\n复制代码\ncd /lib/systemd/system/ cat DJI2YwVz.service\nDJI2YwVz.service 的内容如下\n这些配置的含义就是(由gpt进行解释)\n[Service] ：这个部分定义了服务的启动行为。\nType=simple：表示这是一个简单的服务类型，它意味着主进程由 ExecStart ****指定的命令启动，并且当该命令退出时，整个服务被视为失败。但由于 ****RemainAfterExit=yes，服务的状态将保持活动，即使 ExecStart ****的进程已经退出。 ExecStart=/bin/dtjbdJkw：这是启动服务时要运行的命令。这里指定了一个路径 /bin/dtjbdJkw，它应该是一个可执行文件。不过，这个文件名看起来有些不常见，可能是某个特定应用或脚本。 RemainAfterExit=yes：即使 ****ExecStart ****指定的进程退出，服务也将保持活动状态。这通常与 Type=oneshot 一起使用，但在这里与 Type=simple 一起使用有些不寻常。 Restart=always：如果服务退出（无论是由于失败还是正常退出），它总是会被重新启动。 RestartSec=60s：在尝试重新启动服务之前，系统会等待60秒。 ini\n代码解读\n复制代码\n[Install] WantedBy=multi-user.target\n[Install] ：这个部分提供了服务的安装信息。\nWantedBy=multi-user.target：表示当系统达到 multi-user.target 运行级别时，这个服务应该被启动。multi-user.target ****是一个标准的运行级别，表示系统已经准备好供多个用户登录和使用。 总的来说，这个服务单元文件定义了一个简单的服务，该服务依赖于网络，并在网络启动后运行 /bin/dtjbdJkw ****命令。如果命令退出，服务会尝试每隔60秒重新启动它。这个服务被配置为在系统达到多用户模式 (表示系统已经完成基本初始化，并且允许多个用户同时登录和访问系统资源) 时自动启动。\n现在我们使用locate定位这个服务的位置\n分别cd到这两个目录下去将这两个服务删除\nbash\n代码解读\n复制代码\nsudo rm DJI2YwVz.service\n查看系统自启动中的所有开启的服务\nini\n代码解读\n复制代码\nsystemctl list-unit-files --type=service | grep enabled\n我们发现了一个可疑的包, cat命令查看一下\n果然还是这个病毒的启动文件, 使用rm删除它\nbash\n代码解读\n复制代码\ncd /etc/systemd/system/ sudo rm DJI2YwVz.service systemctl status YaIjzjZB.service #再次查看是否删除成功\n成功删除, 至此, 机子已经处于安全稳定的状态了, 日志中也只有攻击者ssh登录失败的信息\n写一个python脚本来查看一下这七天内被可疑ip登录的ip信息和登陆次数(登录失败的),统计总共的攻击次数\n可以看到, 这是过滤掉了本机的IP地址以及内网 192.168 开头的IP地址后的统计结果,这七天时间,总共有100个左右的IP地址尝试通过ssh登录主机, 总共登录次数为15584次, 这些ip归属地分布世界各地, 猜测使用了ip池子进行伪装.\n曾经我以为互联网到至今应该是很和平的状态, 但是经历了这次ssh字典爆破攻击后我才意识到网络攻击无处不在, 建议系统密码使用比较复杂的随机字符组合,七八十位都没问题, 数据可贵, 电脑该装杀毒软件的就装上, 别因为那占用那点内存而舍弃杀毒软件, 防网络攻击于未然 !\n",
+  "wordCount" : "372",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-06-29T00:00:00Z",
+  "dateModified": "2024-06-29T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Sinvon"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/linuxssh%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E4%BA%BA%E4%BD%BF%E7%94%A8ssh%E5%AD%97%E5%85%B8%E7%88%86%E7%A0%B4/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破
+    </h1>
+    <div class="post-description">
+      2024年1.20凌晨睡了一觉，早上起来用termux远程ssh登录小主机发现密码没法登录了，一直显示密码错误，到了晚上用电脑ssh连接小主机，发现小主机真的没法登录了，直接把小主机接上屏幕查看，发现
+    </div>
+    <div class="post-meta"><span title='2024-06-29 00:00:00 +0000 UTC'>六月 29, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;Sinvon&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> 
+
+  <div class="post-content"><blockquote>
+<p>半年前的写的文章了，今天有了兴致发一下，记录一个运维小白服务器被攻击的经历。</p>
+</blockquote>
+<p>2024年1.20凌晨睡了一觉，早上起来用termux远程ssh登录小主机发现密码没法登录了，一直显示密码错误，到了晚上用电脑ssh连接小主机，发现小主机真的没法登录了，直接把小主机接上屏幕查看，发现密码被人修改了，系统都进不去，而且主机风扇一直呼呼转，估计是cpu使用率上来了，</p>
+<p>这下只能进到linux的安全模式进行密码修改了</p>
+<p>重启ubuntu，开机的时候同时按住<strong>shift+esc</strong>键进入安全模式</p>
+<p>选择ubuntu高级选项然后enter进入</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dd70e84e2d5c466ab160f0e6f69be256~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=905&amp;h=461&amp;s=15467&amp;e=png&amp;b=280018" alt=""  />
+</p>
+<p>向下选择括号内有recovery mode的选项，然后按e进入编辑模式</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d682ead07041484fac7c4cd2e2206210~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=964&amp;h=636&amp;s=123411&amp;e=png&amp;b=280018" alt=""  />
+</p>
+<p>光标移动到前面单词为linux的那一行， 将那一行的ro recovery nomodeset 以及本行他后面的都删掉（比如图中的dis_ucode_ldr）</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ee8fb99f943c4827ab62ef75ba2b5c09~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1280&amp;h=1706&amp;s=90080&amp;e=jpg&amp;b=29252b" alt=""  />
+</p>
+<p>改为quiet splash rw init=/bin/bash,改完如下</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ceb788bba80044d38a4d31de08c3be57~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=949&amp;h=620&amp;s=158747&amp;e=png&amp;b=280018" alt=""  />
+</p>
+<p>按&rsquo;F10&rsquo;键,数秒后,进入界面如下:<img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d4079bf1128c4e59a9d5b1a6c87c5639~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1191&amp;h=446&amp;s=127193&amp;e=png&amp;b=010101" alt=""  />
+</p>
+<p>输入命令passwd 用户名 ,如下</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>这样的 ：passwd 用户名 ：密码 ：确认密码 这样就好了，不加的话你的执行步骤是对的但用户密码有可能还是原来的 --- 比如我用户名是 root，要修改的目标密码是123456。 输入passwd root 输入12345 确认输入12345</code></p>
+<p>然后输入命令保存重启</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>reboot -f #此处只输入reboot是没用的，必须加-f</code></p>
+<p>重启之后就可以登录小主机了</p>
+<hr>
+<p>开机之后， 发现cpu一直居高不下， 开机几分钟cpu直顶99%</p>
+<p>但是top命令查看了一下进程，发现没有进程占用过高，表现十分正常</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9749ffd7fcb4461ca6e8bbe91639e214~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1584&amp;h=1130&amp;s=1553818&amp;e=png&amp;b=2e5166" alt=""  />
+</p>
+<p>使用netstat -napt命令查看tcp进程服务，发现一个可疑的IP地址</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/568466da429c4ec1844bca79090449fd~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1085&amp;h=1172&amp;s=1068701&amp;e=png&amp;b=1a2f3f" alt=""  />
+</p>
+<p>查一下ip来源</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21f19e3bd8c14904b8ccaec13ba705e5~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1312&amp;h=969&amp;s=269527&amp;e=png&amp;b=fdfdfd" alt=""  />
+</p>
+<p>kill掉ntools进程之后第二次查看， 发现原来的可疑IP地址变了，但是用shodan查了一下还是香港的服务器<img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f4bea23535340d2ad7994a024b5d07e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1267&amp;h=814&amp;s=870273&amp;e=png&amp;b=2f5368" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a454f55fdcdd45e981e71abc9abcb60a~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1596&amp;h=1221&amp;s=301312&amp;e=png&amp;b=fdfdfd" alt=""  />
+</p>
+<p>使用shodan查询ip地址的方法：</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.shodan.io%2F" title="https://www.shodan.io/">www.shodan.io/</a></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c23338ad9a2740c8be4e9dc957f830d0~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1691&amp;h=387&amp;s=212023&amp;e=png&amp;b=191919" alt=""  />
+</p>
+<p>使用sysdig查看隐藏进程</p>
+<p>r</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>sysdig -c topprocs_cpu # 该命令可以输出cpu占用的排行，经测试可以显示出被隐藏的进程</code></p>
+<p>sysdig安装教程<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.yundongfang.com%2FYun6123.html" title="https://www.yundongfang.com/Yun6123.html">www.yundongfang.com/Yun6123.htm…</a></p>
+<p>安装sysdig排错教程：<a href="https://link.juejin.cn?target=https%3A%2F%2Fzhuanlan.zhihu.com%2Fp%2F112788242" title="https://zhuanlan.zhihu.com/p/112788242">zhuanlan.zhihu.com/p/112788242</a></p>
+<p>使用sysdig查看到的隐藏进程 :</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f7dcc2e779b44afbbdd1ce9cc54b5dd3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=855&amp;h=439&amp;s=269804&amp;e=png&amp;b=2e5166" alt=""  />
+</p>
+<p>有一个隐藏的进程占用率看起来十分离谱</p>
+<p>百度了一下这个工具, 果然是挖矿软件</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7a9f5edb77bb43a98c9fcfbe7c643481~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=684&amp;h=617&amp;s=138602&amp;e=png&amp;b=fdfcfc" alt=""  />
+</p>
+<p>使用命令搜索隐藏进程的更多信息</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>unhide proc # 自助搜索隐藏进程，linux系统中一切皆文件，proc目录下保存的就是所有正在运行程序的进程ID，即PID</code></p>
+<p>发现以下结果， 全都是这个tmp/ntools， 跟百度上的石锤了</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/50e8bc9226af48c4aec7a8206a6493a3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1105&amp;h=1151&amp;s=1185800&amp;e=png&amp;b=2f5368" alt=""  />
+</p>
+<p>先把他kill掉看看，不过感觉是有定时任务的</p>
+<p>直接kill ！！！！</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/58728408f4074eb5aa8ccfb9d7a32e6c~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=859&amp;h=219&amp;s=185376&amp;e=png&amp;b=2c4f63" alt=""  />
+</p>
+<p>kill掉了之后发现机子风扇变慢了， 但是过了一会又转了</p>
+<p>没错他又启动了！那么可以判断这一定是定时任务了!</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d7d5b174420c409790327d1175bbeae3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=719&amp;h=385&amp;s=217141&amp;e=png&amp;b=2e5166" alt=""  />
+</p>
+<p>挖矿程序一般都设置了定时任务启动脚本程序，查看定时任务，crontab -l查看是找不到的。得看/etc/crontab文件，执行 cat /etc/crontab 。果然有任务在启动程序脚本 /var/log/oneav/cron.lock</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/aed55541ea274e2889b3de219ac9a04f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1457&amp;h=712&amp;s=945152&amp;e=png&amp;b=2d5064" alt=""  />
+</p>
+<p>不过后来查了一下这个是宝塔面板的定时任务, 初步判断应该不是这个原因引起的</p>
+<hr>
+<p>查看ssh是否被暴力破解</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>find /var/log -name 'secure*' -type f | while read line;do awk '/Failed/{print $(NF-3)}' $line;done | awk '{a[$0]++}END{for (j in a) if(a[j] &gt; 20) print j&quot;=&quot;a[j]}' | sort -n -t'=' -k 2</code></p>
+<hr>
+<p>查看防火墙状态</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>sudo ufw status</code></p>
+<p>发现防火墙是不活动的</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f5f5a9db5fb341528bb96a9eb28fd9db~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=756&amp;h=122&amp;s=37129&amp;e=png&amp;b=36383f" alt=""  />
+</p>
+<p>将防火墙开启</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>sudo ufw enable sudo systemctl start ufw # 并且设置开机自启动 或者用sudo service ufw start</code></p>
+<p>同时修改防火墙配置，确保万无一失</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>sudo vim /etc/ufw/ufw.conf</code></p>
+<p>将防火墙的enabled改为yes</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cb0036ba78b747fcb1cb891e43b8065d~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=569&amp;h=247&amp;s=147548&amp;e=png&amp;b=2c4e62" alt=""  />
+</p>
+<p>但是过了十秒钟左右配置文件中的ENABLED又被改成no了</p>
+<p>并且sudo ufw status查看防火墙状态也是未激活状态</p>
+<p>如下</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f525dd95a76742c5962ccc28895638d0~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=756&amp;h=122&amp;s=37129&amp;e=png&amp;b=36383f" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b299c54d01784ef69cee373f8f9f945b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1378&amp;h=494&amp;s=168136&amp;e=png&amp;b=35373e" alt=""  />
+</p>
+<p>不管怎么改他都能将防火墙关闭</p>
+<p>于是我想到了一个方法：</p>
+<p>在修改防火墙之后直接将防火墙的配置文件/etc/ufw/ufw.conf修改权限为“只读”</p>
+<p>在修改防火墙的配置文件后随即修改权限为“只读”</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>chmod 400 /etc/ufw/ufw.conf</code></p>
+<ul>
+<li><strong>4（读权限）：</strong> 表示对文件或目录有读权限。</li>
+<li><strong>2（写权限）：</strong> 表示对文件或目录有写权限。</li>
+<li><strong>1（执行权限）：</strong> 对于文件，表示可以执行；对于目录，表示可以进入。</li>
+</ul>
+<p><strong>数字1（第一个数字）：所有者权限。</strong></p>
+<p><strong>数字2（第二个数字）：组权限。</strong></p>
+<p><strong>数字3（第三个数字）：其他用户权限。</strong></p>
+<hr>
+<p>这样就可以有效阻止攻击者的程序修改防火墙的配置文件</p>
+<p>接着我们查看系统的日志</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>journalctl -e</code></p>
+<p>一条一条日志进行检查</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b10f323efb754a82852a967b2807d4a8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1844&amp;h=1037&amp;s=2081956&amp;e=png&amp;b=1a2e3d" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3f7b281e7aea48c8965830bbf5621506~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1835&amp;h=316&amp;s=655537&amp;e=png&amp;b=2e5165" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d777f87153af48f08b5512c25a6803ba~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1492&amp;h=289&amp;s=466998&amp;e=png&amp;b=2d5064" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a2af2ba9f2242eda07c57b42d18b0a3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1545&amp;h=160&amp;s=275992&amp;e=png&amp;b=2f5368" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3459f1a2f9d54c249bed09df4ba06ddc~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1654&amp;h=205&amp;s=354702&amp;e=png&amp;b=1b3142" alt=""  />
+</p>
+<p>通过查看日志发现有一个unix系统（也是linux）似乎在与我们的主机建立会话</p>
+<p>蓝色框内似乎是在执行一个命令行</p>
+<p>绿色框可以知道这个pam_unix尝试使用root用户与我们的主机建立会话但是被关闭了</p>
+<p><strong>连续对比了几次日志,发现这个cmd命令输入很稳定的一分钟执行一次, 而且有一次是用名称为smmsp的user发送邮件测试, 邮件程序被放在了以下三个文件夹里面, 猜测攻击者做了备用的邮件发送系统, 并且做了软链接</strong></p>
+<p><strong>/etc/init.d/sendmail</strong></p>
+<p><strong>/usr/share/sendmail/sendmail</strong></p>
+<p><strong>/usr/libexec/sendmail/sendmail</strong></p>
+<p><strong>经百度发现这个邮件系统其实是linux自带的</strong></p>
+<hr>
+<p>那么我们接着往下探</p>
+<p>想到攻击者想要访问我们的服务器进行命令行输入，那应该是用到了ssh进行远程登录的</p>
+<p>我们看一下ssh的日志， 查询ssh的日志</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>journalctl -u ssh -e #参数-e是直接将日志输出全部到底</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/822cc0b7587147f7b777c3484863c4fa~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1885&amp;h=1090&amp;s=2156806&amp;e=png&amp;b=1a2e3e" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4751f6355f6846fbb789d8540087e7a8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1180&amp;h=90&amp;s=51903&amp;e=png&amp;b=35373e" alt=""  />
+</p>
+<p>好家伙，我们发现上面一台unix机器一直在尝试用不同的user登录我们的机子，而且每次使用的IP地址都是不一样的，猜测这位攻击者在使用字典进行ssh爆破攻击</p>
+<p>查了一下这些IP地址，都是国外的，联系到上面的几次可疑IP地址的归属地都不是大陆的，可以确定这就是攻击者使用梯子匿名攻击我们的服务器</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e0472b2416d047718e428b29438c3a97~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1056&amp;h=411&amp;s=56985&amp;e=png&amp;b=ffffff" alt=""  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b48894e2c72b44eeafe85fdb6838d03c~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1134&amp;h=387&amp;s=59079&amp;e=png&amp;b=fefefe" alt=""  />
+</p>
+<p>还好刚刚把防火墙立起来了而且加了只读权限,才重新把防火墙立起来，现在攻击者被拦截在外面无法通过ssh进行登录我们的机子</p>
+<hr>
+<p>查看系统邮件是否有对外订阅</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cat var/mail/root</code></p>
+<p>发现有几条可疑的邮件</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ea552bae06af4d349e8f783b9f782a9e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1180&amp;h=760&amp;s=952069&amp;e=png&amp;b=1c3344" alt=""  />
+</p>
+<p>发现邮件通知了防火墙自动禁用的通知而且还有一个可疑的/bin/dtjbdjkw 1 1</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7bd51e9f0e5b403b9eb0f67162cbc72f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1101&amp;h=614&amp;s=735905&amp;e=png&amp;b=2f5267" alt=""  />
+</p>
+<p>前面有个单词cron(定时任务的全称是crontab)那么初步猜测这东西可能跟定时任务有关，查看定时任务的配置文件，看到都是很常规的定时任务，那我们直接进入到系统的这四个定时任务的文件中去查看是否有可疑文件:</p>
+<p>/etc/cron.hourly</p>
+<p>/etc/cron.daily</p>
+<p>/etc/cron.weekly</p>
+<p>/etc/cron.monthly</p>
+<p>这四个文件夹就是系统专门存放定时任务的地方, 分别查看这四个文件夹内部的异样</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3f88d26655f24e14bc5ec7e1629abb61~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1295&amp;h=142&amp;s=104022&amp;e=png&amp;b=36383f" alt=""  />
+</p>
+<p>观察这几个定时任务的执行时间和 <strong>journalctl -e 日志中异常脚本的启动时间间隔是否相似可以进行判断 相关程度</strong></p>
+<p>接着查看后发现，有一个定时任务的文件名字很可疑，使用ls -al可以看到创建时间就是1.20号凌晨的时候</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/13edefb357ad4416b69ada3960886285~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1018&amp;h=132&amp;s=72389&amp;e=png&amp;b=33353c" alt=""  />
+</p>
+<p>观察了三个定时任务目录后可以确认这个<strong>Wsqsg3Wo</strong>就是一个可疑文件, 我们直接<strong>rm -rf Wsqsg3Wo</strong> 将其删掉, 同时使用 <strong>kill -9 pid</strong> 结束掉ntools进程, 然后开启新的终端观察系统日志</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>journalctl -e</code></p>
+<p>最终cpu不再处于高占用状态, 并且攻击者包ntools不再再生 但是还是能看到攻击者在不断地进行ssh字典爆破, 真是穷追不舍啊,</p>
+<p>又过了几天之后使用<strong>journalctl -e</strong>查看日志</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/411478525d864a869a8a9859c33c4af2~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1827&amp;h=1230&amp;s=275645&amp;e=png&amp;b=000000" alt=""  />
+</p>
+<p>发现清除了定时任务后还有个自启动任务在以间隔一分钟的频率执行,但是因为我把它的脚本(定时任务)给移除了, 所以他每次执行的时候都找不到脚本, 就以执行失败告终</p>
+<p>那么我们现在cd 到自启动目录下查看这个日志中出现的 <strong>DJI2YwVz.service</strong></p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cd /lib/systemd/system/ cat DJI2YwVz.service</code></p>
+<p><strong>DJI2YwVz.service</strong> 的内容如下</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ca5c3444c8aa4f679645c2834bf2a095~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=656&amp;h=399&amp;s=25527&amp;e=png&amp;b=000000" alt=""  />
+</p>
+<p>这些配置的含义就是(由gpt进行解释)</p>
+<ul>
+<li>
+<p><strong>[Service]</strong> ：这个部分定义了服务的启动行为。</p>
+</li>
+<li>
+<ul>
+<li><strong>Type=simple</strong>：表示这是一个简单的服务类型，它意味着主进程由 <strong>ExecStart</strong> ****指定的命令启动，并且当该命令退出时，整个服务被视为失败。但由于 ****<strong>RemainAfterExit=yes</strong>，服务的状态将保持活动，即使 <strong>ExecStart</strong> ****的进程已经退出。</li>
+<li><strong>ExecStart=/bin/dtjbdJkw</strong>：这是启动服务时要运行的命令。这里指定了一个路径 <strong>/bin/dtjbdJkw</strong>，它应该是一个可执行文件。不过，这个文件名看起来有些不常见，可能是某个特定应用或脚本。</li>
+<li><strong>RemainAfterExit=yes</strong>：即使 ****<strong>ExecStart</strong> ****指定的进程退出，服务也将保持活动状态。这通常与 <strong>Type=oneshot</strong> 一起使用，但在这里与 Type=simple 一起使用有些不寻常。</li>
+<li><strong>Restart=always</strong>：如果服务退出（无论是由于失败还是正常退出），它总是会被重新启动。</li>
+<li><strong>RestartSec=60s</strong>：在尝试重新启动服务之前，系统会等待60秒。</li>
+</ul>
+</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[Install]   WantedBy=multi-user.target</code></p>
+<ul>
+<li>
+<p><strong>[Install]</strong> ：这个部分提供了服务的安装信息。</p>
+</li>
+<li>
+<ul>
+<li><strong>WantedBy=multi-user.target</strong>：表示当系统达到 <strong>multi-user.target</strong> 运行级别时，这个服务应该被启动。<strong>multi-user.target</strong> ****是一个标准的运行级别，表示系统已经准备好供多个用户登录和使用。</li>
+</ul>
+</li>
+</ul>
+<p>总的来说，这个服务单元文件定义了一个简单的服务，该服务依赖于网络，并在网络启动后运行 <strong>/bin/dtjbdJkw</strong> ****命令。如果命令退出，服务会尝试每隔60秒重新启动它。这个服务被配置为在系统达到多用户模式 <strong>(表示系统已经完成基本初始化，并且允许多个用户同时登录和访问系统资源)</strong> 时自动启动。</p>
+<p>现在我们使用locate定位这个服务的位置</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3a0577c018a34a4a8c79123a9bc60403~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=804&amp;h=125&amp;s=15046&amp;e=png&amp;b=000000" alt=""  />
+</p>
+<p>分别cd到这两个目录下去将这两个服务删除</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>sudo rm DJI2YwVz.service</code></p>
+<p><strong>查看系统自启动中的所有开启的服务</strong></p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>systemctl list-unit-files --type=service | grep enabled</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/37fececcfec74070a54e5d1cc3ecf1ef~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1004&amp;h=665&amp;s=75608&amp;e=png&amp;b=000000" alt=""  />
+</p>
+<p>我们发现了一个可疑的包, cat命令查看一下</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2573f0b4063c45c3a33f90f584f40d04~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=876&amp;h=411&amp;s=28417&amp;e=png&amp;b=000000" alt=""  />
+</p>
+<p>果然还是这个病毒的启动文件, 使用rm删除它</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cd /etc/systemd/system/ sudo rm DJI2YwVz.service systemctl status YaIjzjZB.service #再次查看是否删除成功</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4bbf9de595544beaad52dcdfb93c3307~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=836&amp;h=76&amp;s=10132&amp;e=png&amp;b=000000" alt=""  />
+</p>
+<p>成功删除, 至此, 机子已经处于安全稳定的状态了, 日志中也只有攻击者ssh登录失败的信息</p>
+<p>写一个python脚本来查看一下这七天内被可疑ip登录的ip信息和登陆次数(登录失败的),统计总共的攻击次数</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6f784b462eb0422fae2822d2fd1e263b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2229&amp;h=1341&amp;s=288877&amp;e=png&amp;b=272b33" alt=""  />
+</p>
+<p>可以看到, 这是过滤掉了本机的IP地址以及内网 192.168 开头的IP地址后的统计结果,这七天时间,总共有<strong>100个</strong>左右的IP地址尝试通过ssh登录主机, 总共登录次数为<strong>15584次,</strong> 这些ip归属地分布世界各地, 猜测使用了ip池子进行伪装.</p>
+<p><strong>曾经我以为互联网到至今应该是很和平的状态, 但是经历了这次ssh字典爆破攻击后我才意识到网络攻击无处不在, 建议系统密码使用比较复杂的随机字符组合,七八十位都没问题, 数据可贵, 电脑该装杀毒软件的就装上, 别因为那占用那点内存而舍弃杀毒软件, 防网络攻击于未然 !</strong></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E8%BF%90%E7%BB%B4/">运维</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%AE%89%E5%85%A8/">安全</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8E%E6%88%91%E5%81%9A%E5%89%AF%E4%B8%9A%E7%9A%84%E4%B8%80%E7%82%B9%E5%BF%83%E8%B7%AF%E5%8E%86%E7%A8%8B/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>关于我做副业的一点心路历程</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%98%AF%E7%9A%84%E5%A4%B1%E4%B8%9A%E5%BF%AB%E4%B8%80%E4%B8%AA%E6%9C%88%E4%BA%86/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>是的，失业快一个月了</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 on x"
+            href="https://x.com/intent/tweet/?text=%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f&amp;hashtags=%e8%bf%90%e7%bb%b4%2c%e5%ae%89%e5%85%a8">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f&amp;title=%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4&amp;summary=%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f&title=%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 on telegram"
+            href="https://telegram.me/share/url?text=%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【Linux、SSH】记录一次Linux服务器被人使用SSH字典爆破 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e3%80%90Linux%e3%80%81SSH%e3%80%91%e8%ae%b0%e5%bd%95%e4%b8%80%e6%ac%a1Linux%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e4%ba%ba%e4%bd%bf%e7%94%a8SSH%e5%ad%97%e5%85%b8%e7%88%86%e7%a0%b4&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinuxssh%25E8%25AE%25B0%25E5%25BD%2595%25E4%25B8%2580%25E6%25AC%25A1linux%25E6%259C%258D%25E5%258A%25A1%25E5%2599%25A8%25E8%25A2%25AB%25E4%25BA%25BA%25E4%25BD%25BF%25E7%2594%25A8ssh%25E5%25AD%2597%25E5%2585%25B8%25E7%2588%2586%25E7%25A0%25B4%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

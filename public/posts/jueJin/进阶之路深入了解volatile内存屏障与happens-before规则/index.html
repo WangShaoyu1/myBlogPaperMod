@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>【进阶之路】深入了解volatile、内存屏障与happens-before规则 | PaperMod</title>
+<meta name="keywords" content="Java">
+<meta name="description" content="大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。volatile关键字在Java中的作用是保证变量的可见性和防止指令重排。线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache…">
+<meta name="author" content="南橘ryc">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="【进阶之路】深入了解volatile、内存屏障与happens-before规则" />
+<meta property="og:description" content="大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。volatile关键字在Java中的作用是保证变量的可见性和防止指令重排。线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-10-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-10-26T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="【进阶之路】深入了解volatile、内存屏障与happens-before规则"/>
+<meta name="twitter:description" content="大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。volatile关键字在Java中的作用是保证变量的可见性和防止指令重排。线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "【进阶之路】深入了解volatile、内存屏障与happens-before规则",
+      "item": "http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【进阶之路】深入了解volatile、内存屏障与happens-before规则",
+  "name": "【进阶之路】深入了解volatile、内存屏障与happens-before规则",
+  "description": "大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。volatile关键字在Java中的作用是保证变量的可见性和防止指令重排。线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache…",
+  "keywords": [
+    "Java"
+  ],
+  "articleBody": " 大家好，我是练习java两年半时间的南橘，从一名连java有几种数据结构都不懂超级小白，到现在懂了一点点的进阶小白，学到了不少的东西。知识越分享越值钱，我这段时间总结（包括从别的大佬那边学习，引用）了一些平常学习和工作中的重点（自我认为），希望给大家带来一些帮助\n这是之前的三篇关于JVM的文章，没看过的同学可以一起看一下\n攻克JVM——JVM对象及对象的访问定位（一） 攻克JVM——JVM的垃圾回收机制（二） 攻克JVM——JVM的垃圾收集器（三） 有需要的同学可以加我的公众号，以后的最新的文章第一时间都在里面，也可以找我要思维导图 大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。 volatile关键字在 Java 中的作用是保证变量的可见性和防止指令重排。\n一、保证变量的可见性 在知道volatile是如何保证变量的可见性之前，我们先要知道内存不可见的两个原因：\n1、CPU的运行速度是远远高于内存的读写速度的，为了不让CPU等待读写内存数据，现代CPU和内存之间都存在一个高速缓存cache（实际上是一个多级寄存器），如下图：\n线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache中，其实就是访问自己的内部cache。如果线程B把数据加载进内部缓存cache中，线程A再修改了数据。即使重新写入主内存，但是线程B不会重新从主内存加载变量，看到的还是自己cache中的变量，所以线程B是读取不到线程A更新后的值。\n在多处理器下，为了保证各个处理器的缓存是一致的，就会实现缓存一致性协议，每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里。volatile变量通过这样的机制就使得每个线程都能获得该变量的最新值。 但是，我们也都知道volatile只能保证可见性，不能保证原子性。多个线程同时读取这个共享变量的值，就算保证其他线程修改的可见性，也不能保证线程之间读取到同样的值然后相互覆盖对方的值的情况。\n二、防止指令重排 我们再来看指令重排。\n1、定义 指令重排是指在程序执行过程中, 为了性能考虑, 编译器和CPU可能会对指令重新排序。\n介绍指令重排之前，首先介绍一下内存交互操作的8种指令吧。虚拟机实现必须保证每一个操作都是原子的，不可再分的（对于double和long类型的变量来说，load、store、read和write操作在某些平台上允许例外）\n指令\n内容\nlock （锁定）\n作用于主内存的变量，把一个变量标识为线程独占状态\nread （读取）\n作用于主内存变量，它把一个变量的值从主内存传输到线程的工作内存中，以便随后的load动作使用\nload （载入）\n作用于工作内存的变量，它把read操作从主存中得到变量放入工作内存的变量副本中\nuse （使用）\n作用于工作内存中的变量，它把工作内存中的变量传输给执行引擎，每当虚拟机遇到一个需要使用到变量的值的字节码指令时将会执行这个操作\nassign （赋值）\n作用于工作内存中的变量，它把一个从执行引擎中接受到的值赋值给工作内存的变量副本中，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作\nstore （存储）\n作用于工作内存中的变量，它把一个从工作内存中一个变量的值传送到主内存中，以便后续的write使用\nwrite （写入）\n作用于主内存中的变量，它把store操作从工作内存中得到的变量的值放入主内存的变量中\nunlock （解锁）\n作用于主内存的变量，它把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定\n如图所示：\n既然操作可以被分解为很多步骤, 那么多条操作指令就不一定依次序执行，因为每次只执行一条指令, 依次执行效率太低了。就像小时候学习的煮饭烧水任务时间分配一样，内存也会很聪明的分配时间。\n本来想给大家整一个指令重排序的例子的，但是不管是我自己写还是用别人的代码，我的电脑都没办法让它重排序。但是我们都知道，指令重排是确实存在的（CPU确实会进行重排序，但是这种重排序是无法被我们观测到和控制的）。\n一般重排序可以分为如下三种： 1、编译器优化的重排序。编译器在不改变单线程程序语义的前提下，可以重新安排语句的执行顺序； 2、指令级并行的重排序。现代处理器采用了指令级并行技术来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序； 3、内存系统的重排序。由于处理器使用缓存和读/写缓冲区，这使得加载和存储操作看上去可能是在乱序执行的。 2、原理 我们来看加了volatile前后的代码,用的就是阿里规约提供给我们的双重检查锁的代码。我们分别编译了两次，第一个是没有使用volatile关键字修饰的，第二个是使用volatile关键字来修饰，然后取出他们的的汇编代码（实在是设计的地方太底层，其实这里算是用到了策略模式了）\n未使用volatile修饰\nperl\n代码解读\n复制代码\n0x000000010d29e93b: mov %rax,%r10 0x000000010d29e93e: shr $0x3,%r10 0x000000010d29e942: mov %r10d,0x68(%rsi) 0x000000010d29e946: shr $0x9,%rsi 0x000000010d29e94a: movabs $0xfe403000,%rax 0x000000010d29e954: movb $0x0,(%rsi,%rax,1)\n使用volatile修饰\nperl\n代码解读\n复制代码\n0x0000000114353959: mov %rax,%r10 0x000000011435395c: shr $0x3,%r10 0x0000000114353960: mov %r10d,0x68(%rsi) 0x0000000114353964: shr $0x9,%rsi 0x0000000114353968: movabs $0x10db6e000,%rax 0x0000000114353972: movb $0x0,(%rsi,%rax,1) 0x0000000114353976: lock addl $0x0,(%rsp)\n很明显，在movb操作后，加了volatile修饰的汇编代码后面多了一条汇编指令lock addl $0x0,(%rsp)，这个操作相当于一个内存屏障，指令重排时不能把后面的指令重排序到内存屏障之前的位置。lock前缀会强制执行原子操作，它的作用是是的本CPU的cache写入了内存，该写入动作会引起别的CPU无效化其cache。所以通过这样一个空操作，可让前面volatile变量的便是对其他CPU可见。\n从硬件架构上讲，指令重排序是指CPU将多条指令不按程序规定的顺序分开发送给各相应的点，但并不是指令任意重排，CPU需要能正确处理指令，以保障程序能得出正确的执行结果。lock addl $0x0,(%rsp) 指令把修改同步到内存时，意味着所有值钱的操作都已经执行完成，这样便形成了指令重排序无法越过内存屏障的效果。\n三、内存屏障 既然指令重排和可见性都依赖了lock，同时lock指令引出了内存屏障，我们就来学习一下什么是内存屏障。\n1、定义 内存屏障：保证屏障前的读写指令必须在屏障后的读写指令之前执行，通知被Volatile修饰的值，每次读取都从主存中读取，每次写入都同步写入主存。\n内存屏障具体又分为写屏障和读屏障 写屏障（Store Memory Barrier）：强制将缓存中的内容写入到缓存中或者将该指令之后的写操作写入缓存直到之前的内容被刷入到缓存中，也被称之为smp_wmb 读屏障（Load Memory Barrier）：强制将无效队列（volatile写操作之后失其作废）中的内容处理完毕，也被称之为smp_rmb\n屏障类型\n指令示例\n说明\nLoadLoadBarriers\nLoad1;LoadLoad;Load2\n该屏障确保Load1数据的装载先于Load2及其后所有装载指令的的操作\nStoreStoreBarriers\nStore1;StoreStore;Store2\n该屏障确保Store1立刻刷新数据到内存(使其对其他处理器可见)的操作先于Store2及其后所有存储指令的操作\nLoadStoreBarriers\nLoad1;LoadStore;Store2\n确保Load1的数据装载先于Store2及其后所有的存储指令刷新数据到内存的操作\nStoreLoadBarriers\nStore1;StoreLoad;Load1\n该屏障确保Store1立刻刷新数据到内存的操作先于Load2及其后所有装载装载指令的操作.它会使该屏障之前的所有内存访问指令(存储指令和访问指令)完成之后,才执行该屏障之后的内存访问指令\n2、原理 内存屏障在Java中的体现：\n1、volatile读之后，所有变量读写操作都不会重排序到其前面。 2、volatile读之前，所有volatile读写操作都已完成。 3、volatile写之后，volatile变量读写操作都不会重排序到其前面。 4、volatile写之前，所有变量的读写操作都已完成。 根据JMM规则，结合内存屏障的相关分析得出以下结论：\n1、在每一个volatile写操作前面插入一个StoreStore屏障。这确保了在进行volatile写之前前面的所有普通的写操作都已经刷新到了内存。 2、在每一个volatile写操作后面插入一个StoreLoad屏障。这样可以避免volatile写操作与后面可能存在的volatile读写操作发生重排序。 3、在每一个volatile读操作后面插入一个LoadLoad屏障。这样可以避免volatile读操作和后面普通的读操作进行重排序。 4、在每一个volatile读操作后面插入一个LoadStore屏障。这样可以避免volatile读操作和后面普通的写操作进行重排序。 如下图所示：\n3、as-if-serial语义 但是用了volatile关键字，程序的运行速度必然会受到影响，那么除了volatile关键字以外什么时候不会发生重排序呢？这里就要引入as-if-serial语义。\nas-if-serial语义的意思是：不管怎么重排序（编译器和处理器为了提供并行度），（单线程）程序的执行结果不能被改变。\n如果两个操作访问同一个变量，且这两个操作有一个为写操作，此时这两个操作就存在数据依赖性这里就存在三种情况：1. 读后写；2.写后写；3. 写后读，者三种操作都是存在数据依赖性的。如果重排序会对最终执行结果会存在影响，编译器和处理器在重排序时，会遵守数据依赖性，编译器和处理器不会改变存在数据依赖性关系的两个操作的执行顺序。\nini\n代码解读\n复制代码\nint a=1; int b=2; int c =a+b;\nas-if-serial语义把单线程程序保护了起来，遵守as-if-serial语义的编译器，runtime和处理器共同为编写单线程程序的程序员创建了一个幻觉：单线程程序是按程序的顺序来执行的。比如上面计算的代码，在单线程中，会让人感觉代码是一行一行顺序执行上，实际上a,b两行不存在数据依赖性可能会进行重排序，即a，b不是顺序执行的。as-if-serial语义使程序员不必担心单线程中重排序的问题干扰他们，也无需担心内存可见性问题。\n说到底，as-if-serial语义不过是一种最基础的架构定义,可以类比地球上氧气的比例约为21%。\n重排序可以分为两类：\n会改变程序执行结果的重排序。\n不会改变程序执行结果的重排序。\nJMM对这两种不同性质的重排序，采取了不同的策略。\n对于会改变程序执行结果的重排序，JMM要求编译器和处理器必须禁止这种重排序。 对于不会改变程序执行结果的重排序，JMM对编译器和处理器不做要求（JMM允许进行优化重排序） volatile就是通过对内存语义的封装实现了对volatile关键字读写时的顺序和可见。保证了我们所谓的多线程下的可见性，但是还是没办法保证多线程下修改数据的同步，因为同步除了有序和可见还需要满足原子性。\n四、happens-before规则 在Java内存模型中，如果要确保有序性可以靠volatile和synchronized来实现，但是如果所有的有序性都仅仅依靠这两个关键字来完成，那么有一些操作将会变得很繁琐，但是我们在编写Java代码的时候并没有感觉到这一点，这是因为Java语言中有一个“先行发生(happens-before)”的原则。那么happens-before到底是什么呢？\nhappens-before的概念最初由Leslie Lamport在其一篇影响深远的论文（《Time，Clocks and the Ordering of Events in a Distributed System》）中提出。JSR-133（即JavaTM内存模型与线程规范,由JSR-133专家组开发）使用happens-before的概念来指定两个操作之间的执行顺序。\n1、定义 happens-before表示的是前一个操作的结果对于后续操作是可见的，它是一种表达多个线程之间对于内存的可见性。所以我们可以认为在JMM中，如果一个操作执行的结果需要对另一个操作可见，那么这两个操作必须要存在happens-before关系。\n具体的定义为：\n1、如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。\n2、两个操作之间存在happens-before关系，并不意味着Java平台的具体实现必须要按照happens-before关系指定的顺序来执行。如果重排序之后的执行结果，与按happens-before关系来执行的结果一致，那么这种重排序并不非法（也就是说，JMM允许这种重排序）。\n2、happens-before的8条规则 8条规则定义：\n1、程序顺序规则：一个线程中的每个操作，happens-before于该线程中的任意后续操作。（在一个线程内一段代码的执行结果是有序的） 3、监视器锁规则：对一个锁的解锁，happens-before于随后对这个锁的加锁。(先加锁后解锁) 3、volatile变量规则：对于volatile修饰的变量的写的操作，一定happen-before后续对于volatile变量的读操作。(读写不会重排序，写操作的结果一定对读的这个线程可见) 4、传递性：如果A happens-before B，且B happens-before C，那么A happens-before C。 5、start()规则：如果线程A执行操作ThreadB.start()（启动线程B），那么A线程的ThreadB.start()操作happens-before于线程B中的任意操作。 6、Join()规则：如果线程A执行操作ThreadB.join()并成功返回，那么线程B中的任意操作happens-before于线程A从ThreadB.join()操作成功返回。 7、程序中断规则：对线程interrupted()方法的调用先行于被中断线程的代码检测到中断时间的发生。 8、对象finalize规则：一个对象的初始化完成（构造函数执行结束）先行于发生它的finalize()方法的开始。 JMM对编译器和处理器的束缚已经尽可能少。从上面的分析可以看出，JMM其实是在遵循一个基本原则：只要不改变程序的执行结果（指的是单线程程序和正确同步的多线程程序），编译器和处理器怎么优化都行。例如，如果编译器经过细致的分析后，认定一个锁只会被单个线程访问，那么这个锁可以被消除。再如，如果编译器经过细致的分析后，认定一个volatile变量只会被单个线程访问，那么编译器可以把这个volatile变量当作一个普通变量来对待。这些优化既不会改变程序的执行结果，又能提高程序的执行效率。\n3、happens-before与JMM的关系 一个happens-before规则对应于一个或多个编译器和处理器重排序规则。对于Java程序员来说，happens-before规则简单易懂。\n结语 这段时间为了写这篇文章也是看了很多的文章和视频，很多文章都互相有冲突，很多点我也没有办法保证完全正确，只能自己拿着JSR133的文档去看，看完了以后我推荐大家不要去看orz，真的是学的越多懂得越多不懂的也就更多了。不过学习如逆水行舟，不进则退，如果没有跳出舒适区（包括学一些很难的东西）的勇气，那学习这一条路也就到头了吧~一起加油吧！\n",
+  "wordCount" : "217",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2020-10-26T00:00:00Z",
+  "dateModified": "2020-10-26T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "南橘ryc"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      【进阶之路】深入了解volatile、内存屏障与happens-before规则
+    </h1>
+    <div class="post-description">
+      大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。volatile关键字在Java中的作用是保证变量的可见性和防止指令重排。线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache…
+    </div>
+    <div class="post-meta"><span title='2020-10-26 00:00:00 +0000 UTC'>十月 26, 2020</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;南橘ryc&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e4%bf%9d%e8%af%81%e5%8f%98%e9%87%8f%e7%9a%84%e5%8f%af%e8%a7%81%e6%80%a7" aria-label="一、保证变量的可见性">一、保证变量的可见性</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e9%98%b2%e6%ad%a2%e6%8c%87%e4%bb%a4%e9%87%8d%e6%8e%92" aria-label="二、防止指令重排">二、防止指令重排</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%ae%9a%e4%b9%89" aria-label="1、定义">1、定义</a></li>
+                <li>
+                    <a href="#2%e5%8e%9f%e7%90%86" aria-label="2、原理">2、原理</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c" aria-label="三、内存屏障">三、内存屏障</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%ae%9a%e4%b9%89-1" aria-label="1、定义">1、定义</a></li>
+                <li>
+                    <a href="#2%e5%8e%9f%e7%90%86-1" aria-label="2、原理">2、原理</a></li>
+                <li>
+                    <a href="#3as-if-serial%e8%af%ad%e4%b9%89" aria-label="3、as-if-serial语义">3、as-if-serial语义</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9bhappens-before%e8%a7%84%e5%88%99" aria-label="四、happens-before规则">四、happens-before规则</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%ae%9a%e4%b9%89-2" aria-label="1、定义">1、定义</a></li>
+                <li>
+                    <a href="#2happens-before%e7%9a%848%e6%9d%a1%e8%a7%84%e5%88%99" aria-label="2、happens-before的8条规则">2、happens-before的8条规则</a></li>
+                <li>
+                    <a href="#3happens-before%e4%b8%8ejmm%e7%9a%84%e5%85%b3%e7%b3%bb" aria-label="3、happens-before与JMM的关系">3、happens-before与JMM的关系</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%93%e8%af%ad" aria-label="结语">结语</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>大家好，我是练习java两年半时间的南橘，从一名连java有几种数据结构都不懂超级小白，到现在懂了一点点的进阶小白，学到了不少的东西。知识越分享越值钱，我这段时间总结（包括从别的大佬那边学习，引用）了一些平常学习和工作中的重点（自我认为），希望给大家带来一些帮助</p>
+</blockquote>
+<p>这是之前的三篇关于JVM的文章，没看过的同学可以一起看一下</p>
+<ul>
+<li><a href="https://juejin.cn/post/6844904111456911374" title="https://juejin.cn/post/6844904111456911374">攻克JVM——JVM对象及对象的访问定位（一）</a></li>
+<li><a href="https://juejin.cn/post/6844904115177259015" title="https://juejin.cn/post/6844904115177259015">攻克JVM——JVM的垃圾回收机制（二）</a></li>
+<li><a href="https://juejin.cn/post/6844904117328936974" title="https://juejin.cn/post/6844904117328936974">攻克JVM——JVM的垃圾收集器（三）</a></li>
+</ul>
+<p>有需要的同学可以加我的公众号，以后的最新的文章第一时间都在里面，也可以找我要思维导图 <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4afe4b91459c4a55a1a222f1a903711c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c655c915105a4bc0ac6ec032471e4f14~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>volatile关键字在 Java 中的作用是<strong>保证变量的可见性</strong>和<strong>防止指令重排</strong>。</p>
+<h3 id="一保证变量的可见性">一、保证变量的可见性<a hidden class="anchor" aria-hidden="true" href="#一保证变量的可见性">#</a></h3>
+<p>在知道volatile是如何保证变量的可见性之前，我们先要知道内存不可见的两个原因：</p>
+<p>1、CPU的运行速度是远远高于内存的读写速度的，为了不让CPU等待读写内存数据，现代CPU和内存之间都存在一个高速缓存cache（实际上是一个多级寄存器），如下图：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eedc8d54298c4bd19a11e2226c9ed092~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache中，其实就是访问自己的内部cache。如果线程B把数据加载进内部缓存cache中，线程A再修改了数据。即使重新写入主内存，但是线程B不会重新从主内存加载变量，看到的还是自己cache中的变量，所以线程B是读取不到线程A更新后的值。</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3da2acd16a0f4717aa14f26fb6af7e35~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>在多处理器下，为了保证各个处理器的缓存是一致的，就会实现<strong>缓存一致性协议</strong>，每个处理器通过<strong>嗅探在总线上传播的数据来检查自己缓存的值是不是过期了</strong>，<strong>当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里</strong>。volatile变量通过这样的机制就使得每个线程都能获得该变量的最新值。 但是，我们也都知道volatile只能保证可见性，不能保证原子性。多个线程同时读取这个共享变量的值，就算保证其他线程修改的可见性，也不能保证线程之间读取到同样的值然后相互覆盖对方的值的情况。</p>
+<h3 id="二防止指令重排">二、防止指令重排<a hidden class="anchor" aria-hidden="true" href="#二防止指令重排">#</a></h3>
+<p>我们再来看指令重排。</p>
+<h4 id="1定义">1、定义<a hidden class="anchor" aria-hidden="true" href="#1定义">#</a></h4>
+<p>指令重排是指在程序执行过程中, <strong>为了性能考虑, 编译器和CPU可能会对指令重新排序</strong>。</p>
+<p>介绍指令重排之前，首先介绍一下内存交互操作的8种指令吧。虚拟机实现必须保证每一个操作都是原子的，不可再分的（对于double和long类型的变量来说，load、store、read和write操作在某些平台上允许例外）</p>
+<p>指令</p>
+<p>内容</p>
+<p>lock （锁定）</p>
+<p>作用于主内存的变量，把一个变量标识为线程独占状态</p>
+<p>read （读取）</p>
+<p>作用于主内存变量，它把一个变量的值从主内存传输到线程的工作内存中，以便随后的load动作使用</p>
+<p>load （载入）</p>
+<p>作用于工作内存的变量，它把read操作从主存中得到变量放入工作内存的变量副本中</p>
+<p>use （使用）</p>
+<p>作用于工作内存中的变量，它把工作内存中的变量传输给执行引擎，每当虚拟机遇到一个需要使用到变量的值的字节码指令时将会执行这个操作</p>
+<p>assign （赋值）</p>
+<p>作用于工作内存中的变量，它把一个从执行引擎中接受到的值赋值给工作内存的变量副本中，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作</p>
+<p>store （存储）</p>
+<p>作用于工作内存中的变量，它把一个从工作内存中一个变量的值传送到主内存中，以便后续的write使用</p>
+<p>write  （写入）</p>
+<p>作用于主内存中的变量，它把store操作从工作内存中得到的变量的值放入主内存的变量中</p>
+<p>unlock （解锁）</p>
+<p>作用于主内存的变量，它把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定</p>
+<p>如图所示：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64ec01b63f4e4bc886f77f010fa0d0d3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>既然操作可以被分解为很多步骤, 那么多条操作指令就不一定依次序执行，因为每次只执行一条指令, 依次执行效率太低了。就像小时候学习的煮饭烧水任务时间分配一样，内存也会很聪明的分配时间。</p>
+<p>本来想给大家整一个指令重排序的例子的，但是不管是我自己写还是用别人的代码，我的电脑都没办法让它重排序。但是我们都知道，指令重排是确实存在的（CPU确实会进行重排序，但是这种重排序是无法被我们观测到和控制的）。</p>
+<p>一般重排序可以分为如下三种： <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9d19d64a199b439984d171b72c6604c4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<ul>
+<li>1、<strong>编译器优化的重排序</strong>。编译器在不改变单线程程序语义的前提下，可以重新安排语句的执行顺序；</li>
+<li>2、<strong>指令级并行的重排序</strong>。现代处理器采用了指令级并行技术来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序；</li>
+<li>3、<strong>内存系统的重排序</strong>。由于处理器使用缓存和读/写缓冲区，这使得加载和存储操作看上去可能是在乱序执行的。</li>
+</ul>
+<h4 id="2原理">2、原理<a hidden class="anchor" aria-hidden="true" href="#2原理">#</a></h4>
+<p>我们来看加了volatile前后的代码,用的就是阿里规约提供给我们的双重检查锁的代码。我们分别编译了两次，第一个是没有使用volatile关键字修饰的，第二个是使用volatile关键字来修饰，然后取出他们的的汇编代码（实在是设计的地方太底层，其实这里算是用到了策略模式了）</p>
+<blockquote>
+<p>未使用volatile修饰</p>
+</blockquote>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>0x000000010d29e93b: mov    %rax,%r10   0x000000010d29e93e: shr    $0x3,%r10   0x000000010d29e942: mov    %r10d,0x68(%rsi)   0x000000010d29e946: shr    $0x9,%rsi   0x000000010d29e94a: movabs $0xfe403000,%rax   0x000000010d29e954: movb   $0x0,(%rsi,%rax,1)</code></p>
+<blockquote>
+<p>使用volatile修饰</p>
+</blockquote>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>0x0000000114353959: mov    %rax,%r10   0x000000011435395c: shr    $0x3,%r10   0x0000000114353960: mov    %r10d,0x68(%rsi)   0x0000000114353964: shr    $0x9,%rsi   0x0000000114353968: movabs $0x10db6e000,%rax   0x0000000114353972: movb   $0x0,(%rsi,%rax,1)   0x0000000114353976: lock addl $0x0,(%rsp)</code></p>
+<p>很明显，在movb操作后，加了volatile修饰的汇编代码后面多了一条汇编指令<strong>lock addl $0x0,(%rsp)</strong>，这个操作相当于一个<strong>内存屏障</strong>，指令重排时不能把后面的指令重排序到内存屏障之前的位置。<strong>lock前缀会强制执行原子操作，它的作用是是的本CPU的cache写入了内存，该写入动作会引起别的CPU无效化其cache。所以通过这样一个空操作，可让前面volatile变量的便是对其他CPU可见</strong>。</p>
+<p>从硬件架构上讲，指令重排序是指CPU将多条指令不按程序规定的顺序分开发送给各相应的点，但并不是指令任意重排，CPU需要能正确处理指令，以保障程序能得出正确的执行结果。lock addl $0x0,(%rsp) 指令把修改同步到内存时，意味着所有值钱的操作都已经执行完成，这样便形成了<strong>指令重排序无法越过内存屏障</strong>的效果。</p>
+<h3 id="三内存屏障">三、内存屏障<a hidden class="anchor" aria-hidden="true" href="#三内存屏障">#</a></h3>
+<p>既然指令重排和可见性都依赖了lock，同时lock指令引出了内存屏障，我们就来学习一下什么是内存屏障。</p>
+<h4 id="1定义-1">1、定义<a hidden class="anchor" aria-hidden="true" href="#1定义-1">#</a></h4>
+<blockquote>
+<p>内存屏障：保证屏障前的读写指令必须在屏障后的读写指令之前执行，通知被Volatile修饰的值，每次读取都从主存中读取，每次写入都同步写入主存。</p>
+</blockquote>
+<p>内存屏障具体又分为写屏障和读屏障 写屏障（Store Memory Barrier）：<strong>强制将缓存中的内容写入到缓存中</strong>或者<strong>将该指令之后的写操作写入缓存直到之前的内容被刷入到缓存中</strong>，也被称之为<strong>smp_wmb</strong> 读屏障（Load Memory Barrier）：<strong>强制将无效队列（volatile写操作之后失其作废）中的内容处理完毕</strong>，也被称之为<strong>smp_rmb</strong></p>
+<p>屏障类型</p>
+<p>指令示例</p>
+<p>说明</p>
+<p>LoadLoadBarriers</p>
+<p>Load1;LoadLoad;Load2</p>
+<p>该屏障确保Load1数据的装载先于Load2及其后所有装载指令的的操作</p>
+<p>StoreStoreBarriers</p>
+<p>Store1;StoreStore;Store2</p>
+<p>该屏障确保Store1立刻刷新数据到内存(使其对其他处理器可见)的操作先于Store2及其后所有存储指令的操作</p>
+<p>LoadStoreBarriers</p>
+<p>Load1;LoadStore;Store2</p>
+<p>确保Load1的数据装载先于Store2及其后所有的存储指令刷新数据到内存的操作</p>
+<p>StoreLoadBarriers</p>
+<p>Store1;StoreLoad;Load1</p>
+<p>该屏障确保Store1立刻刷新数据到内存的操作先于Load2及其后所有装载装载指令的操作.它会使该屏障之前的所有内存访问指令(存储指令和访问指令)完成之后,才执行该屏障之后的内存访问指令</p>
+<h4 id="2原理-1">2、原理<a hidden class="anchor" aria-hidden="true" href="#2原理-1">#</a></h4>
+<p><strong>内存屏障在Java中的体现</strong>：</p>
+<ul>
+<li>1、volatile读之后，所有变量读写操作都不会重排序到其前面。</li>
+<li>2、volatile读之前，所有volatile读写操作都已完成。</li>
+<li>3、volatile写之后，volatile变量读写操作都不会重排序到其前面。</li>
+<li>4、volatile写之前，所有变量的读写操作都已完成。</li>
+</ul>
+<p><strong>根据JMM规则，结合内存屏障的相关分析得出以下结论</strong>：</p>
+<ul>
+<li>1、在每一个volatile写操作前面插入一个StoreStore屏障。这确保了在进行volatile写之前前面的所有普通的写操作都已经刷新到了内存。</li>
+<li>2、在每一个volatile写操作后面插入一个StoreLoad屏障。这样可以避免volatile写操作与后面可能存在的volatile读写操作发生重排序。</li>
+<li>3、在每一个volatile读操作后面插入一个LoadLoad屏障。这样可以避免volatile读操作和后面普通的读操作进行重排序。</li>
+<li>4、在每一个volatile读操作后面插入一个LoadStore屏障。这样可以避免volatile读操作和后面普通的写操作进行重排序。</li>
+</ul>
+<p>如下图所示：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3599561f4e104a4e8a45a35f59033aa3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<h4 id="3as-if-serial语义">3、as-if-serial语义<a hidden class="anchor" aria-hidden="true" href="#3as-if-serial语义">#</a></h4>
+<p>但是用了volatile关键字，程序的运行速度必然会受到影响，那么除了volatile关键字以外什么时候不会发生重排序呢？这里就要引入as-if-serial语义。</p>
+<p>as-if-serial语义的意思是：<strong>不管怎么重排序（编译器和处理器为了提供并行度），（单线程）程序的执行结果不能被改变。</strong></p>
+<p>如果两个操作访问同一个变量，且这两个操作有一个为写操作，此时<strong>这两个操作就存在数据依赖性这里就存在三种情况：1. 读后写；2.写后写；3. 写后读，者三种操作都是存在数据依赖性的</strong>。如果重排序会对最终执行结果会存在影响，编译器和处理器在重排序时，会遵守数据依赖性，编译器和处理器不会改变存在数据依赖性关系的两个操作的执行顺序。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>int a=1; int b=2; int c =a+b;</code></p>
+<p><strong>as-if-serial语义</strong>把单线程程序保护了起来，遵守<strong>as-if-serial语义</strong>的编译器，runtime和处理器共同为编写单线程程序的程序员创建了一个幻觉：单线程程序是按程序的顺序来执行的。比如上面计算的代码，在单线程中，会让人感觉代码是一行一行顺序执行上，实际上a,b两行不存在数据依赖性可能会进行重排序，即a，b不是顺序执行的。<strong>as-if-serial语义</strong>使程序员不必担心单线程中重排序的问题干扰他们，也无需担心内存可见性问题。</p>
+<p>说到底，<strong>as-if-serial语义</strong>不过是一种最基础的架构定义,可以类比地球上氧气的比例约为21%。</p>
+<p>重排序可以分为两类：</p>
+<p><strong>会改变程序执行结果的重排序。</strong></p>
+<p><strong>不会改变程序执行结果的重排序。</strong></p>
+<p>JMM对这两种不同性质的重排序，采取了不同的策略。</p>
+<ul>
+<li>对于会改变程序执行结果的重排序，JMM要求编译器和处理器必须禁止这种重排序。</li>
+<li>对于不会改变程序执行结果的重排序，JMM对编译器和处理器不做要求（JMM允许进行优化重排序）</li>
+</ul>
+<p>volatile就是通过对内存语义的封装实现了对volatile关键字读写时的顺序和可见。保证了我们所谓的多线程下的可见性，但是还是没办法保证多线程下修改数据的同步，因为同步除了有序和可见还需要满足原子性。</p>
+<h3 id="四happens-before规则">四、happens-before规则<a hidden class="anchor" aria-hidden="true" href="#四happens-before规则">#</a></h3>
+<p>在Java内存模型中，如果要确保有序性可以靠volatile和synchronized来实现，但是如果所有的有序性都仅仅依靠这两个关键字来完成，那么有一些操作将会变得很繁琐，但是我们在编写Java代码的时候并没有感觉到这一点，这是因为Java语言中有一个“先行发生(happens-before)”的原则。那么happens-before到底是什么呢？</p>
+<p>happens-before的概念最初由Leslie Lamport在其一篇影响深远的论文（《Time，Clocks and the Ordering of Events in a Distributed System》）中提出。JSR-133（即JavaTM内存模型与线程规范,由JSR-133专家组开发）使用happens-before的概念来指定两个操作之间的执行顺序。</p>
+<h4 id="1定义-2">1、定义<a hidden class="anchor" aria-hidden="true" href="#1定义-2">#</a></h4>
+<p>happens-before表示的是前一个操作的结果对于后续操作是可见的，它是一种表达多个线程之间对于内存的可见性。所以我们可以认为在JMM中，如果一个操作执行的结果需要对另一个操作可见，那么这两个操作必须要存在happens-before关系。</p>
+<p><strong>具体的定义为：</strong></p>
+<ul>
+<li>
+<p>1、如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。</p>
+</li>
+<li>
+<p>2、两个操作之间存在happens-before关系，并不意味着Java平台的具体实现必须要按照happens-before关系指定的顺序来执行。如果重排序之后的执行结果，与按happens-before关系来执行的结果一致，那么这种重排序并不非法（也就是说，JMM允许这种重排序）。</p>
+</li>
+</ul>
+<h4 id="2happens-before的8条规则">2、happens-before的8条规则<a hidden class="anchor" aria-hidden="true" href="#2happens-before的8条规则">#</a></h4>
+<p><strong>8条规则定义：</strong></p>
+<ul>
+<li>1、程序顺序规则：一个线程中的每个操作，happens-before于该线程中的任意后续操作。（在一个线程内一段代码的执行结果是有序的）</li>
+<li>3、监视器锁规则：对一个锁的解锁，happens-before于随后对这个锁的加锁。(先加锁后解锁)</li>
+<li>3、volatile变量规则：对于volatile修饰的变量的写的操作，一定happen-before后续对于volatile变量的读操作。(读写不会重排序，写操作的结果一定对读的这个线程可见)</li>
+<li>4、传递性：如果A happens-before B，且B happens-before C，那么A happens-before C。</li>
+<li>5、start()规则：如果线程A执行操作ThreadB.start()（启动线程B），那么A线程的ThreadB.start()操作happens-before于线程B中的任意操作。</li>
+<li>6、Join()规则：如果线程A执行操作ThreadB.join()并成功返回，那么线程B中的任意操作happens-before于线程A从ThreadB.join()操作成功返回。</li>
+<li>7、程序中断规则：对线程interrupted()方法的调用先行于被中断线程的代码检测到中断时间的发生。</li>
+<li>8、对象finalize规则：一个对象的初始化完成（构造函数执行结束）先行于发生它的finalize()方法的开始。</li>
+</ul>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/94c1bb549ece4cff87ba3ce525a3a188~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>JMM对编译器和处理器的束缚已经尽可能少。从上面的分析可以看出，<strong>JMM其实是在遵循一个基本原则：只要不改变程序的执行结果（指的是单线程程序和正确同步的多线程程序），编译器和处理器怎么优化都行</strong>。例如，如果编译器经过细致的分析后，认定一个锁只会被单个线程访问，那么这个锁可以被消除。再如，如果编译器经过细致的分析后，认定一个volatile变量只会被单个线程访问，那么编译器可以把这个volatile变量当作一个普通变量来对待。这些优化既不会改变程序的执行结果，又能提高程序的执行效率。</p>
+<h4 id="3happens-before与jmm的关系">3、happens-before与JMM的关系<a hidden class="anchor" aria-hidden="true" href="#3happens-before与jmm的关系">#</a></h4>
+<p>一个happens-before规则对应于一个或多个编译器和处理器重排序规则。对于Java程序员来说，happens-before规则简单易懂。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c00ea4fb3b9a4b3b8db4abe791512212~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<h3 id="结语">结语<a hidden class="anchor" aria-hidden="true" href="#结语">#</a></h3>
+<blockquote>
+<p>这段时间为了写这篇文章也是看了很多的文章和视频，很多文章都互相有冲突，很多点我也没有办法保证完全正确，只能自己拿着JSR133的文档去看，看完了以后我推荐大家不要去看orz，真的是学的越多懂得越多不懂的也就更多了。不过学习如逆水行舟，不进则退，如果没有跳出舒适区（包括学一些很难的东西）的勇气，那学习这一条路也就到头了吧~一起加油吧！</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/fluttervsreactnative%E9%80%89%E6%8B%A9%E6%9C%80%E9%80%82%E5%90%88%E7%9A%84%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%A7%BB%E5%8A%A8%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>FluttervsReactNative：选择最适合的跨平台移动应用开发框架</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E5%AE%9A%E4%BD%8D%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E5%91%A8%E8%BE%B9%E5%85%AC%E7%94%A8%E5%8E%95%E6%89%80%E8%BF%9C%E8%BF%91%E6%8E%92%E5%BA%8F%E5%88%86%E5%B8%83%E5%9B%BE/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>基于腾讯地图定位组件实现周边公用厕所远近排序分布图</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【进阶之路】深入了解volatile、内存屏障与happens-before规则 on x"
+            href="https://x.com/intent/tweet/?text=%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f&amp;hashtags=Java">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【进阶之路】深入了解volatile、内存屏障与happens-before规则 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f&amp;title=%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99&amp;summary=%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【进阶之路】深入了解volatile、内存屏障与happens-before规则 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f&title=%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【进阶之路】深入了解volatile、内存屏障与happens-before规则 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【进阶之路】深入了解volatile、内存屏障与happens-before规则 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【进阶之路】深入了解volatile、内存屏障与happens-before规则 on telegram"
+            href="https://telegram.me/share/url?text=%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【进阶之路】深入了解volatile、内存屏障与happens-before规则 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e3%80%90%e8%bf%9b%e9%98%b6%e4%b9%8b%e8%b7%af%e3%80%91%e6%b7%b1%e5%85%a5%e4%ba%86%e8%a7%a3volatile%e3%80%81%e5%86%85%e5%ad%98%e5%b1%8f%e9%9a%9c%e4%b8%8ehappens-before%e8%a7%84%e5%88%99&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25BF%259B%25E9%2598%25B6%25E4%25B9%258B%25E8%25B7%25AF%25E6%25B7%25B1%25E5%2585%25A5%25E4%25BA%2586%25E8%25A7%25A3volatile%25E5%2586%2585%25E5%25AD%2598%25E5%25B1%258F%25E9%259A%259C%25E4%25B8%258Ehappens-before%25E8%25A7%2584%25E5%2588%2599%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

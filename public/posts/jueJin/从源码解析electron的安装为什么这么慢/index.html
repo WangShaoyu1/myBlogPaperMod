@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>从源码解析Electron的安装为什么这么慢 | PaperMod</title>
+<meta name="keywords" content="Electron">
+<meta name="description" content="前言Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。">
+<meta name="author" content="w4ngzhen">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90electron%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E6%85%A2/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90electron%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E6%85%A2/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="从源码解析Electron的安装为什么这么慢" />
+<meta property="og:description" content="前言Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90electron%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E6%85%A2/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-04-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-04-10T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="从源码解析Electron的安装为什么这么慢"/>
+<meta name="twitter:description" content="前言Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "从源码解析Electron的安装为什么这么慢",
+      "item": "http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90electron%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E6%85%A2/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从源码解析Electron的安装为什么这么慢",
+  "name": "从源码解析Electron的安装为什么这么慢",
+  "description": "前言Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。",
+  "keywords": [
+    "Electron"
+  ],
+  "articleBody": "前言 Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。\n然而，为什么国内使用Electron的踩坑文章数不胜数，主要原因是Electron为了支持跨平台，为不同的操作系统平台进行了适配，将chromium内核与node集成到了一起，屏蔽了底层操作系统的细节，所以在不同的平台上有着不同的二进制基座。在开发的过程中，我们必须要下载对应的平台的基座，才能正常开发。也就是说，我们npm install electron -D的时候，一定是下载了Electron的二进制基座的。那么这个下载的过程在哪里？为什么速度这么慢呢？本文将通过Electron的安装源码一一说明。\n安装Electron 在安装之前，我们先模拟一下没有配置任何关于Electron二进制镜像的npm配置文件，在~/.npmrc里面，只有一些默认的配置：\nini\n代码解读\n复制代码\n# ~/.npmrc文件 registry=https://registry.npm.taobao.org/ prefix=D:\\Programs\\nodejs\\global_modules cache=D:\\Programs\\nodejs\\cache_modules python=D:\\Programs\\Python39\\python.exe\n然后，创建一个名为electron-install-example的文件夹作为本此测试的Demo项目目录，并在进入该目录后执行npm init初始化node项目。\n最后，使用命令行安装Electron：npm install electron -D。在短暂的npm包安装后，我们会发现会卡在一个地方：\n这时候，很多开发者就会开始在网络上搜索：‘安装Electron卡住’，并且也很容易得到解决方案：\n在~/.npmrc文件中，单独设置Electron的镜像electron_mirror=\"https://npm.taobao.org/mirrors/electron/\"\n于是我们按照搜来的解决方案重新配置我们的.npmrc文件：\nini\n代码解读\n复制代码\n# ~/.npmrc文件 registry=https://registry.npm.taobao.org/ prefix=D:\\Programs\\nodejs\\global_modules cache=D:\\Programs\\nodejs\\cache_modules python=D:\\Programs\\Python39\\python.exe # 单独设置Electron的镜像 electron_mirror=\"https://npm.taobao.org/mirrors/electron/\"\n设置完成后，重新进行npm install，发现能够很快完成下载并继续开发。通过本文，我们深入细节，看看为什么Electron设置了单独的镜像后，就能够正常且快速完成下载安装。\n深入下载细节 进入项目根目录下/node_modules/electron/（后续除特殊情况外，提到的目录路径都是统一相对于项目根目录）目录中，查看package.json文件中的scripts脚本节点：\n了解npm的朋友们知道，postinstall中的脚本会在npm包完成安装后执行。\n也就是说，npm install -D electron完成以后，会在node_modules/electron目录中立刻执行node install.js。所以，我们进一步查看install.js文件，看看它到底执行了什么。核心代码如下：\n代码特别容易理解：在没有缓存文件的时候，会使用@electron/get提供的downloadArtifact函数，进行Electron二进制制品的下载。\n于是，我们又将目标转移到@electron/get。这是个什么东西呢？查询官方仓库：官方仓库，就能够大概知道该工具的功能了：提供一定的参数来向远端下载文件。\n找到@electron/get的模块入口node_modules/@electron/get/dist/cjs/index.js，也很容易从中找到downloadArtifact的函数定义：\n该函数的文档：下载Electron发行制品，并且返回下载后的制品的绝对路径。而函数内部主要流程如下：\n解析要下载的制品对应的操作系统和平台。例如是Windows还是Linux，架构是x86还是AMD64。\n解析要下载的制品的版本。\n解析要下载的制品的具体文件名。例如要下载Windows下的64位的Electron制品，那么默认文件名称是：electron-v11.0.2-win32-x64.zip\n解析要下载的制品所在的远端URL是多少（与本文相关的重点）。\n处理本地缓存。\n本文主要解析下载以及从本地缓存制品两个环节。\n远端下载的URL 从上面的源码图中，我们会看到远端的URL来自于artifact_utils_1.getArtifactRemoteURL(artifactDetails)这个的返回，而该函数在@electron/get/dist/cjs/artifact-utils.js中进行定义：\n该函数的定义也不难，主要流程如下：解析得到base变量，解析得到path变量，解析得到file变量，组合为${base}${path}/${file}。当然，你也可以在mirrorOptions中定义resolveAssetURL函数来返回自定义的地址。\n在上面的处理流程中，能够看到一个频繁出现的函数：mirroVar。该函数也在该文件中定义，其函数定义如下：\njs\n代码解读\n复制代码\nfunction mirrorVar(name, options, defaultValue) { // Convert camelCase to camel_case for env var reading const lowerName = name.replace(/([a-z])([A-Z])/g, (_, a, b) =\u003e `${a}_${b}`).toLowerCase(); return (process.env[`NPM_CONFIG_ELECTRON_${lowerName.toUpperCase()}`] || process.env[`npm_config_electron_${lowerName}`] || process.env[`npm_package_config_electron_${lowerName}`] || process.env[`ELECTRON_${lowerName.toUpperCase()}`] || options[name] || defaultValue); }\n该函数主要返回参数name相关的变量值，以name = 'mirror'为例，获取过程为：\ncustomDir进行下划线分割转换，得到const lowerName = 'mirror'（name为’customDir’则转换为’custom_dir’）。\n依次检查如下环境变量值：\nNPM_CONFIG_ELECTRON_MIRROR npm_config_electron_mirror npm_package_config_electron_mirror ELECTRON_MIRROR options[‘mirror’] 上述任意变量存在值则直接使用，否则，使用默认值defaultValue。\n读到这里，也许有读者疑惑了，我明明是在.npmrc文件中配置的ELECTRON_MIRROR变量，而这里读取的明明是环境变量里面的值，怎么会有呢？如果直接使用node作为入口，那么确实不会有这些变量，但是通过npm运行就不一样了。这里用一个小例子来说明。\n首先在一个node项目中编写一个脚本env-test.js：\njavascript\n代码解读\n复制代码\nconsole.log(process.env);\n我们通过使用node运行该js脚本：\n代码解读\n复制代码\nnode env-test.js\n看到命令行的输出，只会有当前机器的环境变量：\n但是一旦通过npm进行运行，又会不一样：\n运行命令npm run dev，会得到如下的结果，这里本人使用IDEA的断掉调试，会更加清晰的看到env的值：\n通过npm run的方式，我们发现我们在~/.npmrc文件中配置的一些参数，都能在这里得到，并且是以npm_config_作为开头的。可能还有读者有疑惑，上面读取的变量，都是同意大小写的，这里是npm_config_ELECTRON_MIRROR，能读取到吗？事实上，env的读取是忽略大小写的：\n综合目前的研究，相信读者已经清楚了为什么通过配置ELECTRON_MIRROR在.npmrc能够达到加快Electron二进制基座的下载速度的目的了，至于一些其他的配置变量，可以阅读附录的官方文档翻译。\n本地缓存机制 有的读者看了上述的远端下载可能会说，我的机器就在内网环境，内网也没有镜像让我来写，我该怎么下载呢？实际上，@electron/get也不会完全从远端下载制品。它在下载的过程，会优先进行本地缓存文件的查找，如果已经存在了缓存好的制品，自然也就不会从远端下载了。那么这个查找缓存的过程是怎样的呢？或者说，@electron/get会从本地哪个目录去查找呢？让我们回到@electron/get/dist/cjs/index.js脚本的downloadArtifact函数中，看该部分：\n在url变量获取的下一行，构建了一个Cache缓存对象，继续往下，通过判断不进行强制从远端下载的标志，会进入getPathForFileInCache函数返回一个本地的缓存文件路径，如果路径不为空则使用它。所以，我们只需要让这个函数能够返回一个合法的缓存文件路径就能让@electron/get不进行远端下载，而是使用本地的缓存文件。所以我们跟到该函数中：\n函数最终会使用上一节中的url变量形成一个本地的缓存路径，至于代码中的url.format以及filenamify的效果，读者可以自行编写Demo验证。\n最后，路径还使用到了this.cacheRoot，查看Cache的构造函数，发现如果没有传递cacheRoot，则使用defaultCacheRoot，该值在该脚本文件上面有定义：\n通过一段脚本输出该路径：\njs\n代码解读\n复制代码\nconst env_paths_1 = require(\"env-paths\"); const defaultCacheRoot = env_paths_1.default('electron', { suffix: '', }).cache; console.log(defaultCacheRoot); // 在本人的机器上输出： // C:\\Users\\w4ngzhen\\AppData\\Local\\electron\\Cache\n所以在Windows机器下，默认的缓存目录在~/AppData/Local/electron/Cache/，在本人的机器上，已经缓存的文件如下：\n源码个人认为也不用继续解析了，读者结合文件夹名称应该能够很容易分析。\n附录：@electron/get 官方Wiki翻译 下载Electron发行版制品\n使用 基础方式：下载一个Electron二进制ZIP typescript\n代码解读\n复制代码\nimport { download } from '@electron/get'; // NB: Use this syntax within an async function, Node does not have support for // top-level await as of Node 12. const zipFilePath = await download('4.0.4');\n进阶：下载macOS下带有调试符号的Electron文件 typescript\n代码解读\n复制代码\nimport { downloadArtifact } from '@electron/get'; // NB: Use this syntax within an async function, Node does not have support for // top-level await as of Node 12. const zipFilePath = await downloadArtifact({ version: '4.0.4', platform: 'darwin', artifactName: 'electron', artifactSuffix: 'symbols', arch: 'x64', });\n指定镜像 下列选项可以用来指定从其他的地方下载Electron资源：\nmirrorOptions Object（JavaScript对象） mirror String (可选) - 下载资源的镜像地址的基础URL。 nightlyMirror String (可选) - Electron nightly-specific版本的镜像URL。 customDir String (可选) - 下载资源的目录名称，通常由版本号来设定。 customFilename String (可选) - 将要下载的资源的文件名称。 resolveAssetURL Function (可选) - 允许通过编程方式来进行资源下载的函数回调。 下载资源的URL进行如下的分解，每一项都来可以映射到mirrorOptions:\nExample:\ntypescript\n代码解读\n复制代码\nimport { download } from '@electron/get'; const zipFilePath = await download('4.0.4', { mirrorOptions: { mirror: 'https://mirror.example.com/electron/', customDir: 'custom', customFilename: 'unofficial-electron-linux.zip' } }); // 上述将会从如下URL下载： // https://mirror.example.com/electron/custom/unofficial-electron-linux.zip const nightlyZipFilePath = await download('8.0.0-nightly.20190901', { mirrorOptions: { nightlyMirror: 'https://nightly.example.com/', customDir: 'nightlies', customFilename: 'nightly-linux.zip' } }); // 上述将会从如下URL下载： // https://nightly.example.com/nightlies/nightly-linux.zip\ncustomDir参数可以使用{{ version }}占位符来设置版本（务必注意：{}括号之间一定要有空格，否则会解析失败，即，{{[空格]version{空格}}}），这个占位符将会由所下载的资源的版本（没有首字符v）来动态替换。例如：\njavascript\n代码解读\n复制代码\nconst zipFilePath = await download('4.0.4', { mirrorOptions: { mirror: 'https://mirror.example.com/electron/', customDir: 'version-{{ version }}', platform: 'linux', arch: 'x64' } }); // 将会从如下的URL下载： // https://mirror.example.com/electron/version-4.0.4/electron-v4.0.4-linux-x64.zip\n使用环境变量来指定镜像选项 镜像配置选项也可以通过如下的环境变量来指定：\nELECTRON_CUSTOM_DIR - 指定资源下载的自定义目录。 ELECTRON_CUSTOM_FILENAME - 指定资源下载的自定义文件名。 ELECTRON_MIRROR - 指定如果版本没有使用nightly的时候，服务器的下载URL。 ELECTRON_NIGHTLY_MIRROR - 指定如果版本使用nightly的时候，服务器的下载URL。 重写下载的资源版本 所下载的资源的版本可以通过设置``ELECTRON_CUSTOM_VERSION 环境变量来进行覆盖。设置该版本将会覆盖传入download或是downloadArtifact`函数的version参数。\n它是如何运行的 下载Electron资源到操作系统中已知的位置，并且缓存该资源的模块，用于便于在将来请求同一个资源的时候能够立刻完成并返回。缓存路径如下：\nLinux: $XDG_CACHE_HOME or ~/.cache/electron/ MacOS: ~/Library/Caches/electron/ Windows: %LOCALAPPDATA%/electron/Cache or ~/AppData/Local/electron/Cache/ 默认情况下，该模块使用 got作为下载器。因此，您可以通过downloadOptions使用与get相同的选项（options）来进行下载。\n进度条 默认情况下，下载工件超过30秒时会显示进度条。若要禁用，请将ELECTRON_GET_NO_PROGRESS 环境变量设置为任何非空值，或设置downloadOptions中的quiet为true。如果您需要通过API自己监视进度，请设置downloadOptions中的getProgressCallback 回调，其函数签名与got的downloadProgress event callback相同。\n代理 下游软件包应利用 initializeProxy功能来添加HTTP(S)代理支持。如果设置了环境变量ELECTRON_GET_USE_PROXY，则会自动调用它。根据使用的Node版本，使用不同的代理模块.因此，设置代理环境变量的方式略有不同。对于Node 10及更高版本，使用global-agent。否则，将使用global-tunnel-ng。请参阅相应的链接模块以确定如何配置代理支持。\n",
+  "wordCount" : "403",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-04-10T00:00:00Z",
+  "dateModified": "2021-04-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "w4ngzhen"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90electron%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E6%85%A2/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      从源码解析Electron的安装为什么这么慢
+    </h1>
+    <div class="post-description">
+      前言Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。
+    </div>
+    <div class="post-meta"><span title='2021-04-10 00:00:00 +0000 UTC'>四月 10, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;w4ngzhen&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85electron" aria-label="安装Electron">安装Electron</a></li>
+                <li>
+                    <a href="#%e6%b7%b1%e5%85%a5%e4%b8%8b%e8%bd%bd%e7%bb%86%e8%8a%82" aria-label="深入下载细节">深入下载细节</a><ul>
+                        
+                <li>
+                    <a href="#%e8%bf%9c%e7%ab%af%e4%b8%8b%e8%bd%bd%e7%9a%84url" aria-label="远端下载的URL">远端下载的URL</a></li>
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e7%bc%93%e5%ad%98%e6%9c%ba%e5%88%b6" aria-label="本地缓存机制">本地缓存机制</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%99%84%e5%bd%95electronget-%e5%ae%98%e6%96%b9wiki%e7%bf%bb%e8%af%91" aria-label="附录：@electron/get 官方Wiki翻译">附录：@electron/get 官方Wiki翻译</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8" aria-label="使用">使用</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9f%ba%e7%a1%80%e6%96%b9%e5%bc%8f%e4%b8%8b%e8%bd%bd%e4%b8%80%e4%b8%aaelectron%e4%ba%8c%e8%bf%9b%e5%88%b6zip" aria-label="基础方式：下载一个Electron二进制ZIP">基础方式：下载一个Electron二进制ZIP</a></li>
+                <li>
+                    <a href="#%e8%bf%9b%e9%98%b6%e4%b8%8b%e8%bd%bdmacos%e4%b8%8b%e5%b8%a6%e6%9c%89%e8%b0%83%e8%af%95%e7%ac%a6%e5%8f%b7%e7%9a%84electron%e6%96%87%e4%bb%b6" aria-label="进阶：下载macOS下带有调试符号的Electron文件">进阶：下载macOS下带有调试符号的Electron文件</a></li>
+                <li>
+                    <a href="#%e6%8c%87%e5%ae%9a%e9%95%9c%e5%83%8f" aria-label="指定镜像">指定镜像</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f%e6%9d%a5%e6%8c%87%e5%ae%9a%e9%95%9c%e5%83%8f%e9%80%89%e9%a1%b9" aria-label="使用环境变量来指定镜像选项">使用环境变量来指定镜像选项</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%87%8d%e5%86%99%e4%b8%8b%e8%bd%bd%e7%9a%84%e8%b5%84%e6%ba%90%e7%89%88%e6%9c%ac" aria-label="重写下载的资源版本">重写下载的资源版本</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%83%e6%98%af%e5%a6%82%e4%bd%95%e8%bf%90%e8%a1%8c%e7%9a%84" aria-label="它是如何运行的">它是如何运行的</a><ul>
+                        
+                <li>
+                    <a href="#%e8%bf%9b%e5%ba%a6%e6%9d%a1" aria-label="进度条">进度条</a></li>
+                <li>
+                    <a href="#%e4%bb%a3%e7%90%86" aria-label="代理">代理</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>Electron作为一款跨平台的桌面应用端解决方案已经风靡全球。作为开发者，我们几乎不用关心与操作系统的交互，直接通过Web前端技术与Electron提供的API就可以完成桌面应用端的开发。</p>
+<p>然而，为什么国内使用Electron的踩坑文章数不胜数，主要原因是Electron为了支持跨平台，为不同的操作系统平台进行了适配，将chromium内核与node集成到了一起，屏蔽了底层操作系统的细节，所以在不同的平台上有着不同的二进制基座。在开发的过程中，我们必须要下载对应的平台的基座，才能正常开发。也就是说，我们<code>npm install electron -D</code>的时候，一定是下载了Electron的二进制基座的。那么这个下载的过程在哪里？为什么速度这么慢呢？本文将通过Electron的安装源码一一说明。</p>
+<h1 id="安装electron">安装Electron<a hidden class="anchor" aria-hidden="true" href="#安装electron">#</a></h1>
+<p>在安装之前，我们先模拟一下没有配置任何关于Electron二进制镜像的npm配置文件，在<code>~/.npmrc</code>里面，只有一些默认的配置：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># ~/.npmrc文件 registry=https://registry.npm.taobao.org/ prefix=D:\Programs\nodejs\global_modules cache=D:\Programs\nodejs\cache_modules python=D:\Programs\Python39\python.exe</code></p>
+<p>然后，创建一个名为<code>electron-install-example</code>的文件夹作为本此测试的Demo项目目录，并在<strong>进入</strong>该目录后执行<code>npm init</code>初始化node项目。</p>
+<p>最后，使用命令行安装Electron：<code>npm install electron -D</code>。在短暂的npm包安装后，我们会发现会卡在一个地方：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a95d60fdf002453398291af450459ed9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>这时候，很多开发者就会开始在网络上搜索：&lsquo;安装Electron卡住&rsquo;，并且也很容易得到解决方案：</p>
+<blockquote>
+<p>在<code>~/.npmrc</code>文件中，单独设置Electron的镜像<code>electron_mirror=&quot;https://npm.taobao.org/mirrors/electron/&quot;</code></p>
+</blockquote>
+<p>于是我们按照搜来的解决方案重新配置我们的<code>.npmrc</code>文件：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># ~/.npmrc文件 registry=https://registry.npm.taobao.org/ prefix=D:\Programs\nodejs\global_modules cache=D:\Programs\nodejs\cache_modules python=D:\Programs\Python39\python.exe # 单独设置Electron的镜像 electron_mirror=&quot;https://npm.taobao.org/mirrors/electron/&quot;</code></p>
+<p>设置完成后，重新进行<code>npm install</code>，发现能够很快完成下载并继续开发。通过本文，我们深入细节，看看为什么Electron设置了单独的镜像后，就能够正常且快速完成下载安装。</p>
+<h1 id="深入下载细节">深入下载细节<a hidden class="anchor" aria-hidden="true" href="#深入下载细节">#</a></h1>
+<p>进入<code>项目根目录下/node_modules/electron/</code>（后续除特殊情况外，提到的目录路径都是统一相对于项目根目录）目录中，查看package.json文件中的<strong>scripts</strong>脚本节点：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ab8aa74fa34b464fbce62445e5927f6f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>了解npm的朋友们知道，<code>postinstall</code>中的脚本会在npm包完成安装后执行。</p>
+<p>也就是说，<code>npm install -D electron</code>完成以后，会在<code>node_modules/electron</code>目录中立刻执行<code>node install.js</code>。所以，我们进一步查看install.js文件，看看它到底执行了什么。核心代码如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6ba7dbd3dbe74e0cb57cbe405f9e5abf~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>代码特别容易理解：在没有缓存文件的时候，会使用<code>@electron/get</code>提供的<code>downloadArtifact</code>函数，进行Electron二进制制品的下载。</p>
+<p>于是，我们又将目标转移到<code>@electron/get</code>。这是个什么东西呢？查询官方仓库：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Felectron%2Fget" title="https://github.com/electron/get">官方仓库</a>，就能够大概知道该工具的功能了：提供一定的参数来向远端下载文件。</p>
+<p>找到<code>@electron/get</code>的模块入口<code>node_modules/@electron/get/dist/cjs/index.js</code>，也很容易从中找到<code>downloadArtifact</code>的函数定义：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3962f2a147f64de9a6383b716f92d0ac~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>该函数的文档：下载Electron发行制品，并且返回下载后的制品的绝对路径。而函数内部主要流程如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcdafdad7e764c829a1396edf50f3932~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<ul>
+<li>
+<p>解析要下载的制品对应的操作系统和平台。例如是Windows还是Linux，架构是x86还是AMD64。</p>
+</li>
+<li>
+<p>解析要下载的制品的版本。</p>
+</li>
+<li>
+<p>解析要下载的制品的具体文件名。例如要下载Windows下的64位的Electron制品，那么默认文件名称是：<code>electron-v11.0.2-win32-x64.zip</code></p>
+</li>
+<li>
+<p>解析要下载的制品所在的远端URL是多少（与本文相关的重点）。</p>
+</li>
+<li>
+<p>处理本地缓存。</p>
+</li>
+</ul>
+<p>本文主要解析下载以及从本地缓存制品两个环节。</p>
+<h2 id="远端下载的url">远端下载的URL<a hidden class="anchor" aria-hidden="true" href="#远端下载的url">#</a></h2>
+<p>从上面的源码图中，我们会看到远端的URL来自于<code>artifact_utils_1.getArtifactRemoteURL(artifactDetails)</code>这个的返回，而该函数在<code>@electron/get/dist/cjs/artifact-utils.js</code>中进行定义：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c50b132b0e544deb06a17adb16fa16d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>该函数的定义也不难，主要流程如下：解析得到<code>base</code>变量，解析得到<code>path</code>变量，解析得到<code>file</code>变量，组合为<code>${base}${path}/${file}</code>。当然，你也可以在<code>mirrorOptions</code>中定义<code>resolveAssetURL</code>函数来返回自定义的地址。</p>
+<p>在上面的处理流程中，能够看到一个频繁出现的函数：<code>mirroVar</code>。该函数也在该文件中定义，其函数定义如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function mirrorVar(name, options, defaultValue) {     // Convert camelCase to camel_case for env var reading     const lowerName = name.replace(/([a-z])([A-Z])/g, (_, a, b) =&gt; `${a}_${b}`).toLowerCase();     return (process.env[`NPM_CONFIG_ELECTRON_${lowerName.toUpperCase()}`] ||         process.env[`npm_config_electron_${lowerName}`] ||         process.env[`npm_package_config_electron_${lowerName}`] ||         process.env[`ELECTRON_${lowerName.toUpperCase()}`] ||         options[name] ||         defaultValue); }</code></p>
+<p>该函数主要返回参数<code>name</code>相关的变量值，以<code>name = 'mirror'</code>为例，获取过程为：</p>
+<p><code>customDir</code>进行下划线分割转换，得到<code>const lowerName = 'mirror'</code>（name为&rsquo;customDir&rsquo;则转换为&rsquo;custom_dir&rsquo;）。</p>
+<p>依次检查如下环境变量值：</p>
+<ol>
+<li>NPM_CONFIG_ELECTRON_MIRROR</li>
+<li>npm_config_electron_mirror</li>
+<li>npm_package_config_electron_mirror</li>
+<li>ELECTRON_MIRROR</li>
+<li>options[&lsquo;mirror&rsquo;]</li>
+</ol>
+<p>上述任意变量存在值则直接使用，否则，使用默认值<code>defaultValue</code>。</p>
+<p>读到这里，也许有读者疑惑了，我明明是在<code>.npmrc</code>文件中配置的<code>ELECTRON_MIRROR</code>变量，而这里读取的明明是环境变量里面的值，怎么会有呢？如果直接使用node作为入口，那么确实不会有这些变量，但是通过npm运行就不一样了。这里用一个小例子来说明。</p>
+<p>首先在一个node项目中编写一个脚本env-test.js：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>console.log(process.env);</code></p>
+<p>我们通过使用node运行该js脚本：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>node env-test.js</code></p>
+<p>看到命令行的输出，只会有当前机器的环境变量：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/54cf866a83b3447ca9ee6185b50f07ce~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>但是一旦通过npm进行运行，又会不一样：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c316e5377aff4505a6943f6446dd60d4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>运行命令<code>npm run dev</code>，会得到如下的结果，这里本人使用IDEA的断掉调试，会更加清晰的看到env的值：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eafdd68cfae942eb926f5f7b4b1f6cbe~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>通过<code>npm run</code>的方式，我们发现我们在<code>~/.npmrc</code>文件中配置的一些参数，都能在这里得到，并且是以<code>npm_config_</code>作为开头的。可能还有读者有疑惑，上面读取的变量，都是同意大小写的，这里是<code>npm_config_ELECTRON_MIRROR</code>，能读取到吗？事实上，env的读取是忽略大小写的：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e9e9bb8bc6ac454f8b8775e061bed571~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>综合目前的研究，相信读者已经清楚了为什么通过配置ELECTRON_MIRROR在<code>.npmrc</code>能够达到加快Electron二进制基座的下载速度的目的了，至于一些其他的配置变量，可以阅读附录的官方文档翻译。</p>
+<h2 id="本地缓存机制">本地缓存机制<a hidden class="anchor" aria-hidden="true" href="#本地缓存机制">#</a></h2>
+<p>有的读者看了上述的远端下载可能会说，我的机器就在内网环境，内网也没有镜像让我来写，我该怎么下载呢？实际上，<code>@electron/get</code>也不会完全从远端下载制品。它在下载的过程，会优先进行本地缓存文件的查找，如果已经存在了缓存好的制品，自然也就不会从远端下载了。那么这个查找缓存的过程是怎样的呢？或者说，<code>@electron/get</code>会从本地哪个目录去查找呢？让我们回到<code>@electron/get/dist/cjs/index.js</code>脚本的<code>downloadArtifact</code>函数中，看该部分：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ee68f20ac8ae40b1b67345a21cd44569~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>在<code>url</code>变量获取的下一行，构建了一个Cache缓存对象，继续往下，通过判断不进行强制从远端下载的标志，会进入<code>getPathForFileInCache</code>函数返回一个本地的缓存文件路径，如果路径不为空则使用它。所以，我们只需要让这个函数能够返回一个合法的缓存文件路径就能让<code>@electron/get</code>不进行远端下载，而是使用本地的缓存文件。所以我们跟到该函数中：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f47848f6b63421c892b5a38356feff2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>函数最终会使用上一节中的<code>url</code>变量形成一个本地的缓存路径，至于代码中的<code>url.format</code>以及<code>filenamify</code>的效果，读者可以自行编写Demo验证。</p>
+<p>最后，路径还使用到了<code>this.cacheRoot</code>，查看Cache的构造函数，发现如果没有传递<code>cacheRoot</code>，则使用<code>defaultCacheRoot</code>，该值在该脚本文件上面有定义：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6a0c172345c4393bcd3169d4d3c4eb3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>通过一段脚本输出该路径：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const env_paths_1 = require(&quot;env-paths&quot;); const defaultCacheRoot = env_paths_1.default('electron', {   suffix: '', }).cache; console.log(defaultCacheRoot); // 在本人的机器上输出： // C:\Users\w4ngzhen\AppData\Local\electron\Cache</code></p>
+<p>所以在Windows机器下，默认的缓存目录在<code>~/AppData/Local/electron/Cache/</code>，在本人的机器上，已经缓存的文件如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2f40e15f78e64ab4a0345d061a515f1e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>源码个人认为也不用继续解析了，读者结合文件夹名称应该能够很容易分析。</p>
+<h1 id="附录electronget-官方wiki翻译">附录：@electron/get 官方Wiki翻译<a hidden class="anchor" aria-hidden="true" href="#附录electronget-官方wiki翻译">#</a></h1>
+<blockquote>
+<p>下载Electron发行版制品</p>
+</blockquote>
+<h2 id="使用">使用<a hidden class="anchor" aria-hidden="true" href="#使用">#</a></h2>
+<h3 id="基础方式下载一个electron二进制zip">基础方式：下载一个Electron二进制ZIP<a hidden class="anchor" aria-hidden="true" href="#基础方式下载一个electron二进制zip">#</a></h3>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { download } from '@electron/get'; // NB: Use this syntax within an async function, Node does not have support for //     top-level await as of Node 12. const zipFilePath = await download('4.0.4');</code></p>
+<h3 id="进阶下载macos下带有调试符号的electron文件">进阶：下载macOS下带有调试符号的Electron文件<a hidden class="anchor" aria-hidden="true" href="#进阶下载macos下带有调试符号的electron文件">#</a></h3>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { downloadArtifact } from '@electron/get'; // NB: Use this syntax within an async function, Node does not have support for //     top-level await as of Node 12. const zipFilePath = await downloadArtifact({   version: '4.0.4',   platform: 'darwin',   artifactName: 'electron',   artifactSuffix: 'symbols',   arch: 'x64', });</code></p>
+<h3 id="指定镜像">指定镜像<a hidden class="anchor" aria-hidden="true" href="#指定镜像">#</a></h3>
+<p>下列选项可以用来指定从其他的地方下载Electron资源：</p>
+<ul>
+<li><code>mirrorOptions</code> Object（JavaScript对象）
+<ul>
+<li><code>mirror</code> String (可选) - 下载资源的镜像地址的基础URL。</li>
+<li><code>nightlyMirror</code> String (可选) - Electron nightly-specific版本的镜像URL。</li>
+<li><code>customDir</code> String (可选) - 下载资源的目录名称，通常由版本号来设定。</li>
+<li><code>customFilename</code> String (可选) - 将要下载的资源的文件名称。</li>
+<li><code>resolveAssetURL</code> Function (可选) - 允许通过编程方式来进行资源下载的函数回调。</li>
+</ul>
+</li>
+</ul>
+<p>下载资源的URL进行如下的分解，每一项都来可以映射到<code>mirrorOptions</code>:</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/46a60ae22bad4750bfe2c6d02d5a21fe~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>Example:</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { download } from '@electron/get'; const zipFilePath = await download('4.0.4', {   mirrorOptions: {     mirror: 'https://mirror.example.com/electron/',     customDir: 'custom',     customFilename: 'unofficial-electron-linux.zip'   } }); // 上述将会从如下URL下载： // https://mirror.example.com/electron/custom/unofficial-electron-linux.zip const nightlyZipFilePath = await download('8.0.0-nightly.20190901', {   mirrorOptions: {     nightlyMirror: 'https://nightly.example.com/',     customDir: 'nightlies',     customFilename: 'nightly-linux.zip'   } }); // 上述将会从如下URL下载： // https://nightly.example.com/nightlies/nightly-linux.zip</code></p>
+<p><code>customDir</code>参数可以使用<code>{{ version }}</code>占位符来设置版本（务必注意：<code>{}</code>括号之间一定要有空格，否则会解析失败，即，<code>{{[空格]version{空格}}}</code>），这个占位符将会由所下载的资源的版本（没有首字符<code>v</code>）来动态替换。例如：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const zipFilePath = await download('4.0.4', {   mirrorOptions: {     mirror: 'https://mirror.example.com/electron/',     customDir: 'version-{{ version }}',     platform: 'linux',     arch: 'x64'   } }); // 将会从如下的URL下载： // https://mirror.example.com/electron/version-4.0.4/electron-v4.0.4-linux-x64.zip</code></p>
+<h4 id="使用环境变量来指定镜像选项">使用环境变量来指定镜像选项<a hidden class="anchor" aria-hidden="true" href="#使用环境变量来指定镜像选项">#</a></h4>
+<p>镜像配置选项也可以通过如下的环境变量来指定：</p>
+<ul>
+<li><code>ELECTRON_CUSTOM_DIR</code> - 指定资源下载的自定义目录。</li>
+<li><code>ELECTRON_CUSTOM_FILENAME</code> - 指定资源下载的自定义文件名。</li>
+<li><code>ELECTRON_MIRROR</code> - 指定如果版本没有使用nightly的时候，服务器的下载URL。</li>
+<li><code>ELECTRON_NIGHTLY_MIRROR</code> - 指定如果版本使用nightly的时候，服务器的下载URL。</li>
+</ul>
+<h3 id="重写下载的资源版本">重写下载的资源版本<a hidden class="anchor" aria-hidden="true" href="#重写下载的资源版本">#</a></h3>
+<p>所下载的资源的版本可以通过设置``ELECTRON_CUSTOM_VERSION <code>环境变量来进行覆盖。设置该版本将会覆盖传入</code>download<code>或是</code>downloadArtifact`函数的version参数。</p>
+<h2 id="它是如何运行的">它是如何运行的<a hidden class="anchor" aria-hidden="true" href="#它是如何运行的">#</a></h2>
+<p>下载Electron资源到操作系统中已知的位置，并且缓存该资源的模块，用于便于在将来请求同一个资源的时候能够立刻完成并返回。缓存路径如下：</p>
+<ul>
+<li>Linux: <code>$XDG_CACHE_HOME</code> or <code>~/.cache/electron/</code></li>
+<li>MacOS: <code>~/Library/Caches/electron/</code></li>
+<li>Windows: <code>%LOCALAPPDATA%/electron/Cache</code> or <code>~/AppData/Local/electron/Cache/</code></li>
+</ul>
+<p>默认情况下，该模块使用 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsindresorhus%2Fgot" title="https://github.com/sindresorhus/got"><code>got</code></a>作为下载器。因此，您可以通过<code>downloadOptions</code>使用与<code>get</code>相同的选项（<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsindresorhus%2Fgot%23options" title="https://github.com/sindresorhus/got#options">options</a>）来进行下载。</p>
+<h3 id="进度条">进度条<a hidden class="anchor" aria-hidden="true" href="#进度条">#</a></h3>
+<p>默认情况下，下载工件超过30秒时会显示进度条。若要禁用，请将<code>ELECTRON_GET_NO_PROGRESS</code> 环境变量设置为任何非空值，或设置<code>downloadOptions</code>中的<code>quiet</code>为<code>true</code>。如果您需要通过API自己监视进度，请设置<code>downloadOptions</code>中的<code>getProgressCallback</code> 回调，其函数签名与<code>got</code>的<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsindresorhus%2Fgot%23ondownloadprogress-progress" title="https://github.com/sindresorhus/got#ondownloadprogress-progress"><code>downloadProgress</code> event callback</a>相同。</p>
+<h3 id="代理">代理<a hidden class="anchor" aria-hidden="true" href="#代理">#</a></h3>
+<p>下游软件包应利用 <code>initializeProxy</code>功能来添加HTTP(S)代理支持。如果设置了环境变量<code>ELECTRON_GET_USE_PROXY</code>，则会自动调用它。根据使用的Node版本，使用不同的代理模块.因此，设置代理环境变量的方式略有不同。对于Node 10及更高版本，使用<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fgajus%2Fglobal-agent%23environment-variables" title="https://github.com/gajus/global-agent#environment-variables"><code>global-agent</code></a>。否则，将使用<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fnp-maintain%2Fglobal-tunnel%23auto-config" title="https://github.com/np-maintain/global-tunnel#auto-config"><code>global-tunnel-ng</code></a>。请参阅相应的链接模块以确定如何配置代理支持。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/electron/">Electron</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%B8%8D%E6%87%82%E8%BF%99%E4%BA%9B%E7%AE%80%E5%8E%86%E4%B8%8A%E9%83%BD%E4%B8%8D%E6%95%A2%E5%86%99%E8%87%AA%E5%B7%B1%E7%86%9F%E6%82%89redis/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>不懂这些，简历上都不敢写自己熟悉Redis</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E4%BD%9C%E4%B8%BA%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91%E6%84%9F%E5%8F%97%E4%B8%8B%E6%8E%A5%E5%8F%A3%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%AD%85%E5%8A%9B/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>作为后端开发，感受下接口带来的魅力！🔥🔥</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码解析Electron的安装为什么这么慢 on x"
+            href="https://x.com/intent/tweet/?text=%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f&amp;hashtags=Electron">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码解析Electron的安装为什么这么慢 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f&amp;title=%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2&amp;summary=%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码解析Electron的安装为什么这么慢 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f&title=%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码解析Electron的安装为什么这么慢 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码解析Electron的安装为什么这么慢 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码解析Electron的安装为什么这么慢 on telegram"
+            href="https://telegram.me/share/url?text=%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码解析Electron的安装为什么这么慢 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%bb%8e%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90Electron%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e4%b9%88%e6%85%a2&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E6%259E%2590electron%25E7%259A%2584%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%25BA%25E4%25BB%2580%25E4%25B9%2588%25E8%25BF%2599%25E4%25B9%2588%25E6%2585%25A2%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

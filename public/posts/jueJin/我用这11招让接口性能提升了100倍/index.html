@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>我用这11招，让接口性能提升了100倍 | PaperMod</title>
+<meta name="keywords" content="后端">
+<meta name="description" content="前言接口性能优化对于从事后端开发的同学来说，肯定再熟悉不过了，因为它是一个跟开发语言无关的公共问题。该问题说简单也简单，说复杂也复杂。有时候，只需加个索引就能解决问题。有时候，需要做代码重构。">
+<meta name="author" content="苏三说技术">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%88%91%E7%94%A8%E8%BF%9911%E6%8B%9B%E8%AE%A9%E6%8E%A5%E5%8F%A3%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E4%BA%86100%E5%80%8D/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%88%91%E7%94%A8%E8%BF%9911%E6%8B%9B%E8%AE%A9%E6%8E%A5%E5%8F%A3%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E4%BA%86100%E5%80%8D/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="我用这11招，让接口性能提升了100倍" />
+<meta property="og:description" content="前言接口性能优化对于从事后端开发的同学来说，肯定再熟悉不过了，因为它是一个跟开发语言无关的公共问题。该问题说简单也简单，说复杂也复杂。有时候，只需加个索引就能解决问题。有时候，需要做代码重构。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%88%91%E7%94%A8%E8%BF%9911%E6%8B%9B%E8%AE%A9%E6%8E%A5%E5%8F%A3%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E4%BA%86100%E5%80%8D/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-07-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-07-19T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="我用这11招，让接口性能提升了100倍"/>
+<meta name="twitter:description" content="前言接口性能优化对于从事后端开发的同学来说，肯定再熟悉不过了，因为它是一个跟开发语言无关的公共问题。该问题说简单也简单，说复杂也复杂。有时候，只需加个索引就能解决问题。有时候，需要做代码重构。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "我用这11招，让接口性能提升了100倍",
+      "item": "http://localhost:1313/posts/juejin/%E6%88%91%E7%94%A8%E8%BF%9911%E6%8B%9B%E8%AE%A9%E6%8E%A5%E5%8F%A3%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E4%BA%86100%E5%80%8D/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "我用这11招，让接口性能提升了100倍",
+  "name": "我用这11招，让接口性能提升了100倍",
+  "description": "前言接口性能优化对于从事后端开发的同学来说，肯定再熟悉不过了，因为它是一个跟开发语言无关的公共问题。该问题说简单也简单，说复杂也复杂。有时候，只需加个索引就能解决问题。有时候，需要做代码重构。",
+  "keywords": [
+    "后端"
+  ],
+  "articleBody": "前言 苏三的免费刷题网站：www.susan.net.cn 里面：面试八股文、BAT面试真题、工作内推、工作经验分享、技术专栏等等什么都有，欢迎收藏和转发。\n接口性能优化对于从事后端开发的同学来说，肯定再熟悉不过了，因为它是一个跟开发语言无关的公共问题。\n该问题说简单也简单，说复杂也复杂。\n有时候，只需加个索引就能解决问题。\n有时候，需要做代码重构。\n有时候，需要增加缓存。\n有时候，需要引入一些中间件，比如mq。\n有时候，需要需要分库分表。\n有时候，需要拆分服务。\n等等。。。\n导致接口性能问题的原因千奇百怪，不同的项目不同的接口，原因可能也不一样。\n本文我总结了一些行之有效的，优化接口性能的办法，给有需要的朋友一个参考。\n1.索引 接口性能优化大家第一个想到的可能是：优化索引。\n没错，优化索引的成本是最小的。\n你通过查看线上日志或者监控报告，查到某个接口用到的某条sql语句耗时比较长。\n这时你可能会有下面这些疑问：\n该sql语句加索引了没？ 加的索引生效了没？ mysql选错索引了没？ 1.1 没加索引 sql语句中where条件的关键字段，或者order by后面的排序字段，忘了加索引，这个问题在项目中很常见。\n项目刚开始的时候，由于表中的数据量小，加不加索引sql查询性能差别不大。\n后来，随着业务的发展，表中数据量越来越多，就不得不加索引了。\n可以通过命令：\nsql\n代码解读\n复制代码\nshow index from `order`;\n能单独查看某张表的索引情况。\n也可以通过命令：\nsql\n代码解读\n复制代码\nshow create table `order`;\n查看整张表的建表语句，里面同样会显示索引情况。\n通过ALTER TABLE命令可以添加索引：\nsql\n代码解读\n复制代码\nALTER TABLE `order` ADD INDEX idx_name (name);\n也可以通过CREATE INDEX命令添加索引：\nscss\n代码解读\n复制代码\nCREATE INDEX idx_name ON `order` (name);\n不过这里有一个需要注意的地方是：想通过命令修改索引，是不行的。\n目前在mysql中如果想要修改索引，只能先删除索引，再重新添加新的。\n删除索引可以用DROP INDEX命令：\nsql\n代码解读\n复制代码\nALTER TABLE `order` DROP INDEX idx_name;\n用DROP INDEX命令也行：\nsql\n代码解读\n复制代码\nDROP INDEX idx_name ON `order`;\n1.2 索引没生效 通过上面的命令我们已经能够确认索引是有的，但它生效了没？此时你内心或许会冒出这样一个疑问。\n那么，如何查看索引有没有生效呢？\n答：可以使用explain命令，查看mysql的执行计划，它会显示索引的使用情况。\n例如：\nsql\n代码解读\n复制代码\nexplain select * from `order` where code='002';\n结果：\r通过这几列可以判断索引使用情况，执行计划包含列的含义如下图所示：\r如果你想进一步了解explain的详细用法，可以看看我的另一篇文章《explain | 索引优化的这把绝世好剑，你真的会用吗？》\n说实话，sql语句没有走索引，排除没有建索引之外，最大的可能性是索引失效了。\n下面说说索引失效的常见原因：\r如果不是上面的这些原因，则需要再进一步排查一下其他原因。\n1.3 选错索引 此外，你有没有遇到过这样一种情况：明明是同一条sql，只有入参不同而已。有的时候走的索引a，有的时候却走的索引b？\n没错，有时候mysql会选错索引。\n必要时可以使用force index来强制查询sql走某个索引。\n至于为什么mysql会选错索引，后面有专门的文章介绍的，这里先留点悬念。\n2. sql优化 如果优化了索引之后，也没啥效果。\n接下来试着优化一下sql语句，因为它的改造成本相对于java代码来说也要小得多。\n下面给大家列举了sql优化的15个小技巧：\r由于这些技巧在我之前的文章中已经详细介绍过了，在这里我就不深入了。\n更详细的内容，可以看我的另一篇文章《聊聊sql优化的15个小技巧》，相信看完你会有很多收获。\n3. 远程调用 很多时候，我们需要在某个接口中，调用其他服务的接口。\n比如有这样的业务场景：\n在用户信息查询接口中需要返回：用户名称、性别、等级、头像、积分、成长值等信息。\n而用户名称、性别、等级、头像在用户服务中，积分在积分服务中，成长值在成长值服务中。为了汇总这些数据统一返回，需要另外提供一个对外接口服务。\n于是，用户信息查询接口需要调用用户查询接口、积分查询接口 和 成长值查询接口，然后汇总数据统一返回。\n调用过程如下图所示：\r调用远程接口总耗时 530ms = 200ms + 150ms + 180ms\n显然这种串行调用远程接口性能是非常不好的，调用远程接口总的耗时为所有的远程接口耗时之和。\n那么如何优化远程接口性能呢？\n3.1 并行调用 上面说到，既然串行调用多个远程接口性能很差，为什么不改成并行呢？\n如下图所示：\r调用远程接口总耗时 200ms = 200ms（即耗时最长的那次远程接口调用）\n在java8之前可以通过实现Callable接口，获取线程返回结果。\njava8以后通过CompleteFuture类实现该功能。我们这里以CompleteFuture为例：\nini\n代码解读\n复制代码\npublic UserInfo getUserInfo(Long id) throws InterruptedException, ExecutionException { final UserInfo userInfo = new UserInfo(); CompletableFuture userFuture = CompletableFuture.supplyAsync(() -\u003e { getRemoteUserAndFill(id, userInfo); return Boolean.TRUE; }, executor); CompletableFuture bonusFuture = CompletableFuture.supplyAsync(() -\u003e { getRemoteBonusAndFill(id, userInfo); return Boolean.TRUE; }, executor); CompletableFuture growthFuture = CompletableFuture.supplyAsync(() -\u003e { getRemoteGrowthAndFill(id, userInfo); return Boolean.TRUE; }, executor); CompletableFuture.allOf(userFuture, bonusFuture, growthFuture).join(); userFuture.get(); bonusFuture.get(); growthFuture.get(); return userInfo; }\n温馨提醒一下，这两种方式别忘了使用线程池。示例中我用到了executor，表示自定义的线程池，为了防止高并发场景下，出现线程过多的问题。\n3.2 数据异构 上面说到的用户信息查询接口需要调用用户查询接口、积分查询接口 和 成长值查询接口，然后汇总数据统一返回。\n那么，我们能不能把数据冗余一下，把用户信息、积分和成长值的数据统一存储到一个地方，比如：redis，存的数据结构就是用户信息查询接口所需要的内容。然后通过用户id，直接从redis中查询数据出来，不就OK了？\n如果在高并发的场景下，为了提升接口性能，远程接口调用大概率会被去掉，而改成保存冗余数据的数据异构方案。\n但需要注意的是，如果使用了数据异构方案，就可能会出现数据一致性问题。\n用户信息、积分和成长值有更新的话，大部分情况下，会先更新到数据库，然后同步到redis。但这种跨库的操作，可能会导致两边数据不一致的情况产生。\n4. 重复调用 重复调用在我们的日常工作代码中可以说随处可见，但如果没有控制好，会非常影响接口的性能。\n不信，我们一起看看。\n4.1 循环查数据库 有时候，我们需要从指定的用户集合中，查询出有哪些是在数据库中已经存在的。\n实现代码可以这样写：\nsql\n代码解读\n复制代码\npublic List queryUser(List searchList) { if (CollectionUtils.isEmpty(searchList)) { return Collections.emptyList(); } List result = Lists.newArrayList(); searchList.forEach(user -\u003e result.add(userMapper.getUserById(user.getId()))); return result; }\n这里如果有50个用户，则需要循环50次，去查询数据库。我们都知道，每查询一次数据库，就是一次远程调用。\n如果查询50次数据库，就有50次远程调用，这是非常耗时的操作。\n那么，我们如何优化呢？\n具体代码如下：\nscss\n代码解读\n复制代码\npublic List queryUser(List searchList) { if (CollectionUtils.isEmpty(searchList)) { return Collections.emptyList(); } List ids = searchList.stream().map(User::getId).collect(Collectors.toList()); return userMapper.getUserByIds(ids); }\n提供一个根据用户id集合批量查询用户的接口，只远程调用一次，就能查询出所有的数据。\n这里有个需要注意的地方是：id集合的大小要做限制，最好一次不要请求太多的数据。要根据实际情况而定，建议控制每次请求的记录条数在500以内。\n4.2 死循环 有些小伙伴看到这个标题，可能会感到有点意外，死循环也算？\n代码中不是应该避免死循环吗？为啥还是会产生死循环？\n有时候死循环是我们自己写的，例如下面这段代码：\nkotlin\n代码解读\n复制代码\nwhile(true) { if(condition) { break; } System.out.println(\"do samething\"); }\n这里使用了while(true)的循环调用，这种写法在CAS自旋锁中使用比较多。\n当满足condition等于true的时候，则自动退出该循环。\n如果condition条件非常复杂，一旦出现判断不正确，或者少写了一些逻辑判断，就可能在某些场景下出现死循环的问题。\n出现死循环，大概率是开发人员人为的bug导致的，不过这种情况很容易被测出来。\n还有一种隐藏的比较深的死循环，是由于代码写的不太严谨导致的。如果用正常数据，可能测不出问题，但一旦出现异常数据，就会立即出现死循环。\n4.3 无限递归 如果想要打印某个分类的所有父分类，可以用类似这样的递归方法实现：\ncsharp\n代码解读\n复制代码\npublic void printCategory(Category category) { if(category == null || category.getParentId() == null) { return; } System.out.println(\"父分类名称：\"+ category.getName()); Category parent = categoryMapper.getCategoryById(category.getParentId()); printCategory(parent); }\n正常情况下，这段代码是没有问题的。\n但如果某次有人误操作，把某个分类的parentId指向了它自己，这样就会出现无限递归的情况。导致接口一直不能返回数据，最终会发生堆栈溢出。\n建议写递归方法时，设定一个递归的深度，比如：分类最大等级有4级，则深度可以设置为4。然后在递归方法中做判断，如果深度大于4时，则自动返回，这样就能避免无限循环的情况。\n5. 异步处理 有时候，我们接口性能优化，需要重新梳理一下业务逻辑，看看是否有设计上不太合理的地方。\n比如有个用户请求接口中，需要做业务操作，发站内通知，和记录操作日志。为了实现起来比较方便，通常我们会将这些逻辑放在接口中同步执行，势必会对接口性能造成一定的影响。\n接口内部流程图如下：\r这个接口表面上看起来没有问题，但如果你仔细梳理一下业务逻辑，会发现只有业务操作才是核心逻辑，其他的功能都是非核心逻辑。\n在这里有个原则就是：核心逻辑可以同步执行，同步写库。非核心逻辑，可以异步执行，异步写库。\n上面这个例子中，发站内通知和用户操作日志功能，对实时性要求不高，即使晚点写库，用户无非是晚点收到站内通知，或者运营晚点看到用户操作日志，对业务影响不大，所以完全可以异步处理。\n通常异步主要有两种：多线程 和 mq。\n5.1 线程池 使用线程池改造之后，接口逻辑如下：\r发站内通知和用户操作日志功能，被提交到了两个单独的线程池中。\n这样接口中重点关注的是业务操作，把其他的逻辑交给线程异步执行，这样改造之后，让接口性能瞬间提升了。\n但使用线程池有个小问题就是：如果服务器重启了，或者是需要被执行的功能出现异常了，无法重试，会丢数据。\n那么这个问题该怎么办呢？\n5.2 mq 使用mq改造之后，接口逻辑如下：\r对于发站内通知和用户操作日志功能，在接口中并没真正实现，它只发送了mq消息到mq服务器。然后由mq消费者消费消息时，才真正的执行这两个功能。\n这样改造之后，接口性能同样提升了，因为发送mq消息速度是很快的，我们只需关注业务操作的代码即可。\n6. 避免大事务 很多小伙伴在使用spring框架开发项目时，为了方便，喜欢使用@Transactional注解提供事务功能。\n没错，使用@Transactional注解这种声明式事务的方式提供事务功能，确实能少写很多代码，提升开发效率。\n但也容易造成大事务，引发其他的问题。\n下面用一张图看看大事务引发的问题。\r从图中能够看出，大事务问题可能会造成接口超时，对接口的性能有直接的影响。\n我们该如何优化大事务呢？\n少用@Transactional注解 将查询(select)方法放到事务外 事务中避免远程调用 事务中避免一次性处理太多数据 有些功能可以非事务执行 有些功能可以异步处理 关于大事务问题我的另一篇文章《让人头痛的大事务问题到底要如何解决？》，它里面做了非常详细的介绍，如果大家感兴趣可以看看。\n7. 锁粒度 在某些业务场景中，为了防止多个线程并发修改某个共享数据，造成数据异常。\n为了解决并发场景下，多个线程同时修改数据，造成数据不一致的情况。通常情况下，我们会：加锁。\n但如果锁加得不好，导致锁的粒度太粗，也会非常影响接口性能。\n7.1 synchronized 在java中提供了synchronized关键字给我们的代码加锁。\n通常有两种写法：在方法上加锁 和 在代码块上加锁。\n先看看如何在方法上加锁：\nscss\n代码解读\n复制代码\npublic synchronized doSave(String fileUrl) { mkdir(); uploadFile(fileUrl); sendMessage(fileUrl); }\n这里加锁的目的是为了防止并发的情况下，创建了相同的目录，第二次会创建失败，影响业务功能。\n但这种直接在方法上加锁，锁的粒度有点粗。因为doSave方法中的上传文件和发消息方法，是不需要加锁的。只有创建目录方法，才需要加锁。\n我们都知道文件上传操作是非常耗时的，如果将整个方法加锁，那么需要等到整个方法执行完之后才能释放锁。显然，这会导致该方法的性能很差，变得得不偿失。\n这时，我们可以改成在代码块上加锁了，具体代码如下：\nscss\n代码解读\n复制代码\npublic void doSave(String path,String fileUrl) { synchronized(this) { if(!exists(path)) { mkdir(path); } } uploadFile(fileUrl); sendMessage(fileUrl); }\n这样改造之后，锁的粒度一下子变小了，只有并发创建目录功能才加了锁。而创建目录是一个非常快的操作，即使加锁对接口的性能影响也不大。\n最重要的是，其他的上传文件和发送消息功能，任然可以并发执行。\n当然，这种做在单机版的服务中，是没有问题的。但现在部署的生产环境，为了保证服务的稳定性，一般情况下，同一个服务会被部署在多个节点中。如果哪天挂了一个节点，其他的节点服务任然可用。\n多节点部署避免了因为某个节点挂了，导致服务不可用的情况。同时也能分摊整个系统的流量，避免系统压力过大。\n同时它也带来了新的问题：synchronized只能保证一个节点加锁是有效的，但如果有多个节点如何加锁呢?\n答：这就需要使用：分布式锁了。目前主流的分布式锁包括：redis分布式锁、zookeeper分布式锁 和 数据库分布式锁。\n由于zookeeper分布式锁的性能不太好，真实业务场景用的不多，这里先不讲。\n下面聊一下redis分布式锁。\n7.2 redis分布式锁 在分布式系统中，由于redis分布式锁相对于更简单和高效，成为了分布式锁的首先，被我们用到了很多实际业务场景当中。\n使用redis分布式锁的伪代码如下：\ntypescript\n代码解读\n复制代码\npublic void doSave(String path,String fileUrl) { try { String result = jedis.set(lockKey, requestId, \"NX\", \"PX\", expireTime); if (\"OK\".equals(result)) { if(!exists(path)) { mkdir(path); uploadFile(fileUrl); sendMessage(fileUrl); } return true; } } finally{ unlock(lockKey,requestId); } return false; }\n跟之前使用synchronized关键字加锁时一样，这里锁的范围也太大了，换句话说就是锁的粒度太粗，这样会导致整个方法的执行效率很低。\n其实只有创建目录的时候，才需要加分布式锁，其余代码根本不用加锁。\n于是，我们需要优化一下代码：\ntypescript\n代码解读\n复制代码\npublic void doSave(String path,String fileUrl) { if(this.tryLock()) { mkdir(path); } uploadFile(fileUrl); sendMessage(fileUrl); } private boolean tryLock() { try { String result = jedis.set(lockKey, requestId, \"NX\", \"PX\", expireTime); if (\"OK\".equals(result)) { return true; } } finally{ unlock(lockKey,requestId); } return false; }\n上面代码将加锁的范围缩小了，只有创建目录时才加了锁。这样看似简单的优化之后，接口性能能提升很多。说不定，会有意外的惊喜喔。哈哈哈。\nredis分布式锁虽说好用，但它在使用时，有很多注意的细节，隐藏了很多坑，如果稍不注意很容易踩中。详细内容可以看看我的另一篇文章《聊聊redis分布式锁的8大坑》\n7.3 数据库分布式锁 mysql数据库中主要有三种锁：\n表锁：加锁快，不会出现死锁。但锁定粒度大，发生锁冲突的概率最高，并发度最低。 行锁：加锁慢，会出现死锁。但锁定粒度最小，发生锁冲突的概率最低，并发度也最高。 间隙锁：开销和加锁时间界于表锁和行锁之间。它会出现死锁，锁定粒度界于表锁和行锁之间，并发度一般。 并发度越高，意味着接口性能越好。\n所以数据库锁的优化方向是：\n优先使用行锁，其次使用间隙锁，再其次使用表锁。\n最近就业形势比较困难，为了感谢各位小伙伴对苏三一直以来的支持，我特地创建了一些工作内推群， 看看能不能帮助到大家。\n你可以在群里发布招聘信息，也可以内推工作，也可以在群里投递简历找工作，也可以在群里交流面试或者工作的话题。\n添加苏三的私人微信：su_san_java，备注：掘金+所在城市，即可加入。\n赶紧看看，你用对了没？\n8.分页处理 有时候我会调用某个接口批量查询数据，比如：通过用户id批量查询出用户信息，然后给这些用户送积分。\n但如果你一次性查询的用户数量太多了，比如一次查询2000个用户的数据。参数中传入了2000个用户的id，远程调用接口，会发现该用户查询接口经常超时。\n调用代码如下：\nini\n代码解读\n复制代码\nList users = remoteCallUser(ids);\n众所周知，调用接口从数据库获取数据，是需要经过网络传输的。如果数据量太大，无论是获取数据的速度，还是网络传输受限于带宽，都会导致耗时时间比较长。\n那么，这种情况要如何优化呢？\n答：分页处理。\n将一次获取所有的数据的请求，改成分多次获取，每次只获取一部分用户的数据，最后进行合并和汇总。\n其实，处理这个问题，要分为两种场景：同步调用 和 异步调用。\n8.1 同步调用 如果在job中需要获取2000个用户的信息，它要求只要能正确获取到数据就好，对获取数据的总耗时要求不太高。\n但对每一次远程接口调用的耗时有要求，不能大于500ms，不然会有邮件预警。\n这时，我们可以同步分页调用批量查询用户信息接口。\n具体示例代码如下：\nini\n代码解读\n复制代码\nList",
+  "wordCount" : "866",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-07-19T00:00:00Z",
+  "dateModified": "2024-07-19T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "苏三说技术"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%88%91%E7%94%A8%E8%BF%9911%E6%8B%9B%E8%AE%A9%E6%8E%A5%E5%8F%A3%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E4%BA%86100%E5%80%8D/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      我用这11招，让接口性能提升了100倍
+    </h1>
+    <div class="post-description">
+      前言接口性能优化对于从事后端开发的同学来说，肯定再熟悉不过了，因为它是一个跟开发语言无关的公共问题。该问题说简单也简单，说复杂也复杂。有时候，只需加个索引就能解决问题。有时候，需要做代码重构。
+    </div>
+    <div class="post-meta"><span title='2024-07-19 00:00:00 +0000 UTC'>七月 19, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;苏三说技术&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#1%e7%b4%a2%e5%bc%95" aria-label="1.索引">1.索引</a><ul>
+                        
+                <li>
+                    <a href="#11-%e6%b2%a1%e5%8a%a0%e7%b4%a2%e5%bc%95" aria-label="1.1 没加索引">1.1 没加索引</a></li>
+                <li>
+                    <a href="#12-%e7%b4%a2%e5%bc%95%e6%b2%a1%e7%94%9f%e6%95%88" aria-label="1.2 索引没生效">1.2 索引没生效</a></li>
+                <li>
+                    <a href="#13-%e9%80%89%e9%94%99%e7%b4%a2%e5%bc%95" aria-label="1.3 选错索引">1.3 选错索引</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-sql%e4%bc%98%e5%8c%96" aria-label="2. sql优化">2. sql优化</a></li>
+                <li>
+                    <a href="#3-%e8%bf%9c%e7%a8%8b%e8%b0%83%e7%94%a8" aria-label="3. 远程调用">3. 远程调用</a><ul>
+                        
+                <li>
+                    <a href="#31-%e5%b9%b6%e8%a1%8c%e8%b0%83%e7%94%a8" aria-label="3.1 并行调用">3.1 并行调用</a></li>
+                <li>
+                    <a href="#32-%e6%95%b0%e6%8d%ae%e5%bc%82%e6%9e%84" aria-label="3.2 数据异构">3.2 数据异构</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4-%e9%87%8d%e5%a4%8d%e8%b0%83%e7%94%a8" aria-label="4. 重复调用">4. 重复调用</a><ul>
+                        
+                <li>
+                    <a href="#41-%e5%be%aa%e7%8e%af%e6%9f%a5%e6%95%b0%e6%8d%ae%e5%ba%93" aria-label="4.1 循环查数据库">4.1 循环查数据库</a></li>
+                <li>
+                    <a href="#42-%e6%ad%bb%e5%be%aa%e7%8e%af" aria-label="4.2 死循环">4.2 死循环</a></li>
+                <li>
+                    <a href="#43-%e6%97%a0%e9%99%90%e9%80%92%e5%bd%92" aria-label="4.3 无限递归">4.3 无限递归</a></li></ul>
+                </li>
+                <li>
+                    <a href="#5-%e5%bc%82%e6%ad%a5%e5%a4%84%e7%90%86" aria-label="5. 异步处理">5. 异步处理</a><ul>
+                        
+                <li>
+                    <a href="#51-%e7%ba%bf%e7%a8%8b%e6%b1%a0" aria-label="5.1 线程池">5.1 线程池</a></li>
+                <li>
+                    <a href="#52-mq" aria-label="5.2 mq">5.2 mq</a></li></ul>
+                </li>
+                <li>
+                    <a href="#6-%e9%81%bf%e5%85%8d%e5%a4%a7%e4%ba%8b%e5%8a%a1" aria-label="6. 避免大事务">6. 避免大事务</a></li>
+                <li>
+                    <a href="#7-%e9%94%81%e7%b2%92%e5%ba%a6" aria-label="7. 锁粒度">7. 锁粒度</a><ul>
+                        
+                <li>
+                    <a href="#71-synchronized" aria-label="7.1 synchronized">7.1 synchronized</a></li>
+                <li>
+                    <a href="#72-redis%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81" aria-label="7.2 redis分布式锁">7.2 redis分布式锁</a></li>
+                <li>
+                    <a href="#73-%e6%95%b0%e6%8d%ae%e5%ba%93%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81" aria-label="7.3 数据库分布式锁">7.3 数据库分布式锁</a></li></ul>
+                </li>
+                <li>
+                    <a href="#8%e5%88%86%e9%a1%b5%e5%a4%84%e7%90%86" aria-label="8.分页处理">8.分页处理</a><ul>
+                        
+                <li>
+                    <a href="#81-%e5%90%8c%e6%ad%a5%e8%b0%83%e7%94%a8" aria-label="8.1 同步调用">8.1 同步调用</a></li>
+                <li>
+                    <a href="#82-%e5%bc%82%e6%ad%a5%e8%b0%83%e7%94%a8" aria-label="8.2 异步调用">8.2 异步调用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#9%e5%8a%a0%e7%bc%93%e5%ad%98" aria-label="9.加缓存">9.加缓存</a><ul>
+                        
+                <li>
+                    <a href="#91-redis%e7%bc%93%e5%ad%98" aria-label="9.1 redis缓存">9.1 redis缓存</a></li>
+                <li>
+                    <a href="#92-%e4%ba%8c%e7%ba%a7%e7%bc%93%e5%ad%98" aria-label="9.2 二级缓存">9.2 二级缓存</a></li></ul>
+                </li>
+                <li>
+                    <a href="#10-%e5%88%86%e5%ba%93%e5%88%86%e8%a1%a8" aria-label="10. 分库分表">10. 分库分表</a></li>
+                <li>
+                    <a href="#11-%e8%be%85%e5%8a%a9%e5%8a%9f%e8%83%bd" aria-label="11. 辅助功能">11. 辅助功能</a><ul>
+                        
+                <li>
+                    <a href="#111-%e5%bc%80%e5%90%af%e6%85%a2%e6%9f%a5%e8%af%a2%e6%97%a5%e5%bf%97" aria-label="11.1 开启慢查询日志">11.1 开启慢查询日志</a></li>
+                <li>
+                    <a href="#112-%e5%8a%a0%e7%9b%91%e6%8e%a7" aria-label="11.2 加监控">11.2 加监控</a></li>
+                <li>
+                    <a href="#113-%e9%93%be%e8%b7%af%e8%b7%9f%e8%b8%aa" aria-label="11.3 链路跟踪">11.3 链路跟踪</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e5%90%8e%e8%af%b4%e4%b8%80%e5%8f%a5%e6%b1%82%e5%85%b3%e6%b3%a8%e5%88%ab%e7%99%bd%e5%ab%96%e6%88%91" aria-label="最后说一句(求关注，别白嫖我)">最后说一句(求关注，别白嫖我)</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h3>
+<blockquote>
+<p>苏三的免费刷题网站：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.susan.net.cn" title="http://www.susan.net.cn">www.susan.net.cn</a> 里面：面试八股文、BAT面试真题、工作内推、工作经验分享、技术专栏等等什么都有，欢迎收藏和转发。</p>
+</blockquote>
+<p><strong>接口性能优化</strong>对于从事后端开发的同学来说，肯定再熟悉不过了，因为它是一个跟开发语言无关的公共问题。</p>
+<p>该问题说简单也简单，说复杂也复杂。</p>
+<p>有时候，只需加个索引就能解决问题。</p>
+<p>有时候，需要做代码重构。</p>
+<p>有时候，需要增加缓存。</p>
+<p>有时候，需要引入一些中间件，比如mq。</p>
+<p>有时候，需要需要分库分表。</p>
+<p>有时候，需要拆分服务。</p>
+<p>等等。。。</p>
+<p>导致接口性能问题的原因千奇百怪，不同的项目不同的接口，原因可能也不一样。</p>
+<p>本文我总结了一些行之有效的，优化接口性能的办法，给有需要的朋友一个参考。</p>
+<h3 id="1索引">1.索引<a hidden class="anchor" aria-hidden="true" href="#1索引">#</a></h3>
+<p>接口性能优化大家第一个想到的可能是：<code>优化索引</code>。</p>
+<p>没错，优化索引的成本是最小的。</p>
+<p>你通过查看线上日志或者监控报告，查到某个接口用到的某条sql语句耗时比较长。</p>
+<p>这时你可能会有下面这些疑问：</p>
+<ol>
+<li>该sql语句加索引了没？</li>
+<li>加的索引生效了没？</li>
+<li>mysql选错索引了没？</li>
+</ol>
+<h4 id="11-没加索引">1.1 没加索引<a hidden class="anchor" aria-hidden="true" href="#11-没加索引">#</a></h4>
+<p>sql语句中<code>where</code>条件的关键字段，或者<code>order by</code>后面的排序字段，忘了加索引，这个问题在项目中很常见。</p>
+<p>项目刚开始的时候，由于表中的数据量小，加不加索引sql查询性能差别不大。</p>
+<p>后来，随着业务的发展，表中数据量越来越多，就不得不加索引了。</p>
+<p>可以通过命令：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>show index from `order`;</code></p>
+<p>能单独查看某张表的索引情况。</p>
+<p>也可以通过命令：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>show create table `order`;</code></p>
+<p>查看整张表的建表语句，里面同样会显示索引情况。</p>
+<p>通过<code>ALTER TABLE</code>命令可以添加索引：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ALTER TABLE `order` ADD INDEX idx_name (name);</code></p>
+<p>也可以通过<code>CREATE INDEX</code>命令添加索引：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>CREATE INDEX idx_name ON `order` (name);</code></p>
+<p>不过这里有一个需要注意的地方是：想通过命令修改索引，是不行的。</p>
+<p>目前在mysql中如果想要修改索引，只能先删除索引，再重新添加新的。</p>
+<p>删除索引可以用<code>DROP INDEX</code>命令：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ALTER TABLE `order` DROP INDEX idx_name;</code></p>
+<p>用<code>DROP INDEX</code>命令也行：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>DROP INDEX idx_name ON `order`;</code></p>
+<h4 id="12-索引没生效">1.2 索引没生效<a hidden class="anchor" aria-hidden="true" href="#12-索引没生效">#</a></h4>
+<p>通过上面的命令我们已经能够确认索引是有的，但它生效了没？此时你内心或许会冒出这样一个疑问。</p>
+<p>那么，如何查看索引有没有生效呢？</p>
+<p>答：可以使用<code>explain</code>命令，查看mysql的执行计划，它会显示索引的使用情况。</p>
+<p>例如：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>explain select * from `order` where code='002';</code></p>
+<p>结果：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/42e055f082b740c195f53031b639b2d9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=xDW%2BdZ5QQDufTS7zHHZSY%2Blbqmw%3D" alt="图片"  />
+通过这几列可以判断索引使用情况，执行计划包含列的含义如下图所示：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/81a4c9efe48749bfab9a83496bd0b7cb~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=M4Fh7f8BybQKwmaldDEukcmK%2BHM%3D" alt="图片"  />
+如果你想进一步了解explain的详细用法，可以看看我的另一篇文章《<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzkwNjMwMTgzMQ%3D%3D%26mid%3D2247490262%26idx%3D1%26sn%3Da67f610afa984ecca130a54a3be453ab%26chksm%3Dc0ebc23ef79c4b2869dea998e413c5cbea6aeeea01ee74efc7c1a5fc228baa7beca215adf3ea%26token%3D751314179%26lang%3Dzh_CN%26scene%3D21%23wechat_redirect" title="https://mp.weixin.qq.com/s?__biz=MzkwNjMwMTgzMQ==&amp;mid=2247490262&amp;idx=1&amp;sn=a67f610afa984ecca130a54a3be453ab&amp;chksm=c0ebc23ef79c4b2869dea998e413c5cbea6aeeea01ee74efc7c1a5fc228baa7beca215adf3ea&amp;token=751314179&amp;lang=zh_CN&amp;scene=21#wechat_redirect">explain | 索引优化的这把绝世好剑，你真的会用吗？</a>》</p>
+<p>说实话，sql语句没有走索引，排除没有建索引之外，最大的可能性是索引失效了。</p>
+<p>下面说说索引失效的常见原因：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/ceddeae1578047559584096471d890d3~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=iwF6XwTrkDW05J7yViyuUFfoYu0%3D" alt="图片"  />
+如果不是上面的这些原因，则需要再进一步排查一下其他原因。</p>
+<h4 id="13-选错索引">1.3 选错索引<a hidden class="anchor" aria-hidden="true" href="#13-选错索引">#</a></h4>
+<p>此外，你有没有遇到过这样一种情况：明明是同一条sql，只有入参不同而已。有的时候走的索引a，有的时候却走的索引b？</p>
+<p>没错，有时候mysql会选错索引。</p>
+<p>必要时可以使用<code>force index</code>来强制查询sql走某个索引。</p>
+<p>至于为什么mysql会选错索引，后面有专门的文章介绍的，这里先留点悬念。</p>
+<h3 id="2-sql优化">2. sql优化<a hidden class="anchor" aria-hidden="true" href="#2-sql优化">#</a></h3>
+<p>如果优化了索引之后，也没啥效果。</p>
+<p>接下来试着优化一下sql语句，因为它的改造成本相对于java代码来说也要小得多。</p>
+<p>下面给大家列举了sql优化的15个小技巧：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/68c0156d8fd54e2eba70b70a42e51054~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=gVk7ok1R8L3sRhUoOysXkLTmk%2Bs%3D" alt="图片"  />
+由于这些技巧在我之前的文章中已经详细介绍过了，在这里我就不深入了。</p>
+<p>更详细的内容，可以看我的另一篇文章《<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzkwNjMwMTgzMQ%3D%3D%26mid%3D2247490473%26idx%3D1%26sn%3Dba07d64aa8c89054bd263efd660d3a3f%26chksm%3Dc0ebc341f79c4a579a6f41465df0459a696ab8ef0499a5f6fd76269af1064fde0286afdb027d%26token%3D2041133408%26lang%3Dzh_CN%26scene%3D21%23wechat_redirect" title="https://mp.weixin.qq.com/s?__biz=MzkwNjMwMTgzMQ==&amp;mid=2247490473&amp;idx=1&amp;sn=ba07d64aa8c89054bd263efd660d3a3f&amp;chksm=c0ebc341f79c4a579a6f41465df0459a696ab8ef0499a5f6fd76269af1064fde0286afdb027d&amp;token=2041133408&amp;lang=zh_CN&amp;scene=21#wechat_redirect">聊聊sql优化的15个小技巧</a>》，相信看完你会有很多收获。</p>
+<h3 id="3-远程调用">3. 远程调用<a hidden class="anchor" aria-hidden="true" href="#3-远程调用">#</a></h3>
+<p>很多时候，我们需要在某个接口中，调用其他服务的接口。</p>
+<p>比如有这样的业务场景：</p>
+<p>在用户信息查询接口中需要返回：用户名称、性别、等级、头像、积分、成长值等信息。</p>
+<p>而用户名称、性别、等级、头像在用户服务中，积分在积分服务中，成长值在成长值服务中。为了汇总这些数据统一返回，需要另外提供一个对外接口服务。</p>
+<p>于是，用户信息查询接口需要调用用户查询接口、积分查询接口 和 成长值查询接口，然后汇总数据统一返回。</p>
+<p>调用过程如下图所示：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/b270632983b446358d7df23b42c748e9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=0nhRKj0bwODBIZqAo4q5jv3jHOs%3D" alt="图片"  />
+调用远程接口总耗时 530ms = 200ms + 150ms + 180ms</p>
+<p>显然这种串行调用远程接口性能是非常不好的，调用远程接口总的耗时为所有的远程接口耗时之和。</p>
+<p>那么如何优化远程接口性能呢？</p>
+<h4 id="31-并行调用">3.1 并行调用<a hidden class="anchor" aria-hidden="true" href="#31-并行调用">#</a></h4>
+<p>上面说到，既然串行调用多个远程接口性能很差，为什么不改成并行呢？</p>
+<p>如下图所示：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/456ceb1f1aad46479b1b556b4d443dd9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=yNJsPKUmxUezT6gdO85O8a4MtH0%3D" alt="图片"  />
+调用远程接口总耗时 200ms = 200ms（即耗时最长的那次远程接口调用）</p>
+<p>在java8之前可以通过实现<code>Callable</code>接口，获取线程返回结果。</p>
+<p>java8以后通过<code>CompleteFuture</code>类实现该功能。我们这里以CompleteFuture为例：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public UserInfo getUserInfo(Long id) throws InterruptedException, ExecutionException {     final UserInfo userInfo = new UserInfo();     CompletableFuture userFuture = CompletableFuture.supplyAsync(() -&gt; {         getRemoteUserAndFill(id, userInfo);         return Boolean.TRUE;     }, executor);     CompletableFuture bonusFuture = CompletableFuture.supplyAsync(() -&gt; {         getRemoteBonusAndFill(id, userInfo);         return Boolean.TRUE;     }, executor);     CompletableFuture growthFuture = CompletableFuture.supplyAsync(() -&gt; {         getRemoteGrowthAndFill(id, userInfo);         return Boolean.TRUE;     }, executor);     CompletableFuture.allOf(userFuture, bonusFuture, growthFuture).join();     userFuture.get();     bonusFuture.get();     growthFuture.get();     return userInfo; }</code></p>
+<blockquote>
+<p>温馨提醒一下，这两种方式别忘了使用线程池。示例中我用到了executor，表示自定义的线程池，为了防止高并发场景下，出现线程过多的问题。</p>
+</blockquote>
+<h4 id="32-数据异构">3.2 数据异构<a hidden class="anchor" aria-hidden="true" href="#32-数据异构">#</a></h4>
+<p>上面说到的用户信息查询接口需要调用用户查询接口、积分查询接口 和 成长值查询接口，然后汇总数据统一返回。</p>
+<p>那么，我们能不能把数据冗余一下，把用户信息、积分和成长值的数据统一存储到一个地方，比如：redis，存的数据结构就是用户信息查询接口所需要的内容。然后通过用户id，直接从redis中查询数据出来，不就OK了？</p>
+<p>如果在高并发的场景下，为了提升接口性能，远程接口调用大概率会被去掉，而改成保存冗余数据的数据异构方案。</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/89ae61a4fc574575a3446b02a53b72cf~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=WFnZ51eZxkmVuIt2U2Avzqw9%2FAs%3D" alt="图片"  />
+但需要注意的是，如果使用了数据异构方案，就可能会出现数据一致性问题。</p>
+<p>用户信息、积分和成长值有更新的话，大部分情况下，会先更新到数据库，然后同步到redis。但这种跨库的操作，可能会导致两边数据不一致的情况产生。</p>
+<h3 id="4-重复调用">4. 重复调用<a hidden class="anchor" aria-hidden="true" href="#4-重复调用">#</a></h3>
+<p><code>重复调用</code>在我们的日常工作代码中可以说随处可见，但如果没有控制好，会非常影响接口的性能。</p>
+<p>不信，我们一起看看。</p>
+<h4 id="41-循环查数据库">4.1 循环查数据库<a hidden class="anchor" aria-hidden="true" href="#41-循环查数据库">#</a></h4>
+<p>有时候，我们需要从指定的用户集合中，查询出有哪些是在数据库中已经存在的。</p>
+<p>实现代码可以这样写：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public List&lt;User&gt; queryUser(List&lt;User&gt; searchList) {     if (CollectionUtils.isEmpty(searchList)) {         return Collections.emptyList();     }     List&lt;User&gt; result = Lists.newArrayList();     searchList.forEach(user -&gt; result.add(userMapper.getUserById(user.getId())));     return result; }</code></p>
+<p>这里如果有50个用户，则需要循环50次，去查询数据库。我们都知道，每查询一次数据库，就是一次远程调用。</p>
+<p>如果查询50次数据库，就有50次远程调用，这是非常耗时的操作。</p>
+<p>那么，我们如何优化呢？</p>
+<p>具体代码如下：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public List&lt;User&gt; queryUser(List&lt;User&gt; searchList) {     if (CollectionUtils.isEmpty(searchList)) {         return Collections.emptyList();     }     List&lt;Long&gt; ids = searchList.stream().map(User::getId).collect(Collectors.toList());     return userMapper.getUserByIds(ids); }</code></p>
+<p>提供一个根据用户id集合批量查询用户的接口，只远程调用一次，就能查询出所有的数据。</p>
+<blockquote>
+<p>这里有个需要注意的地方是：id集合的大小要做限制，最好一次不要请求太多的数据。要根据实际情况而定，建议控制每次请求的记录条数在500以内。</p>
+</blockquote>
+<h4 id="42-死循环">4.2 死循环<a hidden class="anchor" aria-hidden="true" href="#42-死循环">#</a></h4>
+<p>有些小伙伴看到这个标题，可能会感到有点意外，死循环也算？</p>
+<p>代码中不是应该避免死循环吗？为啥还是会产生死循环？</p>
+<p>有时候死循环是我们自己写的，例如下面这段代码：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>while(true) {     if(condition) {         break;     }     System.out.println(&quot;do samething&quot;); }</code></p>
+<p>这里使用了while(true)的循环调用，这种写法在<code>CAS自旋锁</code>中使用比较多。</p>
+<p>当满足condition等于true的时候，则自动退出该循环。</p>
+<p>如果condition条件非常复杂，一旦出现判断不正确，或者少写了一些逻辑判断，就可能在某些场景下出现死循环的问题。</p>
+<p>出现死循环，大概率是开发人员人为的bug导致的，不过这种情况很容易被测出来。</p>
+<blockquote>
+<p>还有一种隐藏的比较深的死循环，是由于代码写的不太严谨导致的。如果用正常数据，可能测不出问题，但一旦出现异常数据，就会立即出现死循环。</p>
+</blockquote>
+<h4 id="43-无限递归">4.3 无限递归<a hidden class="anchor" aria-hidden="true" href="#43-无限递归">#</a></h4>
+<p>如果想要打印某个分类的所有父分类，可以用类似这样的递归方法实现：</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void printCategory(Category category) {   if(category == null        || category.getParentId() == null) {      return;   }    System.out.println(&quot;父分类名称：&quot;+ category.getName());   Category parent = categoryMapper.getCategoryById(category.getParentId());   printCategory(parent); }</code></p>
+<p>正常情况下，这段代码是没有问题的。</p>
+<p>但如果某次有人误操作，把某个分类的parentId指向了它自己，这样就会出现无限递归的情况。导致接口一直不能返回数据，最终会发生堆栈溢出。</p>
+<blockquote>
+<p>建议写递归方法时，设定一个递归的深度，比如：分类最大等级有4级，则深度可以设置为4。然后在递归方法中做判断，如果深度大于4时，则自动返回，这样就能避免无限循环的情况。</p>
+</blockquote>
+<h3 id="5-异步处理">5. 异步处理<a hidden class="anchor" aria-hidden="true" href="#5-异步处理">#</a></h3>
+<p>有时候，我们接口性能优化，需要重新梳理一下业务逻辑，看看是否有设计上不太合理的地方。</p>
+<p>比如有个用户请求接口中，需要做业务操作，发站内通知，和记录操作日志。为了实现起来比较方便，通常我们会将这些逻辑放在接口中同步执行，势必会对接口性能造成一定的影响。</p>
+<p>接口内部流程图如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/71964b65d86947628657f44759038946~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=hcwf80hWHk%2FOcJgfAkbReGY30%2F0%3D" alt="图片"  />
+这个接口表面上看起来没有问题，但如果你仔细梳理一下业务逻辑，会发现只有业务操作才是<code>核心逻辑</code>，其他的功能都是<code>非核心逻辑</code>。</p>
+<blockquote>
+<p>在这里有个原则就是：核心逻辑可以同步执行，同步写库。非核心逻辑，可以异步执行，异步写库。</p>
+</blockquote>
+<p>上面这个例子中，发站内通知和用户操作日志功能，对实时性要求不高，即使晚点写库，用户无非是晚点收到站内通知，或者运营晚点看到用户操作日志，对业务影响不大，所以完全可以异步处理。</p>
+<p>通常异步主要有两种：<code>多线程</code> 和 <code>mq</code>。</p>
+<h4 id="51-线程池">5.1 线程池<a hidden class="anchor" aria-hidden="true" href="#51-线程池">#</a></h4>
+<p>使用<code>线程池</code>改造之后，接口逻辑如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7882313ffc9942b7b59d04242fa9b78a~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=DCI2yvS45rM0yzShvMELnc2hPUM%3D" alt="图片"  />
+发站内通知和用户操作日志功能，被提交到了两个单独的线程池中。</p>
+<p>这样接口中重点关注的是业务操作，把其他的逻辑交给线程异步执行，这样改造之后，让接口性能瞬间提升了。</p>
+<p>但使用线程池有个小问题就是：如果服务器重启了，或者是需要被执行的功能出现异常了，无法重试，会丢数据。</p>
+<p>那么这个问题该怎么办呢？</p>
+<h4 id="52-mq">5.2 mq<a hidden class="anchor" aria-hidden="true" href="#52-mq">#</a></h4>
+<p>使用<code>mq</code>改造之后，接口逻辑如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/01322e927f4b452fbcef472561236293~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=rSz%2BSi4%2Fhyebc8aUzEdbOqsQgq8%3D" alt="图片"  />
+对于发站内通知和用户操作日志功能，在接口中并没真正实现，它只发送了mq消息到mq服务器。然后由mq消费者消费消息时，才真正的执行这两个功能。</p>
+<p>这样改造之后，接口性能同样提升了，因为发送mq消息速度是很快的，我们只需关注业务操作的代码即可。</p>
+<h3 id="6-避免大事务">6. 避免大事务<a hidden class="anchor" aria-hidden="true" href="#6-避免大事务">#</a></h3>
+<p>很多小伙伴在使用spring框架开发项目时，为了方便，喜欢使用<code>@Transactional</code>注解提供事务功能。</p>
+<p>没错，使用@Transactional注解这种声明式事务的方式提供事务功能，确实能少写很多代码，提升开发效率。</p>
+<p>但也容易造成大事务，引发其他的问题。</p>
+<p>下面用一张图看看大事务引发的问题。<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/18db3c8c8a27416ebb4c1f2eec2b8b19~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=b0WRv4XknosLvFguCEMzg15jApY%3D" alt="图片"  />
+从图中能够看出，大事务问题可能会造成接口超时，对接口的性能有直接的影响。</p>
+<p>我们该如何优化大事务呢？</p>
+<ol>
+<li>少用@Transactional注解</li>
+<li>将查询(select)方法放到事务外</li>
+<li>事务中避免远程调用</li>
+<li>事务中避免一次性处理太多数据</li>
+<li>有些功能可以非事务执行</li>
+<li>有些功能可以异步处理</li>
+</ol>
+<p>关于大事务问题我的另一篇文章《<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzkwNjMwMTgzMQ%3D%3D%26mid%3D2247490259%26idx%3D1%26sn%3D1dd11c5f49103ca303a61fc82ce406e0%26chksm%3Dc0ebc23bf79c4b2db58b28ef752560bd91a1932ceb6713c9b19b821db0f29e1c58275d334076%26token%3D2041133408%26lang%3Dzh_CN%26scene%3D21%23wechat_redirect" title="https://mp.weixin.qq.com/s?__biz=MzkwNjMwMTgzMQ==&amp;mid=2247490259&amp;idx=1&amp;sn=1dd11c5f49103ca303a61fc82ce406e0&amp;chksm=c0ebc23bf79c4b2db58b28ef752560bd91a1932ceb6713c9b19b821db0f29e1c58275d334076&amp;token=2041133408&amp;lang=zh_CN&amp;scene=21#wechat_redirect">让人头痛的大事务问题到底要如何解决？</a>》，它里面做了非常详细的介绍，如果大家感兴趣可以看看。</p>
+<h3 id="7-锁粒度">7. 锁粒度<a hidden class="anchor" aria-hidden="true" href="#7-锁粒度">#</a></h3>
+<p>在某些业务场景中，为了防止多个线程并发修改某个共享数据，造成数据异常。</p>
+<p>为了解决并发场景下，多个线程同时修改数据，造成数据不一致的情况。通常情况下，我们会：<code>加锁</code>。</p>
+<p>但如果锁加得不好，导致锁的粒度太粗，也会非常影响接口性能。</p>
+<h4 id="71-synchronized">7.1 synchronized<a hidden class="anchor" aria-hidden="true" href="#71-synchronized">#</a></h4>
+<p>在java中提供了<code>synchronized</code>关键字给我们的代码加锁。</p>
+<p>通常有两种写法：<code>在方法上加锁</code> 和 <code>在代码块上加锁</code>。</p>
+<p>先看看如何在方法上加锁：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public synchronized doSave(String fileUrl) {     mkdir();     uploadFile(fileUrl);     sendMessage(fileUrl); }</code></p>
+<p>这里加锁的目的是为了防止并发的情况下，创建了相同的目录，第二次会创建失败，影响业务功能。</p>
+<p>但这种直接在方法上加锁，锁的粒度有点粗。因为doSave方法中的上传文件和发消息方法，是不需要加锁的。只有创建目录方法，才需要加锁。</p>
+<p>我们都知道文件上传操作是非常耗时的，如果将整个方法加锁，那么需要等到整个方法执行完之后才能释放锁。显然，这会导致该方法的性能很差，变得得不偿失。</p>
+<p>这时，我们可以改成在代码块上加锁了，具体代码如下：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void doSave(String path,String fileUrl) {     synchronized(this) {       if(!exists(path)) {           mkdir(path);        }     }     uploadFile(fileUrl);     sendMessage(fileUrl); }</code></p>
+<p>这样改造之后，锁的粒度一下子变小了，只有并发创建目录功能才加了锁。而创建目录是一个非常快的操作，即使加锁对接口的性能影响也不大。</p>
+<p>最重要的是，其他的上传文件和发送消息功能，任然可以并发执行。</p>
+<p>当然，这种做在单机版的服务中，是没有问题的。但现在部署的生产环境，为了保证服务的稳定性，一般情况下，同一个服务会被部署在多个节点中。如果哪天挂了一个节点，其他的节点服务任然可用。</p>
+<p>多节点部署避免了因为某个节点挂了，导致服务不可用的情况。同时也能分摊整个系统的流量，避免系统压力过大。</p>
+<p>同时它也带来了新的问题：synchronized只能保证一个节点加锁是有效的，但如果有多个节点如何加锁呢?</p>
+<p>答：这就需要使用：<code>分布式锁</code>了。目前主流的分布式锁包括：redis分布式锁、zookeeper分布式锁 和 数据库分布式锁。</p>
+<p>由于zookeeper分布式锁的性能不太好，真实业务场景用的不多，这里先不讲。</p>
+<p>下面聊一下redis分布式锁。</p>
+<h4 id="72-redis分布式锁">7.2 redis分布式锁<a hidden class="anchor" aria-hidden="true" href="#72-redis分布式锁">#</a></h4>
+<p>在分布式系统中，由于redis分布式锁相对于更简单和高效，成为了分布式锁的首先，被我们用到了很多实际业务场景当中。</p>
+<p>使用redis分布式锁的伪代码如下：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void doSave(String path,String fileUrl) {   try {     String result = jedis.set(lockKey, requestId, &quot;NX&quot;, &quot;PX&quot;, expireTime);     if (&quot;OK&quot;.equals(result)) {       if(!exists(path)) {          mkdir(path);          uploadFile(fileUrl);          sendMessage(fileUrl);       }       return true;     }   } finally{       unlock(lockKey,requestId);   }     return false; }</code></p>
+<p>跟之前使用<code>synchronized</code>关键字加锁时一样，这里锁的范围也太大了，换句话说就是锁的粒度太粗，这样会导致整个方法的执行效率很低。</p>
+<p>其实只有创建目录的时候，才需要加分布式锁，其余代码根本不用加锁。</p>
+<p>于是，我们需要优化一下代码：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void doSave(String path,String fileUrl) {    if(this.tryLock()) {       mkdir(path);    }    uploadFile(fileUrl);    sendMessage(fileUrl); } private boolean tryLock() {     try {     String result = jedis.set(lockKey, requestId, &quot;NX&quot;, &quot;PX&quot;, expireTime);     if (&quot;OK&quot;.equals(result)) {       return true;     }   } finally{       unlock(lockKey,requestId);   }     return false; }</code></p>
+<p>上面代码将加锁的范围缩小了，只有创建目录时才加了锁。这样看似简单的优化之后，接口性能能提升很多。说不定，会有意外的惊喜喔。哈哈哈。</p>
+<p>redis分布式锁虽说好用，但它在使用时，有很多注意的细节，隐藏了很多坑，如果稍不注意很容易踩中。详细内容可以看看我的另一篇文章《<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzkwNjMwMTgzMQ%3D%3D%26mid%3D2247490430%26idx%3D1%26sn%3Da1f42f9a981a8f161941a6472f317b10%26chksm%3Dc0ebc396f79c4a801a330917ca700e7d7a6af3a3c2c5a4e11a05770da925de8aa9ed3c277737%26token%3D2041133408%26lang%3Dzh_CN%26scene%3D21%23wechat_redirect" title="https://mp.weixin.qq.com/s?__biz=MzkwNjMwMTgzMQ==&amp;mid=2247490430&amp;idx=1&amp;sn=a1f42f9a981a8f161941a6472f317b10&amp;chksm=c0ebc396f79c4a801a330917ca700e7d7a6af3a3c2c5a4e11a05770da925de8aa9ed3c277737&amp;token=2041133408&amp;lang=zh_CN&amp;scene=21#wechat_redirect">聊聊redis分布式锁的8大坑</a>》</p>
+<h4 id="73-数据库分布式锁">7.3 数据库分布式锁<a hidden class="anchor" aria-hidden="true" href="#73-数据库分布式锁">#</a></h4>
+<p>mysql数据库中主要有三种锁：</p>
+<ul>
+<li>表锁：加锁快，不会出现死锁。但锁定粒度大，发生锁冲突的概率最高，并发度最低。</li>
+<li>行锁：加锁慢，会出现死锁。但锁定粒度最小，发生锁冲突的概率最低，并发度也最高。</li>
+<li>间隙锁：开销和加锁时间界于表锁和行锁之间。它会出现死锁，锁定粒度界于表锁和行锁之间，并发度一般。</li>
+</ul>
+<p>并发度越高，意味着接口性能越好。</p>
+<p>所以数据库锁的优化方向是：</p>
+<p>优先使用<code>行锁</code>，其次使用<code>间隙锁</code>，再其次使用<code>表锁</code>。</p>
+<p>最近就业形势比较困难，为了感谢各位小伙伴对苏三一直以来的支持，我特地创建了一些工作内推群， 看看能不能帮助到大家。</p>
+<p>你可以在群里发布招聘信息，也可以内推工作，也可以在群里投递简历找工作，也可以在群里交流面试或者工作的话题。</p>
+<p>添加苏三的<strong>私人微信</strong>：su_san_java，备注：<strong>掘金+所在城市</strong>，即可加入。</p>
+<p>赶紧看看，你用对了没？</p>
+<h3 id="8分页处理">8.分页处理<a hidden class="anchor" aria-hidden="true" href="#8分页处理">#</a></h3>
+<p>有时候我会调用某个接口批量查询数据，比如：通过用户id批量查询出用户信息，然后给这些用户送积分。</p>
+<p>但如果你一次性查询的用户数量太多了，比如一次查询2000个用户的数据。参数中传入了2000个用户的id，远程调用接口，会发现该用户查询接口经常超时。</p>
+<p>调用代码如下：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>List&lt;User&gt; users = remoteCallUser(ids);</code></p>
+<p>众所周知，调用接口从数据库获取数据，是需要经过网络传输的。如果数据量太大，无论是获取数据的速度，还是网络传输受限于带宽，都会导致耗时时间比较长。</p>
+<p>那么，这种情况要如何优化呢？</p>
+<p>答：<code>分页处理</code>。</p>
+<p>将一次获取所有的数据的请求，改成分多次获取，每次只获取一部分用户的数据，最后进行合并和汇总。</p>
+<p>其实，处理这个问题，要分为两种场景：<code>同步调用</code> 和 <code>异步调用</code>。</p>
+<h4 id="81-同步调用">8.1 同步调用<a hidden class="anchor" aria-hidden="true" href="#81-同步调用">#</a></h4>
+<p>如果在<code>job</code>中需要获取2000个用户的信息，它要求只要能正确获取到数据就好，对获取数据的总耗时要求不太高。</p>
+<p>但对每一次远程接口调用的耗时有要求，不能大于500ms，不然会有邮件预警。</p>
+<p>这时，我们可以同步分页调用批量查询用户信息接口。</p>
+<p>具体示例代码如下：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>List&lt;List&lt;Long&gt;&gt; allIds = Lists.partition(ids,200); for(List&lt;Long&gt; batchIds:allIds) {    List&lt;User&gt; users = remoteCallUser(batchIds); }</code></p>
+<p>代码中我用的<code>google</code>的<code>guava</code>工具中的<code>Lists.partition</code>方法，用它来做分页简直太好用了，不然要巴拉巴拉写一大堆分页的代码。</p>
+<h4 id="82-异步调用">8.2 异步调用<a hidden class="anchor" aria-hidden="true" href="#82-异步调用">#</a></h4>
+<p>如果是在<code>某个接口</code>中需要获取2000个用户的信息，它考虑的就需要更多一些。</p>
+<p>除了需要考虑远程调用接口的耗时之外，还需要考虑该接口本身的总耗时，也不能超时500ms。</p>
+<p>这时候用上面的同步分页请求远程接口，肯定是行不通的。</p>
+<p>那么，只能使用<code>异步调用</code>了。</p>
+<p>代码如下：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>List&lt;List&lt;Long&gt;&gt; allIds = Lists.partition(ids,200); final List&lt;User&gt; result = Lists.newArrayList(); allIds.stream().forEach((batchIds) -&gt; {    CompletableFuture.supplyAsync(() -&gt; {         result.addAll(remoteCallUser(batchIds));         return Boolean.TRUE;     }, executor); })</code></p>
+<p>使用CompletableFuture类，多个线程异步调用远程接口，最后汇总结果统一返回。</p>
+<h3 id="9加缓存">9.加缓存<a hidden class="anchor" aria-hidden="true" href="#9加缓存">#</a></h3>
+<p>解决接口性能问题，<code>加缓存</code>是一个非常高效的方法。</p>
+<p>但不能为了缓存而缓存，还是要看具体的业务场景。毕竟加了缓存，会导致接口的复杂度增加，它会带来数据不一致问题。</p>
+<p>在有些并发量比较低的场景中，比如用户下单，可以不用加缓存。</p>
+<p>还有些场景，比如在商城首页显示商品分类的地方，假设这里的分类是调用接口获取到的数据，但页面暂时没有做静态化。</p>
+<p>如果查询分类树的接口没有使用缓存，而直接从数据库查询数据，性能会非常差。</p>
+<p>最近就业形势比较困难，为了感谢各位小伙伴对苏三一直以来的支持，我特地创建了一些工作内推群， 看看能不能帮助到大家。</p>
+<p>你可以在群里发布招聘信息，也可以内推工作，也可以在群里投递简历找工作，也可以在群里交流面试或者工作的话题。</p>
+<p>添加苏三的<strong>私人微信</strong>：su_san_java，备注：<strong>掘金+所在城市</strong>，即可加入。</p>
+<p>那么如何使用缓存呢？</p>
+<h4 id="91-redis缓存">9.1 redis缓存<a hidden class="anchor" aria-hidden="true" href="#91-redis缓存">#</a></h4>
+<p>通常情况下，我们使用最多的缓存可能是：<code>redis</code>和<code>memcached</code>。</p>
+<p>但对于java应用来说，绝大多数都是使用的redis，所以接下来我们以redis为例。</p>
+<p>由于在关系型数据库，比如：mysql中，菜单是有上下级关系的。某个四级分类是某个三级分类的子分类，这个三级分类，又是某个二级分类的子分类，而这个二级分类，又是某个一级分类的子分类。</p>
+<p>这种存储结构决定了，想一次性查出这个分类树，并非是一件非常容易的事情。这就需要使用程序递归查询了，如果分类多的话，这个递归是比较耗时的。</p>
+<p>所以，如果每次都直接从数据库中查询分类树的数据，是一个非常耗时的操作。</p>
+<p>这时我们可以使用缓存，大部分情况，接口都直接从缓存中获取数据。操作redis可以使用成熟的框架，比如：jedis和redisson等。</p>
+<p>用jedis伪代码如下：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>String json = jedis.get(key); if(StringUtils.isNotEmpty(json)) {    CategoryTree categoryTree = JsonUtil.toObject(json);    return categoryTree; } return queryCategoryTreeFromDb();</code></p>
+<p>先从redis中根据某个key查询是否有菜单数据，如果有则转换成对象，直接返回。如果redis中没有查到菜单数据，则再从数据库中查询菜单数据，有则返回。</p>
+<p>此外，我们还需要有个job每隔一段时间，从数据库中查询菜单数据，更新到redis当中，这样以后每次都能直接从redis中获取菜单的数据，而无需访问数据库了。<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/60b64d5d275b4c8489e755c59a76af49~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=lVlIYsoqKSuTtbCkvoeUS9kMej0%3D" alt="图片"  />
+这样改造之后，能快速的提升性能。</p>
+<p>但这样做性能提升不是最佳的，还有其他的方案，我们一起看看下面的内容。</p>
+<h4 id="92-二级缓存">9.2 二级缓存<a hidden class="anchor" aria-hidden="true" href="#92-二级缓存">#</a></h4>
+<p>上面的方案是基于redis缓存的，虽说redis访问速度很快。但毕竟是一个远程调用，而且菜单树的数据很多，在网络传输的过程中，是有些耗时的。</p>
+<p>有没有办法，不经过请求远程，就能直接获取到数据呢？</p>
+<p>答：使用<code>二级缓存</code>，即基于内存的缓存。</p>
+<p>除了自己手写的内存缓存之后，目前使用比较多的内存缓存框架有：guava、Ehcache、caffine等。</p>
+<p>我们在这里以<code>caffeine</code>为例，它是spring官方推荐的。</p>
+<p>第一步，引入caffeine的相关jar包</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;dependency&gt;     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;     &lt;artifactId&gt;spring-boot-starter-cache&lt;/artifactId&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;com.github.ben-manes.caffeine&lt;/groupId&gt;     &lt;artifactId&gt;caffeine&lt;/artifactId&gt;     &lt;version&gt;2.6.0&lt;/version&gt; &lt;/dependency&gt;</code></p>
+<p>第二步，配置CacheManager，开启EnableCaching</p>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Configuration @EnableCaching public class CacheConfig {     @Bean     public CacheManager cacheManager(){         CaffeineCacheManager cacheManager = new CaffeineCacheManager();         //Caffeine配置         Caffeine&lt;Object, Object&gt; caffeine = Caffeine.newBuilder()                 //最后一次写入后经过固定时间过期                 .expireAfterWrite(10, TimeUnit.SECONDS)                 //缓存的最大条数                 .maximumSize(1000);         cacheManager.setCaffeine(caffeine);         return cacheManager;     } }</code></p>
+<p>第三步，使用Cacheable注解获取数据</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Service public class CategoryService {        @Cacheable(value = &quot;category&quot;, key = &quot;#categoryKey&quot;)    public CategoryModel getCategory(String categoryKey) {       String json = jedis.get(categoryKey);       if(StringUtils.isNotEmpty(json)) {          CategoryTree categoryTree = JsonUtil.toObject(json);          return categoryTree;       }       return queryCategoryTreeFromDb();    } }</code></p>
+<p>调用categoryService.getCategory()方法时，先从caffine缓存中获取数据，如果能够获取到数据，则直接返回该数据，不进入方法体。</p>
+<p>如果不能获取到数据，则再从redis中查一次数据。如果查询到了，则返回数据，并且放入caffine中。</p>
+<p>如果还是没有查到数据，则直接从数据库中获取到数据，然后放到caffine缓存中。</p>
+<p>具体流程图如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/77a5d36cf9e54741bf0bd4319b0acc8a~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=QKgh7TL%2FXmYQjpg3mRjRkr9GGAo%3D" alt="图片"  />
+该方案的性能更好，但有个缺点就是，如果数据更新了，不能及时刷新缓存。此外，如果有多台服务器节点，可能存在各个节点上数据不一样的情况。</p>
+<p>由此可见，二级缓存给我们带来性能提升的同时，也带来了数据不一致的问题。使用二级缓存一定要结合实际的业务场景，并非所有的业务场景都适用。</p>
+<p>但上面我列举的分类场景，是适合使用二级缓存的。因为它属于用户不敏感数据，即使出现了稍微有点数据不一致也没有关系，用户有可能都没有察觉出来。</p>
+<h3 id="10-分库分表">10. 分库分表<a hidden class="anchor" aria-hidden="true" href="#10-分库分表">#</a></h3>
+<p>有时候，接口性能受限的不是别的，而是数据库。</p>
+<p>当系统发展到一定的阶段，用户并发量大，会有大量的数据库请求，需要占用大量的数据库连接，同时会带来磁盘IO的性能瓶颈问题。</p>
+<p>此外，随着用户数量越来越多，产生的数据也越来越多，一张表有可能存不下。由于数据量太大，sql语句查询数据时，即使走了索引也会非常耗时。</p>
+<p>这时该怎么办呢？</p>
+<p>答：需要做<code>分库分表</code>。</p>
+<p>如下图所示：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/021a9fbb2fc645d79f3c4f4a53362515~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=VolkAnmXiaQDx1NpIOLEHv7af6w%3D" alt="图片"  />
+图中将用户库拆分成了三个库，每个库都包含了四张用户表。</p>
+<p>如果有用户请求过来的时候，先根据用户id路由到其中一个用户库，然后再定位到某张表。</p>
+<p>路由的算法挺多的：</p>
+<ul>
+<li><code>根据id取模</code>，比如：id=7，有4张表，则7%4=3，模为3，路由到用户表3。</li>
+<li><code>给id指定一个区间范围</code>，比如：id的值是0-10万，则数据存在用户表0，id的值是10-20万，则数据存在用户表1。</li>
+<li><code>一致性hash算法</code></li>
+</ul>
+<p>分库分表主要有两个方向：<code>垂直</code>和<code>水平</code>。</p>
+<p>说实话垂直方向（即业务方向）更简单。</p>
+<p>在水平方向（即数据方向）上，分库和分表的作用，其实是有区别的，不能混为一谈。</p>
+<ul>
+<li><code>分库</code>：是为了解决数据库连接资源不足问题，和磁盘IO的性能瓶颈问题。</li>
+<li><code>分表</code>：是为了解决单表数据量太大，sql语句查询数据时，即使走了索引也非常耗时问题。此外还可以解决消耗cpu资源问题。</li>
+<li><code>分库分表</code>：可以解决 数据库连接资源不足、磁盘IO的性能瓶颈、检索数据耗时 和 消耗cpu资源等问题。</li>
+</ul>
+<p>如果在有些业务场景中，用户并发量很大，但是需要保存的数据量很少，这时可以只分库，不分表。</p>
+<p>如果在有些业务场景中，用户并发量不大，但是需要保存的数量很多，这时可以只分表，不分库。</p>
+<p>如果在有些业务场景中，用户并发量大，并且需要保存的数量也很多时，可以分库分表。</p>
+<p>关于分库分表更详细的内容，可以看看我另一篇文章，里面讲的更深入《<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzkwNjMwMTgzMQ%3D%3D%26mid%3D2247490459%26idx%3D1%26sn%3D1e4296228c00aa4203aab481575ac916%26chksm%3Dc0ebc373f79c4a658de7ce7f0d8cf30b1f45adb346c2386321779e7cf85a757a12337d3ae233%26token%3D2041133408%26lang%3Dzh_CN%26scene%3D21%23wechat_redirect" title="https://mp.weixin.qq.com/s?__biz=MzkwNjMwMTgzMQ==&amp;mid=2247490459&amp;idx=1&amp;sn=1e4296228c00aa4203aab481575ac916&amp;chksm=c0ebc373f79c4a658de7ce7f0d8cf30b1f45adb346c2386321779e7cf85a757a12337d3ae233&amp;token=2041133408&amp;lang=zh_CN&amp;scene=21#wechat_redirect">阿里二面：为什么分库分表？</a>》</p>
+<h3 id="11-辅助功能">11. 辅助功能<a hidden class="anchor" aria-hidden="true" href="#11-辅助功能">#</a></h3>
+<p>优化接口性能问题，除了上面提到的这些常用方法之外，还需要配合使用一些辅助功能，因为它们真的可以帮我们提升查找问题的效率。</p>
+<h4 id="111-开启慢查询日志">11.1 开启慢查询日志<a hidden class="anchor" aria-hidden="true" href="#111-开启慢查询日志">#</a></h4>
+<p>通常情况下，为了定位sql的性能瓶颈，我们需要开启mysql的慢查询日志。把超过指定时间的sql语句，单独记录下来，方面以后分析和定位问题。</p>
+<p>开启慢查询日志需要重点关注三个参数：</p>
+<ul>
+<li><code>slow_query_log</code> 慢查询开关</li>
+<li><code>slow_query_log_file</code> 慢查询日志存放的路径</li>
+<li><code>long_query_time</code> 超过多少秒才会记录日志</li>
+</ul>
+<p>通过mysql的<code>set</code>命令可以设置：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>set global slow_query_log='ON';  set global slow_query_log_file='/usr/local/mysql/data/slow.log'; set global long_query_time=2;</code></p>
+<p>设置完之后，如果某条sql的执行时间超过了2秒，会被自动记录到slow.log文件中。</p>
+<p>当然也可以直接修改配置文件<code>my.cnf</code></p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[mysqld] slow_query_log = ON slow_query_log_file = /usr/local/mysql/data/slow.log long_query_time = 2</code></p>
+<p>但这种方式需要重启mysql服务。</p>
+<p>很多公司每天早上都会发一封慢查询日志的邮件，开发人员根据这些信息优化sql。</p>
+<h4 id="112-加监控">11.2 加监控<a hidden class="anchor" aria-hidden="true" href="#112-加监控">#</a></h4>
+<p>为了出现sql问题时，能够让我们及时发现，我们需要对系统做<code>监控</code>。</p>
+<p>目前业界使用比较多的开源监控系统是：<code>Prometheus</code>。</p>
+<p>它提供了 <code>监控</code> 和 <code>预警</code> 的功能。</p>
+<p>架构图如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f6c2609a0eaa4820a2e03dc34bfb1a4f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=1CpAIqYbSYtyTOax2pYXo6uzJ0k%3D" alt="图片"  />
+</p>
+<p>我们可以用它监控如下信息：</p>
+<ul>
+<li>接口响应时间</li>
+<li>调用第三方服务耗时</li>
+<li>慢查询sql耗时</li>
+<li>cpu使用情况</li>
+<li>内存使用情况</li>
+<li>磁盘使用情况</li>
+<li>数据库使用情况</li>
+</ul>
+<p>等等。。。</p>
+<p>它的界面大概长这样子：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/d3fa4117ff204c2f8f14c51ba74af627~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=ik3HnK%2BLtExp9sqkq4uxAIY5Jow%3D" alt="图片"  />
+可以看到mysql当前qps，活跃线程数，连接数，缓存池的大小等信息。</p>
+<p>如果发现数据量连接池占用太多，对接口的性能肯定会有影响。</p>
+<p>这时可能是代码中开启了连接忘了关，或者并发量太大了导致的，需要做进一步排查和系统优化。</p>
+<p>截图中只是它一小部分功能，如果你想了解更多功能，可以访问Prometheus的官网：<a href="https://link.juejin.cn?target=https%3A%2F%2Fprometheus.io%2F" title="https://prometheus.io/">prometheus.io/</a></p>
+<h4 id="113-链路跟踪">11.3 链路跟踪<a hidden class="anchor" aria-hidden="true" href="#113-链路跟踪">#</a></h4>
+<p>有时候某个接口涉及的逻辑很多，比如：查数据库、查redis、远程调用接口，发mq消息，执行业务代码等等。</p>
+<p>该接口一次请求的链路很长，如果逐一排查，需要花费大量的时间，这时候，我们已经没法用传统的办法定位问题了。</p>
+<p>有没有办法解决这问题呢？</p>
+<p>用分布式链路跟踪系统：<code>skywalking</code>。</p>
+<p>架构图如下：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/47ba794de8f242acbdbf141f8a77bf12~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=IluWQsxyvJgfT7l5MvQzwRaL1KY%3D" alt="图片"  />
+通过skywalking定位性能问题：<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/4f3b64799460481b8195da886259c46b~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6IuP5LiJ6K-05oqA5pyv:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728028854&amp;x-signature=Rxd09J4yGRvP2z95iJ5%2BR4Hq2u8%3D" alt="图片"  />
+在skywalking中可以通过<code>traceId</code>（全局唯一的id），串联一个接口请求的完整链路。可以看到整个接口的耗时，调用的远程服务的耗时，访问数据库或者redis的耗时等等，功能非常强大。</p>
+<p>之前没有这个功能的时候，为了定位线上接口性能问题，我们还需要在代码中加日志，手动打印出链路中各个环节的耗时情况，然后再逐一排查。</p>
+<p>如果你用过skywalking排查接口性能问题，不自觉的会爱上它的。如果你想了解更多功能，可以访问skywalking的官网：<a href="https://link.juejin.cn?target=https%3A%2F%2Fskywalking.apache.org%2F" title="https://skywalking.apache.org/">skywalking.apache.org/</a></p>
+<h4 id="最后说一句求关注别白嫖我">最后说一句(求关注，别白嫖我)<a hidden class="anchor" aria-hidden="true" href="#最后说一句求关注别白嫖我">#</a></h4>
+<p>如果这篇文章对您有所帮助，或者有所启发的话，帮忙扫描下发二维码关注一下，您的支持是我坚持写作最大的动力。</p>
+<p>求一键三连：点赞、转发、在看。</p>
+<p>关注公众号：【苏三说技术】，在公众号中回复：面试、代码神器、开发手册、时间管理有超赞的粉丝福利，另外回复：加群，可以跟很多BAT大厂的前辈交流和学习。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/iofod%E6%94%AF%E6%8C%81%E7%94%9F%E6%88%90electron%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>iofod支持生成Electron桌面应用</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/mybatis-plus%E6%89%B9%E9%87%8F%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE%E5%A4%AA%E6%85%A2%E4%BD%BF%E7%94%A8rewritebatchedstatements%E5%B1%9E%E6%80%A7%E4%BC%98%E5%8C%96%E5%A0%AA%E7%A7%B0%E7%A5%9E%E9%80%9F/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Mybatis-Plus批量插入数据太慢，使用rewriteBatchedStatements属性优化，堪称神速！</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我用这11招，让接口性能提升了100倍 on x"
+            href="https://x.com/intent/tweet/?text=%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f&amp;hashtags=%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我用这11招，让接口性能提升了100倍 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f&amp;title=%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d&amp;summary=%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我用这11招，让接口性能提升了100倍 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f&title=%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我用这11招，让接口性能提升了100倍 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我用这11招，让接口性能提升了100倍 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我用这11招，让接口性能提升了100倍 on telegram"
+            href="https://telegram.me/share/url?text=%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我用这11招，让接口性能提升了100倍 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%88%91%e7%94%a8%e8%bf%9911%e6%8b%9b%ef%bc%8c%e8%ae%a9%e6%8e%a5%e5%8f%a3%e6%80%a7%e8%83%bd%e6%8f%90%e5%8d%87%e4%ba%86100%e5%80%8d&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E7%2594%25A8%25E8%25BF%259911%25E6%258B%259B%25E8%25AE%25A9%25E6%258E%25A5%25E5%258F%25A3%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E4%25BA%2586100%25E5%2580%258D%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

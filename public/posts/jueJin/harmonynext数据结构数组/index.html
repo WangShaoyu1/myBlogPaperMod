@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>HarmonyNext数据结构：数组 | PaperMod</title>
+<meta name="keywords" content="HarmonyOS, 掘金·金石计划">
+<meta name="description" content="前言在开发移动端应用时，开发者不可避免的要和页面的数据打交道。那么，为了写出高性能的代码，熟练掌握相应系统的数据结构用法还是非常重要的，本篇文章我们就一起来学习下鸿蒙操作系统中数组的用法。数组在">
+<meta name="author" content="冯志浩">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/harmonynext%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%95%B0%E7%BB%84/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/harmonynext%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%95%B0%E7%BB%84/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="HarmonyNext数据结构：数组" />
+<meta property="og:description" content="前言在开发移动端应用时，开发者不可避免的要和页面的数据打交道。那么，为了写出高性能的代码，熟练掌握相应系统的数据结构用法还是非常重要的，本篇文章我们就一起来学习下鸿蒙操作系统中数组的用法。数组在" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/harmonynext%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%95%B0%E7%BB%84/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-24T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="HarmonyNext数据结构：数组"/>
+<meta name="twitter:description" content="前言在开发移动端应用时，开发者不可避免的要和页面的数据打交道。那么，为了写出高性能的代码，熟练掌握相应系统的数据结构用法还是非常重要的，本篇文章我们就一起来学习下鸿蒙操作系统中数组的用法。数组在"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "HarmonyNext数据结构：数组",
+      "item": "http://localhost:1313/posts/juejin/harmonynext%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%95%B0%E7%BB%84/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "HarmonyNext数据结构：数组",
+  "name": "HarmonyNext数据结构：数组",
+  "description": "前言在开发移动端应用时，开发者不可避免的要和页面的数据打交道。那么，为了写出高性能的代码，熟练掌握相应系统的数据结构用法还是非常重要的，本篇文章我们就一起来学习下鸿蒙操作系统中数组的用法。数组在",
+  "keywords": [
+    "HarmonyOS", "掘金·金石计划"
+  ],
+  "articleBody": "前言 在开发移动端应用时，开发者不可避免的要和页面的数据打交道。那么，为了写出高性能的代码，熟练掌握相应系统的数据结构用法还是非常重要的，本篇文章我们就一起来学习下鸿蒙操作系统中数组的用法。\n数组 在 Harmony OS 中，与数组概念相关的有三个数据结构：\nArray（JS 系统库中的） Array（arkts.collections 库里的） ArrayList JS 内建的 Array 与arkts.collections 库里提供的 Array 区别官方文档解释如下： arkts.collections 主要用于并发场景下的高性能数据传递。功能与 JavaScript 内建的对应容器类似，但ArkTS容器实例无法通过.或者[]添加或更新属性。\n因为两种 Array 接口基本一致，这里就使用 arkts.collections 中的 Array 做代码示例。\n对于 Array 与 ArrayList 的区别，通过接口列表可以看出，Array 的接口更多支持的功能更多，比如常用的 map/filter/reduce 等，而 ArrayList 都是不支持的。\n对于扩容，ArrayList会根据实际需要动态调整容量，每次扩容增加50%。而 Array 的扩容策略文档并未提现。\n初始化 Array Array 支持以下五种初始化方式：\n直接 new ，不带任何参数，示例代码如下： ini\n代码解读\n复制代码\nconst arr1 = new collections.Array();\n填充初始值，示例代码如下： csharp\n代码解读\n复制代码\nconst arr2 = new collections.Array(\"1\", \"2\", \"3\");\n通过传入数组初始化，示例代码如下： ini\n代码解读\n复制代码\nconst arr1 = new collections.Array(); const arr3 = new collections.Array(...arr1);\n静态 create 方法，示例代码如下： c\n代码解读\n复制代码\nconst array = collections.Array.create(2, 1); // [1, 1]\n静态 from 方法，该方法传入的数组元素必须是支持 Sendable 的类型。示例代码如下： csharp\n代码解读\n复制代码\nlet array : Array = ['str1', 'str2', 'str3']; let sendableArray = collections.Array.from(array);\nArrayList ArrayList 的初始化只有以下一种方式：\ntypescript\n代码解读\n复制代码\nconst arrayList: ArrayList = new ArrayList();\n添加元素 Array 首部添加（可以添加一个或多个元素，返回新数组长度）： ini\n代码解读\n复制代码\nconst arr1 = new collections.Array(1, 2, 3); const res = arr1.unshift(0); // [0, 1, 2, 3]\n尾部添加 - push（可以添加一个或多个元素，返回新数组长度）： scss\n代码解读\n复制代码\narr1.push(1); arr1.push(1,2,3); // [1, 1, 2, 3]\n扩容 - extendTo： ini\n代码解读\n复制代码\nconst arr1 = new collections.Array(1, 2, 3); arr1.extendTo(5, 10); // [1, 2, 3, 10, 10]\nArrayList 尾部添加 - add（只能添加一个元素）： csharp\n代码解读\n复制代码\narrayList.add(10);\n插入 - insert（在数组长度范围内任意位置插入）： lua\n代码解读\n复制代码\narrayList.insert(\"a\", 0); arrayList.insert(\"b\", 1); arrayList.insert(\"c\", 2);\n删除元素 Array 移除第一个元素 - shift（若数组为空，返回 undefined，若不为空返回移除的元素）： ini\n代码解读\n复制代码\nconst arr1 = new collections.Array(\"1\", \"2\", \"3\"); const ele = arr1.shift(); // \"1\"\n移除最后一位元素 - pop（若数组为空，返回 undefined，若不为空返回移除的元素）： ini\n代码解读\n复制代码\nconst arr1 = new collections.Array(\"1\", \"2\", \"3\"); const ele = arr1.pop(); // \"3\"\n删除指定位置的元素 - splice（返回被删除的元素数组）： ini\n代码解读\n复制代码\n// 从索引 2 的位置一直删除到尾部 const array1 = new collections.Array(1, 2, 3, 4, 5); let removeArray1 = array1.splice(2); // array1 [1, 2]; removeArray1 [3, 4, 5] // 从索引 2 的位置删除一位 const array2 = new collections.Array(1, 2, 3, 4, 5); let removeArray2 = array2.splice(2, 1); // array2 [1, 2, 4, 5] removeArray2 [3] // 从索引 2 的位置删除两位，且从索引 2 的位置开始插入 6 和 7 const array3 = new collections.Array(1, 2, 3, 4, 5); let removeArray3 = array3.splice(2, 2, 6, 7); // array3 [1, 2, 6, 7, 5] removeArray3 [3, 4]\n收缩长度 - shrinkTo： ini\n代码解读\n复制代码\nconst array1 = new collections.Array(1, 2, 3, 4, 5); array1.shrinkTo(2); // array1 [1, 2] const array2 = new collections.Array(1, 2, 3, 4, 5); array2.shrinkTo(100); // array2 不变\nArrayList 根据 index 删除元素 - removeByIndex： csharp\n代码解读\n复制代码\nconst arrayList: ArrayList = new ArrayList(); arrayList.insert(\"a\", 0); arrayList.insert(\"b\", 1); arrayList.insert(\"c\", 2); const res = arrayList.removeByIndex(0); // \"a\"\n移除第一个相同的元素 - remove： lua\n代码解读\n复制代码\nconst arrayList: ArrayList = new ArrayList(); arrayList.insert(\"a\", 0); arrayList.insert(\"b\", 1); arrayList.insert(\"c\", 2); arrayList.insert(\"b\", 3); const res = arrayList.remove(\"b\"); // [\"a\", \"c\", \"b\"]\n按范围删除 - removeByRange： lua\n代码解读\n复制代码\nconst arrayList: ArrayList = new ArrayList(); arrayList.insert(\"a\", 0); arrayList.insert(\"b\", 1); arrayList.insert(\"c\", 2); arrayList.insert(\"b\", 3); // 从索引 0 开始，删除到索引 2（索引 2 不删除） arrayList.removeByRange(0, 2); // [\"c\", \"b\"]\n全部删除 - clear： csharp\n代码解读\n复制代码\nconst arrayList: ArrayList = new ArrayList(); arrayList.insert(\"a\", 0); arrayList.clear();\n查询 Array 查询满足条件的收个元素值 - find： typescript\n代码解读\n复制代码\nconst array1 = new collections.Array(1, 2, 3, 4, 5); const res = array1.find((value: number) =\u003e value \u003e 3); // 4\n返回第一个满足条件的元素的索引 - findIndex： typescript\n代码解读\n复制代码\nconst array1 = new collections.Array(1, 2, 3, 2, 5); const res = array1.findIndex((value: number) =\u003e value === 2); // 1\n查询符合条件的所有元素 - filter： typescript\n代码解读\n复制代码\nconst array1 = new collections.Array(1, 2, 3, 4, 5); const filteredArray = array1.filter((value : number) =\u003e value \u003c 3); // 返回[1, 2]\n获取元素首次出现的索引 - indexOf： ini\n代码解读\n复制代码\nconst array1 = new collections.Array(1, 1, 3, 4, 5); const res = array1.indexOf(1); // 0\n是否包含 - includes： ini\n代码解读\n复制代码\nconst array1 = new collections.Array(1, 2, 3, 4, 5); const res = array1.includes(1); // true 从索引 0 开始查找是否包含元素1 const res1 = array1.includes(1, 2) // false 从索引 2 开始查找是否包含元素1\nArrayList 获取元素第一次出现时的索引 - getIndexOf： csharp\n代码解读\n复制代码\nconst arrayList: ArrayList = new ArrayList(); arrayList.add(\"a\"); arrayList.add(\"b\"); arrayList.add(\"c\"); arrayList.add(\"a\"); const firstIndex = arrayList.getIndexOf(\"a\"); // 0 const lastIndex = arrayList.getLastIndexOf(\"a\") // 3 const has = arrayList.has(\"c\") // true\n获取元素最后一次出现时的索引 - getLastIndexOf： arduino\n代码解读\n复制代码\nconst lastIndex = arrayList.getLastIndexOf(\"a\") // 3\n是否包含 - has： ini\n代码解读\n复制代码\nconst has = arrayList.has(\"c\") // true\n",
+  "wordCount" : "670",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-24T00:00:00Z",
+  "dateModified": "2024-09-24T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "冯志浩"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/harmonynext%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%95%B0%E7%BB%84/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      HarmonyNext数据结构：数组
+    </h1>
+    <div class="post-description">
+      前言在开发移动端应用时，开发者不可避免的要和页面的数据打交道。那么，为了写出高性能的代码，熟练掌握相应系统的数据结构用法还是非常重要的，本篇文章我们就一起来学习下鸿蒙操作系统中数组的用法。数组在
+    </div>
+    <div class="post-meta"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;冯志浩&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e7%bb%84" aria-label="数组">数组</a></li>
+                <li>
+                    <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96" aria-label="初始化">初始化</a><ul>
+                        
+                <li>
+                    <a href="#array" aria-label="Array">Array</a></li>
+                <li>
+                    <a href="#arraylist" aria-label="ArrayList">ArrayList</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b7%bb%e5%8a%a0%e5%85%83%e7%b4%a0" aria-label="添加元素">添加元素</a><ul>
+                        
+                <li>
+                    <a href="#array-1" aria-label="Array">Array</a></li>
+                <li>
+                    <a href="#arraylist-1" aria-label="ArrayList">ArrayList</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%88%a0%e9%99%a4%e5%85%83%e7%b4%a0" aria-label="删除元素">删除元素</a><ul>
+                        
+                <li>
+                    <a href="#array-2" aria-label="Array">Array</a></li>
+                <li>
+                    <a href="#arraylist-2" aria-label="ArrayList">ArrayList</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9f%a5%e8%af%a2" aria-label="查询">查询</a><ul>
+                        
+                <li>
+                    <a href="#array-3" aria-label="Array">Array</a></li>
+                <li>
+                    <a href="#arraylist-3" aria-label="ArrayList">ArrayList</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h4 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h4>
+<p>在开发移动端应用时，开发者不可避免的要和页面的数据打交道。那么，为了写出高性能的代码，熟练掌握相应系统的数据结构用法还是非常重要的，本篇文章我们就一起来学习下鸿蒙操作系统中数组的用法。</p>
+<h4 id="数组">数组<a hidden class="anchor" aria-hidden="true" href="#数组">#</a></h4>
+<p>在 Harmony OS 中，与数组概念相关的有三个数据结构：</p>
+<ul>
+<li>Array（JS 系统库中的）</li>
+<li>Array（arkts.collections 库里的）</li>
+<li>ArrayList</li>
+</ul>
+<p>JS 内建的 Array 与arkts.collections 库里提供的 Array 区别官方文档解释如下： <code>arkts.collections 主要用于并发场景下的高性能数据传递。功能与 JavaScript 内建的对应容器类似，但ArkTS容器实例无法通过.或者[]添加或更新属性。</code></p>
+<p>因为两种 Array 接口基本一致，这里就使用 arkts.collections 中的 Array 做代码示例。</p>
+<p>对于 Array 与 ArrayList 的区别，通过接口列表可以看出，Array 的接口更多支持的功能更多，比如常用的 <code>map</code>/<code>filter</code>/<code>reduce</code> 等，而 ArrayList 都是不支持的。</p>
+<p>对于扩容，ArrayList会根据实际需要动态调整容量，每次扩容增加50%。而 Array 的扩容策略文档并未提现。</p>
+<h4 id="初始化">初始化<a hidden class="anchor" aria-hidden="true" href="#初始化">#</a></h4>
+<h5 id="array">Array<a hidden class="anchor" aria-hidden="true" href="#array">#</a></h5>
+<p>Array 支持以下五种初始化方式：</p>
+<ul>
+<li>直接 new ，不带任何参数，示例代码如下：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr1 = new collections.Array&lt;number&gt;();</code></p>
+<ul>
+<li>填充初始值，示例代码如下：</li>
+</ul>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr2 = new collections.Array&lt;string&gt;(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;);</code></p>
+<ul>
+<li>通过传入数组初始化，示例代码如下：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr1 = new collections.Array&lt;number&gt;(); const arr3 = new collections.Array(...arr1);</code></p>
+<ul>
+<li>静态 create 方法，示例代码如下：</li>
+</ul>
+<p>c</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const array = collections.Array.create&lt;number&gt;(2, 1); // [1, 1]</code></p>
+<ul>
+<li>静态 from 方法，该方法传入的数组元素必须是支持 Sendable 的类型。示例代码如下：</li>
+</ul>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let array : Array&lt;string&gt; = ['str1', 'str2', 'str3']; let sendableArray = collections.Array.from&lt;string&gt;(array);</code></p>
+<h5 id="arraylist">ArrayList<a hidden class="anchor" aria-hidden="true" href="#arraylist">#</a></h5>
+<p>ArrayList 的初始化只有以下一种方式：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arrayList: ArrayList&lt;number&gt; = new ArrayList();</code></p>
+<h4 id="添加元素">添加元素<a hidden class="anchor" aria-hidden="true" href="#添加元素">#</a></h4>
+<h5 id="array-1">Array<a hidden class="anchor" aria-hidden="true" href="#array-1">#</a></h5>
+<ul>
+<li>首部添加（可以添加一个或多个元素，返回新数组长度）：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr1 = new collections.Array&lt;number&gt;(1, 2, 3); const res = arr1.unshift(0); // [0, 1, 2, 3]</code></p>
+<ul>
+<li>尾部添加 - push（可以添加一个或多个元素，返回新数组长度）：</li>
+</ul>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>arr1.push(1); arr1.push(1,2,3); // [1, 1, 2, 3]</code></p>
+<ul>
+<li>扩容 - extendTo：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr1 = new collections.Array(1, 2, 3); arr1.extendTo(5, 10); // [1, 2, 3, 10, 10]</code></p>
+<h5 id="arraylist-1">ArrayList<a hidden class="anchor" aria-hidden="true" href="#arraylist-1">#</a></h5>
+<ul>
+<li>尾部添加 - add（只能添加一个元素）：</li>
+</ul>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>arrayList.add(10);</code></p>
+<ul>
+<li>插入 - insert（在数组长度范围内任意位置插入）：</li>
+</ul>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>arrayList.insert(&quot;a&quot;, 0); arrayList.insert(&quot;b&quot;, 1); arrayList.insert(&quot;c&quot;, 2);</code></p>
+<h4 id="删除元素">删除元素<a hidden class="anchor" aria-hidden="true" href="#删除元素">#</a></h4>
+<h5 id="array-2">Array<a hidden class="anchor" aria-hidden="true" href="#array-2">#</a></h5>
+<ul>
+<li>移除第一个元素 - shift（若数组为空，返回 undefined，若不为空返回移除的元素）：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr1 = new collections.Array&lt;string&gt;(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;); const ele = arr1.shift(); // &quot;1&quot;</code></p>
+<ul>
+<li>移除最后一位元素 - pop（若数组为空，返回 undefined，若不为空返回移除的元素）：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arr1 = new collections.Array&lt;string&gt;(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;); const ele = arr1.pop(); // &quot;3&quot;</code></p>
+<ul>
+<li>删除指定位置的元素 - splice（返回被删除的元素数组）：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 从索引 2 的位置一直删除到尾部 const array1 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); let removeArray1 = array1.splice(2); // array1 [1, 2]; removeArray1 [3, 4, 5] // 从索引 2 的位置删除一位 const array2 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); let removeArray2 = array2.splice(2, 1); // array2 [1, 2, 4, 5] removeArray2 [3] // 从索引 2 的位置删除两位，且从索引 2 的位置开始插入 6 和 7 const array3 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); let removeArray3 = array3.splice(2, 2, 6, 7); // array3 [1, 2, 6, 7, 5] removeArray3 [3, 4]</code></p>
+<ul>
+<li>收缩长度 - shrinkTo：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const array1 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); array1.shrinkTo(2); // array1 [1, 2] const array2 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); array2.shrinkTo(100); // array2 不变</code></p>
+<h5 id="arraylist-2">ArrayList<a hidden class="anchor" aria-hidden="true" href="#arraylist-2">#</a></h5>
+<ul>
+<li>根据 index 删除元素 - removeByIndex：</li>
+</ul>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arrayList: ArrayList&lt;string&gt; = new ArrayList(); arrayList.insert(&quot;a&quot;, 0); arrayList.insert(&quot;b&quot;, 1); arrayList.insert(&quot;c&quot;, 2); const res = arrayList.removeByIndex(0); // &quot;a&quot;</code></p>
+<ul>
+<li>移除第一个相同的元素 - remove：</li>
+</ul>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arrayList: ArrayList&lt;string&gt; = new ArrayList(); arrayList.insert(&quot;a&quot;, 0); arrayList.insert(&quot;b&quot;, 1); arrayList.insert(&quot;c&quot;, 2); arrayList.insert(&quot;b&quot;, 3); const res = arrayList.remove(&quot;b&quot;);  // [&quot;a&quot;, &quot;c&quot;, &quot;b&quot;]</code></p>
+<ul>
+<li>按范围删除 - removeByRange：</li>
+</ul>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arrayList: ArrayList&lt;string&gt; = new ArrayList(); arrayList.insert(&quot;a&quot;, 0); arrayList.insert(&quot;b&quot;, 1); arrayList.insert(&quot;c&quot;, 2); arrayList.insert(&quot;b&quot;, 3); // 从索引  0 开始，删除到索引 2（索引 2 不删除） arrayList.removeByRange(0, 2); // [&quot;c&quot;, &quot;b&quot;]</code></p>
+<ul>
+<li>全部删除 - clear：</li>
+</ul>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arrayList: ArrayList&lt;string&gt; = new ArrayList(); arrayList.insert(&quot;a&quot;, 0); arrayList.clear();</code></p>
+<h4 id="查询">查询<a hidden class="anchor" aria-hidden="true" href="#查询">#</a></h4>
+<h5 id="array-3">Array<a hidden class="anchor" aria-hidden="true" href="#array-3">#</a></h5>
+<ul>
+<li>查询满足条件的收个元素值 - find：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const array1 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); const res = array1.find((value: number) =&gt; value &gt; 3); // 4</code></p>
+<ul>
+<li>返回第一个满足条件的元素的索引 - findIndex：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const array1 = new collections.Array&lt;number&gt;(1, 2, 3, 2, 5); const res = array1.findIndex((value: number) =&gt; value === 2); // 1</code></p>
+<ul>
+<li>查询符合条件的所有元素 - filter：</li>
+</ul>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const array1 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); const filteredArray = array1.filter((value : number) =&gt; value &lt; 3); // 返回[1, 2]</code></p>
+<ul>
+<li>获取元素首次出现的索引 - indexOf：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const array1 = new collections.Array&lt;number&gt;(1, 1, 3, 4, 5); const res = array1.indexOf(1); // 0</code></p>
+<ul>
+<li>是否包含 - includes：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const array1 = new collections.Array&lt;number&gt;(1, 2, 3, 4, 5); const res = array1.includes(1); // true 从索引 0 开始查找是否包含元素1 const res1 = array1.includes(1, 2) // false 从索引 2 开始查找是否包含元素1</code></p>
+<h5 id="arraylist-3">ArrayList<a hidden class="anchor" aria-hidden="true" href="#arraylist-3">#</a></h5>
+<ul>
+<li>获取元素第一次出现时的索引 - getIndexOf：</li>
+</ul>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const arrayList: ArrayList&lt;string&gt; = new ArrayList(); arrayList.add(&quot;a&quot;); arrayList.add(&quot;b&quot;); arrayList.add(&quot;c&quot;); arrayList.add(&quot;a&quot;); const firstIndex = arrayList.getIndexOf(&quot;a&quot;); // 0 const lastIndex = arrayList.getLastIndexOf(&quot;a&quot;) // 3 const has = arrayList.has(&quot;c&quot;) // true</code></p>
+<ul>
+<li>获取元素最后一次出现时的索引 - getLastIndexOf：</li>
+</ul>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const lastIndex = arrayList.getLastIndexOf(&quot;a&quot;) // 3</code></p>
+<ul>
+<li>是否包含 - has：</li>
+</ul>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const has = arrayList.has(&quot;c&quot;) // true</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/harmonyos/">HarmonyOS</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%8E%98%E9%87%91%E9%87%91%E7%9F%B3%E8%AE%A1%E5%88%92/">掘金·金石计划</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%8E%A5%E4%BA%86%E5%87%A0%E4%B8%AA%E7%A7%81%E6%B4%BB%E7%9C%8B%E7%9C%8B%E5%AE%A2%E6%88%B7%E6%80%8E%E4%B9%88%E6%89%BE%E5%88%B0%E6%88%91%E7%9A%84%E5%B9%B6%E4%B8%94%E6%88%91%E6%98%AF%E6%80%8E%E4%B9%88%E5%BC%80%E5%8F%91%E4%BA%A4%E4%BB%98%E7%9A%84/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>接了几个私活，看看客户怎么找到我的，并且我是怎么开发交付的</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/jetbrains%E5%86%8D%E5%87%BA%E6%89%8B%E6%96%B0%E7%89%88intellijidea2024.2%E6%9C%89%E7%82%B9%E4%B8%9C%E8%A5%BF/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>JetBrains再出手，新版IntelliJIDEA2024.2有点东西！</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HarmonyNext数据结构：数组 on x"
+            href="https://x.com/intent/tweet/?text=HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f&amp;hashtags=HarmonyOS%2c%e6%8e%98%e9%87%91%c2%b7%e9%87%91%e7%9f%b3%e8%ae%a1%e5%88%92">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HarmonyNext数据结构：数组 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f&amp;title=HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84&amp;summary=HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HarmonyNext数据结构：数组 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f&title=HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HarmonyNext数据结构：数组 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HarmonyNext数据结构：数组 on whatsapp"
+            href="https://api.whatsapp.com/send?text=HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HarmonyNext数据结构：数组 on telegram"
+            href="https://telegram.me/share/url?text=HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HarmonyNext数据结构：数组 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=HarmonyNext%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%ef%bc%9a%e6%95%b0%e7%bb%84&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fharmonynext%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E6%2595%25B0%25E7%25BB%2584%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

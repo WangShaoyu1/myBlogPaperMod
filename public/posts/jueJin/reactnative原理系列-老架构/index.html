@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>ReactNative原理系列-老架构 | PaperMod</title>
+<meta name="keywords" content="前端">
+<meta name="description" content="到目前为止，具有完全新架构的正式版ReactNative还没有发布，新架构相关的功能和文档都是作为试验阶段的尝鲜功能发布的。即使你是全新的项目，完全按照官方文档的指引，使用最新的配置，也不一定能一帆">
+<meta name="author" content="云之舞">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/reactnative%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97-%E8%80%81%E6%9E%B6%E6%9E%84/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/reactnative%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97-%E8%80%81%E6%9E%B6%E6%9E%84/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="ReactNative原理系列-老架构" />
+<meta property="og:description" content="到目前为止，具有完全新架构的正式版ReactNative还没有发布，新架构相关的功能和文档都是作为试验阶段的尝鲜功能发布的。即使你是全新的项目，完全按照官方文档的指引，使用最新的配置，也不一定能一帆" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/reactnative%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97-%E8%80%81%E6%9E%B6%E6%9E%84/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-01-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-01-27T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="ReactNative原理系列-老架构"/>
+<meta name="twitter:description" content="到目前为止，具有完全新架构的正式版ReactNative还没有发布，新架构相关的功能和文档都是作为试验阶段的尝鲜功能发布的。即使你是全新的项目，完全按照官方文档的指引，使用最新的配置，也不一定能一帆"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "ReactNative原理系列-老架构",
+      "item": "http://localhost:1313/posts/juejin/reactnative%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97-%E8%80%81%E6%9E%B6%E6%9E%84/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ReactNative原理系列-老架构",
+  "name": "ReactNative原理系列-老架构",
+  "description": "到目前为止，具有完全新架构的正式版ReactNative还没有发布，新架构相关的功能和文档都是作为试验阶段的尝鲜功能发布的。即使你是全新的项目，完全按照官方文档的指引，使用最新的配置，也不一定能一帆",
+  "keywords": [
+    "前端"
+  ],
+  "articleBody": "到目前为止，具有完全新架构的正式版React Native还没有发布，新架构相关的功能和文档都是作为试验阶段的尝鲜功能发布的。即使你是全新的项目，完全按照官方文档的指引，使用最新的配置，也不一定能一帆风顺的把项目跑起来。从18年Meta公司的工程师有想法开始，到如今一个准面世状态，4年过去了。用4年的时间一直做一个不能直接产生价值的技术升级，这在国内的公司里，无论这个公司是大是小，几乎是不可想象的，公司能够给你4个月的时间做技术升级改造就已经是最大的包容了。毕竟4年的时间，可能早已物非人非了。\n新架构之前的React Native可以说还不能算作一个完善的产品，巨大的性能缺陷让它无法真正流行。每一个选择它的团队或多或少都会因为它的性能问题买单，甚至可能被它带入深渊。 这些问题如果不解决，React Native将会一直在生死线上挣扎。不过幸好的是React Native的背后是的Meta（Facebook）公司，经过4年的磨练，React Native终于上升了一个台阶，最可贵的是他们对用户的反馈响应非常迅速、友好、开放，这也从一个侧面可以看出Meta公司的工程师对这个项目很热情很有信心。\n如果一上来就贴代码抠细节可能大家会觉得不知所云，我们准备分多篇文章，采用分层讲解的方式，大家先了解全貌，再逐步深入细节。我们先从老版RN的架构开始，再过渡到新架构，再到源码，这样大家对新架构的理解会更深入。\nReact的诞生 软件领域一直在做一件事情，就是抽象、封装，具体到web前端，数据绑定是近十年web前端领域最具创新意义的抽象封装之一，看一下下面的演进图：\n早期的web前端： 交互与展示分离后的web前端：\n组件化的web前端：\n这三种演进都是相对简单的。而下面的创新就不是随便能发生的了，那就是数据和视图绑定的组件化web前端（MVVM），React就是属于其中的一种实现，React在这种情况下诞生： 数据和UI绑定之后，开发人员只需要操作数据就可以更新UI，再也不需要做繁复的DOM操作了，业务逻辑都和具体的DOM操作解偶了，这就给跨平台带来了一个契机： React Native在这种情况下诞生了。\nReact Native的诞生 现在我们再次从头整理一下React Native的设计。 首先，为什么需要React Native？ Meta公司（Facebook）2012年的时候决定要变成移动优先的公司，他们在移动端尝试HTML5，但是在2013年的时候放弃了，扎克伯格亲口说这是他们最糟糕的决定。Webview中的HTML5有哪些问题呢？下面是Meta公司列出的问题：\n不能很好的控制键盘 没有足够的手势和touch event API 没有管理图片的能力 其实HTML5的问题远不止这些，HTML5在沙箱中执行，可以说是戴着镣铐跳舞，有太多的限制。 所以如果要想有一个好的用户体验，还是需要Native，但是Native也有明显的缺点：\n迭代太慢，每次发版都需要应用商店审核 代码比较复杂，维护难度高 iOS和Android需要分别开发，成本比较高 React Native便是来解决这些问题的，下面看一下React Native的设计。\n不再使用Webview，不再使用HTML5，所有的渲染由Native完成 业务逻辑部分由Javascript完成，内嵌React，Native组件以React组件的形式提供给开发人员 布局使用CSS的Flex布局，通过Yoga转成Native可识别布局方式传给Native Javascript可以获得Native的能力，例如获取设备ID 这个设计如果一切都按照预想的运行，开发效率相比于纯Native开发应该是极高的：\n开箱即用的Flex布局秒杀了Native自带的布局方式 React的数据绑定和组件化开发方式秒杀了Native中复杂的开发方式 但是细节是魔鬼，React Native真正铺开被广泛使用时，它的缺陷暴露出来了：\nJavascript相比于Native始终是慢的 Javascript和Native的通信成为了性能瓶颈 性能问题一直是React Native最最关键的问题，它导致React Native无法真正的流行，团队如果使用了它，或多或少都要为性能问题买单，虽然React Native中所有有性能问题的地方都可以切换成纯Native去实现，但是整个App的复杂度增加了，相比于纯Native团队，使用React Native会对团队架构师的架构能力、人员的组织协调有更高的要求，不过如果能把这些都做好，React Native是可以发挥出它的优势的。\n咱们来看一下React Native的架构细节，结合上面Web前端架构重新画一张更细的架构图，如下所示： 这张图稍微有些复杂，分为平台无关和平台相关两部分，平台无关部分就是上面说的Web前端架构部分，平台相关部分理论上可以对接任何平台的图形界面，常见的有浏览器（React DOM）、Android/iOS（React Native）。\n这就是整个React体系在平台扩展方面的图景，通过对React这个VM层的抽象，将用户代码和平台做了解偶。用户代码和React部分是平台无关的部分，React DOM和React Native是平台的适配器，它们将平台和React连接起来。无论是什么样的平台，只要按照React的要求去对接，都可以以React的方式来开发该平台的图形界面，而React是目前所有UI技术中开发效率最高的方式之一，这不得不说是前端技术的一次创新发展！\nReact DOM和React Native一方面需要和React沟通，另一方面则需要和平台沟通来渲染图形界面，下面咱们说一下这两部分。\n如何与React沟通 React虽然诞生于浏览器端，但是它对DOM操作进行了封装，并且在后来的版本中将DOM相关部分完全独立出去形成了单独的npm包。这给React继续向其他平台扩展带来了可能性。React采用依赖注入的方式来与平台适配器（React DOM、React Native）适配。依赖注入并不是什么复杂的操作，举个例子： 在React中ReactComponentEnvironment.processChildrenUpdates负责子组件DOM更新相关的操作，但是React只是调用这个方法，具体实现是交由平台的相关部分去实现的。下面看一下伪代码。\nReact Native往React注入ReactNativeComponentEnvironment中：\njavascript\n代码解读\n复制代码\nReactComponentEnvironment.injection.injectEnvironment( ReactNativeComponentEnvironment );\nReact中接受外界注入的方法：\njavascript\n代码解读\n复制代码\nvar ReactComponentEnvironment = { injection: { injectEnvironment: function(environment: Environment) { ReactComponentEnvironment.processChildrenUpdates = environment.processChildrenUpdates; }, }, };\nReact Native中，ReactNativeComponentEnvironment被注入给ReactComponentEnvironment 在React中，React Native的对象作为injectEnvironment的参数被注入。 这里并不想对这部分讲太多，因为这部分更多的是React的逻辑并不是React Native的关键点。下面咱们着重说一下和平台的沟通。\n如何与平台沟通\n与浏览器沟通： 与各种平台沟通中最方便的平台就是浏览器了，这毕竟是React诞生的环境，浏览器对Javascript是直接支持的，浏览器利用Javascript引擎的扩展功能对Javascript的功能进行了扩展，从而Javascript具有了直接控制浏览器UI的能力，具体表现形式则是浏览器的DOM API，这部分相信大家都比较熟悉了，也不是这篇文章的重点，就不详细讲解了。\n与Android/iOS沟通 上面的架构图中可以看到，Javascript和Native间通过Bridge进行沟通，这部分也是React Native的核心功能之一，需要好好讲一下。 关于Javascript与平台原生语言之间的通信可以有以下几种方式：\n将Javascript编译成平台原生代码或者平台能够识别的中间代码或者最终的机器码 进程间通信(管道、socket、共享内存、网络) Javascript与其执行引擎所用语言间互操作 第一种方式的工作量是巨大的，因为如果Javascript直接跳过原生语言，就等于跳过了平台和第三方提供的所有库和工具，跳过了整个原生生态系统。不过Flutter就是这样做的。\n第二种方式具体可以使用IPC通信方式或者网络通信方式，但是不管是哪种，都需要对数据进行复制、序列化反序列化操作，较慢的UI反应速度可能会让我们失去用户，这种方式无论如何都不算是优选方案。\n第三种方式两种语言可以直接互操作，虽然没有达到Objective C/Swift和C语言那种可以直接 相互引用的程度，但是可以以Javascript的解释引擎作为媒介来进行相互调用。Javascript本身并不是先编译链接成机器码再执行的，而是通过另外一个程序来执行Javascript程序文本，这样的话这个程序内部肯定是可以知道Javascript的具体执行情况的，那这个程序的编程语言自然也就可以和Javascript通信了，这个编程语言释放出来的API自然也能做到和Javascript通信。 React Native便是采用的这种方式。以这个为方向，我再来思考更具体的实现。 既然是使用Javascript引擎来作为Javascript与Native语言通信的中介，那选一个Javascript引擎就比较关键了。\nV8是最近十年最优秀的Javascript引擎，提供Javascript与C++的相互调用功能，应该是一个理想的选择，但是V8没有办法在苹果手机上使用，因为V8的JIT Compilation（即时编译）功能会在运行时生成代码，会向内存中写入程序并执行它，而苹果不允许其他软件厂商的软件在苹果手机上使用可写可执行的内存，这导致JIT功能无法在iOS上使用。\n剩下的唯一选择就是苹果自家的JavascriptCore了，React Native选择JavascriptCore。JavascriptCore是苹果自家研发的Javascript引擎，也有JIT功能，可惜只有苹果自己的软件和内嵌的WKWebkit才可以使用JIT功能，导致React Native即使使用了JavascriptCore也没法使用JIT功能，而没有JIT的JavascriptCore的性能肯定是大打折扣的。\nJavascriptCore由苹果开发，提供了Javascript和C语言的相互调用的功能，而Objective C是C语言的超集，相互之间可以混合使用，且JavascriptCore被内置在iOS上，因此在iOS上Javascript与Native语言的通信相对是比较容易的。 而在Android平台上，并没有内置JavascriptCore，且JavascriptCore也没有Javascript与Java/Kotlin互调的功能，所以会麻烦一些，不过解决方案还是有的，JavascriptCore提供Javascript与C语言互调的能力，Java/Kotlin的JNI也提供了与C语言的互调能力，都能与C语言互调，因此C语言便成了Javascript与Java/Kotlin互调的桥梁。在Webkit中JavacriptCore是一个独立的存在，可以将其拿出来放到Android平台上使用，不过如此一来每个Android的App包中都要包含一个JavascriptCore。 下面是一张简单的图，说明JavascriptCore所起的作用： 上面的图中的内容是React Native与Native语言通信的基础。\n有了以上这些关键技术和背景，React Native便有了诞生最基本的条件，在这些基本条件之上还有很多事情要做，下面咱们来了解一下。\nBridge React Native的关键技术中首先就是Bridge，Bridge是Javascript与Native代码沟通的桥梁，它是React Native的关键所在。上面已经提到JavascriptCore提供了两边通信的基本保障，可能大家会觉得有了JavascriptCore，事情就变得简单了，JavascriptCore就是我们需要的Bridge，Javascript和C/Objective C/Swift互调，C再和Java/Kotlin互调，然而这里可能有个问题，JavascriptCore关于Javascript和Native互调的API都是同步API，也就是说一方都要等另一方的函数执行完成才能继续往下执行，而跨语言的调用由于涉及到类型转换等操作，势必要比语言内部调用要慢一些，这对于Javascript这种单线程语言会有很大的不利，因为单线程，一个较慢的操作会阻塞住后续的Javascript执行，从而降低Javascript代码的执行性能。下图是对这个问题的形象解释：\n面对这个问题，我们前端的同学肯定第一时间想到的就是异步，对，Javascript对Native的调用完全可以采用异步的形式，如果是异步的形式，我们的流程图变成下面这样： 在异步流程中，由于不再需要等待Native代码执行完成，代码1和代码6会迅速执行完成，而在同步代码流程中，这两段代码会一直占用分配给线程的CPU直到Native执行完成。另外在异步流程中由于代码4和代码5变成了代码1的回调函数，代码7变成了代码6的回调函数，因此相比于同步代码，他们的执行顺序会有根据Native端代码的执行时长而有所变化。从时间轴可以看到异步流程的执行效率会变高，因为不再有代码的同步等待。尽管后来React Native经过实际使用后，发现异步也会带来一些问题，但是在当初开发设计React Native时，这个异步设计是无可厚非的。\n如果要使用异步，就来了问题了，JavascriptCore并没有提供异步的API，因此就需要React Native的创造者自己实现，下面我们来看一下React Native是如何实现异步的。\n我们拿一段Javascript代码举例，来说明React Native bridge关于异步部分的执行流程：\njavascript\n代码解读\n复制代码\nimport {NativeModules} from 'react-native'; let a = 1; NativeModules.Device.getDeviceInfo((deviceInfo) =\u003e { setTimeout(() =\u003e { a = deviceInfo; }, 1000); });\n我们先省去其他细节，先看大体的执行流程：\n用户点击App图标 App启动，Native开启Javascript线程，并开始用JavascriptCore加载Javascript代码（第一轮事件循环） let a = 1开始执行 NativeModules.Device.getDeviceInfo开始执行，Device是一个Native模块，getDeviceInfo的真正实现在Native端 NativeModules.Device.getDeviceInfo整个函数调用的描述信息被组织成JSON的格式存入数组（即所谓的队列） Javascript执行完成，返回到Native端，Native获取Javascript中队列的数据并反解成Native模块方法的调用 完成Native模块的调用后，Native开始回调Javascript代码中专门处理回调的函数，并将业务数据传给Javascript（新一轮事件循环） 进入(deviceInfo) =\u003e {}，开始执行setTimeout，setTimeout内部由Native Module实现，因此Javascript中的setTimeout实际上只是往队列中插入它的描述信息（新一轮事件循环完成） Javascript执行完成，返回到Native端，Native获取Javascript中队列的数据并反解成Native模块方法的调用 Native模块等超时时间1000毫秒到达时，回调Javascript中setTimeout的回调函数() =\u003e {a = deviceInfo}(新一轮事件循环) Javascript执行完成，返回Native，这次队列为空，没有模块调用，流程结束 不知道大家看到这个流程会不会有些意外，尤其是setTimeout的部分，是的，setTimeout并不属于ECMAScript标准，而是HTML规范的标准，JavascriptCore作为纯Javascript语言的运行环境，不去实现setTimeout就不奇怪了，不过虽然JavascriptCore没有实现setTimeout，但是它提供了C语言的接口，像Safari浏览器等使用JavascriptCore作为Javascript运行环境的应用程序都会基于C语言接口去实现setTimeout，所以其实也可以认为setTimeout其实也是一种跨语言的模块调用。那setTimeout的异步功能是怎么实现的呢？对于JavascriptCore的调用者Native代码来说，它所能切分的Javascript的最小单位就是一次完整的同步Javascript的执行，像setTimeout这种一段时间后需要继续运行的异步功能，则需要在Native中切分成两次同步的Javascript任务来实现，一次同步地执行setTimeout函数，另一次同步地执行回调函数，中间的间隔时间的控制由Native代码来实现。这种实现方式在浏览器和Node.js中有一个名词叫做：Event Loop（事件循环） 事件循环就是程序待命的时候是等候状态，待新的事件触发时开始执行程序，等事件处理完成，程序重新进入待命状态，依次循环往复。可以看到其实事件循环和具体的程序语言是完全可以分开的，具体要怎么循环，完全可以由业务方自行决定，程序语言就像一把刀，什么时候怎么使用这把刀是由具体的使用者和使用场景决定的。因此JavascriptCore并没有实现事件循环，谷歌的V8引擎有一个自带的事件循环，但是使用者完全可以替换掉它，而Node.js虽然使用了V8引擎，但是确有自己的一套事件循环机制。在React Native中，Javascript更像是处于工作线程中，当其他线程需要Javascript工作线程执行任务时则开始调用工作线程，工作线程处理完成返回给调用方，每个批次的执行都是一次同步的Javascript执行，若干次的执行Javascript也就像是浏览器中的事件循环，这不过这里的事件循环由App的Native代码实现。我们通过一张图来形象地看一下：\n图中Native一轮又一轮的执行Javascript任务，直到所有任务完成。当有用户事件或者有其他触发条件时（例如文件数据读取返回）Native会重新发起Javascript任务。在复杂的事件循环系统中，例如Node.js，任务会被分成若干种队列，每个队列的优先级会有所不同。React Native中的事件循环相对则要简单很多。\n总结一下就是，Javascript中像setTimeout这种异步任务实际上是被分切成若干同步的任务然后在Javascript外部分别调用完成的。所以对于Javascript语言解释器来说，它可能都不太需要知道这种具体异步任务的存在，它只需要一行行的执行代码就可以了。\n另外在这里咱们也顺便说一下微任务。像setTimeout这种异步任务达到运行条件后，需要排着队挨个儿执行。但是有时候我们有些优先级相对高的任务希望插队提前执行，这个时候就需要一类特殊的任务了，叫做微任务（setTimeout那种的我们把它叫做宏任务），他们也是异步执行的，但是它们不是作为独立的同步代码块一样排队，而是直接被加到本轮同步Javacript程序的最后，作为本轮同步代码的一部分，因此它会比后面的宏任务更优先执行。微任务的典型就是Promise，虽然JavascriptCore实现了Promise，但是React Native并没有使用，而是基于setImmediate实现了自己的微任务，而setImmediate所做的事情就是把异步任务放到本轮同步代码的最后，下面在上面图的基础上加上微任务： 我们再回到上面的执行流程，我们把流程做一个抽象，抽离出这个具体的案例，重新写一下流程：\n用户点击App图标 App启动，Native开启Javascript线程，并开始用JavascriptCore加载Javascript代码（第一轮事件循环） 第一轮同步代码块开始执行 同步代码块执行完成，涉及到Native Module调用的功能，会往队列中插入JSON形式的调用描述信息，将执行权返回给Native Native通过JavascriptCore的API获取到Javascript中的队列数据，解析并分别调用对应的Native模块方法 Native的模块方法执行完成后，调用Javascript中的回调函数，一轮新的事件循环开始，然后继续重复第3步的流程，但是执行的是后续的任务。 可以看到Javascript执行完成后，Native会去遍历调用队列（Javascript调用Native），从而执行相应的模块方法。Javascript并没有直接调用Native的方法。\n以上这些实际上就是React Native Bridge的核心思想了。在Bridge的基础上React Native建立了模块的概念，模块是Javascript和Native之间通信的业务概念，之所以说它是业务概念是因为模块离用户已经很近了，在Native端用户可以添加自己的模块，以便供Javascript端使用。\n下面咱们来看一下基于Bridge的模块。\n模块的原理 React Native经过这么多年的维护，代码一直在变化，因此我们这里不会细节到具体的代码，我还是从一个相对抽象的层次来进行讲解。如果大家对具体的代码感兴趣，我们可以另开一个视频专题，专门解析最新的代码。不过在研究最新的代码之前，先看这篇文章和我们随后出的新架构解析之后，再去研究源代码，一定有利于对源代码的理解。\nBridge的作用是把Javascript端和Native端连接起来，但是如果每次和对端通信都直接面对Bridge，则会有很多重复的代码，为了更方便的和对端通信，React Native中设计了模块的概念，用户通过“模块+方法+参数”便可以实现和对端通信，而不必关心Bridge的细节，而React Native内部也以模块的形式来组织代码，使代码更好维护，这就是模块的意义。\nJavascript调用Native模块 模块分为Javascript模块和Native模块，Javascript模块供Native调用，Native模块供Javascript调用。 这里我们先讲Native模块。由于在大部分情况下都是Javascript需要获取Native的能力，而不是Native需要获取Javascript的能力，因此React Native除了供内部使用的模块之外，也允许用户扩展自己的Native模块，以便自行扩充Javascript的能力。 以Javascript需要通过Native创建View为例，最简单直观的调用方式是下面这样：\njavascript\n代码解读\n复制代码\ncreateView(tag, className, rootTag, props)\n不过这样很容易和别的方法重名，因此我们很容易想到，在方法前面再加一个命名空间：\njavascript\n代码解读\n复制代码\nUIManager.createView(tag, className, rootTag, props)\ncreateView属于UI相关的功能，因此我们把它挂到UIManager对象下，UIManager顾名思义就是UI的管理，这里我们把UIManager叫做模块，它代表了Native端的模块，后面的叙述中我们把它叫作“模块代理对象”。这些模块都是Native端的功能，因此我们把这些模块都统一放到一个叫NativeModules的对象下：\nscss\n代码解读\n复制代码\nNativeModules.UIManager.createView(...)\n这段伪代码可以这么理解：通过Javascript中的模块代理对象UIManager调用Native那边的UIManager模块中的createView方法，Javascript调用端并不需要知道createView是如何实现的。\n既然Javascript端将API调用分成模块和方法，那Native端自然就需要实现模块和方法，Java/Kotlin、Objective C/Swift均是面向对象的语言，因此模块和方法的关系自然就变成了类/对象与方法的关系，我们用Javascript来写Native端模块的伪代码：\njavascript\n代码解读\n复制代码\nclass UIManager { createView(onCallBack) { onCallBack() } }\n以上就是一个模块的调用与创建方式，那我们怎么让模块和Bridge一起工作呢？ 我们来看看React Native的内部实现，React Native在Android和iOS上分别实现了模块功能，虽然不同的语言不同的平台，但是机制是一样的。下面我们以用户点击按钮获取屏幕尺寸为例，列出了程序的执行流程： App启动 -\u003e Native模块注册（Native端） -\u003e 生成模块方法的描述信息（Native端） -\u003e 将模块名称的数组注入Javascript（Native端） -\u003e Javascript端检测到注入的数据中只有模块名称，则给NativeModules[moduleName]设置getter方法（Javascript端懒加载模块代理对象）\n-\u003e 一段时间后发生用户点击事件（Native端） -\u003e 触发Javascript事件处理函数，一次Javascript同步代码的执行开始，即一次事件循环开始（Native端，调用Javacript模块，后面会讲） -\u003e Javascript端事件处理函数开始执行（Javascript端） -\u003e 事件处理函数中调用模块代理对象的方法，并传入回调函数用于获取返回数据（Javascript端） -\u003e 此时Javascript端的模块信息还不全，事件处理函数中调用NativeModules[moduleName]会触发第四步定义的getter方法，向Native端获取模块的描述信息，并生成Javascript端的模块方法函数，随后该函数被调用（Javascript端） -\u003e 模块方法函数被调用，将回调函数存入数组，同时将对应的回调ID（后面会讲生成规则）和模块ID、方法ID、业务参数存入二维数组（二维数组的格式我们会面会给出）（Javascript端） -\u003e 本次Javascript同步代码执行完成返回Native端 -\u003e Native端获取Javascript中的队列数据，根据模块ID、方法ID找到对应的方法，并根据回调ID生成Native端的回调函数，回调函数中会将回调的参数数据、回调ID回传给Javascript（Native端） -\u003e Native的模块方法拿到了屏幕尺寸数据，开始调用回调函数（Native端） -\u003e 回调函数将屏幕尺寸数据、回调ID回传给Javascript（Native端） -\u003e Javascript根据回调ID找到Javascript端的回调函数，将屏幕尺寸数据回传给回调函数（Javascript端） -\u003e 至此用户成功获取到屏幕尺寸数据（Javascript端）\n以上便是Javascript调用Native的全过程。事件循环和Javascript的Native调用队列在上面已经讲过了，这里新增的细节是模块方法信息的组织方式，咱们还是继续按照上面的例子来讲解： UIManager模块有一个方法createView，并且有一个回调函数，此模块会被描述成如下JSON格式信息：\njavascript\n代码解读\n复制代码\n['UIManager', {}, ['createView']]\n第二个元素空对象代表Native模块想提供给Javascript的一些常量数据，以键值对的形式出现，只需要在模块类中实现常量函数并返回需要在Javascript获取的数据。 第三个元素是模块方法名字的数组，所有方法名称都会被放入该数组中。 Native模块往往不止一个，所以最终的数据是若干模块描述的数组，如下所示：\ncss\n代码解读\n复制代码\n[ ['UIManager'], [moduleName] ...]\n可以看到最终的数据中只有模块名称，当我们的App变得越来越大时，可能我们每次只使用App中的一部分功能，所以有些Native模块并不会被用到，这些模块信息被提前注入Javascript端并没有意义，因此React Native设计了懒加载机制，App启动时，仅仅模块名称被注入到javascript，其他信息等这个模块被使用到时再从Native获取，需要注意的是这个获取过程并不是异步的，而是Javascript直接通过JavascriptCore从Native中获取。 另外为了能将这些数据注入到Javascript端，需要将它们放到某个命名空间下，否则很容易污染用户的Javascript变量，因此最终注入到Javascript的全局对象global中的是这样的对象：\ncss\n代码解读\n复制代码\n{ remoteModuleConfig: [ ['UIManager'], [moduleName] ...] }\n所有模块数据在Javascript中存在于该对象下：global.remoteModuleConfig。 当使用到某个模块时，Javascript如果检测到模块信息不完整，则会同步的去Native端拉取全部的模块信息：\ncss\n代码解读\n复制代码\n['UIManager', {}, ['createView']]\n这次是Javascript主动拉取，而不是Native端注入，获取的数据会放入局部变量中，因此不会污染全局变量，不需要放到remoteModuleConfig上。\n整个模块的JSON描述信息写全了是下面这样：\ncsharp\n代码解读\n复制代码\n[moduleName, constants, methods, promiseMethods, syncMethods]\nsyncMethods是同步方法的意思，是React Native后来的版本才有的东西，而且官方也不推荐使用，咱们这里就不讨论了。 promiseMethods是表示可以返回Promise的模块方法，不过它存的并不是方法名称，而是方法名称在methods中的索引。\nJavascript拿到以上JSON信息，开始在NativeNodules对象下创建这样结构的数据，伪代码如下：\nkotlin\n代码解读\n复制代码\nNativeModules[moduleName][methodName] = function(...args) { const {onFail, onSucc, params} = parseArgs(args); onFail \u0026\u0026 params.push(this._callID \u003c\u003c 1); onSucc \u0026\u0026 params.push((this._callID \u003c\u003c 1) | 1); this._successCallbacks[this._callID] = onSucc; this._failureCallbacks[this._callID] = onFail; this._queue[0].push(moduleID); this._queue[1].push(methodID); this._queue[3].push(params); }\n注意这并不是源码，只是为了方便大家理解而写的伪代码。可以看到，Javascript端会构造这样一个函数，当Javascript调用Native模块的方法时，实际上最终是调用的这样的一个函数，它把 moduleID、 methodId、 _callID放入队列，并且缓存了回调函数与_callID的对应关系，然后就返回了。这里的moduleID和methodID是哪里来的呢？它们实际上只是模块方法描述信息的数组索引，例如如果是数组中的第一个模块，那moduleID就是0，第二模块的moduleID就是1，方法也是如此，其ID代表的是模块中方法在方法数组中的索引。\n另外可以看到伪代码中_callID有一些位操作的逻辑，此部分不影响对整体原理的理解，因此如果不感兴趣可以忽略这部分内容。这部分源代码在历代版本中有变化，不太好懂，但是逻辑却很简单，之前的版本中，_callID是以1为步长递增，所有回调函数都放在同一个数组中，数组的索引就是_callID，由于onFail和onSucc并不一定是成对存在，所以在这种模式下，我们很难说某个_callID是onFail还是onSucc。后来随着版本的演进，分成了两个数组来存储_callID与回调函数的对应关系，一个数组表示onFail，另一个数组表示onSucc，将Javascript端_callID的数值的二进制值往左移一位作为onFail在Native端的ID，往左移一位会导致二进制值最右端的位一定是0，另外将_callID的二进制值往左移一位加1作为onSucc在Native端的ID，这样的话二进制数值最右端的位一定是1。其实Native端并不关心_callID的具体数值，当Native端产生回调时，将_callID透传回了Javascript，Javascript端通过判断回传的_callID最右边的位就可以判断是onFail的回调还是onSucc的回调，从而调用对应的回调函数。\n以上便是Javascript调用Native模块的原理部分。下面咱再说一下Native是如何调用Javascript模块的。\nNative调用Javascript模块 Javascript模块对于React Native的使用者来说可能比较陌生，因为它并没有开放给用户，仅仅是供React Native内部的通信在使用。 首先Native调用Javascript并不需要人为设置一个队列，因为Javascript是在单线程中运行，因此所有的调用只需要加入系统维护的线程执行队列就可以了。整个调用过程是比较简单粗暴的，但是和Native模块的逻辑一样，如果每个功能模块都直接面对Bridge，一方面是增加功能之间的耦合，另一方面也会出现重复的代码，加大维护难度，因此Javascript端的模块也是通过注册的形式，当Native端调用Javascript的模块方法时是直接将模块名称和方法名称传给Javascript端，然后Javascript端从注册表（一个键值对对象）中找到对应的功能模块，并执行对应的方法，然后同步的返回数据。随着React Native代码的发展，模块注册也由最开始的在App启动时的全部注册完成变成了先注册部分必要的模块，其余模块全部改成懒加载的模式，看一下两种模式的伪代码：\n全部注册模式：\njavascript\n代码解读\n复制代码\n`BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);` 懒加载注册模式：\njavascript\n代码解读\n复制代码\n`BatchedBridge.registerLazyCallableModule('RCTLog', () =\u003e require('RCTLog'));` 可以看到，懒加载注册模式下，模块的加载是被包裹到了方法中，只有实际调用到了该模块才会去加载该模块。\nJavascript的核心模块大概有这些： AppRegistry、 RCTEventEmitter、 RCTDeviceEventEmitter、 RCTNativeAppEventEmitter、 JSTimers，他们涉及到的基本都是React Native的核心功能。 另外还有不少辅助性和调试用的模块，这里就不列出了。\nJavascript模块的写法也特别简单，就是一个键值对形式的对象，下面贴出部分AppRegistry模块的代码：\njavascript\n代码解读\n复制代码\n``const AppRegistry = { setWrapperComponentProvider(provider: WrapperComponentProvider) { wrapperComponentProvider = provider; }, registerConfig(config: Array): void { config.forEach(appConfig =\u003e { if (appConfig.run) { AppRegistry.registerRunnable(appConfig.appKey, appConfig.run); } else { invariant( appConfig.component != null, 'AppRegistry.registerConfig(...): Every config is expected to set ' + 'either `run` or `component`, but `%s` has neither.', appConfig.appKey, ); AppRegistry.registerComponent( appConfig.appKey, appConfig.component, appConfig.section, ); } }); }, registerComponent( appKey: string, componentProvider: ComponentProvider, section?: boolean, ): string { runnables[appKey] = { componentProvider, run: appParameters =\u003e renderApplication( componentProviderInstrumentationHook(componentProvider), appParameters.initialProps, appParameters.rootTag, wrapperComponentProvider \u0026\u0026 wrapperComponentProvider(appParameters), ), }; if (section) { sections[appKey] = runnables[appKey]; } return appKey; } }`` 这里并不打算讲源代码，这篇文章的主要目的是让大家了解React Native的设计原理，源码可以另开一个专题。\n以上就是Javascript的模块部分。\nNative部分的渲染 未完待续\n线程的利用 未完待续\n",
+  "wordCount" : "530",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-01-27T00:00:00Z",
+  "dateModified": "2024-01-27T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "云之舞"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/reactnative%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97-%E8%80%81%E6%9E%B6%E6%9E%84/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      ReactNative原理系列-老架构
+    </h1>
+    <div class="post-description">
+      到目前为止，具有完全新架构的正式版ReactNative还没有发布，新架构相关的功能和文档都是作为试验阶段的尝鲜功能发布的。即使你是全新的项目，完全按照官方文档的指引，使用最新的配置，也不一定能一帆
+    </div>
+    <div class="post-meta"><span title='2024-01-27 00:00:00 +0000 UTC'>一月 27, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;云之舞&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#react%e7%9a%84%e8%af%9e%e7%94%9f" aria-label="React的诞生">React的诞生</a></li>
+                <li>
+                    <a href="#react-native%e7%9a%84%e8%af%9e%e7%94%9f" aria-label="React Native的诞生">React Native的诞生</a></li>
+                <li>
+                    <a href="#bridge" aria-label="Bridge">Bridge</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9d%97%e7%9a%84%e5%8e%9f%e7%90%86" aria-label="模块的原理">模块的原理</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#javascript%e8%b0%83%e7%94%a8native%e6%a8%a1%e5%9d%97" aria-label="Javascript调用Native模块">Javascript调用Native模块</a></li>
+                <li>
+                    <a href="#native%e8%b0%83%e7%94%a8javascript%e6%a8%a1%e5%9d%97" aria-label="Native调用Javascript模块">Native调用Javascript模块</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#native%e9%83%a8%e5%88%86%e7%9a%84%e6%b8%b2%e6%9f%93" aria-label="Native部分的渲染">Native部分的渲染</a></li>
+                <li>
+                    <a href="#%e7%ba%bf%e7%a8%8b%e7%9a%84%e5%88%a9%e7%94%a8" aria-label="线程的利用">线程的利用</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>到目前为止，具有完全新架构的正式版React Native还没有发布，新架构相关的功能和文档都是作为试验阶段的尝鲜功能发布的。即使你是全新的项目，完全按照官方文档的指引，使用最新的配置，也不一定能一帆风顺的把项目跑起来。从18年Meta公司的工程师有想法开始，到如今一个准面世状态，4年过去了。用4年的时间一直做一个不能直接产生价值的技术升级，这在国内的公司里，无论这个公司是大是小，几乎是不可想象的，公司能够给你4个月的时间做技术升级改造就已经是最大的包容了。毕竟4年的时间，可能早已物非人非了。</p>
+<p>新架构之前的React Native可以说还不能算作一个完善的产品，巨大的性能缺陷让它无法真正流行。每一个选择它的团队或多或少都会因为它的性能问题买单，甚至可能被它带入深渊。 这些问题如果不解决，React Native将会一直在生死线上挣扎。不过幸好的是React Native的背后是的Meta（Facebook）公司，经过4年的磨练，React Native终于上升了一个台阶，最可贵的是他们对用户的反馈响应非常迅速、友好、开放，这也从一个侧面可以看出Meta公司的工程师对这个项目很热情很有信心。</p>
+<p>如果一上来就贴代码抠细节可能大家会觉得不知所云，我们准备分多篇文章，采用分层讲解的方式，大家先了解全貌，再逐步深入细节。我们先从老版RN的架构开始，再过渡到新架构，再到源码，这样大家对新架构的理解会更深入。</p>
+<h2 id="react的诞生">React的诞生<a hidden class="anchor" aria-hidden="true" href="#react的诞生">#</a></h2>
+<p>软件领域一直在做一件事情，就是抽象、封装，具体到web前端，数据绑定是近十年web前端领域最具创新意义的抽象封装之一，看一下下面的演进图：</p>
+<p>早期的web前端： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0230bc2a8ca84d32a23d2521292c7155~tplv-k3u1fbpfcp-image.image#?w=457&amp;h=424&amp;s=12357&amp;e=svg&amp;a=1&amp;b=81c783" alt="image"  />
+</p>
+<p>交互与展示分离后的web前端：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7bd56f95e2fd4f54b0ef88883f0e6679~tplv-k3u1fbpfcp-image.image#?w=460&amp;h=426&amp;s=2631&amp;e=svg&amp;a=1&amp;b=4ed9d0" alt="image"  />
+</p>
+<p>组件化的web前端：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/83082db3be0d46368cfbc202fd161476~tplv-k3u1fbpfcp-image.image#?w=630&amp;h=339&amp;s=10014&amp;e=svg&amp;a=1&amp;b=fee3d1" alt="image"  />
+</p>
+<p>这三种演进都是相对简单的。而下面的创新就不是随便能发生的了，那就是数据和视图绑定的组件化web前端（MVVM），React就是属于其中的一种实现，React在这种情况下诞生： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23b005bf3e6d4aad94d845136babdf16~tplv-k3u1fbpfcp-image.image#?w=646&amp;h=390&amp;s=12920&amp;e=svg&amp;a=1&amp;b=c5e3c7" alt="image"  />
+</p>
+<p>数据和UI绑定之后，开发人员只需要操作数据就可以更新UI，再也不需要做繁复的DOM操作了，业务逻辑都和具体的DOM操作解偶了，这就给跨平台带来了一个契机： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a482b264c28b45a1884a355b4025de04~tplv-k3u1fbpfcp-image.image#?w=646&amp;h=371&amp;s=16049&amp;e=svg&amp;a=1&amp;b=fde4ca" alt="image"  />
+</p>
+<p>React Native在这种情况下诞生了。</p>
+<h2 id="react-native的诞生">React Native的诞生<a hidden class="anchor" aria-hidden="true" href="#react-native的诞生">#</a></h2>
+<p>现在我们再次从头整理一下React Native的设计。 首先，为什么需要React Native？ Meta公司（Facebook）2012年的时候决定要变成移动优先的公司，他们在移动端尝试HTML5，但是在2013年的时候放弃了，扎克伯格亲口说这是他们最糟糕的决定。Webview中的HTML5有哪些问题呢？下面是Meta公司列出的问题：</p>
+<ul>
+<li>不能很好的控制键盘</li>
+<li>没有足够的手势和touch event API</li>
+<li>没有管理图片的能力</li>
+</ul>
+<p>其实HTML5的问题远不止这些，HTML5在沙箱中执行，可以说是戴着镣铐跳舞，有太多的限制。 所以如果要想有一个好的用户体验，还是需要Native，但是Native也有明显的缺点：</p>
+<ul>
+<li>迭代太慢，每次发版都需要应用商店审核</li>
+<li>代码比较复杂，维护难度高</li>
+<li>iOS和Android需要分别开发，成本比较高</li>
+</ul>
+<p>React Native便是来解决这些问题的，下面看一下React Native的设计。</p>
+<ol>
+<li>不再使用Webview，不再使用HTML5，所有的渲染由Native完成</li>
+<li>业务逻辑部分由Javascript完成，内嵌React，Native组件以React组件的形式提供给开发人员</li>
+<li>布局使用CSS的Flex布局，通过Yoga转成Native可识别布局方式传给Native</li>
+<li>Javascript可以获得Native的能力，例如获取设备ID</li>
+</ol>
+<p>这个设计如果一切都按照预想的运行，开发效率相比于纯Native开发应该是极高的：</p>
+<ol>
+<li>开箱即用的Flex布局秒杀了Native自带的布局方式</li>
+<li>React的数据绑定和组件化开发方式秒杀了Native中复杂的开发方式</li>
+</ol>
+<p>但是细节是魔鬼，React Native真正铺开被广泛使用时，它的缺陷暴露出来了：</p>
+<ol>
+<li>Javascript相比于Native始终是慢的</li>
+<li>Javascript和Native的通信成为了性能瓶颈</li>
+</ol>
+<p>性能问题一直是React Native最最关键的问题，它导致React Native无法真正的流行，团队如果使用了它，或多或少都要为性能问题买单，虽然React Native中所有有性能问题的地方都可以切换成纯Native去实现，但是整个App的复杂度增加了，相比于纯Native团队，使用React Native会对团队架构师的架构能力、人员的组织协调有更高的要求，不过如果能把这些都做好，React Native是可以发挥出它的优势的。</p>
+<p>咱们来看一下React Native的架构细节，结合上面Web前端架构重新画一张更细的架构图，如下所示： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7933a7d0dd3544f6b6a2483be53c3968~tplv-k3u1fbpfcp-image.image#?w=926&amp;h=768&amp;s=19867&amp;e=svg&amp;a=1&amp;b=feb74d" alt="image"  />
+</p>
+<p>这张图稍微有些复杂，分为平台无关和平台相关两部分，平台无关部分就是上面说的Web前端架构部分，平台相关部分理论上可以对接任何平台的图形界面，常见的有浏览器（React DOM）、Android/iOS（React Native）。</p>
+<p>这就是整个React体系在平台扩展方面的图景，通过对React这个VM层的抽象，将用户代码和平台做了解偶。用户代码和React部分是平台无关的部分，React DOM和React Native是平台的适配器，它们将平台和React连接起来。无论是什么样的平台，只要按照React的要求去对接，都可以以React的方式来开发该平台的图形界面，而React是目前所有UI技术中开发效率最高的方式之一，这不得不说是前端技术的一次创新发展！</p>
+<p>React DOM和React Native一方面需要和React沟通，另一方面则需要和平台沟通来渲染图形界面，下面咱们说一下这两部分。</p>
+<ol>
+<li>
+<p>如何与React沟通 React虽然诞生于浏览器端，但是它对DOM操作进行了封装，并且在后来的版本中将DOM相关部分完全独立出去形成了单独的npm包。这给React继续向其他平台扩展带来了可能性。React采用依赖注入的方式来与平台适配器（React DOM、React Native）适配。依赖注入并不是什么复杂的操作，举个例子： 在React中<code>ReactComponentEnvironment.processChildrenUpdates</code>负责子组件DOM更新相关的操作，但是React只是调用这个方法，具体实现是交由平台的相关部分去实现的。下面看一下伪代码。</p>
+<p>React Native往React注入<code>ReactNativeComponentEnvironment</code>中：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ReactComponentEnvironment.injection.injectEnvironment(    ReactNativeComponentEnvironment  );</code></p>
+<p>React中接受外界注入的方法：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var ReactComponentEnvironment = {    injection: {      injectEnvironment: function(environment: Environment) {        ReactComponentEnvironment.processChildrenUpdates =          environment.processChildrenUpdates;        },      },  };</code></p>
+<p>React Native中，<code>ReactNativeComponentEnvironment</code>被注入给<code>ReactComponentEnvironment</code> 在React中，React Native的对象作为<code>injectEnvironment</code>的参数被注入。 这里并不想对这部分讲太多，因为这部分更多的是React的逻辑并不是React Native的关键点。下面咱们着重说一下和平台的沟通。</p>
+</li>
+<li>
+<p>如何与平台沟通</p>
+<ul>
+<li>
+<p>与浏览器沟通： 与各种平台沟通中最方便的平台就是浏览器了，这毕竟是React诞生的环境，浏览器对Javascript是直接支持的，浏览器利用Javascript引擎的扩展功能对Javascript的功能进行了扩展，从而Javascript具有了直接控制浏览器UI的能力，具体表现形式则是浏览器的DOM API，这部分相信大家都比较熟悉了，也不是这篇文章的重点，就不详细讲解了。</p>
+</li>
+<li>
+<p>与Android/iOS沟通 上面的架构图中可以看到，Javascript和Native间通过Bridge进行沟通，这部分也是React Native的核心功能之一，需要好好讲一下。 关于Javascript与平台原生语言之间的通信可以有以下几种方式：</p>
+<ul>
+<li>将Javascript编译成平台原生代码或者平台能够识别的中间代码或者最终的机器码</li>
+<li>进程间通信(管道、socket、共享内存、网络)</li>
+<li>Javascript与其执行引擎所用语言间互操作</li>
+</ul>
+<p>第一种方式的工作量是巨大的，因为如果Javascript直接跳过原生语言，就等于跳过了平台和第三方提供的所有库和工具，跳过了整个原生生态系统。不过Flutter就是这样做的。</p>
+<p>第二种方式具体可以使用IPC通信方式或者网络通信方式，但是不管是哪种，都需要对数据进行复制、序列化反序列化操作，较慢的UI反应速度可能会让我们失去用户，这种方式无论如何都不算是优选方案。</p>
+<p>第三种方式两种语言可以直接互操作，虽然没有达到Objective C/Swift和C语言那种可以直接 相互引用的程度，但是可以以Javascript的解释引擎作为媒介来进行相互调用。Javascript本身并不是先编译链接成机器码再执行的，而是通过另外一个程序来执行Javascript程序文本，这样的话这个程序内部肯定是可以知道Javascript的具体执行情况的，那这个程序的编程语言自然也就可以和Javascript通信了，这个编程语言释放出来的API自然也能做到和Javascript通信。 React Native便是采用的这种方式。以这个为方向，我再来思考更具体的实现。 既然是使用Javascript引擎来作为Javascript与Native语言通信的中介，那选一个Javascript引擎就比较关键了。</p>
+<p>V8是最近十年最优秀的Javascript引擎，提供Javascript与C++的相互调用功能，应该是一个理想的选择，但是V8没有办法在苹果手机上使用，因为V8的JIT Compilation（即时编译）功能会在运行时生成代码，会向内存中写入程序并执行它，而苹果不允许其他软件厂商的软件在苹果手机上使用可写可执行的内存，这导致JIT功能无法在iOS上使用。</p>
+<p>剩下的唯一选择就是苹果自家的JavascriptCore了，React Native选择JavascriptCore。JavascriptCore是苹果自家研发的Javascript引擎，也有JIT功能，可惜只有苹果自己的软件和内嵌的WKWebkit才可以使用JIT功能，导致React Native即使使用了JavascriptCore也没法使用JIT功能，而没有JIT的JavascriptCore的性能肯定是大打折扣的。</p>
+<p>JavascriptCore由苹果开发，提供了Javascript和C语言的相互调用的功能，而Objective C是C语言的超集，相互之间可以混合使用，且JavascriptCore被内置在iOS上，因此在iOS上Javascript与Native语言的通信相对是比较容易的。 而在Android平台上，并没有内置JavascriptCore，且JavascriptCore也没有Javascript与Java/Kotlin互调的功能，所以会麻烦一些，不过解决方案还是有的，JavascriptCore提供Javascript与C语言互调的能力，Java/Kotlin的JNI也提供了与C语言的互调能力，都能与C语言互调，因此C语言便成了Javascript与Java/Kotlin互调的桥梁。在Webkit中JavacriptCore是一个独立的存在，可以将其拿出来放到Android平台上使用，不过如此一来每个Android的App包中都要包含一个JavascriptCore。 下面是一张简单的图，说明JavascriptCore所起的作用： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1aff846cc8de453a80052cfb8ad6f3e8~tplv-k3u1fbpfcp-image.image#?w=285&amp;h=382&amp;s=8144&amp;e=svg&amp;a=1&amp;b=6bdde5" alt="image"  />
+ 上面的图中的内容是React Native与Native语言通信的基础。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>有了以上这些关键技术和背景，React Native便有了诞生最基本的条件，在这些基本条件之上还有很多事情要做，下面咱们来了解一下。</p>
+<h2 id="bridge">Bridge<a hidden class="anchor" aria-hidden="true" href="#bridge">#</a></h2>
+<p>React Native的关键技术中首先就是Bridge，Bridge是Javascript与Native代码沟通的桥梁，它是React Native的关键所在。上面已经提到JavascriptCore提供了两边通信的基本保障，可能大家会觉得有了JavascriptCore，事情就变得简单了，JavascriptCore就是我们需要的Bridge，Javascript和C/Objective C/Swift互调，C再和Java/Kotlin互调，然而这里可能有个问题，JavascriptCore关于Javascript和Native互调的API都是同步API，也就是说一方都要等另一方的函数执行完成才能继续往下执行，而跨语言的调用由于涉及到类型转换等操作，势必要比语言内部调用要慢一些，这对于Javascript这种单线程语言会有很大的不利，因为单线程，一个较慢的操作会阻塞住后续的Javascript执行，从而降低Javascript代码的执行性能。下图是对这个问题的形象解释：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8c7c8eeca6b24dbcad117d7fcaea4d81~tplv-k3u1fbpfcp-image.image#?w=914&amp;h=283&amp;s=13055&amp;e=svg&amp;a=1&amp;b=faa230" alt="image"  />
+</p>
+<p>面对这个问题，我们前端的同学肯定第一时间想到的就是异步，对，Javascript对Native的调用完全可以采用异步的形式，如果是异步的形式，我们的流程图变成下面这样： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0116091ec95a4cde9e634a019db3b86b~tplv-k3u1fbpfcp-image.image#?w=914&amp;h=283&amp;s=13553&amp;e=svg&amp;a=1&amp;b=f68d14" alt="image"  />
+</p>
+<p>在异步流程中，由于不再需要等待Native代码执行完成，代码1和代码6会迅速执行完成，而在同步代码流程中，这两段代码会一直占用分配给线程的CPU直到Native执行完成。另外在异步流程中由于代码4和代码5变成了代码1的回调函数，代码7变成了代码6的回调函数，因此相比于同步代码，他们的执行顺序会有根据Native端代码的执行时长而有所变化。从时间轴可以看到异步流程的执行效率会变高，因为不再有代码的同步等待。尽管后来React Native经过实际使用后，发现异步也会带来一些问题，但是在当初开发设计React Native时，这个异步设计是无可厚非的。</p>
+<p>如果要使用异步，就来了问题了，JavascriptCore并没有提供异步的API，因此就需要React Native的创造者自己实现，下面我们来看一下React Native是如何实现异步的。</p>
+<p>我们拿一段Javascript代码举例，来说明React Native bridge关于异步部分的执行流程：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import {NativeModules} from 'react-native'; let a = 1; NativeModules.Device.getDeviceInfo((deviceInfo) =&gt; {   setTimeout(() =&gt; {       a = deviceInfo;   }, 1000); });</code></p>
+<p>我们先省去其他细节，先看大体的执行流程：</p>
+<ol>
+<li>用户点击App图标</li>
+<li>App启动，Native开启Javascript线程，并开始用JavascriptCore加载Javascript代码（第一轮事件循环）</li>
+<li><code>let a = 1</code>开始执行</li>
+<li><code>NativeModules.Device.getDeviceInfo</code>开始执行，<code>Device</code>是一个Native模块，<code>getDeviceInfo</code>的真正实现在Native端</li>
+<li><code>NativeModules.Device.getDeviceInfo</code>整个函数调用的描述信息被组织成JSON的格式存入数组（即所谓的队列）</li>
+<li>Javascript执行完成，返回到Native端，Native获取Javascript中队列的数据并反解成Native模块方法的调用</li>
+<li>完成Native模块的调用后，Native开始回调Javascript代码中专门处理回调的函数，并将业务数据传给Javascript（新一轮事件循环）</li>
+<li>进入<code>(deviceInfo) =&gt; {}</code>，开始执行<code>setTimeout</code>，<code>setTimeout</code>内部由Native Module实现，因此Javascript中的<code>setTimeout</code>实际上只是往队列中插入它的描述信息（新一轮事件循环完成）</li>
+<li>Javascript执行完成，返回到Native端，Native获取Javascript中队列的数据并反解成Native模块方法的调用</li>
+<li>Native模块等超时时间1000毫秒到达时，回调Javascript中<code>setTimeout</code>的回调函数<code>() =&gt; {a = deviceInfo}</code>(新一轮事件循环)</li>
+<li>Javascript执行完成，返回Native，这次队列为空，没有模块调用，流程结束</li>
+</ol>
+<p>不知道大家看到这个流程会不会有些意外，尤其是<code>setTimeout</code>的部分，是的，<code>setTimeout</code>并不属于ECMAScript标准，而是HTML规范的标准，JavascriptCore作为纯Javascript语言的运行环境，不去实现<code>setTimeout</code>就不奇怪了，不过虽然JavascriptCore没有实现<code>setTimeout</code>，但是它提供了C语言的接口，像Safari浏览器等使用JavascriptCore作为Javascript运行环境的应用程序都会基于C语言接口去实现<code>setTimeout</code>，所以其实也可以认为<code>setTimeout</code>其实也是一种跨语言的模块调用。那<code>setTimeout</code>的异步功能是怎么实现的呢？对于JavascriptCore的调用者Native代码来说，它所能切分的Javascript的最小单位就是一次完整的同步Javascript的执行，像<code>setTimeout</code>这种一段时间后需要继续运行的异步功能，则需要在Native中切分成两次同步的Javascript任务来实现，一次同步地执行<code>setTimeout</code>函数，另一次同步地执行回调函数，中间的间隔时间的控制由Native代码来实现。这种实现方式在浏览器和Node.js中有一个名词叫做：Event Loop（事件循环） 事件循环就是程序待命的时候是等候状态，待新的事件触发时开始执行程序，等事件处理完成，程序重新进入待命状态，依次循环往复。可以看到其实事件循环和具体的程序语言是完全可以分开的，具体要怎么循环，完全可以由业务方自行决定，程序语言就像一把刀，什么时候怎么使用这把刀是由具体的使用者和使用场景决定的。因此JavascriptCore并没有实现事件循环，谷歌的V8引擎有一个自带的事件循环，但是使用者完全可以替换掉它，而Node.js虽然使用了V8引擎，但是确有自己的一套事件循环机制。在React Native中，Javascript更像是处于工作线程中，当其他线程需要Javascript工作线程执行任务时则开始调用工作线程，工作线程处理完成返回给调用方，每个批次的执行都是一次同步的Javascript执行，若干次的执行Javascript也就像是浏览器中的事件循环，这不过这里的事件循环由App的Native代码实现。我们通过一张图来形象地看一下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d3e93d0a416e408cbe8e6f3dc75ada66~tplv-k3u1fbpfcp-image.image#?w=604&amp;h=620&amp;s=14318&amp;e=svg&amp;a=1&amp;b=c4ebd5" alt="image"  />
+</p>
+<p>图中Native一轮又一轮的执行Javascript任务，直到所有任务完成。当有用户事件或者有其他触发条件时（例如文件数据读取返回）Native会重新发起Javascript任务。在复杂的事件循环系统中，例如Node.js，任务会被分成若干种队列，每个队列的优先级会有所不同。React Native中的事件循环相对则要简单很多。</p>
+<p>总结一下就是，Javascript中像<code>setTimeout</code>这种异步任务实际上是被分切成若干同步的任务然后在Javascript外部分别调用完成的。所以对于Javascript语言解释器来说，它可能都不太需要知道这种具体异步任务的存在，它只需要一行行的执行代码就可以了。</p>
+<p>另外在这里咱们也顺便说一下微任务。像<code>setTimeout</code>这种异步任务达到运行条件后，需要排着队挨个儿执行。但是有时候我们有些优先级相对高的任务希望插队提前执行，这个时候就需要一类特殊的任务了，叫做微任务（<code>setTimeout</code>那种的我们把它叫做宏任务），他们也是异步执行的，但是它们不是作为独立的同步代码块一样排队，而是直接被加到本轮同步Javacript程序的最后，作为本轮同步代码的一部分，因此它会比后面的宏任务更优先执行。微任务的典型就是<code>Promise</code>，虽然JavascriptCore实现了<code>Promise</code>，但是React Native并没有使用，而是基于<code>setImmediate</code>实现了自己的微任务，而<code>setImmediate</code>所做的事情就是把异步任务放到本轮同步代码的最后，下面在上面图的基础上加上微任务： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b3ac8500f11448559577f918bb573d25~tplv-k3u1fbpfcp-image.image#?w=678&amp;h=875&amp;s=18470&amp;e=svg&amp;a=1&amp;b=c5ebd4" alt="image"  />
+</p>
+<p>我们再回到上面的执行流程，我们把流程做一个抽象，抽离出这个具体的案例，重新写一下流程：</p>
+<ol>
+<li>用户点击App图标</li>
+<li>App启动，Native开启Javascript线程，并开始用JavascriptCore加载Javascript代码（第一轮事件循环）</li>
+<li>第一轮同步代码块开始执行</li>
+<li>同步代码块执行完成，涉及到Native Module调用的功能，会往队列中插入JSON形式的调用描述信息，将执行权返回给Native</li>
+<li>Native通过JavascriptCore的API获取到Javascript中的队列数据，解析并分别调用对应的Native模块方法</li>
+<li>Native的模块方法执行完成后，调用Javascript中的回调函数，一轮新的事件循环开始，然后继续重复第3步的流程，但是执行的是后续的任务。</li>
+</ol>
+<p>可以看到Javascript执行完成后，Native会去遍历调用队列（Javascript调用Native），从而执行相应的模块方法。Javascript并没有直接调用Native的方法。</p>
+<p>以上这些实际上就是React Native Bridge的核心思想了。在Bridge的基础上React Native建立了模块的概念，模块是Javascript和Native之间通信的业务概念，之所以说它是业务概念是因为模块离用户已经很近了，在Native端用户可以添加自己的模块，以便供Javascript端使用。</p>
+<p>下面咱们来看一下基于Bridge的模块。</p>
+<h2 id="模块的原理">模块的原理<a hidden class="anchor" aria-hidden="true" href="#模块的原理">#</a></h2>
+<p>React Native经过这么多年的维护，代码一直在变化，因此我们这里不会细节到具体的代码，我还是从一个相对抽象的层次来进行讲解。如果大家对具体的代码感兴趣，我们可以另开一个视频专题，专门解析最新的代码。不过在研究最新的代码之前，先看这篇文章和我们随后出的新架构解析之后，再去研究源代码，一定有利于对源代码的理解。</p>
+<p>Bridge的作用是把Javascript端和Native端连接起来，但是如果每次和对端通信都直接面对Bridge，则会有很多重复的代码，为了更方便的和对端通信，React Native中设计了模块的概念，用户通过“模块+方法+参数”便可以实现和对端通信，而不必关心Bridge的细节，而React Native内部也以模块的形式来组织代码，使代码更好维护，这就是模块的意义。</p>
+<h4 id="javascript调用native模块">Javascript调用Native模块<a hidden class="anchor" aria-hidden="true" href="#javascript调用native模块">#</a></h4>
+<p>模块分为Javascript模块和Native模块，Javascript模块供Native调用，Native模块供Javascript调用。 这里我们先讲Native模块。由于在大部分情况下都是Javascript需要获取Native的能力，而不是Native需要获取Javascript的能力，因此React Native除了供内部使用的模块之外，也允许用户扩展自己的Native模块，以便自行扩充Javascript的能力。 以Javascript需要通过Native创建View为例，最简单直观的调用方式是下面这样：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>createView(tag, className, rootTag, props)</code></p>
+<p>不过这样很容易和别的方法重名，因此我们很容易想到，在方法前面再加一个命名空间：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>UIManager.createView(tag, className, rootTag, props)</code></p>
+<p><code>createView</code>属于UI相关的功能，因此我们把它挂到<code>UIManager</code>对象下，<code>UIManager</code>顾名思义就是UI的管理，这里我们把UIManager叫做模块，它代表了Native端的模块，后面的叙述中我们把它叫作“模块代理对象”。这些模块都是Native端的功能，因此我们把这些模块都统一放到一个叫<code>NativeModules</code>的对象下：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>NativeModules.UIManager.createView(...)</code></p>
+<p>这段伪代码可以这么理解：通过Javascript中的模块代理对象<code>UIManager</code>调用Native那边的UIManager模块中的createView方法，Javascript调用端并不需要知道createView是如何实现的。</p>
+<p>既然Javascript端将API调用分成模块和方法，那Native端自然就需要实现模块和方法，Java/Kotlin、Objective C/Swift均是面向对象的语言，因此模块和方法的关系自然就变成了类/对象与方法的关系，我们用Javascript来写Native端模块的伪代码：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>class UIManager {          createView(onCallBack) {         onCallBack()     } }</code></p>
+<p>以上就是一个模块的调用与创建方式，那我们怎么让模块和Bridge一起工作呢？ 我们来看看React Native的内部实现，React Native在Android和iOS上分别实现了模块功能，虽然不同的语言不同的平台，但是机制是一样的。下面我们以用户点击按钮获取屏幕尺寸为例，列出了程序的执行流程： App启动 -&gt; Native模块注册（Native端） -&gt; 生成模块方法的描述信息（Native端） -&gt; 将模块名称的数组注入Javascript（Native端） -&gt; Javascript端检测到注入的数据中只有模块名称，则给NativeModules[moduleName]设置getter方法（Javascript端懒加载模块代理对象）</p>
+<p>-&gt; 一段时间后发生用户点击事件（Native端） -&gt; 触发Javascript事件处理函数，一次Javascript同步代码的执行开始，即一次事件循环开始（Native端，调用Javacript模块，后面会讲） -&gt; Javascript端事件处理函数开始执行（Javascript端） -&gt; 事件处理函数中调用模块代理对象的方法，并传入回调函数用于获取返回数据（Javascript端） -&gt; 此时Javascript端的模块信息还不全，事件处理函数中调用NativeModules[moduleName]会触发第四步定义的getter方法，向Native端获取模块的描述信息，并生成Javascript端的模块方法函数，随后该函数被调用（Javascript端） -&gt; 模块方法函数被调用，将回调函数存入数组，同时将对应的回调ID（后面会讲生成规则）和模块ID、方法ID、业务参数存入二维数组（二维数组的格式我们会面会给出）（Javascript端） -&gt; 本次Javascript同步代码执行完成返回Native端 -&gt; Native端获取Javascript中的队列数据，根据模块ID、方法ID找到对应的方法，并根据回调ID生成Native端的回调函数，回调函数中会将回调的参数数据、回调ID回传给Javascript（Native端） -&gt; Native的模块方法拿到了屏幕尺寸数据，开始调用回调函数（Native端） -&gt; 回调函数将屏幕尺寸数据、回调ID回传给Javascript（Native端） -&gt; Javascript根据回调ID找到Javascript端的回调函数，将屏幕尺寸数据回传给回调函数（Javascript端） -&gt; 至此用户成功获取到屏幕尺寸数据（Javascript端）</p>
+<p>以上便是Javascript调用Native的全过程。事件循环和Javascript的Native调用队列在上面已经讲过了，这里新增的细节是模块方法信息的组织方式，咱们还是继续按照上面的例子来讲解： <code>UIManager</code>模块有一个方法<code>createView</code>，并且有一个回调函数，此模块会被描述成如下JSON格式信息：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>['UIManager', {}, ['createView']]</code></p>
+<p>第二个元素空对象代表Native模块想提供给Javascript的一些常量数据，以键值对的形式出现，只需要在模块类中实现常量函数并返回需要在Javascript获取的数据。 第三个元素是模块方法名字的数组，所有方法名称都会被放入该数组中。 Native模块往往不止一个，所以最终的数据是若干模块描述的数组，如下所示：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[ ['UIManager'], [moduleName] ...]</code></p>
+<p>可以看到最终的数据中只有模块名称，当我们的App变得越来越大时，可能我们每次只使用App中的一部分功能，所以有些Native模块并不会被用到，这些模块信息被提前注入Javascript端并没有意义，因此React Native设计了懒加载机制，App启动时，仅仅模块名称被注入到javascript，其他信息等这个模块被使用到时再从Native获取，需要注意的是这个获取过程并不是异步的，而是Javascript直接通过JavascriptCore从Native中获取。 另外为了能将这些数据注入到Javascript端，需要将它们放到某个命名空间下，否则很容易污染用户的Javascript变量，因此最终注入到Javascript的全局对象global中的是这样的对象：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   remoteModuleConfig:      [ ['UIManager'], [moduleName] ...] }</code></p>
+<p>所有模块数据在Javascript中存在于该对象下：<code>global.remoteModuleConfig</code>。 当使用到某个模块时，Javascript如果检测到模块信息不完整，则会同步的去Native端拉取全部的模块信息：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>['UIManager', {}, ['createView']]</code></p>
+<p>这次是Javascript主动拉取，而不是Native端注入，获取的数据会放入局部变量中，因此不会污染全局变量，不需要放到<code>remoteModuleConfig</code>上。</p>
+<p>整个模块的JSON描述信息写全了是下面这样：</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[moduleName, constants, methods, promiseMethods, syncMethods]</code></p>
+<p><code>syncMethods</code>是同步方法的意思，是React Native后来的版本才有的东西，而且官方也不推荐使用，咱们这里就不讨论了。 <code>promiseMethods</code>是表示可以返回<code>Promise</code>的模块方法，不过它存的并不是方法名称，而是方法名称在<code>methods</code>中的索引。</p>
+<p>Javascript拿到以上JSON信息，开始在NativeNodules对象下创建这样结构的数据，伪代码如下：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>NativeModules[moduleName][methodName] = function(...args) {     const {onFail, onSucc, params} = parseArgs(args);     onFail &amp;&amp; params.push(this._callID &lt;&lt; 1);     onSucc &amp;&amp; params.push((this._callID &lt;&lt; 1) | 1);     this._successCallbacks[this._callID] = onSucc;     this._failureCallbacks[this._callID] = onFail;          this._queue[0].push(moduleID);     this._queue[1].push(methodID);     this._queue[3].push(params); }</code></p>
+<p>注意这并不是源码，只是为了方便大家理解而写的伪代码。可以看到，Javascript端会构造这样一个函数，当Javascript调用Native模块的方法时，实际上最终是调用的这样的一个函数，它把 <code>moduleID</code>、 <code>methodId</code>、 <code>_callID</code>放入队列，并且缓存了回调函数与<code>_callID</code>的对应关系，然后就返回了。这里的<code>moduleID</code>和<code>methodID</code>是哪里来的呢？它们实际上只是模块方法描述信息的数组索引，例如如果是数组中的第一个模块，那<code>moduleID</code>就是0，第二模块的<code>moduleID</code>就是1，方法也是如此，其ID代表的是模块中方法在方法数组中的索引。</p>
+<p>另外可以看到伪代码中<code>_callID</code>有一些位操作的逻辑，此部分不影响对整体原理的理解，因此如果不感兴趣可以忽略这部分内容。这部分源代码在历代版本中有变化，不太好懂，但是逻辑却很简单，之前的版本中，<code>_callID</code>是以1为步长递增，所有回调函数都放在同一个数组中，数组的索引就是<code>_callID</code>，由于<code>onFail</code>和<code>onSucc</code>并不一定是成对存在，所以在这种模式下，我们很难说某个<code>_callID</code>是<code>onFail</code>还是<code>onSucc</code>。后来随着版本的演进，分成了两个数组来存储<code>_callID</code>与回调函数的对应关系，一个数组表示<code>onFail</code>，另一个数组表示<code>onSucc</code>，将Javascript端<code>_callID</code>的数值的二进制值往左移一位作为<code>onFail</code>在Native端的ID，往左移一位会导致二进制值最右端的位一定是0，另外将<code>_callID</code>的二进制值往左移一位加1作为<code>onSucc</code>在Native端的ID，这样的话二进制数值最右端的位一定是1。其实Native端并不关心<code>_callID</code>的具体数值，当Native端产生回调时，将<code>_callID</code>透传回了Javascript，Javascript端通过判断回传的<code>_callID</code>最右边的位就可以判断是<code>onFail</code>的回调还是<code>onSucc</code>的回调，从而调用对应的回调函数。</p>
+<p>以上便是Javascript调用Native模块的原理部分。下面咱再说一下Native是如何调用Javascript模块的。</p>
+<h4 id="native调用javascript模块">Native调用Javascript模块<a hidden class="anchor" aria-hidden="true" href="#native调用javascript模块">#</a></h4>
+<p>Javascript模块对于React Native的使用者来说可能比较陌生，因为它并没有开放给用户，仅仅是供React Native内部的通信在使用。 首先Native调用Javascript并不需要人为设置一个队列，因为Javascript是在单线程中运行，因此所有的调用只需要加入系统维护的线程执行队列就可以了。整个调用过程是比较简单粗暴的，但是和Native模块的逻辑一样，如果每个功能模块都直接面对Bridge，一方面是增加功能之间的耦合，另一方面也会出现重复的代码，加大维护难度，因此Javascript端的模块也是通过注册的形式，当Native端调用Javascript的模块方法时是直接将模块名称和方法名称传给Javascript端，然后Javascript端从注册表（一个键值对对象）中找到对应的功能模块，并执行对应的方法，然后同步的返回数据。随着React Native代码的发展，模块注册也由最开始的在App启动时的全部注册完成变成了先注册部分必要的模块，其余模块全部改成懒加载的模式，看一下两种模式的伪代码：</p>
+<p>全部注册模式：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);`
+</code></pre>
+<p>懒加载注册模式：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`BatchedBridge.registerLazyCallableModule('RCTLog', () =&gt; require('RCTLog'));`
+</code></pre>
+<p>可以看到，懒加载注册模式下，模块的加载是被包裹到了方法中，只有实际调用到了该模块才会去加载该模块。</p>
+<p>Javascript的核心模块大概有这些： <code>AppRegistry</code>、 <code>RCTEventEmitter</code>、 <code>RCTDeviceEventEmitter</code>、 <code>RCTNativeAppEventEmitter</code>、 <code>JSTimers</code>，他们涉及到的基本都是React Native的核心功能。 另外还有不少辅助性和调试用的模块，这里就不列出了。</p>
+<p>Javascript模块的写法也特别简单，就是一个键值对形式的对象，下面贴出部分<code>AppRegistry</code>模块的代码：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>``const AppRegistry = {       setWrapperComponentProvider(provider: WrapperComponentProvider) {         wrapperComponentProvider = provider;       },       registerConfig(config: Array&lt;AppConfig&gt;): void {         config.forEach(appConfig =&gt; {           if (appConfig.run) {             AppRegistry.registerRunnable(appConfig.appKey, appConfig.run);           } else {             invariant(               appConfig.component != null,               'AppRegistry.registerConfig(...): Every config is expected to set ' +                 'either `run` or `component`, but `%s` has neither.',               appConfig.appKey,             );             AppRegistry.registerComponent(               appConfig.appKey,               appConfig.component,               appConfig.section,             );           }         });       },       registerComponent(         appKey: string,         componentProvider: ComponentProvider,         section?: boolean,       ): string {         runnables[appKey] = {           componentProvider,           run: appParameters =&gt;             renderApplication(               componentProviderInstrumentationHook(componentProvider),               appParameters.initialProps,               appParameters.rootTag,               wrapperComponentProvider &amp;&amp; wrapperComponentProvider(appParameters),             ),         };         if (section) {           sections[appKey] = runnables[appKey];         }         return appKey;       }     }``
+</code></pre>
+<p>这里并不打算讲源代码，这篇文章的主要目的是让大家了解React Native的设计原理，源码可以另开一个专题。</p>
+<p>以上就是Javascript的模块部分。</p>
+<h2 id="native部分的渲染">Native部分的渲染<a hidden class="anchor" aria-hidden="true" href="#native部分的渲染">#</a></h2>
+<p>未完待续</p>
+<h2 id="线程的利用">线程的利用<a hidden class="anchor" aria-hidden="true" href="#线程的利用">#</a></h2>
+<p>未完待续</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%9B%A0%E4%B8%BA%E4%B8%8D%E6%87%82redis%E9%9B%86%E7%BE%A4%E6%88%91%E8%A2%ABdiss%E4%BA%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>因为不懂Redis集群，我被diss了</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%88%91%E4%BB%A5%E4%B8%BA%E7%AE%80%E5%8E%86%E4%B8%8A%E5%8F%AF%E4%BB%A5%E5%86%99%E7%B2%BE%E9%80%9Aspring%E6%A1%86%E6%9E%B6%E7%9B%B4%E5%88%B0%E6%88%91%E9%81%87%E5%88%B0%E4%BA%86/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>我以为简历上可以写精通Spring框架，直到我遇到了。。。</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative原理系列-老架构 on x"
+            href="https://x.com/intent/tweet/?text=ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f&amp;hashtags=%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative原理系列-老架构 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f&amp;title=ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84&amp;summary=ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative原理系列-老架构 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f&title=ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative原理系列-老架构 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative原理系列-老架构 on whatsapp"
+            href="https://api.whatsapp.com/send?text=ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative原理系列-老架构 on telegram"
+            href="https://telegram.me/share/url?text=ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative原理系列-老架构 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=ReactNative%e5%8e%9f%e7%90%86%e7%b3%bb%e5%88%97-%e8%80%81%e6%9e%b6%e6%9e%84&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E5%258E%259F%25E7%2590%2586%25E7%25B3%25BB%25E5%2588%2597-%25E8%2580%2581%25E6%259E%25B6%25E6%259E%2584%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

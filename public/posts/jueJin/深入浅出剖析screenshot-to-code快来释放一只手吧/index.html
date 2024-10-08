@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>深入浅出剖析Screenshot-to-code：快来释放一只手吧！ | PaperMod</title>
+<meta name="keywords" content="前端, JavaScript">
+<meta name="description" content="本文主要介绍Screenshot-to-code的实现原理，如何实现代码生成、如何实现选定节点二次调优UI、如何在本地运行项目。身为前端的你还等什么？赶紧来释放双手吧。">
+<meta name="author" content="叶知秋水">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E5%89%96%E6%9E%90screenshot-to-code%E5%BF%AB%E6%9D%A5%E9%87%8A%E6%94%BE%E4%B8%80%E5%8F%AA%E6%89%8B%E5%90%A7/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E5%89%96%E6%9E%90screenshot-to-code%E5%BF%AB%E6%9D%A5%E9%87%8A%E6%94%BE%E4%B8%80%E5%8F%AA%E6%89%8B%E5%90%A7/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="深入浅出剖析Screenshot-to-code：快来释放一只手吧！" />
+<meta property="og:description" content="本文主要介绍Screenshot-to-code的实现原理，如何实现代码生成、如何实现选定节点二次调优UI、如何在本地运行项目。身为前端的你还等什么？赶紧来释放双手吧。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E5%89%96%E6%9E%90screenshot-to-code%E5%BF%AB%E6%9D%A5%E9%87%8A%E6%94%BE%E4%B8%80%E5%8F%AA%E6%89%8B%E5%90%A7/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-06-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-06-21T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="深入浅出剖析Screenshot-to-code：快来释放一只手吧！"/>
+<meta name="twitter:description" content="本文主要介绍Screenshot-to-code的实现原理，如何实现代码生成、如何实现选定节点二次调优UI、如何在本地运行项目。身为前端的你还等什么？赶紧来释放双手吧。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "深入浅出剖析Screenshot-to-code：快来释放一只手吧！",
+      "item": "http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E5%89%96%E6%9E%90screenshot-to-code%E5%BF%AB%E6%9D%A5%E9%87%8A%E6%94%BE%E4%B8%80%E5%8F%AA%E6%89%8B%E5%90%A7/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "深入浅出剖析Screenshot-to-code：快来释放一只手吧！",
+  "name": "深入浅出剖析Screenshot-to-code：快来释放一只手吧！",
+  "description": "本文主要介绍Screenshot-to-code的实现原理，如何实现代码生成、如何实现选定节点二次调优UI、如何在本地运行项目。身为前端的你还等什么？赶紧来释放双手吧。",
+  "keywords": [
+    "前端", "JavaScript"
+  ],
+  "articleBody": "\r本文主要介绍Screenshot-to-code的实现原理，如何实现代码生成、如何实现选定节点二次调优UI、如何在本地运行项目。身为前端的你还等什么？赶紧来释放双手吧。\n项目介绍 “Screenshot-to-code”（截图转代码）是一种将用户界面（UI）的截图自动转换成可编辑的前端代码的技术。这种技术通常由人工智能（AI）驱动，能够识别截图中的UI元素，如按钮、文本框、列表等，并将它们转换成相应的HTML、CSS和JavaScript代码，具备以下特点：\n自动化：通过自动化的方式，减少手动编写前端代码的时间和劳动强度。\nAI识别：使用机器学习算法来识别截图中的UI元素和布局。\n前端代码生成：将识别的UI元素转换成HTML标记、CSS样式和JavaScript逻辑。\n提高效率：允许开发人员专注于更复杂的功能实现，而不是花费大量时间编写基础的UI代码。\n实时反馈：一些工具可以提供实时预览，允许用户在生成代码之前调整UI元素。\n定制化：用户可以根据自己的需求调整生成的代码，以满足特定的功能或样式要求。\n“Screenshot-to-code\"尽管不能完全取代手动编码，但对于快速原型开发和加速前端开发流程非常有用，作者是Abi Raja截止到当前已经有53.9k的star。\n项目地址：github.com/abi/screens…\n效果如下：也可以看git项目。\n那它是怎么实现的呢？我们一起来看看\n核心技术——前端 Screenshot-to-code，里面包含了前端和后端。前端用的是react+vite+radix-ui，后端用的是python+poetry。\n先来介绍一下前端：\n核心代码基本都在App.tsx，整个项目只有1个页面，通过websocket请求后端，获取到数据后，显示到前端。\n项目里用到的三个不错的外部库：\ncodemirror：代码编辑器\nreact-hot-toast：toast组件\nzustand：状态管理\n业务流程如下：\n以上是对话的过程，在生成代码预览的功能上，主要是使用了iframe实现，通过给iframe设置srcdoc来更新文档，实现逐步显示的效果，还贴心的做了节流。\n除此之外里面还有一个比较实用的技巧，针对已经生成的页面做点对点的微调。这个是怎么实现的？\n1、从上面的代码可以看到，对body监听了click事件，这个很重要。\n2、click拿到的event被传递到EditPopup组件，组件内通过这个事件对象可以拿到位置显示那个对话弹窗。\n3、通过event的target获取到Dom元素，有dom元素就可以通过outHtml获取具体的html内容了。二次修改的时候就可以把当前的html及要修改的内容一起发过去以及更新具体的内容。\n4、返回的是完整的html，直接替换就完事。\n核心技术——后端 后端主要使用的是python语言，通过poetry管理项目，有点类似node的npm，Poetry 是一个 Python 包管理器和依赖管理器，它旨在提供一种更人性化、更可靠的方式去处理 Python 项目的依赖关系。python需要3.10以上。要提前安装好poetry和pyright，后者类似ts，主要检测类型。\n核心文件：\nroutes/generate_code.py：核心接口，主要用于代码生成\nllm.py：调用大模型的接口\n具体流程如下：\n所以，其实就是调用gpt生成的代码。调用的方式是通过AsyncOpenAI（platform.openai.com/docs/api-re…\n既然是调用gpt那最重要的当然是prompts。来看看它的prompts，bob翻译如下，可以简单看一下：\n首次：\nxml\n代码解读\n复制代码\n您是Tailwind的专家开发人员 您从用户那里截取参考网页的屏幕截图，然后构建单页应用程序 使用Tailwind、HTML和JS。 您可能还会收到您已经构建的网页的屏幕截图（第二张图片），并被要求 更新它，使其看起来更像参考图像（第一张图像）。 -确保应用程序看起来与屏幕截图一模一样。 - 密切关注背景颜色、文本颜色、字体大小、字体系列， 填充、边距、边框等。准确匹配颜色和尺寸。 -使用屏幕截图中的确切文本。 -不要在代码中添加注释，如“”和“\u003c!-...其他新闻项目...--\u003e”来代替编写完整代码。编写完整的代码。 -根据需要重复元素以匹配屏幕截图。例如，如果有15个项目，代码应该有15个项目。不要留下“”等评论，否则坏事会发生。 -对于图像，请使用来自https://placehold.co的占位符图像，并在替代文本中包含图像的详细描述，以便图像生成AI可以稍后生成图像。 在lib方面， -使用此脚本包括尾风： - 您可以使用谷歌字体 - Font Awesome图标字体： 仅返回标签中的完整代码。 不要在开头或结尾包含标记“```”或“```html”\n二次修改：\nxml\n代码解读\n复制代码\n您是Tailwind的专家开发人员。 -不要在代码中添加注释，如“”和“!-- ... other news items ... --\u003e”来代替编写完整代码。编写完整的代码。 -根据需要重复元素。例如，如果有15个项目，代码应该有15个项目。不要留下“”等评论，否则坏事会发生。 -对于图像，请使用来自https://placehold.co的占位符图像，并在替代文本中包含图像的详细描述，以便图像生成AI可以稍后生成图像。 在lib方面， -使用此脚本引入Tailwind： - 您可以使用谷歌字体 - Font Awesome 作为字体文件： 仅返回标签中的完整代码。 不要在开头或结尾包含标记“```”或“```html”。\n从这里也可以看出gpt其实像一个听话的三好学生，你给它足够准确的提示，它会生成更精确的内容。\n如果要自己搭建的，可以对上面的prompts做二次修改或者增加，文件在prompts/screenshot_system_prompts.py和imported_code_prompts.py。\n这个项目跑起来还是比较容易的，我的步骤如下：\n1、环境准备python3.10.x，poetry 、pright，升级或者安装流程可以问大模型\n2、执行如下命令\nbash\n代码解读\n复制代码\ncd backendecho \"OPENAI_API_KEY=sk-your-key\" \u003e .env poetry install poetry shell poetry run uvicorn main:app --reload --port 7001\n.env文件需要配置一下OPENAI_API_KEY。还有其他配置可以看readme。\n如果不想连gpt，用本地mock可以跑这个命令：\nini\n代码解读\n复制代码\nMOCK=true poetry run uvicorn main:app --reload --port 7001\n项目启动后支持热更新。\n总结 以上就是对这个项目的体验。我们内部测试了一下效果，还是值得入手的，写代码不会太差，加上可以微调，基本可以出一个框架了。可以自己改造一下，增加对element-ui、vant等开源框架的识别。叫它用scss写样式，生成vue单文件之类的也是可以的。\n后期如果模型训练的复杂度下降了，能接入自己公司的组件库、接口文档之类的就可以更上一层楼了。\n你心动了吗？心动不如行动，赶紧去试试吧。\n",
+  "wordCount" : "154",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-06-21T00:00:00Z",
+  "dateModified": "2024-06-21T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "叶知秋水"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E5%89%96%E6%9E%90screenshot-to-code%E5%BF%AB%E6%9D%A5%E9%87%8A%E6%94%BE%E4%B8%80%E5%8F%AA%E6%89%8B%E5%90%A7/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      深入浅出剖析Screenshot-to-code：快来释放一只手吧！
+    </h1>
+    <div class="post-description">
+      本文主要介绍Screenshot-to-code的实现原理，如何实现代码生成、如何实现选定节点二次调优UI、如何在本地运行项目。身为前端的你还等什么？赶紧来释放双手吧。
+    </div>
+    <div class="post-meta"><span title='2024-06-21 00:00:00 +0000 UTC'>六月 21, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;叶知秋水&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae%e4%bb%8b%e7%bb%8d" aria-label="项目介绍">项目介绍</a></li>
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e6%8a%80%e6%9c%af%e5%89%8d%e7%ab%af" aria-label="核心技术——前端">核心技术——前端</a></li>
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e6%8a%80%e6%9c%af%e5%90%8e%e7%ab%af" aria-label="核心技术——后端">核心技术——后端</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eedadc97aaba4d6686a2b255ac64af7d~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=459&amp;s=288598&amp;e=png&amp;b=ffffff" alt="未命名__2024-06-21&#43;21_28_12.png"  />
+</p>
+<p>本文主要介绍Screenshot-to-code的实现原理，如何实现代码生成、如何实现选定节点二次调优UI、如何在本地运行项目。身为前端的你还等什么？赶紧来释放双手吧。</p>
+<h2 id="项目介绍">项目介绍<a hidden class="anchor" aria-hidden="true" href="#项目介绍">#</a></h2>
+<p>&ldquo;Screenshot-to-code&rdquo;（截图转代码）是一种将用户界面（UI）的截图自动转换成可编辑的前端代码的技术。这种技术通常由人工智能（AI）驱动，能够识别截图中的UI元素，如按钮、文本框、列表等，并将它们转换成相应的HTML、CSS和JavaScript代码，具备以下特点：</p>
+<ol>
+<li>
+<p><strong>自动化</strong>：通过自动化的方式，减少手动编写前端代码的时间和劳动强度。</p>
+</li>
+<li>
+<p><strong>AI识别</strong>：使用机器学习算法来识别截图中的UI元素和布局。</p>
+</li>
+<li>
+<p><strong>前端代码生成</strong>：将识别的UI元素转换成HTML标记、CSS样式和JavaScript逻辑。</p>
+</li>
+<li>
+<p><strong>提高效率</strong>：允许开发人员专注于更复杂的功能实现，而不是花费大量时间编写基础的UI代码。</p>
+</li>
+<li>
+<p><strong>实时反馈</strong>：一些工具可以提供实时预览，允许用户在生成代码之前调整UI元素。</p>
+</li>
+<li>
+<p><strong>定制化</strong>：用户可以根据自己的需求调整生成的代码，以满足特定的功能或样式要求。</p>
+</li>
+</ol>
+<p>&ldquo;Screenshot-to-code&quot;尽管不能完全取代手动编码，但对于快速原型开发和加速前端开发流程非常有用，作者是<strong>Abi Raja</strong>截止到当前已经有53.9k的star。</p>
+<p>项目地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fabi%2Fscreenshot-to-code" title="https://github.com/abi/screenshot-to-code">github.com/abi/screens…</a></p>
+<p>效果如下：也可以看git项目。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/10c0dcb3c40c49df9223c4f01eb9d0d5~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1232&amp;h=720&amp;s=5351923&amp;e=gif&amp;f=341&amp;b=f9f8f5" alt=""  />
+</p>
+<p>那它是怎么实现的呢？我们一起来看看</p>
+<h2 id="核心技术前端">核心技术——前端<a hidden class="anchor" aria-hidden="true" href="#核心技术前端">#</a></h2>
+<p>Screenshot-to-code，里面包含了前端和后端。前端用的是react+vite+radix-ui，后端用的是python+poetry。</p>
+<p>先来介绍一下前端：</p>
+<p>核心代码基本都在App.tsx，整个项目只有1个页面，通过websocket请求后端，获取到数据后，显示到前端。</p>
+<p>项目里用到的三个不错的外部库：</p>
+<p>codemirror：代码编辑器</p>
+<p>react-hot-toast：toast组件</p>
+<p>zustand：状态管理</p>
+<p>业务流程如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fefe53cdb3b44d689c3503d837b8babc~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1011&amp;h=2331&amp;s=130024&amp;e=png&amp;b=ffffff" alt="无标题文档-流程图.jpg"  />
+</p>
+<p>以上是对话的过程，在生成代码预览的功能上，主要是使用了iframe实现，通过给iframe设置srcdoc来更新文档，实现逐步显示的效果，还贴心的做了节流。</p>
+<p>除此之外里面还有一个比较实用的技巧，针对已经生成的页面做点对点的微调。这个是怎么实现的？</p>
+<p>1、从上面的代码可以看到，对body监听了click事件，这个很重要。</p>
+<p>2、click拿到的event被传递到EditPopup组件，组件内通过这个事件对象可以拿到位置显示那个对话弹窗。</p>
+<p>3、通过event的target获取到Dom元素，有dom元素就可以通过outHtml获取具体的html内容了。二次修改的时候就可以把当前的html及要修改的内容一起发过去以及更新具体的内容。</p>
+<p>4、返回的是完整的html，直接替换就完事。</p>
+<h2 id="核心技术后端">核心技术——后端<a hidden class="anchor" aria-hidden="true" href="#核心技术后端">#</a></h2>
+<p>后端主要使用的是python语言，通过poetry管理项目，有点类似node的npm，Poetry 是一个 Python 包管理器和依赖管理器，它旨在提供一种更人性化、更可靠的方式去处理 Python 项目的依赖关系。python需要3.10以上。要提前安装好poetry和pyright，后者类似ts，主要检测类型。</p>
+<p>核心文件：</p>
+<p>routes/generate_code.py：核心接口，主要用于代码生成</p>
+<p>llm.py：调用大模型的接口</p>
+<p>具体流程如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3d0114e945974c51ac5235cea8b15888~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=411&amp;h=2331&amp;s=79556&amp;e=png&amp;b=ffffff" alt="无标题文档-流程图 (1).jpg"  />
+</p>
+<p>所以，其实就是调用gpt生成的代码。调用的方式是通过AsyncOpenAI（<a href="https://link.juejin.cn?target=https%3A%2F%2Fplatform.openai.com%2Fdocs%2Fapi-reference%2Fchat%2Fcreate%25EF%25BC%2589%25E3%2580%2582" title="https://platform.openai.com/docs/api-reference/chat/create%EF%BC%89%E3%80%82">platform.openai.com/docs/api-re…</a></p>
+<p>既然是调用gpt那最重要的当然是prompts。来看看它的prompts，bob翻译如下，可以简单看一下：</p>
+<p>首次：</p>
+<blockquote>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>您是Tailwind的专家开发人员 您从用户那里截取参考网页的屏幕截图，然后构建单页应用程序 使用Tailwind、HTML和JS。 您可能还会收到您已经构建的网页的屏幕截图（第二张图片），并被要求 更新它，使其看起来更像参考图像（第一张图像）。 -确保应用程序看起来与屏幕截图一模一样。 - 密切关注背景颜色、文本颜色、字体大小、字体系列， 填充、边距、边框等。准确匹配颜色和尺寸。 -使用屏幕截图中的确切文本。 -不要在代码中添加注释，如“&lt;!--根据需要添加其他导航链接--&gt;”和“&lt;!-...其他新闻项目...--&gt;”来代替编写完整代码。编写完整的代码。 -根据需要重复元素以匹配屏幕截图。例如，如果有15个项目，代码应该有15个项目。不要留下“&lt;!--对每个新闻项目重复--&gt;”等评论，否则坏事会发生。 -对于图像，请使用来自https://placehold.co的占位符图像，并在替代文本中包含图像的详细描述，以便图像生成AI可以稍后生成图像。 在lib方面， -使用此脚本包括尾风：&lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt; - 您可以使用谷歌字体 - Font Awesome图标字体：&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css&quot;&gt;&lt;/link&gt; 仅返回&lt;html&gt;&lt;/html&gt;标签中的完整代码。 不要在开头或结尾包含标记“```”或“```html”</code></p>
+</blockquote>
+<p>二次修改：</p>
+<blockquote>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>您是Tailwind的专家开发人员。 -不要在代码中添加注释，如“&lt;!-- Add other navigation links as needed --&gt;”和“!-- ... other news items ... --&gt;”来代替编写完整代码。编写完整的代码。 -根据需要重复元素。例如，如果有15个项目，代码应该有15个项目。不要留下“&lt;!-- Repeat for each news item --&gt;”等评论，否则坏事会发生。 -对于图像，请使用来自https://placehold.co的占位符图像，并在替代文本中包含图像的详细描述，以便图像生成AI可以稍后生成图像。 在lib方面， -使用此脚本引入Tailwind：&lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt; - 您可以使用谷歌字体 - Font Awesome 作为字体文件：&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css&quot;&gt;&lt;/link&gt; 仅返回&lt;html&gt;&lt;/html&gt;标签中的完整代码。 不要在开头或结尾包含标记“```”或“```html”。</code></p>
+</blockquote>
+<p>从这里也可以看出gpt其实像一个听话的三好学生，你给它足够准确的提示，它会生成更精确的内容。</p>
+<p>如果要自己搭建的，可以对上面的prompts做二次修改或者增加，文件在prompts/screenshot_system_prompts.py和imported_code_prompts.py。</p>
+<p>这个项目跑起来还是比较容易的，我的步骤如下：</p>
+<p>1、环境准备python3.10.x，poetry 、pright，升级或者安装流程可以问大模型</p>
+<p>2、执行如下命令</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cd backendecho  &quot;OPENAI_API_KEY=sk-your-key&quot; &gt; .env poetry install poetry shell poetry run uvicorn main:app --reload --port 7001</code></p>
+<p>.env文件需要配置一下OPENAI_API_KEY。还有其他配置可以看readme。</p>
+<p>如果不想连gpt，用本地mock可以跑这个命令：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>MOCK=true poetry run uvicorn main:app --reload --port 7001</code></p>
+<p>项目启动后支持热更新。</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>以上就是对这个项目的体验。我们内部测试了一下效果，还是值得入手的，写代码不会太差，加上可以微调，基本可以出一个框架了。可以自己改造一下，增加对element-ui、vant等开源框架的识别。叫它用scss写样式，生成vue单文件之类的也是可以的。</p>
+<p>后期如果模型训练的复杂度下降了，能接入自己公司的组件库、接口文档之类的就可以更上一层楼了。</p>
+<p>你心动了吗？心动不如行动，赶紧去试试吧。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/window.ai-%E5%9C%A8%E6%9C%AC%E5%9C%B0%E8%B7%91ai%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>window.ai-在本地跑AI大模型</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%8F%AA%E5%86%99%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%9A%84%E5%89%8D%E7%AB%AF%E8%A6%81%E6%80%8E%E4%B9%88%E6%8F%90%E5%8D%87%E8%87%AA%E5%B7%B1/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>只写后台管理的前端要怎么提升自己</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入浅出剖析Screenshot-to-code：快来释放一只手吧！ on x"
+            href="https://x.com/intent/tweet/?text=%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cJavaScript">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入浅出剖析Screenshot-to-code：快来释放一只手吧！ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f&amp;title=%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81&amp;summary=%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入浅出剖析Screenshot-to-code：快来释放一只手吧！ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f&title=%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入浅出剖析Screenshot-to-code：快来释放一只手吧！ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入浅出剖析Screenshot-to-code：快来释放一只手吧！ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入浅出剖析Screenshot-to-code：快来释放一只手吧！ on telegram"
+            href="https://telegram.me/share/url?text=%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入浅出剖析Screenshot-to-code：快来释放一只手吧！ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%b7%b1%e5%85%a5%e6%b5%85%e5%87%ba%e5%89%96%e6%9e%90Screenshot-to-code%ef%bc%9a%e5%bf%ab%e6%9d%a5%e9%87%8a%e6%94%be%e4%b8%80%e5%8f%aa%e6%89%8b%e5%90%a7%ef%bc%81&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E6%25B5%2585%25E5%2587%25BA%25E5%2589%2596%25E6%259E%2590screenshot-to-code%25E5%25BF%25AB%25E6%259D%25A5%25E9%2587%258A%25E6%2594%25BE%25E4%25B8%2580%25E5%258F%25AA%25E6%2589%258B%25E5%2590%25A7%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Linux源码解读-启动过程（一） | PaperMod</title>
+<meta name="keywords" content="操作系统, 面试, 程序员">
+<meta name="description" content="前言之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过">
+<meta name="author" content="Xiao镔">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/linux%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E4%B8%80/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/linux%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E4%B8%80/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Linux源码解读-启动过程（一）" />
+<meta property="og:description" content="前言之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/linux%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E4%B8%80/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-22T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Linux源码解读-启动过程（一）"/>
+<meta name="twitter:description" content="前言之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Linux源码解读-启动过程（一）",
+      "item": "http://localhost:1313/posts/juejin/linux%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E4%B8%80/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Linux源码解读-启动过程（一）",
+  "name": "Linux源码解读-启动过程（一）",
+  "description": "前言之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过",
+  "keywords": [
+    "操作系统", "面试", "程序员"
+  ],
+  "articleBody": "前言 之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过程中，大家都推荐《linux内核完全注释》这本书，果然非常经典，该书是以linux0.12版本来进行讲解，虽然是比较早期的版本，但是麻雀虽小，五脏俱全。后续又找到《Linux内核设计的艺术》这本书，从启动过程开始讲的，更加易懂，想学的朋友可以看看两本书，以下是本人的学习笔记\n从硬件开始 从我们使用计算机的经验得知：要想执行一个程序，必须在窗口中双击它，或者在命令行界面中输入相应的执行命令。但是，在开机加电的一瞬间，内存中什么程序也没有，BIOS是如何执行的呢？\n不难得出这样的结论，既然软件的路走不通，只能依靠硬件方法完成了，CPU硬件逻辑设计为加电瞬间强行将CS的值置为0xF000、IP的值置为0xFFF0，这样CS:IP就指向0xFFFF0这个地址位置，这个位置放置的便是操作系统的引导块程序（bootsect.s），如下图，bootsect.s与之后的setup模块、system模块合力为操作系统运行做了很多准备工作\nbootsect.s程序 bootsect.s代码是磁盘引导块程序，驻留在磁盘的第一个扇区中。在PC机加电ROM BIOS自检后，引导扇区由BIOS加载到内存0x07c00处，然后将自己移动到内存0x90000处。该程序的主要作用是首先将setup模块（由setup.s编译成）从磁盘加载到内存，紧接着bootsect的后面位置（0x90200），然后利用BIOS中断0x13取磁盘参数表中当前启动引导盘的参数，接着在屏幕上显示Loading system...字符串。再者将system模块从磁盘上加载到内存0x10000开始的地方。最后长跳转到setup程序的开始处（0x90200）执行setup程序\n这个代码块的迁移是怎么做的呢？我们来看看代码\nini\n代码解读\n复制代码\nSETUPLEN = 4 ! nr of setup-sectors setup程序的扇区数（setup-sectors）值 BOOTSEG = 0x07c0 ! original address of boot-sector bootsect的原始地址 INITSEG = 0x9000 ! we move boot here - out of the way 将bootsect移到这里 SETUPSEG = 0x9020 ! setup starts here setup程序从这里开始 SYSSEG = 0x1000 ! system loaded at 0x10000 (65536). system模块加载到0x10000（64kB）处 ENDSEG = SYSSEG + SYSSIZE ! where to stop loading 停止加载到段地址 entry start ! 告知链接程序，程序从start标号开始执行 start: mov ax,#BOOTSEG ！将ds段寄存器置为0x07c0 mov ds,ax mov ax,#INITSEG ！将es段寄存器置为0x9000 mov es,ax mov cx,#256 ！设置移动计数值为256字 sub si,si ！原地址 ds:si = 0x07c0:0x0000 sub di,di ！目标地址 es:di = 0x9000:0x0000 rep ！重复执行并递减cx的值，直到cx = 0为止 movw ！即movs指令。这里从内存[si]处移动cx个字到[di]处 jmpi go,INITSEG ！段间跳转（Jump Intersegment）。这里INITSEG指出跳转到的段地址，标号go是段内偏移地址 ​\n要理解上面这段代码，首先需要理解操作系统是如何寻址的，为什么要写下面两行？\nbash\n代码解读\n复制代码\nmov ax,#BOOTSEG ！将ds段寄存器置为0x07c0 mov ds,ax\nds是一个16位的段寄存器，在内存寻址时充当段基址的作用，就是当我们使用汇编语言写一个内存地址时，实际上仅仅是写了偏移地址，比如：\ncss\n代码解读\n复制代码\nmov ax, [0x0001]\n实际上相当于\ncss\n代码解读\n复制代码\nmov ax, [ds:0x0001]\n就跟我们平时聊天，说一些地名的时候，会自动忽略中国、广东省这些前缀是一样的\n还有比较重要的一点，这个ds被赋值为0x07c0，由于x86为了让自己能够在16位这个实模式下访问到20位的地址线，段基址需要先左移四位，那0x07c0左移四位就是0x7c00，也就是说，操作系统寻址时，需要先将段基址左移四位，再加上偏移量，注意，这是实模式下的寻址\n通过接下来代码，ds（0x07c0）和si（0x0000）联合使用，构成了源地址0x07c00；es（0x9000）和di（0x0000）联合使用，构成了目的地址0x90000，一个字一个字复制到了0x90000处\nperl\n代码解读\n复制代码\njmpi go,INITSEG go: mov ax,cs ! 将ds、es和ss都置成移动后代码所在的段处（0x9000） mov ds,ax ! 由于程序中有栈操作（push，pop，call），因此设置堆栈 mov es,ax ! put stack at 0x9ff00. mov ss,ax mov sp,#0xFF00 ! arbitrary value \u003e\u003e512 jmpi go,INITSEG接下来这个跳转指令写得很妙，复制bootsect完成后，在内存的0x07c00和0x90000位置有两段完全相同的代码，执行到jmpi go,INITSEG之后，程序就跳转到0x90000这边的代码执行了，在新位置执行，肯定是往下执行，而不是重复之间的代码，所以go这个偏移量就发挥了作用，jmpi是一个段间跳转指令，表示跳转到0x9000:go，段基址左移四位，也就是跳转到0x90000:go处执行，从下面开始，CPU在已移动到0x90000位置处的代码中执行 接下来的代码设置几个段寄存器，包括栈寄存器ss和sp。为后续的操作做了一些准备工作，数据段寄存器跟代码段寄存器都被设置为0x9000，栈指针sp只要指向远大于512字节偏移（即地址0x90200）处都可以。因为从0x90200地址开始处还要放置setup程序，而此时setup程序大约为4个扇区，因此sp要指向大于（0x200 + 0x200 * 4 + 堆栈大小）处\n加载setup模块 下面bootsect程序就要执行它的第二步工作，将setup程序加载到内存中，加载需要利用BIOS中断INT0x13中断向量所指向的中断服务程序来完成，如果读出错，则复位驱动器，并重试，没有退路\n注意es已经设置好了（在移动代码时es已经指向目的段地址处0x90000），从磁盘第2个扇区开始读到0x90200开始处，共读4个扇区\nint 0x13前面的四个mov指令是为了给BIOS中断服务程序传参\nperl\n代码解读\n复制代码\nload_setup: mov dx,#0x0000 ! drive 0, head 0 mov cx,#0x0002 ! sector 2, track 0 mov bx,#0x0200 ! address = 512, in INITSEG mov ax,#0x0200+SETUPLEN ! service 2, nr of sectors int 0x13 ! read it jnc ok_load_setup ! ok - continue mov dx,#0x0000 mov ax,#0x0000 ! reset the diskette int 0x13 j load_setup\n开机启动显示信息 Loading system\narduino\n代码解读\n复制代码\n! Print some inane message ​ mov ah,#0x03 ! read cursor pos xor bh,bh int 0x10 mov cx,#24 mov bx,#0x0007 ! page 0, attribute 7 (normal) mov bp,#msg1 mov ax,#0x1301 ! write string, move cursor int 0x10\n加载system模块 setup程序已经载入内存，现在开始将system模块加载到0x10000（64KB）开始处，0x010000与0x90000之间的距离是512K，当时操作系统设计者判断操作系统内核的大小不会超出512K\nvbnet\n代码解读\n复制代码\nmov ax,#SYSSEG ! #SYSSEG为0x1000 mov es,ax ! segment of 0x010000 es存放system的段地址 call read_it ! 读磁盘上system模块，es为输入参数 call kill_motor ! 关闭驱动器马达，这样就可以知道驱动器的状态了 ​ ! After that we check which root-device to use. If the device is ! defined (!= 0), nothing is done and the given device is used. ! Otherwise, either /dev/PS0 (2,28) or /dev/at0 (2,8), depending ! on the number of sectors that the BIOS reports currently. ​ seg cs mov ax,root_dev cmp ax,#0 jne root_defined seg cs mov bx,sectors mov ax,#0x0208 ! /dev/ps0 - 1.2Mb cmp bx,#15 je root_defined mov ax,#0x021c ! /dev/PS0 - 1.44Mb cmp bx,#18 je root_defined undef_root: jmp undef_root root_defined: seg cs mov root_dev,ax ​ ! after that (everyting loaded), we jump to ! the setup-routine loaded directly after ! the bootblock: ​ jmpi 0,SETUPSEG !跳转到0x9020:0000（setup.s程序的开始处）本程序到此就结束了\njmpi 0,SETUPSEG跳转到0x90200处，就是setup程序开始的位置，至此，bootsect.s程序就结束了\nsetup.s程序 利用ROM BIOS中断读取机器系统数据，并将这些数据保存到0x90000开始的位置（覆盖掉了bootsect程序所在的地方） 移动system模块程序 进入保护模式，设置中断描述符表寄存器（IDTR）、全局描述符表寄存器（GDTR）、中断描述符表（IDT）、全局描述符表（GDT），开启A20地址线 跳转head.s程序运行 先看看第一件事，利用BIOS提供的中断服务程序从设备上提取内核运行所需的机器系统数据，并将这些机器系统数据加载到内存的0x90000到0x901fc位置处，这些数据将在以后main函数执行时发挥重要作用，下面是提取机器系统数据的具体代码，操作系统内核代码处处都是BIOS的调包侠\nini\n代码解读\n复制代码\n! ok, the read went well so we get current cursor position and save it for ! posterity. ​ mov ax,#INITSEG ! this is done in bootsect already, but... mov ds,ax mov ah,#0x03 ! read cursor pos xor bh,bh int 0x10 ! save it in known place, con_init fetches mov [0],dx ! it from 0x90000. ​ ! Get memory size (extended mem, kB) 获取内存信息 ​ mov ah,#0x88 int 0x15 mov [2],ax ​ ! Get video-card data: 获取显卡显示模式 ​ mov ah,#0x0f int 0x10 mov [4],bx ! bh = display page mov [6],ax ! al = video mode, ah = window width ​ ! check for EGA/VGA and some config parameters 检查显示方式并取参数 ​ mov ah,#0x12 mov bl,#0x10 int 0x10 mov [8],ax mov [10],bx mov [12],cx ​ ! Get hd0 data 获取第一块硬盘的信息 ​ mov ax,#0x0000 mov ds,ax lds si,[4*0x41] mov ax,#INITSEG mov es,ax mov di,#0x0080 mov cx,#0x10 rep movsb ​ ! Get hd1 data 获取第二块硬盘的信息 ​ mov ax,#0x0000 mov ds,ax lds si,[4*0x46] mov ax,#INITSEG mov es,ax mov di,#0x0090 mov cx,#0x10 rep movsb\n注意，0x90000这个地址之前是bootsect程序的，所以走到这里，bootsect程序已经被覆盖掉了\n内存地址\n长度(字节)\n名称\n0x90000\n2\n光标位置\n0x90002\n2\n扩展内存数\n0x90004\n2\n显示页面\n0x90006\n1\n显示模式\n0x90007\n1\n字符列数\n0x90008\n2\n未知\n0x9000A\n1\n显示内存\n0x9000B\n1\n显示状态\n0x9000C\n2\n显卡特性参数\n0x9000E\n1\n屏幕行数\n0x9000F\n1\n屏幕列数\n0x90080\n16\n硬盘1参数表\n0x90090\n16\n硬盘2参数表\n0x901FC\n2\n根设备号\n进入保护模式 接下来，操作系统要为进入32位保护模式做大量的重建工作，首先做的一步就是关中断，程序在接下来的执行过程中，无论是否发生中断，系统都不会对此中断进行响应，直到main函数中能够适应保护模式的中断服务体系被重建完毕才能打开中断，而那时候响应中断的服务程序将不再是BIOS提供的中断服务程序，取而代之的是由系统自身提供的中断服务程序\narduino\n代码解读\n复制代码\ncli ! no interrupts allowed ! 从此开始不允许中断\n紧接着，setup程序做了一个影响深远的动作：将位于0x10000的内核程序复制至内存地址起始位置0x0000\nini\n代码解读\n复制代码\n! first we move the system to it's rightful place ​ mov ax,#0x0000 cld ! 'direction'=0, movs moves forward do_move: mov es,ax ! destination segment add ax,#0x1000 cmp ax,#0x9000 !已经把最后一段（从0x8000段开始的64KB）代码移动完 jz end_move !是，则跳转 mov ds,ax ! source segment sub di,di sub si,si mov cx,#0x8000 rep movsw jmp do_move\n0x00000这个位置原来存放着由BIOS建立的中断向量表及BIOS数据区。这个复制动作将BIOS中断向量表和BIOS数据区完全覆盖，使它们不复存在。直到新的中断服务体系构建完毕之前，操作系统不再具备响应并处理中断的能力\n设置中断描述符表和全局描述符表 紧接着，操作系统要设置两个非常重要的东西，中断描述符表（IDT）、全局描述符表（GDT）\nGDT（Global Descriptor Table，全局描述符表），在系统中唯一的存放段寄存器内容（段描述符）的数组，配合程序进行保护模式下的段寻址。它在操作系统的进程切换中具有重要意义，可理解为所有进程的总目录表，其中存放每一个任务（task）局部描述符表（LDT，Local Descriptor Table）地址和任务状态段（TSS，Task Structure Segment）地址，完成进程中各段段寻址、现场保护与现场恢复\nGDTR（Global Descriptor Table Register，GDT基地址寄存器），GDT可以存放在内存的任何地址。当程序通过段寄存器引用一个段描述符时，需要取得GDT的入口，GDTR标识的即为此入口。在操作系统对GDT的初始化完成后，可以用LGDT（Load GDT）指令将GDT基地址加载至GDTR\nIDT（Interrupt Descriptor Table，中断描述符表），保存保护模式下所有中断服务程序的入口地址，类似于实模式下的中断向量表\nIDTR（Interrupt Descriptor Table Register,IDT基地址寄存器），保存IDT的起始地址\n中断描述符表暂时还不会用到，全局描述符表很快就要用到了，这个表是怎么用的呢？\n保护模式下的寻址跟实模式下的寻址是不一样的，实模式下的寻址就是段基址左移四位，再加上偏移地址，保护模式下的段基址被称为段选择子。段选择子里存储着段描述符的索引\n通过段描述符索引，可以从全局描述符表gdt中找到一个段描述符，段描述符里存储着段基址，段基址取出来，再和偏移地址相加，就得到了物理地址\nGDT的作用知道了，怎么知道它是在内存中的哪里，答案是GDTR，GDTR是一个存储GDT位置的寄存器\n接下来看看代码\npython\n代码解读\n复制代码\nend_move: mov ax,#SETUPSEG ! right, forgot this at first. didn't work :-) mov ds,ax lidt idt_48 ! load idt with 0,0 加载IDTR寄存器 lgdt gdt_48 ! load gdt with whatever appropriate 加载GDTR寄存器\n下面是加载中断描述符表寄存器IDTR的指令lidt要求的6字节操作数。前2字节是IDT表的限长，后4字节是IDT表在线性地址空间中的32位基地址。CPU要求在进入保护模式之前需设置IDT表，因此这里先设置一个长度为0的空表\nini\n代码解读\n复制代码\nidt_48: .word 0 ! idt limit=0 .word 0,0 ! idt base=0L\n下面是设置GDTR寄存器，立刻就要用到了，可以看到这个标签位置处表示一个48位的数据，其中高32位存储的正式全局描述符表的gdt的内存地址0x90200 + gdt，gdt是标签，表示在本文件内的偏移量，0x800定义了GDT的限制，0x800表示GDT的大小为2048字节，意味着GDT可以包含256个段描述符，每个段描述符8字节，2048/8 = 256\nini\n代码解读\n复制代码\ngdt_48: .word 0x800 ! gdt limit=2048, 256 GDT entries .word 512+gdt,0x9 ! gdt base = 0X9xxxx\ngdt这个标签处，是全局描述符表在内存中的真正数据了\nini\n代码解读\n复制代码\ngdt: .word 0,0,0,0 ! dummy 第1个描述符，不用 ! 在GDT表中这里的偏移量是0x08，它是内核代码段选择符的值 .word 0x07FF ! 8Mb - limit=2047 (2048*4096=8Mb) .word 0x0000 ! base address=0 .word 0x9A00 ! code read/exec 代码段只读，可执行 .word 0x00C0 ! granularity=4096, 386 颗粒度为4096，32位模式 ! 在GDT表中这里的偏移量是0x10，它是内核数据段选择符的值 .word 0x07FF ! 8Mb - limit=2047 (2048*4096=8Mb) .word 0x0000 ! base address=0 .word 0x9200 ! data read/write 代码段可读可写 .word 0x00C0 ! granularity=4096, 386 颗粒度为4096，32位模式\n下面设置并进入32位保护模式进行。首先加载机器状态字（lmsw-Load Machine Status Word），也称控制寄存器CR0，其比特位0置1将导致CPU切换到保护模式，并且运行在特权级0中，即当前特权级CPL=0\narduino\n代码解读\n复制代码\nmov ax,#0x0001 ! protected mode (PE) bit lmsw ax ! This is it!\nscss\n代码解读\n复制代码\njmpi 0,8 ! jmp offset 0 of segment 8 (cs) 跳转至cs段偏移0处\n这一行代码便是保护模式下的寻址，0是段内偏移，8是保护模式下的段选择符，用于选择描述符表和描述符表项以及所要求的特权级。8转化成二进制就是1000，此时已经是保护模式了，内存寻址方式变了，段寄存器里的值被当作段选择子，对照下面的图，1000的最后两位00表示内核特权级，与之相对的用户特权级是11，第三位的0表示GDT，如果是1，则表示LDT，1000的1表示所选的表的第一项来确定代码段的段基址和段限长等信息。代码是从段基址0x00000000、偏移为0处，也就是head程序的开始位置开始执行的，这意味着下面将执行head程序\n内存变化 bootsect、setup程序中大量内存操作的示意图如下\nhead.s程序 head程序执行完之后就要开始执行main函数了，所以经过head程序后，内存的布局大部分都固定了，我们主要关注head做了哪些内存的设置\nperl\n代码解读\n复制代码\nstartup_32: movl $0x10,%eax ! eax表示是32位的ax寄存器 mov %ax,%ds mov %ax,%es mov %ax,%fs mov %ax,%gs\n此时已经处于保护模式，cs本身不是段基址，而是段选择子，下面代码执行完毕后，ds、es、fs、gs中的值都成为0x10，与前面提到的jmpi 0,8中的8的分析方法相同，0x10转化成二进制就是00010000，最后三位与前面讲解的一样，其中最后两位00表示内核特权级，倒数第三位0表示选择GDT，倒数第四五位10是GDT的第三项，也就是数据段\n重新设置中断描述符表和全局描述符表 r\n代码解读\n复制代码\ncall setup_idt ! 调用设置中断描述符表函数\nperl\n代码解读\n复制代码\nsetup_idt: lea ignore_int,%edx ! 将ignore_int的有效地址（偏移值）值设置到edx寄存器 movl $0x00080000,%eax ! 将选择符0x0008置入eax的高16位中 movw %dx,%ax /* selector = 0x0008 = cs */ movw $0x8E00,%dx /* interrupt gate - dpl=0, present */ ​ lea _idt,%edi mov $256,%ecx ! for循环执行256次，设置每一行中断描述符数据为上面的样子 rp_sidt: movl %eax,(%edi) movl %edx,4(%edi) addl $8,%edi dec %ecx ! 减1 jne rp_sidt ! 跳转到rp_sidt处 lidt idt_descr ret\n中断描述符为64位，包含了其对应中断服务程序的段内偏移地址（offset）、所在段选择符（selector）、描述符特权级（DPL）、段存在标志（P）、段描述符类型（type）等信息，供CPU在程序中需要进行中断服务时找到相应的中断服务程序\n其中，第0-15位和第48-63位组合成32位的中断服务程序的段内偏移地址（offset）；第16-31位为段选择符（selector），定位中断服务程序所在段；第47位为段存在标志（P），用于标识此段是否存在于内存中，为虚拟存储提供支持；第45-46位为特权级标志（DPL），特权级范围为0-3；第40-43位段描述符类型标志（DPL），特权级范围位0-3；第40-43位为段描述符类型标志（type），中断描述符对应的类型标志为0111（0xE），如下图\n这四行代码的意思是对一行中断描述符做内存的设置，每一个中断描述符中的中断程序地址都指向ignore_int的函数地址，这是个默认的中断处理程序，在这个阶段，你按键盘，点鼠标都是没有反应的\nperl\n代码解读\n复制代码\nlea ignore_int,%edx movl $0x00080000,%eax ! 将选择符0x0008置入eax的高16位中 movw %dx,%ax /* selector = 0x0008 = cs */ movw $0x8E00,%dx /* interrupt gate - dpl=0, present */\n设置gdt，代码跟setup程序类似\nr\n代码解读\n复制代码\ncall setup_gdt\nphp\n代码解读\n复制代码\nsetup_gdt: lgdt gdt_descr ! 加载全局描述符表寄存器 ret ! 下面加载GDT, 这里全局表长度设置为2KB字节（0x7ff即可），因为每8字节 ! 组成一个描述符项，所以表中共可有256项，符号_gdt是全局表在本程序中的偏移位置 gdt_descr: .word 256*8-1 # so does gdt (not that that's any .long _gdt # magic number, but it works for me :^) _gdt: .quad 0x0000000000000000 /* NULL descriptor */ .quad 0x00c09a0000000fff /* 16Mb */ 0x08，内核代码段最大长度16MB .quad 0x00c0920000000fff /* 16Mb */ 0x10，内核数据段最大长度16MB .quad 0x0000000000000000 /* TEMPORARY - don't use */ .fill 252,8,0 /* space for LDT's and TSS's etc */ 预留空间\n为什么要废除原来的GDT而重新设置一套GDT呢？\n原来GDT所在的位置是设计代码时在setup.s里面设置的数据，将来这个setup模块所在的内存位置会在设计缓冲区时被覆盖。如果不改变位置，将来GDT的内容肯定会被缓冲区覆盖掉，从而影响系统的运行。这样一来，将来整个内存中唯一安全的地方就是现在head.s所在的位置了\n开启分页机制 bash\n代码解读\n复制代码\nafter_page_tables: pushl $0 # These are the parameters to main :-) pushl $0 pushl $0 pushl $L6 # return address for main, if it decides to. pushl $_main jmp setup_paging L6: jmp L6 # main should never return here, but # just in case, we know what happens.\nswift\n代码解读\n复制代码\nsetup_paging: movl $1024*5,%ecx /* 5 pages - pg_dir+4 page tables */ xorl %eax,%eax xorl %edi,%edi /* pg_dir is at 0x000 */ cld;rep;stosl movl $pg0+7,_pg_dir /* set present bit/user r/w */ movl $pg1+7,_pg_dir+4 /* --------- \" \" --------- */ movl $pg2+7,_pg_dir+8 /* --------- \" \" --------- */ movl $pg3+7,_pg_dir+12 /* --------- \" \" --------- */ movl $pg3+4092,%edi movl $0xfff007,%eax /* 16Mb - 4096 + 7 (r/w user,p) */ std 1: stosl /* fill pages backwards - more efficient :-) */ subl $0x1000,%eax jge 1b xorl %eax,%eax /* pg_dir is at 0x0000 */ movl %eax,%cr3 /* cr3 - page directory start */ movl %cr0,%eax orl $0x80000000,%eax movl %eax,%cr0 /* set paging (PG) bit */ ret /* this also flushes prefetch-queue */\n接下来，开始创建分页机制，先要将页目录表和4个页表放在屋里内存的起始位置，从内存起始位置开始的5页空间内容全部清零（每页4KB），为初始化页目录和页表做准备。注意，这个动作起到了用1个页目录表和4个页表覆盖head程序自身所占内存空间的作用，这4个页表都是内核专属的页表，将来每个用户进程都会有它们专属的页表，这些工作做完后，内存中的布局如下所示\n至于为什么要分页，我想放在另外一篇笔记上\n至此，内存变成下图的样子，接下来会有一个压栈return跳转到main函数执行的骚操作，比较细节\n参考资料 《Linux内核设计的艺术》\n《linux内核完全注释》\ngithub.com/dibingfa/fl…\n",
+  "wordCount" : "1284",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-22T00:00:00Z",
+  "dateModified": "2024-09-22T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Xiao镔"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/linux%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E4%B8%80/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Linux源码解读-启动过程（一）
+    </h1>
+    <div class="post-description">
+      前言之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过
+    </div>
+    <div class="post-meta"><span title='2024-09-22 00:00:00 +0000 UTC'>九月 22, 2024</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;Xiao镔&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e4%bb%8e%e7%a1%ac%e4%bb%b6%e5%bc%80%e5%a7%8b" aria-label="从硬件开始">从硬件开始</a></li>
+                <li>
+                    <a href="#bootsects%e7%a8%8b%e5%ba%8f" aria-label="bootsect.s程序">bootsect.s程序</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8a%a0%e8%bd%bdsetup%e6%a8%a1%e5%9d%97" aria-label="加载setup模块">加载setup模块</a></li>
+                <li>
+                    <a href="#%e5%8a%a0%e8%bd%bdsystem%e6%a8%a1%e5%9d%97" aria-label="加载system模块">加载system模块</a></li></ul>
+                </li>
+                <li>
+                    <a href="#setups%e7%a8%8b%e5%ba%8f" aria-label="setup.s程序">setup.s程序</a><ul>
+                        
+                <li>
+                    <a href="#%e8%bf%9b%e5%85%a5%e4%bf%9d%e6%8a%a4%e6%a8%a1%e5%bc%8f" aria-label="进入保护模式">进入保护模式</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae%e4%b8%ad%e6%96%ad%e6%8f%8f%e8%bf%b0%e7%ac%a6%e8%a1%a8%e5%92%8c%e5%85%a8%e5%b1%80%e6%8f%8f%e8%bf%b0%e7%ac%a6%e8%a1%a8" aria-label="设置中断描述符表和全局描述符表">设置中断描述符表和全局描述符表</a></li>
+                <li>
+                    <a href="#%e5%86%85%e5%ad%98%e5%8f%98%e5%8c%96" aria-label="内存变化">内存变化</a></li></ul>
+                </li>
+                <li>
+                    <a href="#heads%e7%a8%8b%e5%ba%8f" aria-label="head.s程序">head.s程序</a><ul>
+                        
+                <li>
+                    <a href="#%e9%87%8d%e6%96%b0%e8%ae%be%e7%bd%ae%e4%b8%ad%e6%96%ad%e6%8f%8f%e8%bf%b0%e7%ac%a6%e8%a1%a8%e5%92%8c%e5%85%a8%e5%b1%80%e6%8f%8f%e8%bf%b0%e7%ac%a6%e8%a1%a8" aria-label="重新设置中断描述符表和全局描述符表">重新设置中断描述符表和全局描述符表</a></li>
+                <li>
+                    <a href="#%e5%bc%80%e5%90%af%e5%88%86%e9%a1%b5%e6%9c%ba%e5%88%b6" aria-label="开启分页机制">开启分页机制</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" aria-label="参考资料">参考资料</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h5 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h5>
+<p>之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过程中，大家都推荐《linux内核完全注释》这本书，果然非常经典，该书是以<code>linux0.12</code>版本来进行讲解，虽然是比较早期的版本，但是麻雀虽小，五脏俱全。后续又找到《Linux内核设计的艺术》这本书，从启动过程开始讲的，更加易懂，想学的朋友可以看看两本书，以下是本人的<code>学习笔记</code></p>
+<h5 id="从硬件开始">从硬件开始<a hidden class="anchor" aria-hidden="true" href="#从硬件开始">#</a></h5>
+<p>从我们使用计算机的经验得知：要想执行一个程序，必须在窗口中双击它，或者在命令行界面中输入相应的执行命令。但是，在开机加电的一瞬间，内存中什么程序也没有，BIOS是如何执行的呢？</p>
+<p>不难得出这样的结论，既然软件的路走不通，只能依靠硬件方法完成了，CPU硬件逻辑设计为加电瞬间强行将CS的值置为<code>0xF000</code>、IP的值置为<code>0xFFF0</code>，这样CS:IP就指向<code>0xFFFF0</code>这个地址位置，这个位置放置的便是操作系统的引导块程序（bootsect.s），如下图，bootsect.s与之后的setup模块、system模块合力为操作系统运行做了很多准备工作</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/441510414840418e93b78ba0b9b20e6e~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=aOsXduhzPXfJ4mksbL329Eq7ES4%3D" alt="image.png"  />
+</p>
+<h5 id="bootsects程序">bootsect.s程序<a hidden class="anchor" aria-hidden="true" href="#bootsects程序">#</a></h5>
+<p><code>bootsect.s</code>代码是磁盘引导块程序，驻留在磁盘的第一个扇区中。在PC机加电ROM BIOS自检后，引导扇区由BIOS加载到内存<code>0x07c00</code>处，然后将自己移动到内存<code>0x90000</code>处。该程序的主要作用是首先将setup模块（由setup.s编译成）从磁盘加载到内存，紧接着bootsect的后面位置（<code>0x90200</code>），然后利用BIOS中断<code>0x13</code>取磁盘参数表中当前启动引导盘的参数，接着在屏幕上显示<code>Loading system...</code>字符串。再者将system模块从磁盘上加载到内存<code>0x10000</code>开始的地方。最后长跳转到setup程序的开始处（<code>0x90200</code>）执行setup程序<br>
+<img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/82997b2d6536468fb3851796ca36643a~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=frwxyLw6%2B3I2ZrV%2Fiu3Nxk0AgYI%3D" alt="image.png"  />
+</p>
+<p>这个代码块的迁移是怎么做的呢？我们来看看代码</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>SETUPLEN = 4        ! nr of setup-sectors setup程序的扇区数（setup-sectors）值 BOOTSEG  = 0x07c0     ! original address of boot-sector bootsect的原始地址 INITSEG  = 0x9000     ! we move boot here - out of the way 将bootsect移到这里 SETUPSEG = 0x9020     ! setup starts here setup程序从这里开始 SYSSEG   = 0x1000     ! system loaded at 0x10000 (65536). system模块加载到0x10000（64kB）处 ENDSEG   = SYSSEG + SYSSIZE   ! where to stop loading 停止加载到段地址       entry start             ! 告知链接程序，程序从start标号开始执行 start:   mov ax,#BOOTSEG       ！将ds段寄存器置为0x07c0   mov ds,ax                mov ax,#INITSEG       ！将es段寄存器置为0x9000   mov es,ax   mov cx,#256           ！设置移动计数值为256字   sub si,si             ！原地址 ds:si = 0x07c0:0x0000   sub di,di             ！目标地址 es:di = 0x9000:0x0000   rep                   ！重复执行并递减cx的值，直到cx = 0为止   movw                  ！即movs指令。这里从内存[si]处移动cx个字到[di]处   jmpi  go,INITSEG      ！段间跳转（Jump Intersegment）。这里INITSEG指出跳转到的段地址，标号go是段内偏移地址 ​</code></p>
+<p>要理解上面这段代码，首先需要理解操作系统是如何寻址的，为什么要写下面两行？</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mov ax,#BOOTSEG       ！将ds段寄存器置为0x07c0 mov ds,ax</code></p>
+<p><code>ds</code>是一个16位的段寄存器，在内存寻址时充当段基址的作用，就是当我们使用汇编语言写一个内存地址时，实际上仅仅是写了偏移地址，比如：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mov ax, [0x0001]</code></p>
+<p>实际上相当于</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mov ax, [ds:0x0001]</code></p>
+<p>就跟我们平时聊天，说一些地名的时候，会自动忽略中国、广东省这些前缀是一样的</p>
+<p>还有比较重要的一点，这个<code>ds</code>被赋值为<code>0x07c0</code>，由于x86为了让自己能够在16位这个实模式下访问到20位的地址线，段基址需要先左移四位，那<code>0x07c0</code>左移四位就是<code>0x7c00</code>，也就是说，操作系统寻址时，需要先将段基址左移四位，再加上偏移量，注意，这是实模式下的寻址</p>
+<p>通过接下来代码，ds（<code>0x07c0</code>）和si（<code>0x0000</code>）联合使用，构成了源地址<code>0x07c00</code>；es（<code>0x9000</code>）和di（<code>0x0000</code>）联合使用，构成了目的地址<code>0x90000</code>，一个<code>字</code>一个<code>字</code>复制到了<code>0x90000</code>处</p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>jmpi  go,INITSEG  go: mov ax,cs     ! 将ds、es和ss都置成移动后代码所在的段处（0x9000）     mov ds,ax       ! 由于程序中有栈操作（push，pop，call），因此设置堆栈     mov es,ax ! put stack at 0x9ff00.     mov ss,ax        mov sp,#0xFF00    ! arbitrary value &gt;&gt;512</code>  </p>
+<p><code>jmpi go,INITSEG</code>接下来这个跳转指令写得很妙，复制bootsect完成后，在内存的<code>0x07c00</code>和<code>0x90000</code>位置有两段完全相同的代码，执行到<code>jmpi go,INITSEG</code>之后，程序就跳转到<code>0x90000</code>这边的代码执行了，在新位置执行，肯定是往下执行，而不是重复之间的代码，所以<code>go</code>这个偏移量就发挥了作用，<code>jmpi</code>是一个段间跳转指令，表示跳转到<code>0x9000:go</code>，段基址左移四位，也就是跳转到<code>0x90000:go</code>处执行，从下面开始，CPU在已移动到<code>0x90000</code>位置处的代码中执行 <img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f44bd2316cf540ceb2d8b57f4a1c70f1~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=TvQ6taRW83TaaMpk8MMB9u4EuFk%3D" alt="image.png"  />
+</p>
+<p>接下来的代码设置几个段寄存器，包括栈寄存器ss和sp。为后续的操作做了一些准备工作，数据段寄存器跟代码段寄存器都被设置为<code>0x9000</code>，栈指针sp只要指向远大于512字节偏移（即地址0x90200）处都可以。因为从0x90200地址开始处还要放置setup程序，而此时setup程序大约为4个扇区，因此sp要指向大于（0x200 + 0x200 * 4 + 堆栈大小）处</p>
+<h6 id="加载setup模块">加载setup模块<a hidden class="anchor" aria-hidden="true" href="#加载setup模块">#</a></h6>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/3e17f5ea41234479b57ff7cf20dcb75e~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=wdXfHGrTdKoa56Ax92JloBJUvDI%3D" alt="image.png"  />
+</p>
+<p>下面bootsect程序就要执行它的第二步工作，将setup程序加载到内存中，加载需要利用BIOS中断INT<code>0x13</code>中断向量所指向的中断服务程序来完成，如果读出错，则复位驱动器，并重试，没有退路</p>
+<p>注意es已经设置好了（在移动代码时es已经指向目的段地址处<code>0x90000</code>），从磁盘第2个扇区开始读到<code>0x90200</code>开始处，共读4个扇区</p>
+<p><code>int 0x13</code>前面的四个<code>mov</code>指令是为了给BIOS中断服务程序传参</p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>load_setup:   mov dx,#0x0000    ! drive 0, head 0   mov cx,#0x0002    ! sector 2, track 0   mov bx,#0x0200    ! address = 512, in INITSEG   mov ax,#0x0200+SETUPLEN ! service 2, nr of sectors   int 0x13      ! read it   jnc ok_load_setup   ! ok - continue   mov dx,#0x0000   mov ax,#0x0000    ! reset the diskette   int 0x13   j load_setup</code></p>
+<p>开机启动显示信息 <code>Loading system</code></p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>! Print some inane message ​   mov ah,#0x03    ! read cursor pos   xor bh,bh   int 0x10      mov cx,#24   mov bx,#0x0007    ! page 0, attribute 7 (normal)   mov bp,#msg1   mov ax,#0x1301    ! write string, move cursor   int 0x10</code></p>
+<h6 id="加载system模块">加载system模块<a hidden class="anchor" aria-hidden="true" href="#加载system模块">#</a></h6>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/2d0053626b1d4b5ab2be11106e784e7d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=a8iRBQnA3bEBuD5DBg%2Bka0AC6WI%3D" alt="image.png"  />
+</p>
+<p>setup程序已经载入内存，现在开始将system模块加载到<code>0x10000</code>（64KB）开始处，<code>0x010000</code>与<code>0x90000</code>之间的距离是512K，当时操作系统设计者判断操作系统内核的大小不会超出512K</p>
+<p>vbnet</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mov ax,#SYSSEG    ! #SYSSEG为0x1000   mov es,ax   ! segment of 0x010000 es存放system的段地址   call  read_it     ! 读磁盘上system模块，es为输入参数   call  kill_motor  ! 关闭驱动器马达，这样就可以知道驱动器的状态了 ​ ! After that we check which root-device to use. If the device is ! defined (!= 0), nothing is done and the given device is used. ! Otherwise, either /dev/PS0 (2,28) or /dev/at0 (2,8), depending ! on the number of sectors that the BIOS reports currently. ​   seg cs   mov ax,root_dev   cmp ax,#0   jne root_defined   seg cs   mov bx,sectors   mov ax,#0x0208    ! /dev/ps0 - 1.2Mb   cmp bx,#15   je  root_defined   mov ax,#0x021c    ! /dev/PS0 - 1.44Mb   cmp bx,#18   je  root_defined undef_root:   jmp undef_root root_defined:   seg cs   mov root_dev,ax ​ ! after that (everyting loaded), we jump to ! the setup-routine loaded directly after ! the bootblock: ​   jmpi  0,SETUPSEG    !跳转到0x9020:0000（setup.s程序的开始处）本程序到此就结束了</code></p>
+<p><code>jmpi 0,SETUPSEG</code>跳转到<code>0x90200</code>处，就是setup程序开始的位置，至此，<code>bootsect.s</code>程序就结束了</p>
+<h5 id="setups程序">setup.s程序<a hidden class="anchor" aria-hidden="true" href="#setups程序">#</a></h5>
+<ol>
+<li>利用ROM BIOS中断读取机器系统数据，并将这些数据保存到<code>0x90000</code>开始的位置（覆盖掉了bootsect程序所在的地方）</li>
+<li>移动system模块程序</li>
+<li>进入保护模式，设置中断描述符表寄存器（IDTR）、全局描述符表寄存器（GDTR）、中断描述符表（IDT）、全局描述符表（GDT），开启A20地址线</li>
+<li>跳转head.s程序运行</li>
+</ol>
+<p>先看看第一件事，利用BIOS提供的中断服务程序从设备上提取内核运行所需的机器系统数据，并将这些机器系统数据加载到内存的<code>0x90000</code>到<code>0x901fc</code>位置处，这些数据将在以后main函数执行时发挥重要作用，下面是提取机器系统数据的具体代码，操作系统内核代码处处都是BIOS的调包侠</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/ef8dd7b367f94d878678017169f49d96~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=0xKrlumzutGZb75XlCwJ0bMACsI%3D" alt="image.png"  />
+</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>! ok, the read went well so we get current cursor position and save it for ! posterity. ​   mov ax,#INITSEG ! this is done in bootsect already, but...   mov ds,ax   mov ah,#0x03  ! read cursor pos   xor bh,bh   int 0x10    ! save it in known place, con_init fetches   mov [0],dx    ! it from 0x90000. ​ ! Get memory size (extended mem, kB) 获取内存信息 ​   mov ah,#0x88   int 0x15   mov [2],ax ​ ! Get video-card data: 获取显卡显示模式 ​   mov ah,#0x0f   int 0x10   mov [4],bx    ! bh = display page   mov [6],ax    ! al = video mode, ah = window width ​ ! check for EGA/VGA and some config parameters 检查显示方式并取参数 ​   mov ah,#0x12   mov bl,#0x10   int 0x10   mov [8],ax   mov [10],bx   mov [12],cx ​ ! Get hd0 data 获取第一块硬盘的信息 ​   mov ax,#0x0000   mov ds,ax   lds si,[4*0x41]   mov ax,#INITSEG   mov es,ax   mov di,#0x0080   mov cx,#0x10   rep   movsb ​ ! Get hd1 data 获取第二块硬盘的信息 ​   mov ax,#0x0000   mov ds,ax   lds si,[4*0x46]   mov ax,#INITSEG   mov es,ax   mov di,#0x0090   mov cx,#0x10   rep   movsb</code></p>
+<p>注意，<code>0x90000</code>这个地址之前是bootsect程序的，所以走到这里，bootsect程序已经被覆盖掉了</p>
+<p>内存地址</p>
+<p>长度(字节)</p>
+<p>名称</p>
+<p>0x90000</p>
+<p>2</p>
+<p>光标位置</p>
+<p>0x90002</p>
+<p>2</p>
+<p>扩展内存数</p>
+<p>0x90004</p>
+<p>2</p>
+<p>显示页面</p>
+<p>0x90006</p>
+<p>1</p>
+<p>显示模式</p>
+<p>0x90007</p>
+<p>1</p>
+<p>字符列数</p>
+<p>0x90008</p>
+<p>2</p>
+<p>未知</p>
+<p>0x9000A</p>
+<p>1</p>
+<p>显示内存</p>
+<p>0x9000B</p>
+<p>1</p>
+<p>显示状态</p>
+<p>0x9000C</p>
+<p>2</p>
+<p>显卡特性参数</p>
+<p>0x9000E</p>
+<p>1</p>
+<p>屏幕行数</p>
+<p>0x9000F</p>
+<p>1</p>
+<p>屏幕列数</p>
+<p>0x90080</p>
+<p>16</p>
+<p>硬盘1参数表</p>
+<p>0x90090</p>
+<p>16</p>
+<p>硬盘2参数表</p>
+<p>0x901FC</p>
+<p>2</p>
+<p>根设备号</p>
+<h6 id="进入保护模式">进入保护模式<a hidden class="anchor" aria-hidden="true" href="#进入保护模式">#</a></h6>
+<p>接下来，操作系统要为进入32位保护模式做大量的重建工作，首先做的一步就是关中断，程序在接下来的执行过程中，无论是否发生中断，系统都不会对此中断进行响应，直到main函数中能够适应保护模式的中断服务体系被重建完毕才能打开中断，而那时候响应中断的服务程序将不再是BIOS提供的中断服务程序，取而代之的是由系统自身提供的中断服务程序</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cli     ! no interrupts allowed ! 从此开始不允许中断</code></p>
+<p>紧接着，setup程序做了一个影响深远的动作：将位于<code>0x10000</code>的内核程序复制至内存地址起始位置<code>0x0000</code></p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>! first we move the system to it's rightful place ​   mov ax,#0x0000   cld     ! 'direction'=0, movs moves forward do_move:   mov es,ax   ! destination segment   add ax,#0x1000   cmp ax,#0x9000  !已经把最后一段（从0x8000段开始的64KB）代码移动完   jz  end_move    !是，则跳转   mov ds,ax   ! source segment   sub di,di   sub si,si   mov   cx,#0x8000   rep   movsw   jmp do_move</code></p>
+<p><code>0x00000</code>这个位置原来存放着由BIOS建立的中断向量表及BIOS数据区。这个复制动作将BIOS中断向量表和BIOS数据区完全覆盖，使它们不复存在。直到新的中断服务体系构建完毕之前，操作系统不再具备响应并处理中断的能力</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/2b8a6558698c414cae54b13eec2323e0~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=vHa8fzi7wK5UpLwd%2F6GHrAYhcEE%3D" alt="image.png"  />
+</p>
+<h6 id="设置中断描述符表和全局描述符表">设置中断描述符表和全局描述符表<a hidden class="anchor" aria-hidden="true" href="#设置中断描述符表和全局描述符表">#</a></h6>
+<p>紧接着，操作系统要设置两个非常重要的东西，中断描述符表（IDT）、全局描述符表（GDT）</p>
+<p>GDT（Global Descriptor Table，全局描述符表），在系统中唯一的存放段寄存器内容（段描述符）的数组，配合程序进行保护模式下的段寻址。它在操作系统的进程切换中具有重要意义，可理解为所有进程的总目录表，其中存放每一个任务（task）局部描述符表（LDT，Local Descriptor Table）地址和任务状态段（TSS，Task Structure Segment）地址，完成进程中各段段寻址、现场保护与现场恢复</p>
+<p>GDTR（Global Descriptor Table Register，GDT基地址寄存器），GDT可以存放在内存的任何地址。当程序通过段寄存器引用一个段描述符时，需要取得GDT的入口，GDTR标识的即为此入口。在操作系统对GDT的初始化完成后，可以用LGDT（Load GDT）指令将GDT基地址加载至GDTR</p>
+<p>IDT（Interrupt Descriptor Table，中断描述符表），保存保护模式下所有中断服务程序的入口地址，类似于实模式下的中断向量表</p>
+<p>IDTR（Interrupt Descriptor Table Register,IDT基地址寄存器），保存IDT的起始地址</p>
+<p>中断描述符表暂时还不会用到，全局描述符表很快就要用到了，这个表是怎么用的呢？</p>
+<p>保护模式下的寻址跟实模式下的寻址是不一样的，实模式下的寻址就是段基址左移四位，再加上偏移地址，保护模式下的段基址被称为段选择子。段选择子里存储着段描述符的索引</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/5d74c44936da4ed1b962771c819d255f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=YLevm0p80hejMVtFpxcu4IRFXPw%3D" alt="image.png"  />
+</p>
+<p>通过段描述符索引，可以从全局描述符表gdt中找到一个段描述符，段描述符里存储着段基址，段基址取出来，再和偏移地址相加，就得到了物理地址</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/3362d25c25bb4686a3c168abfd3473e4~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=pSavCcvHYVvN9TpW%2F2vqO0rEkK4%3D" alt="image.png"  />
+</p>
+<p>GDT的作用知道了，怎么知道它是在内存中的哪里，答案是GDTR，GDTR是一个存储GDT位置的寄存器</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/e198061f027d412dae4d0eeface13036~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=Y%2F29tD0PgEkEBV9bkZZCAjVVtWU%3D" alt="image.png"  />
+</p>
+<p>接下来看看代码</p>
+<p>python</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>end_move:   mov ax,#SETUPSEG  ! right, forgot this at first. didn't work :-)   mov ds,ax   lidt  idt_48    ! load idt with 0,0 加载IDTR寄存器   lgdt  gdt_48    ! load gdt with whatever appropriate 加载GDTR寄存器</code></p>
+<p>下面是加载中断描述符表寄存器IDTR的指令lidt要求的6字节操作数。前2字节是IDT表的限长，后4字节是IDT表在线性地址空间中的32位基地址。CPU要求在进入保护模式之前需设置IDT表，因此这里先设置一个长度为0的空表</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>idt_48:   .word 0     ! idt limit=0   .word 0,0     ! idt base=0L</code></p>
+<p>下面是设置GDTR寄存器，立刻就要用到了，可以看到这个标签位置处表示一个48位的数据，其中高32位存储的正式全局描述符表的gdt的内存地址<code>0x90200 + gdt</code>，gdt是标签，表示在本文件内的偏移量，<code>0x800</code>定义了GDT的限制，<code>0x800</code>表示GDT的大小为2048字节，意味着GDT可以包含256个段描述符，每个段描述符8字节，2048/8 = 256</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>gdt_48:   .word 0x800   ! gdt limit=2048, 256 GDT entries   .word 512+gdt,0x9 ! gdt base = 0X9xxxx</code></p>
+<p>gdt这个标签处，是全局描述符表在内存中的真正数据了</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>gdt:   .word 0,0,0,0   ! dummy 第1个描述符，不用                   ! 在GDT表中这里的偏移量是0x08，它是内核代码段选择符的值   .word 0x07FF    ! 8Mb - limit=2047 (2048*4096=8Mb)   .word 0x0000    ! base address=0   .word 0x9A00    ! code read/exec  代码段只读，可执行   .word 0x00C0    ! granularity=4096, 386 颗粒度为4096，32位模式                   ! 在GDT表中这里的偏移量是0x10，它是内核数据段选择符的值   .word 0x07FF    ! 8Mb - limit=2047 (2048*4096=8Mb)   .word 0x0000    ! base address=0    .word 0x9200    ! data read/write 代码段可读可写   .word 0x00C0    ! granularity=4096, 386 颗粒度为4096，32位模式</code></p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/645e7978321b491c92cc50649b5392c8~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=nrC5Ldi8nfMwwx9xlvU0b3V2QH0%3D" alt="image.png"  />
+</p>
+<p>下面设置并进入32位保护模式进行。首先加载机器状态字（lmsw-Load Machine Status Word），也称控制寄存器CR0，其比特位0置1将导致CPU切换到保护模式，并且运行在特权级0中，即当前特权级CPL=0</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mov ax,#0x0001  ! protected mode (PE) bit lmsw  ax    ! This is it!</code></p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>jmpi  0,8   ! jmp offset 0 of segment 8 (cs) 跳转至cs段偏移0处</code></p>
+<p>这一行代码便是保护模式下的寻址，<code>0</code>是段内偏移，<code>8</code>是保护模式下的段选择符，用于选择描述符表和描述符表项以及所要求的特权级。<code>8</code>转化成二进制就是<code>1000</code>，此时已经是保护模式了，内存寻址方式变了，段寄存器里的值被当作段选择子，对照下面的图，<code>1000</code>的最后两位<code>00</code>表示内核特权级，与之相对的用户特权级是<code>11</code>，第三位的<code>0</code>表示GDT，如果是1，则表示<code>LDT</code>，<code>1000</code>的<code>1</code>表示所选的表的第一项来确定代码段的段基址和段限长等信息。代码是从段基址0x00000000、偏移为0处，也就是head程序的开始位置开始执行的，这意味着下面将执行head程序</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/88f2a3bdd3224a01adc81c587b023254~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=0N5HxAqgDGjcVKbS9UEj2NkwiMY%3D" alt="image.png"  />
+</p>
+<h6 id="内存变化">内存变化<a hidden class="anchor" aria-hidden="true" href="#内存变化">#</a></h6>
+<p>bootsect、setup程序中大量内存操作的示意图如下</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/46b5eb228e2c456b86c8ecec818ebce1~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=HrZD5QvbD5gS6es2SmAvN0CvV7w%3D" alt="image.png"  />
+</p>
+<h5 id="heads程序">head.s程序<a hidden class="anchor" aria-hidden="true" href="#heads程序">#</a></h5>
+<p>head程序执行完之后就要开始执行main函数了，所以经过head程序后，内存的布局大部分都固定了，我们主要关注head做了哪些内存的设置</p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>startup_32:   movl $0x10,%eax  ! eax表示是32位的ax寄存器   mov %ax,%ds   mov %ax,%es   mov %ax,%fs   mov %ax,%gs</code></p>
+<p>此时已经处于保护模式，cs本身不是段基址，而是段选择子，下面代码执行完毕后，ds、es、fs、gs中的值都成为0x10，与前面提到的<code>jmpi 0,8</code>中的<code>8</code>的分析方法相同，0x10转化成二进制就是<code>00010000</code>，最后三位与前面讲解的一样，其中最后两位<code>00</code>表示内核特权级，倒数第三位<code>0</code>表示选择GDT，倒数第四五位<code>10</code>是GDT的第三项，也就是数据段</p>
+<h6 id="重新设置中断描述符表和全局描述符表">重新设置中断描述符表和全局描述符表<a hidden class="anchor" aria-hidden="true" href="#重新设置中断描述符表和全局描述符表">#</a></h6>
+<p>r</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>call setup_idt      ! 调用设置中断描述符表函数</code></p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>setup_idt:   lea ignore_int,%edx   ! 将ignore_int的有效地址（偏移值）值设置到edx寄存器   movl $0x00080000,%eax   ! 将选择符0x0008置入eax的高16位中   movw %dx,%ax    /* selector = 0x0008 = cs */   movw $0x8E00,%dx  /* interrupt gate - dpl=0, present */ ​   lea _idt,%edi   mov $256,%ecx ! for循环执行256次，设置每一行中断描述符数据为上面的样子     rp_sidt:   movl %eax,(%edi)   movl %edx,4(%edi)   addl $8,%edi   dec %ecx          ! 减1   jne rp_sidt       ! 跳转到rp_sidt处   lidt idt_descr   ret</code></p>
+<p>中断描述符为64位，包含了其对应中断服务程序的段内偏移地址（offset）、所在段选择符（selector）、描述符特权级（DPL）、段存在标志（P）、段描述符类型（type）等信息，供CPU在程序中需要进行中断服务时找到相应的中断服务程序</p>
+<p>其中，第0-15位和第48-63位组合成32位的中断服务程序的段内偏移地址（offset）；第16-31位为段选择符（selector），定位中断服务程序所在段；第47位为段存在标志（P），用于标识此段是否存在于内存中，为虚拟存储提供支持；第45-46位为特权级标志（DPL），特权级范围为0-3；第40-43位段描述符类型标志（DPL），特权级范围位0-3；第40-43位为段描述符类型标志（type），中断描述符对应的类型标志为0111（0xE），如下图</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7677b7d22f0d41a48ccc761a820f1ce3~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=%2BpKt%2FTwc71%2FfborxDIhXDOVVy4k%3D" alt="image.png"  />
+</p>
+<p>这四行代码的意思是对一行中断描述符做内存的设置，每一个中断描述符中的中断程序地址都指向<code>ignore_int</code>的函数地址，这是个默认的中断处理程序，在这个阶段，你按键盘，点鼠标都是没有反应的</p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>lea ignore_int,%edx  movl $0x00080000,%eax   ! 将选择符0x0008置入eax的高16位中 movw %dx,%ax    /* selector = 0x0008 = cs */ movw $0x8E00,%dx  /* interrupt gate - dpl=0, present */</code></p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/5e67e33b2be44d3abecddfdf8b578e58~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=7h9aWwzDZ9xpVSti%2BwHTZ%2B0TpGc%3D" alt="image.png"  />
+</p>
+<p>设置gdt，代码跟setup程序类似</p>
+<p>r</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>call setup_gdt</code></p>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>setup_gdt:   lgdt gdt_descr      ! 加载全局描述符表寄存器   ret      ! 下面加载GDT, 这里全局表长度设置为2KB字节（0x7ff即可），因为每8字节 ! 组成一个描述符项，所以表中共可有256项，符号_gdt是全局表在本程序中的偏移位置         gdt_descr:   .word 256*8-1   # so does gdt (not that that's any   .long _gdt    # magic number, but it works for me :^)      _gdt: .quad 0x0000000000000000  /* NULL descriptor */   .quad 0x00c09a0000000fff  /* 16Mb */  0x08，内核代码段最大长度16MB   .quad 0x00c0920000000fff  /* 16Mb */  0x10，内核数据段最大长度16MB     .quad 0x0000000000000000  /* TEMPORARY - don't use */   .fill 252,8,0     /* space for LDT's and TSS's etc */     预留空间</code></p>
+<p>为什么要废除原来的GDT而重新设置一套GDT呢？</p>
+<p>原来GDT所在的位置是设计代码时在setup.s里面设置的数据，将来这个setup模块所在的内存位置会在设计缓冲区时被覆盖。如果不改变位置，将来GDT的内容肯定会被缓冲区覆盖掉，从而影响系统的运行。这样一来，将来整个内存中唯一安全的地方就是现在head.s所在的位置了</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/2054370dab2646d8a8d8ccf625206275~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=AXXUFXo5BYoGM3j25qqIbzsqZW4%3D" alt="image.png"  />
+</p>
+<h6 id="开启分页机制">开启分页机制<a hidden class="anchor" aria-hidden="true" href="#开启分页机制">#</a></h6>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>after_page_tables:   pushl $0    # These are the parameters to main :-)   pushl $0   pushl $0   pushl $L6   # return address for main, if it decides to.   pushl $_main   jmp setup_paging L6:   jmp L6      # main should never return here, but         # just in case, we know what happens.</code></p>
+<p>swift</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>setup_paging:   movl $1024*5,%ecx   /* 5 pages - pg_dir+4 page tables */   xorl %eax,%eax   xorl %edi,%edi      /* pg_dir is at 0x000 */   cld;rep;stosl   movl $pg0+7,_pg_dir   /* set present bit/user r/w */   movl $pg1+7,_pg_dir+4   /*  --------- &quot; &quot; --------- */   movl $pg2+7,_pg_dir+8   /*  --------- &quot; &quot; --------- */   movl $pg3+7,_pg_dir+12    /*  --------- &quot; &quot; --------- */   movl $pg3+4092,%edi   movl $0xfff007,%eax   /*  16Mb - 4096 + 7 (r/w user,p) */   std 1:  stosl     /* fill pages backwards - more efficient :-) */   subl $0x1000,%eax   jge 1b   xorl %eax,%eax    /* pg_dir is at 0x0000 */   movl %eax,%cr3    /* cr3 - page directory start */   movl %cr0,%eax   orl $0x80000000,%eax   movl %eax,%cr0    /* set paging (PG) bit */   ret     /* this also flushes prefetch-queue */</code></p>
+<p>接下来，开始创建分页机制，先要将页目录表和4个页表放在屋里内存的起始位置，从内存起始位置开始的5页空间内容全部清零（每页4KB），为初始化页目录和页表做准备。注意，这个动作起到了用1个页目录表和4个页表覆盖head程序自身所占内存空间的作用，这4个页表都是内核专属的页表，将来每个用户进程都会有它们专属的页表，这些工作做完后，内存中的布局如下所示</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/e0cda9d94f8843f38d46f7861b137939~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=gh06cFVdQ%2FlUpTnoU7pb3vcp2jA%3D" alt="image.png"  />
+</p>
+<p>至于为什么要分页，我想放在另外一篇笔记上</p>
+<p>至此，内存变成下图的样子，接下来会有一个压栈return跳转到<code>main</code>函数执行的骚操作，比较细节</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7cbbbc58f5c543b991ac9f6b687aac34~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgWGlhb-mVlA==:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728182773&amp;x-signature=c7aRlK5wFdJlOVinKSUxQfLH%2BlY%3D" alt="image.png"  />
+</p>
+<h5 id="参考资料">参考资料<a hidden class="anchor" aria-hidden="true" href="#参考资料">#</a></h5>
+<p>《Linux内核设计的艺术》</p>
+<p>《linux内核完全注释》</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fdibingfa%2Fflash-linux0.11-talk%3Ftab%3Dreadme-ov-file" title="https://github.com/dibingfa/flash-linux0.11-talk?tab=readme-ov-file">github.com/dibingfa/fl…</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/">程序员</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Etruelicense%E9%A1%B9%E7%9B%AE%E8%AF%81%E4%B9%A6%E7%94%9F%E6%88%90/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>基于TrueLicense项目证书生成</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%AF%8F%E4%B8%AA%E5%BC%80%E5%8F%91%E4%BA%BA%E5%91%98%E9%83%BD%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E7%9A%8413%E4%B8%AAnodejs%E5%BA%93/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>每个开发人员都应该知道的13个Nodejs库</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux源码解读-启动过程（一） on x"
+            href="https://x.com/intent/tweet/?text=Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f&amp;hashtags=%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f%2c%e9%9d%a2%e8%af%95%2c%e7%a8%8b%e5%ba%8f%e5%91%98">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux源码解读-启动过程（一） on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f&amp;title=Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89&amp;summary=Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux源码解读-启动过程（一） on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f&title=Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux源码解读-启动过程（一） on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux源码解读-启动过程（一） on whatsapp"
+            href="https://api.whatsapp.com/send?text=Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux源码解读-启动过程（一） on telegram"
+            href="https://telegram.me/share/url?text=Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux源码解读-启动过程（一） on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Linux%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb-%e5%90%af%e5%8a%a8%e8%bf%87%e7%a8%8b%ef%bc%88%e4%b8%80%ef%bc%89&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E6%25BA%2590%25E7%25A0%2581%25E8%25A7%25A3%25E8%25AF%25BB-%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

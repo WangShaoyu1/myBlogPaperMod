@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>重新认识Lambda和Stream | PaperMod</title>
+<meta name="keywords" content="后端">
+<meta name="description" content="前言：Java8就引入了Lambda和StreamAPI（截止到2023年6月，JDK20亦然发布，参考网址：https://injdk.cn/），这两种特性平时在工作中也是经常使用，但一">
+<meta name="author" content="好看的HK">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86lambda%E5%92%8Cstream/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86lambda%E5%92%8Cstream/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="重新认识Lambda和Stream" />
+<meta property="og:description" content="前言：Java8就引入了Lambda和StreamAPI（截止到2023年6月，JDK20亦然发布，参考网址：https://injdk.cn/），这两种特性平时在工作中也是经常使用，但一" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86lambda%E5%92%8Cstream/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-05-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-05-10T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="重新认识Lambda和Stream"/>
+<meta name="twitter:description" content="前言：Java8就引入了Lambda和StreamAPI（截止到2023年6月，JDK20亦然发布，参考网址：https://injdk.cn/），这两种特性平时在工作中也是经常使用，但一"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "重新认识Lambda和Stream",
+      "item": "http://localhost:1313/posts/juejin/%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86lambda%E5%92%8Cstream/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "重新认识Lambda和Stream",
+  "name": "重新认识Lambda和Stream",
+  "description": "前言：Java8就引入了Lambda和StreamAPI（截止到2023年6月，JDK20亦然发布，参考网址：https://injdk.cn/），这两种特性平时在工作中也是经常使用，但一",
+  "keywords": [
+    "后端"
+  ],
+  "articleBody": "前言：Java 8就引入了 Lambda 和 Stream API（截止到2023年6月，JDK 20亦然发布，参考网址：injdk.cn/），这两种特性平时在工作中也是经常使用，但一直没有机会进行全面地系统性总结，这次抽空来好好过一下。\n补充：本文不做源码层面的解读，抱着够用就行的心态，随便稍稍深入了解一丢丢的思想来进行的。源码实现可以参考这篇：www.throwx.cn/2021/10/06/…\n一、Lambda Lambda 表达式是JDK 8的一个新特性，支持 Java 能进行简单的“函数式编程” ，可以取代大部分的匿名内部类（接口里面只有一个抽象方法），写出更优雅的Java代码。尤其在集合的遍历和其他集合操作中，可以极大地优化代码结构。\n1、函数式接口 如果定义的一个接口有且只有一个抽象方法 ，这样的接口就成为函数式接口（Functional Interface）。函数式接口可以有任意个 default 或者 static 方法。\n任何函数式接口都可以使用 Lambda 表达式替换。Lambda表达式的本质是实现函数式接口的一种方式，编译时仍然会替换为一个实现类，只不过语法上做了简化，是Java提供的又一个语法糖。\n如下是一个简单的示例：\njava\n代码解读\n复制代码\n/** * 说明：@FunctionalInterface 注解会显式提醒编译器这是一个函数式接口，但加不加，没啥实际影响 */ @FunctionalInterface public interface IPerson { ​ void saySomething(); } ​ public interface IPerson1 { ​ String concatStr(String str1, String str2); } ​ public class Test { ​ public static void main(String[] args) { // 1.无入参，空返回实现 IPerson person = () -\u003e System.out.println(\"我是中国人\"); person.saySomething(); ​ // 2.多个入参，且有方法体实现 IPerson1 person1 = (s1, s2) -\u003e { // 这行如果没有的话，可以直接 (s1, s2) -\u003e s1 + \"_\" + s2 System.out.println(\"输入为：\" + s1 + \",\" + s2); return s1 + \"_\" + s2; }; String str = person1.concatStr(\"haha\", \"haha\"); System.out.println(str); ​ // 3.双冒号 :: 为引⽤运算符，一般与包 java.util.function 提供的函数式接口相配合，返回一个方法应用 // 一般要求调用方法无入参或只有一个入参 Arrays.asList(\"1\", \"2\", \"3\").forEach(System.out::println); ​ Supplier supplier = Math::random; System.out.println(supplier.get()); } }\n2、常用函数式接口 java.util.function包默认提供了大量函数式接口，这些接口一般可与Stream API完美配合使用，如下是一些常见Stream接口API说明：\njava\n代码解读\n复制代码\n// 1.条件筛选 filter(Predicate\u003c? super T\u003e predicate) // 2.对单个item对象转换操作 map(Function\u003c? super T, ? extends R\u003e mapper) // 3.对item对象操作，并返回一个新的Stream流 flatMap(Function\u003c? super T, ? extends Stream\u003c? extends R\u003e\u003e mapper) // 4.循环遍历 forEach(Consumer\u003c? super T\u003e action) // 5.条件筛选，整个集合item有一个为true anyMatch(Predicate\u003c? super T\u003e predicate) // 6.条件筛选，全部item为true allMatch(Predicate\u003c? super T\u003e predicate) // 7.累计计算，值累加等 reduce(BinaryOperator accumulator) // 8.集合操作，元素汇总转换计算 collect(Collector\u003c? super T, A, R\u003e collector)\n1、Supplier Supplier供给型接口，无参有返回值。Supplier接口之所以被称之为生产型接口，是因为如果我们指定了接口的泛型是什么类型，那么接口中的get方法就会生产什么类型的数据供我们使用。\nT get()方法：用于获得结果；不需要参数，它会按照某种实现逻辑（由Lambd表达式实现）返回一个数据。 java\n代码解读\n复制代码\npublic class SupplierTest { ​ public static void main(String[] args) { System.out.println(concatStr(() -\u003e \"haha\")); } ​ private static String concatStr(Supplier supplier) { return supplier.get() + \"_concat\"; } }\n2、Consumer Consumer消费型接口，有参数无返回值。Consumer接口也被称之为消费型接口，它消费的数据的类型由泛型指定，包含两个方法。\nvoid accept(T t)：对给定的参数执行此操作 default Consumer andThen(Consumer after)：返回一个组合的Consumer，依次执行此操作，然后执行after操作。 java\n代码解读\n复制代码\npublic class ConsumerTest { ​ public static void main(String[] args) { List list = Arrays.asList(1, 2, 3, 4); // 简单实用，foreach的入参就是一个 Consumer\u003c? super T\u003e action list.forEach(System.out::print); ​ // 自己编写 accept 方法体的 Consumer consumer(list, s -\u003e { System.out.println(\"测试消费：\" + s); }); // andThen的测试，每一个数会依次经过 consumer-\u003econsumer1-\u003econsumer2 Consumer consumer = x -\u003e { System.out.println(\"全部消费：\" + x); }; Consumer consumer1 = x -\u003e { if (x % 2 == 0) { System.out.println(\"偶数消费：\" + x); } }; Consumer consumer2 = x -\u003e { if (x % 2 != 0) { System.out.println(\"基数消费：\" + x); } }; // 这种链式反应很奇妙 list.forEach(consumer.andThen(consumer1).andThen(consumer2)); } ​ private static void consumer(List list, Consumer consumer) { // consumer::accept 也可已直接替换为 consumer list.forEach(consumer::accept); } }\n3、Predicate Predicate断言型接口，有参有返回值，返回值是boolean类型。Predicate方法通常用于判断参数是否满足指定的条件，常用的四个方法：\nboolean test(T t)：对给定的参数进行判断（判断逻辑由Lambda表达式实现），返回一个布尔值。 default Predicate negate()：返回一个逻辑的否定，对应逻辑非。 default Predicate and(Predicate other)：返回一个组合判断，对应短路与。 default Predicate or(Predicate other)：返回一个组合判断，对应短路或。 java\n代码解读\n复制代码\npublic class PredicateTest { ​ public static void main(String[] args) { List list = Arrays.asList(1, 2, 3, 4, 5); // 过滤出偶数 list = list.stream().filter(s -\u003e s % 2 == 0).collect(Collectors.toList()); System.out.println(list); ​ Predicate predicate = s -\u003e s.contains(\"sb\"); System.out.println(\"包含侮辱词汇: \" + predicate.test(\"abcdesb\")); System.out.println(\"包含侮辱词汇: \" + predicate.test(\"abcdefgbbs\")); ​ Predicate isMan = s -\u003e s.contains(\" man\"); Predicate isWoman = s -\u003e s.contains(\" woman\"); Predicate isStudent = s -\u003e s.contains(\" student\"); Predicate isTeacher = s -\u003e s.contains(\" teacher\"); String human1 = \"he is a man who work as a as student in home\"; String human2 = \"she is a women who work as a teacher in home\"; // and or negate 方法使用演 System.out.println(\"这个人是一个男性：\" + isStudent.and(isMan).test(human1)); System.out.println(\"这是一个老师或者学生：\" + isStudent.or(isMan).test(human1)); System.out.println(\"这是一个既是又是老师，又是一名男性：\" + isStudent.and(isMan).test(human2)); System.out.println(\"这是一个既是又是老师，又是一名女性：\" + isStudent.and(isWoman).test(human2)); System.out.println(\"他不是一名老师：\" + isTeacher.negate().test(human1)); } }\n4、Function Function函数式接口，有参有返回值。接口通常用于对参数进行处理和转换，然后返回一个新的值。\nR apply(T t)：将此函数应用于给定的参数。 default Function andThen(Function after)：返回一个组合函数，首先将该函数应用于输入，然后将after函数应用于结果。 java\n代码解读\n复制代码\npublic class FunctionTest { ​ public static void main(String[] args) { Function delInt = i -\u003e { System.out.println(\"开始处理int数字:\" + i); boolean r = i % 2 == 0; return r ? (i + \"是偶数\") : (i + \"是奇数\"); }; Function delStr = s -\u003e { System.out.println(\"开始处理:\" + s); boolean r = s.contains(\"偶数\"); return r ? (s + \"√\") : (s + \"×\"); }; // 1.map是把集合每个元素重新映射 List list1 = Arrays.asList(1, 2, 3, 4, 5); List result1 = list1.stream().map(delInt.andThen(delStr)).collect(Collectors.toList()); System.out.println(result1); ​ // 2.flatMap从字面上来说是压平这个映射，实际作用就是将每个元素进行一个一对多的拆分， // 细分成更小的单元，返回一个新的Stream流，新的流元素个数增加 Function",
+  "wordCount" : "1256",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-05-10T00:00:00Z",
+  "dateModified": "2024-05-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "好看的HK"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86lambda%E5%92%8Cstream/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      重新认识Lambda和Stream
+    </h1>
+    <div class="post-description">
+      前言：Java8就引入了Lambda和StreamAPI（截止到2023年6月，JDK20亦然发布，参考网址：https://injdk.cn/），这两种特性平时在工作中也是经常使用，但一
+    </div>
+    <div class="post-meta"><span title='2024-05-10 00:00:00 +0000 UTC'>五月 10, 2024</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;好看的HK&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80lambda" aria-label="一、Lambda">一、Lambda</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%87%bd%e6%95%b0%e5%bc%8f%e6%8e%a5%e5%8f%a3" aria-label="1、函数式接口">1、函数式接口</a></li>
+                <li>
+                    <a href="#2%e5%b8%b8%e7%94%a8%e5%87%bd%e6%95%b0%e5%bc%8f%e6%8e%a5%e5%8f%a3" aria-label="2、常用函数式接口">2、常用函数式接口</a><ul>
+                        
+                <li>
+                    <a href="#1supplier" aria-label="1、Supplier">1、Supplier</a></li>
+                <li>
+                    <a href="#2consumer" aria-label="2、Consumer">2、Consumer</a></li>
+                <li>
+                    <a href="#3predicate" aria-label="3、Predicate">3、Predicate</a></li>
+                <li>
+                    <a href="#4function" aria-label="4、Function">4、Function</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8cstream" aria-label="二、Stream">二、Stream</a><ul>
+                        
+                <li>
+                    <a href="#1optional" aria-label="1、Optional">1、Optional</a></li>
+                <li>
+                    <a href="#2%e8%81%9a%e5%90%88maxmincount" aria-label="2、聚合(max/min/count)">2、聚合(max/min/count)</a></li>
+                <li>
+                    <a href="#3reduce" aria-label="3、Reduce">3、Reduce</a></li>
+                <li>
+                    <a href="#4%e5%88%86%e7%bb%84groupingbytomap" aria-label="4、分组(groupingBy/toMap)">4、分组(groupingBy/toMap)</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89%e6%80%bb%e7%bb%93" aria-label="三、总结">三、总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>前言：Java 8就引入了 Lambda 和 Stream API（截止到2023年6月，JDK 20亦然发布，参考网址：<a href="https://link.juejin.cn?target=https%3A%2F%2Finjdk.cn%2F" title="https://injdk.cn/">injdk.cn/</a>），这两种特性平时在工作中也是经常使用，但一直没有机会进行全面地系统性总结，这次抽空来好好过一下。</p>
+<p>补充：本文不做源码层面的解读，抱着够用就行的心态，随便稍稍深入了解一丢丢的思想来进行的。源码实现可以参考这篇：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.throwx.cn%2F2021%2F10%2F06%2Fstream-of-jdk%2F" title="https://www.throwx.cn/2021/10/06/stream-of-jdk/">www.throwx.cn/2021/10/06/…</a></p>
+<h2 id="一lambda">一、Lambda<a hidden class="anchor" aria-hidden="true" href="#一lambda">#</a></h2>
+<p><strong>Lambda</strong> 表达式是JDK 8的一个新特性，<strong>支持 Java 能进行简单的“函数式编程”</strong> ，可以取代大部分的匿名内部类（接口里面只有一个抽象方法），写出更优雅的Java代码。尤其在集合的遍历和其他集合操作中，可以极大地优化代码结构。</p>
+<h3 id="1函数式接口">1、函数式接口<a hidden class="anchor" aria-hidden="true" href="#1函数式接口">#</a></h3>
+<p><strong>如果定义的一个接口<code>有且只有一个抽象方法</code></strong> ，这样的接口就成为<strong>函数式接口</strong>（Functional Interface）。函数式接口<code>可以有任意个 default 或者 static 方法</code>。</p>
+<p><strong>任何函数式接口都可以使用 Lambda 表达式替换</strong>。Lambda表达式的本质是实现函数式接口的一种方式，编译时仍然会替换为一个实现类，只不过语法上做了简化，是Java提供的又一个语法糖。</p>
+<p>如下是一个简单的示例：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 说明：@FunctionalInterface 注解会显式提醒编译器这是一个函数式接口，但加不加，没啥实际影响  */ @FunctionalInterface public interface IPerson { ​     void saySomething(); } ​ public interface IPerson1 { ​     String concatStr(String str1, String str2); } ​ public class Test { ​     public static void main(String[] args) {         // 1.无入参，空返回实现         IPerson person = () -&gt; System.out.println(&quot;我是中国人&quot;);         person.saySomething(); ​         // 2.多个入参，且有方法体实现         IPerson1 person1 = (s1, s2) -&gt; {             // 这行如果没有的话，可以直接 (s1, s2) -&gt; s1 + &quot;_&quot; + s2             System.out.println(&quot;输入为：&quot; + s1 + &quot;,&quot; + s2);             return s1 + &quot;_&quot; + s2;         };         String str = person1.concatStr(&quot;haha&quot;, &quot;haha&quot;);         System.out.println(str); ​         // 3.双冒号 :: 为引⽤运算符，一般与包 java.util.function 提供的函数式接口相配合，返回一个方法应用         // 一般要求调用方法无入参或只有一个入参         Arrays.asList(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;).forEach(System.out::println); ​         Supplier&lt;Double&gt; supplier = Math::random;         System.out.println(supplier.get());     } }</code></p>
+<h3 id="2常用函数式接口">2、常用函数式接口<a hidden class="anchor" aria-hidden="true" href="#2常用函数式接口">#</a></h3>
+<p>java.util.function包默认提供了大量函数式接口，这些接口一般可与Stream API完美配合使用，如下是一些常见Stream接口API说明：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 1.条件筛选 filter(Predicate&lt;? super T&gt; predicate) // 2.对单个item对象转换操作 map(Function&lt;? super T, ? extends R&gt; mapper) // 3.对item对象操作，并返回一个新的Stream流 flatMap(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt; mapper) // 4.循环遍历 forEach(Consumer&lt;? super T&gt; action) // 5.条件筛选，整个集合item有一个为true anyMatch(Predicate&lt;? super T&gt; predicate) // 6.条件筛选，全部item为true     allMatch(Predicate&lt;? super T&gt; predicate) // 7.累计计算，值累加等 reduce(BinaryOperator&lt;T&gt; accumulator) // 8.集合操作，元素汇总转换计算 collect(Collector&lt;? super T, A, R&gt; collector)</code></p>
+<h4 id="1supplier">1、Supplier<a hidden class="anchor" aria-hidden="true" href="#1supplier">#</a></h4>
+<p><strong><code>Supplier&lt;T&gt;</code>供给型接口，无参有返回值</strong>。Supplier接口之所以被称之为<strong>生产型接口</strong>，是因为如果我们指定了接口的泛型是什么类型，那么接口中的get方法就会生产什么类型的数据供我们使用。</p>
+<ul>
+<li><code>T get()</code>方法：用于获得结果；不需要参数，它会按照某种实现逻辑（由Lambd表达式实现）返回一个数据。</li>
+</ul>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class SupplierTest { ​     public static void main(String[] args) {         System.out.println(concatStr(() -&gt; &quot;haha&quot;));     } ​     private static String concatStr(Supplier&lt;String&gt; supplier) {         return supplier.get() + &quot;_concat&quot;;     } }</code></p>
+<h4 id="2consumer">2、Consumer<a hidden class="anchor" aria-hidden="true" href="#2consumer">#</a></h4>
+<p><strong><code>Consumer&lt;T&gt;</code>消费型接口，有参数无返回值</strong>。Consumer接口也被称之为<strong>消费型接口</strong>，它消费的数据的类型由泛型指定，包含两个方法。</p>
+<ul>
+<li><code>void accept(T t)</code>：对给定的参数执行此操作</li>
+<li><code>default Consumer&lt;T&gt; andThen(Consumer after)</code>：返回一个组合的Consumer，依次执行此操作，然后执行after操作。</li>
+</ul>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class ConsumerTest { ​     public static void main(String[] args) {         List&lt;Integer&gt; list = Arrays.asList(1, 2, 3, 4);         // 简单实用，foreach的入参就是一个 Consumer&lt;? super T&gt; action         list.forEach(System.out::print); ​         // 自己编写 accept 方法体的 Consumer         consumer(list, s -&gt; {             System.out.println(&quot;测试消费：&quot; + s);         });                  // andThen的测试，每一个数会依次经过 consumer-&gt;consumer1-&gt;consumer2         Consumer&lt;Integer&gt; consumer = x -&gt; {             System.out.println(&quot;全部消费：&quot; + x);         };         Consumer&lt;Integer&gt; consumer1 = x -&gt; {             if (x % 2 == 0) {                 System.out.println(&quot;偶数消费：&quot; + x);             }         };         Consumer&lt;Integer&gt; consumer2 = x -&gt; {             if (x % 2 != 0) {                 System.out.println(&quot;基数消费：&quot; + x);             }         };         // 这种链式反应很奇妙         list.forEach(consumer.andThen(consumer1).andThen(consumer2));     } ​     private static void consumer(List&lt;Integer&gt; list, Consumer&lt;Integer&gt; consumer) {         // consumer::accept 也可已直接替换为 consumer         list.forEach(consumer::accept);     } }</code></p>
+<h4 id="3predicate">3、Predicate<a hidden class="anchor" aria-hidden="true" href="#3predicate">#</a></h4>
+<p><strong><code>Predicate&lt;T&gt;</code>断言型接口，有参有返回值，返回值是boolean类型</strong>。<code>Predicate&lt;T&gt;</code>方法通常用于判断参数是否满足指定的条件，常用的四个方法：</p>
+<ul>
+<li>boolean test(T t)：对给定的参数进行判断（判断逻辑由Lambda表达式实现），返回一个布尔值。</li>
+<li>default Predicate negate()：返回一个逻辑的否定，对应逻辑非。</li>
+<li>default Predicate and(Predicate other)：返回一个组合判断，对应短路与。</li>
+<li>default Predicate or(Predicate other)：返回一个组合判断，对应短路或。</li>
+</ul>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class PredicateTest { ​     public static void main(String[] args) {         List&lt;Integer&gt; list = Arrays.asList(1, 2, 3, 4, 5);         // 过滤出偶数         list = list.stream().filter(s -&gt; s % 2 == 0).collect(Collectors.toList());         System.out.println(list); ​         Predicate&lt;String&gt; predicate = s -&gt; s.contains(&quot;sb&quot;);         System.out.println(&quot;包含侮辱词汇: &quot; + predicate.test(&quot;abcdesb&quot;));         System.out.println(&quot;包含侮辱词汇: &quot; + predicate.test(&quot;abcdefgbbs&quot;)); ​         Predicate&lt;String&gt; isMan = s -&gt; s.contains(&quot; man&quot;);         Predicate&lt;String&gt; isWoman = s -&gt; s.contains(&quot; woman&quot;);         Predicate&lt;String&gt; isStudent = s -&gt; s.contains(&quot; student&quot;);         Predicate&lt;String&gt; isTeacher = s -&gt; s.contains(&quot; teacher&quot;);         String human1 = &quot;he is a man who work as a as student in home&quot;;         String human2 = &quot;she is a women who work as a teacher in home&quot;;         // and or negate 方法使用演         System.out.println(&quot;这个人是一个男性：&quot; + isStudent.and(isMan).test(human1));         System.out.println(&quot;这是一个老师或者学生：&quot; + isStudent.or(isMan).test(human1));         System.out.println(&quot;这是一个既是又是老师，又是一名男性：&quot; + isStudent.and(isMan).test(human2));         System.out.println(&quot;这是一个既是又是老师，又是一名女性：&quot; + isStudent.and(isWoman).test(human2));         System.out.println(&quot;他不是一名老师：&quot; + isTeacher.negate().test(human1));     } }</code></p>
+<h4 id="4function">4、Function<a hidden class="anchor" aria-hidden="true" href="#4function">#</a></h4>
+<p><strong><code>Function&lt;T,R&gt;</code>函数式接口，有参有返回值</strong>。接口通常用于对参数进行处理和转换，然后返回一个新的值。</p>
+<ul>
+<li><code>R apply(T t)</code>：将此函数应用于给定的参数。</li>
+<li><code>default &lt;V&gt; Function andThen(Function after)</code>：返回一个组合函数，首先将该函数应用于输入，然后将after函数应用于结果。</li>
+</ul>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class FunctionTest { ​     public static void main(String[] args) {         Function&lt;Integer, String&gt; delInt = i -&gt; {             System.out.println(&quot;开始处理int数字:&quot; + i);             boolean r = i % 2 == 0;             return r ? (i + &quot;是偶数&quot;) : (i + &quot;是奇数&quot;);         };         Function&lt;String, String&gt; delStr = s -&gt; {             System.out.println(&quot;开始处理:&quot; + s);             boolean r = s.contains(&quot;偶数&quot;);             return r ? (s + &quot;√&quot;) : (s + &quot;×&quot;);         };         // 1.map是把集合每个元素重新映射         List&lt;Integer&gt; list1 = Arrays.asList(1, 2, 3, 4, 5);         List&lt;String&gt; result1 = list1.stream().map(delInt.andThen(delStr)).collect(Collectors.toList());         System.out.println(result1); ​         // 2.flatMap从字面上来说是压平这个映射，实际作用就是将每个元素进行一个一对多的拆分，         // 细分成更小的单元，返回一个新的Stream流，新的流元素个数增加         Function&lt;String, Stream&lt;String&gt;&gt; split = s -&gt; Stream.of(s.trim().split(&quot; &quot;));         List&lt;String&gt; list2 = Arrays.asList(&quot;a b c&quot;, &quot;e f g&quot;, &quot;h&quot;);         List&lt;String&gt; result2 = list2.stream().flatMap(split).collect(Collectors.toList());         System.out.println(result2); ​         // 3.生成 1-100 数字，并计算结果         // rangeClosed/range两个方法的区别在于一个是闭区间，一个是半开半闭区间         // sum聚合方法，底层实现还是reduce方法         long sum = IntStream.rangeClosed(1, 100).asLongStream().sum();         System.out.println(&quot;sum方法 从1加到100=&quot; + sum);         // 使用 reduce 方法         long sum1 = IntStream.rangeClosed(1, 100).reduce((x1, x2) -&gt; x1 + x2).getAsInt();         System.out.println(&quot;reduce方法 从1加到100=&quot; + sum1);         long sum2 = IntStream.rangeClosed(1, 100).reduce(4950, Integer::sum);         System.out.println(&quot;reduce方法 4950 + &quot; + sum1 + &quot; = &quot; + sum2);     } }</code></p>
+<h2 id="二stream">二、Stream<a hidden class="anchor" aria-hidden="true" href="#二stream">#</a></h2>
+<p>Stream 中文称为 <strong>“流”</strong> ，通过将集合转换为这么一种叫做 “流” 的元素序列，通过声明性方式，能够对集合中的每个元素进行一系列并行或串行的<strong>流水线操作</strong>。有如下特性</p>
+<ul>
+<li><strong>Stream流不是一种数据结构，不保存数据，它只是在原数据集上定义了一组操作</strong></li>
+<li><strong>这些操作是惰性的，即每当访问到流中的一个元素，才会在此元素上执行这一系列操作</strong></li>
+<li><strong>Stream不保存数据，故每个Stream流只能使用一次</strong></li>
+</ul>
+<p>在上一节中，已经可以看到 <strong>Lambda + Stream 配合</strong>使用的强大。对于一些较为简单的API方法，这里不多作说明，着重列举下一些需要注意的相关重点API。</p>
+<h3 id="1optional">1、Optional<a hidden class="anchor" aria-hidden="true" href="#1optional">#</a></h3>
+<ol start="0">
+<li>Optional 类是一个可以为null的容器对象。如果值存在则isPresent()方法会返回true，调用get()方法会返回该对象。</li>
+<li>Optional 是个容器：它可以保存类型T的值，或者仅仅保存null。Optional提供很多有用的方法，这样我们就不用显式进行空值检测。</li>
+<li>Optional 类的引入很好的解决空指针异常。</li>
+</ol>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class OptionalTest { ​     public static void main(String[] args) {         // 1.基本演示         // of 方法不允许入参为null，会报NPE         // ofNullable允许入参为null，内部构造一个empty对象         Optional&lt;String&gt; optional = Optional.ofNullable(null);         System.out.println(&quot;初始optional中是否有值:&quot; + optional.isPresent()); ​         // 2.filter map 等方法默认过滤null值         String s1 = optional                 .filter(s -&gt; s.contains(&quot;0&quot;))                 .map(s -&gt; s + &quot;1&quot;)                 // 直接get会报NPE，因此最好使用 orElse orElseThrow                 .orElse(&quot;这是个默认值&quot;);         System.out.println(s1); ​         // 3.手动处理异常         /// 这里会让程序直接抛异常         /// s1 = optional.orElseThrow(() -&gt; new RuntimeException(&quot;参数不能为null&quot;));         /// System.out.println(s1); ​         // 4.Stream聚合操作         optional.ifPresent(s -&gt; {             // 不会输出，有不为null的值才会输出         });         Stream.of(null, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, null, &quot;4&quot;)                 /// .map(Objects::nonNull) 也行                 .filter(s -&gt; Optional.ofNullable(s).isPresent() &amp;&amp; Integer.parseInt(s) &gt; 1)                 .map(s -&gt; Optional.of(s))                 .forEach(s -&gt; {                     System.out.println(&quot;输出值:&quot; + s.get());                 });     } }</code></p>
+<h3 id="2聚合maxmincount">2、聚合(max/min/count)<a hidden class="anchor" aria-hidden="true" href="#2聚合maxmincount">#</a></h3>
+<p>不多讲，上代码</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class CountTest { ​     public static void main(String[] args) {         List&lt;String&gt; list = Arrays.asList(&quot;11.221&quot;, &quot;33.22&quot;, &quot;22.113&quot;, &quot;44.55&quot;, &quot;4.0&quot;); ​         // 1.找出转 Double 后的最大值         Optional&lt;String&gt; optional = list.stream().max(Comparator.comparingDouble(Double::valueOf));         System.out.println(&quot;最大值：&quot; + optional.get());         // min同         System.out.println(&quot;最小值：&quot; + list.stream().min(Comparator.comparingDouble(Double::valueOf)).get()); ​         // 2.找出字符串最长的那个         String maxLengthOne = list.stream().max(Comparator.comparing(String::length)).get();         System.out.println(&quot;最长的字符串：&quot; + maxLengthOne);         // min同         System.out.println(&quot;最短的字符串：&quot; + list.stream().min(Comparator.comparing(String::length)).get()); ​         // 3.自然排序，字典顺序，结果为 [11.221, 22.113, 33.22, 4.0, 44.55]         System.out.println(list.stream().sorted().collect(Collectors.toList()));         // 转成 Double 再排序，结果为 [4.0, 11.221, 22.113, 33.22, 44.55]         System.out.println(list.stream().mapToDouble(Double::valueOf).boxed()                 .sorted().collect(Collectors.toList()));         // 倒序排序，反字典顺序，结果为 [44.55, 4.0, 33.22, 22.113, 11.221]         System.out.println(list.stream()                 .sorted(Comparator.reverseOrder()).collect(Collectors.toList()));         // 自定义排序规则，结果为 [4.0, 11.221, 22.113, 33.22, 44.55]         System.out.println(list.stream()                 .sorted(Comparator.comparing(Double::valueOf)).collect(Collectors.toList()));         // 自定义复杂规则，结果为 [4.0, 33.22, 44.55, 22.113, 11.221]         System.out.println(list.stream()                 .sorted((s1, s2) -&gt; {                     // 自定义比较规则，整数位 + 小数位，从小到大                     int i1 = Arrays.stream(s1.split(&quot;\.&quot;)).mapToInt(Integer::valueOf).sum();                     int i2 = Arrays.stream(s2.split(&quot;\.&quot;)).mapToInt(Integer::valueOf).sum();                     return i1 &gt; i2 ? 1 : -1;                 }).collect(Collectors.toList())); ​         // 4.去重后，统计数量         list = Arrays.asList(&quot;123456543210&quot;.split(&quot;&quot;));         // 输出为：[1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0]         System.out.println(&quot;原始值：&quot; + list);         // 输出位：[1, 2, 3, 4, 5, 6, 0]         System.out.println(&quot;去重后：&quot; + list.stream().distinct().collect(Collectors.toList()));         // 统计个数，sum，average         System.out.println(&quot;去重后个数：&quot; + list.stream().distinct().count());         System.out.println(&quot;去重后总和：&quot; + list.stream().distinct().mapToInt(Integer::valueOf).sum());         System.out.println(&quot;去重后平均值：&quot; + list.stream().distinct()                 .mapToInt(Integer::valueOf).average().orElse(0L));     } }</code></p>
+<h3 id="3reduce">3、Reduce<a hidden class="anchor" aria-hidden="true" href="#3reduce">#</a></h3>
+<p>reduce思想还是有必要再单独提一下的，虽然之前也有过例子，如下</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class ReduceTest {     public static void main(String[] args) {         // 1.生成 1-10 数字，并计算结果         // rangeClosed/range两个方法的区别在于一个是闭区间，一个是半开半闭区间         // 也可以直接 .asLongStream().sum() 得到sum结果         Stream&lt;String&gt; stream = IntStream.rangeClosed(1, 10).asLongStream().boxed().map(String::valueOf);         // 字符串拼接，结果为 12345678910         String concatStr = stream.reduce((s1, s2) -&gt; s1 + s2).orElse(&quot;&quot;);         System.out.println(concatStr);         // 2.计算sum、max、乘积         Stream&lt;Integer&gt; integerStream = IntStream.rangeClosed(1, 10).boxed();         long sum = integerStream.reduce(0, (x1, x2) -&gt; (x1 + x2));         System.out.println(&quot;sum = &quot; + sum);         // 同一个流不能操作两次         integerStream = IntStream.rangeClosed(1, 10).boxed();         int max = integerStream.reduce((x1, x2) -&gt; (x1 &gt; x2 ? x1 : x2)).orElse(0);         System.out.println(&quot;max = &quot; + max);         integerStream = IntStream.rangeClosed(1, 10).boxed();         int result = integerStream.reduce(1, (x1, x2) -&gt; (x1 * x2));         System.out.println(&quot;乘积 = &quot; + result);     } }</code></p>
+<h3 id="4分组groupingbytomap">4、分组(groupingBy/toMap)<a hidden class="anchor" aria-hidden="true" href="#4分组groupingbytomap">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class GroupTest {     public static void main(String[] args) {         List&lt;Person&gt; list = Arrays.asList(                 new Person(&quot;张三&quot;, 22, &quot;男&quot;, &quot;北京&quot;),                 new Person(&quot;李四&quot;, 25, &quot;女&quot;, &quot;深圳&quot;),                 new Person(&quot;王五&quot;, 32, &quot;男&quot;, &quot;北京&quot;),                 new Person(&quot;赵六&quot;, 35, &quot;女&quot;, &quot;上海&quot;)         );         // 1.根据性别分组         Map&lt;String, List&lt;Person&gt;&gt; sexMap = list                 .stream().collect(Collectors.groupingBy(Person::getSex));         System.out.println(&quot;按照sex分组：&quot; + sexMap);         // 2.按照年龄区间分区，partitioningBy 接收一个 Predicate 对象         Map&lt;Boolean, List&lt;Person&gt;&gt; ageMap = list.stream()                 .collect(Collectors.partitioningBy(p -&gt; p.getAge() &lt; 30 ));         System.out.println(&quot;按照age分组：&quot; + ageMap);         // 3.多个分组，先按性别，再按年龄         Map&lt;String, Map&lt;String, List&lt;Person&gt;&gt;&gt; map = list.stream()                 .collect(Collectors.groupingBy(Person::getSex, Collectors.groupingBy(Person::getAddress)));         System.out.println(&quot;复合条件分组：&quot; + map);         // 4.补充一个遇到的bug，2022-04-21 stream toMap value不能为空         // 如果key重复，会报重复 IllegalStateException Duplicate key 张三         // 如果value位null，会报空指针         // 这里list不能add，会报 UnsupportedOperationException         list = new ArrayList&lt;&gt;(list);         Map&lt;String, String&gt; map1 = list.stream()                 // key应该具有唯一标识，且value不能为null                 .collect(Collectors.toMap(Person::getName, Person::getSex));         System.out.println(map1);         // 5.单个Map转换，比如，我只获得一个 Map&lt;String, Person&gt; 对象，那应该怎么做呢         // 这里再加一个女张三         list.add(new Person(&quot;张三&quot;, 18, &quot;女&quot;, &quot;杭州&quot;));         Map&lt;String, Person&gt; collectMap = list.stream()                 // 三个参数分为 key value key冲突时保留前者还是后者，这里是保留前者，因此女张三会被丢弃                 .collect(Collectors.toMap(Person::getName, p -&gt; p, (p1, p2) -&gt; p1));         System.out.println(collectMap);     }     @AllArgsConstructor     @Data     private static class Person {         private String name;         private int age;         private String sex;         private String address;     } }</code></p>
+<h2 id="三总结">三、总结<a hidden class="anchor" aria-hidden="true" href="#三总结">#</a></h2>
+<p>熟练使用 <strong>Lambda + Stream</strong> 能够有效提升编码效率，提升代码的扩展性和可读性，既装逼又实惠，是时候好好学习一波了！</p>
+<p>欢迎关注微信公众号：<strong>好看的HK</strong>，第一时间掌握Java最新黑科技，轻轻松松进大厂！</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E5%B8%B8%E7%94%A8%E7%BD%91%E7%AB%99%E6%B1%87%E6%80%BB%E4%B8%80%E5%AE%9A%E6%9C%89%E4%BD%A0%E6%83%B3%E8%A6%81%E7%9A%84/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>前端常用网站汇总，一定有你想要的🔥🔥🔥</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93vue3%E7%9A%8413%E7%A7%8D%E4%BC%A0%E5%8F%82%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E9%9D%9E%E5%B8%B8%E9%BD%90%E5%85%A8/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>总结Vue3的13种传参通信方式，非常齐全</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 重新认识Lambda和Stream on x"
+            href="https://x.com/intent/tweet/?text=%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f&amp;hashtags=%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 重新认识Lambda和Stream on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f&amp;title=%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream&amp;summary=%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 重新认识Lambda和Stream on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f&title=%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 重新认识Lambda和Stream on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 重新认识Lambda和Stream on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 重新认识Lambda和Stream on telegram"
+            href="https://telegram.me/share/url?text=%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 重新认识Lambda和Stream on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%86Lambda%e5%92%8cStream&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2587%258D%25E6%2596%25B0%25E8%25AE%25A4%25E8%25AF%2586lambda%25E5%2592%258Cstream%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

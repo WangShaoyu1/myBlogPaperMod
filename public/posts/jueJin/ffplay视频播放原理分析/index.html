@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>ffplay视频播放原理分析 | PaperMod</title>
+<meta name="keywords" content="音视频开发">
+<meta name="description" content="本文从整体播放流程出发，介绍了ffplay播放器播放媒体文件的主要流程，不深陷于代码细节。同时，对FFmpeg的一些常用函数有了一些了解，对我们自己手写一个简单的播放器有很大的帮助。">
+<meta name="author" content="百度Geek说">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/ffplay%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/ffplay%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="ffplay视频播放原理分析" />
+<meta property="og:description" content="本文从整体播放流程出发，介绍了ffplay播放器播放媒体文件的主要流程，不深陷于代码细节。同时，对FFmpeg的一些常用函数有了一些了解，对我们自己手写一个简单的播放器有很大的帮助。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/ffplay%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-08-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-08-03T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="ffplay视频播放原理分析"/>
+<meta name="twitter:description" content="本文从整体播放流程出发，介绍了ffplay播放器播放媒体文件的主要流程，不深陷于代码细节。同时，对FFmpeg的一些常用函数有了一些了解，对我们自己手写一个简单的播放器有很大的帮助。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "ffplay视频播放原理分析",
+      "item": "http://localhost:1313/posts/juejin/ffplay%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ffplay视频播放原理分析",
+  "name": "ffplay视频播放原理分析",
+  "description": "本文从整体播放流程出发，介绍了ffplay播放器播放媒体文件的主要流程，不深陷于代码细节。同时，对FFmpeg的一些常用函数有了一些了解，对我们自己手写一个简单的播放器有很大的帮助。",
+  "keywords": [
+    "音视频开发"
+  ],
+  "articleBody": "\r作者 | 赵家祝\nFFmpeg 框架由命令行工具和函数库组成， ffplay 是其中的一种命令行工具，提供了播放音视频文件的功能，不仅可以播放本地多媒体文件，还可以播放网络流媒体文件。本文从 ffplay 的整体播放流程出发，借鉴其设计思路，学习如何设计一款简易的播放器。\n一、播放器工作流程 在学习 ffplay 源码之前，为了方便理解，我们先宏观了解一下播放器在播放媒体文件时的工作流程。\n解协议：媒体文件在网络上传输时，需要经过流媒体协议将媒体数据分段成若干个数据包，这样就可以满足用户一边下载一边观看的需求，而不需要等整个媒体文件都下载完成才能观看。常见的流媒体协议有 RTMP、HTTP、HLS、MPEG-DASH、MSS、HDS 等。由于流媒体协议中不仅仅包含媒体数据，还包含控制播放的信令数据。因此，解协议是移除协议中的信令数据，输出音视频封装格式数据。\n解封装：封装格式也叫容器，就是将已经编码压缩好的视频流和音频流按照一定的格式放到一个文件中，常见的封装格式有 MP4、FLV、MPEG2-TS、AVI、MKV、MOV 等。解封装是将封装格式数据中的音频流压缩编码数据和视频流压缩编码数据分离，方便在解码阶段使用不同的解码器解码。\n解码：压缩编码数据是在原始数据基础上采用不同的编码压缩得到的数据，而解码阶段就是编码的逆向操作。常见的视频压缩编码标准有 H.264/H.265 、MPEG-2 、AV1 、V8/9 等，音频压缩编码标准有 AAC 、MP3 等。解压后得到的视频图像数据是 YUV 或 RGB ，音频采样数据是 PCM 。\n音视频同步：解码后的视频数据和音频数据是独立的，在送给显卡和声卡播放前，需要将视频和音频同步，避免播放进度不一致。\n二、main函数 ffplay 的使用非常简单，以ffplay -i input.mp4 -loop 2为例，表示使用 ffplay 播放器循环播放 input.mp4 文件两遍。执行该命令时，对应的源码在 fftools/ffplay.c 中，程序入口函数是 main 函数 。\n注：本文 ffplay 源码基于 ffmpeg 4.4。\n2.1 环境初始化\n初始化部分主要调用以下函数：\ninit_dynload：调用SetDllDirectory(\"\")删除 动态链接库（DLL）搜索路径中的当前工作目录，是 Windows 平台下的一种安全预防措施。\nav_log_set_flag：设置 log 打印的标记为AV_LOG_SKIP_REPEATED，即跳过重复消息。\nparse_loglevel：解析 log 的级别，会匹配命令中的-loglevel字段。如果命令中添加-report，会将播放日志输出成文件。\navdevice_register_all：注册特殊设备的封装库。\navformat_network_init：初始化网络资源，可以从网络中拉流。\nparse_options：解析命令行参数，示例中的-i input.mp4和-loop 2就是通过这个函数解析的，支持的选项定义在options静态数组中。解析得到的文件名、文件格式分别保存在全局变量input_filename和file_iformat中。\n2.2 SDL初始化\nSDL的全称是 Simple DirectMedia Layer，是一个跨平台的多媒体开发库，支持 Linux、Windows、Mac OS等多个平台，实际上是对 DirectX、OpenGL、Xlib再封装，在不同操作系统上提供了相同的函数。ffplay 的播放显示是通过 SDL 实现的。\nmain 函数中主要调用了以下三个 SDL 函数：\nSDL_Init：初始化 SDL 库，传入的参数 flags，默认支持视频、音频和定时器，如果命令中配置了-an则禁用音频，配置了-vn则禁用视频。\nSDL_CreateWindow：创建播放视频的窗口，该函数可以指定窗口的位置、大小，默认是 640*480 大小。\nSDL_CreateRenderer：为指定的窗口创建渲染器上下文，对应的结构体是 SDL_Render 。我们既可以使用渲染器创建纹理，也可以渲染视图。\n2.3 解析媒体流\nstream_open函数是 ffplay 开始播放流程的起点，该函数传入两个参数，分别是文件名input_filename和文件格式file_iformat。下面是函数内部的处理流程：\n（1） 初始化VideoState：VideoState 是 ffplay 中最大的结构体，所有的视频信息都定义在其中。初始化 VideoState 时，先定义 VideoState 结构体指针类型的局部变量is，分配堆内存。然后初始化结构体中的变量，例如视频流、音频流、字幕流的索引，并赋值函数入参 filename 和 iformat。\n（2）初始化FrameQueue：FrameQueue 是解码后的 Frame 队列， Frame 是解码后的数据，例如视频解码后是 YUV 或 RGB 数据，音频解码后是 PCM 数据。初始化 FrameQueue 时，会对 VideoState 中的 pictq（视频帧队列）、subpq（字幕帧队列）、sampq（音频帧队列）依次调用frame_queue_init函数进行初始化。FrameQueue 内部是通过数组实现了一个先进先出的环形缓冲区，windex 是写指针，被解码线程使用；rindex 是读指针，被播放线程使用。使用环形缓冲区的好处是，缓冲区内的元素被移除后，其它元素不需要移动位置，适用于事先知道缓冲区最大容量的场景。\n（3）初始化PacketQueue：PacketQueue 是解码前的 Packet 队列，用于保存解封装后的数据。初始化 PacketQueue 时，会对 VideoState 中的 videoq（视频包队列）、audio（音频包队列）、subtitleq（字幕包队列）依次调用packet_queue_init函数进行初始化。不同于 FrameQueue ， PacketQueue 采用链表的方式实现队列。由于解码前的包大小不可控，无法明确缓冲区的最大容量，如果使用环形缓冲区，容易触发缓冲区扩容，需要移动缓冲区内的数据。因此，使用链表实现队列更加合适。\n（4）初始化Clock：Clock 是时钟，在音视频同步阶段，有三种同步方法：视频同步到音频，音频同步到视频，以及音频和视频同步到外部时钟。初始化 Clock 时，会对 VideoState 中的 vidclk（视频时钟）、audclk（音频时钟）、extclk（外部时钟）依次调用init_clock函数进行初始化。\n（5）限制音量范围：先限制音量范围在 0~100 之间，然后再根据 SDL 的音量范围作进一步限制。\n（6）设置音视频同步方式：ffplay 默认采用AV_SYNC_AUDIO_MASTER，即视频同步到音频。\n（7）创建读线程：调用SDL_CreateThread创建读线程，同时设置了线程创建成功的回调read_thread函数以及接收参数is（ stream_open 函数最开始创建的 VideoState 指针类型的局部变量）。如果线程创建失败，则调用stream_close做销毁逻辑。\n（8）返回值：将局部变量is作为函数返回值返回，用于处理下面的各种 SDL 事件。\n2.4 SDL事件处理\nevent_loop函数内部是一个 for 循环，使用 SDL 监听用户的键盘按键事件、鼠标点击事件、窗口事件、退出事件等。\n三、read_thread函数 read_thread函数的作用是从磁盘或者网络中获取流，包括音频流、视频流和字幕流，然后根据可用性创建对应流的解码线程。因此read_thread所在的线程实际上起到了解协议/解封装的作用。核心处理流程可以分为以下步骤：\n3.1 创建AVFormatContext\nAVFormatContext 是封装上下文，描述了媒体文件或媒体流的构成和基本信息。avformat_alloc_context函数用于分配内存创建 AVFormatContext 对象ic。\n拿到 AVFormatContext 对象后，在调用avformat_open_input函数打开文件前，需要设置中断回调函数，用于检查是否应该中断 IO 操作。\nini\n代码解读\n复制代码\n‍ ic-\u003einterrupt_callback.callback = decode_interrupt_cb; ic-\u003einterrupt_callback.opaque = is;\ndecode_interrupt_cb内部返回了一个 VideoState 的 abort_request 变量，该变量在调用stream_close函数关闭流时会被置为1。\n3.2 打开输入文件\n在准备好前面的一些赋值操作后，就可以开始根据 filename 打开文件了。avformat_open_input函数用于打开一个文件，并对文件进行解析。如果文件是一个网络链接，则发起网络请求，在网络数据返回后解析音频流、视频流相关的数据。\n3.3 搜索流信息\n搜索流信息使用avformat_find_stream_info函数，该从媒体文件中读取若干个包，然后从其中搜索流相关的信息，最后将搜索到的流信息放到ic-\u003estreams指针数组中，数组的大小为ic-\u003enb_streams。\n由于在实际播放过程中，用户可以指定是否禁用音频流、视频流、字幕流。因此在解码要处理的流之前，会判断对应的流是否处于不可用状态，如果是可用状态则调用av_find_best_stream函数查找对应流的索引，并保存在st_index数组中。\n3.4 设置窗口大小\n如果找到了视频流的索引，则需要渲染视频画面。由于窗体的大小一般使用默认值 640*480 ，这个值和视频帧真正的大小可能是不相等的。为了正确显示承载视频画面的窗体，需要计算视频帧的宽高比。调用av_guess_sample_aspect_ration函数猜测帧样本的宽高比，调用set_default_window_size函数重新设置显示窗口的大小和宽高比。\n3.5 创建解码线程\n根据st_index判断音频流、视频流、字幕流的索引是否找到，如果找到了就依次调用stream_component_open创建对应流的解码线程。\n3.6 解封装处理\n接下来是一个 for(;;) 循环：\n（1）响应中断停止、暂停/继续、Seek操作；\n（2）判断 PacketQueue 队列是否满了，如果满了就休眠10ms，继续循环；\n（3）调用av_read_frame从码流中读取若干个音频帧或一个视频帧；\n（4）从输入文件中读取一个 AVPacket ，判断当前 AVPacket 是否在播放时间范围内，如果是则调用packet_queue_put函数，根据类型将其放在音频/视频/字幕的 PacketQueue 中。\n四、stream_component_open函数 3.5小节讲到，stream_component_open函数负责创建不同流的解码线程。那么它是如何创建解码线程的呢？\n4.1 创建AVCodecContext\nAVCodecContext是编解码器上下文，保存音视频编解码相关的信息。使用avcodec_alloc_context3函数分配空间 ，使用avcodec_free_context函数释放空间。\n4.2 查找解码器\n根据解码器的id ，调用avcodec_find_decoder函数，查找对应的解码器。与之类似的一个函数是avcodec_find_encoder，用于查找 FFmpeg 的编码器。两个函数返回的结构体都是 AVCodec 。\n如果指定了解码器名称，则需要调用avcodec_find_decoder_by_name函数查找解码器。\n不管是哪种方式查找解码器，如果没有找到解码器，都会抛异常退出流程。\n4.3 解码器初始化\n找到解码器后，需要打开解码器，并对解码器初始化，对应的函数是avcodec_open2，该函数也支持编码器的初始化。\n4.4 创建解码线程\n判断解码类型，创建不同的解码线程。\ncsharp\n代码解读\n复制代码\nswitch (avctx-\u003ecodec_type) { case AVMEDIA_TYPE_AUDIO: // 音频 ... if ((ret = decoder_init(\u0026is-\u003eauddec, avctx, \u0026is-\u003eaudioq, is-\u003econtinue_read_thread)) \u003c 0) goto fail; ... if ((ret = decoder_start(\u0026is-\u003eauddec, audio_thread, \"audio_decoder\", is)) \u003c 0) goto out; ... case AVMEDIA_TYPE_VIDEO: // 视频 ... if ((ret = decoder_init(\u0026is-\u003eviddec, avctx, \u0026is-\u003evideoq, is-\u003econtinue_read_thread)) \u003c 0) goto fail; if ((ret = decoder_start(\u0026is-\u003eviddec, video_thread, \"video_decoder\", is)) \u003c 0) goto out; ... case AVMEDIA_TYPE_SUBTITLE: // 字幕 ... if ((ret = decoder_init(\u0026is-\u003esubdec, avctx, \u0026is-\u003esubtitleq, is-\u003econtinue_read_thread)) \u003c 0) goto fail; if ((ret = decoder_start(\u0026is-\u003esubdec, subtitle_thread, \"subtitle_decoder\", is)) \u003c 0) goto out; ... }\n线程创建在decoder_start函数中，依然使用 SDL 创建线程的方式，调用SDL_CreateThread函数。\n五、video_thread函数 视频解码线程从视频的 PacketQueue 中不断读取 AVPacket ，解码完成后将 AVFrame 放入视频 FrameQueue 。音频的解码实现和视频类似，这里仅介绍视频的解码过程。\n5.1 创建AVFrame\nAVFrame 描述解码后的原始音频数据或视频数据，通过av_frame_alloc函数分配内存，通过av_frame_free函数释放内存。\n5.2 视频解码\n开启 for(;;) 循环，不断调用get_video_frame函数解码一个视频帧。该函数主要调用了decoder_decode_frame函数解码，decoder_decode_frame函数对音频、视频、字幕都进行了处理，主要依靠 FFmpeg 的avcodec_receive_frame函数获取解码器解码输出的数据。\n拿到解码后的视频帧后，会根据音视频同步的方式和命令行的-framedrop选项，判断是否需要丢弃失去同步的视频帧。\n命令行带-framedrop选项，无论哪种音视频同步机制，都会丢弃失去同步的视频帧。\n命令行带-noframedrop选项，无论哪种音视频同步机制，都不会丢弃失去同步的视频帧。\n命令行不带-framedrop或-noframedrop选项，若音视频同步机制为同步到视频，则不丢弃失去同步的视频帧，否则会丢弃失去同步的视频帧。\n5.3 放入FrameQueue\n调用queue_picture函数，将 AVFrame 放入 FrameQueue 。该函数内部调用了frame_queue_push函数，采用了环形缓冲区的处理方式，对写指针windex累加。\nscss\n代码解读\n复制代码\nstatic void frame_queue_push(FrameQueue *f) { if (++f-\u003ewindex == f-\u003emax_size) f-\u003ewindex = 0; SDL_LockMutex(f-\u003emutex); f-\u003esize++; SDL_CondSignal(f-\u003econd); SDL_UnlockMutex(f-\u003emutex); }\n六、音视频同步 ffplay 默认采用将视频同步到音频的方式，分以下三种情况：\n如果视频和音频进度一致，不需要同步；\n如果视频落后音频，则丢弃当前帧直接播放下一帧，人眼感觉跳帧了；\n如果视频超前音频，则重复显示上一帧，等待音频，人眼感觉视频画面停止了，但是有声音在播放；\nffplay 视频同步到音频的逻辑在视频播放函数video_refresh中实现。该函数的调用链是：main()-\u003eevent_loop()-\u003erefresh_loop_wait_event()-\u003evideo_refresh。\n6.1 判断播放完成\n调用frame_queue_nb_remaing函数计算剩余没有显示的帧数是否等于0，如果是，则不需要走剩下的步骤。计算过程比较简单，用 FrameQueue 的 size - rindex_shown ， size 是 FrameQueue 的大小， rindex_shown 表示 rindex 指向的节点是否已经显示，如果已经显示则为1，否则为0。\n6.2 播放序列匹配\n分别调用frame_queue_peek_last和frame_queue_peek函数从 FrameQueue 中获取上一帧和当前帧，上一帧是上次已经显示的帧，当前帧是当前待显示的帧。\n（1）比较当前帧和当前 PacketQueue 的播放序列serial是否相等：\n如果不等，重试视频播放的逻辑；\n如果相等，则进入（2）流程判断；\n注：serial是用来区分是不是连续的数据，如果发生了 seek ，会开始一个新的播放序列，\n（2）比较上一帧和当前帧的播放序列serial是否相等：\n如果不相等，则将frame_timer更新为当前时间；\n如果相等，不处理并进入下一流程\n6.3 判断是否重复上一帧\n（1）将上一帧lastvp和当前帧vp传入vp_duration函数，通过vp-\u003epts - lastvp-\u003epts计算上一帧的播放时长。\n注：pts全称是 Presentation Time Stamp ，显示时间戳，表示解码后得到的帧的显示时间。\n（2）在compute_target_delay函数中，调用get_clock函数获取视频时钟，调用get_master_clock函数获取同步时钟，计算两个时钟的差值，根据差值计算需要 delay 的时间。\n（3）如果当前帧播放时刻（is-\u003eframe_timer + delay）大于当前时刻（time），表示当前帧的播放时间还没有到，相当于当前视频超前音频了，则需要将上一帧再播放一遍。\nini\n代码解读\n复制代码\nlast_duration = vp_duration(is, lastvp, vp); delay = compute_target_delay(last_duration, is); time= av_gettime_relative()/1000000.0; if (time \u003c is-\u003eframe_timer + delay) { *remaining_time = FFMIN(is-\u003eframe_timer + delay - time, *remaining_time); goto display; }\n6.4 判断是否丢弃未播放的帧\n如果当前队列中的帧数大于1，则需要考虑丢帧，只有一帧的时候不考虑丢帧。\n（1）调用frame_queue_peek_next函数获取下一帧（下一个待显示的帧），根据当前帧和下一帧计算当前帧的播放时长，计算过程和6.3相同。\n（2）满足以下条件时，开始丢帧：\n当前播放模式不是步进模式；\n丢帧策略生效：framedrop\u003e0，或者当前音视频同步策略不是音频到视频。\n当前帧vp还没有来得及播放，但是下一帧的播放时刻（is-\u003eframe_timer + duration）已经小于当前系统时刻（time）了。\n（3）丢帧时，将is-\u003eframe_drops_late++，并调用frame_queue_next函数将上一帧删除，更新 FrameQueue 的读指针 rindex 和 size 。\nscss\n代码解读\n复制代码\nif (frame_queue_nb_remaining(\u0026is-\u003epictq) \u003e 1) { Frame *nextvp = frame_queue_peek_next(\u0026is-\u003epictq); duration = vp_duration(is, vp, nextvp); if(!is-\u003estep \u0026\u0026 (framedrop\u003e0 || (framedrop \u0026\u0026 get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER)) \u0026\u0026 time \u003e is-\u003eframe_timer + duration){ is-\u003eframe_drops_late++; frame_queue_next(\u0026is-\u003epictq); goto retry; }}\n七、渲染 ffplay 最终的图像渲染是由 SDL 完成的，在 video_display 中调用了 SDL_RenderPresent(render) 函数，其中 render 参数是最开始在 main 函数中创建的。在渲染之前，需要将解码得到的视频帧数据转换为 SDL 支持的图像格式。转换过程在 upload_texture 函数中实现，细节不在此处分析。\n音频类似，如果解码得到的音频不能被 SDL 支持，需要对音频进行重采样，将音频帧格式转换为 SDL 支持的格式。\n八、小结 本文从整体播放流程出发，介绍了 ffplay 播放器播放媒体文件的主要流程，不深陷于代码细节。同时，对 FFmpeg 的一些常用函数有了一些了解，对我们自己手写一个简单的播放器有很大的帮助。\n-——— END ———-\n推荐阅读【技术加油站】系列：\n百度工程师眼中的云原生可观测性追踪技术\n使用百度开发者工具 4.0 搭建专属的小程序 IDE\n百度工程师教你玩转设计模式（观察者模式）\n揭秘百度智能测试在测试自动执行领域实践\nH.265编码原理入门\n小程序启动性能优化实践\n",
+  "wordCount" : "594",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-08-03T00:00:00Z",
+  "dateModified": "2022-08-03T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "百度Geek说"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/ffplay%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      ffplay视频播放原理分析
+    </h1>
+    <div class="post-description">
+      本文从整体播放流程出发，介绍了ffplay播放器播放媒体文件的主要流程，不深陷于代码细节。同时，对FFmpeg的一些常用函数有了一些了解，对我们自己手写一个简单的播放器有很大的帮助。
+    </div>
+    <div class="post-meta"><span title='2022-08-03 00:00:00 +0000 UTC'>八月 3, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;百度Geek说&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e6%92%ad%e6%94%be%e5%99%a8%e5%b7%a5%e4%bd%9c%e6%b5%81%e7%a8%8b" aria-label="一、播放器工作流程">一、播放器工作流程</a></li>
+                <li>
+                    <a href="#%e4%ba%8cmain%e5%87%bd%e6%95%b0" aria-label="二、main函数">二、main函数</a></li>
+                <li>
+                    <a href="#%e4%b8%89read_thread%e5%87%bd%e6%95%b0" aria-label="三、read_thread函数">三、read_thread函数</a></li>
+                <li>
+                    <a href="#%e5%9b%9bstream_component_open%e5%87%bd%e6%95%b0" aria-label="四、stream_component_open函数">四、stream_component_open函数</a></li>
+                <li>
+                    <a href="#%e4%ba%94video_thread%e5%87%bd%e6%95%b0" aria-label="五、video_thread函数">五、video_thread函数</a></li>
+                <li>
+                    <a href="#%e5%85%ad%e9%9f%b3%e8%a7%86%e9%a2%91%e5%90%8c%e6%ad%a5" aria-label="六、音视频同步">六、音视频同步</a></li>
+                <li>
+                    <a href="#%e4%b8%83%e6%b8%b2%e6%9f%93" aria-label="七、渲染">七、渲染</a></li>
+                <li>
+                    <a href="#%e5%85%ab%e5%b0%8f%e7%bb%93" aria-label="八、小结">八、小结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/de624a1e74294c68b77cfc54e0bf289c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="图片"  />
+</p>
+<p>作者 | 赵家祝</p>
+<p>FFmpeg 框架由命令行工具和函数库组成， ffplay 是其中的一种命令行工具，提供了播放音视频文件的功能，不仅可以播放本地多媒体文件，还可以播放网络流媒体文件。本文从 ffplay 的整体播放流程出发，借鉴其设计思路，学习如何设计一款简易的播放器。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/09a2ed951db740ddad8e6ccb772b0857~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="图片"  />
+</p>
+<h1 id="一播放器工作流程"><strong>一、播放器工作流程</strong><a hidden class="anchor" aria-hidden="true" href="#一播放器工作流程">#</a></h1>
+<p>在学习 ffplay 源码之前，为了方便理解，我们先宏观了解一下播放器在播放媒体文件时的工作流程。</p>
+<ul>
+<li>
+<p><strong>解协议</strong>：媒体文件在网络上传输时，需要经过流媒体协议将媒体数据分段成若干个数据包，这样就可以满足用户一边下载一边观看的需求，而不需要等整个媒体文件都下载完成才能观看。常见的流媒体协议有 RTMP、HTTP、HLS、MPEG-DASH、MSS、HDS 等。由于流媒体协议中不仅仅包含媒体数据，还包含控制播放的信令数据。因此，解协议是移除协议中的信令数据，输出音视频封装格式数据。</p>
+</li>
+<li>
+<p><strong>解封装</strong>：封装格式也叫容器，就是将已经编码压缩好的视频流和音频流按照一定的格式放到一个文件中，常见的封装格式有 MP4、FLV、MPEG2-TS、AVI、MKV、MOV 等。解封装是将封装格式数据中的音频流压缩编码数据和视频流压缩编码数据分离，方便在解码阶段使用不同的解码器解码。</p>
+</li>
+<li>
+<p><strong>解码</strong>：压缩编码数据是在原始数据基础上采用不同的编码压缩得到的数据，而解码阶段就是编码的逆向操作。常见的视频压缩编码标准有 H.264/H.265 、MPEG-2 、AV1 、V8/9 等，音频压缩编码标准有 AAC 、MP3 等。解压后得到的视频图像数据是 YUV 或 RGB ，音频采样数据是 PCM 。</p>
+</li>
+<li>
+<p><strong>音视频同步</strong>：解码后的视频数据和音频数据是独立的，在送给显卡和声卡播放前，需要将视频和音频同步，避免播放进度不一致。</p>
+</li>
+</ul>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8f7f080ed5d24ff982eacd238e873f1b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="图片"  />
+</p>
+<h1 id="二main函数"><strong>二、main函数</strong><a hidden class="anchor" aria-hidden="true" href="#二main函数">#</a></h1>
+<p>ffplay 的使用非常简单，以ffplay -i input.mp4 -loop 2为例，表示使用 ffplay 播放器循环播放 input.mp4 文件两遍。执行该命令时，对应的源码在 fftools/ffplay.c 中，程序入口函数是 main 函数 。</p>
+<blockquote>
+<p>注：本文 ffplay 源码基于 ffmpeg 4.4。</p>
+</blockquote>
+<p><strong>2.1 环境初始化</strong></p>
+<p>初始化部分主要调用以下函数：</p>
+<ul>
+<li>
+<p><strong>init_dynload</strong>：调用SetDllDirectory(&quot;&quot;)删除 动态链接库（DLL）搜索路径中的当前工作目录，是 Windows 平台下的一种安全预防措施。</p>
+</li>
+<li>
+<p><strong>av_log_set_flag</strong>：设置 log 打印的标记为AV_LOG_SKIP_REPEATED，即跳过重复消息。</p>
+</li>
+<li>
+<p><strong>parse_loglevel</strong>：解析 log 的级别，会匹配命令中的-loglevel字段。如果命令中添加-report，会将播放日志输出成文件。</p>
+</li>
+<li>
+<p><strong>avdevice_register_all</strong>：注册特殊设备的封装库。</p>
+</li>
+<li>
+<p><strong>avformat_network_init</strong>：初始化网络资源，可以从网络中拉流。</p>
+</li>
+<li>
+<p><strong>parse_options</strong>：解析命令行参数，示例中的-i input.mp4和-loop 2就是通过这个函数解析的，支持的选项定义在options静态数组中。解析得到的文件名、文件格式分别保存在全局变量input_filename和file_iformat中。</p>
+</li>
+</ul>
+<p><strong>2.2 SDL初始化</strong></p>
+<p>SDL的全称是 Simple DirectMedia Layer，是一个跨平台的多媒体开发库，支持 Linux、Windows、Mac OS等多个平台，实际上是对 DirectX、OpenGL、Xlib再封装，在不同操作系统上提供了相同的函数。ffplay 的播放显示是通过 SDL 实现的。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fb416d2027844e2f9edd7f825370821f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="图片"  />
+</p>
+<p>main 函数中主要调用了以下三个 SDL 函数：</p>
+<ul>
+<li>
+<p><strong>SDL_Init</strong>：初始化 SDL 库，传入的参数 flags，默认支持视频、音频和定时器，如果命令中配置了-an则禁用音频，配置了-vn则禁用视频。</p>
+</li>
+<li>
+<p><strong>SDL_CreateWindow</strong>：创建播放视频的窗口，该函数可以指定窗口的位置、大小，默认是 640*480 大小。</p>
+</li>
+<li>
+<p><strong>SDL_CreateRenderer</strong>：为指定的窗口创建渲染器上下文，对应的结构体是 SDL_Render 。我们既可以使用渲染器创建纹理，也可以渲染视图。</p>
+</li>
+</ul>
+<p><strong>2.3 解析媒体流</strong></p>
+<p>stream_open函数是 ffplay 开始播放流程的起点，该函数传入两个参数，分别是文件名input_filename和文件格式file_iformat。下面是函数内部的处理流程：</p>
+<p><strong>（1） 初始化VideoState</strong>：VideoState 是 ffplay 中最大的结构体，所有的视频信息都定义在其中。初始化 VideoState 时，先定义 VideoState 结构体指针类型的局部变量is，分配堆内存。然后初始化结构体中的变量，例如视频流、音频流、字幕流的索引，并赋值函数入参 filename 和 iformat。</p>
+<p><strong>（2）初始化FrameQueue</strong>：FrameQueue 是解码后的 Frame 队列， Frame 是解码后的数据，例如视频解码后是 YUV 或 RGB 数据，音频解码后是 PCM 数据。初始化 FrameQueue 时，会对 VideoState 中的 pictq（视频帧队列）、subpq（字幕帧队列）、sampq（音频帧队列）依次调用frame_queue_init函数进行初始化。FrameQueue 内部是通过数组实现了一个先进先出的环形缓冲区，windex 是写指针，被解码线程使用；rindex 是读指针，被播放线程使用。使用环形缓冲区的好处是，缓冲区内的元素被移除后，其它元素不需要移动位置，适用于事先知道缓冲区最大容量的场景。</p>
+<p><strong>（3）初始化PacketQueue</strong>：PacketQueue 是解码前的 Packet 队列，用于保存解封装后的数据。初始化 PacketQueue 时，会对 VideoState 中的 videoq（视频包队列）、audio（音频包队列）、subtitleq（字幕包队列）依次调用packet_queue_init函数进行初始化。不同于 FrameQueue ， PacketQueue 采用链表的方式实现队列。由于解码前的包大小不可控，无法明确缓冲区的最大容量，如果使用环形缓冲区，容易触发缓冲区扩容，需要移动缓冲区内的数据。因此，使用链表实现队列更加合适。</p>
+<p><strong>（4）初始化Clock</strong>：Clock 是时钟，在音视频同步阶段，有三种同步方法：视频同步到音频，音频同步到视频，以及音频和视频同步到外部时钟。初始化 Clock 时，会对 VideoState 中的 vidclk（视频时钟）、audclk（音频时钟）、extclk（外部时钟）依次调用init_clock函数进行初始化。</p>
+<p><strong>（5）限制音量范围</strong>：先限制音量范围在 0~100 之间，然后再根据 SDL 的音量范围作进一步限制。</p>
+<p><strong>（6）设置音视频同步方式</strong>：ffplay 默认采用AV_SYNC_AUDIO_MASTER，即视频同步到音频。</p>
+<p><strong>（7）创建读线程</strong>：调用SDL_CreateThread创建读线程，同时设置了线程创建成功的回调read_thread函数以及接收参数is（ stream_open 函数最开始创建的 VideoState 指针类型的局部变量）。如果线程创建失败，则调用stream_close做销毁逻辑。</p>
+<p><strong>（8）返回值</strong>：将局部变量is作为函数返回值返回，用于处理下面的各种 SDL 事件。</p>
+<p><strong>2.4 SDL事件处理</strong></p>
+<p>event_loop函数内部是一个 for 循环，使用 SDL 监听用户的键盘按键事件、鼠标点击事件、窗口事件、退出事件等。</p>
+<h1 id="三read_thread函数"><strong>三、read_thread函数</strong><a hidden class="anchor" aria-hidden="true" href="#三read_thread函数">#</a></h1>
+<p>read_thread函数的作用是从磁盘或者网络中获取流，包括音频流、视频流和字幕流，然后根据可用性创建对应流的解码线程。因此read_thread所在的线程实际上起到了解协议/解封装的作用。核心处理流程可以分为以下步骤：</p>
+<p><strong>3.1</strong> <strong>创建AVFormatContext</strong></p>
+<p>AVFormatContext 是封装上下文，描述了媒体文件或媒体流的构成和基本信息。avformat_alloc_context函数用于分配内存创建 AVFormatContext 对象ic。</p>
+<p>拿到 AVFormatContext 对象后，在调用avformat_open_input函数打开文件前，需要设置中断回调函数，用于检查是否应该中断 IO 操作。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>‍ ic-&gt;interrupt_callback.callback = decode_interrupt_cb; ic-&gt;interrupt_callback.opaque = is;</code></p>
+<p>decode_interrupt_cb内部返回了一个 VideoState 的 abort_request 变量，该变量在调用stream_close函数关闭流时会被置为1。</p>
+<p><strong>3.2 打开输入文件</strong></p>
+<p>在准备好前面的一些赋值操作后，就可以开始根据 filename 打开文件了。avformat_open_input函数用于打开一个文件，并对文件进行解析。如果文件是一个网络链接，则发起网络请求，在网络数据返回后解析音频流、视频流相关的数据。</p>
+<p><strong>3.3</strong> <strong>搜索流信息</strong></p>
+<p>搜索流信息使用avformat_find_stream_info函数，该从媒体文件中读取若干个包，然后从其中搜索流相关的信息，最后将搜索到的流信息放到ic-&gt;streams指针数组中，数组的大小为ic-&gt;nb_streams。</p>
+<p>由于在实际播放过程中，用户可以指定是否禁用音频流、视频流、字幕流。因此在解码要处理的流之前，会判断对应的流是否处于不可用状态，如果是可用状态则调用av_find_best_stream函数查找对应流的索引，并保存在st_index数组中。</p>
+<p><strong>3.4 设置窗口大小</strong></p>
+<p>如果找到了视频流的索引，则需要渲染视频画面。由于窗体的大小一般使用默认值 640*480 ，这个值和视频帧真正的大小可能是不相等的。为了正确显示承载视频画面的窗体，需要计算视频帧的宽高比。调用av_guess_sample_aspect_ration函数猜测帧样本的宽高比，调用set_default_window_size函数重新设置显示窗口的大小和宽高比。</p>
+<p><strong>3.5 创建解码线程</strong></p>
+<p>根据st_index判断音频流、视频流、字幕流的索引是否找到，如果找到了就依次调用stream_component_open创建对应流的解码线程。</p>
+<p><strong>3.6 解封装处理</strong></p>
+<p>接下来是一个 for(;;) 循环：</p>
+<p>（1）响应中断停止、暂停/继续、Seek操作；</p>
+<p>（2）判断 PacketQueue 队列是否满了，如果满了就休眠10ms，继续循环；</p>
+<p>（3）调用av_read_frame从码流中读取若干个音频帧或一个视频帧；</p>
+<p>（4）从输入文件中读取一个 AVPacket ，判断当前 AVPacket 是否在播放时间范围内，如果是则调用packet_queue_put函数，根据类型将其放在音频/视频/字幕的 PacketQueue 中。</p>
+<h1 id="四stream_component_open函数"><strong>四、stream_component_open函数</strong><a hidden class="anchor" aria-hidden="true" href="#四stream_component_open函数">#</a></h1>
+<p>3.5小节讲到，stream_component_open函数负责创建不同流的解码线程。那么它是如何创建解码线程的呢？</p>
+<p><strong>4.1</strong> <strong>创建AVCodecContext</strong></p>
+<p>AVCodecContext是编解码器上下文，保存音视频编解码相关的信息。使用avcodec_alloc_context3函数分配空间 ，使用avcodec_free_context函数释放空间。</p>
+<p><strong>4.2 查找解码器</strong></p>
+<p>根据解码器的id ，调用avcodec_find_decoder函数，查找对应的解码器。与之类似的一个函数是avcodec_find_encoder，用于查找 FFmpeg 的编码器。两个函数返回的结构体都是 AVCodec 。</p>
+<p>如果指定了解码器名称，则需要调用avcodec_find_decoder_by_name函数查找解码器。</p>
+<p>不管是哪种方式查找解码器，如果没有找到解码器，都会抛异常退出流程。</p>
+<p><strong>4.3 解码器初始化</strong></p>
+<p>找到解码器后，需要打开解码器，并对解码器初始化，对应的函数是avcodec_open2，该函数也支持编码器的初始化。</p>
+<p><strong>4.4 创建解码线程</strong></p>
+<p>判断解码类型，创建不同的解码线程。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4206a108095942c79e74f5af42f0d604~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="图片"  />
+</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>switch (avctx-&gt;codec_type) { case AVMEDIA_TYPE_AUDIO:    // 音频     ...     if ((ret = decoder_init(&amp;is-&gt;auddec, avctx, &amp;is-&gt;audioq, is-&gt;continue_read_thread)) &lt; 0)         goto fail;     ...     if ((ret = decoder_start(&amp;is-&gt;auddec, audio_thread, &quot;audio_decoder&quot;, is)) &lt; 0)         goto out;     ... case AVMEDIA_TYPE_VIDEO:    // 视频     ...     if ((ret = decoder_init(&amp;is-&gt;viddec, avctx, &amp;is-&gt;videoq, is-&gt;continue_read_thread)) &lt; 0)         goto fail;     if ((ret = decoder_start(&amp;is-&gt;viddec, video_thread, &quot;video_decoder&quot;, is)) &lt; 0)         goto out;     ... case AVMEDIA_TYPE_SUBTITLE: // 字幕     ...     if ((ret = decoder_init(&amp;is-&gt;subdec, avctx, &amp;is-&gt;subtitleq, is-&gt;continue_read_thread)) &lt; 0)         goto fail;     if ((ret = decoder_start(&amp;is-&gt;subdec, subtitle_thread, &quot;subtitle_decoder&quot;, is)) &lt; 0)         goto out;     ... }</code></p>
+<p>线程创建在decoder_start函数中，依然使用 SDL 创建线程的方式，调用SDL_CreateThread函数。</p>
+<h1 id="五video_thread函数"><strong>五、video_thread函数</strong><a hidden class="anchor" aria-hidden="true" href="#五video_thread函数">#</a></h1>
+<p>视频解码线程从视频的 PacketQueue 中不断读取 AVPacket ，解码完成后将 AVFrame 放入视频 FrameQueue 。音频的解码实现和视频类似，这里仅介绍视频的解码过程。</p>
+<p><strong>5.1</strong> <strong>创建AVFrame</strong></p>
+<p>AVFrame 描述解码后的原始音频数据或视频数据，通过av_frame_alloc函数分配内存，通过av_frame_free函数释放内存。</p>
+<p><strong>5.2 视频解码</strong></p>
+<p>开启 for(;;) 循环，不断调用get_video_frame函数解码一个视频帧。该函数主要调用了decoder_decode_frame函数解码，decoder_decode_frame函数对音频、视频、字幕都进行了处理，主要依靠 FFmpeg 的avcodec_receive_frame函数获取解码器解码输出的数据。</p>
+<p>拿到解码后的视频帧后，会根据音视频同步的方式和命令行的-framedrop选项，判断是否需要丢弃失去同步的视频帧。</p>
+<ul>
+<li>
+<p>命令行带-framedrop选项，无论哪种音视频同步机制，都会丢弃失去同步的视频帧。</p>
+</li>
+<li>
+<p>命令行带-noframedrop选项，无论哪种音视频同步机制，都不会丢弃失去同步的视频帧。</p>
+</li>
+<li>
+<p>命令行不带-framedrop或-noframedrop选项，若音视频同步机制为同步到视频，则不丢弃失去同步的视频帧，否则会丢弃失去同步的视频帧。</p>
+</li>
+</ul>
+<p><strong>5.3</strong> <strong>放入FrameQueue</strong></p>
+<p>调用queue_picture函数，将 AVFrame 放入 FrameQueue 。该函数内部调用了frame_queue_push函数，采用了环形缓冲区的处理方式，对写指针windex累加。</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>static void frame_queue_push(FrameQueue *f) {     if (++f-&gt;windex == f-&gt;max_size)         f-&gt;windex = 0;     SDL_LockMutex(f-&gt;mutex);     f-&gt;size++;     SDL_CondSignal(f-&gt;cond);     SDL_UnlockMutex(f-&gt;mutex); }</code></p>
+<h1 id="六音视频同步"><strong>六、音视频同步</strong><a hidden class="anchor" aria-hidden="true" href="#六音视频同步">#</a></h1>
+<p>ffplay 默认采用将视频同步到音频的方式，分以下三种情况：</p>
+<ul>
+<li>
+<p>如果视频和音频进度一致，不需要同步；</p>
+</li>
+<li>
+<p>如果视频落后音频，则丢弃当前帧直接播放下一帧，人眼感觉跳帧了；</p>
+</li>
+<li>
+<p>如果视频超前音频，则重复显示上一帧，等待音频，人眼感觉视频画面停止了，但是有声音在播放；</p>
+</li>
+</ul>
+<p>ffplay 视频同步到音频的逻辑在视频播放函数video_refresh中实现。该函数的调用链是：main()-&gt;event_loop()-&gt;refresh_loop_wait_event()-&gt;video_refresh。</p>
+<p><strong>6.1 判断播放完成</strong></p>
+<p>调用frame_queue_nb_remaing函数计算剩余没有显示的帧数是否等于0，如果是，则不需要走剩下的步骤。计算过程比较简单，用 FrameQueue 的 size - rindex_shown ， size 是 FrameQueue 的大小， rindex_shown 表示 rindex 指向的节点是否已经显示，如果已经显示则为1，否则为0。</p>
+<p><strong>6.2 <strong>播放序列匹配</strong></strong></p>
+<p>分别调用frame_queue_peek_last和frame_queue_peek函数从 FrameQueue 中获取上一帧和当前帧，上一帧是上次已经显示的帧，当前帧是当前待显示的帧。</p>
+<p>（1）比较当前帧和当前 PacketQueue 的播放序列serial是否相等：</p>
+<ul>
+<li>
+<p>如果不等，重试视频播放的逻辑；</p>
+</li>
+<li>
+<p>如果相等，则进入（2）流程判断；</p>
+</li>
+</ul>
+<blockquote>
+<p>注：<code>serial</code>是用来区分是不是连续的数据，如果发生了 seek ，会开始一个新的播放序列，</p>
+</blockquote>
+<p>（2）比较上一帧和当前帧的播放序列serial是否相等：</p>
+<ul>
+<li>
+<p>如果不相等，则将frame_timer更新为当前时间；</p>
+</li>
+<li>
+<p>如果相等，不处理并进入下一流程</p>
+</li>
+</ul>
+<p><strong>6.3 判断是否重复上一帧</strong></p>
+<p>（1）将上一帧lastvp和当前帧vp传入vp_duration函数，通过vp-&gt;pts - lastvp-&gt;pts计算上一帧的播放时长。</p>
+<blockquote>
+<p>注：<code>pts</code>全称是 Presentation Time Stamp ，显示时间戳，表示解码后得到的帧的显示时间。</p>
+</blockquote>
+<p>（2）在compute_target_delay函数中，调用get_clock函数获取视频时钟，调用get_master_clock函数获取同步时钟，计算两个时钟的差值，根据差值计算需要 delay 的时间。</p>
+<p>（3）如果当前帧播放时刻（is-&gt;frame_timer + delay）大于当前时刻（time），表示当前帧的播放时间还没有到，相当于当前视频超前音频了，则需要将上一帧再播放一遍。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>last_duration = vp_duration(is, lastvp, vp); delay = compute_target_delay(last_duration, is); time= av_gettime_relative()/1000000.0; if (time &lt; is-&gt;frame_timer + delay) {     *remaining_time = FFMIN(is-&gt;frame_timer + delay - time, *remaining_time);     goto display; }</code></p>
+<p><strong>6.4 判断是否丢弃未播放的帧</strong></p>
+<p>如果当前队列中的帧数大于1，则需要考虑丢帧，只有一帧的时候不考虑丢帧。</p>
+<p>（1）调用frame_queue_peek_next函数获取下一帧（下一个待显示的帧），根据当前帧和下一帧计算当前帧的播放时长，计算过程和6.3相同。</p>
+<p>（2）满足以下条件时，开始丢帧：</p>
+<ul>
+<li>
+<p>当前播放模式不是步进模式；</p>
+</li>
+<li>
+<p>丢帧策略生效：framedrop&gt;0，或者当前音视频同步策略不是音频到视频。</p>
+</li>
+<li>
+<p>当前帧vp还没有来得及播放，但是下一帧的播放时刻（is-&gt;frame_timer + duration）已经小于当前系统时刻（time）了。</p>
+</li>
+</ul>
+<p>（3）丢帧时，将is-&gt;frame_drops_late++，并调用frame_queue_next函数将上一帧删除，更新 FrameQueue 的读指针 rindex 和 size 。</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if (frame_queue_nb_remaining(&amp;is-&gt;pictq) &gt; 1) {    Frame *nextvp = frame_queue_peek_next(&amp;is-&gt;pictq);    duration = vp_duration(is, vp, nextvp);    if(!is-&gt;step &amp;&amp; (framedrop&gt;0 || (framedrop &amp;&amp; get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER)) &amp;&amp; time &gt; is-&gt;frame_timer + duration){        is-&gt;frame_drops_late++;        frame_queue_next(&amp;is-&gt;pictq);        goto retry;    }}</code></p>
+<h1 id="七渲染"><strong>七、渲染</strong><a hidden class="anchor" aria-hidden="true" href="#七渲染">#</a></h1>
+<p>ffplay 最终的图像渲染是由 SDL 完成的，在 video_display 中调用了 SDL_RenderPresent(render) 函数，其中 render 参数是最开始在 main 函数中创建的。在渲染之前，需要将解码得到的视频帧数据转换为 SDL 支持的图像格式。转换过程在 upload_texture 函数中实现，细节不在此处分析。</p>
+<p>音频类似，如果解码得到的音频不能被 SDL 支持，需要对音频进行重采样，将音频帧格式转换为 SDL 支持的格式。</p>
+<h1 id="八小结"><strong>八、小结</strong><a hidden class="anchor" aria-hidden="true" href="#八小结">#</a></h1>
+<p>本文从整体播放流程出发，介绍了 ffplay 播放器播放媒体文件的主要流程，不深陷于代码细节。同时，对 FFmpeg 的一些常用函数有了一些了解，对我们自己手写一个简单的播放器有很大的帮助。</p>
+<p>-&mdash;&mdash;&mdash;  END  &mdash;&mdash;&mdash;-</p>
+<p><strong>推荐阅读【技术加油站】系列</strong>：</p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzg5MjU0NTI5OQ%3D%3D%26mid%3D2247524031%26idx%3D1%26sn%3D2ff36cc5d33744c43c62e741cc6bba98%26chksm%3Dc03eaec3f74927d5bec5caf7aaa544132202733a4d6c4d88d495b90f36d3cd10f5ba0c86e31c%26scene%3D21%23wechat_redirect" title="http://mp.weixin.qq.com/s?__biz=Mzg5MjU0NTI5OQ==&amp;mid=2247524031&amp;idx=1&amp;sn=2ff36cc5d33744c43c62e741cc6bba98&amp;chksm=c03eaec3f74927d5bec5caf7aaa544132202733a4d6c4d88d495b90f36d3cd10f5ba0c86e31c&amp;scene=21#wechat_redirect">百度工程师眼中的云原生可观测性追踪技术</a></p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzg5MjU0NTI5OQ%3D%3D%26mid%3D2247521904%26idx%3D1%26sn%3Dfcd93d9238ee639ca29e760b5643c6b5%26chksm%3Dc03ea60cf7492f1adf16ebe83b06c64b0d833e73310ff83483c2cd5f4ae1866533ea71311c14%26scene%3D21%23wechat_redirect" title="http://mp.weixin.qq.com/s?__biz=Mzg5MjU0NTI5OQ==&amp;mid=2247521904&amp;idx=1&amp;sn=fcd93d9238ee639ca29e760b5643c6b5&amp;chksm=c03ea60cf7492f1adf16ebe83b06c64b0d833e73310ff83483c2cd5f4ae1866533ea71311c14&amp;scene=21#wechat_redirect">使用百度开发者工具 4.0 搭建专属的小程序 IDE</a></p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzg5MjU0NTI5OQ%3D%3D%26mid%3D2247521125%26idx%3D1%26sn%3D0bb5fbbd10935d021b33603772485706%26chksm%3Dc03ea319f7492a0f9fc78f73f0dba33607a23adf9893017bb27681e411ecac8550218093658d%26scene%3D21%23wechat_redirect" title="http://mp.weixin.qq.com/s?__biz=Mzg5MjU0NTI5OQ==&amp;mid=2247521125&amp;idx=1&amp;sn=0bb5fbbd10935d021b33603772485706&amp;chksm=c03ea319f7492a0f9fc78f73f0dba33607a23adf9893017bb27681e411ecac8550218093658d&amp;scene=21#wechat_redirect">百度工程师教你玩转设计模式（观察者模式）</a></p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzg5MjU0NTI5OQ%3D%3D%26mid%3D2247516487%26idx%3D1%26sn%3Dbda8cb37e2e7a03960862a6811b38533%26chksm%3Dc03eb13bf749382df10ff4b105db41a5c56f73d70fa3aaf101f2394e8d393c5d9eec188f4b67%26scene%3D21%23wechat_redirect" title="http://mp.weixin.qq.com/s?__biz=Mzg5MjU0NTI5OQ==&amp;mid=2247516487&amp;idx=1&amp;sn=bda8cb37e2e7a03960862a6811b38533&amp;chksm=c03eb13bf749382df10ff4b105db41a5c56f73d70fa3aaf101f2394e8d393c5d9eec188f4b67&amp;scene=21#wechat_redirect">揭秘百度智能测试在测试自动执行领域实践</a></p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzg5MjU0NTI5OQ%3D%3D%26mid%3D2247515103%26idx%3D1%26sn%3D13e26ea1837b17959fd2ce2dd70df4ab%26chksm%3Dc03e8ba3f74902b58894600a96bae451e063b9c6694651ac0f9339be00cb182a1cf4d0b3c561%26scene%3D21%23wechat_redirect" title="http://mp.weixin.qq.com/s?__biz=Mzg5MjU0NTI5OQ==&amp;mid=2247515103&amp;idx=1&amp;sn=13e26ea1837b17959fd2ce2dd70df4ab&amp;chksm=c03e8ba3f74902b58894600a96bae451e063b9c6694651ac0f9339be00cb182a1cf4d0b3c561&amp;scene=21#wechat_redirect">H.265编码原理入门</a></p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzg5MjU0NTI5OQ%3D%3D%26mid%3D2247514864%26idx%3D1%26sn%3D23d48664f70a8b42fce5a5fa9412c606%26chksm%3Dc03e8a8cf749039a28d464e347777383250364567cfb04382da488a382a75436d7234922cdcf%26scene%3D21%23wechat_redirect" title="http://mp.weixin.qq.com/s?__biz=Mzg5MjU0NTI5OQ==&amp;mid=2247514864&amp;idx=1&amp;sn=23d48664f70a8b42fce5a5fa9412c606&amp;chksm=c03e8a8cf749039a28d464e347777383250364567cfb04382da488a382a75436d7234922cdcf&amp;scene=21#wechat_redirect">小程序启动性能优化实践</a></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0d31d17b96d74ce59d64e0c53a45ef93~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="图片"  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E9%9F%B3%E8%A7%86%E9%A2%91%E5%BC%80%E5%8F%91/">音视频开发</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E4%B8%93%E6%A0%8F%E6%9F%90%E9%AA%8C%E5%88%9D%E4%BB%A3%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>【验证码逆向专栏】某验“初代”滑块验证码逆向分析</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%8E%98%E9%87%91%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%AE%89%E5%85%A8%E5%8D%87%E7%BA%A7%E7%BB%A7%E7%BB%AD%E7%A0%B4%E8%A7%A3/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>掘金滑块验证码安全升级，继续破解</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ffplay视频播放原理分析 on x"
+            href="https://x.com/intent/tweet/?text=ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f&amp;hashtags=%e9%9f%b3%e8%a7%86%e9%a2%91%e5%bc%80%e5%8f%91">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ffplay视频播放原理分析 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f&amp;title=ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90&amp;summary=ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ffplay视频播放原理分析 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f&title=ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ffplay视频播放原理分析 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ffplay视频播放原理分析 on whatsapp"
+            href="https://api.whatsapp.com/send?text=ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ffplay视频播放原理分析 on telegram"
+            href="https://telegram.me/share/url?text=ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ffplay视频播放原理分析 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=ffplay%e8%a7%86%e9%a2%91%e6%92%ad%e6%94%be%e5%8e%9f%e7%90%86%e5%88%86%e6%9e%90&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffplay%25E8%25A7%2586%25E9%25A2%2591%25E6%2592%25AD%25E6%2594%25BE%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

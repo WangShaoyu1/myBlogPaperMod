@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>深入剖析Java逻辑运算符，解决日常开发难题 | PaperMod</title>
+<meta name="keywords" content="Java, JavaEE, 后端">
+<meta name="description" content="今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。">
+<meta name="author" content="喵手">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90java%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6%E8%A7%A3%E5%86%B3%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E9%9A%BE%E9%A2%98/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90java%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6%E8%A7%A3%E5%86%B3%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E9%9A%BE%E9%A2%98/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="深入剖析Java逻辑运算符，解决日常开发难题" />
+<meta property="og:description" content="今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90java%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6%E8%A7%A3%E5%86%B3%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E9%9A%BE%E9%A2%98/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-11-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-11-08T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="深入剖析Java逻辑运算符，解决日常开发难题"/>
+<meta name="twitter:description" content="今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "深入剖析Java逻辑运算符，解决日常开发难题",
+      "item": "http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90java%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6%E8%A7%A3%E5%86%B3%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E9%9A%BE%E9%A2%98/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "深入剖析Java逻辑运算符，解决日常开发难题",
+  "name": "深入剖析Java逻辑运算符，解决日常开发难题",
+  "description": "今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。",
+  "keywords": [
+    "Java", "JavaEE", "后端"
+  ],
+  "articleBody": " 哈喽，各位小伙伴们，你们好呀，我是喵手。\n今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。\n我是一名后端开发爱好者，工作日常接触到最多的就是Java语言啦，所以我都尽量抽业余时间把自己所学到所会的，通过文章的形式进行输出，希望以这种方式帮助到更多的初学者或者想入门的小伙伴们，同时也能对自己的技术进行沉淀，加以复盘，查缺补漏。\n小伙伴们在批阅的过程中，如果觉得文章不错，欢迎点赞、收藏、关注哦。三连即是对作者我写作道路上最好的鼓励与支持！\n深入剖析Java逻辑运算符，解决日常开发难题 前言 在日常的Java开发中，逻辑运算符是经常使用的一种运算符。但是，由于逻辑运算符的复杂性和使用频率高，经常会出现一些难以预料的问题，给开发带来不小的麻烦。本文将对Java逻辑运算符进行深入剖析，帮助开发者解决日常开发中遇到的难题。\n摘要 本文从源码解析、应用场景案例、优缺点分析等方面对Java逻辑运算符进行了详细剖析。同时，本文提供了测试用例，确保读者可以通过代码实践更好地掌握逻辑运算符的使用。\n简介 Java逻辑运算符主要包括与(\u0026\u0026)、或(||)、非(!)三种，它们通常用于两个或多个布尔表达式之间的运算。在Java中，逻辑运算符是从左到右进行运算的，运算结果为true或false。\n逻辑运算符在Java中的优先级如下：\n! \u0026\u0026 || 源代码解析 与(\u0026\u0026)运算符 与(\u0026\u0026)运算符用于判断两个条件是否同时成立，只有当两个条件都为true时，才会返回true，否则返回false。下面是与运算符的源代码实现：\njava\n代码解读\n复制代码\npublic static boolean and(boolean a, boolean b) { return a \u0026\u0026 b; }\n代码解析：\n这是一个静态方法，返回值类型为boolean。方法名为and，该方法有两个boolean类型的参数a和b。\n该方法实现的是逻辑与操作。如果a和b都为true，则返回true；否则返回false。\n该方法可以用来判断两个条件是否同时满足，例如：\njava\n代码解读\n复制代码\nif (and(a \u003e 0, b \u003c 10)) { // 如果a大于0且b小于10，执行该代码块 }\n或(||)运算符 或(||)运算符用于判断两个条件是否有至少一个成立，只有当两个条件都为false时，才会返回false，否则返回true。下面是或运算符的源代码实现：\njava\n代码解读\n复制代码\npublic static boolean or(boolean a, boolean b) { return a || b; }\n代码解析：\n这段代码包含一个静态方法 or，它接受两个布尔类型的参数 a 和 b，返回它们的逻辑或（||）的结果。\n逻辑或的真值表如下：\nA\nB\nA OR B\ntrue\ntrue\ntrue\ntrue\nfalse\ntrue\nfalse\ntrue\ntrue\nfalse\nfalse\nfalse\n因此，当两个参数中有至少一个为 true 时，方法返回 true，否则返回 false。\n非(!)运算符 非(!)运算符用于对一个布尔值取反，如果原来的布尔值为true，则取反后为false；如果原来的布尔值为false，则取反后为true。下面是非运算符的源代码实现：\njava\n代码解读\n复制代码\npublic static boolean not(boolean a) { return !a; }\n代码解析：\n这是一个Java方法，名为“not”，它有一个Boolean类型的参数\"a\"作为输入，返回一个Boolean类型的输出。\n该方法的实现是将输入的Boolean值取反，即如果输入的值为true，则返回false，反之亦然。\n例如，如果调用方法not(true)，则返回false，如果调用方法not(false)，则返回true。\n这个方法可以被用来改变Boolean值的状态，或者判断一个Boolean值是否为false。\n应用场景案例 与(\u0026\u0026)运算符的应用 与(\u0026\u0026)运算符常用于多个条件的判断，只有在所有条件都满足的情况下才会执行某段代码。例如：\njava\n代码解读\n复制代码\nif (a == 1 \u0026\u0026 b == 2 \u0026\u0026 c == 3) { // 执行代码 }\n这段代码中，只有当a等于1且b等于2且c等于3时才会执行if语句中的代码。\n代码解析：\n这是一个条件语句，当 a 等于 1，且 b 等于 2，且 c 等于 3 时，执行花括号中的代码。如果其中任何一个条件不满足，则跳过执行代码。\n或(||)运算符的应用 或(||)运算符常用于多个条件的判断，只要有一个条件满足就会执行某段代码。例如：\njava\n代码解读\n复制代码\nif (a == 1 || b == 2 || c == 3) { // 执行代码 }\n这段代码中，只要a等于1或b等于2或c等于3中的一个条件成立，就会执行if语句中的代码。\n代码解析：\n根据如上代码进行分析：如果变量a的值等于1，或者变量b的值等于2，或者变量c的值等于3，则执行代码块中的语句。也就是说，只要满足任意一个条件，就会执行代码块中的语句。如果多个条件同时满足，仍然只会执行一次代码块中的语句。\n非(!)运算符的应用 非(!)运算符常用于布尔值的取反，例如：\njava\n代码解读\n复制代码\nif (!isTrue) { // 执行代码 }\n这段代码中，如果isTrue的值为false，则会执行if语句中的代码。\n代码解析：\n如果变量isTrue的值为false，则执行括号内的代码。如果变量isTrue的值为true，则不执行括号内的代码。\n优缺点分析 优点 逻辑运算符可以将多个条件进行组合，使得对于复杂的逻辑判断变得更加简单明了。\n缺点 如果逻辑运算符的组合逻辑过于复杂，容易出现优先级和逻辑错误。这时候需要开发者仔细分析每一个判断条件，确保代码的正确性。\n类代码方法介绍 java\n代码解读\n复制代码\npackage com.example.javase.se.operators; /** * @Author ms * @Date 2023-11-07 20:14 */ public class LogicOperatorDemo { //实现与(\u0026\u0026)运算符的功能 public static boolean and(boolean a, boolean b) { return a \u0026\u0026 b; } //实现或(||)运算符的功能 public static boolean or(boolean a, boolean b) { return a || b; } //实现非(!)运算符的功能 public static boolean not(boolean a) { return !a; } }\n本类代码主要提供了三个静态方法，用于实现与(\u0026\u0026)、或(||)、非(!)运算符的功能。\n代码解析：\n该代码定义了一个名为LogicOperatorDemo的类，其中包含了三个静态方法and、or和not，分别实现了与(\u0026\u0026)、或(||)、非(!)逻辑运算符的功能。\n这些方法接受布尔型参数a和b，其中not方法只接受一个布尔型参数a。方法体中，使用了相应的逻辑运算符来对这些布尔型参数进行逻辑运算，并返回计算结果。\n这些方法都是静态方法，因此可以通过类名直接调用，而不需要创建该类的实例。\n可以将这些方法用于需要逻辑与、逻辑或和逻辑非运算的程序中。\n测试用例 测试代码演示 java\n代码解读\n复制代码\npackage com.example.javase.se.operators; /** * @Author ms * @Date 2023-11-07 20:14 */ public class LogicOperatorDemo { //实现与(\u0026\u0026)运算符的功能 public static boolean and(boolean a, boolean b) { return a \u0026\u0026 b; } //实现或(||)运算符的功能 public static boolean or(boolean a, boolean b) { return a || b; } //实现非(!)运算符的功能 public static boolean not(boolean a) { return !a; } public static void main(String[] args) { boolean a = true; boolean b = false; System.out.println(LogicOperatorDemo.and(a, b)); System.out.println(LogicOperatorDemo.or(a, b)); System.out.println(LogicOperatorDemo.not(a)); } }\n这段测试用例代码测试了LogicOperators类中的与(\u0026\u0026)、或(||)、非(!)三个静态方法的功能，并输出运算结果。\n测试结果 根据如上测试用例，本地测试结果如下，仅供参考，你们也可以自行修改测试用例或者添加更多的测试数据或测试方法，进行熟练学习以此加深理解。\n测试代码分析 根据如上测试用例，在此我给大家进行深入详细的解读一下测试代码，以便于更多的同学能够理解并加深印象。\n如上测试用例是一个Java程序，主要演示了逻辑运算符的使用。在代码中定义了三个方法：and、or和not，分别实现了与运算、或运算和非运算的功能。其中，and和or方法的参数分别是两个布尔类型的数值，not方法的参数是一个布尔类型的数值。这三个方法的返回值都是布尔类型的数值。\n在main方法中，定义了两个布尔类型的变量a和b，分别初始化为true和false。然后分别调用and、or和not方法，并将结果打印出来。\n总的来说，这个程序简单明了，演示了逻辑运算符的使用。\n全文小结 在本文中，我们深入剖析了Java逻辑运算符，包括与(\u0026\u0026)、或(||)、非(!)三种运算符的源代码实现、应用场景案例、优缺点分析等方面。通过本文的学习，希望读者可以更好地掌握逻辑运算符的使用。\n总结 Java逻辑运算符是Java开发中常用的运算符，有着广泛的应用。在使用逻辑运算符时，需要注意优先级和逻辑错误的问题，确保代码的正确性。同时，根据不同的应用场景选择不同的运算符是非常重要的，可以使得代码更加简洁明了。\n… …\n文末 好啦，以上就是我这期的全部内容，如果有任何疑问，欢迎下方留言哦，咱们下期见。\n… …\n学习不分先后，知识不分多少；事无巨细，当以虚心求教；三人行，必有我师焉！！！\nwished for you successed ！！！\n⭐️若喜欢我，就请关注我叭。\n⭐️若对您有用，就请点赞叭。\n⭐️若有疑问，就请评论留言告诉我叭。\n",
+  "wordCount" : "366",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-11-08T00:00:00Z",
+  "dateModified": "2023-11-08T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "喵手"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90java%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6%E8%A7%A3%E5%86%B3%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E9%9A%BE%E9%A2%98/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      深入剖析Java逻辑运算符，解决日常开发难题
+    </h1>
+    <div class="post-description">
+      今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。
+    </div>
+    <div class="post-meta"><span title='2023-11-08 00:00:00 +0000 UTC'>十一月 8, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;喵手&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98" aria-label="深入剖析Java逻辑运算符，解决日常开发难题">深入剖析Java逻辑运算符，解决日常开发难题</a><ul>
+                        
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e6%91%98%e8%a6%81" aria-label="摘要">摘要</a></li>
+                <li>
+                    <a href="#%e7%ae%80%e4%bb%8b" aria-label="简介">简介</a></li>
+                <li>
+                    <a href="#%e6%ba%90%e4%bb%a3%e7%a0%81%e8%a7%a3%e6%9e%90" aria-label="源代码解析">源代码解析</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%8e%e8%bf%90%e7%ae%97%e7%ac%a6" aria-label="与(&amp;&amp;)运算符">与(&amp;&amp;)运算符</a></li>
+                <li>
+                    <a href="#%e6%88%96%e8%bf%90%e7%ae%97%e7%ac%a6" aria-label="或(||)运算符">或(||)运算符</a></li>
+                <li>
+                    <a href="#%e9%9d%9e%e8%bf%90%e7%ae%97%e7%ac%a6" aria-label="非(!)运算符">非(!)运算符</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af%e6%a1%88%e4%be%8b" aria-label="应用场景案例">应用场景案例</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%8e%e8%bf%90%e7%ae%97%e7%ac%a6%e7%9a%84%e5%ba%94%e7%94%a8" aria-label="与(&amp;&amp;)运算符的应用">与(&amp;&amp;)运算符的应用</a></li>
+                <li>
+                    <a href="#%e6%88%96%e8%bf%90%e7%ae%97%e7%ac%a6%e7%9a%84%e5%ba%94%e7%94%a8" aria-label="或(||)运算符的应用">或(||)运算符的应用</a></li>
+                <li>
+                    <a href="#%e9%9d%9e%e8%bf%90%e7%ae%97%e7%ac%a6%e7%9a%84%e5%ba%94%e7%94%a8" aria-label="非(!)运算符的应用">非(!)运算符的应用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bc%98%e7%bc%ba%e7%82%b9%e5%88%86%e6%9e%90" aria-label="优缺点分析">优缺点分析</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bc%98%e7%82%b9" aria-label="优点">优点</a></li>
+                <li>
+                    <a href="#%e7%bc%ba%e7%82%b9" aria-label="缺点">缺点</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%b1%bb%e4%bb%a3%e7%a0%81%e6%96%b9%e6%b3%95%e4%bb%8b%e7%bb%8d" aria-label="类代码方法介绍">类代码方法介绍</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e7%94%a8%e4%be%8b" aria-label="测试用例">测试用例</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e4%bb%a3%e7%a0%81%e6%bc%94%e7%a4%ba" aria-label="测试代码演示">测试代码演示</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e7%bb%93%e6%9e%9c" aria-label="测试结果">测试结果</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e4%bb%a3%e7%a0%81%e5%88%86%e6%9e%90" aria-label="测试代码分析">测试代码分析</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%a8%e6%96%87%e5%b0%8f%e7%bb%93" aria-label="全文小结">全文小结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li>
+                <li>
+                    <a href="#%e6%96%87%e6%9c%ab" aria-label="文末">文末</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>哈喽，各位小伙伴们，你们好呀，我是喵手。</p>
+</blockquote>
+<p>  今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。</p>
+<p>  我是一名后端开发爱好者，工作日常接触到最多的就是Java语言啦，所以我都尽量抽业余时间把自己所学到所会的，通过文章的形式进行输出，希望以这种方式帮助到更多的初学者或者想入门的小伙伴们，同时也能对自己的技术进行沉淀，加以复盘，查缺补漏。</p>
+<blockquote>
+<p><strong>小伙伴们在批阅的过程中，如果觉得文章不错，欢迎点赞、收藏、关注哦。三连即是对作者我写作道路上最好的鼓励与支持！</strong></p>
+</blockquote>
+<h1 id="深入剖析java逻辑运算符解决日常开发难题">深入剖析Java逻辑运算符，解决日常开发难题<a hidden class="anchor" aria-hidden="true" href="#深入剖析java逻辑运算符解决日常开发难题">#</a></h1>
+<h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<p>  在日常的Java开发中，逻辑运算符是经常使用的一种运算符。但是，由于逻辑运算符的复杂性和使用频率高，经常会出现一些难以预料的问题，给开发带来不小的麻烦。本文将对Java逻辑运算符进行深入剖析，帮助开发者解决日常开发中遇到的难题。</p>
+<h2 id="摘要">摘要<a hidden class="anchor" aria-hidden="true" href="#摘要">#</a></h2>
+<p>  本文从源码解析、应用场景案例、优缺点分析等方面对Java逻辑运算符进行了详细剖析。同时，本文提供了测试用例，确保读者可以通过代码实践更好地掌握逻辑运算符的使用。</p>
+<h2 id="简介">简介<a hidden class="anchor" aria-hidden="true" href="#简介">#</a></h2>
+<p>  Java逻辑运算符主要包括与(&amp;&amp;)、或(||)、非(!)三种，它们通常用于两个或多个布尔表达式之间的运算。在Java中，逻辑运算符是从左到右进行运算的，运算结果为true或false。</p>
+<p>逻辑运算符在Java中的优先级如下：</p>
+<ol>
+<li>!</li>
+<li>&amp;&amp;</li>
+<li>||</li>
+</ol>
+<h2 id="源代码解析">源代码解析<a hidden class="anchor" aria-hidden="true" href="#源代码解析">#</a></h2>
+<h3 id="与运算符">与(&amp;&amp;)运算符<a hidden class="anchor" aria-hidden="true" href="#与运算符">#</a></h3>
+<p>  与(&amp;&amp;)运算符用于判断两个条件是否同时成立，只有当两个条件都为true时，才会返回true，否则返回false。下面是与运算符的源代码实现：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public static boolean and(boolean a, boolean b) {     return a &amp;&amp; b; }</code></p>
+<p><strong>代码解析：</strong></p>
+<p>  这是一个静态方法，返回值类型为boolean。方法名为and，该方法有两个boolean类型的参数a和b。</p>
+<p>  该方法实现的是逻辑与操作。如果a和b都为true，则返回true；否则返回false。</p>
+<p>  该方法可以用来判断两个条件是否同时满足，例如：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if (and(a &gt; 0, b &lt; 10)) {     // 如果a大于0且b小于10，执行该代码块 }</code></p>
+<h3 id="或运算符">或(||)运算符<a hidden class="anchor" aria-hidden="true" href="#或运算符">#</a></h3>
+<p>  或(||)运算符用于判断两个条件是否有至少一个成立，只有当两个条件都为false时，才会返回false，否则返回true。下面是或运算符的源代码实现：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public static boolean or(boolean a, boolean b) {     return a || b; }</code></p>
+<p><strong>代码解析：</strong></p>
+<p>  这段代码包含一个静态方法 <code>or</code>，它接受两个布尔类型的参数 <code>a</code> 和 <code>b</code>，返回它们的逻辑或（<code>||</code>）的结果。</p>
+<p>逻辑或的真值表如下：</p>
+<p>A</p>
+<p>B</p>
+<p>A OR B</p>
+<p>true</p>
+<p>true</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>
+<p>true</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>false</p>
+<p>因此，当两个参数中有至少一个为 <code>true</code> 时，方法返回 <code>true</code>，否则返回 <code>false</code>。</p>
+<h3 id="非运算符">非(!)运算符<a hidden class="anchor" aria-hidden="true" href="#非运算符">#</a></h3>
+<p>  非(!)运算符用于对一个布尔值取反，如果原来的布尔值为true，则取反后为false；如果原来的布尔值为false，则取反后为true。下面是非运算符的源代码实现：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public static boolean not(boolean a) {     return !a; }</code></p>
+<p><strong>代码解析：</strong></p>
+<p>  这是一个Java方法，名为“not”，它有一个Boolean类型的参数&quot;a&quot;作为输入，返回一个Boolean类型的输出。</p>
+<p>  该方法的实现是将输入的Boolean值取反，即如果输入的值为true，则返回false，反之亦然。</p>
+<p>  例如，如果调用方法not(true)，则返回false，如果调用方法not(false)，则返回true。</p>
+<p>  这个方法可以被用来改变Boolean值的状态，或者判断一个Boolean值是否为false。</p>
+<h2 id="应用场景案例">应用场景案例<a hidden class="anchor" aria-hidden="true" href="#应用场景案例">#</a></h2>
+<h3 id="与运算符的应用">与(&amp;&amp;)运算符的应用<a hidden class="anchor" aria-hidden="true" href="#与运算符的应用">#</a></h3>
+<p>  与(&amp;&amp;)运算符常用于多个条件的判断，只有在所有条件都满足的情况下才会执行某段代码。例如：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if (a == 1 &amp;&amp; b == 2 &amp;&amp; c == 3) {     // 执行代码 }</code></p>
+<p>  这段代码中，只有当a等于1且b等于2且c等于3时才会执行if语句中的代码。</p>
+<p><strong>代码解析：</strong></p>
+<p>  这是一个条件语句，当 <code>a</code> 等于 1，且 <code>b</code> 等于 2，且 <code>c</code> 等于 3 时，执行花括号中的代码。如果其中任何一个条件不满足，则跳过执行代码。</p>
+<h3 id="或运算符的应用">或(||)运算符的应用<a hidden class="anchor" aria-hidden="true" href="#或运算符的应用">#</a></h3>
+<p>  或(||)运算符常用于多个条件的判断，只要有一个条件满足就会执行某段代码。例如：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if (a == 1 || b == 2 || c == 3) {     // 执行代码 }</code></p>
+<p>  这段代码中，只要a等于1或b等于2或c等于3中的一个条件成立，就会执行if语句中的代码。</p>
+<p><strong>代码解析：</strong></p>
+<p>  根据如上代码进行分析：如果变量a的值等于1，或者变量b的值等于2，或者变量c的值等于3，则执行代码块中的语句。也就是说，只要满足任意一个条件，就会执行代码块中的语句。如果多个条件同时满足，仍然只会执行一次代码块中的语句。</p>
+<h3 id="非运算符的应用">非(!)运算符的应用<a hidden class="anchor" aria-hidden="true" href="#非运算符的应用">#</a></h3>
+<p>  非(!)运算符常用于布尔值的取反，例如：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if (!isTrue) {     // 执行代码 }</code></p>
+<p>  这段代码中，如果isTrue的值为false，则会执行if语句中的代码。</p>
+<p><strong>代码解析：</strong></p>
+<p>  如果变量isTrue的值为false，则执行括号内的代码。如果变量isTrue的值为true，则不执行括号内的代码。</p>
+<h2 id="优缺点分析">优缺点分析<a hidden class="anchor" aria-hidden="true" href="#优缺点分析">#</a></h2>
+<h3 id="优点">优点<a hidden class="anchor" aria-hidden="true" href="#优点">#</a></h3>
+<p>  逻辑运算符可以将多个条件进行组合，使得对于复杂的逻辑判断变得更加简单明了。</p>
+<h3 id="缺点">缺点<a hidden class="anchor" aria-hidden="true" href="#缺点">#</a></h3>
+<p>  如果逻辑运算符的组合逻辑过于复杂，容易出现优先级和逻辑错误。这时候需要开发者仔细分析每一个判断条件，确保代码的正确性。</p>
+<h2 id="类代码方法介绍">类代码方法介绍<a hidden class="anchor" aria-hidden="true" href="#类代码方法介绍">#</a></h2>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>package com.example.javase.se.operators; /**  * @Author ms  * @Date 2023-11-07 20:14  */ public class LogicOperatorDemo {     //实现与(&amp;&amp;)运算符的功能     public static boolean and(boolean a, boolean b) {         return a &amp;&amp; b;     }     //实现或(||)运算符的功能     public static boolean or(boolean a, boolean b) {         return a || b;     }     //实现非(!)运算符的功能     public static boolean not(boolean a) {         return !a;     } }</code></p>
+<p>  本类代码主要提供了三个静态方法，用于实现与(&amp;&amp;)、或(||)、非(!)运算符的功能。</p>
+<p><strong>代码解析：</strong></p>
+<p>  该代码定义了一个名为LogicOperatorDemo的类，其中包含了三个静态方法and、or和not，分别实现了与(&amp;&amp;)、或(||)、非(!)逻辑运算符的功能。</p>
+<p>  这些方法接受布尔型参数a和b，其中not方法只接受一个布尔型参数a。方法体中，使用了相应的逻辑运算符来对这些布尔型参数进行逻辑运算，并返回计算结果。</p>
+<p>  这些方法都是静态方法，因此可以通过类名直接调用，而不需要创建该类的实例。</p>
+<p>  可以将这些方法用于需要逻辑与、逻辑或和逻辑非运算的程序中。</p>
+<h2 id="测试用例">测试用例<a hidden class="anchor" aria-hidden="true" href="#测试用例">#</a></h2>
+<h3 id="测试代码演示">测试代码演示<a hidden class="anchor" aria-hidden="true" href="#测试代码演示">#</a></h3>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>package com.example.javase.se.operators; /**  * @Author ms  * @Date 2023-11-07 20:14  */ public class LogicOperatorDemo {     //实现与(&amp;&amp;)运算符的功能     public static boolean and(boolean a, boolean b) {         return a &amp;&amp; b;     }     //实现或(||)运算符的功能     public static boolean or(boolean a, boolean b) {         return a || b;     }     //实现非(!)运算符的功能     public static boolean not(boolean a) {         return !a;     }     public static void main(String[] args) {         boolean a = true;         boolean b = false;         System.out.println(LogicOperatorDemo.and(a, b));         System.out.println(LogicOperatorDemo.or(a, b));         System.out.println(LogicOperatorDemo.not(a));     } }</code></p>
+<p>  这段测试用例代码测试了LogicOperators类中的与(&amp;&amp;)、或(||)、非(!)三个静态方法的功能，并输出运算结果。</p>
+<h3 id="测试结果">测试结果<a hidden class="anchor" aria-hidden="true" href="#测试结果">#</a></h3>
+<p>  根据如上测试用例，本地测试结果如下，仅供参考，你们也可以自行修改测试用例或者添加更多的测试数据或测试方法，进行熟练学习以此加深理解。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/01ccd96bd21d4930b5f6b8b44b19def2~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1115&amp;h=792&amp;s=59357&amp;e=png&amp;b=2c2c2c" alt="在这里插入图片描述"  />
+</p>
+<h3 id="测试代码分析">测试代码分析<a hidden class="anchor" aria-hidden="true" href="#测试代码分析">#</a></h3>
+<p>  根据如上测试用例，在此我给大家进行深入详细的解读一下测试代码，以便于更多的同学能够理解并加深印象。</p>
+<p>  如上测试用例是一个Java程序，主要演示了逻辑运算符的使用。在代码中定义了三个方法：and、or和not，分别实现了与运算、或运算和非运算的功能。其中，and和or方法的参数分别是两个布尔类型的数值，not方法的参数是一个布尔类型的数值。这三个方法的返回值都是布尔类型的数值。</p>
+<p>  在main方法中，定义了两个布尔类型的变量a和b，分别初始化为true和false。然后分别调用and、or和not方法，并将结果打印出来。</p>
+<p>  总的来说，这个程序简单明了，演示了逻辑运算符的使用。</p>
+<h2 id="全文小结">全文小结<a hidden class="anchor" aria-hidden="true" href="#全文小结">#</a></h2>
+<p>  在本文中，我们深入剖析了Java逻辑运算符，包括与(&amp;&amp;)、或(||)、非(!)三种运算符的源代码实现、应用场景案例、优缺点分析等方面。通过本文的学习，希望读者可以更好地掌握逻辑运算符的使用。</p>
+<h1 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h1>
+<p>  Java逻辑运算符是Java开发中常用的运算符，有着广泛的应用。在使用逻辑运算符时，需要注意优先级和逻辑错误的问题，确保代码的正确性。同时，根据不同的应用场景选择不同的运算符是非常重要的，可以使得代码更加简洁明了。</p>
+<p>&hellip; &hellip;</p>
+<h1 id="文末">文末<a hidden class="anchor" aria-hidden="true" href="#文末">#</a></h1>
+<p>好啦，以上就是我这期的全部内容，如果有任何疑问，欢迎下方留言哦，咱们下期见。</p>
+<p>&hellip; &hellip;</p>
+<p>学习不分先后，知识不分多少；事无巨细，当以虚心求教；三人行，必有我师焉！！！</p>
+<p>wished for you successed ！！！</p>
+<hr>
+<p>⭐️若喜欢我，就请关注我叭。</p>
+<p>⭐️若对您有用，就请点赞叭。</p>
+<p>⭐️若有疑问，就请评论留言告诉我叭。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+      <li><a href="http://localhost:1313/tags/javaee/">JavaEE</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%A0%B9%E4%B8%8A%E7%90%86%E8%A7%A3mybatis%E7%9A%84%E4%B8%80%E7%BA%A7%E4%BA%8C%E7%BA%A7%E7%BC%93%E5%AD%98%E5%AE%8C/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>从根上理解Mybatis的一级、二级缓存（完）</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Ereact&#43;electron%E5%BC%80%E5%8F%91%E5%8F%8A%E7%BB%93%E5%90%88%E7%88%AC%E8%99%AB%E7%9A%84%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>基于react&#43;electron开发及结合爬虫的应用实践🎅</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入剖析Java逻辑运算符，解决日常开发难题 on x"
+            href="https://x.com/intent/tweet/?text=%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f&amp;hashtags=Java%2cJavaEE%2c%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入剖析Java逻辑运算符，解决日常开发难题 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f&amp;title=%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98&amp;summary=%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入剖析Java逻辑运算符，解决日常开发难题 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f&title=%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入剖析Java逻辑运算符，解决日常开发难题 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入剖析Java逻辑运算符，解决日常开发难题 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入剖析Java逻辑运算符，解决日常开发难题 on telegram"
+            href="https://telegram.me/share/url?text=%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 深入剖析Java逻辑运算符，解决日常开发难题 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%b7%b1%e5%85%a5%e5%89%96%e6%9e%90Java%e9%80%bb%e8%be%91%e8%bf%90%e7%ae%97%e7%ac%a6%ef%bc%8c%e8%a7%a3%e5%86%b3%e6%97%a5%e5%b8%b8%e5%bc%80%e5%8f%91%e9%9a%be%e9%a2%98&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25B7%25B1%25E5%2585%25A5%25E5%2589%2596%25E6%259E%2590java%25E9%2580%25BB%25E8%25BE%2591%25E8%25BF%2590%25E7%25AE%2597%25E7%25AC%25A6%25E8%25A7%25A3%25E5%2586%25B3%25E6%2597%25A5%25E5%25B8%25B8%25E5%25BC%2580%25E5%258F%2591%25E9%259A%25BE%25E9%25A2%2598%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

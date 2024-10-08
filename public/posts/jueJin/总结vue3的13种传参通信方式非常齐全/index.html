@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>总结Vue3的13种传参通信方式，非常齐全 | PaperMod</title>
+<meta name="keywords" content="前端, JavaScript, Vue.js">
+<meta name="description" content="特意总结一下vue3竟然总结出来13种传参通信方式那么多，13种我分别都列了出来，并且带上最通俗易懂的例子。">
+<meta name="author" content="天天鸭">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93vue3%E7%9A%8413%E7%A7%8D%E4%BC%A0%E5%8F%82%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E9%9D%9E%E5%B8%B8%E9%BD%90%E5%85%A8/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93vue3%E7%9A%8413%E7%A7%8D%E4%BC%A0%E5%8F%82%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E9%9D%9E%E5%B8%B8%E9%BD%90%E5%85%A8/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="总结Vue3的13种传参通信方式，非常齐全" />
+<meta property="og:description" content="特意总结一下vue3竟然总结出来13种传参通信方式那么多，13种我分别都列了出来，并且带上最通俗易懂的例子。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93vue3%E7%9A%8413%E7%A7%8D%E4%BC%A0%E5%8F%82%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E9%9D%9E%E5%B8%B8%E9%BD%90%E5%85%A8/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-04-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-04-13T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="总结Vue3的13种传参通信方式，非常齐全"/>
+<meta name="twitter:description" content="特意总结一下vue3竟然总结出来13种传参通信方式那么多，13种我分别都列了出来，并且带上最通俗易懂的例子。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "总结Vue3的13种传参通信方式，非常齐全",
+      "item": "http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93vue3%E7%9A%8413%E7%A7%8D%E4%BC%A0%E5%8F%82%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E9%9D%9E%E5%B8%B8%E9%BD%90%E5%85%A8/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "总结Vue3的13种传参通信方式，非常齐全",
+  "name": "总结Vue3的13种传参通信方式，非常齐全",
+  "description": "特意总结一下vue3竟然总结出来13种传参通信方式那么多，13种我分别都列了出来，并且带上最通俗易懂的例子。",
+  "keywords": [
+    "前端", "JavaScript", "Vue.js"
+  ],
+  "articleBody": "前言： vue3出来很久了，也非常成熟了，平时项目只管用也没多想，直至今天想写一编关于vue3传参，然后我总结一下竟然总结出来13种方式那么多，13种我分别列了出来，由于vue3有两种setup写法，下面我将用最简洁的代码例子针对主流的\n子组件代码： const props = defineProps({})接收后直接在标签使用\nxml\n代码解读\n复制代码\n{{ props.name }} 二、子传父 思路：子组件用 const emits = defineEmits([‘触发的方法’]) 注册某个在父组件的事件，然后通过emits(‘触发的事件’, 参数) 触发父组件事件并且带上参数。\n子组件代码： 注册 addEvent 事件后， 用 emits(‘addEvent’, name.value) 触发父组件的 addEvent事件\nxml\n代码解读\n复制代码\n父组件代码： 触发addEvent事件后，在对应的方法里面直接能拿到传过来的参数\nxml\n代码解读\n复制代码\n三、兄弟组件传参（mitt） 以前vue2是用EventBus事件总线跨组件实现兄弟组件通信的。但vue3中没有，所以vue3目前主流使用mitt.js插件来进行替代实现兄弟通信。\n1、npm包引入 css\n代码解读\n复制代码\nnpm install --save mitt\n2、在main.js文件进行全局挂载, $bus是自定义属性名 arduino\n代码解读\n复制代码\nimport mitt from \"mitt\" const app = createApp(App) app.config.globalProperties.$bus = new mitt()\n3、传参出去的兄弟组件代码 xml\n代码解读\n复制代码\n4、接收参数的兄弟组件代码 xml\n代码解读\n复制代码\n四、$attrs 注意： 以前在在vue2里面中除了$attrs，还有$listeners； 但vue3直接把$listeners合并到 $attrs 里面了。\n简要说明：$attrs主要作用是接收没在props里面定义，但父组件又传了过来的属性。看下面代码例子就好懂多了\n父组件代码： 传两个属性过去，一个在子组件props中，一个不在\nxml\n代码解读\n复制代码\n子组件代码： $attrs接收到props以外的内容，所以用useAttrs()打印出来没有name只有data\nxml\n代码解读\n复制代码\n{{ props.name }} // '天天鸭' 五、refs传参 简单说明：父组件通过在子组件上定义 ref=‘ref名称’，然后const ref名称 = ref(null)，就能通过ref名称操控子组件的属性和方法（子组件用defineExpose对外暴露才能被操控），具体看下面例子。\n父组件代码：\nxml\n代码解读\n复制代码\n点击 子组件代码： 用defineExpose对外暴露才能被操控\nxml\n代码解读\n复制代码\n六、v-model 简单讲解： v-model其实语法糖，如下两行代码作用是一样, 上面是下面的简写。\nini\n代码解读\n复制代码\n父组件代码： 直接使用v-model传参\nxml\n代码解读\n复制代码\n子组件代码： 通过 defineEmits获取到然后用emit(“update:修改的属性”, 修改的内容)进行修改父组件的内容，，注意：update:是固定写法。\nxml\n代码解读\n复制代码\n点击 v-model扩展：defineModel()： defineModel()宏的简单说明：父子组件的数据双向绑定，不用emit和props的繁重代码\n版本要求：必须要3.4+\n示例场景：父组件引入一个子组件弹窗，点击就父传子（props）弹出子组件弹窗，子组件里面有个按钮点击就子传父（emit）关闭\n父组件代码： 用v-model在子组件身上绑定showDevice属性，该属性用于通知子组件是否打开弹窗。\nxml\n代码解读\n复制代码\n子组件代码： 如下的handleClickCancel方法，通过defineModel宏声明一个model，点击按钮能直接通知父组件修改属性。\nxml\n代码解读\n复制代码\n点击取消子组件弹窗 上面例子通过defineModel宏，直接不需要props和emit就实现了父子通信效果，非常简洁好用。\n七、provide/inject 简单讲解：provide和inject叫依赖注入，是vue官方提供的API，它们可以实现多层组件传递数据，无论层级有多深，都可以通过这API实现。\n假设这是太老爷组件： provide(‘名称’, 传递的参数)向后代组件提供数据, 只要是后代都能接收\nxml\n代码解读\n复制代码\n最深层的孙组件： 无论层级多深，用 inject(接收什么参数) 进行接收即可\nxml\n代码解读\n复制代码\n{{ name }} 八、路由传参 简单讲解： 路由跳转事上参数也是传参的一种，而且传参方式还不止一种呢，下面细说。\n1、query传参\njavascript\n代码解读\n复制代码\n// 传递方 const query = { id: 9527, name: '天天鸭' } router.push({ path: '/user', query }) // 接收方 import { useRoute} from 'vue-router' const route = useRoute() console.log(route.query)\n2、params传参\n注意：4.1.4 (2022-08-22) 删除了param这种方式\nphp\n代码解读\n复制代码\n// 发送方 router.push({ name: 'test', params: { name: '天天鸭' } }) // 接收方 import { useRoute} from 'vue-router' const route = useRoute() console.log(route.params) // { name: '天天鸭' }\n3、state传参\narduino\n代码解读\n复制代码\n// 发送方 const state= { name: '天天鸭' } router.push({ path: '/user', state }) // 接收方直接使用 console.log(history?.state?.name)\n九、vuex传参 写过对应的文章，可以直接细看：对比vuex和pinia用法\n十、pinia 写过对应的文章，可以直接细看：对比vuex和pinia用法\n十一、浏览器缓存 localStorage 和sessionStorage： 这算是用的不多，但也是必用的一种通信方式了，下面看看区别：\nsessionStorage（临时存储）：为每一个数据源维持一个存储区域，在浏览器打开期间存在，包括页面重新加载\nlocalStorage（长期存储）：与 sessionStorage 一样，但是浏览器关闭后，数据依然会一直存在\n下面直接上使用的语法。\njavascript\n代码解读\n复制代码\n// 存储数据 localStorage.setItem('key', 'value'); sessionStorage.setItem('key', 'value'); // 获取数据 const valueFromLocalStorage = localStorage.getItem('key'); const valueFromSessionStorage = sessionStorage.getItem('key'); // 删除数据 localStorage.removeItem('key'); sessionStorage.removeItem('key'); // 清空所有数据 localStorage.clear(); sessionStorage.clear();\n十二、通过window对象全局挂载全局对象或者属性 简单说明：直接用语法 window.name = ‘天天鸭’ 定义然后全局通用即可。存放在内存刷新会清空。\n注意：在 Vue 3 应用程序中，虽然可以直接将属性挂载到 window 对象上实现全局访问，但这并不是推荐的做法，因为直接修改全局对象可能会导致命名冲突、难以进行模块化管理以及不利于应用的封装与维护。\n用法：直接定义，可以是属性也可以是对象\nini\n代码解读\n复制代码\nwindow.duname = '天天鸭' window.duObj = { test: '看看对象' }\n引用：\njavascript\n代码解读\n复制代码\nconsole.log( window.duname); // 天天鸭 console.log( window.duObj); // {test: '看看对象'}\n十三、app.config.globalProperties 简单讲解：app.config.globalProperties 是Vue官方的一个 api，这是对 Vue 2 中 Vue.prototype 使用方式的一种替代，Vue.prototype 法在 Vue3 已经不存在了。与任何全局的东西一样，应该谨慎使用。\n用法示例：在main.js文件挂载一个全局的 msg 属性\narduino\n代码解读\n复制代码\nimport { createApp } from 'vue' const app = createApp(App) app.config.globalProperties.msg = 'hello'\n在其它页面使用getCurrentInstance()获取\njavascript\n代码解读\n复制代码\nimport { getCurrentInstance } from \"vue\"; const { proxy } = getCurrentInstance() // 使用proxy，类似于vue2的this console.log(proxy.msg); // hello\n总结： 空闲想总结一下，纯人工肝了一天终于写好了，我尽量用最简洁易懂的方式写了，如果有什么写错了或者不够明细都欢迎大家指出。这也当笔记用了，以后忘记用法回来看一眼。创作不易，如果有幸能让你看到这里，希望给个点赞哦。\n",
+  "wordCount" : "827",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-04-13T00:00:00Z",
+  "dateModified": "2024-04-13T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "天天鸭"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93vue3%E7%9A%8413%E7%A7%8D%E4%BC%A0%E5%8F%82%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E9%9D%9E%E5%B8%B8%E9%BD%90%E5%85%A8/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      总结Vue3的13种传参通信方式，非常齐全
+    </h1>
+    <div class="post-description">
+      特意总结一下vue3竟然总结出来13种传参通信方式那么多，13种我分别都列了出来，并且带上最通俗易懂的例子。
+    </div>
+    <div class="post-meta"><span title='2024-04-13 00:00:00 +0000 UTC'>四月 13, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;天天鸭&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言：">前言：</a></li>
+                <li>
+                    <a href="#%e4%b8%80%e7%88%b6%e4%bc%a0%e5%ad%90" aria-label="一、父传子">一、父传子</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%ad%90%e4%bc%a0%e7%88%b6" aria-label="二、子传父">二、子传父</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e5%85%84%e5%bc%9f%e7%bb%84%e4%bb%b6%e4%bc%a0%e5%8f%82mitt" aria-label="三、兄弟组件传参（mitt）">三、兄弟组件传参（mitt）</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1npm%e5%8c%85%e5%bc%95%e5%85%a5" aria-label="1、npm包引入">1、npm包引入</a></li>
+                <li>
+                    <a href="#2%e5%9c%a8mainjs%e6%96%87%e4%bb%b6%e8%bf%9b%e8%a1%8c%e5%85%a8%e5%b1%80%e6%8c%82%e8%bd%bd-bus%e6%98%af%e8%87%aa%e5%ae%9a%e4%b9%89%e5%b1%9e%e6%80%a7%e5%90%8d" aria-label="2、在main.js文件进行全局挂载, $bus是自定义属性名">2、在main.js文件进行全局挂载, $bus是自定义属性名</a></li>
+                <li>
+                    <a href="#3%e4%bc%a0%e5%8f%82%e5%87%ba%e5%8e%bb%e7%9a%84%e5%85%84%e5%bc%9f%e7%bb%84%e4%bb%b6%e4%bb%a3%e7%a0%81" aria-label="3、传参出去的兄弟组件代码">3、传参出去的兄弟组件代码</a></li>
+                <li>
+                    <a href="#4%e6%8e%a5%e6%94%b6%e5%8f%82%e6%95%b0%e7%9a%84%e5%85%84%e5%bc%9f%e7%bb%84%e4%bb%b6%e4%bb%a3%e7%a0%81" aria-label="4、接收参数的兄弟组件代码">4、接收参数的兄弟组件代码</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9battrs" aria-label="四、$attrs">四、$attrs</a></li>
+                <li>
+                    <a href="#%e4%ba%94refs%e4%bc%a0%e5%8f%82" aria-label="五、refs传参">五、refs传参</a></li>
+                <li>
+                    <a href="#%e5%85%adv-model" aria-label="六、v-model">六、v-model</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#v-model%e6%89%a9%e5%b1%95definemodel" aria-label="v-model扩展：defineModel()：">v-model扩展：defineModel()：</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%83provideinject" aria-label="七、provide/inject">七、provide/inject</a></li>
+                <li>
+                    <a href="#%e5%85%ab%e8%b7%af%e7%94%b1%e4%bc%a0%e5%8f%82" aria-label="八、路由传参">八、路由传参</a></li>
+                <li>
+                    <a href="#%e4%b9%9dvuex%e4%bc%a0%e5%8f%82" aria-label="九、vuex传参">九、vuex传参</a></li>
+                <li>
+                    <a href="#%e5%8d%81pinia" aria-label="十、pinia">十、pinia</a></li>
+                <li>
+                    <a href="#%e5%8d%81%e4%b8%80%e6%b5%8f%e8%a7%88%e5%99%a8%e7%bc%93%e5%ad%98" aria-label="十一、浏览器缓存">十一、浏览器缓存</a></li>
+                <li>
+                    <a href="#%e5%8d%81%e4%ba%8c%e9%80%9a%e8%bf%87window%e5%af%b9%e8%b1%a1%e5%85%a8%e5%b1%80%e6%8c%82%e8%bd%bd%e5%85%a8%e5%b1%80%e5%af%b9%e8%b1%a1%e6%88%96%e8%80%85%e5%b1%9e%e6%80%a7" aria-label="十二、通过window对象全局挂载全局对象或者属性">十二、通过window对象全局挂载全局对象或者属性</a></li>
+                <li>
+                    <a href="#%e5%8d%81%e4%b8%89appconfigglobalproperties" aria-label="十三、app.config.globalProperties">十三、app.config.globalProperties</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结：">总结：</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="前言">前言：<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h3>
+<p>vue3出来很久了，也非常成熟了，平时项目只管用也没多想，直至今天想写一编关于vue3传参，然后我总结一下竟然总结出来13种方式那么多，13种我分别列了出来，由于vue3有两种setup写法，下面我将用<strong>最简洁</strong>的代码例子针对主流的<code>&lt;script setup&gt;</code>写法对每一种用法进行细说。如果有那里不对或者有补充欢迎大佬指导。</p>
+<p><strong>顺手带上</strong>：<a href="https://juejin.cn/post/7404007685644730395" title="https://juejin.cn/post/7404007685644730395">Vue2的16种传参方式</a></p>
+<blockquote>
+<ol>
+<li><code>props</code>父传子</li>
+<li><code>defineEmits</code>子传父</li>
+<li><code>mitt</code>兄弟组件传参</li>
+<li><code>$attrs</code> （爷孙）</li>
+<li><code>refs</code></li>
+<li><code>v-model</code>(双向)</li>
+<li><code>provide/inject</code>(多层)</li>
+<li>路由传参</li>
+<li><code>vuex</code>传参 (全局)</li>
+<li><code>pinia</code>传参 (全局)</li>
+<li>浏览器缓存 (全局)</li>
+<li><code>window</code> (全局)</li>
+<li><code>app.config.globalProperties</code> (全局)</li>
+</ol>
+</blockquote>
+<h3 id="一父传子">一、父传子<a hidden class="anchor" aria-hidden="true" href="#一父传子">#</a></h3>
+<blockquote>
+<p><strong>思路</strong>：父组件通过冒号：绑定变量，然后子组件用const props = defineProps({})进行接收参数。</p>
+</blockquote>
+<p><strong>父组件代码：</strong> 在第二行那里 :name=&ldquo;name&rdquo; 把那么传给子组件</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;child :name=&quot;name&quot;&gt;&lt;/child&gt; &lt;/template&gt; &lt;script setup&gt; import { ref } from 'vue' import child from './child.vue' const name = ref('天天鸭') &lt;/script&gt;</code></p>
+<p><strong>子组件代码：</strong> const props = defineProps({})接收后直接在标签使用</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;{{ props.name }}&lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { defineProps } from 'vue' const props = defineProps({   name: {     type: String,     default: '',   }, }) &lt;/script&gt;</code></p>
+<h3 id="二子传父">二、子传父<a hidden class="anchor" aria-hidden="true" href="#二子传父">#</a></h3>
+<blockquote>
+<p>思路：子组件用 const emits = defineEmits([&lsquo;触发的方法&rsquo;]) 注册某个在父组件的事件，然后通过emits(&lsquo;触发的事件&rsquo;, 参数) 触发父组件事件并且带上参数。</p>
+</blockquote>
+<p><strong>子组件代码：</strong> 注册 addEvent 事件后， 用 emits(&lsquo;addEvent&rsquo;, name.value) 触发父组件的 addEvent事件</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div &gt;&lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { ref, defineEmits } from 'vue' const name = ref('天天鸭') const emits = defineEmits(['addEvent']) const handleSubmit = () =&gt; {   emits('addEvent', name.value) } &lt;/script&gt;</code></p>
+<p><strong>父组件代码：</strong> 触发addEvent事件后，在对应的方法里面直接能拿到传过来的参数</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;child @addEvent=&quot;handle&quot;&gt;&lt;/child&gt; &lt;/template&gt; &lt;script setup&gt; import { ref } from 'vue' import child from './child.vue' const handle = value =&gt; {   console.log(value); // '天天鸭' } &lt;/script&gt;</code></p>
+<h3 id="三兄弟组件传参mitt">三、兄弟组件传参（mitt）<a hidden class="anchor" aria-hidden="true" href="#三兄弟组件传参mitt">#</a></h3>
+<blockquote>
+<p>以前vue2是用EventBus事件总线跨组件实现兄弟组件通信的。但vue3中没有，所以vue3目前主流使用mitt.js插件来进行替代实现兄弟通信。</p>
+</blockquote>
+<h5 id="1npm包引入">1、npm包引入<a hidden class="anchor" aria-hidden="true" href="#1npm包引入">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install --save mitt</code></p>
+<h5 id="2在mainjs文件进行全局挂载-bus是自定义属性名">2、在main.js文件进行全局挂载, $bus是自定义属性名<a hidden class="anchor" aria-hidden="true" href="#2在mainjs文件进行全局挂载-bus是自定义属性名">#</a></h5>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import mitt from &quot;mitt&quot; const app = createApp(App) app.config.globalProperties.$bus = new mitt()</code></p>
+<h5 id="3传参出去的兄弟组件代码">3、传参出去的兄弟组件代码<a hidden class="anchor" aria-hidden="true" href="#3传参出去的兄弟组件代码">#</a></h5>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script setup&gt;     import mitt from 'mitt'     const emitter = mitt()     emitter.emit('自定义的事件名称','参数') &lt;/script&gt;</code></p>
+<h5 id="4接收参数的兄弟组件代码">4、接收参数的兄弟组件代码<a hidden class="anchor" aria-hidden="true" href="#4接收参数的兄弟组件代码">#</a></h5>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script setup&gt;      import mitt from 'mitt'      const emitter = mitt()      emitter.on('自定义的事件名称', '参数' ) &lt;/script&gt;</code></p>
+<h3 id="四attrs">四、<code>$attrs</code><a hidden class="anchor" aria-hidden="true" href="#四attrs">#</a></h3>
+<blockquote>
+<p>注意： 以前在在vue2里面中除了<code>$attrs</code>，还有<code>$listeners</code>； 但<code>vue3</code>直接把<code>$listeners</code>合并到 <code>$attrs</code> 里面了。</p>
+</blockquote>
+<blockquote>
+<p>简要说明：<code>$attrs</code>主要作用是接收没在<code>props</code>里面定义，但父组件又传了过来的属性。看下面代码例子就好懂多了</p>
+</blockquote>
+<p><strong>父组件代码：</strong> 传两个属性过去，一个在子组件props中，一个不在</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;child :name=&quot;天天鸭&quot; data=&quot;PC9527&quot;/&gt; &lt;/template&gt; &lt;script setup&gt; import child from './child.vue' &lt;/script&gt;</code></p>
+<p><strong>子组件代码：</strong> <code>$attrs</code>接收到props以外的内容，所以用<code>useAttrs()</code>打印出来没有name只有data</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;     {{ props.name }}   // '天天鸭'   &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { defineProps, useAttrs } from 'vue' const props = defineProps({   name: {     type: String   } }) const myattrs = useAttrs() console.log(myattrs)   //  { &quot;data&quot;: &quot;PC9527&quot; } &lt;/script&gt;</code></p>
+<h3 id="五refs传参">五、refs传参<a hidden class="anchor" aria-hidden="true" href="#五refs传参">#</a></h3>
+<blockquote>
+<p>简单说明：父组件通过在子组件上定义 ref=&lsquo;ref名称&rsquo;，然后const ref名称 = ref(null)，就能通过ref名称操控子组件的属性和方法（子组件用defineExpose对外暴露才能被操控），具体看下面例子。</p>
+</blockquote>
+<p><strong>父组件代码：</strong></p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;child ref=&quot;myref&quot;&gt;&lt;/child&gt;   &lt;button @click=&quot;myClick&quot;&gt;点击&lt;/button&gt; &lt;/template&gt; &lt;script setup&gt;   import child from &quot;./child.vue&quot;   import { ref } from &quot;vue&quot;   const myref = ref(null)   const myClick = () =&gt; {       console.log(myref.value.name) // 直接获取到子组件的属性       myref.value.chileMethod()      // 直接调用子组件的方法   } &lt;/script&gt;</code></p>
+<p><strong>子组件代码：</strong> 用<code>defineExpose</code>对外暴露才能被操控</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;&lt;/div&gt; &lt;/template&gt; &lt;script setup&gt;     import { defineExpose } from &quot;vue&quot;     const chileMethod = () =&gt;{       console.log(&quot;我是方法&quot;)     }     const name = ref('天天鸭')     defineExpose({    // 对外暴露         name,         chileMethod     }) &lt;/script&gt;</code></p>
+<h3 id="六v-model">六、v-model<a hidden class="anchor" aria-hidden="true" href="#六v-model">#</a></h3>
+<blockquote>
+<p>简单讲解： v-model其实语法糖，如下两行代码作用是一样, 上面是下面的简写。</p>
+</blockquote>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;chile v-model:title=&quot;title&quot; /&gt; &lt;chile :title=&quot;title&quot; @update:title=&quot;title = $event&quot; /&gt;</code></p>
+<p><strong>父组件代码：</strong> 直接使用v-model传参</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;child v-model:name=&quot;name&quot; v-model:num=&quot;num&quot;&gt;&lt;/child&gt; &lt;/template&gt; &lt;script setup&gt;     import child from &quot;./child.vue&quot;     import { ref, reactive } from &quot;vue&quot;     const name = ref(&quot;天天鸭&quot;)     const num = ref(&quot;2222&quot;) &lt;/script&gt;</code></p>
+<p><strong>子组件代码：</strong> 通过 <code>defineEmits</code>获取到然后用emit(&ldquo;update:修改的属性&rdquo;, 修改的内容)进行修改父组件的内容，，注意：<code>update:</code>是固定写法。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;button @click=&quot;myClick&quot;&gt;点击&lt;/button&gt; &lt;/template&gt; &lt;script setup&gt;   import { defineEmits } from &quot;vue&quot;   const emit = defineEmits([&quot;name&quot;,&quot;num&quot;])      // 子组件触发使用   const myClick = () =&gt; {       emit(&quot;update:name&quot;, &quot;改个新名字&quot;)       emit(&quot;update:num&quot;, &quot;换个新号码&quot;)   } &lt;/script&gt;</code></p>
+<h5 id="v-model扩展definemodel">v-model扩展：<code>defineModel()</code>：<a hidden class="anchor" aria-hidden="true" href="#v-model扩展definemodel">#</a></h5>
+<blockquote>
+<p><code>defineModel()</code>宏的简单说明：父子组件的数据双向绑定，不用emit和props的繁重代码</p>
+<p>版本要求：必须要<code>3.4+</code></p>
+</blockquote>
+<blockquote>
+<p>示例场景：父组件引入一个子组件弹窗，点击就<code>父传子（props）</code>弹出子组件弹窗，子组件里面有个按钮点击就<code>子传父（emit）</code>关闭</p>
+</blockquote>
+<p><strong>父组件代码：</strong> 用v-model在子组件身上绑定showDevice属性，该属性用于通知子组件是否打开弹窗。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;child v-if=&quot;showDevice&quot; v-model=&quot;showDevice&quot;&gt;&lt;/child&gt; &lt;/template&gt; &lt;script setup&gt;     import child from &quot;./child.vue&quot;     import { ref } from &quot;vue&quot;          const showDevice = ref(false) // 控制子组件的显示和隐藏 &lt;/script&gt;</code></p>
+<p><strong>子组件代码：</strong> 如下的<code>handleClickCancel</code>方法，通过<code>defineModel</code>宏声明一个model，点击按钮能直接通知父组件修改属性。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;button @click=&quot;handleClickCancel&quot;&gt;点击取消子组件弹窗&lt;/button&gt; &lt;/template&gt; &lt;script setup&gt;   import { defineModel } from 'vue'   const model = defineModel()                       // 写法一   // const model = defineModel({ type: Boolean })   // 写法二 也可以用声明类型的方法   const handleClickCancel = () =&gt; {     model.value = false   } &lt;/script&gt;</code></p>
+<p>上面例子通过<code>defineModel</code>宏，直接不需要props和emit就实现了父子通信效果，非常简洁好用。</p>
+<h3 id="七provideinject">七、provide/inject<a hidden class="anchor" aria-hidden="true" href="#七provideinject">#</a></h3>
+<blockquote>
+<p>简单讲解：provide和inject叫依赖注入，是vue官方提供的API，它们可以实现多层组件传递数据，无论层级有多深，都可以通过这API实现。</p>
+</blockquote>
+<p><strong>假设这是太老爷组件：</strong> provide(&lsquo;名称&rsquo;, 传递的参数)向后代组件提供数据, 只要是后代都能接收</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;&lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { ref, provide } from 'vue' const name = ref('天天鸭') // 向后代组件提供数据, 只要是后代都能接收 provide('name', name.value) &lt;/script&gt;</code></p>
+<p><strong>最深层的孙组件：</strong> 无论层级多深，用 inject(接收什么参数) 进行接收即可</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;{{ name }}&lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { inject } from 'vue' // 接收顶层组件的通信 const name = inject('name') &lt;/script&gt;</code></p>
+<h3 id="八路由传参">八、路由传参<a hidden class="anchor" aria-hidden="true" href="#八路由传参">#</a></h3>
+<blockquote>
+<p>简单讲解： 路由跳转事上参数也是传参的一种，而且传参方式还不止一种呢，下面细说。</p>
+</blockquote>
+<p><strong>1、query传参</strong></p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 传递方 const query = { id: 9527, name: '天天鸭' } router.push({ path: '/user', query }) // 接收方 import { useRoute} from 'vue-router' const route = useRoute() console.log(route.query)</code></p>
+<p><strong>2、params传参</strong></p>
+<blockquote>
+<p>注意：4.1.4 (2022-08-22) 删除了param这种方式</p>
+</blockquote>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 发送方 router.push({    name: 'test',     params: {        name: '天天鸭'    } })   // 接收方 import { useRoute} from 'vue-router' const route = useRoute() console.log(route.params) // { name: '天天鸭' }</code></p>
+<p><strong>3、state传参</strong></p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 发送方 const state= { name: '天天鸭' } router.push({ path: '/user', state })   // 接收方直接使用 console.log(history?.state?.name)</code></p>
+<h3 id="九vuex传参">九、vuex传参<a hidden class="anchor" aria-hidden="true" href="#九vuex传参">#</a></h3>
+<p>写过对应的文章，可以直接细看：<a href="https://juejin.cn/post/7355050145485914149" title="https://juejin.cn/post/7355050145485914149">对比vuex和pinia用法</a></p>
+<h3 id="十pinia">十、pinia<a hidden class="anchor" aria-hidden="true" href="#十pinia">#</a></h3>
+<p>写过对应的文章，可以直接细看：<a href="https://juejin.cn/post/7355050145485914149" title="https://juejin.cn/post/7355050145485914149">对比vuex和pinia用法</a></p>
+<h3 id="十一浏览器缓存">十一、浏览器缓存<a hidden class="anchor" aria-hidden="true" href="#十一浏览器缓存">#</a></h3>
+<blockquote>
+<p>localStorage 和sessionStorage： 这算是用的不多，但也是必用的一种通信方式了，下面看看区别：</p>
+<p><code>sessionStorage</code>（临时存储）：为每一个数据源维持一个存储区域，在浏览器打开期间存在，包括页面重新加载</p>
+<p><code>localStorage</code>（长期存储）：与 sessionStorage 一样，但是浏览器关闭后，数据依然会一直存在</p>
+</blockquote>
+<p>下面直接上使用的语法。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 存储数据 localStorage.setItem('key', 'value'); sessionStorage.setItem('key', 'value'); // 获取数据 const valueFromLocalStorage = localStorage.getItem('key'); const valueFromSessionStorage = sessionStorage.getItem('key'); // 删除数据 localStorage.removeItem('key'); sessionStorage.removeItem('key'); // 清空所有数据 localStorage.clear(); sessionStorage.clear();</code></p>
+<h3 id="十二通过window对象全局挂载全局对象或者属性">十二、通过window对象全局挂载全局对象或者属性<a hidden class="anchor" aria-hidden="true" href="#十二通过window对象全局挂载全局对象或者属性">#</a></h3>
+<blockquote>
+<p>简单说明：直接用语法 window.name = &lsquo;天天鸭&rsquo; 定义然后<code>全局</code>通用即可。<code>存放在内存刷新会清空</code>。</p>
+</blockquote>
+<p><strong>注意</strong>：在 Vue 3 应用程序中，虽然可以直接将属性挂载到 window 对象上实现全局访问，但这并不是推荐的做法，因为<code>直接修改全局对象可能会导致命名冲突、难以进行模块化管理以及不利于应用的封装与维护</code>。</p>
+<p>用法：直接定义，可以是属性也可以是对象</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>window.duname = '天天鸭' window.duObj = { test: '看看对象' }</code></p>
+<p>引用：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>console.log( window.duname);   // 天天鸭  console.log( window.duObj);   // {test: '看看对象'}</code></p>
+<h3 id="十三appconfigglobalproperties">十三、app.config.globalProperties<a hidden class="anchor" aria-hidden="true" href="#十三appconfigglobalproperties">#</a></h3>
+<blockquote>
+<p>简单讲解：app.config.globalProperties 是Vue官方的一个 api，这是对 Vue 2 中 Vue.prototype 使用方式的一种替代，Vue.prototype 法在 Vue3 已经不存在了。与任何全局的东西一样，应该谨慎使用。</p>
+</blockquote>
+<p>用法示例：在main.js文件挂载一个全局的 msg 属性</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { createApp } from 'vue' const app = createApp(App) app.config.globalProperties.msg = 'hello'</code></p>
+<p>在其它页面使用<code>getCurrentInstance()</code>获取</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { getCurrentInstance } from &quot;vue&quot;; const { proxy } = getCurrentInstance() // 使用proxy，类似于vue2的this console.log(proxy.msg);    // hello</code></p>
+<h3 id="总结">总结：<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>空闲想总结一下，纯人工肝了一天终于写好了，我尽量用最简洁易懂的方式写了，如果有什么写错了或者不够明细都欢迎大家指出。这也当笔记用了，以后忘记用法回来看一眼。创作不易，如果有幸能让你看到这里，希望给个点赞哦。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86lambda%E5%92%8Cstream/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>重新认识Lambda和Stream</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E4%B8%89%E5%B9%B4%E5%89%8D%E7%AB%AF%E8%BF%9Enpm%E5%8C%85%E9%83%BD%E4%B8%8D%E4%BC%9A%E5%BC%80%E5%8F%91%E5%B8%A6%E4%BD%A0%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E5%8F%91%E5%B8%83%E4%B8%80%E4%B8%AAnpm%E5%8C%855%E5%88%86%E9%92%9F%E5%B0%B1%E8%83%BD%E5%AD%A6%E4%BC%9A/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>三年前端连npm包都不会开发？带你从零到一发布一个npm包，5分钟就能学会</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 总结Vue3的13种传参通信方式，非常齐全 on x"
+            href="https://x.com/intent/tweet/?text=%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cJavaScript%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 总结Vue3的13种传参通信方式，非常齐全 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f&amp;title=%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8&amp;summary=%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 总结Vue3的13种传参通信方式，非常齐全 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f&title=%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 总结Vue3的13种传参通信方式，非常齐全 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 总结Vue3的13种传参通信方式，非常齐全 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 总结Vue3的13种传参通信方式，非常齐全 on telegram"
+            href="https://telegram.me/share/url?text=%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 总结Vue3的13种传参通信方式，非常齐全 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%80%bb%e7%bb%93Vue3%e7%9a%8413%e7%a7%8d%e4%bc%a0%e5%8f%82%e9%80%9a%e4%bf%a1%e6%96%b9%e5%bc%8f%ef%bc%8c%e9%9d%9e%e5%b8%b8%e9%bd%90%e5%85%a8&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25BB%25E7%25BB%2593vue3%25E7%259A%258413%25E7%25A7%258D%25E4%25BC%25A0%25E5%258F%2582%25E9%2580%259A%25E4%25BF%25A1%25E6%2596%25B9%25E5%25BC%258F%25E9%259D%259E%25E5%25B8%25B8%25E9%25BD%2590%25E5%2585%25A8%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

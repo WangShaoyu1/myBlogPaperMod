@@ -35,6 +35,16 @@ export async function writeToFile(content, relativeFilePath, append = false) {
     }
 }
 
+// 公共函数：读取文件内容
+export async function readFile(filePath) {
+    try {
+        const content = await fs.readFile(filePath, 'utf-8');
+        return content
+    } catch (error) {
+        console.error('Error reading file:', error);
+    }
+}
+
 // 组合markdown内容
 export async function mergeContentMarkdown({author, title, date, readTime, description, tags, weight, articleContent}) {
     const preface =
@@ -75,6 +85,11 @@ export function replaceDoubleWithSingleQuotes(input) {
     }
     // 如果输入既不是字符串也不是数组，返回原输入
     return input;
+}
+
+// 去掉特殊字符
+export function removeSpecialChars(str) {
+    return str.replace(/[\/\\:*"<>|\.]/g, '');
 }
 
 // 匹配并移除所有 <tagName> 标签及其内容

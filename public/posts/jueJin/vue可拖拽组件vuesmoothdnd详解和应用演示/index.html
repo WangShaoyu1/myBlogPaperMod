@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Vue可拖拽组件VueSmoothDnD详解和应用演示 | PaperMod</title>
+<meta name="keywords" content="Vue.js, 前端">
+<meta name="description" content="VueSmoothDnD是一个快速、轻量级的拖放、可排序的Vue.js库，封装了smooth-dnd库。VueSmoothDnD主要包含了两个组件。">
+<meta name="author" content="我不吃饼干">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/vue%E5%8F%AF%E6%8B%96%E6%8B%BD%E7%BB%84%E4%BB%B6vuesmoothdnd%E8%AF%A6%E8%A7%A3%E5%92%8C%E5%BA%94%E7%94%A8%E6%BC%94%E7%A4%BA/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/vue%E5%8F%AF%E6%8B%96%E6%8B%BD%E7%BB%84%E4%BB%B6vuesmoothdnd%E8%AF%A6%E8%A7%A3%E5%92%8C%E5%BA%94%E7%94%A8%E6%BC%94%E7%A4%BA/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Vue可拖拽组件VueSmoothDnD详解和应用演示" />
+<meta property="og:description" content="VueSmoothDnD是一个快速、轻量级的拖放、可排序的Vue.js库，封装了smooth-dnd库。VueSmoothDnD主要包含了两个组件。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/vue%E5%8F%AF%E6%8B%96%E6%8B%BD%E7%BB%84%E4%BB%B6vuesmoothdnd%E8%AF%A6%E8%A7%A3%E5%92%8C%E5%BA%94%E7%94%A8%E6%BC%94%E7%A4%BA/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-07-26T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Vue可拖拽组件VueSmoothDnD详解和应用演示"/>
+<meta name="twitter:description" content="VueSmoothDnD是一个快速、轻量级的拖放、可排序的Vue.js库，封装了smooth-dnd库。VueSmoothDnD主要包含了两个组件。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Vue可拖拽组件VueSmoothDnD详解和应用演示",
+      "item": "http://localhost:1313/posts/juejin/vue%E5%8F%AF%E6%8B%96%E6%8B%BD%E7%BB%84%E4%BB%B6vuesmoothdnd%E8%AF%A6%E8%A7%A3%E5%92%8C%E5%BA%94%E7%94%A8%E6%BC%94%E7%A4%BA/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Vue可拖拽组件VueSmoothDnD详解和应用演示",
+  "name": "Vue可拖拽组件VueSmoothDnD详解和应用演示",
+  "description": "VueSmoothDnD是一个快速、轻量级的拖放、可排序的Vue.js库，封装了smooth-dnd库。VueSmoothDnD主要包含了两个组件。",
+  "keywords": [
+    "Vue.js", "前端"
+  ],
+  "articleBody": "本文已参与好文召集令活动，点击查看：后端、大前端双赛道投稿，2万元奖池等你挑战！\n简介和 Demo 展示 最近需要有个拖拽列表的需求，发现一个简单好用的 Vue 可拖拽组件。安利一下~\nVue Smooth DnD 是一个快速、轻量级的拖放、可排序的 Vue.js 库，封装了 smooth-dnd 库。\nVue Smooth DnD 主要包含了两个组件，Container 和 Draggable，Container 包含可拖动的元素或组件，它的每一个子元素都应该被 Draggable 包裹。每一个要被设置为可拖动的元素都需要被 Draggable 包裹。\n安装： npm i vue-smooth-dnd\n一个简单的 Demo ，展示组件的基础用法，实现了可以拖拽的列表。\nhtml\n代码解读\n复制代码\n{{item.data}} 效果\nAPI: Container 属性 属性\n类型\n默认值\n描述\n:orientation\nstring\nvertical\n容器的方向，可以为 horizontal 或 vertical\n:behaviour\nstring\nmove\n描述被拖动的元素被移动或复制到目标容器。 可以为 move 或 copy 或 drop-zone 或 contain 。move 可以在容器间互相移动，copy 是可以将元素复制到其他容器，但本容器内元素不可变，drop-zone 可以在容器间移动，但是容器内元素的顺序是固定的。contain 只能在容器内移动。\n:tag\nstring, NodeDescription\ndiv\n容器的元素标签，默认是 div ，可以是字符串如 tag=\"table\" 也可以是包含 value和 props 属性的对象 :tag=\"{value: 'table', props: {class: 'my-table'}}\"\n:group-name\nstring\nundefined\n可拖动元素可以在具有相同组名的容器之间移动。如果未设置组名容器将不接受来自外部的元素。 这种行为可以被 shouldAcceptDrop 函数覆盖。 见下文。\n:lock-axis\nstring\nundefined\n锁定拖动的移动轴。可用值 x, y 或 undefined。\n:drag-handle-selector\nstring\nundefined\n用于指定可以开启拖拽的 CSS 选择器，如果不指定的话则元素内部任意位置都可抓取。\n:non-drag-area-selector\nstring\nundefined\n禁止拖动的 CSS 选择器，优先于 dragHandleSelector.\n:drag-begin-delay\nnumber\n0（触控设备为 200）\n单位毫秒。表示点击元素持续多久后可以开始拖动。在此之前移动光标超过 5px 将取消拖动。\n:animation-duration\nnumber\n250\n单位毫秒。表示放置元素和重新排序的动画持续时间。\n:auto-scroll-enabled\nboolean\ntrue\n如果拖动项目接近边界，第一个可滚动父项将自动滚动。（这个属性没看懂= =）\n:drag-class\nstring\nundefined\n元素被拖动中的添加的类（不会影响拖拽结束后元素的显示）。\n:drop-class\nstring\nundefined\n从拖拽元素被放置到被添加到页面过程中添加的类。\n:remove-on-drop-out\nboolean\nundefined\n如果设置为 true，在被拖拽元素没有被放置到任何相关容器时，使用元素索引作为 removedIndex 调用 onDrop()\n:drop-placeholder\nboolean,object\nundefined\n占位符的选项。包含 className, animationDuration, showOnTop\n关于 drag-class，drop-class 和 drop-placeholder.className 的效果演示\nhtml\n代码解读\n复制代码\n.... 类对应样式\ncss\n代码解读\n复制代码\n.card-ghost { transition: transform 0.18s ease; transform: rotateZ(35deg); background: red !important; } .card-ghost-drop { transition: transform 1s cubic-bezier(0,1.43,.62,1.56); transform: rotateZ(0deg); background: green !important; } .drop-preview { border: 1px dashed #abc; margin: 5px; background: yellow !important; }\n实际效果（我这优秀的配色啊）\n生命周期 一次拖动的生命周期通过一系列回调和事件进行描述和控制，下面以包含 3 个容器的示例为例进行说明 （直接复制了文档没有翻译，API 详细解释可以看后面介绍。）：\nsql\n代码解读\n复制代码\nMouse Calls Callback / Event Parameters Notes down o Initial click move o Initial drag | | get-child-payload() index Function should return payload | | 3 x should-accept-drop() srcOptions, payload Fired for all containers | | 3 x drag-start dragResult Fired for all containers | | drag-enter v move o Drag over containers | | n x drag-leave Fired as draggable leaves container | n x drag-enter Fired as draggable enters container v up o Finish drag should-animate-drop() srcOptions, payload Fires once for dropped container 3 x drag-end dragResult Fired for all containers n x drop dropResult Fired only for droppable containers\n请注意，应在每次 drag-start 之前和每次 drag-end 之前触发 should-accept-drop，但为了清晰起见，此处已省略。\n其中 dragResult 参数的格式：\njs\n代码解读\n复制代码\ndragResult: { payload, # 负载 可以理解为用来记录被拖动的对象 isSource, # 是否是被拖动的容器本身 willAcceptDrop, # 是否可以被放置 }\n其中 dropResult 参数的格式：\njs\n代码解读\n复制代码\ndropResult: { addedIndex, # 被放置的新添加元素的下标，没有则为 null removedIndex, # 将被移除的元素下标，没有则为 null payload, # 拖动的元素对象，可通过 getChildPayload 指定 droppedElement, # 放置的 DOM 元素 }\n回调 回调在用户交互之前和期间提供了额外的逻辑和检查。\nget-child-payload(index) 自定义传给 onDrop() 的 payload 对象。\nshould-accept-drop(sourceContainerOptions, payload) 用来确定容器是否可被放置，会覆盖 group-name 属性。\nshould-animate-drop(sourceContainerOptions, payload) 返回 false 则阻止放置动画。\nget-ghost-parent() 返回幽灵元素（拖动时显示的元素）应该添加到的元素，默认是父元素，某些情况定位会出现问题，则可以选择自定义，如返回 document.body。\n事件 @drag-start 在拖动开始时由所有容器发出的事件。参数 dragResult。\n@drag-end 所有容器在拖动结束时调用的函数。 在 @drop 事件之前调用。参数 dragResult。\n@drag-enter 每当拖动的项目在拖动时进入其边界时，相关容器要发出的事件。\n@drag-leave 每当拖动的项目在拖动时离开其边界时，相关容器要发出的事件。\n@drop-ready 当容器中可能放置位置的索引发生变化时，被拖动的容器将调用的函数。基本上，每次容器中的可拖动对象滑动以打开拖动项目的空间时都会调用它。参数 dropResult。\n@drop 放置结束时所有相关容器会发出的事件（放置动画结束后）。源容器和任何可以接受放置的容器都被认为是相关的。参数 dropResult。\nAPI: Draggable tag 同容器的 tag 指定可拖拽元素的 DOM 元素标签。\n实战 实现一个简单的团队协作任务管理器。\nhtml\n代码解读\n复制代码\n\u0026#x2630; {{ column.name }} {{ task.name }} {{ priorityMap[task.priority].label }} 效果\n",
+  "wordCount" : "1136",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-07-26T00:00:00Z",
+  "dateModified": "2021-07-26T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "我不吃饼干"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/vue%E5%8F%AF%E6%8B%96%E6%8B%BD%E7%BB%84%E4%BB%B6vuesmoothdnd%E8%AF%A6%E8%A7%A3%E5%92%8C%E5%BA%94%E7%94%A8%E6%BC%94%E7%A4%BA/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Vue可拖拽组件VueSmoothDnD详解和应用演示
+    </h1>
+    <div class="post-description">
+      VueSmoothDnD是一个快速、轻量级的拖放、可排序的Vue.js库，封装了smooth-dnd库。VueSmoothDnD主要包含了两个组件。
+    </div>
+    <div class="post-meta"><span title='2021-07-26 00:00:00 +0000 UTC'>七月 26, 2021</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;我不吃饼干&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%ae%80%e4%bb%8b%e5%92%8c-demo-%e5%b1%95%e7%a4%ba" aria-label="简介和 Demo 展示">简介和 Demo 展示</a></li>
+                <li>
+                    <a href="#api-container" aria-label="API: Container">API: Container</a><ul>
+                        
+                <li>
+                    <a href="#%e5%b1%9e%e6%80%a7" aria-label="属性">属性</a></li>
+                <li>
+                    <a href="#%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f" aria-label="生命周期">生命周期</a></li>
+                <li>
+                    <a href="#%e5%9b%9e%e8%b0%83" aria-label="回调">回调</a></li>
+                <li>
+                    <a href="#%e4%ba%8b%e4%bb%b6" aria-label="事件">事件</a></li></ul>
+                </li>
+                <li>
+                    <a href="#api-draggable" aria-label="API: Draggable">API: Draggable</a><ul>
+                        
+                <li>
+                    <a href="#tag" aria-label="tag">tag</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%9e%e6%88%98" aria-label="实战">实战</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本文已参与好文召集令活动，点击查看：<a href="https://juejin.cn/post/6978685539985653767" title="https://juejin.cn/post/6978685539985653767">后端、大前端双赛道投稿，2万元奖池等你挑战！</a></p>
+<h2 id="简介和-demo-展示">简介和 Demo 展示<a hidden class="anchor" aria-hidden="true" href="#简介和-demo-展示">#</a></h2>
+<p>最近需要有个拖拽列表的需求，发现一个简单好用的 Vue 可拖拽组件。安利一下~</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fkutlugsahin%2Fvue-smooth-dnd" title="https://github.com/kutlugsahin/vue-smooth-dnd">Vue Smooth DnD</a> 是一个快速、轻量级的拖放、可排序的 Vue.js 库，封装了 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fkutlugsahin%2Fsmooth-dnd" title="https://github.com/kutlugsahin/smooth-dnd">smooth-dnd</a> 库。</p>
+<p>Vue Smooth DnD 主要包含了两个组件，<code>Container</code> 和 <code>Draggable</code>，<code>Container</code> 包含可拖动的元素或组件，它的每一个子元素都应该被 <code>Draggable</code> 包裹。每一个要被设置为可拖动的元素都需要被 <code>Draggable</code> 包裹。</p>
+<p>安装： <code>npm i vue-smooth-dnd</code></p>
+<p>一个简单的 Demo ，展示组件的基础用法，实现了可以拖拽的列表。</p>
+<p>html</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;     &lt;div&gt;         &lt;div class=&quot;simple-page&quot;&gt;             &lt;Container @drop=&quot;onDrop&quot;&gt;                 &lt;Draggable v-for=&quot;item in items&quot; :key=&quot;item.id&quot;&gt;                     &lt;div class=&quot;draggable-item&quot;&gt;                         {{item.data}}                     &lt;/div&gt;                 &lt;/Draggable&gt;             &lt;/Container&gt;         &lt;/div&gt;     &lt;/div&gt; &lt;/template&gt; &lt;script&gt;     import { Container, Draggable } from &quot;vue-smooth-dnd&quot;;     const applyDrag = (arr, dragResult) =&gt; {         const { removedIndex, addedIndex, payload } = dragResult         console.log(removedIndex, addedIndex, payload)         if (removedIndex === null &amp;&amp; addedIndex === null) return arr         const result = [...arr]         let itemToAdd = payload         if (removedIndex !== null) {             itemToAdd = result.splice(removedIndex, 1)[0]         }         if (addedIndex !== null) {             result.splice(addedIndex, 0, itemToAdd)         }         return result     }     const generateItems = (count, creator) =&gt; {         const result = []         for (let i = 0; i &lt; count; i++) {             result.push(creator(i))         }         return result     }     export default {         name: &quot;Simple&quot;,         components: { Container, Draggable },         data() {             return {                 items: generateItems(50, i =&gt; ({ id: i, data: &quot;Draggable &quot; + i }))             };         },         methods: {             onDrop(dropResult) {                 this.items = applyDrag(this.items, dropResult);             }         }     }; &lt;/script&gt; &lt;style&gt;     .draggable-item {         height: 50px;         line-height: 50px;         text-align: center;         display: block;         background-color: #fff;         outline: 0;         border: 1px solid rgba(0, 0, 0, .125);         margin-bottom: 2px;         margin-top: 2px;         cursor: default;         user-select: none;     } &lt;/style&gt;</code></p>
+<p>效果</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3155c4900a944e8b88978514b49a97fc~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="drag2.gif"  />
+</p>
+<h2 id="api-container">API: Container<a hidden class="anchor" aria-hidden="true" href="#api-container">#</a></h2>
+<h3 id="属性">属性<a hidden class="anchor" aria-hidden="true" href="#属性">#</a></h3>
+<p>属性</p>
+<p>类型</p>
+<p>默认值</p>
+<p>描述</p>
+<p>:orientation</p>
+<p>string</p>
+<p><code>vertical</code></p>
+<p>容器的方向，可以为 <strong>horizontal</strong> 或 <strong>vertical</strong></p>
+<p>:behaviour</p>
+<p>string</p>
+<p><code>move</code></p>
+<p>描述被拖动的元素被移动或复制到目标容器。 可以为 <strong>move</strong> 或 <strong>copy</strong> 或 <strong>drop-zone</strong> 或 <strong>contain</strong> 。<code>move</code> 可以在容器间互相移动，<code>copy</code> 是可以将元素复制到其他容器，但本容器内元素不可变，<code>drop-zone</code> 可以在容器间移动，但是容器内元素的顺序是固定的。<code>contain</code> 只能在容器内移动。</p>
+<p>:tag</p>
+<p>string, NodeDescription</p>
+<p><code>div</code></p>
+<p>容器的元素标签，默认是 <code>div</code> ，可以是字符串如 <code>tag=&quot;table&quot;</code> 也可以是包含 <code>value</code>和 <code>props</code> 属性的对象 <code>:tag=&quot;{value: 'table', props: {class: 'my-table'}}&quot;</code></p>
+<p>:group-name</p>
+<p>string</p>
+<p><code>undefined</code></p>
+<p>可拖动元素可以在具有相同组名的容器之间移动。如果未设置组名容器将不接受来自外部的元素。 这种行为可以被 shouldAcceptDrop 函数覆盖。 见下文。</p>
+<p>:lock-axis</p>
+<p>string</p>
+<p><code>undefined</code></p>
+<p>锁定拖动的移动轴。可用值 <strong>x</strong>, <strong>y</strong> 或 <strong>undefined</strong>。</p>
+<p>:drag-handle-selector</p>
+<p>string</p>
+<p><code>undefined</code></p>
+<p>用于指定可以开启拖拽的 CSS 选择器，如果不指定的话则元素内部任意位置都可抓取。</p>
+<p>:non-drag-area-selector</p>
+<p>string</p>
+<p><code>undefined</code></p>
+<p>禁止拖动的 CSS 选择器，优先于 <strong>dragHandleSelector</strong>.</p>
+<p>:drag-begin-delay</p>
+<p>number</p>
+<p><code>0</code>（触控设备为 <code>200</code>）</p>
+<p>单位毫秒。表示点击元素持续多久后可以开始拖动。在此之前移动光标超过 5px 将取消拖动。</p>
+<p>:animation-duration</p>
+<p>number</p>
+<p><code>250</code></p>
+<p>单位毫秒。表示放置元素和重新排序的动画持续时间。</p>
+<p>:auto-scroll-enabled</p>
+<p>boolean</p>
+<p><code>true</code></p>
+<p>如果拖动项目接近边界，第一个可滚动父项将自动滚动。（这个属性没看懂= =）</p>
+<p>:drag-class</p>
+<p>string</p>
+<p><code>undefined</code></p>
+<p>元素被拖动中的添加的类（不会影响拖拽结束后元素的显示）。</p>
+<p>:drop-class</p>
+<p>string</p>
+<p><code>undefined</code></p>
+<p>从拖拽元素被放置到被添加到页面过程中添加的类。</p>
+<p>:remove-on-drop-out</p>
+<p>boolean</p>
+<p><code>undefined</code></p>
+<p>如果设置为 <code>true</code>，在被拖拽元素没有被放置到任何相关容器时，使用元素索引作为 <code>removedIndex</code> 调用 <code>onDrop()</code></p>
+<p>:drop-placeholder</p>
+<p>boolean,object</p>
+<p><code>undefined</code></p>
+<p>占位符的选项。包含 <strong>className</strong>, <strong>animationDuration</strong>, <strong>showOnTop</strong></p>
+<p>关于 <code>drag-class</code>，<code>drop-class</code> 和 <code>drop-placeholder.className</code> 的效果演示</p>
+<p>html</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;Container # 省略其它属性...         :animation-duration=&quot;1000&quot; # 放置元素后动画延时         drag-class=&quot;card-ghost&quot;                  drop-class=&quot;card-ghost-drop&quot;         :drop-placeholder=&quot;{             className: 'drop-preview',  # 占位符的样式             animationDuration: '1000', # 占位符的动画延迟             showOnTop: true            # 是否在其它元素的上面显示 设置为false会被其他的拖拽元素覆盖         }&quot; &gt;     &lt;!-- 一些可拖拽元素 --&gt;     &lt;Draggable&gt;....&lt;/Draggable&gt; &lt;/Container&gt;</code></p>
+<p>类对应样式</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>.card-ghost {     transition: transform 0.18s ease;     transform: rotateZ(35deg);     background: red !important; } .card-ghost-drop {     transition: transform 1s cubic-bezier(0,1.43,.62,1.56);     transform: rotateZ(0deg);     background: green !important; } .drop-preview {     border: 1px dashed #abc;     margin: 5px;     background: yellow !important; }</code></p>
+<p>实际效果（我这优秀的配色啊）</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ffd6e53414164c649f785b86ca740071~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="dnd3.gif"  />
+</p>
+<h3 id="生命周期">生命周期<a hidden class="anchor" aria-hidden="true" href="#生命周期">#</a></h3>
+<p>一次拖动的生命周期通过一系列回调和事件进行描述和控制，下面以包含 3 个容器的示例为例进行说明 （直接复制了文档没有翻译，API 详细解释可以看后面介绍。）：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Mouse     Calls  Callback / Event       Parameters              Notes down   o                                                        Initial click move   o                                                        Initial drag        |        |         get-child-payload()    index                   Function should return payload        |        |   3 x   should-accept-drop()   srcOptions, payload     Fired for all containers        |        |   3 x   drag-start             dragResult              Fired for all containers        |        |         drag-enter        v move   o                                                        Drag over containers        |        |   n x   drag-leave                                     Fired as draggable leaves container        |   n x   drag-enter                                     Fired as draggable enters container        v up     o                                                        Finish drag                  should-animate-drop()  srcOptions, payload     Fires once for dropped container            3 x   drag-end               dragResult              Fired for all containers            n x   drop                   dropResult              Fired only for droppable containers</code></p>
+<p>请注意，应在每次 <code>drag-start</code> 之前和每次 <code>drag-end</code> 之前触发 <code>should-accept-drop</code>，但为了清晰起见，此处已省略。</p>
+<p>其中 <code>dragResult</code> 参数的格式：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>dragResult: {     payload,        # 负载 可以理解为用来记录被拖动的对象     isSource,       # 是否是被拖动的容器本身     willAcceptDrop, # 是否可以被放置 }</code></p>
+<p>其中 <code>dropResult</code> 参数的格式：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>dropResult: {     addedIndex,     # 被放置的新添加元素的下标，没有则为 null     removedIndex,   # 将被移除的元素下标，没有则为 null     payload,        # 拖动的元素对象，可通过 getChildPayload 指定     droppedElement, # 放置的 DOM 元素 }</code></p>
+<h3 id="回调">回调<a hidden class="anchor" aria-hidden="true" href="#回调">#</a></h3>
+<p>回调在用户交互之前和期间提供了额外的逻辑和检查。</p>
+<ul>
+<li>
+<p><code>get-child-payload(index)</code> 自定义传给 <code>onDrop()</code> 的 <code>payload</code> 对象。</p>
+</li>
+<li>
+<p><code>should-accept-drop(sourceContainerOptions, payload)</code> 用来确定容器是否可被放置，会覆盖 <code>group-name</code> 属性。</p>
+</li>
+<li>
+<p><code>should-animate-drop(sourceContainerOptions, payload)</code> 返回 <code>false</code> 则阻止放置动画。</p>
+</li>
+<li>
+<p><code>get-ghost-parent()</code> 返回幽灵元素（拖动时显示的元素）应该添加到的元素，默认是父元素，某些情况定位会出现问题，则可以选择自定义，如返回 <code>document.body</code>。</p>
+</li>
+</ul>
+<h3 id="事件">事件<a hidden class="anchor" aria-hidden="true" href="#事件">#</a></h3>
+<ul>
+<li>
+<p><code>@drag-start</code> 在拖动开始时由所有容器发出的事件。参数 <code>dragResult</code>。</p>
+</li>
+<li>
+<p><code>@drag-end</code> 所有容器在拖动结束时调用的函数。 在 <code>@drop</code> 事件之前调用。参数 <code>dragResult</code>。</p>
+</li>
+<li>
+<p><code>@drag-enter</code> 每当拖动的项目在拖动时进入其边界时，相关容器要发出的事件。</p>
+</li>
+<li>
+<p><code>@drag-leave</code> 每当拖动的项目在拖动时离开其边界时，相关容器要发出的事件。</p>
+</li>
+<li>
+<p><code>@drop-ready</code> 当容器中可能放置位置的索引发生变化时，被拖动的容器将调用的函数。基本上，每次容器中的可拖动对象滑动以打开拖动项目的空间时都会调用它。参数 <code>dropResult</code>。</p>
+</li>
+<li>
+<p><strong><code>@drop</code></strong> 放置结束时所有相关容器会发出的事件（放置动画结束后）。源容器和<strong>任何可以接受放置的容器</strong>都被认为是相关的。参数 <code>dropResult</code>。</p>
+</li>
+</ul>
+<h2 id="api-draggable">API: Draggable<a hidden class="anchor" aria-hidden="true" href="#api-draggable">#</a></h2>
+<h3 id="tag"><code>tag</code><a hidden class="anchor" aria-hidden="true" href="#tag">#</a></h3>
+<p>同容器的 <code>tag</code> 指定可拖拽元素的 DOM 元素标签。</p>
+<h2 id="实战">实战<a hidden class="anchor" aria-hidden="true" href="#实战">#</a></h2>
+<p>实现一个简单的团队协作任务管理器。</p>
+<p>html</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;     &lt;div class=&quot;card-scene&quot;&gt;         &lt;Container                 orientation=&quot;horizontal&quot;                 @drop=&quot;onColumnDrop($event)&quot;                 drag-handle-selector=&quot;.column-drag-handle&quot;         &gt;             &lt;Draggable v-for=&quot;column in taskColumnList&quot; :key=&quot;column.name&quot;&gt;                 &lt;div class=&quot;card-container&quot;&gt;                     &lt;div class=&quot;card-column-header&quot;&gt;                         &lt;span class=&quot;column-drag-handle&quot;&gt;&amp;#x2630;&lt;/span&gt;                         {{ column.name }}                     &lt;/div&gt;                     &lt;Container                             group-name=&quot;col&quot;                             @drop=&quot;(e) =&gt; onCardDrop(column.id, e)&quot;                             :get-child-payload=&quot;getCardPayload(column.id)&quot;                             drag-class=&quot;card-ghost&quot;                             drop-class=&quot;card-ghost-drop&quot;                             :drop-placeholder=&quot;dropPlaceholderOptions&quot;                             class=&quot;draggable-container&quot;                     &gt;                         &lt;Draggable v-for=&quot;task in column.list&quot; :key=&quot;task.id&quot;&gt;                             &lt;div class=&quot;task-card&quot;&gt;                                 &lt;div class=&quot;task-title&quot;&gt;{{ task.name }}&lt;/div&gt;                                 &lt;div class=&quot;task-priority&quot; :style=&quot;{ background: priorityMap[task.priority].color }&quot;&gt;                                     {{ priorityMap[task.priority].label }}                                 &lt;/div&gt;                             &lt;/div&gt;                         &lt;/Draggable&gt;                     &lt;/Container&gt;                 &lt;/div&gt;             &lt;/Draggable&gt;         &lt;/Container&gt;     &lt;/div&gt; &lt;/template&gt; &lt;script&gt;     import { Container, Draggable } from &quot;vue-smooth-dnd&quot;;     const applyDrag = (arr, dragResult) =&gt; {         const { removedIndex, addedIndex, payload } = dragResult         console.log(removedIndex, addedIndex, payload)         if (removedIndex === null &amp;&amp; addedIndex === null) return arr         const result = [...arr]         let itemToAdd = payload         if (removedIndex !== null) {             itemToAdd = result.splice(removedIndex, 1)[0]         }         if (addedIndex !== null) {             result.splice(addedIndex, 0, itemToAdd)         }         return result     }     const taskList = [         {             name: '首页',             priority: 'P1',             status: '待开发',             id: 1,         },         {             name: '流程图开发',             priority: 'P3',             status: '待评审',             id: 2,         },         {             name: '统计图展示',             priority: 'P0',             status: '开发中',             id: 3,         },         {             name: '文件管理',             priority: 'P1',             status: '开发中',             id: 4,         }     ]     const statusList = ['待评审', '待开发', '开发中', '已完成']     const taskColumnList = statusList.map((status, index) =&gt; {         return {             name: status,             list: taskList.filter(item =&gt; item.status === status),             id: index         }     })     const priorityMap = {         'P0': {             label: '最高优',             color: '#ff5454',         },         'P1': {             label: '高优',             color: '#ff9a00',         },         'P2': {             label: '中等',             color: '#ffd139',         },         'P3': {             label: '较低',             color: '#1ac7b5',         },     }     export default {         name: 'Cards',         components: {Container, Draggable},         data () {             return {                 taskColumnList,                 priorityMap,                 dropPlaceholderOptions: {                     className: 'drop-preview',                     animationDuration: '150',                     showOnTop: true                 }             }         },         methods: {             onColumnDrop (dropResult) {                 this.taskColumnList = applyDrag(this.taskColumnList, dropResult)             },             onCardDrop (columnId, dropResult) {                 let { removedIndex, addedIndex, payload } = dropResult                 if (removedIndex !== null || addedIndex !== null) {                     const column = taskColumnList.find(p =&gt; p.id === columnId)                     if (addedIndex !== null &amp;&amp; payload) { // 更新任务状态                         dropResult.payload = {                             ...payload,                             status: column.name,                         }                     }                     column.list = applyDrag(column.list, dropResult)                 }             },             getCardPayload (columnId) {                 return index =&gt;                     this.taskColumnList.find(p =&gt; p.id === columnId).list[index]             },         }     } &lt;/script&gt; &lt;style&gt;     * {         margin: 0;         padding: 0;         font-family: 'Microsoft YaHei','PingFang SC','Helvetica Neue',Helvetica,sans-serif;         line-height: 1.45;         color: rgba(0,0,0,.65);     }     .card-scene {         user-select: none;         display: flex;         height: 100%;         margin: 20px;     }     .card-container {         display: flex;         flex-direction: column;         width: 260px;         min-width: 260px;         border-radius: 12px;         background-color: #edeff2;         margin-right: 16px;         height: calc(100vh - 40px);     }     .card-column-header {         display: flex;         height: 50px;         margin: 0 16px;         align-items: center;         flex-shrink: 0;         font-weight: 500;         font-size: 16px;     }     .draggable-container {         flex-grow: 1;         overflow: auto;     }     .column-drag-handle {         cursor: move;         padding: 5px;     }     .task-card {         margin: 10px;         background-color: white;         padding: 15px 10px;         border-radius: 8px;         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12);         cursor: pointer;         display: flex;         justify-content: space-between;     }     .task-title {         color: #333333;         font-size: 14px;     }     .task-priority {         width: 60px;         line-height: 20px;         border-radius: 12px;         text-align: center;         color: #fff;         font-size: 12px;     }     .card-ghost {         transition: transform 0.18s ease;         transform: rotateZ(5deg)     }     .card-ghost-drop {         transition: transform 0.18s ease-in-out;         transform: rotateZ(0deg)     }     .drop-preview {         background-color: rgba(150, 150, 200, 0.1);         border: 1px dashed #abc;         margin: 5px;     } &lt;/style&gt;</code></p>
+<p>效果</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0862ed1613f34747a1348a5a2fb4b848~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="dnd4.gif"  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%AE%9E%E7%8E%B0reactnative%E4%B8%8E%E5%86%85%E5%B5%8Ch5%E7%9B%B8%E4%BA%92%E9%80%9A%E4%BF%A1/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>实现ReactNative与内嵌H5相互通信</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BE%AA%E7%8E%AF%E5%88%A0%E9%99%A4list%E5%85%83%E7%B4%A0%E4%BC%9A%E6%8A%A5%E9%94%99/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>为什么循环删除List元素会报错</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue可拖拽组件VueSmoothDnD详解和应用演示 on x"
+            href="https://x.com/intent/tweet/?text=Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f&amp;hashtags=Vue.js%2c%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue可拖拽组件VueSmoothDnD详解和应用演示 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f&amp;title=Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba&amp;summary=Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue可拖拽组件VueSmoothDnD详解和应用演示 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f&title=Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue可拖拽组件VueSmoothDnD详解和应用演示 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue可拖拽组件VueSmoothDnD详解和应用演示 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue可拖拽组件VueSmoothDnD详解和应用演示 on telegram"
+            href="https://telegram.me/share/url?text=Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue可拖拽组件VueSmoothDnD详解和应用演示 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Vue%e5%8f%af%e6%8b%96%e6%8b%bd%e7%bb%84%e4%bb%b6VueSmoothDnD%e8%af%a6%e8%a7%a3%e5%92%8c%e5%ba%94%e7%94%a8%e6%bc%94%e7%a4%ba&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue%25E5%258F%25AF%25E6%258B%2596%25E6%258B%25BD%25E7%25BB%2584%25E4%25BB%25B6vuesmoothdnd%25E8%25AF%25A6%25E8%25A7%25A3%25E5%2592%258C%25E5%25BA%2594%25E7%2594%25A8%25E6%25BC%2594%25E7%25A4%25BA%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

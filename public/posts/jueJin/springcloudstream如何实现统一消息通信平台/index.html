@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>SpringCloudStream如何实现统一消息通信平台 | PaperMod</title>
+<meta name="keywords" content="Java">
+<meta name="description" content="SpringCloudStream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，SpringCloudStre">
+<meta name="author" content="职略">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/springcloudstream%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/springcloudstream%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="SpringCloudStream如何实现统一消息通信平台" />
+<meta property="og:description" content="SpringCloudStream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，SpringCloudStre" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/springcloudstream%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-04-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-04-09T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="SpringCloudStream如何实现统一消息通信平台"/>
+<meta name="twitter:description" content="SpringCloudStream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，SpringCloudStre"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "SpringCloudStream如何实现统一消息通信平台",
+      "item": "http://localhost:1313/posts/juejin/springcloudstream%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SpringCloudStream如何实现统一消息通信平台",
+  "name": "SpringCloudStream如何实现统一消息通信平台",
+  "description": "SpringCloudStream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，SpringCloudStre",
+  "keywords": [
+    "Java"
+  ],
+  "articleBody": "Spring Cloud Stream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，Spring Cloud Stream为开发人员提供的是一种跨消息中间件的统一消息通信平台。那么，它是如何做到这一点的呢？这是一个很好的话题，本文内容将围绕这一话题展开讨论。\n我们知道，在分布式系统设计和开发过程中，服务与服务之间可以通过RPC实现交互。但是，RPC虽然实现起来比较简单，但却是一种耦合度较高的实现技术。为了降低服务与服务之间的耦合度，有时候我们需要引入消息通信机制，采用异步的方式来完成不同服务之间的交互。讲到这里，你可能会说，这不就是消息中间件能解决的问题吗？答案是肯定的，但还不够。\n我们知道常见的消息通信规范以及中间件有很多种，代表性的规范有JMS和AMQP，对应的实现框架包括ActiveMQ和RabbitMQ等，而Kafka、RocketMQ等工具并不遵循特定的规范但也提供了消息通信的实现方案。显然，这些中间件的使用方式是完全不同的。那么，如何屏蔽这些中间件在使用上的差别，从而为开发人员提供了一套统一且高效的消息发送和接收API，这是我们今天要讨论的问题，如下图所示。\n围绕统一消息平台的设计和实现，我们需要明确的是所采用的技术体系。目前，针对这个主题，我们可以参考和借鉴的框架并不多，而Spring家族中的Spring Cloud Stream是其中的代表。Spring Cloud Stream对整个消息发布和消费过程做了高度抽象，并提供了一系列核心组件，包括Binder、Channel、Source和Sink等。\n让我们基于具体框架来分析底层的实现原理。在Spring Cloud Stream中，真正完成与对不同消息中间件之间的集成的是Binder组件。而不同的消息中间件具有不同的API，所以在Binder组件的设计和实现过程中，一方面需要考虑抽象，另一方面也需要针对不同中间件的特性来完成底层的交互过程。这部分内容是我们需要掌握的重点，值得深入进行学习，对于自身架构设计能力的提升有很大帮助。\n消息通信技术体系 Spring家族中的消息通信解决方案 在Spring家族中，与消息通信机制相关的框架有三个，分别是Spring Messaging、Spring Integration和Spring Cloud Steam。事实上，Spring Cloud中的Spring Cloud Stream是基于Spring Integration实现了消息发布和消费机制并提供了一层封装，很多关于消息发布和消费的概念和实现方法本质上都是依赖于Spring Integration。而在Spring Integration的背后，则依赖于Spring Messaging组件来实现消息处理机制的基础设施。这三个框架之间的依赖关系如下图所示。\n从依赖关系上讲，Spring Messaging 是Spring家族中处理消息通信的底层框架。而Spring Integration在定位上属于一种企业服务总线，依赖于Spring Messaging。因此，我们先来介绍Spring Messaging。\nSpring Messaging是Spring框架内置的一个模块，提供了最基本的消息通信API，其中，消息这个概念由Message接口进行表示，包括一个消息头Header和一个消息体Payload，如下所示。\npublic interface Message {\nT getPayload();\nMessageHeaders getHeaders();\n} 而消息通道MessageChannel的定义也比较简单，只包含了一个用来发送消息的send方法，如下所示。\npublic interface MessageChannel {\nlong INDEFINITE_TIMEOUT = -1;\ndefault boolean send(Message\u003c?\u003e message) {\nreturn send(message, INDEFINITE_TIMEOUT);\n}\nboolean send(Message\u003c?\u003e message, long timeout);\n}\nSpring Messaging把通道抽象成两种基本的表现形式，即支持轮询的PollableChannel和实现发布-订阅模式的SubscribableChannel，这两个通道都继承自具有消息发送功能的MessageChannel，如下所示。\npublic interface PollableChannel extends MessageChannel {\nMessage\u003c?\u003e receive();\nMessage\u003c?\u003e receive(long timeout);\n}\npublic interface SubscribableChannel extends MessageChannel {\nboolean subscribe(MessageHandler handler);\nboolean unsubscribe(MessageHandler handler);\n}\n注意到对于PollableChannel而言才有receive的概念，代表通过轮询操作主动获取消息的过程。而SubscribableChannel则是通过注册回调函数MessageHandler来实现事件响应。MessageHandler接口定义如下所示。\npublic interface MessageHandler {\nvoid handleMessage(Message\u003c?\u003e message) throws MessagingException;\n}\n在Spring家族中，Spring Integration是对Spring Messaging的扩展，提供了对《企业集成模式：设计、构建及部署消息通信解决方案》一书中各种企业集成模式的支持，通常被认为是一种ESB（Enterprise Service Bus，企业服务总线）框架。而Spring Cloud Stream则是Spring Integration的一种增强。我们先来看一下Spring Cloud Stream中与Spring Integration相关的内容。\n在Spring Cloud Stream中，存在一组Source和Sink接口，其中Source接口的定义如下所示。注意到这里通过Spring Messaging提供的MessageChannel来对外发送消息。\npublic interface Source {\nString OUTPUT = “output”;\n@Output(Source.OUTPUT)\nMessageChannel output();\n}\n类似的，Sink接口定义如下所示，通过Spring Messaging中的SubscribableChannel实现对来自外部消息的接收。\npublic interface Sink{\nString INPUT = “input”;\n@Input(Source.INPUT)\nSubscribableChannel input();\n}\nSpring Cloud Stream基本架构 Spring Cloud Stream对整个消息发布和消费过程做了高度抽象，并提供了一系列核心组件。我们先来介绍基于Spring Cloud Stream构建消息通信机制的基本工作流程。区别于直接使用RabbitMQ、Kafka等消息中间件，Spring Cloud Stream在消息生产者和消费者之间添加了一种桥梁机制，所有的消息都将通过Spring Cloud Stream进行发送和接收，如下图所示。\n在上图中，我们不难看出Spring Cloud Stream具备四个核心组件，分别是Binder、Channel、Source和Sink，其中Binder和Channel成对出现，而Source和Sink分别面向消息的发布者和消费者。\nl Source和Sink\n在Spring Cloud Stream中，Source组件是真正生成消息的组件，相当于是一个输出（Output）组件。而Sink则是真正消费消息的组件，相当于是一个输入（Input）组件。根据我们对事件驱动架构的了解，对于同一个Source组件而言，不同的服务可能会实现不同的Sink组件，分别根据自身需求进行业务上的处理。\nl Channel\nChannel的概念比较容易理解，就是常见的通道，这里不再展开。\nl Binder\nSpring Cloud Stream中最重要的概念就是Binder。所谓Binder，顾名思义就是一种黏合剂，将业务服务与消息通信系统黏合在一起。通过Binder，我们可以很方便的连接消息中间件，可以动态的改变消息的目标地址、发送方式而不需要了解各种消息中间件在实现上的差异。关于Binder是如何与不同的消息中间件进行整合的实现原理我们在接下来的内容中进行详细展开。\nSpring Cloud Stream原理解析 Spring Cloud Stream中的Binder 基于Spring Cloud Stream，我们知道在发送和接收消息时，需要使用@EnableBinding注解。我们可以在@EnableBinding注解中指定一个Source或Sink接口。这里以Source为例给出该接口的定义，如下所示。\npublic interface Source {\nString OUTPUT = “output”;\n@Output(Source.OUTPUT)\nMessageChannel output();\n}\n对于Source而言，消息是向外发送的，所以是Output。显然，对于Sink而言，消息是向内接收的，对应的是Input。\n在Spring Cloud Stream中，BindableProxyFactory是一个用于初始化由@EnableBinding注解所提供接口的工厂类，该类的定义如下所示。\npublic class BindableProxyFactory implements MethodInterceptor, FactoryBean, Bindable, InitializingBean\n注意到BindableProxyFactory同时实现了MethodInterceptor接口和Bindable接口。其中前者是AOP中的方法拦截器，而后者是一个标明能够绑定Input和Output的接口，如下图所示。\n我们先来看MethodInterceptor接口中用于实现拦截的invoke方法，如下所示。\n@Override\npublic synchronized Object invoke(MethodInvocation invocation) throws Throwable {\nMethod method = invocation.getMethod();\n//从缓存中获取目标对象\nObject boundTarget = targetCache.get(method);\nif (boundTarget != null) {\nreturn boundTarget;\n}\n//获取Input接口\nInput input = AnnotationUtils.findAnnotation(method, Input.class);\nif (input != null) {\nString name = BindingBeanDefinitionRegistryUtils.getBindingTargetName(input, method);\nboundTarget = this.inputHolders.get(name).getBoundTarget();\ntargetCache.put(method, boundTarget);\nreturn boundTarget;\n}\n//获取Output接口，和获取Input接口实现方式类似\nelse {\n…\n}\nreturn null;\n}\n这里的逻辑比较简单，可以看到BindableProxyFactory保存了一个缓存对象targetCache，如果所调用方法已经存在于缓存中，则直接返回目标对象。反之，会根据@Input和@Output注解从inputHolders和outputHolders中获取对应的目标对象并放入缓存中。至于这里提到的这个目标对象，暂时可以把它理解为就是一种MessageChannel对象。\n然后我们来看Bindable接口，该接口提供了对Input和Output的绑定和解绑操作，而这些操作是通过Binder接口来完成的。Binder接口分别提供了绑定生产者和消费者的方法，如下所示。\npublic interface Binder",
+  "wordCount" : "523",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-04-09T00:00:00Z",
+  "dateModified": "2024-04-09T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "职略"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/springcloudstream%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      SpringCloudStream如何实现统一消息通信平台
+    </h1>
+    <div class="post-description">
+      SpringCloudStream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，SpringCloudStre
+    </div>
+    <div class="post-meta"><span title='2024-04-09 00:00:00 +0000 UTC'>四月 9, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;职略&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e6%8a%80%e6%9c%af%e4%bd%93%e7%b3%bb" aria-label="消息通信技术体系">消息通信技术体系</a><ul>
+                        
+                <li>
+                    <a href="#spring%e5%ae%b6%e6%97%8f%e4%b8%ad%e7%9a%84%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="Spring家族中的消息通信解决方案">Spring家族中的消息通信解决方案</a></li>
+                <li>
+                    <a href="#spring-cloud-stream%e5%9f%ba%e6%9c%ac%e6%9e%b6%e6%9e%84" aria-label="Spring Cloud Stream基本架构">Spring Cloud Stream基本架构</a></li></ul>
+                </li>
+                <li>
+                    <a href="#spring-cloud-stream%e5%8e%9f%e7%90%86%e8%a7%a3%e6%9e%90" aria-label="Spring Cloud Stream原理解析">Spring Cloud Stream原理解析</a><ul>
+                        
+                <li>
+                    <a href="#spring-cloud-stream%e4%b8%ad%e7%9a%84binder" aria-label="Spring Cloud Stream中的Binder">Spring Cloud Stream中的Binder</a></li>
+                <li>
+                    <a href="#spring-cloud-stream%e9%9b%86%e6%88%90rabbitmq" aria-label="Spring Cloud Stream集成RabbitMQ">Spring Cloud Stream集成RabbitMQ</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Spring Cloud Stream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，Spring Cloud Stream为开发人员提供的是一种跨消息中间件的统一消息通信平台。那么，它是如何做到这一点的呢？这是一个很好的话题，本文内容将围绕这一话题展开讨论。</p>
+<p>我们知道，在分布式系统设计和开发过程中，服务与服务之间可以通过RPC实现交互。但是，RPC虽然实现起来比较简单，但却是一种耦合度较高的实现技术。为了降低服务与服务之间的耦合度，有时候我们需要引入消息通信机制，采用异步的方式来完成不同服务之间的交互。讲到这里，你可能会说，这不就是消息中间件能解决的问题吗？答案是肯定的，但还不够。</p>
+<p>我们知道常见的消息通信规范以及中间件有很多种，代表性的规范有JMS和AMQP，对应的实现框架包括ActiveMQ和RabbitMQ等，而Kafka、RocketMQ等工具并不遵循特定的规范但也提供了消息通信的实现方案。显然，这些中间件的使用方式是完全不同的。那么，如何屏蔽这些中间件在使用上的差别，从而为开发人员提供了一套统一且高效的消息发送和接收API，这是我们今天要讨论的问题，如下图所示。</p>
+<p>  <img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/81733df67ce24765ab4b28bd2ec00e6d~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=664&amp;h=352&amp;s=53628&amp;e=jpg&amp;b=fefaf9" alt="1.png"  />
+</p>
+<p>围绕统一消息平台的设计和实现，我们需要明确的是所采用的技术体系。目前，针对这个主题，我们可以参考和借鉴的框架并不多，而Spring家族中的Spring Cloud Stream是其中的代表。Spring Cloud Stream对整个消息发布和消费过程做了高度抽象，并提供了一系列核心组件，包括Binder、Channel、Source和Sink等。</p>
+<p>让我们基于具体框架来分析底层的实现原理。在Spring Cloud Stream中，真正完成与对不同消息中间件之间的集成的是Binder组件。而不同的消息中间件具有不同的API，所以在Binder组件的设计和实现过程中，一方面需要考虑抽象，另一方面也需要针对不同中间件的特性来完成底层的交互过程。这部分内容是我们需要掌握的重点，值得深入进行学习，对于自身架构设计能力的提升有很大帮助。</p>
+<h2 id="消息通信技术体系">消息通信技术体系<a hidden class="anchor" aria-hidden="true" href="#消息通信技术体系">#</a></h2>
+<h3 id="spring家族中的消息通信解决方案">Spring家族中的消息通信解决方案<a hidden class="anchor" aria-hidden="true" href="#spring家族中的消息通信解决方案">#</a></h3>
+<p>在Spring家族中，与消息通信机制相关的框架有三个，分别是Spring Messaging、Spring Integration和Spring Cloud Steam。事实上，Spring Cloud中的Spring Cloud Stream是基于Spring Integration实现了消息发布和消费机制并提供了一层封装，很多关于消息发布和消费的概念和实现方法本质上都是依赖于Spring Integration。而在Spring Integration的背后，则依赖于Spring Messaging组件来实现消息处理机制的基础设施。这三个框架之间的依赖关系如下图所示。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/caaff0cecd424577b8ad082c4cb0fcef~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=499&amp;h=384&amp;s=53356&amp;e=jpg&amp;b=fef8f6" alt="2.png"  />
+</p>
+<p>从依赖关系上讲，Spring Messaging 是Spring家族中处理消息通信的底层框架。而Spring Integration在定位上属于一种企业服务总线，依赖于Spring Messaging。因此，我们先来介绍Spring Messaging。</p>
+<p>Spring Messaging是Spring框架内置的一个模块，提供了最基本的消息通信API，其中，消息这个概念由Message接口进行表示，包括一个消息头Header和一个消息体Payload，如下所示。</p>
+<p>public interface Message {</p>
+<p>T getPayload();</p>
+<p>MessageHeaders getHeaders();</p>
+<p>}  </p>
+<p>而消息通道MessageChannel的定义也比较简单，只包含了一个用来发送消息的send方法，如下所示。</p>
+<p>public interface MessageChannel {</p>
+<p>long INDEFINITE_TIMEOUT = -1;</p>
+<p>default boolean send(Message<?> message) {</p>
+<p>return send(message, INDEFINITE_TIMEOUT);</p>
+<p>}</p>
+<p>boolean send(Message<?> message, long timeout);</p>
+<p>}</p>
+<p>Spring Messaging把通道抽象成两种基本的表现形式，即支持轮询的PollableChannel和实现发布-订阅模式的SubscribableChannel，这两个通道都继承自具有消息发送功能的MessageChannel，如下所示。</p>
+<p>public interface PollableChannel extends MessageChannel {</p>
+<p>    Message<?> receive();</p>
+<p>    Message<?> receive(long timeout);</p>
+<p>}</p>
+<p>public interface SubscribableChannel extends MessageChannel {</p>
+<p>    boolean subscribe(MessageHandler handler);</p>
+<p>    boolean unsubscribe(MessageHandler handler);</p>
+<p>}</p>
+<p>注意到对于PollableChannel而言才有receive的概念，代表通过轮询操作主动获取消息的过程。而SubscribableChannel则是通过注册回调函数MessageHandler来实现事件响应。MessageHandler接口定义如下所示。</p>
+<p>public interface MessageHandler {</p>
+<p>void handleMessage(Message<?> message) throws MessagingException;</p>
+<p>}</p>
+<p>在Spring家族中，Spring Integration是对Spring Messaging的扩展，提供了对《企业集成模式：设计、构建及部署消息通信解决方案》一书中各种企业集成模式的支持，通常被认为是一种ESB（Enterprise Service Bus，企业服务总线）框架。而Spring Cloud Stream则是Spring Integration的一种增强。我们先来看一下Spring Cloud Stream中与Spring Integration相关的内容。</p>
+<p>在Spring Cloud Stream中，存在一组Source和Sink接口，其中Source接口的定义如下所示。注意到这里通过Spring Messaging提供的MessageChannel来对外发送消息。</p>
+<p>public interface Source {</p>
+<p>String OUTPUT = &ldquo;output&rdquo;;</p>
+<p>@Output(Source.OUTPUT)</p>
+<p>MessageChannel output();</p>
+<p>}</p>
+<p>类似的，Sink接口定义如下所示，通过Spring <a href="https://link.juejin.cn?target=mailto%3AMessaging%25E4%25B8%25AD%25E7%259A%2584SubscribableChannel%25E6%259D%25A5%25E5%25AE%259E%25E7%258E%25B0%25E6%25B6%2588%25E6%2581%25AF%25E6%258E%25A5%25E6%2594%25B6%25EF%25BC%258C%25E8%2580%258C%40Input%25E6%25B3%25A8%25E8%25A7%25A3%25EF%25BC%2588%40Input%25E6%25B3%25A8%25E8%25A7%25A3%25E5%2592%258C%25E5%2589%258D%25E9%259D%25A2%25E4%25BB%258B%25E7%25BB%258D%25E7%259A%2584%40Output%25E6%25B3%25A8%25E8%25A7%25A3%25E9%2583%25BD%25E4%25BD%258D%25E4%25BA%258Erg.springframework.cloud.stream.annotation%25E5%258C%2585%25E4%25B8%25AD%25EF%25BC%2589%25E5%25AE%259A%25E4%25B9%2589%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E8%25BE%2593%25E5%2585%25A5%25E9%2580%259A%25E9%2581%2593%25EF%25BC%258C%25E5%25BA%2594%25E7%2594%25A8%25E9%2580%259A%25E8%25BF%2587%25E8%25AF%25A5%25E8%25BE%2593%25E5%2585%25A5%25E9%2580%259A%25E9%2581%2593%25E6%258E%25A5%25E6%2594%25B6%25E6%259D%25A5%25E8%2587%25AA%25E5%25A4%2596%25E9%2583%25A8%25E7%259A%2584%25E6%25B6%2588%25E6%2581%25AF%25E3%2580%2582" title="mailto:Messaging%E4%B8%AD%E7%9A%84SubscribableChannel%E6%9D%A5%E5%AE%9E%E7%8E%B0%E6%B6%88%E6%81%AF%E6%8E%A5%E6%94%B6%EF%BC%8C%E8%80%8C@Input%E6%B3%A8%E8%A7%A3%EF%BC%88@Input%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%89%8D%E9%9D%A2%E4%BB%8B%E7%BB%8D%E7%9A%84@Output%E6%B3%A8%E8%A7%A3%E9%83%BD%E4%BD%8D%E4%BA%8Erg.springframework.cloud.stream.annotation%E5%8C%85%E4%B8%AD%EF%BC%89%E5%AE%9A%E4%B9%89%E4%BA%86%E4%B8%80%E4%B8%AA%E8%BE%93%E5%85%A5%E9%80%9A%E9%81%93%EF%BC%8C%E5%BA%94%E7%94%A8%E9%80%9A%E8%BF%87%E8%AF%A5%E8%BE%93%E5%85%A5%E9%80%9A%E9%81%93%E6%8E%A5%E6%94%B6%E6%9D%A5%E8%87%AA%E5%A4%96%E9%83%A8%E7%9A%84%E6%B6%88%E6%81%AF%E3%80%82">Messaging中的SubscribableChannel实现对来自外部消息的接收。</a></p>
+<p>public interface Sink{</p>
+<p>String INPUT = &ldquo;input&rdquo;;</p>
+<p>@Input(Source.INPUT)</p>
+<p>SubscribableChannel input();</p>
+<p>}</p>
+<h3 id="spring-cloud-stream基本架构">Spring Cloud Stream基本架构<a hidden class="anchor" aria-hidden="true" href="#spring-cloud-stream基本架构">#</a></h3>
+<p>Spring Cloud Stream对整个消息发布和消费过程做了高度抽象，并提供了一系列核心组件。我们先来介绍基于Spring Cloud Stream构建消息通信机制的基本工作流程。区别于直接使用RabbitMQ、Kafka等消息中间件，Spring Cloud Stream在消息生产者和消费者之间添加了一种桥梁机制，所有的消息都将通过Spring Cloud Stream进行发送和接收，如下图所示。</p>
+<p>  <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5acca3e0c5d34b33b0e34bba4bba40b3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=985&amp;h=438&amp;s=92896&amp;e=jpg&amp;b=fef4f0" alt="3.png"  />
+</p>
+<p>在上图中，我们不难看出Spring Cloud Stream具备四个核心组件，分别是Binder、Channel、Source和Sink，其中Binder和Channel成对出现，而Source和Sink分别面向消息的发布者和消费者。</p>
+<p>l Source和Sink</p>
+<p>在Spring Cloud Stream中，Source组件是真正生成消息的组件，相当于是一个输出（Output）组件。而Sink则是真正消费消息的组件，相当于是一个输入（Input）组件。根据我们对事件驱动架构的了解，对于同一个Source组件而言，不同的服务可能会实现不同的Sink组件，分别根据自身需求进行业务上的处理。</p>
+<p>l Channel</p>
+<p>Channel的概念比较容易理解，就是常见的通道，这里不再展开。</p>
+<p>l Binder</p>
+<p>Spring Cloud Stream中最重要的概念就是Binder。所谓Binder，顾名思义就是一种黏合剂，将业务服务与消息通信系统黏合在一起。通过Binder，我们可以很方便的连接消息中间件，可以动态的改变消息的目标地址、发送方式而不需要了解各种消息中间件在实现上的差异。关于Binder是如何与不同的消息中间件进行整合的实现原理我们在接下来的内容中进行详细展开。</p>
+<h2 id="spring-cloud-stream原理解析">Spring Cloud Stream原理解析<a hidden class="anchor" aria-hidden="true" href="#spring-cloud-stream原理解析">#</a></h2>
+<h3 id="spring-cloud-stream中的binder">Spring Cloud Stream中的Binder<a hidden class="anchor" aria-hidden="true" href="#spring-cloud-stream中的binder">#</a></h3>
+<p>基于Spring Cloud Stream，<a href="https://link.juejin.cn?target=mailto%3A%25E6%25B3%25A8%25E6%2584%258F%25E5%2588%25B0%25E8%25BF%2599%25E9%2587%258C%25E7%2594%25A8%25E5%2588%25B0%25E4%25BA%2586%40EnableBinding\\(Source.class\\)" title="mailto:%E6%B3%A8%E6%84%8F%E5%88%B0%E8%BF%99%E9%87%8C%E7%94%A8%E5%88%B0%E4%BA%86@EnableBinding(Source.class)">我们知道在发送和接收消息时，需要使用@EnableBinding</a>注解。我们可以在@EnableBinding注解中指定一个Source或Sink接口。这里以Source为例给出该接口的定义，如下所示。</p>
+<p>public interface Source {</p>
+<p>String OUTPUT = &ldquo;output&rdquo;;</p>
+<p>@Output(Source.OUTPUT)</p>
+<p>MessageChannel output();</p>
+<p>}</p>
+<p>对于Source而言，消息是向外发送的，所以是Output。显然，对于Sink而言，消息是向内接收的，对应的是Input。</p>
+<p>在Spring Cloud Stream中，BindableProxyFactory是一个用于初始化由@EnableBinding注解所提供接口的工厂类，该类的定义如下所示。</p>
+<p><strong>public</strong> <strong>class</strong> BindableProxyFactory <strong>implements</strong> MethodInterceptor, FactoryBean, Bindable, InitializingBean</p>
+<p>注意到BindableProxyFactory同时实现了MethodInterceptor接口和Bindable接口。其中前者是AOP中的方法拦截器，而后者是一个标明能够绑定Input和Output的接口，如下图所示。</p>
+<p>  <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/202cc9f521f24a40a10a038264dcabaa~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=795&amp;h=295&amp;s=35484&amp;e=jpg&amp;b=fef7f6" alt="4.png"  />
+</p>
+<p>我们先来看MethodInterceptor接口中用于实现拦截的invoke方法，如下所示。</p>
+<p>@Override</p>
+<p><strong>public</strong> <strong>synchronized</strong> Object invoke(MethodInvocation invocation) <strong>throws</strong> Throwable {</p>
+<p>Method method = invocation.getMethod();</p>
+<p>//从缓存中获取目标对象</p>
+<p>Object boundTarget = targetCache.get(method);</p>
+<p><strong>if</strong> (boundTarget != <strong>null</strong>) {</p>
+<p><strong>return</strong> boundTarget;</p>
+<p>}</p>
+<p>//获取Input接口</p>
+<p>Input input = AnnotationUtils.<em>findAnnotation</em>(method, Input.<strong>class</strong>);</p>
+<p><strong>if</strong> (input != <strong>null</strong>) {</p>
+<p>String name = BindingBeanDefinitionRegistryUtils.<em>getBindingTargetName</em>(input, method);</p>
+<p>boundTarget = <strong>this</strong>.inputHolders.get(name).getBoundTarget();</p>
+<p>targetCache.put(method, boundTarget);</p>
+<p><strong>return</strong> boundTarget;</p>
+<p>}</p>
+<p>//获取Output接口，和获取Input接口实现方式类似</p>
+<p><strong>else</strong> {</p>
+<p>&hellip;</p>
+<p>}</p>
+<p><strong>return</strong> <strong>null</strong>;</p>
+<p>}</p>
+<p>这里的逻辑比较简单，可以看到BindableProxyFactory保存了一个缓存对象targetCache，如果所调用方法已经存在于缓存中，则直接返回目标对象。反之，会根据@Input和@Output注解从inputHolders和outputHolders中获取对应的目标对象并放入缓存中。至于这里提到的这个目标对象，暂时可以把它理解为就是一种MessageChannel对象。</p>
+<p>然后我们来看Bindable接口，该接口提供了对Input和Output的绑定和解绑操作，而这些操作是通过Binder接口来完成的。Binder接口分别提供了绑定生产者和消费者的方法，如下所示。</p>
+<p><strong>public</strong> <strong>interface</strong> Binder&lt;T, C <strong>extends</strong> ConsumerProperties, P <strong>extends</strong> ProducerProperties&gt; {</p>
+<p>//绑定生产者</p>
+<p>Binding bindProducer(String name, T outboundBindTarget, P producerProperties);</p>
+<p>//绑定消费者</p>
+<p>Binding bindConsumer(String name, String group, T inboundBindTarget, C consumerProperties);</p>
+<p>}</p>
+<p>在Spring Cloud Stream中，Binder接口的类层关系如下所示，注意到这里还展示了RabbitMessageChannelBinder类，这个类在接下来讲到Spring Cloud Stream与RabbitMQ的集成过程时会具体展开。</p>
+<p><img loading="lazy" src="%E8%BD%AC%E5%AD%98%E5%A4%B1%E8%B4%A5%EF%BC%8C%E5%BB%BA%E8%AE%AE%E7%9B%B4%E6%8E%A5%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87%E6%96%87%E4%BB%B6%20" alt="转存失败，建议直接上传图片文件"  />
+ </p>
+<p>针对Binder接口的实现过程，Spring Cloud Stream首先提供了一个AbstractBinder，这是一个抽象类。AbstractBinder的子类是AbstractMessageChannelBinder，它同样也是一个抽象类。我们来看它的doBindProducer方法，并对该方法中的核心语句进行提取和整理，如下所示。</p>
+<p>@Override</p>
+<p><strong>public</strong> <strong>final</strong> Binding doBindProducer(<strong>final</strong> String destination, MessageChannel outputChannel,</p>
+<p><strong>final</strong> P producerProperties) <strong>throws</strong> BinderException {</p>
+<p>…</p>
+<p>//发送到 outputChannel通道的消息会被SendingHandler进行处理</p>
+<p>((SubscribableChannel) outputChannel).subscribe(</p>
+<p><strong>new</strong> SendingHandler(producerMessageHandler,&hellip;);</p>
+<p>//基于outputChannel构建Binding</p>
+<p>Binding binding = <strong>new</strong> DefaultBinding(destination, <strong>null</strong>, outputChannel,</p>
+<p>producerMessageHandler <strong>instanceof</strong> Lifecycle ? (Lifecycle) producerMessageHandler : <strong>null</strong>) {</p>
+<p>…</p>
+<p>};</p>
+<p><strong>return</strong> binding;</p>
+<p>}</p>
+<p>上述代码的核心逻辑在于，通过Source发送的消息会被outputChannel这个通道传递出去，而负责处理这些消息的是SendingHandler，它是一个Spring Messaging模块中的MessageHandler。</p>
+<p>这里要注意的是，SendingHandler会使用Spring Messaging组件中的Message消息对象，而Spring Cloud Stream会把这个Message消息对象转换成对应中间件的消息数据格式并进行发送。</p>
+<p>下面转到消息消费的场景。针对消息消费，我们可以使用@StreamListener注解。如果在一个方法上添加了@StreamListener注解，那么这个方法就可以用来接收消息，如下所示。</p>
+<p>@StreamListener(&ldquo;input&rdquo;)</p>
+<p><strong>public</strong> <strong>void</strong> handleMessage(MyMessage myMessage) {</p>
+<p>基于@StreamListener注解，在Spring Cloud Stream中存在一个StreamListenerMessageHandler类，用于订阅inputChannel消息通道中传入的消息并进行消费。</p>
+<p>作为总结，我们可以用如下所示的流程图来概括整个消息发送和消费流程。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4c50aed800454787aca9aaa24d12b7c7~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=856&amp;h=717&amp;s=103258&amp;e=jpg&amp;b=fefafa" alt="5.png"  />
+</p>
+<p>到目前为止，Spring Cloud Stream通过Binder组件分别完成了对RabbitMQ以及Kafka的集成。在接下来的内容中，我们将以RabbitMQ为例，给出Spring Cloud Stream集成RabbitMQ的实现过程。</p>
+<h3 id="spring-cloud-stream集成rabbitmq">Spring Cloud Stream集成RabbitMQ<a hidden class="anchor" aria-hidden="true" href="#spring-cloud-stream集成rabbitmq">#</a></h3>
+<p>Spring Cloud Stream团队提供了spring-cloud-stream-binder-rabbit作为与RabbitMQ集成的代码工程。这个代码工程只有四个类，我们需要重点关注的就是实现了AbstractMessageChannelBinder中几个抽象方法的RabbitMessageChannelBinder类。</p>
+<p>首先我们找到RabbitMessageChannelBinder中的createProducerMessageHandler方法，我们知道该方法用于完成消息的发送。我们在createProducerMessageHandler中找到了以下核心代码。</p>
+<p><strong>final</strong> AmqpOutboundEndpoint endpoint = <strong>new</strong> AmqpOutboundEndpoint( buildRabbitTemplate(producerProperties.getExtension(), errorChannel != <strong>null</strong>));</p>
+<p>endpoint.setExchangeName(producerDestination.getName());</p>
+<p>首先，在buildRabbitTemplate方法中，我们看到了RabbitTemplate的构建过程。RabbitTemplate是Spring Amqp组件提供的专门用于封装与RabbitMQ底层交互API的模板类。在构建RabbitTemplate的整个过程中，涉及到设置与RabbitMQ相关的ConnectionFactory等众多参数。</p>
+<p>然后，我们发现RabbitMessageChannelBinder也是直接集成了Spring中用于整合AQMP协议的AmqpOutboundEndpoint，该类来自于Spring Integration框架，并提供了如下所示的send方法进行消息的发送。</p>
+<p><strong>private</strong> <strong>void</strong> send(String exchangeName, String routingKey,</p>
+<p><strong>final</strong> Message<?> requestMessage, CorrelationData correlationData) {</p>
+<p><strong>if</strong> (<strong>this</strong>.amqpTemplate <strong>instanceof</strong> RabbitTemplate) {</p>
+<p>//实现消息格式的转换</p>
+<p>MessageConverter converter = ((RabbitTemplate) <strong>this</strong>.amqpTemplate).getMessageConverter();</p>
+<p>org.springframework.amqp.core.Message amqpMessage = MappingUtils.mapMessage(&hellip;);</p>
+<p>&hellip;</p>
+<p>//实现消息发送</p>
+<p>((RabbitTemplate) <strong>this</strong>.amqpTemplate).send(exchangeName, routingKey, amqpMessage, correlationData);</p>
+<p>}</p>
+<p><strong>else</strong> {</p>
+<p>//实现消息转换和发送</p>
+<p><strong>this</strong>.amqpTemplate.convertAndSend(exchangeName, routingKey, requestMessage.getPayload(),</p>
+<p>message -&gt; {</p>
+<p>getHeaderMapper().fromHeadersToRequest(requestMessage.getHeaders(),</p>
+<p>message.getMessageProperties());</p>
+<p><strong>return</strong> message;</p>
+<p>});</p>
+<p>}</p>
+<p>}</p>
+<p>可以看到这里依赖于Spring Amqp提供的AmqpTemplate接口实现消息发送，而RabbitTemplate是AmqpTemplate的一个实现类。同时，我们还注意到这里通过MessageConverter工具类完成了从org.springframework.messaging.Message到org.springframework.amqp.core.Message这两个消息数据结构之间的转换。</p>
+<p>介绍完消息发送，接下来我们来看消息的消费。RabbitMessageChannelBinder中与消息消费相关的是createConsumerEndpoint方法。类似的，这个方法中也大量使用了Spring Amqp和Spring Integration中的工具类。该方法最终返回的是一个AmqpInboundChannelAdapter对象。在Spring Integration中，AmqpInboundChannelAdapter是一种InboundChannelAdapter，代表面向输入的通道适配器，提供了消息监听功能，如下所示。</p>
+<p><strong>protected</strong> <strong>class</strong> Listener <strong>implements</strong> ChannelAwareMessageListener, RetryListener {</p>
+<p>@Override</p>
+<p><strong>public</strong> <strong>void</strong> onMessage(<strong>final</strong> Message message, <strong>final</strong> Channel channel) <strong>throws</strong> Exception {</p>
+<p>//省略相关实现</p>
+<p>}</p>
+<p>}</p>
+<p>在这个onMessage方法内部，最关键的是用于创建消息的createMessage方法，如下所示。</p>
+<p><strong>private</strong> org.springframework.messaging.Message createMessage(Message message, Channel channel) {</p>
+<p>//创建消息体</p>
+<p>Object payload = AmqpInboundChannelAdapter.<strong>this</strong>.messageConverter.fromMessage(message);</p>
+<p>//创建消息头</p>
+<p>Map&lt;String, Object&gt; headers = AmqpInboundChannelAdapter.<strong>this</strong>.headerMapper .toHeadersFromRequest(message.getMessageProperties());</p>
+<p>&hellip;</p>
+<p>//创建消息</p>
+<p><strong>final</strong> org.springframework.messaging.Message messagingMessage = getMessageBuilderFactory()</p>
+<p>.withPayload(payload)</p>
+<p>.copyHeaders(headers)</p>
+<p>.build();</p>
+<p><strong>return</strong> messagingMessage;</p>
+<p>}</p>
+<p>显然，在这个createMessage方法中，我们完成了消息数据格式从org.springframework.amqp.core.Message到org.springframework.messaging.Message的反向转换。</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>关于如何构建一个统一化的消息通信平台，Spring Cloud Stream是我们值得深入分析和研究的一个框架。对于消息通信而言，我们需要分别实现消息的发布者和消费者。在Spring Cloud Stream中分别是Source和Sink组件。而消息的传递显然应该用到通道，所以Spring Cloud Stream也包含了Channel组件。最后，作为Spring Cloud Stream框架在设计上的一大特色，Binder组件专门用于屏蔽与各种消息中间件之间的技术差异，为开发者提供统一的API。这样，我们就把Spring Cloud Stream中的四个核心组件都梳理了一遍，分别是Binder、Channel、Source和Sink。在回答这类问题时，可以围绕Spring Cloud Stream的基本架构把这些组件都介绍到，并重点对Binder组件做细化阐述。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%AF%B9%E4%BA%8Edocker%E5%92%8Cpodman%E7%9A%84%E4%B8%80%E7%82%B9%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>对于Docker和Podman的一点使用经验</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99%E5%9C%A8%E5%89%8D%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>接口隔离原则在前端的应用</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringCloudStream如何实现统一消息通信平台 on x"
+            href="https://x.com/intent/tweet/?text=SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f&amp;hashtags=Java">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringCloudStream如何实现统一消息通信平台 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f&amp;title=SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0&amp;summary=SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringCloudStream如何实现统一消息通信平台 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f&title=SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringCloudStream如何实现统一消息通信平台 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringCloudStream如何实现统一消息通信平台 on whatsapp"
+            href="https://api.whatsapp.com/send?text=SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringCloudStream如何实现统一消息通信平台 on telegram"
+            href="https://telegram.me/share/url?text=SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringCloudStream如何实现统一消息通信平台 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=SpringCloudStream%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%bb%9f%e4%b8%80%e6%b6%88%e6%81%af%e9%80%9a%e4%bf%a1%e5%b9%b3%e5%8f%b0&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringcloudstream%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E7%25BB%259F%25E4%25B8%2580%25E6%25B6%2588%25E6%2581%25AF%25E9%2580%259A%25E4%25BF%25A1%25E5%25B9%25B3%25E5%258F%25B0%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

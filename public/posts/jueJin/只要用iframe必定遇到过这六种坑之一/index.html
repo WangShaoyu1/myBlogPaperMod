@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>只要用iframe必定遇到过这六种“坑”之一 | PaperMod</title>
+<meta name="keywords" content="前端, JavaScript, Vue.js">
+<meta name="description" content="如果你是做web前端，那么不可避免早晚都会用到iframe的。其实博主很久前用过，但最近又要有项目用了，由于年代久远对iframe的注意事项都有点忘记了，然后想着总结一下比较需要注意的几个重点事项。">
+<meta name="author" content="天天鸭">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%8F%AA%E8%A6%81%E7%94%A8iframe%E5%BF%85%E5%AE%9A%E9%81%87%E5%88%B0%E8%BF%87%E8%BF%99%E5%85%AD%E7%A7%8D%E5%9D%91%E4%B9%8B%E4%B8%80/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%8F%AA%E8%A6%81%E7%94%A8iframe%E5%BF%85%E5%AE%9A%E9%81%87%E5%88%B0%E8%BF%87%E8%BF%99%E5%85%AD%E7%A7%8D%E5%9D%91%E4%B9%8B%E4%B8%80/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="只要用iframe必定遇到过这六种“坑”之一" />
+<meta property="og:description" content="如果你是做web前端，那么不可避免早晚都会用到iframe的。其实博主很久前用过，但最近又要有项目用了，由于年代久远对iframe的注意事项都有点忘记了，然后想着总结一下比较需要注意的几个重点事项。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%8F%AA%E8%A6%81%E7%94%A8iframe%E5%BF%85%E5%AE%9A%E9%81%87%E5%88%B0%E8%BF%87%E8%BF%99%E5%85%AD%E7%A7%8D%E5%9D%91%E4%B9%8B%E4%B8%80/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-24T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="只要用iframe必定遇到过这六种“坑”之一"/>
+<meta name="twitter:description" content="如果你是做web前端，那么不可避免早晚都会用到iframe的。其实博主很久前用过，但最近又要有项目用了，由于年代久远对iframe的注意事项都有点忘记了，然后想着总结一下比较需要注意的几个重点事项。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "只要用iframe必定遇到过这六种“坑”之一",
+      "item": "http://localhost:1313/posts/juejin/%E5%8F%AA%E8%A6%81%E7%94%A8iframe%E5%BF%85%E5%AE%9A%E9%81%87%E5%88%B0%E8%BF%87%E8%BF%99%E5%85%AD%E7%A7%8D%E5%9D%91%E4%B9%8B%E4%B8%80/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "只要用iframe必定遇到过这六种“坑”之一",
+  "name": "只要用iframe必定遇到过这六种“坑”之一",
+  "description": "如果你是做web前端，那么不可避免早晚都会用到iframe的。其实博主很久前用过，但最近又要有项目用了，由于年代久远对iframe的注意事项都有点忘记了，然后想着总结一下比较需要注意的几个重点事项。",
+  "keywords": [
+    "前端", "JavaScript", "Vue.js"
+  ],
+  "articleBody": "前言 如果你是做web前端，那么不可避免早晚都会用到iframe的。其实博主很久前用过，但最近又要有项目用了，由于年代久远对iframe的注意事项都有点忘记了，然后想着总结一下比较需要注意的几个重点事项，除了便于高效工作还能分享给有需要用到iframe的小伙伴。\n一、iframe基于父窗口大小自适应宽高 简述： 这是iframe最常见的需求了，有时候我们用iframe嵌入一个页面时，不想固定宽高想跟随父系统屏幕大小动态变化，从而大大提高适配性。\n实现思路： iframe标签绑定:style 来动态设置宽高，监听父窗口宽高变化时动态获取并且绑定到:style，但监听变化需要考虑到初始化和窗口缩放的情况，并且记得移除事件监听器防止内存泄漏。\n完整实现代码如下所示\nxml\n代码解读\n复制代码\n二、iframe基于内容动态宽高 简述： 例如我们业务需求嵌入的是一个表格而不是一个页面，并且表格高度并不确定时我们不能固定iframe的高度，否则只有一条内容或者没有内容的时候会不好看，这里要根据内容的数量去决定ifram嵌入窗口的高度。\n实现思路： 思路是子窗口通信告诉父窗口具体高度，然后父窗口再动态设置高度即可。具体实现是子窗口利用window.postMessage 来发送具体高度，然后父窗口用window.addEventListener('message', 方法)接收内容，从而根据接收到的内容动态调整iframe的高度。\n子窗口（被嵌入页面）代码\nxml\n代码解读\n复制代码\n父窗口代码\nxml\n代码解读\n复制代码\n注意： if (event.origin !== 'https:******.com') return 这行代码记得加上。\n三、iframe嵌入页面免登录处理 这个小弟有单独写过相关详细文章，并且分析了几种情况的处理方式，移步：iframe嵌入页面实现免登录\n四、http无法嵌入https 简述： 例如开发环境是HTTP，嵌入的环境是生产环境的HTTPS，这时就会发现这个问题了。其实是现代浏览器的安全机制，会认为是跨域不同源而禁止。因为HTTP协议传输的数据未加密的会有安全风险。\n解决思路： 网上五花八门的方法，但其实真正靠谱的就两种，（1）将 HTTP 转换成 HTTPS （2）使用代理服务。\n方法一：将 HTTP 转换成 HTTPS（推荐） 1、获取 SSL 证书并安装 方法不止一种，这里就细说啦。\n2、配置服务器（这里以nginx为例） 下面我把核心部分解释放在注释说明，这是简单版本用于说明HTTP转HTTPS，如果真的上生产其实还有不少其它配置。\nperl\n代码解读\n复制代码\nserver { listen 80; // 监听http默认的80端口 return 301 https://$host$request_uri; // 把所有http永久重定向到https server_name ****.com www.****.com; // 指定域名,这里视真实情况而定 } server { listen 443 ssl; // 监听https默认的443端口。 server_name ****.com www.****.com; // 指定域名,这里视真实情况而定 // 指定 SSL 证书文件路径。 ssl_certificate /etc/lets/live/****.com/fullchain.pem; // 指定 SSL 私钥文件路径 ssl_certificate_key /etc/lets/live/****.com/privkey.pem; location / { index index.html index.htm; root /var/w/html; } }\n方法二：使用代理服务 用nodejs搭建个简单的代理服务器（这里是用nodejs举例，真实业务场景可能是后端那边搞）\n要先安装对应的依赖，例如\ncsharp\n代码解读\n复制代码\nnpm init -y npm install express http-proxy\n然后再配置对应的代理服务器，主要核心是下面四个模块\nexpress：作用是构建 Web 应用。 http：作用是处理 HTTP 请求。 https：作用是处理 HTTPS 请求。 httpProxy：作用是创建代理服务器。 ini\n代码解读\n复制代码\nconst express = require('express'); const fs = require('fs'); const https = require('https'); const http = require('http'); const httpProxy = require('http-proxy'); const app = express(); const proxy = httpProxy.createProxyServer(); const port = 3000; // 读取对应的SSL证书文件 const options = { key: fs.readFileSync('/etc/lets/live/proxy.****.com/privkey.pem'), cert: fs.readFileSync('/etc/lets/live/proxy.****.com/fullchain.pem') }; // 设置路由信息 app.all('/proxy/*', (req, res) =\u003e { const targetUrl = `http://${req.params[0]}`; proxy.web(req, res, { target: targetUrl }, (error) =\u003e { res.status(500).send('Proxy request failed'); }); }); // 创建HTTPS服务器 const server = https.createServer(options, app); // 启动代理服务器 server.listen(port, () =\u003e { console.log(`HTTPS`); });\n五、跨域问题 简述： iframe 页面的跨域问题是因为涉及到浏览器的安全策略，即同源策略。同源策略限制了一个网页脚本不能读写不同源页面的 DOM 与 Cookie之类的信息。即如果 iframe 中的内容与包含它的页面不在同一个源上，那么这两个页面之间会受到跨域限制。\n解决思路：\n1、使用 window.postMessage 实现跨域通信 父页面代码： 主要用window.addEventListener监听消息用postMessage发送消息。\n注意： @load加载完成后再监听和window.removeEventListener取消监听这两个细节。\nxml\n代码解读\n复制代码\n发送消息 子页面代码：和父页面一样，用window.addEventListener监听消息用postMessage发送消息。\nxml\n代码解读\n复制代码\n发送消息到父页面 2、使用 document.domain document.domain用于解决二级域名之间跨域问题的方法，例如：a.tty.com 和 b.tty.com，它们都属于同一个顶级域名 tty.com，这时就适合用document.domain来让这两个页面能够相互访问。用法相当于简单，就是分别设置两个页面的document.domain。\n核心代码在第10与19行。\nini\n代码解读\n复制代码\n3、使用 CORS 这里主要是后端的配置了，通过调整服务器响应头中的 Access-Control-Allow-Origin 来控制哪些源是可以安全访问资源。\n以为nginx为例，*设置为所有。\nini\n代码解读\n复制代码\nhttp { server { listen 80; server_name yourdomain.com; # 替换为你的域名 # 代理 iframe 请求并添加 CORS 头部 location /iframe-proxy/ { # 添加CORS头部 add_header Access-Control-Allow-Origin *; # 其他配置... } } }\n4、nginx配置代理 算是常见解决方案了，思路是通过 Nginx 反向代理，将请求重定向到想要请求的目标服务器。\n核心就是第10行代码，具体可以特意去看看nginx。\nbash\n代码解读\n复制代码\nhttp { server { listen 80; server_name yourdomain.com; # 替换为你的域名 # 代理 iframe 请求并添加 CORS 头部 location /iframe-proxy/ { # 将请求代理到目标 proxy_pass http://tty.com/; # 其他配置... } } }\n六、iframe嵌入后报拒绝连接请求 不知道你用iframe有没有见过这个页面，这通常是目标页面设置了 X-Frame-Options 响应头来限制内容被嵌入到其他站点的 iframe 中。这个可以找后端看看 X-Frame-Options 。 小结 都是把遇到的场景总结了一下，感觉都是比较常见的情况。\n如果大佬们有什么iframe的“坑”也可以分享一下我同步学习一下，还有那里写的不好也可以指出更正鸭\n",
+  "wordCount" : "724",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-24T00:00:00Z",
+  "dateModified": "2024-09-24T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "天天鸭"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%8F%AA%E8%A6%81%E7%94%A8iframe%E5%BF%85%E5%AE%9A%E9%81%87%E5%88%B0%E8%BF%87%E8%BF%99%E5%85%AD%E7%A7%8D%E5%9D%91%E4%B9%8B%E4%B8%80/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      只要用iframe必定遇到过这六种“坑”之一
+    </h1>
+    <div class="post-description">
+      如果你是做web前端，那么不可避免早晚都会用到iframe的。其实博主很久前用过，但最近又要有项目用了，由于年代久远对iframe的注意事项都有点忘记了，然后想着总结一下比较需要注意的几个重点事项。
+    </div>
+    <div class="post-meta"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;天天鸭&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e4%b8%80iframe%e5%9f%ba%e4%ba%8e%e7%88%b6%e7%aa%97%e5%8f%a3%e5%a4%a7%e5%b0%8f%e8%87%aa%e9%80%82%e5%ba%94%e5%ae%bd%e9%ab%98" aria-label="一、iframe基于父窗口大小自适应宽高">一、iframe基于父窗口大小自适应宽高</a></li>
+                <li>
+                    <a href="#%e4%ba%8ciframe%e5%9f%ba%e4%ba%8e%e5%86%85%e5%ae%b9%e5%8a%a8%e6%80%81%e5%ae%bd%e9%ab%98" aria-label="二、iframe基于内容动态宽高">二、iframe基于内容动态宽高</a></li>
+                <li>
+                    <a href="#%e4%b8%89iframe%e5%b5%8c%e5%85%a5%e9%a1%b5%e9%9d%a2%e5%85%8d%e7%99%bb%e5%bd%95%e5%a4%84%e7%90%86" aria-label="三、iframe嵌入页面免登录处理">三、iframe嵌入页面免登录处理</a></li>
+                <li>
+                    <a href="#%e5%9b%9bhttp%e6%97%a0%e6%b3%95%e5%b5%8c%e5%85%a5https" aria-label="四、http无法嵌入https">四、http无法嵌入https</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e6%96%b9%e6%b3%95%e4%b8%80%e5%b0%86-http-%e8%bd%ac%e6%8d%a2%e6%88%90-https%e6%8e%a8%e8%8d%90" aria-label="方法一：将 HTTP 转换成 HTTPS（推荐）">方法一：将 HTTP 转换成 HTTPS（推荐）</a><ul>
+                        
+                <li>
+                    <a href="#1%e8%8e%b7%e5%8f%96-ssl-%e8%af%81%e4%b9%a6%e5%b9%b6%e5%ae%89%e8%a3%85" aria-label="1、获取 SSL 证书并安装">1、获取 SSL 证书并安装</a></li>
+                <li>
+                    <a href="#2%e9%85%8d%e7%bd%ae%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%bf%99%e9%87%8c%e4%bb%a5nginx%e4%b8%ba%e4%be%8b" aria-label="2、配置服务器（这里以nginx为例）">2、配置服务器（这里以nginx为例）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%96%b9%e6%b3%95%e4%ba%8c%e4%bd%bf%e7%94%a8%e4%bb%a3%e7%90%86%e6%9c%8d%e5%8a%a1" aria-label="方法二：使用代理服务">方法二：使用代理服务</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%94%e8%b7%a8%e5%9f%9f%e9%97%ae%e9%a2%98" aria-label="五、跨域问题">五、跨域问题</a><ul>
+                        <ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1%e4%bd%bf%e7%94%a8-windowpostmessage-%e5%ae%9e%e7%8e%b0%e8%b7%a8%e5%9f%9f%e9%80%9a%e4%bf%a1" aria-label="1、使用 window.postMessage 实现跨域通信">1、使用 window.postMessage 实现跨域通信</a></li>
+                <li>
+                    <a href="#2%e4%bd%bf%e7%94%a8-documentdomain" aria-label="2、使用 document.domain">2、使用 document.domain</a></li>
+                <li>
+                    <a href="#3%e4%bd%bf%e7%94%a8-cors" aria-label="3、使用 CORS">3、使用 CORS</a></li>
+                <li>
+                    <a href="#4nginx%e9%85%8d%e7%bd%ae%e4%bb%a3%e7%90%86" aria-label="4、nginx配置代理">4、nginx配置代理</a></li></ul>
+                    </ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%adiframe%e5%b5%8c%e5%85%a5%e5%90%8e%e6%8a%a5%e6%8b%92%e7%bb%9d%e8%bf%9e%e6%8e%a5%e8%af%b7%e6%b1%82" aria-label="六、iframe嵌入后报拒绝连接请求">六、iframe嵌入后报拒绝连接请求</a></li>
+                <li>
+                    <a href="#%e5%b0%8f%e7%bb%93" aria-label="小结">小结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<p>如果你是做<code>web</code>前端，那么不可避免早晚都会用到<code>iframe</code>的。其实博主很久前用过，但最近又要有项目用了，由于年代久远对<code>iframe</code>的注意事项都有点忘记了，然后想着总结一下比较需要注意的几个重点事项，除了便于高效工作还能分享给有需要用到<code>iframe</code>的小伙伴。</p>
+<h2 id="一iframe基于父窗口大小自适应宽高">一、iframe基于父窗口大小自适应宽高<a hidden class="anchor" aria-hidden="true" href="#一iframe基于父窗口大小自适应宽高">#</a></h2>
+<p><strong>简述：</strong> 这是<code>iframe</code>最常见的需求了，有时候我们用<code>iframe</code>嵌入一个页面时，不想固定宽高想跟随父系统屏幕大小动态变化，从而大大提高适配性。</p>
+<p><strong>实现思路：</strong> <code>iframe</code>标签绑定<code>:style</code> 来动态设置宽高，监听父窗口宽高变化时动态获取并且绑定到<code>:style</code>，但监听变化需要考虑到初始化和窗口缩放的情况，并且记得移除事件监听器防止内存泄漏。</p>
+<p><strong>完整实现代码如下所示</strong></p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;box&quot; @resize=&quot;iframeResize&quot;&gt;     &lt;iframe :src=&quot;iframeSrc&quot; :style=&quot;{ width: '100%', height: frameHeight + 'px' }&quot; ref=&quot;myRef&quot;&gt;&lt;/iframe&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { onMounted, onUnmounted, ref, watchEffect } from 'vue'; const myRef = ref(null); const iframeSrc = 'https:******.com'; const frameHeight = ref(0); // 调整iframe的高度的方法 function initHeight() {   if (myRef.value) {     frameHeight.value = window.innerHeight;   } } // 窗口大小变化触发 function iframeResize() {   initHeight(); } // 移除事件监听器, 防止内存泄漏 onUnmounted(() =&gt; {   window.removeEventListener('resize', iframeResize); }); // 在组件挂载时先获取一次iframe高度 onMounted(() =&gt; {   initHeight();   window.addEventListener('resize', iframeResize); }); // 时刻监听变化，防止iframeRef没有赋值 watchEffect(() =&gt; {   if (myRef.value) {     initHeight();   } }); &lt;/script&gt; &lt;style scoped&gt; .box {   position: relative;   width: 100%;   height: 100vh; } &lt;/style&gt;</code></p>
+<h2 id="二iframe基于内容动态宽高">二、iframe基于内容动态宽高<a hidden class="anchor" aria-hidden="true" href="#二iframe基于内容动态宽高">#</a></h2>
+<p><strong>简述：</strong> 例如我们业务需求嵌入的是一个表格而不是一个页面，并且表格高度并不确定时我们不能固定<code>iframe</code>的高度，否则只有一条内容或者没有内容的时候会不好看，这里要根据内容的数量去决定<code>ifram</code>嵌入窗口的高度。</p>
+<p><strong>实现思路：</strong> 思路是子窗口通信告诉父窗口具体高度，然后父窗口再动态设置高度即可。具体实现是子窗口利用<code>window.postMessage</code> 来发送具体高度，然后父窗口用<code>window.addEventListener('message', 方法)</code>接收内容，从而根据接收到的内容动态调整<code>iframe</code>的高度。</p>
+<p><strong>子窗口（被嵌入页面）代码</strong></p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script setup&gt;     window.onload = function() {         let height = '想要告诉父窗口的高度'         if (window.parent &amp;&amp; window.parent.postMessage) {             window.parent.postMessage({height: height}, '*');         }     }; &lt;/script&gt;</code></p>
+<p><strong>父窗口代码</strong></p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;     &lt;iframe :src=&quot;iframeSrc&quot; ref=&quot;myRef&quot;&gt;&lt;/iframe&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { onMounted, ref } from 'vue'; const iframeSrc = 'https:******.com'; const myRef = ref(null); onMounted(() =&gt; {   window.addEventListener('message', iframeMessage); }); const iframeMessage = (event) =&gt; {   // 验证消息来源,确保安全性   if (event.origin !== 'https:******.com') return;   const newHeight = event.data.height;   if (newHeight &amp;&amp; myRef.value) {     myRef.value.style.height = `${newHeight}px`;   } }; &lt;/script&gt;</code></p>
+<p><strong>注意：</strong> <code>if (event.origin !== 'https:******.com') return</code> 这行代码记得加上。</p>
+<h2 id="三iframe嵌入页面免登录处理">三、iframe嵌入页面免登录处理<a hidden class="anchor" aria-hidden="true" href="#三iframe嵌入页面免登录处理">#</a></h2>
+<p>这个小弟有单独写过相关详细文章，并且分析了几种情况的处理方式，移步：<a href="https://juejin.cn/post/7350876924393209894" title="https://juejin.cn/post/7350876924393209894">iframe嵌入页面实现免登录</a></p>
+<h2 id="四http无法嵌入https">四、http无法嵌入https<a hidden class="anchor" aria-hidden="true" href="#四http无法嵌入https">#</a></h2>
+<p><strong>简述：</strong> 例如开发环境是<code>HTTP</code>，嵌入的环境是生产环境的<code>HTTPS</code>，这时就会发现这个问题了。其实是现代浏览器的安全机制，会认为是跨域不同源而禁止。因为<code>HTTP</code>协议传输的数据未加密的会有安全风险。</p>
+<p><strong>解决思路：</strong> 网上五花八门的方法，但其实真正靠谱的就两种，（1）将 <code>HTTP</code> 转换成 <code>HTTPS</code> （2）使用代理服务。</p>
+<h4 id="方法一将-http-转换成-https推荐">方法一：将 <code>HTTP</code> 转换成 <code>HTTPS</code>（推荐）<a hidden class="anchor" aria-hidden="true" href="#方法一将-http-转换成-https推荐">#</a></h4>
+<h5 id="1获取-ssl-证书并安装">1、获取 SSL 证书并安装<a hidden class="anchor" aria-hidden="true" href="#1获取-ssl-证书并安装">#</a></h5>
+<p>方法不止一种，这里就细说啦。</p>
+<h5 id="2配置服务器这里以nginx为例">2、配置服务器（这里以nginx为例）<a hidden class="anchor" aria-hidden="true" href="#2配置服务器这里以nginx为例">#</a></h5>
+<p>下面我把核心部分解释放在注释说明，这是简单版本用于说明<code>HTTP</code>转<code>HTTPS</code>，如果真的上生产其实还有不少其它配置。</p>
+<p>perl</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>server {   listen 80;   // 监听http默认的80端口   return 301 https://$host$request_uri; // 把所有http永久重定向到https   server_name ****.com www.****.com;  // 指定域名,这里视真实情况而定 } server {   listen 443 ssl; // 监听https默认的443端口。   server_name ****.com www.****.com;  // 指定域名,这里视真实情况而定      // 指定 SSL 证书文件路径。   ssl_certificate /etc/lets/live/****.com/fullchain.pem;      // 指定 SSL 私钥文件路径   ssl_certificate_key /etc/lets/live/****.com/privkey.pem;   location / {       index index.html index.htm;       root /var/w/html;   } }</code></p>
+<h4 id="方法二使用代理服务">方法二：使用代理服务<a hidden class="anchor" aria-hidden="true" href="#方法二使用代理服务">#</a></h4>
+<p>用<code>nodejs</code>搭建个简单的代理服务器（这里是用<code>nodejs</code>举例，真实业务场景可能是后端那边搞）</p>
+<p>要先安装对应的依赖，例如</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm init -y npm install express http-proxy</code></p>
+<p>然后再配置对应的代理服务器，主要核心是下面四个模块</p>
+<blockquote>
+<ul>
+<li><code>express</code>：作用是构建 <code>Web</code> 应用。</li>
+<li><code>http</code>：作用是处理 <code>HTTP</code> 请求。</li>
+<li><code>https</code>：作用是处理 <code>HTTPS</code> 请求。</li>
+<li><code>httpProxy</code>：作用是创建代理服务器。</li>
+</ul>
+</blockquote>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const express = require('express'); const fs = require('fs'); const https = require('https'); const http = require('http'); const httpProxy = require('http-proxy'); const app = express(); const proxy = httpProxy.createProxyServer(); const port = 3000; // 读取对应的SSL证书文件 const options = {   key: fs.readFileSync('/etc/lets/live/proxy.****.com/privkey.pem'),   cert: fs.readFileSync('/etc/lets/live/proxy.****.com/fullchain.pem') }; // 设置路由信息 app.all('/proxy/*', (req, res) =&gt; {   const targetUrl = `http://${req.params[0]}`;   proxy.web(req, res, { target: targetUrl }, (error) =&gt; {     res.status(500).send('Proxy request failed');   }); }); // 创建HTTPS服务器 const server = https.createServer(options, app); // 启动代理服务器 server.listen(port, () =&gt; {   console.log(`HTTPS`); });</code></p>
+<h2 id="五跨域问题">五、跨域问题<a hidden class="anchor" aria-hidden="true" href="#五跨域问题">#</a></h2>
+<p><strong>简述：</strong> <code>iframe</code> 页面的跨域问题是因为涉及到浏览器的安全策略，即同源策略。同源策略限制了一个网页脚本不能读写不同源页面的 <code>DOM</code> 与 <code>Cookie</code>之类的信息。即如果 <code>iframe</code> 中的内容与包含它的页面不在同一个源上，那么这两个页面之间会受到跨域限制。</p>
+<p><strong>解决思路：</strong></p>
+<h5 id="1使用-windowpostmessage-实现跨域通信">1、使用 window.postMessage 实现跨域通信<a hidden class="anchor" aria-hidden="true" href="#1使用-windowpostmessage-实现跨域通信">#</a></h5>
+<p>父页面代码： 主要用<code>window.addEventListener</code>监听消息用<code>postMessage</code>发送消息。</p>
+<p><strong>注意</strong>： <code>@load</code>加载完成后再监听和<code>window.removeEventListener</code>取消监听这两个细节。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;     &lt;iframe :src=&quot;iframeSrc&quot; ref=&quot;iframeRef&quot; @load=&quot;onIframeLoad&quot; style=&quot;width: 100%; height: 400px;&quot;&gt;&lt;/iframe&gt;     &lt;button @click=&quot;sendMessage&quot;&gt;发送消息&lt;/button&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { ref, onMounted } from 'vue'; onMounted(() =&gt; {   window.addEventListener('message', handleMessage);   // 在组件卸载时移除事件监听器   return () =&gt; {     window.removeEventListener('message', handleMessage);   }; }); const iframeSrc = 'http://***.com'; const iframeRef = ref(null);   // 当 iframe 加载完成后，再设置监听器 const onIframeLoad = () =&gt; {   window.addEventListener('message', handleMessage); }; const sendMessage = () =&gt; {   const iframe = iframeRef.value;   if (iframe.contentWindow) {     iframe.contentWindow.postMessage('Hello!', 'http://***.com');   } }; const handleMessage = (event) =&gt; {   // 确保来自想要的源才处理消息   if (event.origin !== 'http://***.com') return;   console.log( event.data); }; &lt;/script&gt;</code></p>
+<p>子页面代码：和父页面一样，用<code>window.addEventListener</code>监听消息用<code>postMessage</code>发送消息。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;     &lt;button @click=&quot;sendMessage&quot;&gt;发送消息到父页面&lt;/button&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { ref, onMounted } from 'vue'; onMounted(() =&gt; {   window.addEventListener('message', handleMessage);   // 在组件卸载时移除事件监听器   return () =&gt; {     window.removeEventListener('message', handleMessage);   }; }); const sendMessage = () =&gt; {   const parentWindow = window.parent;   if (parentWindow) {     parentWindow.postMessage('Hello!', 'http://****.com');   } }; const handleMessage = (event) =&gt; {   if (event.origin !== 'http://****.com') return;   console.log(event.data); }; &lt;/script&gt;</code></p>
+<h5 id="2使用-documentdomain">2、使用 document.domain<a hidden class="anchor" aria-hidden="true" href="#2使用-documentdomain">#</a></h5>
+<p><code>document.domain</code>用于解决二级域名之间跨域问题的方法，例如：<code>a.tty.com</code> 和 <code>b.tty.com</code>，它们都属于同一个顶级域名 <code>tty.com</code>，这时就适合用<code>document.domain</code>来让这两个页面能够相互访问。用法相当于简单，就是分别设置两个页面的<code>document.domain</code>。</p>
+<p>核心代码在第<code>10与19</code>行。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div&gt;     &lt;iframe :src=&quot;iframeSrc&quot; @load=&quot;onIframeLoad&quot; ref=&quot;iframeRef&quot;&gt;&lt;/iframe&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { ref } from 'vue'; document.domain = 'tty.com'; // 设置顶级域名 const iframeRef = ref(null); const iframeSrc = 'http://b.tty.com'; const onIframeLoad = () =&gt; {   const iframe = iframeRef.value;   if (iframe.contentWindow) {     //  设置iframe的 document.domain     iframe.contentWindow.document.domain = 'tty.com';   } }; &lt;/script&gt;</code></p>
+<h5 id="3使用-cors">3、使用 CORS<a hidden class="anchor" aria-hidden="true" href="#3使用-cors">#</a></h5>
+<p>这里主要是后端的配置了，通过调整服务器响应头中的 <code>Access-Control-Allow-Origin</code> 来控制哪些源是可以安全访问资源。</p>
+<p>以为<code>nginx</code>为例，*设置为所有。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>http {   server {       listen 80;       server_name yourdomain.com;  # 替换为你的域名       # 代理 iframe 请求并添加 CORS 头部       location /iframe-proxy/ {           # 添加CORS头部           add_header Access-Control-Allow-Origin *;           # 其他配置...       }   } }</code></p>
+<h5 id="4nginx配置代理">4、nginx配置代理<a hidden class="anchor" aria-hidden="true" href="#4nginx配置代理">#</a></h5>
+<p>算是常见解决方案了，思路是通过 <code>Nginx</code> 反向代理，将请求重定向到想要请求的目标服务器。</p>
+<p>核心就是第<code>10</code>行代码，具体可以特意去看看<code>nginx</code>。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>http {   server {       listen 80;       server_name yourdomain.com;  # 替换为你的域名       # 代理 iframe 请求并添加 CORS 头部       location /iframe-proxy/ {           # 将请求代理到目标           proxy_pass http://tty.com/;             # 其他配置...       }   } }</code></p>
+<h2 id="六iframe嵌入后报拒绝连接请求">六、iframe嵌入后报拒绝连接请求<a hidden class="anchor" aria-hidden="true" href="#六iframe嵌入后报拒绝连接请求">#</a></h2>
+<p>不知道你用<code>iframe</code>有没有见过这个页面，这通常是目标页面设置了 <code>X-Frame-Options</code> 响应头来限制内容被嵌入到其他站点的 <code>iframe</code> 中。这个可以找后端看看 <code>X-Frame-Options</code> 。 <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f14d46d14ae24b4c947d8e7cc17bf18f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5aSp5aSp6bit:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727777954&amp;x-signature=mdiAUhSNH2sxY4rpqPVW14wstBU%3D" alt="image.png"  />
+</p>
+<h2 id="小结">小结<a hidden class="anchor" aria-hidden="true" href="#小结">#</a></h2>
+<p>都是把遇到的场景总结了一下，感觉都是比较常见的情况。</p>
+<p>如果大佬们有什么<code>iframe</code>的“坑”也可以分享一下我同步学习一下，还有那里写的不好也可以指出更正鸭</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3starrocks%E7%9A%84%E5%85%83%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>深入理解StarRocks的元数据管理</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8Eai%E5%8A%A0%E7%A0%81%E9%9D%92%E8%AE%AD%E8%90%A5x%E8%B1%86%E5%8C%85marscode%E6%8A%80%E6%9C%AF%E8%AE%AD%E7%BB%83%E8%90%A5%E4%BD%A0%E6%83%B3%E4%BA%86%E8%A7%A3%E7%9A%84%E5%9C%A8%E8%BF%99%E9%87%8C/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>关于【AI加码，青训营X豆包MarsCode技术训练营】你想了解的在这里</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 只要用iframe必定遇到过这六种“坑”之一 on x"
+            href="https://x.com/intent/tweet/?text=%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cJavaScript%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 只要用iframe必定遇到过这六种“坑”之一 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f&amp;title=%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80&amp;summary=%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 只要用iframe必定遇到过这六种“坑”之一 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f&title=%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 只要用iframe必定遇到过这六种“坑”之一 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 只要用iframe必定遇到过这六种“坑”之一 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 只要用iframe必定遇到过这六种“坑”之一 on telegram"
+            href="https://telegram.me/share/url?text=%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 只要用iframe必定遇到过这六种“坑”之一 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%8f%aa%e8%a6%81%e7%94%a8iframe%e5%bf%85%e5%ae%9a%e9%81%87%e5%88%b0%e8%bf%87%e8%bf%99%e5%85%ad%e7%a7%8d%e2%80%9c%e5%9d%91%e2%80%9d%e4%b9%8b%e4%b8%80&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%258F%25AA%25E8%25A6%2581%25E7%2594%25A8iframe%25E5%25BF%2585%25E5%25AE%259A%25E9%2581%2587%25E5%2588%25B0%25E8%25BF%2587%25E8%25BF%2599%25E5%2585%25AD%25E7%25A7%258D%25E5%259D%2591%25E4%25B9%258B%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

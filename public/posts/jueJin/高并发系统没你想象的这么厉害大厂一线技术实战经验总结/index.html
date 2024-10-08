@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 | PaperMod</title>
+<meta name="keywords" content="后端, 面试, 架构">
+<meta name="description" content="Hi你好，我是东东拿铁，不少朋友都希望了解一下高并发系统，今天想和大家聊聊，高并发系统的背后设计思路，大厂一线技术实战经验总结。">
+<meta name="author" content="东东拿铁">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E6%B2%A1%E4%BD%A0%E6%83%B3%E8%B1%A1%E7%9A%84%E8%BF%99%E4%B9%88%E5%8E%89%E5%AE%B3%E5%A4%A7%E5%8E%82%E4%B8%80%E7%BA%BF%E6%8A%80%E6%9C%AF%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E6%B2%A1%E4%BD%A0%E6%83%B3%E8%B1%A1%E7%9A%84%E8%BF%99%E4%B9%88%E5%8E%89%E5%AE%B3%E5%A4%A7%E5%8E%82%E4%B8%80%E7%BA%BF%E6%8A%80%E6%9C%AF%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="高并发系统没你想象的这么厉害！大厂一线技术实战经验总结" />
+<meta property="og:description" content="Hi你好，我是东东拿铁，不少朋友都希望了解一下高并发系统，今天想和大家聊聊，高并发系统的背后设计思路，大厂一线技术实战经验总结。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E6%B2%A1%E4%BD%A0%E6%83%B3%E8%B1%A1%E7%9A%84%E8%BF%99%E4%B9%88%E5%8E%89%E5%AE%B3%E5%A4%A7%E5%8E%82%E4%B8%80%E7%BA%BF%E6%8A%80%E6%9C%AF%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-05-20T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-05-20T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="高并发系统没你想象的这么厉害！大厂一线技术实战经验总结"/>
+<meta name="twitter:description" content="Hi你好，我是东东拿铁，不少朋友都希望了解一下高并发系统，今天想和大家聊聊，高并发系统的背后设计思路，大厂一线技术实战经验总结。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "高并发系统没你想象的这么厉害！大厂一线技术实战经验总结",
+      "item": "http://localhost:1313/posts/juejin/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E6%B2%A1%E4%BD%A0%E6%83%B3%E8%B1%A1%E7%9A%84%E8%BF%99%E4%B9%88%E5%8E%89%E5%AE%B3%E5%A4%A7%E5%8E%82%E4%B8%80%E7%BA%BF%E6%8A%80%E6%9C%AF%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "高并发系统没你想象的这么厉害！大厂一线技术实战经验总结",
+  "name": "高并发系统没你想象的这么厉害！大厂一线技术实战经验总结",
+  "description": "Hi你好，我是东东拿铁，不少朋友都希望了解一下高并发系统，今天想和大家聊聊，高并发系统的背后设计思路，大厂一线技术实战经验总结。",
+  "keywords": [
+    "后端", "面试", "架构"
+  ],
+  "articleBody": "前言 Hi 你好，我是东东拿铁，一个正在探索个人IP\u0026副业的后端程序员。\n今天想和大家聊聊，高并发系统的背后都有什么，设计思路是什么，具体是如何优化的。\n为什么要写这个文章，起源于上一篇文章读者的评论。\n我本来是不想写这类话题的，因为做一个高并发系统，因为高并发涉及并发读和并发写，对应了IO密集型和CPU密集型，依赖的中间件有所不同，性能优化的点也不同，想一文写出来，一定会有些泛泛而谈。\n所以我一开始回复了“利用好缓存和多线程，你也可以的。”（我真的是这么想的）\n但后面的评论大家也看到了，大部分朋友的评论在我回复完之后，一般很少会继续回复我了，但他挺主动的。每一个积极主动的你都应该被认真对待，因此我决定尝试一下讲一下这个话题。\n许多刚工作几年的朋友，因为工作内容的原因，可能很难接触到高并发、大数据这些场景，因此在一定程度上，很多人觉着高并发系统有着天然的憧憬，刚毕业几年的我也是如此。\n本文更多的是一些设计思路、实战经验分享，希望你看完之后有所收获。为了尽可能一文能够讲完，文章一些概念我不会具体展开，可能需要你自己去学习基础概念。\n普通人只是缺少一个机会、一个环境，事实上每个人都可以做出高并发系统。\n架构设计三个思维 合适即可 选择适合当前现状的，而不是追求最好的。合适也就是适应当前业务的要求是首位的，不要追求完美与过度设计。\n针对合适原则，我们有几个考虑方向，人力资源、业务需求、公司资源几个角度考虑。\n比如当前开发人员只有2个，那么能用单体就用单体架构，微服务都不需要用。\n业务需求就是满足低频次的数据写入和读取，那么直接读数据库就好，缓存也不需要。\n简单原则 依赖系统、组件越多，就越有可能某个组件出故障。\n尽量减少服务调用链路 微服务架构已经不是什么新鲜事了，一次请求依赖几十个服务也不是没有可能，我们需要做的就是保证尽量少的依赖关系，模块之间的依赖关系应尽量减少，避免过多的依赖链条。\n这样可以降低修改一个模块对其他模块造成的影响，提高系统的稳定性和可维护性。\n在面对多种设计选择时，优先选择简单的解决方案。简单的解决方案往往更易于理解和实现，并且更不容易出错。\n演化原则 唯一不变的就是变化，所有的系统，都不是一开始就是这样设计的，而是一步步演变来的。\n迭代思维在架构设计中的应用可以体现在多个方面：\n渐进式完善系统：架构设计不必一开始就完全确定所有细节，而是可以先设计一个初步的架构，然后通过迭代不断优化和完善。\n快速验证想法：通过迭代，可以快速验证不同的架构想法和解决方案，从而找到最合适的方案。\n及时反馈和调整：迭代过程中可以及时获取用户和利益相关者的反馈，从而及时调整架构设计，保证系统的实际需求和预期一致。\n系统背景 业务背景 某大型促销活动系统，展示不同的活动页面，属于CPU密集型服务，读多写少，主要提供了页面数据获取。\n（针对于高并发写，有机会的话，下次再说吧。）\n指标评估 系统用户数 假设注册用户1亿人。 活跃用户数 日活按照注册用户的10%，有1000w人。 目标用户数 促销活动，只针对部分用户生效，可能我们目标是覆盖到100w人。 并发用户数 100w人是我们期望覆盖的用户数量，中间会产生一些折损，而且这部分人也不会同一时间访问我们的系统。我们假设并发用户数为10w人。\n因此，我们估算指标如下： 峰值QPS10w+，平均RT：200-300ms\n设计思路 扩展能力 设计思路的第一点，就是系统要具有扩展的能力，扩展又分为垂直和水平两种。\n垂直扩展 一类是传统大型软件系统的技术方案，被称作垂直伸缩方案。所谓的垂直伸缩就是提升单台服务器的处理能力，比如用更多核的 CPU、更大的内存、更快的网卡、更多的磁盘组成一台服务器，从普通服务器升级到小型机，从小型机提升到中型机，从中型机提升到大型机，从而使单台服务器的处理能力得到提升。通过这种手段提升系统的处理能力。\n水平扩展 第二类就是水平扩展方案，不用更厉害的硬件，而使用更多的服务器，来构建成一个分布式集群，以此提升整体能力。\n水平扩展其实也是随着互联网应用场景必备的解决方案，因为你没法预估有多少人来访问你的系统，或者在一些促销活动时，会有多少倍的流量增加。\n简单来说，假设在4c8g（4核CPU，8g内存）情况下，单机支持500QPS时，10wQPS的流量洪峰情况下，200台机器就可以满足系统整体要求了。\n那100W QPS的情况下，理论上2000台机器就可以满足系统要求了。\n当然，横向扩展也不是无限扩展的，机器数量在达到一定量级的时候，可能就会带来一些架构上的问题，这个我们下面再说。\n多线程 假设依赖下游较多，较多数据需要处理，那么就要合理的利用多线程。\n比如我们的活动系统，一个活动页面包含了不同的组件，共同组合成了这一个页面，可能包含优惠券模块、秒杀模块、内容展示模块等。\n如果我们使用串行方式加载不同模块，假定每一个模块都需要100ms的时间，那么10个模块的加载时间就需要1000ms。如果运营在页面上配置更多的模块，时间也会随着模块数量直线上升。\n比如下面这个例子\nini\n代码解读\n复制代码\nvoid test(){ String x = query1(); String y = query2(); String z = query3(); return x+y+z; }\n在方法test中调用了方法query1，那么在方法 query1 返回之前，就不会调用方法 query2和query3了，即方法 a 被方法 m 阻塞了。这种编程模型下，方法 m 和方法 n 不能同时执行，系统的运行速度就不会 快，并发处理能力就不会很高。\n但是我们采用模块化的设计方案，每一个模块逻辑独立，我们可以采用多线程的方式来进行加载。\nJava中就离不开线程池和CompletableFuture了\ntypescript\n代码解读\n复制代码\npublic class Example { public static void main(String[] args) { long start = System.currentTimeMillis(); ThreadFactory namedThreadFactory = new ThreadFactoryBuilder() .setNameFormat(\"activity-thread-%d\").build(); // 线程池 ExecutorService pool = new ThreadPoolExecutor(5, 5, 5, TimeUnit.MILLISECONDS, new ArrayBlockingQueue\u003c\u003e(500), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy()); CompletableFuture query1 = CompletableFuture.supplyAsync(() -\u003e { try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); } return \"query1\"; }, pool); CompletableFuture query2 = CompletableFuture.supplyAsync(() -\u003e { try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); } return \"query2\"; }, pool); CompletableFuture query3 = CompletableFuture.supplyAsync(() -\u003e { try { Thread.sleep(550); } catch (InterruptedException e) { e.printStackTrace(); } return \"query3\"; }, pool); try { // 资源获取完成，走后续主逻辑 executeNext(query1.get(),query2.get(),query3.get(2,TimeUnit.SECONDS)); }catch (Exception e){ e.printStackTrace(); } System.out.println(\"耗时:\"+ (System.currentTimeMillis() - start)); pool.shutdown(); } private static void executeNext(String a1,String a2,String a3) { System.out.println(a1); System.out.println(a2); System.out.println(a3); } }\n异步 核心流程，经过我们多线程的处理，我们已经极大的减少了耗时。\n异步其实最常见的是优化并发写的场景，常见的就是引入消息队列。\n应用服务器接收到用户的写操作请求后，并不直接与数据库进行交互，而是将写操作请求发送至消息队列服务器。随后，消息消费者服务器从消息队列服务器消费消息，最终完成对数据库的写入操作。\n这种设计带来了两个主要好处。\n首先，用户的写操作请求发送至消息队列后，应用服务器可以立即返回响应给用户。由于消息队列服务器的处理速度远远快于数据库，因此用户端的响应时间大大缩短。\n其次，当消息队列执行写入数据库操作时，可以根据数据库的负载能力来控制写入速度。即使在用户请求并发很高的情况下，也不会导致数据库崩溃。因此，消息队列可以确保系统在性能最优的负载压力范围内稳定运行。\n缓存 可以说，在计算机的世界中，凡是想要提高性能的场合都会使用到缓存的思想。利用好缓存，是每一个高并发系统必须要去考虑的。缓存是指将数据存储在访问速度相对较快的存储介质中，所以从缓存中读取数据的速度更快。\n所以这部分也会用比较长的篇幅来讲。\n缓存是一个比较大的概念，在系统、软件不同级别有不同层级的缓存：\n浏览器级别的缓存，会用来存储之前在网络上下载过的静态资源； CDN缓存，属于部署在网络服务供应商机房中的缓存； 反向代理服务器本质上同样也是缓存，属于用户数据中心最前端的缓存，比如Nginx 针对数据库中的“热点”数据，在应用服务器集群中有一级缓存，在缓存服务集群中有二级缓存 我们主要聚焦在一个支持高并发的活动系统，因此缓存这块，我们主要考虑两类缓存：Redis集中式缓存，和类似Guava Cache的本地缓存。\n分布式缓存 先简单聊聊老生常谈的三个问题 缓存穿透 当一个请求查询一个不存在于缓存中的数据，而且这个数据也不在持久化存储（如数据库）中时，就会发生缓存穿透。这种情况下，大量的请求会直接穿过缓存层，直接访问底层的数据存储，导致数据库等存储系统压力增大，并可能导致性能下降甚至宕机。为了解决这个问题，可以在缓存层设置一个空值缓存（即将查询结果为空的键值对也缓存起来），或者使用布隆过滤器等数据结构来过滤掉不存在的键，避免无效的查询访问数据库。\n缓存击穿 缓存击穿指的是针对某个热点数据的大量并发请求同时到达缓存系统，而这个热点数据的缓存刚好失效或被淘汰，导致这些请求都绕过了缓存直接访问底层存储系统。\n比如10W QPS/s的情况下，加载数据-\u003e写入缓存需要耗费100ms的时间，假设请求在1s内分布均匀，那么打到DB的请求量可能会有1w+，有击垮DB的风险。\n与缓存穿透不同的是，缓存击穿通常指的是某个具体的热点数据的缓存失效引起的问题，而不是查询的数据本身不存在。\n这个场景在大流量下很常见，针对这个我们可能要考虑热点数据加载加互斥锁、预加载、异步更新等场景。\n缓存雪崩 缓存雪崩是指在缓存中存储了大量的缓存数据，且这些缓存数据在同一时间失效，导致大量请求直接落在了底层存储系统上，造成存储系统的瞬时压力过大，甚至导致宕机。这种情况通常发生在缓存的过期时间设置不合理，或者大量的缓存数据在同一时间失效的情况下。为了避免缓存雪崩，可以采取多种策略，如给缓存数据设置不同的过期时间。\n除了老生常谈的三个问题，集中式缓存还需要解决需要解决热点数据、数据一致性问题等\n热点数据，导致Redis集群某个实例压力过大，甚至打满网络带宽，那么我们可能需要考虑热点数据分片。\nDB、缓存数据一致性，这个话题是没有标准答案的，并且没有完美的方案，只需要适合你的场景就可以。比如先更新数据库、删除缓存，或者延迟双删，这块就不展开了。\n本地缓存 说起本地缓存，大家可能觉着，已经有了像Redis这样的分布式缓存，本地缓存是不是已经很难派上用场了，实际中应用到的场景还多吗？\n但在高并发场景中，利用本地缓存的场景还是存在的，甚至在很多场景下，必然要从分布式缓存切换到本地缓存。\n比如缓存数据较大的时候，比如1GB大小时，Redis明显就无法支持这类场景了。\n那么对于本地缓存，缓存数据加载方式是我们首先要考虑的，常见几种方式\n预加载 增量更新 过期失效 预加载：服务启动时进行查询，不设置过期时间，当数据有变更的时候通知所有服务重新加载。\n看起来很美好，预加载可能会有相当多的问题，比如服务启动慢，滚动发布时间长。当集群规模上万台，重新加载时数据库的压力依旧很大等。\n增量更新 如果重新加载的代价太高，那么就需要设计增量更新的方案，比如1GB的数据包，当只有1%的数据发生变更，那我们没必要完整的加载这1GB的数据。\n过期失效 本地缓存设置过期时间，过期后回源查询。这个方案就需要业务能容容忍一段时间的数据不一致情况。\n本地缓存除了需要考虑缓存和DB之间的一致性问题，还想需要考虑服务器之间数据Diff问题，比如A服务器和B服务器，当B服务器更新本地缓存失败，就会造成在同一时间同一个key的结果不一致，这个也是需要提前考虑到的。\n极致优化 说了很多方法论上的内容，上述内容做好，一个基本的高并发系统就成型了，但实际生产环境运行中，一个高并发系统依然有很多问题需要持续优化。\n服务抖动 10W+QPS的服务，我们的RT在200-300ms，假设TP99为200ms\nTP99 = 200ms，标识这段时间 99% 的请求执行时间都在 200ms 以内，TP50 和 TP999 也是相同计算策略。\n但是1%的流量就有1000QPS，这时你的TP999时延的大小可能直接会到1000ms，如果控制不好，影响面也是极广的。\n这里的TP99的200ms，只是为了给大家举例子，让大家直观的感受到TP99和TP999影响面的差距，真正生产环境，对于RT在200-300ms之间的要求，一定是针对TP999来要求的。\n那么影响RT的地方可能就有很多，比如垃圾回收产生的抖动。比如CPU占用率达到60%以上时，系统的PCT999一定会有一个影响。\n抛砖引玉，这块不展开了，有经验的大佬可以在评论区交流。\n容灾策略 当你负责了这么大的流量系统，你就要考虑一件事情，容灾。\n你的系统出问题1s，那就意味着有10w人在这一刻，无法加载出这一个活动页面，这是不可接受的。\n针对你服务中依赖的所有中间件，你需要考虑，他们故障的时候，你应该怎么办。\n比如我们的活动系统，Redis承担了你的绝大部分读取流量，如果Redis故障了，怎么办。\n常见的方案如下：\n限流：保护系统不被超出其处理能力的请求冲垮，通过拒绝请求的方式，保证系统的可用性。\n降级：降级就是牺牲一些非核心功能，来保证系统核心功能可用性。比如当Redis服务故障，我们就启用我们的降级策略，读取数据逻辑先走本地缓存逻辑，虽然可能会产生服务之间的数据Diff，但是整体保证了我们系统时可用的。，\n熔断：比如我们活动页面的query1依赖的服务故障，出现超时、错误率过高或资源不足等过载现象时，我们需要切断对该下游服务的请求，以避免出现故障扩散的情况。\n当然，具体的容灾策略，需要经过一系列配置细化，方便精细化管理。整体改造完后，需要进行容灾演练，并有对应的操作面板，避免需要容灾时，操作太过复杂导致故障时间过长。\n说在最后 好了，文章到这里就要结束啦，很感谢你能看到最后。能力不足，水平有限，文章中如果有问题，希望你能够指正。\n希望你看完之后，对于高并发系统能够有一种“高并发也不过如此的感觉”，那我这篇文章的目标就达到了。没有什么高深莫测，都是细节的积累与持续的迭代。\n不知道你有没有什么高并发下的经验可以交流的呢？欢迎你在评论区和我分享，也希望你点赞、评论、收藏，让我知道对你有所收获，这对我来说很重要。也欢迎你加我的wx：Ldhrlhy10，一起交流～\n本篇文章是第35篇原创文章，2024目标进度35/100，欢迎有趣的你关注我～\n",
+  "wordCount" : "304",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-05-20T00:00:00Z",
+  "dateModified": "2024-05-20T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "东东拿铁"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E6%B2%A1%E4%BD%A0%E6%83%B3%E8%B1%A1%E7%9A%84%E8%BF%99%E4%B9%88%E5%8E%89%E5%AE%B3%E5%A4%A7%E5%8E%82%E4%B8%80%E7%BA%BF%E6%8A%80%E6%9C%AF%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      高并发系统没你想象的这么厉害！大厂一线技术实战经验总结
+    </h1>
+    <div class="post-description">
+      Hi你好，我是东东拿铁，不少朋友都希望了解一下高并发系统，今天想和大家聊聊，高并发系统的背后设计思路，大厂一线技术实战经验总结。
+    </div>
+    <div class="post-meta"><span title='2024-05-20 00:00:00 +0000 UTC'>五月 20, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;东东拿铁&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e4%b8%89%e4%b8%aa%e6%80%9d%e7%bb%b4" aria-label="架构设计三个思维">架构设计三个思维</a><ul>
+                        
+                <li>
+                    <a href="#%e5%90%88%e9%80%82%e5%8d%b3%e5%8f%af" aria-label="合适即可">合适即可</a></li>
+                <li>
+                    <a href="#%e7%ae%80%e5%8d%95%e5%8e%9f%e5%88%99" aria-label="简单原则">简单原则</a></li>
+                <li>
+                    <a href="#%e6%bc%94%e5%8c%96%e5%8e%9f%e5%88%99" aria-label="演化原则">演化原则</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%b3%bb%e7%bb%9f%e8%83%8c%e6%99%af" aria-label="系统背景">系统背景</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%9a%e5%8a%a1%e8%83%8c%e6%99%af" aria-label="业务背景">业务背景</a></li>
+                <li>
+                    <a href="#%e6%8c%87%e6%a0%87%e8%af%84%e4%bc%b0" aria-label="指标评估">指标评估</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%ae%be%e8%ae%a1%e6%80%9d%e8%b7%af" aria-label="设计思路">设计思路</a><ul>
+                        
+                <li>
+                    <a href="#%e6%89%a9%e5%b1%95%e8%83%bd%e5%8a%9b" aria-label="扩展能力">扩展能力</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9e%82%e7%9b%b4%e6%89%a9%e5%b1%95" aria-label="垂直扩展">垂直扩展</a></li>
+                <li>
+                    <a href="#%e6%b0%b4%e5%b9%b3%e6%89%a9%e5%b1%95" aria-label="水平扩展">水平扩展</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%a4%9a%e7%ba%bf%e7%a8%8b" aria-label="多线程">多线程</a></li>
+                <li>
+                    <a href="#%e5%bc%82%e6%ad%a5" aria-label="异步">异步</a></li>
+                <li>
+                    <a href="#%e7%bc%93%e5%ad%98" aria-label="缓存">缓存</a><ul>
+                        
+                <li>
+                    <a href="#%e5%88%86%e5%b8%83%e5%bc%8f%e7%bc%93%e5%ad%98" aria-label="分布式缓存">分布式缓存</a></li>
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e7%bc%93%e5%ad%98" aria-label="本地缓存">本地缓存</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9e%81%e8%87%b4%e4%bc%98%e5%8c%96" aria-label="极致优化">极致优化</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e6%8a%96%e5%8a%a8" aria-label="服务抖动">服务抖动</a></li>
+                <li>
+                    <a href="#%e5%ae%b9%e7%81%be%e7%ad%96%e7%95%a5" aria-label="容灾策略">容灾策略</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%af%b4%e5%9c%a8%e6%9c%80%e5%90%8e" aria-label="说在最后">说在最后</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>Hi 你好，我是东东拿铁，一个正在探索个人IP&amp;副业的后端程序员。</p>
+<p>今天想和大家聊聊，高并发系统的背后都有什么，设计思路是什么，具体是如何优化的。</p>
+<p>为什么要写这个文章，起源于上一篇文章读者的评论。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/10141e8763da4d11aecff00c062f8ed3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1104&amp;h=1092&amp;s=243815&amp;e=png&amp;a=1&amp;b=ffffff" alt=""  />
+</p>
+<p>我本来是不想写这类话题的，因为做一个高并发系统，因为高并发涉及并发读和并发写，对应了IO密集型和CPU密集型，依赖的中间件有所不同，性能优化的点也不同，想一文写出来，一定会有些泛泛而谈。</p>
+<p>所以我一开始回复了“利用好缓存和多线程，你也可以的。”（我真的是这么想的）</p>
+<p>但后面的评论大家也看到了，大部分朋友的评论在我回复完之后，一般很少会继续回复我了，但他挺主动的。每一个积极主动的你都应该被认真对待，因此我决定尝试一下讲一下这个话题。</p>
+<p>许多刚工作几年的朋友，因为工作内容的原因，可能很难接触到高并发、大数据这些场景，因此在一定程度上，很多人觉着高并发系统有着天然的憧憬，刚毕业几年的我也是如此。</p>
+<p>本文更多的是一些设计思路、实战经验分享，希望你看完之后有所收获。为了尽可能一文能够讲完，文章一些概念我不会具体展开，可能需要你自己去学习基础概念。</p>
+<blockquote>
+<p>普通人只是缺少一个机会、一个环境，事实上每个人都可以做出高并发系统。</p>
+</blockquote>
+<h1 id="架构设计三个思维">架构设计三个思维<a hidden class="anchor" aria-hidden="true" href="#架构设计三个思维">#</a></h1>
+<h2 id="合适即可">合适即可<a hidden class="anchor" aria-hidden="true" href="#合适即可">#</a></h2>
+<p>选择适合当前现状的，而不是追求最好的。合适也就是适应当前业务的要求是首位的，不要追求完美与过度设计。</p>
+<p>针对合适原则，我们有几个考虑方向，人力资源、业务需求、公司资源几个角度考虑。</p>
+<p>比如当前开发人员只有2个，那么能用单体就用单体架构，微服务都不需要用。</p>
+<p>业务需求就是满足低频次的数据写入和读取，那么直接读数据库就好，缓存也不需要。</p>
+<h2 id="简单原则">简单原则<a hidden class="anchor" aria-hidden="true" href="#简单原则">#</a></h2>
+<p>依赖系统、组件越多，就越有可能某个组件出故障。</p>
+<p>尽量减少服务调用链路 微服务架构已经不是什么新鲜事了，一次请求依赖几十个服务也不是没有可能，我们需要做的就是保证尽量少的依赖关系，模块之间的依赖关系应尽量减少，避免过多的依赖链条。</p>
+<p>这样可以降低修改一个模块对其他模块造成的影响，提高系统的稳定性和可维护性。</p>
+<p>在面对多种设计选择时，优先选择简单的解决方案。简单的解决方案往往更易于理解和实现，并且更不容易出错。</p>
+<h2 id="演化原则">演化原则<a hidden class="anchor" aria-hidden="true" href="#演化原则">#</a></h2>
+<p>唯一不变的就是变化，所有的系统，都不是一开始就是这样设计的，而是一步步演变来的。</p>
+<p>迭代思维在架构设计中的应用可以体现在多个方面：</p>
+<ol>
+<li>
+<p>渐进式完善系统：架构设计不必一开始就完全确定所有细节，而是可以先设计一个初步的架构，然后通过迭代不断优化和完善。</p>
+</li>
+<li>
+<p>快速验证想法：通过迭代，可以快速验证不同的架构想法和解决方案，从而找到最合适的方案。</p>
+</li>
+<li>
+<p>及时反馈和调整：迭代过程中可以及时获取用户和利益相关者的反馈，从而及时调整架构设计，保证系统的实际需求和预期一致。</p>
+</li>
+</ol>
+<h1 id="系统背景">系统背景<a hidden class="anchor" aria-hidden="true" href="#系统背景">#</a></h1>
+<h2 id="业务背景">业务背景<a hidden class="anchor" aria-hidden="true" href="#业务背景">#</a></h2>
+<p>某大型促销活动系统，展示不同的活动页面，属于CPU密集型服务，读多写少，主要提供了页面数据获取。</p>
+<p>（针对于高并发写，有机会的话，下次再说吧。）</p>
+<h2 id="指标评估">指标评估<a hidden class="anchor" aria-hidden="true" href="#指标评估">#</a></h2>
+<p><strong>系统用户数</strong> 假设注册用户1亿人。 <strong>活跃用户数</strong> 日活按照注册用户的10%，有1000w人。 <strong>目标用户数</strong> 促销活动，只针对部分用户生效，可能我们目标是覆盖到100w人。 <strong>并发用户数</strong> 100w人是我们期望覆盖的用户数量，中间会产生一些折损，而且这部分人也不会同一时间访问我们的系统。我们假设并发用户数为10w人。</p>
+<p>因此，我们估算指标如下： <strong>峰值QPS10w+，平均RT：200-300ms</strong></p>
+<h1 id="设计思路">设计思路<a hidden class="anchor" aria-hidden="true" href="#设计思路">#</a></h1>
+<h2 id="扩展能力">扩展能力<a hidden class="anchor" aria-hidden="true" href="#扩展能力">#</a></h2>
+<p>设计思路的第一点，就是系统要具有<strong>扩展</strong>的能力，扩展又分为垂直和水平两种。</p>
+<h3 id="垂直扩展">垂直扩展<a hidden class="anchor" aria-hidden="true" href="#垂直扩展">#</a></h3>
+<p>一类是传统大型软件系统的技术方案，被称作垂直伸缩方案。所谓的垂直伸缩就是提升单台服务器的处理能力，比如用更多核的 CPU、更大的内存、更快的网卡、更多的磁盘组成一台服务器，从普通服务器升级到小型机，从小型机提升到中型机，从中型机提升到大型机，从而使单台服务器的处理能力得到提升。通过这种手段提升系统的处理能力。</p>
+<h3 id="水平扩展">水平扩展<a hidden class="anchor" aria-hidden="true" href="#水平扩展">#</a></h3>
+<p>第二类就是水平扩展方案，不用更厉害的硬件，而使用更多的服务器，来构建成一个分布式集群，以此提升整体能力。</p>
+<p>水平扩展其实也是随着互联网应用场景必备的解决方案，因为你没法预估有多少人来访问你的系统，或者在一些促销活动时，会有多少倍的流量增加。</p>
+<p>简单来说，假设在4c8g（4核CPU，8g内存）情况下，单机支持500QPS时，10wQPS的流量洪峰情况下，200台机器就可以满足系统整体要求了。</p>
+<p>那100W QPS的情况下，理论上2000台机器就可以满足系统要求了。</p>
+<p>当然，横向扩展也不是无限扩展的，机器数量在达到一定量级的时候，可能就会带来一些架构上的问题，这个我们下面再说。</p>
+<h2 id="多线程">多线程<a hidden class="anchor" aria-hidden="true" href="#多线程">#</a></h2>
+<p>假设依赖下游较多，较多数据需要处理，那么就要合理的利用多线程。</p>
+<p>比如我们的活动系统，一个活动页面包含了不同的组件，共同组合成了这一个页面，可能包含优惠券模块、秒杀模块、内容展示模块等。</p>
+<p>如果我们使用串行方式加载不同模块，假定每一个模块都需要100ms的时间，那么10个模块的加载时间就需要1000ms。如果运营在页面上配置更多的模块，时间也会随着模块数量直线上升。</p>
+<p>比如下面这个例子</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>void test(){     String x = query1();     String y = query2();     String z = query3();     return x+y+z; }</code></p>
+<p>在方法test中调用了方法query1，那么在方法 query1 返回之前，就不会调用方法 query2和query3了，即方法 a 被方法 m 阻塞了。这种编程模型下，方法 m 和方法 n 不能同时执行，系统的运行速度就不会 快，并发处理能力就不会很高。</p>
+<p>但是我们采用模块化的设计方案，每一个模块逻辑独立，我们可以采用多线程的方式来进行加载。</p>
+<p>Java中就离不开线程池和CompletableFuture了</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class Example {     public static void main(String[] args)  {         long start = System.currentTimeMillis();         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()                 .setNameFormat(&quot;activity-thread-%d&quot;).build();         // 线程池         ExecutorService pool = new ThreadPoolExecutor(5, 5, 5, TimeUnit.MILLISECONDS,                 new ArrayBlockingQueue&lt;&gt;(500), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());         CompletableFuture&lt;String&gt; query1 = CompletableFuture.supplyAsync(() -&gt; {             try {                 Thread.sleep(500);             } catch (InterruptedException e) {                 e.printStackTrace();             }             return &quot;query1&quot;;         }, pool);         CompletableFuture&lt;String&gt; query2 = CompletableFuture.supplyAsync(() -&gt; {             try {                 Thread.sleep(500);             } catch (InterruptedException e) {                 e.printStackTrace();             }             return &quot;query2&quot;;         }, pool);         CompletableFuture&lt;String&gt; query3 = CompletableFuture.supplyAsync(() -&gt; {             try {                 Thread.sleep(550);             } catch (InterruptedException e) {                 e.printStackTrace();             }             return &quot;query3&quot;;         }, pool);         try {            // 资源获取完成，走后续主逻辑 executeNext(query1.get(),query2.get(),query3.get(2,TimeUnit.SECONDS));         }catch (Exception e){             e.printStackTrace();         }         System.out.println(&quot;耗时:&quot;+ (System.currentTimeMillis() - start));         pool.shutdown();     }     private static void executeNext(String a1,String a2,String a3) {         System.out.println(a1);         System.out.println(a2);         System.out.println(a3);     } }</code></p>
+<h2 id="异步">异步<a hidden class="anchor" aria-hidden="true" href="#异步">#</a></h2>
+<p>核心流程，经过我们多线程的处理，我们已经极大的减少了耗时。</p>
+<p>异步其实最常见的是优化并发写的场景，常见的就是引入消息队列。</p>
+<p>应用服务器接收到用户的写操作请求后，并不直接与数据库进行交互，而是将写操作请求发送至消息队列服务器。随后，消息消费者服务器从消息队列服务器消费消息，最终完成对数据库的写入操作。</p>
+<p>这种设计带来了两个主要好处。</p>
+<p>首先，用户的写操作请求发送至消息队列后，应用服务器可以立即返回响应给用户。由于消息队列服务器的处理速度远远快于数据库，因此用户端的响应时间大大缩短。</p>
+<p>其次，当消息队列执行写入数据库操作时，可以根据数据库的负载能力来控制写入速度。即使在用户请求并发很高的情况下，也不会导致数据库崩溃。因此，消息队列可以确保系统在性能最优的负载压力范围内稳定运行。</p>
+<h2 id="缓存">缓存<a hidden class="anchor" aria-hidden="true" href="#缓存">#</a></h2>
+<p>可以说，在计算机的世界中，凡是想要提高性能的场合都会使用到缓存的思想。利用好缓存，是每一个高并发系统必须要去考虑的。缓存是指将数据存储在访问速度相对较快的存储介质中，所以从缓存中读取数据的速度更快。</p>
+<p>所以这部分也会用比较长的篇幅来讲。</p>
+<p>缓存是一个比较大的概念，在系统、软件不同级别有不同层级的缓存：</p>
+<ul>
+<li>浏览器级别的缓存，会用来存储之前在网络上下载过的静态资源；</li>
+<li>CDN缓存，属于部署在网络服务供应商机房中的缓存；</li>
+<li>反向代理服务器本质上同样也是缓存，属于用户数据中心最前端的缓存，比如Nginx</li>
+<li>针对数据库中的“热点”数据，在应用服务器集群中有一级缓存，在缓存服务集群中有二级缓存</li>
+</ul>
+<p>我们主要聚焦在一个支持高并发的活动系统，因此缓存这块，我们主要考虑两类缓存：Redis集中式缓存，和类似Guava Cache的本地缓存。</p>
+<h3 id="分布式缓存">分布式缓存<a hidden class="anchor" aria-hidden="true" href="#分布式缓存">#</a></h3>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c7421e8ba95a42c685aa4da1a48b7639~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=810&amp;h=488&amp;s=138126&amp;e=png&amp;b=ffffff" alt=""  />
+</p>
+<p>先简单聊聊老生常谈的三个问题 <strong>缓存穿透</strong> 当一个请求查询一个不存在于缓存中的数据，而且这个数据也不在持久化存储（如数据库）中时，就会发生缓存穿透。这种情况下，大量的请求会直接穿过缓存层，直接访问底层的数据存储，导致数据库等存储系统压力增大，并可能导致性能下降甚至宕机。为了解决这个问题，可以在缓存层设置一个<strong>空值缓存</strong>（即将查询结果为空的键值对也缓存起来），或者使用<strong>布隆过滤器</strong>等数据结构来过滤掉不存在的键，避免无效的查询访问数据库。</p>
+<p><strong>缓存击穿</strong> 缓存击穿指的是针对某个热点数据的大量并发请求同时到达缓存系统，而这个热点数据的缓存刚好失效或被淘汰，导致这些请求都绕过了缓存直接访问底层存储系统。</p>
+<p>比如10W QPS/s的情况下，加载数据-&gt;写入缓存需要耗费100ms的时间，假设请求在1s内分布均匀，那么打到DB的请求量可能会有1w+，有击垮DB的风险。</p>
+<p>与缓存穿透不同的是，缓存击穿通常指的是某个具体的<strong>热点数据</strong>的缓存失效引起的问题，而不是查询的数据本身不存在。</p>
+<p>这个场景在大流量下很常见，针对这个我们可能要考虑热点数据加载加<strong>互斥锁、预加载、异步更新</strong>等场景。</p>
+<p><strong>缓存雪崩</strong> 缓存雪崩是指在缓存中存储了大量的缓存数据，且这些缓存数据在同一时间失效，导致<strong>大量请求</strong>直接落在了底层存储系统上，造成存储系统的瞬时压力过大，甚至导致宕机。这种情况通常发生在缓存的过期时间设置不合理，或者大量的缓存数据在同一时间失效的情况下。为了避免缓存雪崩，可以采取多种策略，如给缓存数据设置<strong>不同的过期时间</strong>。</p>
+<p>除了老生常谈的三个问题，集中式缓存还需要解决需要解决<strong>热点数据、数据一致性</strong>问题等</p>
+<p>热点数据，导致Redis集群某个实例压力过大，甚至打满网络带宽，那么我们可能需要考虑热点数据分片。</p>
+<p>DB、缓存数据一致性，这个话题是没有标准答案的，并且没有完美的方案，只需要适合你的场景就可以。比如先更新数据库、删除缓存，或者延迟双删，这块就不展开了。</p>
+<h3 id="本地缓存">本地缓存<a hidden class="anchor" aria-hidden="true" href="#本地缓存">#</a></h3>
+<p>说起本地缓存，大家可能觉着，已经有了像Redis这样的分布式缓存，本地缓存是不是已经很难派上用场了，实际中应用到的场景还多吗？</p>
+<p>但在高并发场景中，利用本地缓存的场景还是存在的，甚至在很多场景下，必然要从分布式缓存切换到本地缓存。</p>
+<p>比如缓存数据较大的时候，比如1GB大小时，Redis明显就无法支持这类场景了。</p>
+<p>那么对于本地缓存，缓存数据加载方式是我们首先要考虑的，常见几种方式</p>
+<ol>
+<li>预加载</li>
+<li>增量更新</li>
+<li>过期失效</li>
+</ol>
+<p><strong>预加载</strong>：服务启动时进行查询，不设置过期时间，当数据有变更的时候通知所有服务重新加载。</p>
+<p>看起来很美好，预加载可能会有相当多的问题，比如服务启动慢，滚动发布时间长。当集群规模上万台，重新加载时数据库的压力依旧很大等。</p>
+<p><strong>增量更新</strong> 如果重新加载的代价太高，那么就需要设计增量更新的方案，比如1GB的数据包，当只有1%的数据发生变更，那我们没必要完整的加载这1GB的数据。</p>
+<p><strong>过期失效</strong> 本地缓存设置过期时间，过期后回源查询。这个方案就需要业务能容容忍一段时间的数据不一致情况。</p>
+<p>本地缓存除了需要考虑缓存和DB之间的一致性问题，还想需要考虑服务器之间<strong>数据Diff</strong>问题，比如A服务器和B服务器，当B服务器更新本地缓存失败，就会造成在同一时间同一个key的结果不一致，这个也是需要提前考虑到的。</p>
+<h1 id="极致优化">极致优化<a hidden class="anchor" aria-hidden="true" href="#极致优化">#</a></h1>
+<p>说了很多方法论上的内容，上述内容做好，一个基本的高并发系统就成型了，但实际生产环境运行中，一个高并发系统依然有很多问题需要持续优化。</p>
+<h2 id="服务抖动">服务抖动<a hidden class="anchor" aria-hidden="true" href="#服务抖动">#</a></h2>
+<p>10W+QPS的服务，我们的RT在200-300ms，假设TP99为200ms</p>
+<blockquote>
+<p>TP99 = 200ms，标识这段时间 99% 的请求执行时间都在 200ms 以内，TP50 和 TP999 也是相同计算策略。</p>
+</blockquote>
+<p>但是1%的流量就有1000QPS，这时你的TP999时延的大小可能直接会到1000ms，如果控制不好，影响面也是极广的。</p>
+<blockquote>
+<p>这里的TP99的200ms，只是为了给大家举例子，让大家直观的感受到TP99和TP999影响面的差距，真正生产环境，对于RT在200-300ms之间的要求，一定是针对TP999来要求的。</p>
+</blockquote>
+<p>那么影响RT的地方可能就有很多，比如垃圾回收产生的抖动。比如CPU占用率达到60%以上时，系统的PCT999一定会有一个影响。</p>
+<p>抛砖引玉，这块不展开了，有经验的大佬可以在评论区交流。</p>
+<h2 id="容灾策略">容灾策略<a hidden class="anchor" aria-hidden="true" href="#容灾策略">#</a></h2>
+<p>当你负责了这么大的流量系统，你就要考虑一件事情，容灾。</p>
+<p>你的系统出问题1s，那就意味着有<strong>10w人</strong>在这一刻，无法加载出这一个活动页面，这是不可接受的。</p>
+<p>针对你服务中依赖的所有中间件，你需要考虑，他们故障的时候，你应该怎么办。</p>
+<p>比如我们的活动系统，Redis承担了你的绝大部分读取流量，如果Redis故障了，怎么办。</p>
+<p>常见的方案如下：</p>
+<p><strong>限流</strong>：保护系统不被超出其处理能力的请求冲垮，通过拒绝请求的方式，保证系统的可用性。</p>
+<p><strong>降级</strong>：降级就是牺牲一些非核心功能，来保证系统核心功能可用性。比如当Redis服务故障，我们就启用我们的降级策略，读取数据逻辑先走本地缓存逻辑，虽然可能会产生服务之间的数据Diff，但是整体保证了我们系统时可用的。，</p>
+<p><strong>熔断</strong>：比如我们活动页面的query1依赖的服务故障，出现超时、错误率过高或资源不足等过载现象时，我们需要切断对该下游服务的请求，以避免出现故障扩散的情况。</p>
+<p>当然，具体的容灾策略，需要经过一系列配置细化，方便精细化管理。整体改造完后，需要进行容灾演练，并有对应的操作面板，避免需要容灾时，操作太过复杂导致故障时间过长。</p>
+<h1 id="说在最后">说在最后<a hidden class="anchor" aria-hidden="true" href="#说在最后">#</a></h1>
+<p>好了，文章到这里就要结束啦，很感谢你能看到最后。能力不足，水平有限，文章中如果有问题，希望你能够指正。</p>
+<p>希望你看完之后，对于高并发系统能够有一种“<strong>高并发也不过如此的感觉</strong>”，那我这篇文章的目标就达到了。没有什么高深莫测，都是细节的积累与持续的迭代。</p>
+<p>不知道你有没有什么高并发下的经验可以交流的呢？欢迎你在评论区和我分享，也希望你点赞、评论、收藏，让我知道对你有所收获，这对我来说很重要。也欢迎你加我的wx：Ldhrlhy10，一起交流～</p>
+<p>本篇文章是第35篇原创文章，2024目标进度35/100，欢迎有趣的你关注我～</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%9E%B6%E6%9E%84/">架构</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%8F%AF%E8%83%BD%E6%98%AF%E6%9C%80%E6%BC%82%E4%BA%AE%E7%9A%84javai/o%E6%B5%81%E8%AF%A6%E8%A7%A3/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>可能是最漂亮的JavaI/O流详解</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%86%8D%E6%9C%89%E4%BA%BA%E9%97%AE%E4%BD%A0websocket%E4%B8%BA%E4%BB%80%E4%B9%88%E7%89%9B%E9%80%BC%E5%B0%B1%E6%8A%8A%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E5%8F%91%E7%BB%99%E4%BB%96/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>再有人问你WebSocket为什么牛逼，就把这篇文章发给他！</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 on x"
+            href="https://x.com/intent/tweet/?text=%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2c%e9%9d%a2%e8%af%95%2c%e6%9e%b6%e6%9e%84">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f&amp;title=%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93&amp;summary=%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f&title=%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 on telegram"
+            href="https://telegram.me/share/url?text=%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e9%ab%98%e5%b9%b6%e5%8f%91%e7%b3%bb%e7%bb%9f%e6%b2%a1%e4%bd%a0%e6%83%b3%e8%b1%a1%e7%9a%84%e8%bf%99%e4%b9%88%e5%8e%89%e5%ae%b3%ef%bc%81%e5%a4%a7%e5%8e%82%e4%b8%80%e7%ba%bf%e6%8a%80%e6%9c%af%e5%ae%9e%e6%88%98%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%25AB%2598%25E5%25B9%25B6%25E5%258F%2591%25E7%25B3%25BB%25E7%25BB%259F%25E6%25B2%25A1%25E4%25BD%25A0%25E6%2583%25B3%25E8%25B1%25A1%25E7%259A%2584%25E8%25BF%2599%25E4%25B9%2588%25E5%258E%2589%25E5%25AE%25B3%25E5%25A4%25A7%25E5%258E%2582%25E4%25B8%2580%25E7%25BA%25BF%25E6%258A%2580%25E6%259C%25AF%25E5%25AE%259E%25E6%2588%2598%25E7%25BB%258F%25E9%25AA%258C%25E6%2580%25BB%25E7%25BB%2593%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

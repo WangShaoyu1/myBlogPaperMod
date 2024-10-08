@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>「仓颉线程」、「Kotlin协程」线程？or协程？ | PaperMod</title>
+<meta name="keywords" content="HarmonyOS, Android, 前端">
+<meta name="description" content="「仓颉线程」和协程的关系？Kotlin的协程根本不是协程，只是个线程池框架？Kotlin的协程究竟有没有性能上的优势？一篇文章讲清楚「协程」的概念...">
+<meta name="author" content="沈剑心">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BA%BF%E7%A8%8Bkotlin%E5%8D%8F%E7%A8%8B%E7%BA%BF%E7%A8%8Bor%E5%8D%8F%E7%A8%8B/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BA%BF%E7%A8%8Bkotlin%E5%8D%8F%E7%A8%8B%E7%BA%BF%E7%A8%8Bor%E5%8D%8F%E7%A8%8B/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="「仓颉线程」、「Kotlin协程」线程？or协程？" />
+<meta property="og:description" content="「仓颉线程」和协程的关系？Kotlin的协程根本不是协程，只是个线程池框架？Kotlin的协程究竟有没有性能上的优势？一篇文章讲清楚「协程」的概念..." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BA%BF%E7%A8%8Bkotlin%E5%8D%8F%E7%A8%8B%E7%BA%BF%E7%A8%8Bor%E5%8D%8F%E7%A8%8B/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-24T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="「仓颉线程」、「Kotlin协程」线程？or协程？"/>
+<meta name="twitter:description" content="「仓颉线程」和协程的关系？Kotlin的协程根本不是协程，只是个线程池框架？Kotlin的协程究竟有没有性能上的优势？一篇文章讲清楚「协程」的概念..."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "「仓颉线程」、「Kotlin协程」线程？or协程？",
+      "item": "http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BA%BF%E7%A8%8Bkotlin%E5%8D%8F%E7%A8%8B%E7%BA%BF%E7%A8%8Bor%E5%8D%8F%E7%A8%8B/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "「仓颉线程」、「Kotlin协程」线程？or协程？",
+  "name": "「仓颉线程」、「Kotlin协程」线程？or协程？",
+  "description": "「仓颉线程」和协程的关系？Kotlin的协程根本不是协程，只是个线程池框架？Kotlin的协程究竟有没有性能上的优势？一篇文章讲清楚「协程」的概念...",
+  "keywords": [
+    "HarmonyOS", "Android", "前端"
+  ],
+  "articleBody": "作为国产编程语言，同时又背靠「华为鸿蒙」这棵大树，仓颉这门语言一时间风头无两。作为一门现代语言，并发的支持显然是重中之重。最近学习仓颉语言的时候，在官网看到了一段似曾相识的描述：\n仓颉提供仓颉线程的概念，开发者在大多数情况下只需面向仓颉线程编写并发代码。\n仓颉线程本质上是用户态的轻量级线程，每个仓颉线程都受到底层 native 线程的调度执行，并且多个仓颉线程可以由一个 native 线程执行。每个 native 线程会不断地选择一个就绪的仓颉线程完成执行，如果仓颉线程在执行过程中发生阻塞（例如等待互斥锁的释放），那么 native 线程会将当前的仓颉线程挂起，并继续选择下一个就绪的仓颉线程。发生阻塞的仓颉线程在重新就绪后会继续被 native 线程调度执行。\n我勒个骚刚…\n用户态？轻量级线程？我再确认下打开的不是Kotlin协程的官网吧，嗯…打开的确实是仓颉的官网。这就很有嚼头了…\nKotlin官网：Kotlin协程是可挂起计算的实例。它在概念上类似于线程，因为它需要与其余代码同时运行的代码块。但是，协程不绑定到任何特定线程。它可以在一个线程中挂起其执行并在另一线程中恢复。协程可以被认为是轻量级线程…\n同样的用户态、轻量级线程，同样的支持挂起，仓颉所谓的仓颉线程在描述上显然和Kotlin协程十分相似。Kotlin的协程刚推出时，在开发者群体中引起了不小的争论，大致有以下两个观点：\nKotlin的协程根本不是协程，只是个线程池框架 Kotlin的协程本质上还是依赖线程，没有任何性能上的优势 相信不少Kotlin开发者对上面两个问题也都捉摸不定。类似的，按照仓颉线程是不是也算是「协程」呢？是不是也会有这两个疑问呢？那本篇文章就阐述一下个人对协程的认知以及尝试回答一下上面两个问题。\n一切为了性能 计算机发展的早期阶段，每隔大约18到24个月，集成电路上的晶体管数量就会翻一番，从而使计算机的计算性能显著提高，同时成本降低。这就是有名的摩尔定律。\n然而近年来，随着工艺制程接近物理极限，CPU性能的增长速度不断放缓。于是人们尝试通过让计算机尽可能的多处理一些计算任务来压榨计算机性能。我们都知道，计算机的运算速度相比于存储速度以及网络通信速度差异太大了，如果计算机只能执行一个计算任务，就会导致计算机大量时间都花费在磁盘I/O、网络通信上，CPU大部分时间都处于等待其他资源的状态，造成性能的浪费，所以操作系统就需要有一个手段来实现计算机多任务的处理，这就是线程。在同一时间内处理多个任务的能力就是我们常说的并发。\n线程的概念 线程是操作系统能够独立调度和执行的最小单位。它是进程中的一个实体，负责执行进程中的任务。一个进程可以包含多个线程，它们共享进程的资源（如内存、文件句柄）。\n操作系统通过引入线程实现了不同任务的独立调度，提升了并发效率。主流的操作系统都提供了线程的实现，根，同时不同的语言对线程也有一套自己的抽象实现，根据和操作系统内核线程的对应关系不同，大致上有三种方式：\n使用操作系统内核线程实现（1:1实现） 使用用户线程（1:N实现） 使用用户线程加内核线程混合实现（N：M实现） 内核线程实现 以Java中的线程举例，Java语言针对不同操作系统提供了统一的抽象实现Thread，每个已经调用过start()方法且还未结束的java.lang.Thread类的实例就代表着一个线程，对应着操作系统的内核线程。所以Java的线程直接使用了操作系统内核线程实现（1:1实现），不同操作系统和不同硬件上的实现差异由JVM抹平。\n内核线程就是由操作系统内核管理和调度的线程。每个内核线程都有自己的上下文，包括寄存器、堆栈等，由操作系统在不同线程之间切换时保存和恢复。内核通过调度器完成对线程的调度，并负责将线程的任务映射到处理器上。\n需要注意的是，程序一般不会直接使用内核线程，而是使用内核线程的一种高级接口——轻量级进程（Light Weight Process，LWP）。\n轻量级进程是介于用户线程和内核线程之间的一种线程实现方式。它通常由操作系统内核支持，提供用户线程和内核线程之间的桥梁。\n我们通常意义上所讲的线程指的就是轻量级进程，轻量级进程和内核线程的数量关系为1:1，即每个轻量级进程都由一个内核线程支持。\n正是由于每个轻量级进程的背后都是基于内核线程的支持，所以轻量级进程的各种操作（如创建、同步等）都需要进行对应的内核线程的操作调用，这部分的工作对应的系统调用代价相对较高，同时内核线程需要消耗一定的内核资源（如内核线程的栈空间），因此一个操作系统对于轻量级线程的支持是有数量限制的，创建过多的轻量级线程可能会导致程序卡顿甚至发生OOM，比如记一次「线程优化」导致的业务异常。\n用户线程实现 用户线程是由用户级线程库管理的线程，操作系统内核通常对其不可见。它们在用户空间中实现，提供了一种轻量级的多线程机制。也就是说，用户线程的创建、调度、同步等操作完全由语言自己实现，无需借助内核线程。这种进程和用户线程之间1:N的实现我们称之为一对多实现。因此相比于内核线程实现，用户线程会相对快速，且内核资源消耗较低，所以支持的线程数量的规模也会更高。\nJava早期版本实现的绿色线程（Green Threads）就是一种用户线程的实现。这种实现缺点也很明显：\n无法利用多核：由于所有线程在单个内核线程上运行，绿色线程无法利用多核处理器的并行性。 阻塞问题：如果一个绿色线程阻塞（例如进行I/O操作），整个JVM可能被阻塞。 由于这些限制，绿色线程很快就被Java给抛弃了，现代主流的JVM的线程实现都被替换为了内核线程1:1的实现。\n内核线程和用户线程的混合实现 除了上面两种独立实现的线程模型外，还有一种结合了内核线程和用户线程一起使用的实现方式，这种混合实现我们称之为N：M实现。即在这种实现下，既存在内核线程（轻量级进程），同时也存在用户线程。这种实现结合了以上两种的特点：\n用户线程的创建、同步、调度等操作仍然发生在用户空间中，所以依然快速、资源消耗小 操作系统支持的轻量级进程作为内核线程和用户线程的桥梁，用户线程可以使用内核线程的线程调度以及映射CPU执行操作。 我们所熟悉的Kotlin协程就是基于此实现的，与之实现类似的还有我们今天提到的主角仓颉线程。\n线程？协程？ 这里我们先明确一点概念，这里的线程，指的就是上面所说轻量级进程（或者说内核线程），我们上面一直在讲基于基于内核线程实现的线程模型使用成本高，具体是怎么个高呢？\n这部分的成本，主要源自于操作系统调度切换内核线程的执行成本。想象这么一个场景，操作系统将执行的线程从A线程切换到B线程，大概要经历以下几个过程：\n线程调度器在线程切换时，最主要的工作就是保存和恢复线程的上下文，这里的上下文，指的就是存储在内存、缓存以及寄存器中的一个个数值。在这个过程中，会频繁涉及到数据在各种存储介质中的来回拷贝，而I/O操作本身就不是一种轻量操作。\n既然内核线程的切换开销这么大，我们能不能绕开内核线程的切换，将多任务的处理、任务切换交由开发者自己处理以缩减任务切换的开销？当然可以，上面讲的用户线程就是这种做法：程序自己模拟多线程效果、自己实现任务的挂起、恢复。由于最初大部分用户线程都被设计成协同式调度，所以用户线程也有了一个别名，叫做协程（Coroutine）。 这也是为什么大部分语言的协程实现都会提到所谓的用户态。\n早期的协程实现确实是协同式调度，然而这并不意味着协程就一定以协同调度的方式工作。事实上，非协同式、可自由调度的协程的例子也不少见。\n‌协程概念最早出现在1963年，由美国计算机科学家Melvin E. Conway提出：协程是一种程序组件，它允许程序中的某些部分在执行过程中被挂起，并在稍后的时间从挂起点恢复执行。 协程与线程的区别在于，协程是由程序员显式控制的，不依赖于操作系统调度，因此具有更低的上下文切换开销。\n基于以上的描述，我们可以大致总结协程的特点：\n相比于传统的线程，协程更加轻量：轻量级“线程” 协程可以被挂起并在特定的时间节点从挂起点恢复执行：用户态 协程和内核线程不是一一对应的。 当然，任何事物都有两面性，协程也有其不足的地方：\n协程的任务执行时间是由程序自己控制的，如果一个协程的代码实现有问题，一直不进行协程切换动作，那么程序会一直阻塞等待协程执行完毕； 协程依赖语言的具体实现，相对于操作系统本身的内核线程，需要自己实现调度器、挂起、恢复等逻辑，相对复杂且抽象。 协程的不同实现 不同语言对于协程的实现五花八门，各不相同，不过也是有迹可循的。\n按调用栈进行分类，协程的实现分为有栈协程\u0026无栈协程\n有栈协程： 其大致的原理是通过在内存里划出一片额外空间来模拟调用栈，有栈协程是每个协程拥有自己的独立调用栈。协程可以在任何时候暂停，并在以后恢复时继续执行。典型的例子就是Go语言实现的协程，仓颉线程也是有栈协程。 无栈协程：无栈协程不维护独立的调用栈，通常通过状态机或闭包实现。协程的每个暂停点被转换为状态，以实现程序的挂起/恢复。无栈协程本质上是一种有限状态机，状态保存在闭包里。它的典型应用，即各种语言中的await、async、yield这类关键字。 由于实现方式的不同，有栈协程和无栈协程的区别也很明显：\n内存管理：有栈协程需要独立的栈，无栈协程则不需要，这意味着有栈协程往往意味着更多的内存占用。\n灵活性：有栈协程更灵活，适合复杂的控制流；无栈协程适合简单的、状态明确的任务。 实现复杂度：无栈协程的实现可能需要更多的状态管理和转换逻辑。 按调度方式进行分类，协程的实现分为对称式协程和非对称式协程。\n对称式协程：对称式协程允许协程之间相互切换，任何协程都可以将控制权转移给其他协程。 非对称式协程：非对称式协程只能将控制权交还给调用者或调度器，通常是通过 yield或await关键字实现。 「仓颉线程」是不是协程？ 我的回答：是，当然是。\n协程的核心概念其实就是程序能够自己挂起、自己恢复，挂起和恢复由程序自己控制。从这个定义上来讲，「仓颉线程」当然是协程。那为什么仓颉自己非要将其称之为“仓颉线程”而不是协程呢？\n这个问题我也请教了仓颉的开发人员，他们认为协程应该是区别于传统线程的抢占式，而是协同式，但是仓颉线程是支持抢占式的，所以仓颉的语言专家认为「仓颉线程」有别于协程，所以定义时和协程做了区分。\n仓颉线程本质上是一种用户态的轻量级线程，支持抢占且相比操作系统线程更轻量化。\n其实不少资料上都显示协程的工作方式一定是协同式的，但是我并没有找到这种说法的根源，早期的协程确实都是基于协同式实现，但是如今非协同式、可自由调度的协程的例子也不少见，比如Go语言实现的协程:\nGo 运行时还会对长期占用调度权的 go routine 进行隐式挂起，并将调度权转移给其他 go routine，这其实就是我们熟悉的抢占式调度了。\n所以协程并不意味着就一定以协同调度的方式工作， 基于此我仍然认为仓颉线程就是协程。\n当然一千个人心里就有一千个哈姆雷特，作为开发者的我们，需要做的就是破开认知的迷障，了解技术背后的本质。至于它叫协程还是仓颉线程，不重要。\nkotlin协程究竟称不称得上协程？ 我得回答仍然是：是，当然是。\n从协程的核心概念出发，Kotlin的协程确实实现了程序的挂起、恢复，挂起恢复由程序自己控制，所以毫无疑问kotlin协程确实是协程。至于为什么有 Kotlin协程就是一个线程池框架 这种说法，我理解最大的原因就是Kotlin协程在Java虚拟机上的实现确实要依赖线程，但这是受限于Java虚拟机对线程的实现问题。毕竟Kotlin的协程在Js上也有对应的支持，你总不能还说他就是一个线程池框架吧？\n相比于线程，协程究竟有没有性能上的优势？ 这个问题如果你仔细阅读了文章，相信一定会有一个清晰且坚定的回答：一定有。\n在讲解协程的概念时，我们就提到了内核态的线程切换需要经历的过程以及对应的操作系统资源之间的切换，相比于编程语言层面实现的用户态多任务切换，内核态的线程切换一定是会带来更多的性能开销的。\n",
+  "wordCount" : "106",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-24T00:00:00Z",
+  "dateModified": "2024-09-24T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "沈剑心"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%BB%93%E9%A2%89%E7%BA%BF%E7%A8%8Bkotlin%E5%8D%8F%E7%A8%8B%E7%BA%BF%E7%A8%8Bor%E5%8D%8F%E7%A8%8B/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      「仓颉线程」、「Kotlin协程」线程？or协程？
+    </h1>
+    <div class="post-description">
+      「仓颉线程」和协程的关系？Kotlin的协程根本不是协程，只是个线程池框架？Kotlin的协程究竟有没有性能上的优势？一篇文章讲清楚「协程」的概念...
+    </div>
+    <div class="post-meta"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;沈剑心&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e5%88%87%e4%b8%ba%e4%ba%86%e6%80%a7%e8%83%bd" aria-label="一切为了性能">一切为了性能</a></li>
+                <li>
+                    <a href="#%e7%ba%bf%e7%a8%8b%e7%9a%84%e6%a6%82%e5%bf%b5" aria-label="线程的概念">线程的概念</a><ul>
+                        
+                <li>
+                    <a href="#%e5%86%85%e6%a0%b8%e7%ba%bf%e7%a8%8b%e5%ae%9e%e7%8e%b0" aria-label="内核线程实现">内核线程实现</a></li>
+                <li>
+                    <a href="#%e7%94%a8%e6%88%b7%e7%ba%bf%e7%a8%8b%e5%ae%9e%e7%8e%b0" aria-label="用户线程实现">用户线程实现</a></li>
+                <li>
+                    <a href="#%e5%86%85%e6%a0%b8%e7%ba%bf%e7%a8%8b%e5%92%8c%e7%94%a8%e6%88%b7%e7%ba%bf%e7%a8%8b%e7%9a%84%e6%b7%b7%e5%90%88%e5%ae%9e%e7%8e%b0" aria-label="内核线程和用户线程的混合实现">内核线程和用户线程的混合实现</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ba%bf%e7%a8%8b%e5%8d%8f%e7%a8%8b" aria-label="线程？协程？">线程？协程？</a></li>
+                <li>
+                    <a href="#%e5%8d%8f%e7%a8%8b%e7%9a%84%e4%b8%8d%e5%90%8c%e5%ae%9e%e7%8e%b0" aria-label="协程的不同实现">协程的不同实现</a></li>
+                <li>
+                    <a href="#%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e6%98%af%e4%b8%8d%e6%98%af%e5%8d%8f%e7%a8%8b" aria-label="「仓颉线程」是不是协程？">「仓颉线程」是不是协程？</a></li>
+                <li>
+                    <a href="#kotlin%e5%8d%8f%e7%a8%8b%e7%a9%b6%e7%ab%9f%e7%a7%b0%e4%b8%8d%e7%a7%b0%e5%be%97%e4%b8%8a%e5%8d%8f%e7%a8%8b" aria-label="kotlin协程究竟称不称得上协程？">kotlin协程究竟称不称得上协程？</a></li>
+                <li>
+                    <a href="#%e7%9b%b8%e6%af%94%e4%ba%8e%e7%ba%bf%e7%a8%8b%e5%8d%8f%e7%a8%8b%e7%a9%b6%e7%ab%9f%e6%9c%89%e6%b2%a1%e6%9c%89%e6%80%a7%e8%83%bd%e4%b8%8a%e7%9a%84%e4%bc%98%e5%8a%bf" aria-label="相比于线程，协程究竟有没有性能上的优势？">相比于线程，协程究竟有没有性能上的优势？</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>作为国产编程语言，同时又背靠「华为鸿蒙」这棵大树，<code>仓颉</code>这门语言一时间风头无两。作为一门现代语言，并发的支持显然是重中之重。最近学习仓颉语言的时候，在<a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.huawei.com%2Fconsumer%2Fcn%2Fdoc%2Fcangjie-guides-V5%2Fconcurrency_overview-V5" title="https://developer.huawei.com/consumer/cn/doc/cangjie-guides-V5/concurrency_overview-V5">官网</a>看到了一段似曾相识的描述：</p>
+<blockquote>
+<p>仓颉提供<code>仓颉线程</code>的概念，开发者在大多数情况下只需面向仓颉线程编写并发代码。</p>
+<p>仓颉线程本质上是<code>用户态</code>的<code>轻量级线程</code>，每个仓颉线程都受到底层 native 线程的调度执行，并且多个仓颉线程可以由一个 native 线程执行。每个 native 线程会不断地选择一个就绪的仓颉线程完成执行，如果仓颉线程在执行过程中发生阻塞（例如等待互斥锁的释放），那么 native 线程会将当前的仓颉线程挂起，并继续选择下一个就绪的仓颉线程。发生阻塞的仓颉线程在重新就绪后会继续被 native 线程调度执行。</p>
+</blockquote>
+<p>我勒个骚刚&hellip;</p>
+<p><code>用户态</code>？<code>轻量级线程</code>？我再确认下打开的不是Kotlin协程的官网吧，嗯&hellip;打开的确实是仓颉的官网。这就很有嚼头了&hellip;</p>
+<blockquote>
+<p>Kotlin官网：<code>Kotlin协程</code>是可挂起计算的实例。它在概念上类似于线程，因为它需要与其余代码同时运行的代码块。但是，协程不绑定到任何特定线程。它可以在一个线程中挂起其执行并在另一线程中恢复。协程可以被认为是<code>轻量级线程</code>&hellip;</p>
+</blockquote>
+<p>同样的<code>用户态</code>、<code>轻量级线程</code>，同样的支持<code>挂起</code>，仓颉所谓的<code>仓颉线程</code>在描述上显然和<code>Kotlin协程</code>十分相似。Kotlin的协程刚推出时，在开发者群体中引起了不小的争论，大致有以下两个观点：</p>
+<ul>
+<li>Kotlin的协程根本不是协程，只是个<code>线程池框架</code></li>
+<li>Kotlin的协程本质上还是依赖线程，<strong>没有任何性能上的优势</strong></li>
+</ul>
+<p>相信不少Kotlin开发者对上面两个问题也都捉摸不定。类似的，按照<strong>仓颉线程</strong>是不是也算是「协程」呢？是不是也会有这两个疑问呢？那本篇文章就阐述一下个人对协程的认知以及尝试回答一下上面两个问题。</p>
+<h3 id="一切为了性能">一切为了性能<a hidden class="anchor" aria-hidden="true" href="#一切为了性能">#</a></h3>
+<p>计算机发展的早期阶段，每隔大约18到24个月，集成电路上的晶体管数量就会翻一番，从而使计算机的计算性能显著提高，同时成本降低。这就是有名的<code>摩尔定律</code>。</p>
+<p>然而近年来，随着工艺制程接近物理极限，CPU性能的增长速度不断放缓。于是人们尝试通过让计算机尽可能的多处理一些计算任务来压榨计算机性能。我们都知道，计算机的运算速度相比于存储速度以及网络通信速度差异太大了，如果计算机只能执行一个计算任务，就会导致计算机大量时间都花费在磁盘I/O、网络通信上，CPU大部分时间都处于等待其他资源的状态，造成性能的浪费，所以操作系统就需要有一个手段来实现计算机多任务的处理，这就是<code>线程</code>。在同一时间内处理多个任务的能力就是我们常说的<code>并发</code>。</p>
+<h3 id="线程的概念">线程的概念<a hidden class="anchor" aria-hidden="true" href="#线程的概念">#</a></h3>
+<blockquote>
+<p>线程是操作系统能够独立调度和执行的最小单位。它是进程中的一个实体，负责执行进程中的任务。一个进程可以包含多个线程，它们共享进程的资源（如内存、文件句柄）。</p>
+</blockquote>
+<p>操作系统通过引入线程实现了不同任务的独立调度，提升了并发效率。主流的操作系统都提供了线程的实现，根，同时不同的语言对线程也有一套自己的抽象实现，根据和操作系统内核线程的对应关系不同，大致上有三种方式：</p>
+<ul>
+<li>使用操作系统内核线程实现（1:1实现）</li>
+<li>使用用户线程（1:N实现）</li>
+<li>使用用户线程加内核线程混合实现（N：M实现）</li>
+</ul>
+<h4 id="内核线程实现">内核线程实现<a hidden class="anchor" aria-hidden="true" href="#内核线程实现">#</a></h4>
+<p>以Java中的线程举例，Java语言针对不同操作系统提供了统一的抽象实现<code>Thread</code>，每个已经调用过start()方法且还未结束的<code>java.lang.Thread</code>类的实例就代表着一个线程，对应着操作系统的<code>内核线程</code>。所以Java的线程直接使用了操作系统内核线程实现（1:1实现），不同操作系统和不同硬件上的实现差异由<code>JVM</code>抹平。</p>
+<blockquote>
+<p><code>内核线程</code>就是由操作系统内核管理和调度的线程。每个内核线程都有自己的上下文，包括寄存器、堆栈等，由操作系统在不同线程之间切换时保存和恢复。内核通过调度器完成对线程的调度，并负责将线程的任务映射到处理器上。</p>
+</blockquote>
+<p>需要注意的是，程序一般不会直接使用内核线程，而是使用内核线程的一种高级接口——<code>轻量级进程（Light Weight Process，LWP）</code>。</p>
+<p>轻量级进程是介于用户线程和内核线程之间的一种线程实现方式。它通常由操作系统内核支持，提供用户线程和内核线程之间的桥梁。</p>
+<p>我们通常意义上所讲的线程指的就是轻量级进程，轻量级进程和内核线程的数量关系为1:1，即每个轻量级进程都由一个内核线程支持。</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/6be7fdf2cc7546c59cce9c266587effc~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5rKI5YmR5b-D:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727745009&amp;x-signature=wGAC8uFj0gAtoYNDnBhi2opYdhU%3D" alt="画板"  />
+</p>
+<p>正是由于每个轻量级进程的背后都是基于内核线程的支持，所以轻量级进程的各种操作（如创建、同步等）都需要进行对应的内核线程的操作调用，这部分的工作对应的系统调用代价相对较高，同时内核线程需要消耗一定的内核资源（如内核线程的栈空间），因此一个操作系统对于轻量级线程的支持是有数量限制的，创建过多的轻量级线程可能会导致程序卡顿甚至发生<code>OOM</code>，比如<a href="https://juejin.cn/post/7390413094444777472" title="https://juejin.cn/post/7390413094444777472">记一次「线程优化」导致的业务异常</a>。</p>
+<h4 id="用户线程实现">用户线程实现<a hidden class="anchor" aria-hidden="true" href="#用户线程实现">#</a></h4>
+<p>用户线程是由用户级线程库管理的线程，操作系统内核通常对其不可见。它们在用户空间中实现，提供了一种轻量级的多线程机制。也就是说，用户线程的创建、调度、同步等操作完全由语言自己实现，无需借助内核线程。这种进程和用户线程之间1:N的实现我们称之为一对多实现。因此相比于内核线程实现，用户线程会相对快速，且内核资源消耗较低，所以支持的线程数量的规模也会更高。</p>
+<p>Java早期版本实现的<code>绿色线程（Green Threads）</code>就是一种用户线程的实现。这种实现缺点也很明显：</p>
+<ul>
+<li>无法利用多核：由于所有线程在单个内核线程上运行，绿色线程无法利用多核处理器的并行性。</li>
+<li>阻塞问题：如果一个绿色线程阻塞（例如进行I/O操作），整个JVM可能被阻塞。</li>
+</ul>
+<p>由于这些限制，绿色线程很快就被Java给抛弃了，现代主流的JVM的线程实现都被替换为了内核线程1:1的实现。</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/56bbf18e4b6147b28a9aac1118d87707~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5rKI5YmR5b-D:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727745009&amp;x-signature=PI%2FoqQVgV5O3pICEWHRKnmn8bdY%3D" alt="画板"  />
+</p>
+<h4 id="内核线程和用户线程的混合实现">内核线程和用户线程的混合实现<a hidden class="anchor" aria-hidden="true" href="#内核线程和用户线程的混合实现">#</a></h4>
+<p>除了上面两种独立实现的线程模型外，还有一种结合了内核线程和用户线程一起使用的实现方式，这种混合实现我们称之为N：M实现。即在这种实现下，既存在内核线程（轻量级进程），同时也存在用户线程。这种实现结合了以上两种的特点：</p>
+<ul>
+<li>用户线程的创建、同步、调度等操作仍然发生在用户空间中，所以依然快速、资源消耗小</li>
+<li>操作系统支持的轻量级进程作为内核线程和用户线程的桥梁，用户线程可以使用内核线程的线程调度以及映射CPU执行操作。</li>
+</ul>
+<p>我们所熟悉的Kotlin协程就是基于此实现的，与之实现类似的还有我们今天提到的主角<code>仓颉线程</code>。</p>
+<h3 id="线程协程">线程？协程？<a hidden class="anchor" aria-hidden="true" href="#线程协程">#</a></h3>
+<p>这里我们先明确一点概念，这里的线程，指的就是上面所说<code>轻量级进程</code>（或者说内核线程），我们上面一直在讲基于基于内核线程实现的线程模型使用成本高，具体是怎么个高呢？</p>
+<p>这部分的成本，主要源自于操作系统调度切换<code>内核线程</code>的执行成本。想象这么一个场景，操作系统将执行的线程从A线程切换到B线程，大概要经历以下几个过程：</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/78a90ba92d6d4b21b7c927ee88763067~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5rKI5YmR5b-D:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727745009&amp;x-signature=QW7rR2uTg3fgg6FT37XCbSVXSgE%3D" alt=""  />
+</p>
+<p>线程调度器在线程切换时，最主要的工作就是保存和恢复线程的<code>上下文</code>，这里的上下文，指的就是存储在内存、缓存以及寄存器中的一个个数值。在这个过程中，会频繁涉及到数据在各种存储介质中的来回拷贝，而I/O操作本身就不是一种轻量操作。</p>
+<p>既然内核线程的切换开销这么大，我们能不能绕开内核线程的切换，将多任务的处理、任务切换交由开发者自己处理以缩减任务切换的开销？当然可以，上面讲的用户线程就是这种做法：程序自己模拟多线程效果、自己实现任务的挂起、恢复。由于最初大部分用户线程都被设计成<code>协同式调度</code>，所以用户线程也有了一个别名，叫做<code>协程（Coroutine）</code>。 这也是为什么大部分语言的协程实现都会提到所谓的<code>用户态</code>。</p>
+<blockquote>
+<p>早期的协程实现确实是协同式调度，然而这并不意味着协程就一定以协同调度的方式工作。事实上，非协同式、可自由调度的协程的例子也不少见。</p>
+</blockquote>
+<p>‌<code>协程</code>概念最早出现在1963年，由美国计算机科学家<code>Melvin E. Conway</code>提出：协程是一种程序组件，它允许程序中的某些部分在执行过程中被挂起，并在稍后的时间从挂起点恢复执行。 协程与线程的区别在于，协程是由程序员显式控制的，不依赖于操作系统调度，因此具有更低的上下文切换开销。</p>
+<p>基于以上的描述，我们可以大致总结协程的特点：</p>
+<ul>
+<li>相比于传统的线程，协程更加轻量：<code>轻量级“线程”</code></li>
+<li>协程可以被挂起并在特定的时间节点从挂起点恢复执行：<code>用户态</code></li>
+<li>协程和内核线程不是一一对应的。</li>
+</ul>
+<p>当然，任何事物都有两面性，协程也有其不足的地方：</p>
+<ul>
+<li>协程的任务执行时间是由程序自己控制的，如果一个协程的代码实现有问题，一直不进行协程切换动作，那么程序会一直阻塞等待协程执行完毕；</li>
+<li>协程依赖语言的具体实现，相对于操作系统本身的内核线程，需要自己实现调度器、挂起、恢复等逻辑，相对复杂且抽象。</li>
+</ul>
+<h3 id="协程的不同实现">协程的不同实现<a hidden class="anchor" aria-hidden="true" href="#协程的不同实现">#</a></h3>
+<p>不同语言对于协程的实现五花八门，各不相同，不过也是有迹可循的。</p>
+<p>按<code>调用栈</code>进行分类，协程的实现分为<code>有栈协程</code>&amp;<code>无栈协程</code></p>
+<ul>
+<li>有栈协程： 其大致的原理是通过在内存里划出一片额外空间来模拟调用栈，有栈协程是每个协程拥有自己的独立调用栈。协程可以在任何时候暂停，并在以后恢复时继续执行。典型的例子就是<code>Go语言</code>实现的协程，<code>仓颉线程</code>也是有栈协程。</li>
+<li>无栈协程：无栈协程不维护独立的调用栈，通常通过状态机或闭包实现。协程的每个暂停点被转换为状态，以实现程序的挂起/恢复。无栈协程本质上是一种有限状态机，状态保存在闭包里。它的典型应用，即各种语言中的await、async、yield这类关键字。</li>
+</ul>
+<p>由于实现方式的不同，有栈协程和无栈协程的区别也很明显：</p>
+<p>内存管理：有栈协程需要独立的栈，无栈协程则不需要，这意味着有栈协程往往意味着更多的内存占用。</p>
+<ul>
+<li>灵活性：有栈协程更灵活，适合复杂的控制流；无栈协程适合简单的、状态明确的任务。</li>
+<li>实现复杂度：无栈协程的实现可能需要更多的状态管理和转换逻辑。</li>
+</ul>
+<p>按<code>调度方式</code>进行分类，协程的实现分为<code>对称式协程</code>和<code>非对称式协程</code>。</p>
+<ul>
+<li>对称式协程：对称式协程允许协程之间相互切换，任何协程都可以将控制权转移给其他协程。</li>
+<li>非对称式协程：非对称式协程只能将控制权交还给调用者或调度器，通常是通过 <code>yield</code>或<code>await</code>关键字实现。</li>
+</ul>
+<h3 id="仓颉线程是不是协程">「仓颉线程」是不是协程？<a hidden class="anchor" aria-hidden="true" href="#仓颉线程是不是协程">#</a></h3>
+<p>我的回答：<strong>是，当然是。</strong></p>
+<p>协程的核心概念其实就是程序能够自己挂起、自己恢复，挂起和恢复由程序自己控制。从这个定义上来讲，<code>「仓颉线程」</code>当然是协程。那为什么仓颉自己非要将其称之为“仓颉线程”而不是协程呢？</p>
+<p>这个问题我也请教了仓颉的开发人员，他们认为协程应该是区别于传统线程的<strong>抢占式</strong>，而是<strong>协同式</strong>，但是仓颉线程是支持抢占式的，所以仓颉的语言专家认为<code>「仓颉线程」</code>有别于协程，所以定义时和协程做了区分。</p>
+<blockquote>
+<p>仓颉线程本质上是一种用户态的轻量级线程，支持抢占且相比操作系统线程更轻量化。</p>
+</blockquote>
+<p>其实不少资料上都显示<code>协程</code>的工作方式一定是协同式的，但是我并没有找到这种说法的根源，早期的协程确实都是基于协同式实现，但是如今非协同式、可自由调度的协程的例子也不少见，比如<code>Go</code>语言实现的协程:</p>
+<blockquote>
+<p>Go 运行时还会对长期占用调度权的 go routine 进行隐式挂起，并将调度权转移给其他 go routine，这其实就是我们熟悉的<code>抢占式</code>调度了。</p>
+</blockquote>
+<p>所以协程并不意味着就一定以协同调度的方式工作， 基于此我仍然认为<code>仓颉线程</code>就是协程。</p>
+<blockquote>
+<p>当然一千个人心里就有一千个哈姆雷特，作为开发者的我们，需要做的就是破开认知的迷障，了解技术背后的本质。至于它叫<code>协程</code>还是<code>仓颉线程</code>，不重要。</p>
+</blockquote>
+<h3 id="kotlin协程究竟称不称得上协程">kotlin协程究竟称不称得上协程？<a hidden class="anchor" aria-hidden="true" href="#kotlin协程究竟称不称得上协程">#</a></h3>
+<p>我得回答仍然是：<strong>是，当然是</strong>。</p>
+<p>从协程的核心概念出发，Kotlin的协程确实实现了程序的挂起、恢复，挂起恢复由程序自己控制，所以毫无疑问kotlin协程确实是协程。至于为什么有 <strong>Kotlin协程就是一个线程池框架</strong> 这种说法，我理解最大的原因就是Kotlin协程在Java虚拟机上的实现确实要依赖线程，但这是受限于Java虚拟机对线程的实现问题。毕竟Kotlin的协程在Js上也有对应的支持，你总不能还说他就是一个线程池框架吧？</p>
+<h3 id="相比于线程协程究竟有没有性能上的优势">相比于线程，协程究竟有没有性能上的优势？<a hidden class="anchor" aria-hidden="true" href="#相比于线程协程究竟有没有性能上的优势">#</a></h3>
+<p>这个问题如果你仔细阅读了文章，相信一定会有一个清晰且坚定的回答：<strong>一定有</strong>。</p>
+<p>在讲解协程的概念时，我们就提到了内核态的线程切换需要经历的过程以及对应的操作系统资源之间的切换，相比于编程语言层面实现的用户态多任务切换，内核态的线程切换一定是会带来更多的性能开销的。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/harmonyos/">HarmonyOS</a></li>
+      <li><a href="http://localhost:1313/tags/android/">Android</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/jetbrainside%E5%85%A8%E6%96%B0ui%E9%A2%84%E8%A7%88%E7%89%88%E6%9D%A5%E4%BA%86%E8%A6%81%E5%81%9A%E7%AE%80%E6%B4%81%E4%B8%8E%E5%BC%BA%E5%A4%A7%E5%85%BC%E9%A1%BE%E7%9A%84ide/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>JetBrainsIDE全新UI预览版来了，要做简洁与强大兼顾的IDE</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/2023%E5%B9%B4%E4%BA%86%E6%98%AF%E6%97%B6%E5%80%99%E8%AF%A5%E7%9F%A5%E9%81%93jetbrains%E5%9C%A8jdk%E4%B8%AD%E5%86%85%E7%BD%AE%E4%BA%86%E4%B8%80%E4%B8%AAchromium%E4%BA%86/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>2023年了，是时候该知道JetBrains在JDK中内置了一个Chromium了</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 「仓颉线程」、「Kotlin协程」线程？or协程？ on x"
+            href="https://x.com/intent/tweet/?text=%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f&amp;hashtags=HarmonyOS%2cAndroid%2c%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 「仓颉线程」、「Kotlin协程」线程？or协程？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f&amp;title=%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f&amp;summary=%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 「仓颉线程」、「Kotlin协程」线程？or协程？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f&title=%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 「仓颉线程」、「Kotlin协程」线程？or协程？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 「仓颉线程」、「Kotlin协程」线程？or协程？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 「仓颉线程」、「Kotlin协程」线程？or协程？ on telegram"
+            href="https://telegram.me/share/url?text=%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 「仓颉线程」、「Kotlin协程」线程？or协程？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e3%80%8c%e4%bb%93%e9%a2%89%e7%ba%bf%e7%a8%8b%e3%80%8d%e3%80%81%e3%80%8cKotlin%e5%8d%8f%e7%a8%8b%e3%80%8d%e7%ba%bf%e7%a8%8b%ef%bc%9for%e5%8d%8f%e7%a8%8b%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%2593%25E9%25A2%2589%25E7%25BA%25BF%25E7%25A8%258Bkotlin%25E5%258D%258F%25E7%25A8%258B%25E7%25BA%25BF%25E7%25A8%258Bor%25E5%258D%258F%25E7%25A8%258B%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

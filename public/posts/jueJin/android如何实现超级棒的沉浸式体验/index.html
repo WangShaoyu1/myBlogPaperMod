@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Android如何实现超级棒的沉浸式体验 | PaperMod</title>
+<meta name="keywords" content="Android, 程序员, 设计师, 腾讯">
+<meta name="description" content="做APP开发的过程中，有很多时候，我们需要实现类似于下面这种沉浸式的体验。一开始接触的时候，似乎大家都会觉这种体验实现起来，会比较困难。难点在于:头部的背景图在推上去的过程中，慢慢的变得不可见了，整个区域的颜色变成的暗黑色，然后标题出现了。StatusBar变的透明，且空…">
+<meta name="author" content="brzhang">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/android%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%B6%85%E7%BA%A7%E6%A3%92%E7%9A%84%E6%B2%89%E6%B5%B8%E5%BC%8F%E4%BD%93%E9%AA%8C/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/android%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%B6%85%E7%BA%A7%E6%A3%92%E7%9A%84%E6%B2%89%E6%B5%B8%E5%BC%8F%E4%BD%93%E9%AA%8C/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Android如何实现超级棒的沉浸式体验" />
+<meta property="og:description" content="做APP开发的过程中，有很多时候，我们需要实现类似于下面这种沉浸式的体验。一开始接触的时候，似乎大家都会觉这种体验实现起来，会比较困难。难点在于:头部的背景图在推上去的过程中，慢慢的变得不可见了，整个区域的颜色变成的暗黑色，然后标题出现了。StatusBar变的透明，且空…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/android%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%B6%85%E7%BA%A7%E6%A3%92%E7%9A%84%E6%B2%89%E6%B5%B8%E5%BC%8F%E4%BD%93%E9%AA%8C/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-10-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-10-25T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Android如何实现超级棒的沉浸式体验"/>
+<meta name="twitter:description" content="做APP开发的过程中，有很多时候，我们需要实现类似于下面这种沉浸式的体验。一开始接触的时候，似乎大家都会觉这种体验实现起来，会比较困难。难点在于:头部的背景图在推上去的过程中，慢慢的变得不可见了，整个区域的颜色变成的暗黑色，然后标题出现了。StatusBar变的透明，且空…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Android如何实现超级棒的沉浸式体验",
+      "item": "http://localhost:1313/posts/juejin/android%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%B6%85%E7%BA%A7%E6%A3%92%E7%9A%84%E6%B2%89%E6%B5%B8%E5%BC%8F%E4%BD%93%E9%AA%8C/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Android如何实现超级棒的沉浸式体验",
+  "name": "Android如何实现超级棒的沉浸式体验",
+  "description": "做APP开发的过程中，有很多时候，我们需要实现类似于下面这种沉浸式的体验。一开始接触的时候，似乎大家都会觉这种体验实现起来，会比较困难。难点在于:头部的背景图在推上去的过程中，慢慢的变得不可见了，整个区域的颜色变成的暗黑色，然后标题出现了。StatusBar变的透明，且空…",
+  "keywords": [
+    "Android", "程序员", "设计师", "腾讯"
+  ],
+  "articleBody": "原文链接 cloud.tencent.com/developer/a…\n做APP开发的过程中，有很多时候，我们需要实现类似于下面这种沉浸式的体验。\n沉浸式体验\n一开始接触的时候，似乎大家都会觉这种体验实现起来，会比较困难。难点在于:\n头部的背景图在推上去的过程中，慢慢的变得不可见了，整个区域的颜色变成的暗黑色，然后标题出现了。 StatusBar变的透明，且空间可以被利用起来，看我们的图片就顶到了顶 了。 我们的viewpager推到actionbar的下方的时候，就固定在了actionbar的下方，不能在往上面推了。 底部有一个控件，随着列表的向上滑动，它退出视角范围，以便于给出更多的空间来展示列表，其实整个沉浸式体验都是为了给列表留出更多的空间来展示。 好，总结起来以上就是我们的问题，也是需要解决的，一个一个解决了，这种需求也就实现了，那么，我们如何去一步一步来解决以上的问题呢？\n1、头部背景和标题的渐隐渐现 首先，我们来分析第一个问题，头部的背景图在推上去的过程中，慢慢的变得不可见了，这种听起来好像是某种collapse，因此，很容易让人想到CollapsingToolbarLayout，如果你想要比较容易的了解CollapsingToolbarLayout\n应用，建议看这位兄台的文章，他给也给了一个动画，比较详细的介绍了这个的应用，例如：\nCollapsingToolbarLayout\n对于里面的用法，我这里不作讲解了，但是如果你不了解这个布局的应用，我强烈建议你好好了解一下，才能继续下面走，只是想说明一下，走到这里，你有一个坑需要去填，那就是我们的标题动画可以不是这样的，而且，还是标题还是居中的，注意，这里的实现，标题不是居中的，是靠左的，这本来是Android设计规范，但是设计师偏偏不买Android规范的账，因此，我们必须躺过这个坑，然后，从Stack Overflow上了解到一个issue：\n代码解读\n复制代码\n假设，这个方式是可行的，那么要解决居中的问题后，把返回按钮改为我们的按钮样式，然后，在耍点小诡计，让title开始是透明的，并且改变返回按钮的图片：\n代码解读\n复制代码\ncollapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE); //collapsingToolbarLayout.setExpandedTitleColor(Color.WHITE); collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);\n然而，假设，始终只是一个假设，实际上，这个假设不成立，我在尝试的时候，发现Toolbar中的TextView根本就不能使用android:layout_gravity=“center\"这种属性好吧，即使强行加上，效果也是靠左的。\n那么，如何做，我的解决方式是这样的\n代码解读\n复制代码\n......... 然后，include里面的布局是这样的\n代码解读\n复制代码\n\u003c?xml version=\"1.0\" encoding=\"utf-8\"?\u003e //*****请注意这个View*******/// 效果就是这样\n当然，这时候，标题是需要你自己设置渐隐渐现的。那么，我们依据什么呢？\n代码解读\n复制代码\nappBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() { @Override public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) { mTitle.setAlpha(-verticalOffset * 1.0f / appBarLayout.getTotalScrollRange()); } });\n依据的就是对appBarLayout的监听。\n2、将statusBar变为透明，且利用他的空间来放我们的布局内容。 代码解读\n复制代码\n/** * 使状态栏透明,并覆盖状态栏，对API大于19的显示正常，但小于的界面扩充到状态栏，但状态栏不为透明 */ @TargetApi(Build.VERSION_CODES.KITKAT) public static void transparentAndCoverStatusBar(Activity activity) { //FLAG_LAYOUT_NO_LIMITS这个千万别用，带虚拟按键的机型会有特别多问题 // //FLAG_TRANSLUCENT_STATUS要求API大于19 // activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); // activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN); // //FLAG_LAYOUT_NO_LIMITS对API没有要求 // activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS); if (Build.VERSION.SDK_INT \u003e= Build.VERSION_CODES.LOLLIPOP) { Window window = activity.getWindow(); window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE); window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS); window.setStatusBarColor(Color.TRANSPARENT); window.setNavigationBarColor(Resources.getSystem().getColor(android.R.color.background_dark)); } else if (Build.VERSION.SDK_INT \u003e= Build.VERSION_CODES.KITKAT) { Window window = activity.getWindow(); window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); } }\n这里是在网上找的一个方法，直接调用即可，但是API需要大于19，相信目前基本上都满足吧。请注意，我的AppBarLayout中并没有这个属性\n代码解读\n复制代码\nandroid:fitsSystemWindows=\"true\"\n如果你加了这个属性，嘿嘿，statusbar虽然空间可以利用，但是有一个你挥之不去的颜色覆盖在上面，\n然后,你还记得上面那个布局中\n代码解读\n复制代码\n//*****请注意这个View*******/// 这个作用可大了，就是为了对status_bar原始空间做偏移的，在代码中，需要动态的改变这个View的高度为statusBar的高度，怎么获取：\n代码解读\n复制代码\n/** * 获取状态栏高度 * * @param context context * @return 状态栏高度 */ public static int getStatusBarHeight(Context context) { // 获得状态栏高度 int resourceId = context.getResources().getIdentifier(\"status_bar_height\", \"dimen\", \"android\"); return context.getResources().getDimensionPixelSize(resourceId); }\n完了之后，还需要设置我们自己塞进去的那个toolbar的高度为toolbar的高度加上StatusBar的高度。\n3、ViewPager推到actionbar下面就不让在推了 这个其实需要你CollapsingToolbarLayout里面有一个子view是要使用pin模式的，那么这个子view是谁，显然就是那个toolbar了\n代码解读\n复制代码\n4、底部控件随着列表的滑动渐渐隐藏 可以看到，底部的控件是覆盖在列表上的，列表向上滑动的时候，把他隐藏，就可以空出更多的控件看列表。那么，如何做呢？\n既然，我们是包裹在CoordinatorLayout中，那么，显然，最好的方式是使用layout_behavior了，我这里实现了一个BottomBehavior：\n代码解读\n复制代码\npublic class BottomBehavior extends CoordinatorLayout.Behavior { private int id; private float bottomPadding; private int screenWidth; private float designWidth = 375.0f;//设计视图的宽度，通常是375dp， public BottomBehavior() { super(); } public BottomBehavior(Context context, AttributeSet attrs) { super(context, attrs); screenWidth = getScreenWidth(context); TypedArray typedArray = context.getResources().obtainAttributes(attrs, R.styleable.BottomBehavior); id = typedArray.getResourceId(R.styleable.BottomBehavior_anchor_id, -1); bottomPadding = typedArray.getFloat(R.styleable.BottomBehavior_bottom_padding, 0f); typedArray.recycle(); } @Override public void onAttachedToLayoutParams(@NonNull CoordinatorLayout.LayoutParams params) { params.dodgeInsetEdges = Gravity.BOTTOM; } @Override public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) { return dependency.getId() == id; } @Override public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) { child.setTranslationY(-(dependency.getTop() - (screenWidth * bottomPadding / designWidth))); Log.e(\"BottomBehavior\", \"layoutDependsOn() called with: parent = [\" + dependency.getTop()); return true; } public static int getScreenWidth(Context context) { WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE); Display display = null; if (wm != null) { display = wm.getDefaultDisplay(); Point size = new Point(); display.getSize(size); int width = size.x; // int height = size.y; return width; } return 0; } }\n这个里面有两个自定义属性，id，bottomPadding，id表示基于哪个控件的相对位置改变，我这打算基于viewpager\n这个控件，看源码可以知道，只有当onDependentViewChanged返回ture时，layoutDependsOn才会被回调。bottomPadding是表示一个初始的偏移，因为viewpager本身不是顶在屏幕顶端的（开始被图片占据了一部分控件），因此，需要扣除这部分占有。\n同理，加入让你实现一个悬浮在左侧，右侧，滑动隐藏，停止显示的，也都可以参考类似Behavior的方式，减少代码耦合。\n总结 最后整个布局是这样子的\n代码解读\n复制代码\n\u003c?xml version=\"1.0\" encoding=\"utf-8\"?\u003e ............ ..........底部布局 注：IGameRefreshLayout实际上就是封装的PullToRefreshView，IgameViewPager是我们封装的Viewpager，减少每次写Viewpager的套路代码。\n按照这个框架来，相信你很容易写出这个样子的布局。\n",
+  "wordCount" : "533",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2018-10-25T00:00:00Z",
+  "dateModified": "2018-10-25T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "brzhang"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/android%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%B6%85%E7%BA%A7%E6%A3%92%E7%9A%84%E6%B2%89%E6%B5%B8%E5%BC%8F%E4%BD%93%E9%AA%8C/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Android如何实现超级棒的沉浸式体验
+    </h1>
+    <div class="post-description">
+      做APP开发的过程中，有很多时候，我们需要实现类似于下面这种沉浸式的体验。一开始接触的时候，似乎大家都会觉这种体验实现起来，会比较困难。难点在于:头部的背景图在推上去的过程中，慢慢的变得不可见了，整个区域的颜色变成的暗黑色，然后标题出现了。StatusBar变的透明，且空…
+    </div>
+    <div class="post-meta"><span title='2018-10-25 00:00:00 +0000 UTC'>十月 25, 2018</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;brzhang&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1%e5%a4%b4%e9%83%a8%e8%83%8c%e6%99%af%e5%92%8c%e6%a0%87%e9%a2%98%e7%9a%84%e6%b8%90%e9%9a%90%e6%b8%90%e7%8e%b0" aria-label="1、头部背景和标题的渐隐渐现">1、头部背景和标题的渐隐渐现</a></li>
+                <li>
+                    <a href="#2%e5%b0%86statusbar%e5%8f%98%e4%b8%ba%e9%80%8f%e6%98%8e%e4%b8%94%e5%88%a9%e7%94%a8%e4%bb%96%e7%9a%84%e7%a9%ba%e9%97%b4%e6%9d%a5%e6%94%be%e6%88%91%e4%bb%ac%e7%9a%84%e5%b8%83%e5%b1%80%e5%86%85%e5%ae%b9" aria-label="2、将statusBar变为透明，且利用他的空间来放我们的布局内容。">2、将statusBar变为透明，且利用他的空间来放我们的布局内容。</a></li>
+                <li>
+                    <a href="#3viewpager%e6%8e%a8%e5%88%b0actionbar%e4%b8%8b%e9%9d%a2%e5%b0%b1%e4%b8%8d%e8%ae%a9%e5%9c%a8%e6%8e%a8%e4%ba%86" aria-label="3、ViewPager推到actionbar下面就不让在推了">3、ViewPager推到actionbar下面就不让在推了</a></li>
+                <li>
+                    <a href="#4%e5%ba%95%e9%83%a8%e6%8e%a7%e4%bb%b6%e9%9a%8f%e7%9d%80%e5%88%97%e8%a1%a8%e7%9a%84%e6%bb%91%e5%8a%a8%e6%b8%90%e6%b8%90%e9%9a%90%e8%97%8f" aria-label="4、底部控件随着列表的滑动渐渐隐藏">4、底部控件随着列表的滑动渐渐隐藏</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>原文链接  <a href="https://link.juejin.cn?target=https%3A%2F%2Fcloud.tencent.com%2Fdeveloper%2Farticle%2F1358534" title="https://cloud.tencent.com/developer/article/1358534">cloud.tencent.com/developer/a…</a></p>
+<p>做APP开发的过程中，有很多时候，我们需要实现类似于下面这种沉浸式的体验。</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/25/166a95ea28effea8~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" alt=""  />
+</p>
+<p>沉浸式体验</p>
+<p>一开始接触的时候，似乎大家都会觉这种体验实现起来，会比较困难。难点在于:</p>
+<ol>
+<li>头部的背景图在推上去的过程中，慢慢的变得不可见了，整个区域的颜色变成的暗黑色，然后标题出现了。</li>
+<li>StatusBar变的透明，且空间可以被利用起来，看我们的图片就顶到了顶 了。</li>
+<li>我们的viewpager推到actionbar的下方的时候，就固定在了actionbar的下方，不能在往上面推了。</li>
+<li>底部有一个控件，随着列表的向上滑动，它退出视角范围，以便于给出更多的空间来展示列表，其实整个沉浸式体验都是为了给列表留出更多的空间来展示。</li>
+</ol>
+<p>好，总结起来以上就是我们的问题，也是需要解决的，一个一个解决了，这种需求也就实现了，那么，我们如何去一步一步来解决以上的问题呢？</p>
+<h1 id="1头部背景和标题的渐隐渐现">1、头部背景和标题的渐隐渐现<a hidden class="anchor" aria-hidden="true" href="#1头部背景和标题的渐隐渐现">#</a></h1>
+<p>首先，我们来分析第一个问题，<strong>头部的背景图在推上去的过程中，慢慢的变得不可见了</strong>，这种听起来好像是某种collapse，因此，很容易让人想到CollapsingToolbarLayout，如果你想要比较容易的了解CollapsingToolbarLayout</p>
+<p>应用，建议看<a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fa553181867%2Farticle%2Fdetails%2F52871424" title="https://blog.csdn.net/a553181867/article/details/52871424">这位兄台</a>的文章，他给也给了一个动画，比较详细的介绍了这个的应用，例如：</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/25/166a95ea28cc0a60~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" alt=""  />
+</p>
+<p>CollapsingToolbarLayout</p>
+<p>对于里面的用法，我这里不作讲解了，但是<strong>如果你不了解这个布局的应用，我强烈建议你好好了解一下</strong>，才能继续下面走，只是想说明一下，走到这里，你有一个坑需要去填，那就是我们的标题动画可以不是这样的，而且，<strong>还是标题还是居中的</strong>，注意，这里的实现，标题不是居中的，是靠左的，这本来是Android设计规范，但是设计师偏偏不买Android规范的账，因此，我们必须躺过这个坑，然后，从Stack Overflow上了解到一个<a href="https://link.juejin.cn?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F26533510%2Fandroid-toolbar-center-title-and-custom-font" title="https://stackoverflow.com/questions/26533510/android-toolbar-center-title-and-custom-font">issue</a>：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;android.support.v7.widget.Toolbar     android:id=&quot;@+id/toolbar_top&quot;     android:layout_height=&quot;wrap_content&quot;     android:layout_width=&quot;match_parent&quot;     android:minHeight=&quot;?attr/actionBarSize&quot;     android:background=&quot;@color/action_bar_bkgnd&quot;     app:theme=&quot;@style/ToolBarTheme&quot; &gt;      &lt;TextView         android:layout_width=&quot;wrap_content&quot;         android:layout_height=&quot;wrap_content&quot;         android:text=&quot;Toolbar Title&quot;         android:layout_gravity=&quot;center&quot;         android:id=&quot;@+id/toolbar_title&quot; /&gt; &lt;/android.support.v7.widget.Toolbar&gt;</code></p>
+<p>假设，这个方式是可行的，那么要解决居中的问题后，把返回按钮改为我们的按钮样式，然后，在耍点小诡计，让title开始是透明的，并且<a href="https://link.juejin.cn?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F26671677%2Fandroid-appcompat-21-how-to-change-the-back-icon-and-the-overflow-icon-to-a-cu" title="https://stackoverflow.com/questions/26671677/android-appcompat-21-how-to-change-the-back-icon-and-the-overflow-icon-to-a-cu">改变返回按钮</a>的图片：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE); //collapsingToolbarLayout.setExpandedTitleColor(Color.WHITE); collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);</code></p>
+<p>然而，假设，始终只是一个假设，实际上，这个假设不成立，我在尝试的时候，发现Toolbar中的TextView根本就不能使用android:layout_gravity=&ldquo;center&quot;这种属性好吧，即使强行加上，效果也是靠左的。</p>
+<p>那么，如何做，我的解决方式是这样的</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;android.support.design.widget.AppBarLayout             android:id=&quot;@+id/appbarlayout&quot;             android:layout_width=&quot;match_parent&quot;             android:layout_height=&quot;wrap_content&quot;             app:elevation=&quot;0dp&quot;&gt;             &lt;android.support.design.widget.CollapsingToolbarLayout                 android:id=&quot;@+id/collapsing_tool_bar&quot;                 android:layout_width=&quot;match_parent&quot;                 android:layout_height=&quot;wrap_content&quot;                 app:contentScrim=&quot;@color/b_G6&quot;                 app:expandedTitleMarginEnd=&quot;10dp&quot;                 app:expandedTitleMarginStart=&quot;10dp&quot;                 app:layout_scrollFlags=&quot;scroll|exitUntilCollapsed|snap&quot;&gt;                 &lt;android.support.constraint.ConstraintLayout                     android:layout_width=&quot;match_parent&quot;                     android:layout_height=&quot;match_parent&quot;&gt;                     &lt;ImageView                         android:id=&quot;@+id/igame_arena_rank_class_header_bg&quot;                         android:layout_width=&quot;match_parent&quot;                         android:layout_height=&quot;0dp&quot;                         android:scaleType=&quot;centerCrop&quot;                         android:src=&quot;@drawable/bg_arena_rank_class&quot;                         app:layout_constraintDimensionRatio=&quot;375:156&quot; /&gt;                         .........                 &lt;/android.support.constraint.ConstraintLayout&gt;                 &lt;android.support.v7.widget.Toolbar                     android:id=&quot;@+id/common_index_activity_tb_title&quot;                     android:layout_width=&quot;match_parent&quot;                     android:layout_height=&quot;wrap_content&quot;                     android:minHeight=&quot;?android:attr/actionBarSize&quot;                     android:visibility=&quot;visible&quot;                     app:contentInsetLeft=&quot;0dp&quot;                     app:contentInsetStart=&quot;0dp&quot;                     app:layout_collapseMode=&quot;pin&quot;&gt;                     &lt;include                         layout=&quot;@layout/igame_common_tool_bar&quot;                         android:layout_width=&quot;match_parent&quot;                         android:layout_height=&quot;wrap_content&quot;                         android:layout_gravity=&quot;center&quot; /&gt;                 &lt;/android.support.v7.widget.Toolbar&gt;             &lt;/android.support.design.widget.CollapsingToolbarLayout&gt;         &lt;/android.support.design.widget.AppBarLayout&gt;</code></p>
+<p>然后，include里面的布局是这样的</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt; &lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;     xmlns:tools=&quot;http://schemas.android.com/tools&quot;     android:layout_width=&quot;match_parent&quot;     android:layout_height=&quot;wrap_content&quot;     android:orientation=&quot;vertical&quot;&gt; //*****请注意这个View*******///     &lt;View         android:id=&quot;@+id/common_index_activity_view_status_bar&quot;         android:layout_width=&quot;match_parent&quot;         android:layout_height=&quot;0dp&quot; /&gt;     &lt;RelativeLayout         android:layout_width=&quot;match_parent&quot;         android:layout_height=&quot;50dp&quot;&gt;         &lt;TextView             android:id=&quot;@+id/tv_toolbar_bg&quot;             android:layout_width=&quot;match_parent&quot;             android:layout_height=&quot;50dp&quot;             android:layout_centerInParent=&quot;true&quot;             tools:background=&quot;@color/b_G6&quot; /&gt;         &lt;TextView             android:id=&quot;@+id/common_index_header_tv_title&quot;             android:layout_width=&quot;wrap_content&quot;             android:layout_height=&quot;wrap_content&quot;             android:layout_centerInParent=&quot;true&quot;             android:gravity=&quot;center&quot;             android:textColor=&quot;@color/b_G99&quot;             android:textSize=&quot;@dimen/igame_textsize_xl&quot;             tools:text=&quot;这里是标题&quot; /&gt;         &lt;RelativeLayout             android:id=&quot;@+id/common_index_header_rl_back&quot;             android:layout_width=&quot;48dp&quot;             android:layout_height=&quot;48dp&quot;             android:layout_centerVertical=&quot;true&quot;             android:layout_gravity=&quot;center_vertical&quot;             android:visibility=&quot;visible&quot;&gt;             &lt;ImageView                 android:layout_width=&quot;match_parent&quot;                 android:layout_height=&quot;match_parent&quot;                 android:layout_centerInParent=&quot;true&quot;                 android:contentDescription=&quot;@string/image_desc&quot;                 android:scaleType=&quot;centerInside&quot;                 android:src=&quot;@drawable/igame_actionbar_arrow_left&quot; /&gt;         &lt;/RelativeLayout&gt;     &lt;/RelativeLayout&gt; &lt;/LinearLayout&gt;</code></p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/25/166a95ea28dd3e7f~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" alt=""  />
+</p>
+<p>效果就是这样</p>
+<p>当然，这时候，标题是需要你自己设置渐隐渐现的。那么，我们依据什么呢？</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {             @Override             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {                 mTitle.setAlpha(-verticalOffset * 1.0f / appBarLayout.getTotalScrollRange());             }         });</code></p>
+<p>依据的就是对appBarLayout的监听。</p>
+<h1 id="2将statusbar变为透明且利用他的空间来放我们的布局内容">2、将statusBar变为透明，且利用他的空间来放我们的布局内容。<a hidden class="anchor" aria-hidden="true" href="#2将statusbar变为透明且利用他的空间来放我们的布局内容">#</a></h1>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**      * 使状态栏透明,并覆盖状态栏，对API大于19的显示正常，但小于的界面扩充到状态栏，但状态栏不为透明      */     @TargetApi(Build.VERSION_CODES.KITKAT)     public static void transparentAndCoverStatusBar(Activity activity) {         //FLAG_LAYOUT_NO_LIMITS这个千万别用，带虚拟按键的机型会有特别多问题 //        //FLAG_TRANSLUCENT_STATUS要求API大于19 //        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); //        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN); //        //FLAG_LAYOUT_NO_LIMITS对API没有要求 //        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);         if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) {             Window window = activity.getWindow();             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);             window.setStatusBarColor(Color.TRANSPARENT);             window.setNavigationBarColor(Resources.getSystem().getColor(android.R.color.background_dark));         } else if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) {             Window window = activity.getWindow();             window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);         }     }</code></p>
+<p>这里是在网上找的一个方法，直接调用即可，但是API需要大于19，相信目前基本上都满足吧。<strong>请注意，我的AppBarLayout中并没有这个属性</strong></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>android:fitsSystemWindows=&quot;true&quot;</code></p>
+<p>如果你加了这个属性，嘿嘿，statusbar虽然空间可以利用，但是有一个你挥之不去的颜色覆盖在上面，</p>
+<p>然后,你还记得上面那个布局中</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>//*****请注意这个View*******///     &lt;View         android:id=&quot;@+id/common_index_activity_view_status_bar&quot;         android:layout_width=&quot;match_parent&quot;         android:layout_height=&quot;0dp&quot; /&gt;</code></p>
+<p>这个作用可大了，就是为了对status_bar原始空间做偏移的，在代码中，需要动态的改变这个View的高度为statusBar的高度，怎么获取：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**      * 获取状态栏高度      *      * @param context context      * @return 状态栏高度      */     public static int getStatusBarHeight(Context context) {         // 获得状态栏高度         int resourceId = context.getResources().getIdentifier(&quot;status_bar_height&quot;, &quot;dimen&quot;, &quot;android&quot;);         return context.getResources().getDimensionPixelSize(resourceId);     }</code></p>
+<p>完了之后，还需要设置我们自己塞进去的那个toolbar的高度为toolbar的高度加上StatusBar的高度。</p>
+<h1 id="3viewpager推到actionbar下面就不让在推了">3、ViewPager推到actionbar下面就不让在推了<a hidden class="anchor" aria-hidden="true" href="#3viewpager推到actionbar下面就不让在推了">#</a></h1>
+<p>这个其实需要你CollapsingToolbarLayout里面有一个子view是要使用pin模式的，那么这个子view是谁，显然就是那个toolbar了</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;android.support.v7.widget.Toolbar                     android:id=&quot;@+id/common_index_activity_tb_title&quot;                     android:layout_width=&quot;match_parent&quot;                     android:layout_height=&quot;wrap_content&quot;                     android:minHeight=&quot;?android:attr/actionBarSize&quot;                     android:visibility=&quot;visible&quot;                     app:contentInsetLeft=&quot;0dp&quot;                     app:contentInsetStart=&quot;0dp&quot;                     app:layout_collapseMode=&quot;pin&quot;&gt;                     &lt;include                         layout=&quot;@layout/igame_common_tool_bar&quot;                         android:layout_width=&quot;match_parent&quot;                         android:layout_height=&quot;wrap_content&quot;                         android:layout_gravity=&quot;center&quot; /&gt;                 &lt;/android.support.v7.widget.Toolbar&gt;</code></p>
+<h1 id="4底部控件随着列表的滑动渐渐隐藏">4、底部控件随着列表的滑动渐渐隐藏<a hidden class="anchor" aria-hidden="true" href="#4底部控件随着列表的滑动渐渐隐藏">#</a></h1>
+<p>可以看到，底部的控件是覆盖在列表上的，列表向上滑动的时候，把他隐藏，就可以空出更多的控件看列表。那么，如何做呢？</p>
+<p>既然，我们是包裹在CoordinatorLayout中，那么，显然，最好的方式是使用layout_behavior了，我这里实现了一个BottomBehavior：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class BottomBehavior extends CoordinatorLayout.Behavior {     private int id;     private float bottomPadding;     private int screenWidth;     private float designWidth = 375.0f;//设计视图的宽度，通常是375dp，     public BottomBehavior() {         super();     }     public BottomBehavior(Context context, AttributeSet attrs) {         super(context, attrs);         screenWidth = getScreenWidth(context);         TypedArray typedArray = context.getResources().obtainAttributes(attrs, R.styleable.BottomBehavior);         id = typedArray.getResourceId(R.styleable.BottomBehavior_anchor_id, -1);         bottomPadding = typedArray.getFloat(R.styleable.BottomBehavior_bottom_padding, 0f);         typedArray.recycle();     }     @Override     public void onAttachedToLayoutParams(@NonNull CoordinatorLayout.LayoutParams params) {         params.dodgeInsetEdges = Gravity.BOTTOM;     }     @Override     public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {         return dependency.getId() == id;     }     @Override     public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {         child.setTranslationY(-(dependency.getTop() - (screenWidth * bottomPadding / designWidth)));         Log.e(&quot;BottomBehavior&quot;, &quot;layoutDependsOn() called with: parent = [&quot; + dependency.getTop());         return true;     }     public static int getScreenWidth(Context context) {         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);         Display display = null;         if (wm != null) {             display = wm.getDefaultDisplay();             Point size = new Point();             display.getSize(size);             int width = size.x; //            int height = size.y;             return width;         }         return 0;     } }</code></p>
+<p>这个里面有两个自定义属性，id，bottomPadding，id表示基于哪个控件的相对位置改变，我这打算基于viewpager</p>
+<p>这个控件，看源码可以知道，只有当onDependentViewChanged返回ture时，layoutDependsOn才会被回调。bottomPadding是表示一个初始的偏移，因为viewpager本身不是顶在屏幕顶端的（开始被图片占据了一部分控件），因此，需要扣除这部分占有。</p>
+<p>同理，加入让你实现一个悬浮在左侧，右侧，滑动隐藏，停止显示的，也都可以参考类似Behavior的方式，减少代码耦合。</p>
+<h1 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h1>
+<p>最后整个布局是这样子的</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt; &lt;com.tencent.igame.view.common.widget.IGameRefreshLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;     xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;     android:id=&quot;@+id/igame_competition_detail_fragment_refresh&quot;     android:layout_width=&quot;match_parent&quot;     android:layout_height=&quot;match_parent&quot;&gt;     &lt;android.support.design.widget.CoordinatorLayout         android:layout_width=&quot;match_parent&quot;         android:layout_height=&quot;match_parent&quot;&gt;         &lt;android.support.design.widget.AppBarLayout             android:id=&quot;@+id/appbarlayout&quot;             android:layout_width=&quot;match_parent&quot;             android:layout_height=&quot;wrap_content&quot;             app:elevation=&quot;0dp&quot;&gt;             &lt;android.support.design.widget.CollapsingToolbarLayout                 android:id=&quot;@+id/collapsing_tool_bar&quot;                 android:layout_width=&quot;match_parent&quot;                 android:layout_height=&quot;wrap_content&quot;                 app:contentScrim=&quot;@color/b_G6&quot;                 app:expandedTitleMarginEnd=&quot;10dp&quot;                 app:expandedTitleMarginStart=&quot;10dp&quot;                 app:layout_scrollFlags=&quot;scroll|exitUntilCollapsed|snap&quot;&gt;                 &lt;android.support.constraint.ConstraintLayout                     android:layout_width=&quot;match_parent&quot;                     android:layout_height=&quot;match_parent&quot;&gt;                     &lt;ImageView                         android:id=&quot;@+id/igame_arena_rank_class_header_bg&quot;                         android:layout_width=&quot;match_parent&quot;                         android:layout_height=&quot;0dp&quot;                         android:scaleType=&quot;centerCrop&quot;                         android:src=&quot;@drawable/bg_arena_rank_class&quot;                         app:layout_constraintDimensionRatio=&quot;375:156&quot; /&gt;                         ............                 &lt;/android.support.constraint.ConstraintLayout&gt;                 &lt;android.support.v7.widget.Toolbar                     android:id=&quot;@+id/common_index_activity_tb_title&quot;                     android:layout_width=&quot;match_parent&quot;                     android:layout_height=&quot;wrap_content&quot;                     android:minHeight=&quot;?android:attr/actionBarSize&quot;                     android:visibility=&quot;visible&quot;                     app:contentInsetLeft=&quot;0dp&quot;                     app:contentInsetStart=&quot;0dp&quot;                     app:layout_collapseMode=&quot;pin&quot;&gt;                     &lt;include                         layout=&quot;@layout/igame_common_tool_bar&quot;                         android:layout_width=&quot;match_parent&quot;                         android:layout_height=&quot;wrap_content&quot;                         android:layout_gravity=&quot;center&quot; /&gt;                 &lt;/android.support.v7.widget.Toolbar&gt;             &lt;/android.support.design.widget.CollapsingToolbarLayout&gt;         &lt;/android.support.design.widget.AppBarLayout&gt;         &lt;com.tencent.igame.widget.viewpager.IgameViewPager             android:id=&quot;@+id/igame_arena_rank_class_vp_content&quot;             android:layout_width=&quot;match_parent&quot;             android:layout_height=&quot;match_parent&quot;             app:layout_behavior=&quot;@string/appbar_scrolling_view_behavior&quot; /&gt;         &lt;android.support.constraint.ConstraintLayout             android:layout_width=&quot;match_parent&quot;             android:layout_height=&quot;60dp&quot;             android:layout_gravity=&quot;bottom&quot;             android:background=&quot;@color/b_G6&quot;             android:paddingLeft=&quot;12dp&quot;             android:paddingRight=&quot;12dp&quot;             app:anchor_id=&quot;@+id/igame_arena_rank_class_vp_content&quot;             app:bottom_padding=&quot;156.0&quot;             app:layout_behavior=&quot;com.tencent.igame.common.widget.BottomBehavior&quot;&gt; ..........底部布局         &lt;/android.support.constraint.ConstraintLayout&gt;     &lt;/android.support.design.widget.CoordinatorLayout&gt; &lt;/com.tencent.igame.view.common.widget.IGameRefreshLayout&gt;</code></p>
+<p>注：IGameRefreshLayout实际上就是封装的PullToRefreshView，IgameViewPager是我们封装的Viewpager，减少每次写Viewpager的套路代码。</p>
+<p>按照这个框架来，相信你很容易写出这个样子的布局。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/android/">Android</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/">程序员</a></li>
+      <li><a href="http://localhost:1313/tags/%E8%AE%BE%E8%AE%A1%E5%B8%88/">设计师</a></li>
+      <li><a href="http://localhost:1313/tags/%E8%85%BE%E8%AE%AF/">腾讯</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/nestjs&#43;vue3%E6%89%93%E9%80%A0%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80socket.io%E8%81%8A%E5%A4%A9%E5%AE%A4/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>nestjs&#43;vue3打造一个最简socket.io聊天室</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/flutter%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6%E6%B1%87%E6%80%BB%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Flutter第三方插件汇总（持续更新）</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Android如何实现超级棒的沉浸式体验 on x"
+            href="https://x.com/intent/tweet/?text=Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f&amp;hashtags=Android%2c%e7%a8%8b%e5%ba%8f%e5%91%98%2c%e8%ae%be%e8%ae%a1%e5%b8%88%2c%e8%85%be%e8%ae%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Android如何实现超级棒的沉浸式体验 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f&amp;title=Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c&amp;summary=Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Android如何实现超级棒的沉浸式体验 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f&title=Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Android如何实现超级棒的沉浸式体验 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Android如何实现超级棒的沉浸式体验 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Android如何实现超级棒的沉浸式体验 on telegram"
+            href="https://telegram.me/share/url?text=Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Android如何实现超级棒的沉浸式体验 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Android%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e8%b6%85%e7%ba%a7%e6%a3%92%e7%9a%84%e6%b2%89%e6%b5%b8%e5%bc%8f%e4%bd%93%e9%aa%8c&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fandroid%25E5%25A6%2582%25E4%25BD%2595%25E5%25AE%259E%25E7%258E%25B0%25E8%25B6%2585%25E7%25BA%25A7%25E6%25A3%2592%25E7%259A%2584%25E6%25B2%2589%25E6%25B5%25B8%25E5%25BC%258F%25E4%25BD%2593%25E9%25AA%258C%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

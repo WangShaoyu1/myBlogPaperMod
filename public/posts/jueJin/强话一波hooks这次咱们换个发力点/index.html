@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>强话一波hooks，这次咱们换个发力点 | PaperMod</title>
+<meta name="keywords" content="React.js, 前端">
+<meta name="description" content="这回咱们好好讲讲hooks，找一个合适深度的发力点，争取建立从原理到使用的一条细细的通路，这样更有利于之后学习和补充，正所谓先迷后得主。">
+<meta name="author" content="闲D阿强">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2hooks%E8%BF%99%E6%AC%A1%E5%92%B1%E4%BB%AC%E6%8D%A2%E4%B8%AA%E5%8F%91%E5%8A%9B%E7%82%B9/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2hooks%E8%BF%99%E6%AC%A1%E5%92%B1%E4%BB%AC%E6%8D%A2%E4%B8%AA%E5%8F%91%E5%8A%9B%E7%82%B9/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="强话一波hooks，这次咱们换个发力点" />
+<meta property="og:description" content="这回咱们好好讲讲hooks，找一个合适深度的发力点，争取建立从原理到使用的一条细细的通路，这样更有利于之后学习和补充，正所谓先迷后得主。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2hooks%E8%BF%99%E6%AC%A1%E5%92%B1%E4%BB%AC%E6%8D%A2%E4%B8%AA%E5%8F%91%E5%8A%9B%E7%82%B9/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-11-23T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="强话一波hooks，这次咱们换个发力点"/>
+<meta name="twitter:description" content="这回咱们好好讲讲hooks，找一个合适深度的发力点，争取建立从原理到使用的一条细细的通路，这样更有利于之后学习和补充，正所谓先迷后得主。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "强话一波hooks，这次咱们换个发力点",
+      "item": "http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2hooks%E8%BF%99%E6%AC%A1%E5%92%B1%E4%BB%AC%E6%8D%A2%E4%B8%AA%E5%8F%91%E5%8A%9B%E7%82%B9/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "强话一波hooks，这次咱们换个发力点",
+  "name": "强话一波hooks，这次咱们换个发力点",
+  "description": "这回咱们好好讲讲hooks，找一个合适深度的发力点，争取建立从原理到使用的一条细细的通路，这样更有利于之后学习和补充，正所谓先迷后得主。",
+  "keywords": [
+    "React.js", "前端"
+  ],
+  "articleBody": "首先hooks已经推出很久，想必大家或多或少都使用过或者了解过hooks，不知是否会和我一样都有一种感受，那就是hooks使用起来很简单，但总感觉像是一种魔法，并不是很清楚其内部如何实现的，很难得心应手，所以我觉得要想真正驾驭hooks，应该先从了解其内部原理开始，再讲使用，试着建立从原理到使用的一条细细的通路。\nhooks扭转了函数组件的橘势 hooks 之前 函数组件的基因限制 函数组件可以粗略的认为就是类组件的render函数，即一个返回jsx从而创建虚拟dom的函数。\n类组件有this，能够拥有自己的实例方法，变量，这样很容易就可以实现各种特性，比如state和生命周期函数，每一次渲染都可以认为是“曾经\"的自己在不断脱变，有延续性。\n反观函数组件就无法延续，每一次渲染都是“新”的自己，这就是函数组件的“基因限制”，有点像章鱼。\n函数组件和类组件一个“小差异” 首先一个组件可以分别用类组件和函数组件写出两个版本，对吧\n类组件：\njs\n代码解读\n复制代码\nclass CompClass extends Component { showMessage = () =\u003e { console.log(\"点击的这一刻，props中info为 \" + this.props.info); }; handleClick = () =\u003e { setTimeout(this.showMessage, 3000); console.log(`当前props中的info为${this.props.info},一致就说明准确的关联到了此时的render结果`) }; render() { return 点击类组件 ; } }\n函数组件：\njs\n代码解读\n复制代码\nfunction CompFunction(props) { const showMessage = () =\u003e { console.log(\"点击的这一刻，props中info为 \" + props.info); }; const handleClick = () =\u003e { setTimeout(showMessage, 3000); console.log(`当前props中的info为${props.info},一致就说明准确的关联到了此时的\trender结果`) }; return 点击函数组件; }\n那也就说这两者不同写法是等价的，对么？\n答案是：通常情况下是等价的，但是有种情况二者不同，比如\njs\n代码解读\n复制代码\nexport default function App() { const [info, setInfo] = useState(0); return ( { setInfo(info+1) }}\u003e父组件的info信息\u003e\u003e {info} ); }\n通过代码能够看出：\n在组件App中，有个状态info其初始值为0，并且可以通过点击修改 CompFunction和CompClass是作为子组件显示，并且都接受父组件的info作为参数， 这两个组件都有一个点击回调，点击之后都会触发一个延迟3秒的setTimeout，然后把从父组件App中获得info，log出来 那就操作一下：\n就是快速点击CompFunction和CompClass，以触发其内部的setTimeout，等待3秒之后，看看打印从父组件App中获得info信息 然后再点击父组件进而修改info,只要变了就行，假设变成了5。 (建议动手试一下。) 结果：\n函数组件CompFunction会输出：0 类组件CompClass会输出：5 结果不同，按道理讲应该等价啊，为什么不同呢？\n解释：\n函数组件执行，就会形成一个闭包，可以形象地说成render结果，其中包括props，而点击事件的处理函数同样也包括在内，那它无论是立即执行还是延迟执行，都应该与触发执行的那一刻的render结果（你也可以理解为那一刻的快照）相关联。 所以回调函数showMessage所应该log出的info，应该为事件触发的那一刻render结果中的info，也就是\"1\"，无论外部的info怎么变。\n而类组件就会输出info的最新值，也就是\"5\"。\n结论：\n这个“小差异”就叫做capture value\n每次 Render 的内容都会形成一个快照并保留下来，因此当状态变更而 Rerender 时，就形成了 N 个 Render 状态，而每个 Render 状态都拥有自己固定不变的 Props 与 State。\nclass组件想做到这一点，多少有点难，毕竟this这个奶酪被React给动了。\ncapture value是一把双刃剑，不过没关系有办法解决（后面会讲）\nhooks 之后 hooks让这个“render”函数成精了 如果说在hooks之前，函数组件有一些“硬伤”，其独特之处不足以支撑它与类组件分庭抗礼，但是当hooks的到来之后，橘势就不一样了，这个曾经的“render”函数一下就走起来了。\nhooks帮函数组件打碎了基因锁。 我们之前聊了，函数组件最大的硬伤就是\"次次重来，无法延续\" ，很难让它具备跟类组件那样的能力，比如用状态和生命周期函数，而如今hooks的加持，很好的粉碎了被类组件克制的枷锁。\n所以说在了解如何使用hooks之前，最好要先了解函数组件是怎么拥有了延续性，这样使用hooks就”有谱“，否则你就会觉得hooks到处都是黑魔法，这么整就不是很”靠谱“了。\n想要了解Hooks延续的奥秘，你可能得认识一下Fiber 没有延续性，遑论其他，真正让函数组件有延续性的幕后真大佬实际上是Fiber，为了能够很好的了解React怎么实现的这么多种hooks，那么Fiber你是绕不开的，不过学习Fiber不用太用力，点到为止，我会尽可能的浅出，我们的目标就是能够更好的理解和使用Hooks，毕竟吃饺子嘛，不用非得那么清楚怎么做的。\nfiber 的结构 js\n代码解读\n复制代码\ntype Fiber = { // 函数组件记录以链表形式存放的hooks信息，类组件存放`state`信息 memoizedState: any, // 将diff得出的结果提交给的那个节点 return: Fiber | null, // 单链表结构 child：子节点，sibling：兄弟节点 child: Fiber | null, sibling: Fiber | null, ... // 每个workinprogress都维护了一个effect list（很复杂，不会也不耽误我们吃饺子） nextEffect: Fiber | null, firstEffect: Fiber | null, lastEffect: Fiber | null, ... }\nFiber 的由来 React到底是如何将项目渲染出来的。\n首先这个过程称为“reconciler”，可以先粗略讲reconciler划分出两个阶段。\nreconciliation ：通过diff获得变动的结果。 commit：将变动作用到画面上（side effect即副作用，如dom操作）。 reconciliation是异步的，commit是同步的。\n在fiber之前，React是如何实现的reconciliation 从头创建一个新的虚拟dom即vdom，与旧的vdom进行比对，从而得出diff结果，这个过程是递归，需要一气呵成，不能停的，这样JavaScript长时间的占用主线程，就会阻塞画面的渲染，就很卡。\n因为JavaScript在浏览器的主线程上运行，恰好与样式计算、布局以及许多情况下的绘制一起运行。如果JavaScript运行时间过长，就会阻塞这些其他工作，可能导致掉帧。\n（引自Optimize JavaScript Execution）\n那么可以说，旧的方式暴露了两点问题：\n自顶向下遍历，不能停。 React长时间的执行耽误了浏览器工作。 vdom进化成为Fiber Fiber可以理解为将上述整个reconciliation工作拆分了，然后通过链表串了起来，变成了一个个可以中断/挂起/恢复的任务单元。并且结合浏览器提供的requestIdleCallback API（有兴趣可以了解）进行协同合作。\nFiber核心是实现了一个基于优先级和requestIdleCallback的循环任务调度算法。(参考：fiber-reconciler)\n直白的说：就一碗面条，一双筷子，以前React吃的时候，浏览器只能看着，现在就变成React吃一口换浏览器吃一口，一下就和谐了。\nFiber就是按照vdom来拆分的，一个vdom节点对应一个Fiber节点，最后形成一个链表结构的fiber tree，大体如图：\nchild：指向子节点的指针 sibling：指向兄弟节点指针 return：提交变动结果（effectList）到指定的目标节点（图中没标示，下文会有动态演示）\n所以说Fiber tree就是可切片的vdom tree都不为过。\n那么vdom还存在么？ 这个问题我思考了很久，请原谅这方面的源码我还没看透，我现在通过查阅多篇相关的文章，得出了一个我能接受，逻辑能自洽的解释:\nFiber出来之后，vdom的作用只是作为蓝本进行构建Fiber树。\nem~，龙珠熟悉吧，vdom就好像是超级赛亚人1之前够用了，现在不行了，进化到了超级赛亚人2，即Fiber。\nFiber是如何工作的 首先我已经知道，Fiber tree是一个链表结构，React是通过循环处理每个Fiber工作单元，在一段时间后再交还控制权给浏览器，从而协同的合作，让页面变得更加流畅。\n要弄清函数组件怎么有的延续性的答案就藏在了这个工作循环中。\n探索一下workLoop 为了能够摆脱又困又长的源码分析，可以试着先简单的理解workLoop。\n首先Loop啥呢？\n工作单元，即work。\nwork又可以粗略的分为：\nbeginWork：开始工作 completeWork：完成工作 那么结合之前的Fiber tree，看一下\n那么看下大体的运转过程：\n那么通过动画我初步了解了整个workLoop的流转过程，简单描述下：\n自顶root向下，流转子节点b1 b1开始beginWork，工作目标根据情况diff处理，获得变动结果（effectList），然后判断是是否有子节点，没有那结束工作completeWork，然后流转到兄弟节点b2 b2开始工作，然后判断有子节点c1，那就流转到c1 c1工作完了，completeWork获得effectList，并提交给b2 然后b2完成工作，流转给b3,那么b3就按照这套路子，往下执行了，最后执行到了最底部d2 最后随着光标的路线，一路整合各节点的effectList，最后抵达Root节点，第1阶段-reconciliation结束，准备进入Commit阶段 再进一步，“延续”的答案就快浮出水面了 我们已经大致的了解了workLoop，但还不能解释函数组件怎么“延续”的，我们还要再深入了解，那么再细致一点分解workLoop，实际上是这样的：\n（动画中“current”和“备用”是一体，为了看起来容易理解：“构建wip树是尽可能复用current树”，动画结束时，current再用备用来描述，以表达current树是作为备用的）\n描述一下过程：\n根据current fiber treeclone出workinProgress fiber tree，每clone一个workinProgress fiber都会尽可能的复用备用fiber节点（曾经的current fiber） 当构建完整个workinProgress fiber tree的时候，current fiber tree就会退下去，作为备用fiber节点树，然后workinProgress fiber tree就会扶正，成为新的current fiber tree 然后就将已收集完变动结果（effect list）的新current fiber tree，送去commit阶段，从而更新画面 其中几个点我要注意：\ncurrent fiber tree为主决定屏幕上显示内容，workinProgress fiber tree为辅制作完毕成为下一个current fiber tree 构建workinProgress fiber tree的过程，就是diff的过程，主要的工作都是发生在workinProgress fiber上，有变动就会维护一个effect list,当完成工作的时候就会提交格给return所指向的节点。 要退位的current fiber tree作为备用,充当了构建workinProgress fiber tree的原料，最大程度节约了性能，这样周而复始，。 收集到的effect list只会关注有改动的节点，并且从最深处往前排列，这也就对应上了，刷新顺序是子节点到父节点。 双fiber树就是问题关键 有两个阶段：\n首次渲染：直接先把current fiber tree构建出来 更新渲染：延续current fiber tree构建workinProgress fiber tree 蜕变之中必有延续 更新阶段，两棵fiber树如双生一般，current fiber与workinProgress fiber之间用alternate这个指针进行了关联，也就是说，可以在处理workinProgress fiber工作的时候，能够获得current fiber的信息，除非是全新的，那就重新创建。\n每构建一个workinProgress fiber，如果这个fiber对应的节点是一个函数组件，并且可以通过alternate获得current fiber，那么就进行延续，承载延续的精华的便是current fiber的memoizedState这个属性\n延续的精华尽在memoizedState 首次渲染时\n依次执行我们在函数组件的hooks，每执行一个种类hooks，都会创建一个对应该种类的hook对象，用来保存信息。\nuseState 对应 state信息 useEffect 对应 effect对象 useMemo 对应 缓存的值和deps useRef 对应 ref对象 … 这些信息都会以链表的形式保存在current fiber的memoizedState中\n更新渲染时\n每次构建对应的是函数组件的workinProgress fiber时，都会从对应的current fiber中延续这个以链表结构存储的hooks信息。\n如该函数组件：\njs\n代码解读\n复制代码\nexport default function Test() { const [info1, setInfo1] = useState(0); useEffect(() =\u003e {}, [info1]); const ref = useRef(); const [info2, setInfo2] = useState(0); const [info3, setInfo3] = useState(0); return ( {`${info1}${info2}${info3}`} ); }\n那么hooks的延续就如下图这样：\n通过链表的顺序去延续，如果其中的一个hooks写在条件语句中,代码如下：\njs\n代码解读\n复制代码\nexport default function Test() { const [info1, setInfo1] = useState(0); let ref; useEffect(() =\u003e { setInfo1(info1+1) }, [info1]); if(info1==0){ ref = useRef(); } const [info2, setInfo2] = useState(0); const [info3, setInfo3] = useState(0); return ( {`${info1}${info2}${info3}`} ); }\n那么就会破坏延续的顺序，获得信息就会驴唇不对马嘴，就像这样：\n所以这就是不能把hooks写在条件语句中的原因\n而这就是Hooks能够延续的奥秘，作为支撑其实现各种功能，从而与class组件相媲美的前提基础。\nhooks整的那些活儿 了解一下capture value以及闭包陷阱 capture value顾名思义，“捕获的的值”，函数组件执行一次就会产生一个闭包，就好像一个快照， 这跟我们上面分析说的“关联render结果”或者“那一刻快照”呼应上了。\n当capture value遇上hooks出现了因使用“过期快照”而产生的问题，那就称为闭包陷阱。\n不过叫什么不重要，归根节点都是“过期闭包”的问题，而在useEffect中的暴露的问题最为明显。\n先举个🌰：\njs\n代码解读\n复制代码\nlet B = (props) =\u003e { const { info } = props; const [count,setCount] = useState(0); useEffect(()=\u003e{ setInterval(()=\u003e{ //这才是dispatch函数正确的使用方式 setCount((old)=\u003e{ return old+1; }) },1000) },[]) useEffect(()=\u003e{ setInterval(()=\u003e{ console.log(\"info为：\"+info+\" count为：\"+count) },1000) },[]) return } let A = (props) =\u003e { const [info,setInfo] = useState(0); useEffect(()=\u003e{ setInterval(()=\u003e{ //这才是dispatch函数正确的使用方式 setInfo((old)=\u003e{ return old+1; }) },1000) },[]) return {info} } export default function App() { return ( ); }\n这种log出来的一直都是info：0 count：0，很显然使用的关联的“过期快照”中的数据。\n解决办法：\n通过useRef获得ref对象\nref的结构是这样的：\njs\n代码解读\n复制代码\n{ current:null }\n我们把需要托管的数据赋值给current,值得一提的你只能赋值给current，ref对象是不支持扩展的。\n然后我们重写一下代码：\njs\n代码解读\n复制代码\nlet B = (props) =\u003e { const { info } = props; const [count,setCount] = useState(0); const refInfoFromProps = useRef(); const refCountFromProps = useRef(); refInfoFromProps.current = info; refCountFromProps.current = count; useEffect(()=\u003e{ setInterval(()=\u003e{ //这才是dispatch函数正确的使用方式 setCount((old)=\u003e{ return old+1; }) },1000) },[]) useEffect(()=\u003e{ setInterval(()=\u003e{ console.log(\"info为：\"+refInfoFromProps.current+\" count为：\"+refCountFromProps.current) },1000) },[]) return }\n这样就能每次都访问最新的数据了。\n当然还有很多别的办法，比如使用useReducer，有兴趣可以研究一下。\nuseState的事儿 这样设置刷新么？ 先看下这段代码\njs\n代码解读\n复制代码\nlet A = ((props) =\u003e { const [count,setCount] = useState({a:1}) return { count.a = Date.now(); setCount(count) }}\u003e 测试是否刷新 })\n当我点击之后触发了setCount，请问刷新么？\n答案是不刷新，因为我们在使用React的时候，心里应该常提醒自己，就是：\n不可变值，不可变值，不可变值\n上面的代码问题主要两点：\n直接的修改了state，这样破坏了不可变值的规矩，你应该通过Object.assign或者扩展运算符来重新创建一个对象进行设置。 React内部会针对传入的参数进行浅比较，引用类型的数据比较的是其指向的地址，而不是内容，切记，所以光内容变了没用。 正确的写法\njs\n代码解读\n复制代码\nlet A = ((props) =\u003e { const [count,setCount] = useState({a:1}) return { setCount({...count,a:Date.now()}) }}\u003e 测试是否刷新 })\nuseState和setState不太一样 useState的set函数跟类组件的setState命名很像，会让有种错觉它俩一样，其实不然，前者实际上是一个dispath，因为useState内部是基于useReducer实现的。而且也不用非得命名set***，你可以随便起名。\n其中有三点不同，值得指出：\nsetState:\n第二个参数是一个函数，可以在状态值设置生效后进行回调，我们就可以在这里面拿到最新的状态值。 setState具备浅合并功能，比如state是{a:1,b:2,c:{e:0}},setState({c:{f:0},d:4}),state就会合并成{a:1,b:2,c:{f:0},d:4} setState设置状态就会引发刷新，即使设置的是相同的值也一样，除非用PureComponent实现才能解决 set函数\n没有第二个参数，但是可以借助useEffect组合实现,也还好 没有合并功能，设置啥就是啥。。。,不过自己动手优化一下也是可以的。 设置相同的状态是不会触发刷新的，这一点无需进行配置。 接下来深入讨论一个有趣的问题。\nuseState的set函数是同步的还是异步的？setState是同步还是异步的？ 答案惊人的一致，即：\n大部分时候异步，有些时候同步\n具体什么时候同步呢？就是\n如果是由React引发的事件处理（比如通过onClick引发的事件处理），调用setState不会同步更新this.state，除此之外的setState调用会同步执行this.state\n不信，那看下代码：\njs\n代码解读\n复制代码\nexport default function Test() { const [info1, setInfo1] = useState(0); const [info2, setInfo2] = useState(0); const ref1 = useRef(); const ref2 = useRef(); ref1.current = info1; ref2.current = info2; useEffect(() =\u003e { setInfo1(ref1.current + 1); setInfo1(ref1.current + 1); setInfo1(ref1.current + 1); console.log(\"info1:\"+ref1.current); // info1:0 setTimeout(() =\u003e { setInfo2(ref2.current + 1); setInfo2(ref2.current + 1); setInfo2(ref2.current + 1); console.log(\"info2:\"+ref2.current);// 同步输出 info2:3 }); }, []); return {info1}; }\n输出的日志是: info1:0 info2:3\n那么useState的set函数这一点上就跟setState一样了，所以再说useState的set函数是异步还是同步的时候，知道怎么说了吧。\nuseEffect的事儿 useEffect有两个参数，一个effect执行的回调函数，一个是是依赖数组\n同时useEffect可以写多个，这样就可以按照业务独立拆分，做到关注点分离\n生命周期 useEffect是函数组件实现生命周期函数的重要手段\n可以模拟的生命周期分别是：\ncomponentDidMount componentWillUnmount componentDidUpdate 代码如下：\njs\n代码解读\n复制代码\nuseEffect(() =\u003e { // 相当于 componentDidMount return () =\u003e { // 相当于 componentWillUnmount } }, []) useEffect(() =\u003e { // 相当于 componentDidUpdate })\nuseEffect的清除函数的执行时机 首先清除函数执行有两种情况：\n一个是卸载的时候，这个众所周知。 一个是effect重新执行的时候，也会执行，这点大家要注意，容易马虎 然后再看下这段代码\njs\n代码解读\n复制代码\nuseEffect( () =\u003e { ... return () =\u003e { ... console.log(\"test\") } }, [flag]], )\n请问：当flag从true设置成了false，这个return的清除函数会执行么？\n答案是：执行\n再难一点\njs\n代码解读\n复制代码\nuseEffect( () =\u003e { if (flag) { ... return () =\u003e { ... console.log(\"test\") } } }, [flag]], )\n请问执行么？\n答案是：执行\n你可以记住一个铁律：\n当effect重新执行的时候，会清除上一次effect\nuseEffect和useLayoutEffect区分 useEffect是异步的，useLayoutEffect是同步的 所谓的异步就是利用requestIdleCallback，在浏览器空闲时间执行传入的callback，也就是继续处理js逻辑 大部分情况没什么区别，但是当有耗时的逻辑，useLayoutEffect就会造成渲染阻塞\n先贴出一段代码，这是我在网上遇到了很有趣的例子。\njs\n代码解读\n复制代码\nfunction TestEffectApi() { const [lapse, setLapse] = useState(0) const [running, setRunning] = useState(false) useEffect( () =\u003e { if (running) { const startTime = Date.now() - lapse const intervalId = setInterval(() =\u003e { setLapse(Date.now() - startTime) }, 2) console.log(intervalId) return () =\u003e { clearInterval(intervalId) } } }, [running], ) function handleRunClick() { setRunning(r =\u003e !r) } function handleClearClick() { setRunning(false) setLapse(0) } return ( {lapse}ms {running ? '暂停' : '开始'} 暂停并清0 ) }\n通过代码可以看出，当我点击“暂停并清0”按钮的时候，我们设置了两个状态一个running和lapse，前者控制定时器运行，后者控制数据显示，而点击之后的预期是：定时器关闭，同时显示的数据为“0”，但是实际情况却是偶发出现显示不为“0”的情况\n原因：\n因为useEffect是异步的，当通过设置running关闭定时器和设置lapse为“0”时，并没有第一时间关闭定时器，而是阴差阳错的出现了一种情况：lapse已经设置为零，定时器还没关闭就要关闭的这一霎，又一次的执行了，便出现了这种问题。而用同步执行的LayoutEffect就没有这个问题\n通过上面这个例子，useEffect和LayoutEffect的区别应该能可见一斑了。\nuseRef真有用啊 useRef是真有用啊，凭借“跨渲染周期”保存数据的能力，即拥有在整个组件生命周期只维护一个引用的特性，可以解决很多问题。\n不但可以保存dom节点还可以保存其他数据，比如上面提到的过期闭包的问题中保存外部的prop和state。\n除此之外还有一个有趣的用处，就是可以结合forwardRef和useImperativeHandle这两个api，让函数组件可以像类组件那样暴露函数给其他节点使用\n代码如下:\njs\n代码解读\n复制代码\nlet A = forwardRef((props, ref) =\u003e { useImperativeHandle(ref, () =\u003e { return { test: () =\u003e { console.log(\"123\") } } }) const [info, setInfo] = useState(0); return {info} }) export default function App() { const ref = useRef(null); return ( ",
+  "wordCount" : "1369",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-11-23T00:00:00Z",
+  "dateModified": "2021-11-23T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "闲D阿强"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2hooks%E8%BF%99%E6%AC%A1%E5%92%B1%E4%BB%AC%E6%8D%A2%E4%B8%AA%E5%8F%91%E5%8A%9B%E7%82%B9/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      强话一波hooks，这次咱们换个发力点
+    </h1>
+    <div class="post-description">
+      这回咱们好好讲讲hooks，找一个合适深度的发力点，争取建立从原理到使用的一条细细的通路，这样更有利于之后学习和补充，正所谓先迷后得主。
+    </div>
+    <div class="post-meta"><span title='2021-11-23 00:00:00 +0000 UTC'>十一月 23, 2021</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;闲D阿强&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#hooks%e6%89%ad%e8%bd%ac%e4%ba%86%e5%87%bd%e6%95%b0%e7%bb%84%e4%bb%b6%e7%9a%84%e6%a9%98%e5%8a%bf" aria-label="hooks扭转了函数组件的橘势">hooks扭转了函数组件的橘势</a><ul>
+                        
+                <li>
+                    <a href="#hooks-%e4%b9%8b%e5%89%8d" aria-label="hooks 之前">hooks 之前</a><ul>
+                        
+                <li>
+                    <a href="#%e5%87%bd%e6%95%b0%e7%bb%84%e4%bb%b6%e7%9a%84%e5%9f%ba%e5%9b%a0%e9%99%90%e5%88%b6" aria-label="函数组件的基因限制">函数组件的基因限制</a></li>
+                <li>
+                    <a href="#%e5%87%bd%e6%95%b0%e7%bb%84%e4%bb%b6%e5%92%8c%e7%b1%bb%e7%bb%84%e4%bb%b6%e4%b8%80%e4%b8%aa%e5%b0%8f%e5%b7%ae%e5%bc%82" aria-label="函数组件和类组件一个“小差异”">函数组件和类组件一个“小差异”</a></li></ul>
+                </li>
+                <li>
+                    <a href="#hooks-%e4%b9%8b%e5%90%8e" aria-label="hooks 之后">hooks 之后</a><ul>
+                        
+                <li>
+                    <a href="#hooks%e8%ae%a9%e8%bf%99%e4%b8%aarender%e5%87%bd%e6%95%b0%e6%88%90%e7%b2%be%e4%ba%86" aria-label="hooks让这个“render”函数成精了">hooks让这个“render”函数成精了</a></li>
+                <li>
+                    <a href="#hooks%e5%b8%ae%e5%87%bd%e6%95%b0%e7%bb%84%e4%bb%b6%e6%89%93%e7%a2%8e%e4%ba%86%e5%9f%ba%e5%9b%a0%e9%94%81" aria-label="hooks帮函数组件打碎了基因锁。">hooks帮函数组件打碎了基因锁。</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%83%b3%e8%a6%81%e4%ba%86%e8%a7%a3hooks%e5%bb%b6%e7%bb%ad%e7%9a%84%e5%a5%a5%e7%a7%98%e4%bd%a0%e5%8f%af%e8%83%bd%e5%be%97%e8%ae%a4%e8%af%86%e4%b8%80%e4%b8%8bfiber" aria-label="想要了解Hooks延续的奥秘，你可能得认识一下Fiber">想要了解Hooks延续的奥秘，你可能得认识一下Fiber</a><ul>
+                        
+                <li>
+                    <a href="#fiber-%e7%9a%84%e7%bb%93%e6%9e%84" aria-label="fiber 的结构">fiber 的结构</a></li>
+                <li>
+                    <a href="#fiber-%e7%9a%84%e7%94%b1%e6%9d%a5" aria-label="Fiber 的由来">Fiber 的由来</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%a8fiber%e4%b9%8b%e5%89%8dreact%e6%98%af%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%9a%84reconciliation" aria-label="在fiber之前，React是如何实现的reconciliation">在fiber之前，React是如何实现的reconciliation</a></li>
+                <li>
+                    <a href="#vdom%e8%bf%9b%e5%8c%96%e6%88%90%e4%b8%bafiber" aria-label="vdom进化成为Fiber">vdom进化成为Fiber</a></li>
+                <li>
+                    <a href="#%e9%82%a3%e4%b9%88vdom%e8%bf%98%e5%ad%98%e5%9c%a8%e4%b9%88" aria-label="那么vdom还存在么？">那么vdom还存在么？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#fiber%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84" aria-label="Fiber是如何工作的">Fiber是如何工作的</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8e%a2%e7%b4%a2%e4%b8%80%e4%b8%8bworkloop" aria-label="探索一下workLoop">探索一下workLoop</a></li>
+                <li>
+                    <a href="#%e5%86%8d%e8%bf%9b%e4%b8%80%e6%ad%a5%e5%bb%b6%e7%bb%ad%e7%9a%84%e7%ad%94%e6%a1%88%e5%b0%b1%e5%bf%ab%e6%b5%ae%e5%87%ba%e6%b0%b4%e9%9d%a2%e4%ba%86" aria-label="再进一步，“延续”的答案就快浮出水面了">再进一步，“延续”的答案就快浮出水面了</a></li>
+                <li>
+                    <a href="#%e5%8f%8cfiber%e6%a0%91%e5%b0%b1%e6%98%af%e9%97%ae%e9%a2%98%e5%85%b3%e9%94%ae" aria-label="双fiber树就是问题关键">双fiber树就是问题关键</a></li>
+                <li>
+                    <a href="#%e8%9c%95%e5%8f%98%e4%b9%8b%e4%b8%ad%e5%bf%85%e6%9c%89%e5%bb%b6%e7%bb%ad" aria-label="蜕变之中必有延续">蜕变之中必有延续</a></li>
+                <li>
+                    <a href="#%e5%bb%b6%e7%bb%ad%e7%9a%84%e7%b2%be%e5%8d%8e%e5%b0%bd%e5%9c%a8memoizedstate" aria-label="延续的精华尽在memoizedState">延续的精华尽在memoizedState</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#hooks%e6%95%b4%e7%9a%84%e9%82%a3%e4%ba%9b%e6%b4%bb%e5%84%bf" aria-label="hooks整的那些活儿">hooks整的那些活儿</a><ul>
+                        
+                <li>
+                    <a href="#%e4%ba%86%e8%a7%a3%e4%b8%80%e4%b8%8bcapture-value%e4%bb%a5%e5%8f%8a%e9%97%ad%e5%8c%85%e9%99%b7%e9%98%b1" aria-label="了解一下capture value以及闭包陷阱">了解一下capture value以及闭包陷阱</a></li>
+                <li>
+                    <a href="#usestate%e7%9a%84%e4%ba%8b%e5%84%bf" aria-label="useState的事儿">useState的事儿</a><ul>
+                        
+                <li>
+                    <a href="#%e8%bf%99%e6%a0%b7%e8%ae%be%e7%bd%ae%e5%88%b7%e6%96%b0%e4%b9%88" aria-label="这样设置刷新么？">这样设置刷新么？</a></li>
+                <li>
+                    <a href="#usestate%e5%92%8csetstate%e4%b8%8d%e5%a4%aa%e4%b8%80%e6%a0%b7" aria-label="useState和setState不太一样">useState和setState不太一样</a></li>
+                <li>
+                    <a href="#usestate%e7%9a%84set%e5%87%bd%e6%95%b0%e6%98%af%e5%90%8c%e6%ad%a5%e7%9a%84%e8%bf%98%e6%98%af%e5%bc%82%e6%ad%a5%e7%9a%84setstate%e6%98%af%e5%90%8c%e6%ad%a5%e8%bf%98%e6%98%af%e5%bc%82%e6%ad%a5%e7%9a%84" aria-label="useState的set函数是同步的还是异步的？setState是同步还是异步的？">useState的set函数是同步的还是异步的？setState是同步还是异步的？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#useeffect%e7%9a%84%e4%ba%8b%e5%84%bf" aria-label="useEffect的事儿">useEffect的事儿</a><ul>
+                        
+                <li>
+                    <a href="#%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f" aria-label="生命周期">生命周期</a></li>
+                <li>
+                    <a href="#useeffect%e7%9a%84%e6%b8%85%e9%99%a4%e5%87%bd%e6%95%b0%e7%9a%84%e6%89%a7%e8%a1%8c%e6%97%b6%e6%9c%ba" aria-label="useEffect的清除函数的执行时机">useEffect的清除函数的执行时机</a></li>
+                <li>
+                    <a href="#useeffect%e5%92%8cuselayouteffect%e5%8c%ba%e5%88%86" aria-label="useEffect和useLayoutEffect区分">useEffect和useLayoutEffect区分</a></li></ul>
+                </li>
+                <li>
+                    <a href="#useref%e7%9c%9f%e6%9c%89%e7%94%a8%e5%95%8a" aria-label="useRef真有用啊">useRef真有用啊</a></li>
+                <li>
+                    <a href="#usecontext%e5%8f%af%e4%bb%a5%e4%b8%80%e5%ae%9a%e7%a8%8b%e5%ba%a6%e7%9a%84%e6%9b%bf%e4%bb%a3%e7%ac%ac%e4%b8%89%e6%96%b9%e7%9a%84%e6%95%b0%e6%8d%ae%e7%ae%a1%e7%90%86%e5%ba%93" aria-label="useContext可以一定程度的替代第三方的数据管理库">useContext可以一定程度的替代第三方的数据管理库</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89hook%e4%b8%8d%e5%90%8c%e4%ba%8e%e4%bb%a5%e5%be%80%e5%b0%81%e8%a3%85%e7%9a%84%e5%b7%a5%e5%85%b7%e5%87%bd%e6%95%b0" aria-label="自定义hook不同于以往封装的工具函数">自定义hook不同于以往封装的工具函数</a></li>
+                <li>
+                    <a href="#%e5%87%bd%e6%95%b0%e7%bb%84%e4%bb%b6%e7%9a%84%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e7%9a%84%e6%96%b9%e5%bc%8f" aria-label="函数组件的性能优化的方式">函数组件的性能优化的方式</a><ul>
+                        
+                <li>
+                    <a href="#memo" aria-label="memo">memo</a></li>
+                <li>
+                    <a href="#usememo" aria-label="useMemo">useMemo</a></li>
+                <li>
+                    <a href="#usecallback" aria-label="useCallback">useCallback</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li>
+                <li>
+                    <a href="#%e9%a2%98%e5%a4%96%e8%af%9d" aria-label="题外话">题外话</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>首先<code>hooks</code>已经推出很久，想必大家或多或少都使用过或者了解过<code>hooks</code>，不知是否会和我一样都有一种感受，那就是<code>hooks</code>使用起来很简单，但总感觉像是一种魔法，并不是很清楚其内部如何实现的，很难得心应手，所以我觉得要想真正驾驭<code>hooks</code>，应该先从了解其内部原理开始，再讲使用，试着建立从原理到使用的一条细细的通路。</p>
+<h1 id="hooks扭转了函数组件的橘势">hooks扭转了函数组件的橘势<a hidden class="anchor" aria-hidden="true" href="#hooks扭转了函数组件的橘势">#</a></h1>
+<h2 id="hooks-之前">hooks 之前<a hidden class="anchor" aria-hidden="true" href="#hooks-之前">#</a></h2>
+<h3 id="函数组件的基因限制">函数组件的基因限制<a hidden class="anchor" aria-hidden="true" href="#函数组件的基因限制">#</a></h3>
+<p>函数组件可以粗略的认为就是类组件的<code>render</code>函数，即一个返回<code>jsx</code>从而创建虚拟<code>dom</code>的函数。</p>
+<p>类组件有<code>this</code>，能够拥有自己的实例方法，变量，这样很容易就可以实现各种特性，比如<code>state</code>和生命周期函数，每一次渲染都可以认为是“曾经&quot;的自己在不断脱变，有延续性。</p>
+<p>反观函数组件就无法延续，每一次渲染都是“新”的自己，这就是函数组件的“基因限制”，有点像章鱼。</p>
+<h3 id="函数组件和类组件一个小差异">函数组件和类组件一个“小差异”<a hidden class="anchor" aria-hidden="true" href="#函数组件和类组件一个小差异">#</a></h3>
+<p>首先一个组件可以分别用类组件和函数组件写出两个版本，对吧</p>
+<p><strong>类组件：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>class CompClass extends Component {  showMessage = () =&gt; {  	console.log(&quot;点击的这一刻，props中info为 &quot; + this.props.info);  };  handleClick = () =&gt; { 	 setTimeout(this.showMessage, 3000); 	 console.log(`当前props中的info为${this.props.info},一致就说明准确的关联到了此时的render结果`)  };  render() {  	return &lt;div onClick={this.handleClick}&gt; 		 &lt;div&gt;点击类组件&lt;/div&gt; 	&lt;/div&gt;;  } }</code></p>
+<p><strong>函数组件：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function CompFunction(props) { 	 	const showMessage = () =&gt; { 		console.log(&quot;点击的这一刻，props中info为 &quot; + props.info); 	};   	const handleClick = () =&gt; { 		setTimeout(showMessage, 3000); 		console.log(`当前props中的info为${props.info},一致就说明准确的关联到了此时的		render结果`) 	}; return &lt;div onClick={handleClick}&gt;点击函数组件&lt;/div&gt;; }</code></p>
+<p>那也就说这两者不同写法是等价的，对么？</p>
+<p>答案是：<strong>通常情况下是等价的，但是有种情况二者不同</strong>，比如</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>export default function App() {  const [info, setInfo] = useState(0);  return ( 	 &lt;div&gt; 		 &lt;div onClick={()=&gt;{ 		 	setInfo(info+1) 		 }}&gt;父组件的info信息&gt;&gt; {info}&lt;/div&gt; 		 &lt;CompFunction info = {info}&gt;&lt;/CompFunction&gt; 		 &lt;CompClass info = {info}&gt;&lt;/CompClass&gt; 	 &lt;/div&gt;  ); }</code></p>
+<p>通过代码能够看出：</p>
+<ol>
+<li>在组件<code>App</code>中，有个状态<code>info</code>其初始值为0，并且可以通过点击修改</li>
+<li><code>CompFunction</code>和<code>CompClass</code>是作为子组件显示，并且都接受父组件的<code>info</code>作为参数，</li>
+<li>这两个组件都有一个点击回调，点击之后都会触发一个延迟3秒的<code>setTimeout</code>，然后把从父组件<code>App</code>中获得<code>info</code>，<code>log</code>出来</li>
+</ol>
+<p>那就操作一下：</p>
+<ol>
+<li>就是快速点击<code>CompFunction</code>和<code>CompClass</code>，以触发其内部的<code>setTimeout</code>，等待3秒之后，看看打印从父组件<code>App</code>中获得<code>info</code>信息</li>
+<li>然后再点击父组件进而修改<code>info</code>,只要变了就行，假设变成了5。 (<em>建议动手试一下。</em>)</li>
+</ol>
+<p>结果：</p>
+<ol>
+<li>函数组件<code>CompFunction</code>会输出：0</li>
+<li>类组件<code>CompClass</code>会输出：5</li>
+</ol>
+<p><strong>结果不同，按道理讲应该等价啊，为什么不同呢？</strong></p>
+<p><strong>解释：</strong></p>
+<p>函数组件执行，就会形成一个闭包，可以形象地说成<strong>render结果</strong>，其中包括<code>props</code>，而点击事件的处理函数同样也包括在内，那它无论是立即执行还是延迟执行，都应该与触发执行的那一刻的<strong>render结果</strong>（你也可以理解为那一刻的快照）相关联。 所以回调函数<code>showMessage</code>所应该<code>log</code>出的<code>info</code>，应该为事件触发的那一刻<code>render</code>结果中的<code>info</code>，也就是&quot;1&quot;，无论外部的info怎么变。</p>
+<p>而类组件就会输出<code>info</code>的最新值，也就是&quot;5&quot;。</p>
+<p><strong>结论：</strong></p>
+<p>这个“小差异”就叫做<strong>capture value</strong></p>
+<blockquote>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fsegmentfault.com%2Fa%2F1190000018685253%3Futm_source%3Dtag-newest%23%3A~%3Atext%3D%25E6%25AF%258F%25E6%25AC%25A1%2520Render%2520%25E7%259A%2584%25E5%2586%2585%25E5%25AE%25B9%25E9%2583%25BD%25E4%25BC%259A%25E5%25BD%25A2%25E6%2588%2590%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BF%25AB%25E7%2585%25A7%25E5%25B9%25B6%25E4%25BF%259D%25E7%2595%2599%25E4%25B8%258B%25E6%259D%25A5%25EF%25BC%258C%25E5%259B%25A0%25E6%25AD%25A4%25E5%25BD%2593%25E7%258A%25B6%25E6%2580%2581%25E5%258F%2598%25E6%259B%25B4%25E8%2580%258C%2520Rerender%2520%25E6%2597%25B6%25EF%25BC%258C%25E5%25B0%25B1%25E5%25BD%25A2%25E6%2588%2590%25E4%25BA%2586%2520N%2520%25E4%25B8%25AA%2520Render%2520%25E7%258A%25B6%25E6%2580%2581%25EF%25BC%258C%25E8%2580%258C%25E6%25AF%258F%25E4%25B8%25AA%2520Render%2520%25E7%258A%25B6%25E6%2580%2581%25E9%2583%25BD%25E6%258B%25A5%25E6%259C%2589%25E8%2587%25AA%25E5%25B7%25B1%25E5%259B%25BA%25E5%25AE%259A%25E4%25B8%258D%25E5%258F%2598%25E7%259A%2584%2520Props%2520%25E4%25B8%258E%2520State%25E3%2580%2582" title="https://segmentfault.com/a/1190000018685253?utm_source=tag-newest#:~:text=%E6%AF%8F%E6%AC%A1%20Render%20%E7%9A%84%E5%86%85%E5%AE%B9%E9%83%BD%E4%BC%9A%E5%BD%A2%E6%88%90%E4%B8%80%E4%B8%AA%E5%BF%AB%E7%85%A7%E5%B9%B6%E4%BF%9D%E7%95%99%E4%B8%8B%E6%9D%A5%EF%BC%8C%E5%9B%A0%E6%AD%A4%E5%BD%93%E7%8A%B6%E6%80%81%E5%8F%98%E6%9B%B4%E8%80%8C%20Rerender%20%E6%97%B6%EF%BC%8C%E5%B0%B1%E5%BD%A2%E6%88%90%E4%BA%86%20N%20%E4%B8%AA%20Render%20%E7%8A%B6%E6%80%81%EF%BC%8C%E8%80%8C%E6%AF%8F%E4%B8%AA%20Render%20%E7%8A%B6%E6%80%81%E9%83%BD%E6%8B%A5%E6%9C%89%E8%87%AA%E5%B7%B1%E5%9B%BA%E5%AE%9A%E4%B8%8D%E5%8F%98%E7%9A%84%20Props%20%E4%B8%8E%20State%E3%80%82">每次 Render 的内容都会形成一个快照并保留下来，因此当状态变更而 Rerender 时，就形成了 N 个 Render 状态，而每个 Render 状态都拥有自己固定不变的 Props 与 State。</a></p>
+</blockquote>
+<p><code>class</code>组件想做到这一点，多少有点难，毕竟this这个奶酪被React给动了。</p>
+<p><strong>capture value</strong>是一把双刃剑，不过没关系有办法解决（后面会讲）</p>
+<h2 id="hooks-之后">hooks 之后<a hidden class="anchor" aria-hidden="true" href="#hooks-之后">#</a></h2>
+<h3 id="hooks让这个render函数成精了">hooks让这个“render”函数成精了<a hidden class="anchor" aria-hidden="true" href="#hooks让这个render函数成精了">#</a></h3>
+<p>如果说在<code>hooks</code>之前，函数组件有一些“硬伤”，其独特之处不足以支撑它与类组件分庭抗礼，但是当<code>hooks</code>的到来之后，橘势就不一样了，这个曾经的“<code>render</code>”函数一下就走起来了。</p>
+<h3 id="hooks帮函数组件打碎了基因锁">hooks帮函数组件打碎了基因锁。<a hidden class="anchor" aria-hidden="true" href="#hooks帮函数组件打碎了基因锁">#</a></h3>
+<p>我们之前聊了，函数组件最大的硬伤就是&quot;<strong>次次重来，无法延续</strong>&quot; ，很难让它具备跟类组件那样的能力，比如用状态和生命周期函数，而如今<code>hooks</code>的加持，很好的粉碎了被类组件克制的枷锁。</p>
+<p>所以说在了解如何使用<code>hooks</code>之前，最好要先了解函数组件是怎么拥有了延续性，这样使用<code>hooks</code>就”有谱“，否则你就会觉得<code>hooks</code>到处都是黑魔法，这么整就不是很”靠谱“了。</p>
+<h1 id="想要了解hooks延续的奥秘你可能得认识一下fiber">想要了解Hooks延续的奥秘，你可能得认识一下Fiber<a hidden class="anchor" aria-hidden="true" href="#想要了解hooks延续的奥秘你可能得认识一下fiber">#</a></h1>
+<p>没有延续性，遑论其他，真正让函数组件有延续性的幕后真大佬实际上是<code>Fiber</code>，为了能够很好的了解React怎么实现的这么多种<code>hooks</code>，那么<code>Fiber</code>你是绕不开的，不过学习<code>Fiber</code>不用太用力，<strong>点到为止</strong>，我会尽可能的浅出，我们的目标就是能够更好的理解和使用<code>Hooks</code>，毕竟吃饺子嘛，不用非得那么清楚怎么做的。</p>
+<h2 id="fiber-的结构">fiber 的结构<a hidden class="anchor" aria-hidden="true" href="#fiber-的结构">#</a></h2>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>type Fiber = {  // 函数组件记录以链表形式存放的hooks信息，类组件存放`state`信息  memoizedState: any,  // 将diff得出的结果提交给的那个节点  return: Fiber | null,  // 单链表结构 child：子节点，sibling：兄弟节点  child: Fiber | null,  sibling: Fiber | null,    ...  // 每个workinprogress都维护了一个effect list（很复杂，不会也不耽误我们吃饺子）  nextEffect: Fiber | null,  firstEffect: Fiber | null,  lastEffect: Fiber | null,  ... }</code></p>
+<h2 id="fiber-的由来">Fiber 的由来<a hidden class="anchor" aria-hidden="true" href="#fiber-的由来">#</a></h2>
+<p>React到底是如何将项目渲染出来的。</p>
+<p>首先这个过程称为“reconciler”，可以先粗略讲reconciler划分出两个阶段。</p>
+<ol>
+<li><strong>reconciliation</strong> ：通过diff获得变动的结果。</li>
+<li><strong>commit</strong>：将变动作用到画面上（<code>side effect</code>即副作用，如<code>dom</code>操作）。</li>
+</ol>
+<p><code>reconciliation</code>是异步的，<code>commit</code>是同步的。</p>
+<h3 id="在fiber之前react是如何实现的reconciliation">在fiber之前，React是如何实现的reconciliation<a hidden class="anchor" aria-hidden="true" href="#在fiber之前react是如何实现的reconciliation">#</a></h3>
+<p>从头创建一个新的虚拟dom即<code>vdom</code>，与旧的<code>vdom</code>进行比对，从而得出<code>diff</code>结果，这个过程是递归，需要一气呵成，不能停的，这样JavaScript长时间的占用主线程，就会阻塞画面的渲染，就很卡。</p>
+<blockquote>
+<p>因为JavaScript在浏览器的主线程上运行，恰好与样式计算、布局以及许多情况下的绘制一起运行。如果JavaScript运行时间过长，就会阻塞这些其他工作，可能导致掉帧。</p>
+</blockquote>
+<p>（引自<a href="https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.google.com%2Fweb%2Ffundamentals%2Fperformance%2Frendering%2Foptimize-javascript-execution%23reduce_complexity_or_use_web_workers" title="https://developers.google.com/web/fundamentals/performance/rendering/optimize-javascript-execution#reduce_complexity_or_use_web_workers">Optimize JavaScript Execution</a>）</p>
+<p>那么可以说，旧的方式暴露了两点问题：</p>
+<ul>
+<li><strong>自顶向下遍历，不能停。</strong></li>
+<li><strong>React长时间的执行耽误了浏览器工作。</strong></li>
+</ul>
+<h3 id="vdom进化成为fiber">vdom进化成为Fiber<a hidden class="anchor" aria-hidden="true" href="#vdom进化成为fiber">#</a></h3>
+<p><code>Fiber</code>可以理解为将上述整个<code>reconciliation</code>工作拆分了，然后通过链表串了起来，变成了一个个可以中断/挂起/恢复的任务单元。并且结合浏览器提供的<code>requestIdleCallback</code> API（有兴趣可以了解）进行协同合作。</p>
+<blockquote>
+<p><strong>Fiber核心是实现了一个基于优先级和requestIdleCallback的循环任务调度算法</strong>。(<a href="https://link.juejin.cn?target=https%3A%2F%2Freactjs.org%2Fdocs%2Fcodebase-overview.html%23fiber-reconciler" title="https://reactjs.org/docs/codebase-overview.html#fiber-reconciler">参考：fiber-reconciler</a>)</p>
+</blockquote>
+<p><strong>直白的说：就一碗面条，一双筷子，以前React吃的时候，浏览器只能看着，现在就变成React吃一口换浏览器吃一口，一下就和谐了。</strong></p>
+<p><code>Fiber</code>就是按照<code>vdom</code>来拆分的，一个<code>vdom</code>节点对应一个<code>Fiber</code>节点，最后形成一个链表结构的<code>fiber tree</code>，大体如图：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/80119bac312c449fa073bec14ad2b76b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="Image"  />
+</p>
+<p>child：指向子节点的指针 sibling：指向兄弟节点指针 return：提交变动结果（effectList）到指定的目标节点（图中没标示，下文会有动态演示）</p>
+<p><strong>所以说<code>Fiber tree</code>就是可切片的<code>vdom tree</code>都不为过。</strong></p>
+<h3 id="那么vdom还存在么">那么<code>vdom</code>还存在么？<a hidden class="anchor" aria-hidden="true" href="#那么vdom还存在么">#</a></h3>
+<p>这个问题我思考了很久，请原谅这方面的源码我还没看透，我现在通过查阅多篇相关的文章，得出了一个我能接受，逻辑能自洽的解释:</p>
+<p><strong><code>Fiber</code>出来之后，<code>vdom</code>的作用只是作为蓝本进行构建<code>Fiber</code>树。</strong></p>
+<p>em~，龙珠熟悉吧，<code>vdom</code>就好像是超级赛亚人1之前够用了，现在不行了，进化到了超级赛亚人2，即<code>Fiber</code>。</p>
+<h2 id="fiber是如何工作的">Fiber是如何工作的<a hidden class="anchor" aria-hidden="true" href="#fiber是如何工作的">#</a></h2>
+<p>首先我已经知道，<code>Fiber tree</code>是一个链表结构，React是通过循环处理每个<code>Fiber</code>工作单元，在一段时间后再交还控制权给浏览器，从而协同的合作，让页面变得更加流畅。</p>
+<p>要弄清函数组件怎么有的<strong>延续性</strong>的答案就藏在了这个<strong>工作循环</strong>中。</p>
+<h3 id="探索一下workloop">探索一下workLoop<a hidden class="anchor" aria-hidden="true" href="#探索一下workloop">#</a></h3>
+<p>为了能够摆脱又困又长的源码分析，可以试着先简单的理解<code>workLoop</code>。</p>
+<p>首先Loop啥呢？</p>
+<p><strong>工作单元</strong>，即<code>work</code>。</p>
+<p><strong><code>work</code>又可以粗略的分为：</strong></p>
+<ul>
+<li><strong>beginWork</strong>：开始工作</li>
+<li><strong>completeWork</strong>：完成工作</li>
+</ul>
+<p>那么结合之前的Fiber tree，看一下</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ac82c9920494fcc9e22a5c4a540ae9f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="Image"  />
+</p>
+<p>那么看下大体的运转过程：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8d368fa39a0f43aeaa558fdcfcebcc41~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="Image"  />
+</p>
+<p>那么通过动画我初步了解了整个<code>workLoop</code>的流转过程，简单描述下：</p>
+<ol>
+<li>自顶<code>root</code>向下，流转子节点<code>b1</code></li>
+<li>b1开始<code>beginWork</code>，工作目标根据情况diff处理，获得变动结果（<code>effectList</code>），然后判断是是否有子节点，没有那结束工作<code>completeWork</code>，然后流转到兄弟节点<code>b2</code></li>
+<li><code>b2</code>开始工作，然后判断有子节点<code>c1</code>，那就流转到<code>c1</code></li>
+<li><code>c1</code>工作完了，<code>completeWork</code>获得<code>effectList</code>，并提交给<code>b2</code></li>
+<li>然后<code>b2</code>完成工作，流转给<code>b3</code>,那么<code>b3</code>就按照这套路子，往下执行了，最后执行到了最底部<code>d2</code></li>
+<li>最后随着光标的路线，一路整合各节点的<code>effectList</code>，最后抵达<code>Root</code>节点，第1阶段-<code>reconciliation</code>结束，准备进入<code>Commit</code>阶段</li>
+</ol>
+<h3 id="再进一步延续的答案就快浮出水面了">再进一步，“延续”的答案就快浮出水面了<a hidden class="anchor" aria-hidden="true" href="#再进一步延续的答案就快浮出水面了">#</a></h3>
+<p>我们已经大致的了解了<code>workLoop</code>，但还不能解释函数组件怎么“延续”的，我们还要再深入了解，那么再细致一点分解<code>workLoop</code>，实际上是这样的：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fea6fe8e7b1c4c20a4e9736d33938746~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="test.gif"  />
+</p>
+<p><em>（动画中“current”和“备用”是一体，为了看起来容易理解：“构建wip树是尽可能复用current树”，动画结束时，current再用备用来描述，以表达current树是作为备用的）</em></p>
+<p><strong>描述一下过程：</strong></p>
+<ol>
+<li>根据<code>current fiber tree</code>clone出<code>workinProgress fiber tree</code>，每clone一个<code>workinProgress fiber</code>都会尽可能的复用备用<code>fiber</code>节点（曾经的<code>current fiber</code>）</li>
+<li>当构建完整个<code>workinProgress fiber tree</code>的时候，<code>current fiber tree</code>就会退下去，作为备用<code>fiber</code>节点树，然后<code>workinProgress fiber tree</code>就会扶正，成为新的<code>current fiber tree</code></li>
+<li>然后就将已收集完变动结果（<code>effect list</code>）的新<code>current fiber tree</code>，送去<code>commit</code>阶段，从而更新画面</li>
+</ol>
+<p><strong>其中几个点我要注意：</strong></p>
+<ul>
+<li><code>current fiber tree</code>为主决定屏幕上显示内容，<code>workinProgress fiber tree</code>为辅制作完毕成为下一个<code>current fiber tree</code></li>
+<li>构建<code>workinProgress fiber tree</code>的过程，就是<code>diff</code>的过程，主要的工作都是发生在<code>workinProgress fiber</code>上，有变动就会维护一个<code>effect list</code>,当完成工作的时候就会提交格给<code>return</code>所指向的节点。</li>
+<li>要退位的<code>current fiber tree</code>作为备用,充当了构建<code>workinProgress fiber tree</code>的原料，最大程度节约了性能，这样周而复始，。</li>
+<li>收集到的<code>effect list</code>只会关注有改动的节点，并且从最深处往前排列，这也就对应上了，刷新顺序是子节点到父节点。</li>
+</ul>
+<h3 id="双fiber树就是问题关键">双fiber树就是问题关键<a hidden class="anchor" aria-hidden="true" href="#双fiber树就是问题关键">#</a></h3>
+<p><strong>有两个阶段：</strong></p>
+<ul>
+<li>首次渲染：直接先把<code>current fiber tree</code>构建出来</li>
+<li>更新渲染：延续<code>current fiber tree</code>构建<code>workinProgress fiber tree</code></li>
+</ul>
+<h3 id="蜕变之中必有延续">蜕变之中必有延续<a hidden class="anchor" aria-hidden="true" href="#蜕变之中必有延续">#</a></h3>
+<p>更新阶段，两棵<code>fiber</code>树如双生一般，<code>current fiber</code>与<code>workinProgress fiber</code>之间用<code>alternate</code>这个指针进行了关联，也就是说，可以在处理<code>workinProgress fiber</code>工作的时候，能够获得<code>current fiber</code>的信息，除非是全新的，那就重新创建。</p>
+<p>每构建一个<code>workinProgress fiber</code>，如果这个<code>fiber</code>对应的节点是一个函数组件，并且可以通过<code>alternate</code>获得<code>current fiber</code>，那么就进行延续，承载延续的精华的便是<code>current fiber</code>的<code>memoizedState</code>这个属性</p>
+<h3 id="延续的精华尽在memoizedstate">延续的精华尽在<code>memoizedState</code><a hidden class="anchor" aria-hidden="true" href="#延续的精华尽在memoizedstate">#</a></h3>
+<p><strong>首次渲染时</strong></p>
+<p>依次执行我们在函数组件的<code>hooks</code>，每执行一个种类<code>hooks</code>，都会创建一个对应该种类的<code>hook</code>对象，用来保存信息。</p>
+<ul>
+<li>useState 对应 state信息</li>
+<li>useEffect 对应 effect对象</li>
+<li>useMemo 对应 缓存的值和deps</li>
+<li>useRef 对应 ref对象</li>
+<li>&hellip;</li>
+</ul>
+<p>这些信息都会以链表的形式保存在<code>current fiber</code>的<code>memoizedState</code>中</p>
+<p><strong>更新渲染时</strong></p>
+<p>每次构建对应的是<strong>函数组件</strong>的<code>workinProgress fiber</code>时，都会从对应的<code>current fiber</code>中延续这个<strong>以链表结构存储的hooks信息</strong>。</p>
+<p>如该函数组件：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>export default function Test() {  const [info1, setInfo1] = useState(0);  useEffect(() =&gt; {}, [info1]);  const ref = useRef();  const [info2, setInfo2] = useState(0);  const [info3, setInfo3] = useState(0);  return ( 	 &lt;div&gt; 		&lt;div ref={ref}&gt; {`${info1}${info2}${info3}`}&lt;/div&gt; 	 &lt;/div&gt;  ); }</code></p>
+<p>那么<code>hooks</code>的延续就如下图这样：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/824d2419a4d24337be12eca8f9a13801~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="hooksList.jpg"  />
+</p>
+<p>通过链表的顺序去延续，如果其中的一个<code>hooks</code>写在条件语句中,代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>export default function Test() {  const [info1, setInfo1] = useState(0);  let ref;  useEffect(() =&gt; {  setInfo1(info1+1)  }, [info1]);  if(info1==0){  	ref = useRef();  }  const [info2, setInfo2] = useState(0);  const [info3, setInfo3] = useState(0);  return ( 	 &lt;div&gt; 		&lt;div ref={ref}&gt; {`${info1}${info2}${info3}`}&lt;/div&gt; 	 &lt;/div&gt;  ); }</code></p>
+<p>那么就会破坏延续的顺序，获得信息就会驴唇不对马嘴，就像这样：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1b20ad1f1daf4b289436891150a4e943~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="QQ截图20211121210010.jpg"  />
+</p>
+<p><strong>所以这就是不能把<code>hooks</code>写在条件语句中的原因</strong></p>
+<p><strong>而这就是Hooks能够延续的奥秘，作为支撑其实现各种功能，从而与class组件相媲美的前提基础。</strong></p>
+<h1 id="hooks整的那些活儿">hooks整的那些活儿<a hidden class="anchor" aria-hidden="true" href="#hooks整的那些活儿">#</a></h1>
+<h2 id="了解一下capture-value以及闭包陷阱">了解一下capture value以及闭包陷阱<a hidden class="anchor" aria-hidden="true" href="#了解一下capture-value以及闭包陷阱">#</a></h2>
+<p><code>capture value</code>顾名思义，“捕获的的值”，函数组件执行一次就会产生一个闭包，就好像一个快照， 这跟我们上面分析说的“关联render结果”或者“那一刻快照”呼应上了。</p>
+<p>当<code>capture value</code>遇上<code>hooks</code>出现了因使用“过期快照”而产生的问题，那就称为<strong>闭包陷阱</strong>。</p>
+<p>不过叫什么不重要，归根节点都是“过期闭包”的问题，而在<code>useEffect</code>中的暴露的问题最为明显。</p>
+<p>先举个🌰：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let B = (props) =&gt; {   const { info } = props;   const [count,setCount] = useState(0);   useEffect(()=&gt;{     setInterval(()=&gt;{       //这才是dispatch函数正确的使用方式       setCount((old)=&gt;{         return old+1;       })     },1000)   },[])   useEffect(()=&gt;{       setInterval(()=&gt;{           console.log(&quot;info为：&quot;+info+&quot; count为：&quot;+count)       },1000)   },[])   return &lt;div&gt;&lt;/div&gt; } let A = (props) =&gt; {   const [info,setInfo] = useState(0);   useEffect(()=&gt;{     setInterval(()=&gt;{       //这才是dispatch函数正确的使用方式       setInfo((old)=&gt;{         return old+1;       })     },1000)   },[])   return &lt;div&gt;     &lt;B info={info}&gt;&lt;/B&gt;     {info}     &lt;/div&gt; } export default function App() {   return (     &lt;div&gt;       &lt;A&gt;       &lt;/A&gt;     &lt;/div&gt;   ); }</code></p>
+<p>这种log出来的一直都是<code>info：0 count：0</code>，很显然使用的关联的“过期快照”中的数据。</p>
+<p>解决办法：</p>
+<p>通过<code>useRef</code>获得<code>ref</code>对象</p>
+<p><code>ref</code>的结构是这样的：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{ 	current:null }</code></p>
+<p>我们把需要托管的数据赋值给<code>current</code>,值得一提的你只能赋值给<code>current</code>，<strong><code>ref</code>对象是不支持扩展的</strong>。</p>
+<p>然后我们重写一下代码：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let B = (props) =&gt; {   const { info } = props;   const [count,setCount] = useState(0);   const refInfoFromProps = useRef();   const refCountFromProps = useRef();   refInfoFromProps.current = info;   refCountFromProps.current = count;   useEffect(()=&gt;{     setInterval(()=&gt;{       //这才是dispatch函数正确的使用方式       setCount((old)=&gt;{         return old+1;       })     },1000)   },[])   useEffect(()=&gt;{       setInterval(()=&gt;{           console.log(&quot;info为：&quot;+refInfoFromProps.current+&quot; count为：&quot;+refCountFromProps.current)       },1000)   },[])   return &lt;div&gt;&lt;/div&gt; }</code></p>
+<p>这样就能每次都访问最新的数据了。</p>
+<p>当然还有很多别的办法，比如使用<code>useReducer</code>，有兴趣可以研究一下。</p>
+<h2 id="usestate的事儿">useState的事儿<a hidden class="anchor" aria-hidden="true" href="#usestate的事儿">#</a></h2>
+<h3 id="这样设置刷新么">这样设置刷新么？<a hidden class="anchor" aria-hidden="true" href="#这样设置刷新么">#</a></h3>
+<p>先看下这段代码</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let A = ((props) =&gt; {   const [count,setCount] = useState({a:1})      return &lt;div onClick={()=&gt;{     count.a = Date.now();     setCount(count)   }}&gt;   	测试是否刷新   &lt;/div&gt; })</code></p>
+<p>当我点击之后触发了<code>setCount</code>，请问刷新么？</p>
+<p>答案是<strong>不刷新</strong>，因为我们在使用React的时候，心里应该常提醒自己，就是：</p>
+<p><strong>不可变值，不可变值，不可变值</strong></p>
+<p>上面的代码问题主要两点：</p>
+<ul>
+<li>直接的修改了state，这样破坏了不可变值的规矩，你应该通过<code>Object.assign</code>或者扩展运算符来重新创建一个对象进行设置。</li>
+<li>React内部会针对传入的参数进行浅比较，引用类型的数据比较的是其指向的地址，而不是内容，切记，所以光内容变了没用。</li>
+</ul>
+<p>正确的写法</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let A = ((props) =&gt; {   const [count,setCount] = useState({a:1})   return &lt;div onClick={()=&gt;{     setCount({...count,a:Date.now()})   }}&gt;     测试是否刷新   &lt;/div&gt; })</code></p>
+<h3 id="usestate和setstate不太一样">useState和setState不太一样<a hidden class="anchor" aria-hidden="true" href="#usestate和setstate不太一样">#</a></h3>
+<p><code>useState</code>的<code>set</code>函数跟类组件的<code>setState</code>命名很像，会让有种错觉它俩一样，其实不然，前者实际上是一个<code>dispath</code>，因为<code>useState</code>内部是基于<code>useReducer</code>实现的。而且也不用非得命名<code>set***</code>，你可以随便起名。</p>
+<p><strong>其中有三点不同，值得指出：</strong></p>
+<p><code>setState</code>:</p>
+<ol>
+<li><strong>第二个参数是一个函数</strong>，可以在状态值设置生效后进行回调，我们就可以在这里面拿到最新的状态值。</li>
+<li><strong>setState具备浅合并功能</strong>，比如state是<code>{a:1,b:2,c:{e:0}}</code>,<code>setState({c:{f:0},d:4})</code>,<code>state</code>就会合并成<code>{a:1,b:2,c:{f:0},d:4}</code></li>
+<li><strong><code>setState</code>设置状态就会引发刷新</strong>，即使设置的是相同的值也一样，除非用<code>PureComponent</code>实现才能解决</li>
+</ol>
+<p><code>set</code>函数</p>
+<ol>
+<li><strong>没有第二个参数</strong>，但是可以借助<code>useEffect</code>组合实现,也还好</li>
+<li><strong>没有合并功能</strong>，设置啥就是啥。。。,不过自己动手优化一下也是可以的。</li>
+<li><strong>设置相同的状态是不会触发刷新的</strong>，这一点无需进行配置。</li>
+</ol>
+<p>接下来深入讨论一个有趣的问题。</p>
+<h3 id="usestate的set函数是同步的还是异步的setstate是同步还是异步的"><code>useState</code>的<code>set</code>函数是同步的还是异步的？<code>setState</code>是同步还是异步的？<a hidden class="anchor" aria-hidden="true" href="#usestate的set函数是同步的还是异步的setstate是同步还是异步的">#</a></h3>
+<p>答案惊人的一致，即：</p>
+<p><strong>大部分时候异步，有些时候同步</strong></p>
+<p>具体什么时候同步呢？就是</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fzhuanlan.zhihu.com%2Fp%2F26069727%23%3A~%3Atext%3D%25E5%25A6%2582%25E6%259E%259C%25E6%2598%25AF%25E7%2594%25B1React%25E5%25BC%2595%25E5%258F%2591%25E7%259A%2584%25E4%25BA%258B%25E4%25BB%25B6%25E5%25A4%2584%25E7%2590%2586%25EF%25BC%2588%25E6%25AF%2594%25E5%25A6%2582%25E9%2580%259A%25E8%25BF%2587onClick%25E5%25BC%2595%25E5%258F%2591%25E7%259A%2584%25E4%25BA%258B%25E4%25BB%25B6%25E5%25A4%2584%25E7%2590%2586%25EF%25BC%2589%25EF%25BC%258C%25E8%25B0%2583%25E7%2594%25A8setState%25E4%25B8%258D%25E4%25BC%259A%25E5%2590%258C%25E6%25AD%25A5%25E6%259B%25B4%25E6%2596%25B0this.state%25EF%25BC%258C%25E9%2599%25A4%25E6%25AD%25A4%25E4%25B9%258B%25E5%25A4%2596%25E7%259A%2584setState%25E8%25B0%2583%25E7%2594%25A8%25E4%25BC%259A%25E5%2590%258C%25E6%25AD%25A5%25E6%2589%25A7%25E8%25A1%258Cthis.state" title="https://zhuanlan.zhihu.com/p/26069727#:~:text=%E5%A6%82%E6%9E%9C%E6%98%AF%E7%94%B1React%E5%BC%95%E5%8F%91%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%EF%BC%88%E6%AF%94%E5%A6%82%E9%80%9A%E8%BF%87onClick%E5%BC%95%E5%8F%91%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%EF%BC%89%EF%BC%8C%E8%B0%83%E7%94%A8setState%E4%B8%8D%E4%BC%9A%E5%90%8C%E6%AD%A5%E6%9B%B4%E6%96%B0this.state%EF%BC%8C%E9%99%A4%E6%AD%A4%E4%B9%8B%E5%A4%96%E7%9A%84setState%E8%B0%83%E7%94%A8%E4%BC%9A%E5%90%8C%E6%AD%A5%E6%89%A7%E8%A1%8Cthis.state">如果是由React引发的事件处理（比如通过onClick引发的事件处理），调用setState不会同步更新this.state，除此之外的setState调用会同步执行this.state</a></p>
+<p>不信，那看下代码：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>export default function Test() {   const [info1, setInfo1] = useState(0);   const [info2, setInfo2] = useState(0);   const ref1 = useRef();   const ref2 = useRef();   ref1.current = info1;   ref2.current = info2;   useEffect(() =&gt; {     setInfo1(ref1.current + 1);     setInfo1(ref1.current + 1);     setInfo1(ref1.current + 1);     console.log(&quot;info1:&quot;+ref1.current); // info1:0     setTimeout(() =&gt; {       setInfo2(ref2.current + 1);       setInfo2(ref2.current + 1);       setInfo2(ref2.current + 1);       console.log(&quot;info2:&quot;+ref2.current);// 同步输出 info2:3     });   }, []);   return &lt;div&gt;{info1}&lt;/div&gt;; }</code></p>
+<p>输出的日志是: <code>info1:0</code> <code>info2:3</code></p>
+<p>那么<code>useState</code>的<code>set</code>函数这一点上就跟<code>setState</code>一样了，所以再说<code>useState</code>的<code>set</code>函数是异步还是同步的时候，知道怎么说了吧。</p>
+<h2 id="useeffect的事儿">useEffect的事儿<a hidden class="anchor" aria-hidden="true" href="#useeffect的事儿">#</a></h2>
+<p><code>useEffect</code>有两个参数，一个<code>effect</code>执行的回调函数，一个是是依赖数组</p>
+<p>同时<code>useEffect</code>可以写多个，这样就可以<strong>按照业务独立拆分</strong>，做到<strong>关注点分离</strong></p>
+<h3 id="生命周期">生命周期<a hidden class="anchor" aria-hidden="true" href="#生命周期">#</a></h3>
+<p><code>useEffect</code>是函数组件实现生命周期函数的重要手段</p>
+<p>可以模拟的生命周期分别是：</p>
+<ul>
+<li><strong>componentDidMount</strong></li>
+<li><strong>componentWillUnmount</strong></li>
+<li><strong>componentDidUpdate</strong></li>
+</ul>
+<p>代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>useEffect(() =&gt; {     // 相当于 componentDidMount     return () =&gt; {       // 相当于 componentWillUnmount     }   }, [])     useEffect(() =&gt; {     // 相当于 componentDidUpdate   })</code></p>
+<h3 id="useeffect的清除函数的执行时机">useEffect的清除函数的执行时机<a hidden class="anchor" aria-hidden="true" href="#useeffect的清除函数的执行时机">#</a></h3>
+<p>首先<strong>清除函数</strong>执行有两种情况：</p>
+<ul>
+<li><strong>一个是卸载的时候</strong>，这个众所周知。</li>
+<li><strong>一个是effect重新执行的时候</strong>，也会执行，这点大家要注意，容易马虎</li>
+</ul>
+<p>然后再看下这段代码</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>useEffect(     () =&gt; {         ...         return () =&gt; {           ...           console.log(&quot;test&quot;)         }     },     [flag]],   )</code></p>
+<p>请问：当<code>flag</code>从<code>true</code>设置成了<code>false</code>，这个<code>return</code>的清除函数会执行么？</p>
+<p>答案是：<strong>执行</strong></p>
+<p>再难一点</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>useEffect(     () =&gt; {       if (flag) {         ...         return () =&gt; {           ...           console.log(&quot;test&quot;)         }       }     },     [flag]],   )</code></p>
+<p>请问执行么？</p>
+<p>答案是：<strong>执行</strong></p>
+<p>你可以记住一个铁律：</p>
+<p><strong>当effect重新执行的时候，会清除上一次effect</strong></p>
+<h3 id="useeffect和uselayouteffect区分">useEffect和useLayoutEffect区分<a hidden class="anchor" aria-hidden="true" href="#useeffect和uselayouteffect区分">#</a></h3>
+<blockquote>
+<p><code>useEffect</code>是异步的，<code>useLayoutEffect</code>是同步的 所谓的异步就是利用<code>requestIdleCallback</code>，在浏览器空闲时间执行传入的<code>callback</code>，也就是继续处理js逻辑 大部分情况没什么区别，但是当有耗时的逻辑，<code>useLayoutEffect</code>就会造成渲染阻塞</p>
+</blockquote>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimweb.io%2Ftopic%2F5cd845cadcd62f86299fcd76%23%3A~%3Atext%3DuseEffect%25E6%2598%25AF%25E5%25BC%2582%25E6%25AD%25A5%25E7%259A%2584%25EF%25BC%258CuseLayoutEffect%25E6%2598%25AF%25E5%2590%258C%25E6%25AD%25A5%25E7%259A%2584" title="https://imweb.io/topic/5cd845cadcd62f86299fcd76#:~:text=useEffect%E6%98%AF%E5%BC%82%E6%AD%A5%E7%9A%84%EF%BC%8CuseLayoutEffect%E6%98%AF%E5%90%8C%E6%AD%A5%E7%9A%84">先贴出一段代码，这是我在网上遇到了很有趣的例子。</a></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function TestEffectApi() {   const [lapse, setLapse] = useState(0)   const [running, setRunning] = useState(false)   useEffect(     () =&gt; {       if (running) {         const startTime = Date.now() - lapse         const intervalId = setInterval(() =&gt; {           setLapse(Date.now() - startTime)         }, 2)         console.log(intervalId)         return () =&gt; {           clearInterval(intervalId)         }       }     },     [running],   )   function handleRunClick() {     setRunning(r =&gt; !r)   }   function handleClearClick() {     setRunning(false)     setLapse(0)   }   return (     &lt;div&gt;       &lt;label&gt;{lapse}ms&lt;/label&gt;       &lt;button onClick={handleRunClick}&gt;         {running ? '暂停' : '开始'}       &lt;/button&gt;       &lt;button onClick={handleClearClick}&gt;         暂停并清0       &lt;/button&gt;     &lt;/div&gt;   ) }</code></p>
+<p>通过代码可以看出，当我点击“暂停并清0”按钮的时候，我们设置了两个状态一个<code>running</code>和<code>lapse</code>，前者控制定时器运行，后者控制数据显示，而点击之后的预期是：定时器关闭，同时显示的数据为“0”，但是实际情况却是偶发出现显示不为“0”的情况</p>
+<p><strong>原因：</strong></p>
+<p>因为<code>useEffect</code>是异步的，当通过设置<code>running</code>关闭定时器和设置<code>lapse</code>为“0”时，并没有第一时间关闭定时器，而是阴差阳错的出现了一种情况：<code>lapse</code>已经设置为零，定时器还没关闭就要关闭的这一霎，又一次的执行了，便出现了这种问题。而用同步执行的<code>LayoutEffect</code>就没有这个问题</p>
+<p>通过上面这个例子，<code>useEffect</code>和<code>LayoutEffect</code>的区别应该能可见一斑了。</p>
+<h2 id="useref真有用啊">useRef真有用啊<a hidden class="anchor" aria-hidden="true" href="#useref真有用啊">#</a></h2>
+<p>useRef是真有用啊，凭借“跨渲染周期”保存数据的能力，即拥有在整个组件生命周期只维护一个引用的特性，可以解决很多问题。</p>
+<p>不但可以保存<code>dom</code>节点还可以保存其他数据，比如上面提到的过期闭包的问题中保存外部的<code>prop</code>和<code>state</code>。</p>
+<p>除此之外还有一个有趣的用处，就是可以结合<code>forwardRef</code>和<code>useImperativeHandle</code>这两个api，让函数组件可以像类组件那样<strong>暴露函数</strong>给其他节点使用</p>
+<p>代码如下:</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let A = forwardRef((props, ref) =&gt; {   useImperativeHandle(ref, () =&gt; {     return {       test: () =&gt; {         console.log(&quot;123&quot;)       }     }   })   const [info, setInfo] = useState(0);   return &lt;div&gt;     {info}   &lt;/div&gt; }) export default function App() {   const ref = useRef(null);   return (     &lt;div onClick={() =&gt; {       ref.current.test()     }}&gt;       &lt;A ref={ref}&gt;       &lt;/A&gt;     &lt;/div&gt;   ); }</code></p>
+<p>在父组件中创建一个<code>ref，</code>然后给到子组件的<code>A</code> 但是子组件是函数组件，不能直接给，那就用<code>forwardRef</code>这个HOC包装一下，就能收到了，并作为继<code>props</code>之后第二个参数传入 拿到ref作为<code>useImperativeHandle</code>的第一个参数，第二个参数是一个函数，用于返回装有暴露数据的对象。</p>
+<p>对于<code>forwardRef</code>这个Hoc，我认为完全可以不用，我改造一下代码</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let A = ((props) =&gt; {   const {testRef} = props;   useImperativeHandle(testRef, () =&gt; {     return {       test: () =&gt; {         console.log(&quot;ok&quot;)       }     }   })   const [info, setInfo] = useState(0);   return &lt;div&gt;     {info}   &lt;/div&gt; }) export default function App() {   const ref = useRef(null);   return (     &lt;div onClick={() =&gt; {       ref.current.test()     }}&gt;       &lt;A testRef={ref}&gt;       &lt;/A&gt;     &lt;/div&gt;   ); }</code></p>
+<p>这么写也是可以的，看着还简洁了不少，仅供参考。</p>
+<h2 id="usecontext可以一定程度的替代第三方的数据管理库">useContext可以一定程度的替代第三方的数据管理库<a hidden class="anchor" aria-hidden="true" href="#usecontext可以一定程度的替代第三方的数据管理库">#</a></h2>
+<p>先贴出完整可运行代码</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import {   createContext,   useContext,   useReducer, } from &quot;react&quot;; export const TestContext = createContext({}) const TAG_1 = 'TAG_1' const reducer = (state, action) =&gt; {   const { payload, type } = action;   switch (type) {     case TAG_1:       return { ...state, ...payload };       dedault: return state;   } }; export const A = (props) =&gt; {   const [data, dispatch] = useReducer(reducer, { info: &quot;本文作者&quot; });   return (     &lt;TestContext.Provider value={{ data, dispatch }}&gt;       &lt;B&gt;&lt;/B&gt;     &lt;/TestContext.Provider&gt;   ); }; let B = () =&gt; {   const { dispatch, data } = useContext(TestContext);   let handleClick = ()=&gt;{     dispatch({         type: TAG_1,         payload: {           info: &quot;闲D阿强&quot;,         },       })   }   return (     &lt;div&gt;       &lt;input         type=&quot;button&quot;         value=&quot;测试context&quot;         onClick={handleClick}       /&gt;       {data.info}     &lt;/div&gt;   ); };</code></p>
+<p><strong>使用api有：</strong></p>
+<ul>
+<li><strong>createContext</strong></li>
+<li><strong>useReducer</strong></li>
+<li><strong>useContext</strong></li>
+</ul>
+<p><strong>实现的步骤：</strong></p>
+<ul>
+<li>
+<p>函数组件A</p>
+<ol>
+<li>使用<code>createContext</code>api创建一个<code>TestContext</code>,进而使用<code>Provider</code></li>
+<li>然后使用<code>useReducer</code>api创建一个<code>reducer</code>,将<code>reducer</code>返回的<code>data</code>, <code>dispatch</code>,通过<code>Provider</code>进行共享</li>
+</ol>
+</li>
+<li>
+<p>函数组件B</p>
+<ol>
+<li>在其内部使用<code>useContext</code>api并传入创建好的<code>TestContext</code>，从而获得<code>data</code>,<code>dispatch</code></li>
+<li>使用<code>data</code>中<code>info</code>值作为显示，通过点击事件调用<code>dispatch</code>进行修改，看反馈是否正确</li>
+</ol>
+</li>
+</ul>
+<p>em~，目前来看可以在一定程度上替代数据管理库，对，是一定程度。</p>
+<h2 id="自定义hook不同于以往封装的工具函数">自定义hook不同于以往封装的工具函数<a hidden class="anchor" aria-hidden="true" href="#自定义hook不同于以往封装的工具函数">#</a></h2>
+<p>自定义hook，大概是这个样子的</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const useMousePosition = () =&gt; {     const [position, setPosition] = useState({x: 0, y: 0 })     useEffect(() =&gt; {         const updateMouse = (e) =&gt; {             setPosition({ x: e.clientX, y: e.clientY })         }         document.addEventListener('mousemove', updateMouse)         return () =&gt; {             document.removeEventListener('mousemove', updateMouse)         }     })     return position }</code></p>
+<p>我曾纠结过一个问题，写一个自定义<code>hook</code>和单纯封装一个函数有区别么？</p>
+<p>现在看来，答案是肯定，至于如何去区分，我觉得是这样的：</p>
+<p>自定义<code>hook</code>与其他工具函数的区别就在于可以使用官方提供的<code>hooks</code>和其他自定义<code>hook</code>，拥有自己的状态，就好比说一个自定义<code>hook</code>就像一个不用返回<code>jsx</code>的组件函数。 当然你也可以不用这个优势，那么就跟普通函数没啥区别了。。。 但就这一手，拆分共用逻辑，避免代码重复的发挥空间就大了不知多少。</p>
+<h2 id="函数组件的性能优化的方式">函数组件的性能优化的方式<a hidden class="anchor" aria-hidden="true" href="#函数组件的性能优化的方式">#</a></h2>
+<h3 id="memo">memo<a hidden class="anchor" aria-hidden="true" href="#memo">#</a></h3>
+<p>memo是一个高阶组件，使用方法很简单：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let A = memo((props) =&gt; {   return &lt;div &gt;     memo测试   &lt;/div&gt; })</code></p>
+<p>很多文章说<code>memo</code>相当于<code>PureComponent</code>，我觉得不对，我更愿意这么理解:</p>
+<p><strong>函数组件本身就有继承<code>PureComponent</code>创建的类组件有类似的能力</strong> <strong>memo对标的应该是类组件的<code>shouldComponentUpdate</code></strong></p>
+<p>比如用<code>PureComponent</code>创建一个类组件：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>class C extends PureComponent{   state={     a:1   }   render(){     return &lt;div onClick={       ()=&gt;{         this.setState({           a:1         })       }     }&gt;测试组件是否刷新&lt;/div&gt;   } }</code></p>
+<p>点击设置状态变量<code>a</code>相同的值<code>1</code>，页面是不刷新的，你用<code>Component</code>创建的组件是刷新的 但这点，函数组件本身就有了，不用刻意为之。</p>
+<p>而<code>memo</code>最主要的就是避免函数组件不必要的刷新，这点跟<code>shouldComponentUpdate</code>如出一辙。</p>
+<p><code>shouldComponentUpdate</code>是一个生命周期，代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`... 	shouldComponentUpdate (nextProps, nextState) {       if (nextProps.name === this.props.name) return false       return true     } 	...`
+</code></pre>
+<p><code>memo</code> 的实现，传入第二个参数<code>propsAreEqual</code>，代码是这样的：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let propsAreEqual = (prevProps, nextProps)=&gt;{ 	// 根据具体业务判断传入的参数是否相当决定刷新 	// true 表示相等，不刷新，函数组件就不会执行 	// false 表示不等，刷新，就会执行 	return false } let A = memo((props) =&gt; {   return &lt;div &gt;     memo测试   &lt;/div&gt; },propsAreEqual)</code></p>
+<p>一个叫“shouldComponentUpdate”，&ldquo;我能刷新么&rdquo;</p>
+<p>一个叫做“propsAreEqual”，&ldquo;参数相等么&rdquo;</p>
+<p>&ldquo;相等为true&quot;当然&quot;不能刷新false&rdquo;,em~ 它俩是相反的。</p>
+<h3 id="usememo">useMemo<a hidden class="anchor" aria-hidden="true" href="#usememo">#</a></h3>
+<p>避免重复计算，类似计算属性</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>useMemo(()=&gt;{return &quot;计算的值&quot;},[依赖的值])</code></p>
+<p><em>注意闭包陷阱，逻辑中用到什么，最后就依赖什么</em></p>
+<h3 id="usecallback">useCallback<a hidden class="anchor" aria-hidden="true" href="#usecallback">#</a></h3>
+<p>首先函数是引用类型，本质也是一个对象，函数组件内部会创建一些函数来组织业务，并且还会作为参数传入子节点。</p>
+<p>那么每次函数刷新，即使函数本身没有变化，也会重新创建新的函数对象，有可能会引起不必要的刷新，频繁创建也会浪费性能。</p>
+<p>那就用<code>useCallback</code>记忆一下，依赖不变，函数的引用就不变，可以理解为是一个配置依赖以响应更新的<code>useRef</code></p>
+<p>写法如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>useCallback(() =&gt; {}, [依赖的值]);</code></p>
+<p><em>注意闭包陷阱，逻辑中用到什么，最后就依赖什么</em></p>
+<h1 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h1>
+<p>那么我们梳理一下思路，我们从<code>hooks</code>助力函数组件聊起，对hooks能够延续的魔法而感到着迷，进而探索内部的运行原理，了解到了延续的奥秘尽在<code>fiber</code>之中，最后再说了说使用<code>hooks</code>开发的的二三事，试着建立从原理到使用的一条细细的通路，目的就是先把思路调通，这样之后学习和补充更有主见，正所谓先迷后得主。</p>
+<h1 id="题外话">题外话<a hidden class="anchor" aria-hidden="true" href="#题外话">#</a></h1>
+<p>每当我着迷hooks的精妙，去查阅相关资料的时候，起初真的看的一头雾水，并没第一时间觉得文章有多好，随着我反复的阅读并动手调试React源码去印证一些疑惑，终于如我一般普通的coder也能勉强感受到文章的功力，但这引发了我的一个思考，是不是文章发力太深，就算力量再强，打不到读者也是弱，当好与大家越来越远，渐渐地没有了欣赏，那么也就没有了好，中庸的我希望能够粘合住二者，找一个合适位置发出我的力，如果这个力能打到尽可能多的的人，那么再弱的力也是强，这样就有可能帮助更多的人去欣赏真正好的文章，大家都想当“玉”，那么我就去当个“砖头”吧。</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FmoderateReact%2FtoDebugReact" title="https://github.com/moderateReact/toDebugReact">React源码调试项目，可调试v16.x和v17.x</a></p>
+<p>深受启发的几篇好文章:</p>
+<p><a href="https://juejin.cn/post/6944863057000529933" title="https://juejin.cn/post/6944863057000529933">一文吃透react-hooks原理</a></p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ayqy.net%2Fblog%2Fdive-into-react-fiber%2F" title="http://www.ayqy.net/blog/dive-into-react-fiber/">完全理解React Fiber</a></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Ftech-blog.cymetrics.io%2Fposts%2Fmingyou%2Fdeep-dive-into-react-fiber%2F%23%3A~%3Atext%3D%25E5%259C%25A8%2520reconciliation%2520%25E6%2599%2582%25EF%25BC%258C%25E6%25AF%258F%25E5%2580%258B%2520component%2520%25E7%259A%2584%2520render%2520%25E6%2596%25B9%25E6%25B3%2595%25E5%259B%259E%25E5%2582%25B3%25E7%259A%2584%25E8%25B3%2587%25E6%2596%2599%25E9%2583%25BD%25E6%259C%2583%25E5%2590%2588%25E4%25BD%25B5%25E5%2588%25B0%2520Fiber%2520tree%2520%25E4%25B8%25AD%25EF%25BC%258C%25E6%25AF%258F%25E5%2580%258BReact%25E5%2585%2583%25E7%25B4%25A0%25E9%2583%25BD%25E6%259C%2589%25E4%25B8%2580%25E5%2580%258B%25E5%25B0%258D%25E6%2587%2589%25E7%259A%2584%2520Fiber%2520nodes%25EF%25BC%258C%25E7%2594%25A8%25E4%25BE%2586%25E8%25A8%2598%25E9%258C%2584%25E5%25B0%258D%25E6%2587%2589%25E7%259A%2584%25E5%25B7%25A5%25E4%25BD%259C%25E5%2585%25A7%25E5%25AE%25B9%25EF%25BC%258C%25E8%2580%258C%25E7%2589%25B9%25E5%2588%25A5%25E7%259A%2584%25E5%259C%25B0%25E6%2596%25B9%25E5%259C%25A8%25E6%2596%25BC%25E5%259C%25A8%25E6%25AF%258F%25E6%25AC%25A1%2520render%2520%25E6%2599%2582%25E4%25B8%258D%25E6%259C%2583%25E9%2587%258D%25E6%2596%25B0%25E7%2594%25A2%25E7%2594%259F" title="https://tech-blog.cymetrics.io/posts/mingyou/deep-dive-into-react-fiber/#:~:text=%E5%9C%A8%20reconciliation%20%E6%99%82%EF%BC%8C%E6%AF%8F%E5%80%8B%20component%20%E7%9A%84%20render%20%E6%96%B9%E6%B3%95%E5%9B%9E%E5%82%B3%E7%9A%84%E8%B3%87%E6%96%99%E9%83%BD%E6%9C%83%E5%90%88%E4%BD%B5%E5%88%B0%20Fiber%20tree%20%E4%B8%AD%EF%BC%8C%E6%AF%8F%E5%80%8BReact%E5%85%83%E7%B4%A0%E9%83%BD%E6%9C%89%E4%B8%80%E5%80%8B%E5%B0%8D%E6%87%89%E7%9A%84%20Fiber%20nodes%EF%BC%8C%E7%94%A8%E4%BE%86%E8%A8%98%E9%8C%84%E5%B0%8D%E6%87%89%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%85%A7%E5%AE%B9%EF%BC%8C%E8%80%8C%E7%89%B9%E5%88%A5%E7%9A%84%E5%9C%B0%E6%96%B9%E5%9C%A8%E6%96%BC%E5%9C%A8%E6%AF%8F%E6%AC%A1%20render%20%E6%99%82%E4%B8%8D%E6%9C%83%E9%87%8D%E6%96%B0%E7%94%A2%E7%94%9F">隱藏在 React 下的機制： Fiber</a></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.cnblogs.com%2Fzhuanzhuanfe%2Fp%2F9567081.html" title="https://www.cnblogs.com/zhuanzhuanfe/p/9567081.html">浅谈React16框架 - Fiber</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/react.js/">React.js</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/antd5%E4%B8%80%E5%87%BA%E6%B2%BB%E5%A5%BD%E4%BA%86%E6%88%91%E7%BB%84%E4%BB%B6%E5%BA%93%E9%80%89%E6%8B%A9%E5%86%85%E8%80%97%E6%88%91%E7%9B%B4%E6%8E%A5%E6%90%AD%E9%85%8Dreact18&#43;vite&#43;ts%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E7%AE%A1%E7%90%86%E5%90%8E%E5%8F%B0/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Antd5一出，治好了我组件库选择内耗，我直接搭配React18&#43;Vite&#43;Ts做了一个管理后台</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%B5%8F%E8%A7%88%E5%99%A8%E8%8A%82%E8%83%BD%E6%9C%BA%E5%88%B6%E5%AF%BC%E8%87%B4websocket%E6%96%AD%E8%BF%9E%E7%9A%84%E5%9D%91%EF%B8%8F%EF%B8%8F/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>浏览器节能机制导致Websocket断连的坑🕳️🔥🕳️</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 强话一波hooks，这次咱们换个发力点 on x"
+            href="https://x.com/intent/tweet/?text=%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f&amp;hashtags=React.js%2c%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 强话一波hooks，这次咱们换个发力点 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f&amp;title=%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9&amp;summary=%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 强话一波hooks，这次咱们换个发力点 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f&title=%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 强话一波hooks，这次咱们换个发力点 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 强话一波hooks，这次咱们换个发力点 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 强话一波hooks，这次咱们换个发力点 on telegram"
+            href="https://telegram.me/share/url?text=%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 强话一波hooks，这次咱们换个发力点 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%bc%ba%e8%af%9d%e4%b8%80%e6%b3%a2hooks%ef%bc%8c%e8%bf%99%e6%ac%a1%e5%92%b1%e4%bb%ac%e6%8d%a2%e4%b8%aa%e5%8f%91%e5%8a%9b%e7%82%b9&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BC%25BA%25E8%25AF%259D%25E4%25B8%2580%25E6%25B3%25A2hooks%25E8%25BF%2599%25E6%25AC%25A1%25E5%2592%25B1%25E4%25BB%25AC%25E6%258D%25A2%25E4%25B8%25AA%25E5%258F%2591%25E5%258A%259B%25E7%2582%25B9%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

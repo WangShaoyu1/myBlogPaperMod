@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>ReactNative新架构是如何工作的 | PaperMod</title>
+<meta name="keywords" content="前端, ReactNative">
+<meta name="description" content="目前ReactNative新架构所依赖的React18已经发了beta版，ReactNative新架构面向生态库和核心开发者的文档也正式发布，ReactNative团队成员K">
+<meta name="author" content="xiangzhihong">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/reactnative%E6%96%B0%E6%9E%B6%E6%9E%84%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/reactnative%E6%96%B0%E6%9E%B6%E6%9E%84%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="ReactNative新架构是如何工作的" />
+<meta property="og:description" content="目前ReactNative新架构所依赖的React18已经发了beta版，ReactNative新架构面向生态库和核心开发者的文档也正式发布，ReactNative团队成员K" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/reactnative%E6%96%B0%E6%9E%B6%E6%9E%84%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-12-26T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="ReactNative新架构是如何工作的"/>
+<meta name="twitter:description" content="目前ReactNative新架构所依赖的React18已经发了beta版，ReactNative新架构面向生态库和核心开发者的文档也正式发布，ReactNative团队成员K"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "ReactNative新架构是如何工作的",
+      "item": "http://localhost:1313/posts/juejin/reactnative%E6%96%B0%E6%9E%B6%E6%9E%84%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ReactNative新架构是如何工作的",
+  "name": "ReactNative新架构是如何工作的",
+  "description": "目前ReactNative新架构所依赖的React18已经发了beta版，ReactNative新架构面向生态库和核心开发者的文档也正式发布，ReactNative团队成员K",
+  "keywords": [
+    "前端", "ReactNative"
+  ],
+  "articleBody": "目前 React Native 新架构所依赖的 React 18 已经发了 beta 版，React Native 新架构面向生态库和核心开发者的文档也正式发布，React Native 团队成员 Kevin Gozali 也在最近一次访谈中谈到新架构离正式发版还差最后一步延迟初始化，而最后一步工作大约会在 2022 年上半年完成。种种迹象表明，React Native 新架构真的要来了。\n前面，RN官方宣布：Hermes将成为React Native默认的JS引擎。在文章中，我们简单的介绍了即将发布的新渲染器 Fabric，那么我们重点来认识下这个新的渲染器 Fabric 。\n一、Fabric 1.1 基本概念 Fabric 是 React Native 新架构的渲染系统，是从老架构的渲染系统演变而来的。核心原理是在 C++ 层统一更多的渲染逻辑，提升与宿主平台（host platforms）互操作性，即能够在 UI 线程上同步调用JavaScript代码，渲染效率得到明显的提高。Fabric研发始于 2018 年，Facebook 内部的很多React Native 应用使用的就是新的渲染器Fabric。\n在简介新渲染器（new renderer）之前，我们先介绍几个单词和概念：\n宿主平台（Host platform）：React Native 嵌入的平台，比如 Android、iOS、Windows、macOS。 Fabric 渲染器（Fabric Renderer）：React Native 执行的 React 框架代码，和 React 在 Web 中执行代码是同一份。但是，React Native 渲染的是通用平台视图（宿主视图）而不是 DOM 节点（可以认为 DOM 是 Web 的宿主视图）。 在更换了底层的渲染流程之后，Fabric 渲染器使得渲染宿主视图变得可行。Fabric 让 React 与各个平台直接通信并管理其宿主视图实例。Fabric 渲染器存在于 JavaScript 中，并且它调用的是由 C++ 代码暴露的接口。\n1.2 新渲染器的初衷 开发新的渲染架构的初衷是为了更好的提升用户体验，而这种新体验是在老架构上是不可能实现的。主要体现为：\n提升宿主视图（host views）和 React 视图（React views）的互操作性，渲染器必须有能力同步地测量和渲染 React 界面。在老架构中，React Native 布局是异步的，这导致在宿主视图中渲染嵌套的 React Native 视图，会有布局“抖动”的问题。 借助多优先级和同步事件的能力，渲染器可以提高用户交互的优先级，来确保他们的操作得到及时的处理。 React Suspense 的集成，允许开发者在 React 中更合理的组织请求数据代码。 允许开发者在 React Native 使用 React Concurrent 中断渲染功能。 更容易的实现 React Native 的服务端渲染。 除此之外，新的Fabric渲染器在代码质量、性能、可扩展性方面也是有了质的飞升。\n类型安全：代码生成工具（code generation）确保了 JS 和宿主平台两方面的类型安全。代码生成工具使用 JavaScript 组件声明作为唯一事实源，生成 C++ 结构体来持有 props 属性。不会因为 JavaScript 和宿主组件 props 属性不匹配而出现构建错误。 共享 C++ core：渲染器是用 C++ 实现的，其核心 core 在平台之间是共享的。这增加了一致性并且使得新的平台能够更容易采用 React Native。（译注：例如 VR 新平台） 更好的宿主平台互操作性：当宿主组件集成到 React Native 时，同步和线程安全的布局计算提升了用户体验（译注：没有异步的【抖动】）。 性能提升：新的渲染系统的实现是跨平台的，每个平台都从那些原本只在某个特定平台的实现的性能优化中得到了更好的用户体验。比如拍平视图层级，原本只是 Android 上的性能优化方案，现在 Android 和 iOS 都直接有了。 一致性：新的渲染系统的实现是跨平台的，不同平台之间更容易保持一致。 更快的启动速度：默认情况下，宿主组件的初始化是懒执行的。 JS 和宿主平台之间的数据序列化更少：React 使用序列化 JSON 在 JavaScript 和宿主平台之间传递数据。新的渲染器用 JSI（JavaScript Interface）直接获取 JavaScript 数据。 二、渲染流程 2.1 渲染流程 React Native 渲染器通过一系列加工处理，将 React 代码渲染到宿主平台。这一系列加工处理就是渲染流水线（pipeline），它的作用是初始化渲染和 UI 状态更新。接下来，我们重点介绍一下React Native 渲染流水线，及其在各种场景中的不同之处。\n渲染流水线可大致分为三个阶段：\n渲染：在 JavaScript 中，React 执行那些产品逻辑代码创建 React 元素树（React Element Trees）。然后在 C++ 中，用 React 元素树创建 React 影子树（React Shadow Tree）。 提交：在 React 影子树完全创建后，渲染器会触发一次提交。这会将 React 元素树和新创建的 React 影子树的提升为“下一棵要挂载的树”。这个过程中也包括了布局信息计算。 挂载：React 影子树有了布局计算结果后，它会被转化为一个宿主视图树（Host View Tree）。 这里有几个名词需要解释下：\nReact元素树 React 元素树是通过 JavaScript 中的 React 创建的，该树由一系类 React 元素组成。一个 React 元素就是一个普通的 JavaScript 对象，它描述了需要在屏幕中展示的内容。一个元素包括属性 props、样式 styles、子元素 children。React 元素分为两类：React 复合组件实例（React Composite Components）和 React 宿主组件（React Host Components）实例，并且它只存在于 JavaScript 中。\nReact 影子树 React 影子树是通过 Fabric 渲染器创建的，树由一系列 React 影子节点组成。一个 React 影子节点是一个对象，代表一个已经挂载的 React 宿主组件，其包含的属性 props 来自 JavaScript。它也包括布局信息，比如坐标系 x、y，宽高 width、height。在新渲染器 Fabric 中，React 影子节点对象只存在于 C++ 中。而在老架构中，它存在于手机运行时的堆栈中，比如 Android 的 JVM。\n宿主视图树 宿主视图树就是一系列的宿主视图，宿主平台有 Android 平台、iOS 平台等等。在 Android 上，宿主视图就是 android.view.ViewGroup实例、 android.widget.TextView实例等等。宿主视图就像积木一样地构成了宿主视图树。每个宿主视图的大小和坐标位置基于的是 LayoutMetrics，而 LayoutMetrics是通过React Native得布局引擎 Yoga 计算出来的。宿主视图的样式和内容信息，是从 React 影子树中得到的。\nReact Native渲染流水线的各个阶段可能发生在不同的线程中，参考线程模型部分。 在React Native中，涉及渲染的操作通常有三种：\n初始化渲染 React 状态更新 React Native 渲染器的状态更新 2.2 初始化渲染 2.2.1 渲染阶段 假如，有下面一个组件需要执行渲染：\njavascript\n代码解读\n复制代码\nfunction MyComponent() { return ( Hello, World ); }\n在上面的例子中，最终会被React 简化为最基础的React 宿主元素。每一次递归地调用函数组件 MyComponet ，或类组件的 render 方法，直至所有的组件都被调用过。最终，得到一棵 React 宿主组件的 React 元素树。 在这里，有几个重要的名词需要解释下“\nReact 组件：React 组件就是 JavaScript 函数或者类，描述如何创建 React 元素。 React 复合组件：React 组件的 render 方法中，包括其他 React 复合组件和 React 宿主组件。（译注：复合组件就是开发者声明的组件） React 宿主组件：React 组件的视图是通过宿主视图，比如 、实现的。在 Web 中，ReactDOM 的宿主组件就是 标签、标签代表的组件。 在元素简化的过程中，每调用一个 React 元素，渲染器同时会同步地创建 React 影子节点。这个过程只发生在 React 宿主组件上，不会发生在 React 复合组件上。比如，一个 会创建一个 ViewShadowNode 对象，一个会创建一个TextShadowNode对象。而我们开发的组件，由于不是基础组件，因此没有直接的React 影子节点与之对应，所以并没有直接对应的 React 影子节点。\n在 React 为两个 React 元素节点创建一对父子关系的同时，渲染器也会为对应的 React 影子节点创建一样的父子关系。上面代码，各个渲染阶段的产物如下图所示。\n2.2.2 提交阶段 在 React 影子树创建完成后，渲染器触发了一次 React 元素树的提交。 提交阶段（Commit Phase）由两个操作组成：布局计算和树提升。\n布局计算 这一步会计算每个 React 影子节点的位置和大小。在 React Native 中，每一个 React 影子节点的布局都是通过 Yoga 布局引擎来计算的。实际的计算需要考虑每一个 React 影子节点的样式，该样式来自于 JavaScript 中的 React 元素。计算还需要考虑 React 影子树的根节点的布局约束，这决定了最终节点能够拥有多少可用空间。 树提升 从新树到下一棵树（Tree Promotion，New Tree → Next Tree），这一步会将新的 React 影子树提升为要挂载的下一棵树。这次提升代表着新树拥有了所有要挂载的信息，并且能够代表 React 元素树的最新状态，下一棵树会在 UI 线程下一个“tick”进行挂载（译注：tick 是 CUP 的最小时间单元）。\n并且，绝大多数布局计算都是 C++ 中执行，只有某些组件，比如 Text、TextInput 组件等的布局计算是在宿主平台执行的。文字的大小和位置在每个宿主平台都是特别的，需要在宿主平台层进行计算。为此，Yoga 布局引擎调用了宿主平台的函数来计算这些组件的布局。\n2.2.3 挂载阶段 挂载阶段（Mount Phase）会将已经包含布局计算数据的 React 影子树，转换为以像素形式渲染在屏幕中的宿主视图树。\n站在更高的抽象层次上，React Native 渲染器为每个 React 影子节点创建了对应的宿主视图，并且将它们挂载在屏幕上。在上面的例子中，渲染器为 创建了android.view.ViewGroup 实例，为 创建了文字内容为“Hello World”的 android.widget.TextView实例 。iOS 也是类似的，创建了一个 UIView 并调用 NSLayoutManager 创建文本。然后会为宿主视图配置来自 React 影子节点上的属性，这些宿主视图的大小位置都是通过计算好的布局信息配置的。\n挂载阶段又细分为三个步骤：\n树对比： 这个步骤完全用的是 C++ 计算的，会对比“已经渲染的树”和”下一棵树”之间的元素差异。计算的结果是一系列宿主平台上的原子变更操作，比如 createView, updateView, removeView, deleteView 等等。在这个步骤中，还会将 React 影子树重构，来避免不必要的宿主视图创建。\n树提升，从下一棵树到已渲染树： 在这个步骤中，会自动将“下一棵树”提升为“先前渲染的树”，因此在下一个挂载阶段，树的对比计算用的是正确的树。\n视图挂载： 这个步骤会在对应的原生视图上执行原子变更操作，该步骤是发生在原生平台的 UI 线程的。\n同时，挂载阶段的所有操作都是在 UI 线程同步执行的。如果提交阶段是在后台线程执行，那么在挂载阶段会在 UI 线程的下一个“tick”执行。另外，如果提交阶段是在 UI 线程执行的，那么挂载阶段也是在 UI 线程执行。挂载阶段的调度和执行很大程度取决于宿主平台。例如，当前 Android 和 iOS 挂载层的渲染架构是不一样的。\n2.3 React 状态更新 接下来，我们继续看 React 状态更新时，渲染流水线的各个阶段的情况。假设，在初始化渲染时渲染的是如下组件。\njavascript\n代码解读\n复制代码\nfunction MyComponent() { return ( ",
+  "wordCount" : "970",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-12-26T00:00:00Z",
+  "dateModified": "2021-12-26T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "xiangzhihong"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/reactnative%E6%96%B0%E6%9E%B6%E6%9E%84%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      ReactNative新架构是如何工作的
+    </h1>
+    <div class="post-description">
+      目前ReactNative新架构所依赖的React18已经发了beta版，ReactNative新架构面向生态库和核心开发者的文档也正式发布，ReactNative团队成员K
+    </div>
+    <div class="post-meta"><span title='2021-12-26 00:00:00 +0000 UTC'>十二月 26, 2021</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;xiangzhihong&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80fabric" aria-label="一、Fabric">一、Fabric</a><ul>
+                        
+                <li>
+                    <a href="#11-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5" aria-label="1.1 基本概念">1.1 基本概念</a></li>
+                <li>
+                    <a href="#12-%e6%96%b0%e6%b8%b2%e6%9f%93%e5%99%a8%e7%9a%84%e5%88%9d%e8%a1%b7" aria-label="1.2 新渲染器的初衷">1.2 新渲染器的初衷</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8c%e6%b8%b2%e6%9f%93%e6%b5%81%e7%a8%8b" aria-label="二、渲染流程">二、渲染流程</a><ul>
+                        
+                <li>
+                    <a href="#21-%e6%b8%b2%e6%9f%93%e6%b5%81%e7%a8%8b" aria-label="2.1 渲染流程">2.1 渲染流程</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#react%e5%85%83%e7%b4%a0%e6%a0%91" aria-label="React元素树">React元素树</a></li>
+                <li>
+                    <a href="#react-%e5%bd%b1%e5%ad%90%e6%a0%91" aria-label="React 影子树">React 影子树</a></li>
+                <li>
+                    <a href="#%e5%ae%bf%e4%b8%bb%e8%a7%86%e5%9b%be%e6%a0%91" aria-label="宿主视图树">宿主视图树</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#22-%e5%88%9d%e5%a7%8b%e5%8c%96%e6%b8%b2%e6%9f%93" aria-label="2.2 初始化渲染">2.2 初始化渲染</a><ul>
+                        
+                <li>
+                    <a href="#221-%e6%b8%b2%e6%9f%93%e9%98%b6%e6%ae%b5" aria-label="2.2.1 渲染阶段">2.2.1 渲染阶段</a></li>
+                <li>
+                    <a href="#222-%e6%8f%90%e4%ba%a4%e9%98%b6%e6%ae%b5" aria-label="2.2.2 提交阶段">2.2.2 提交阶段</a><ul>
+                        
+                <li>
+                    <a href="#%e5%b8%83%e5%b1%80%e8%ae%a1%e7%ae%97" aria-label="布局计算">布局计算</a></li>
+                <li>
+                    <a href="#%e6%a0%91%e6%8f%90%e5%8d%87" aria-label="树提升">树提升</a></li></ul>
+                </li>
+                <li>
+                    <a href="#223-%e6%8c%82%e8%bd%bd%e9%98%b6%e6%ae%b5" aria-label="2.2.3 挂载阶段">2.2.3 挂载阶段</a></li></ul>
+                </li>
+                <li>
+                    <a href="#23-react-%e7%8a%b6%e6%80%81%e6%9b%b4%e6%96%b0" aria-label="2.3 React 状态更新">2.3 React 状态更新</a><ul>
+                        
+                <li>
+                    <a href="#231-%e6%b8%b2%e6%9f%93%e9%98%b6%e6%ae%b5" aria-label="2.3.1 渲染阶段">2.3.1 渲染阶段</a></li>
+                <li>
+                    <a href="#232-%e6%8f%90%e4%ba%a4%e9%98%b6%e6%ae%b5" aria-label="2.3.2 提交阶段">2.3.2 提交阶段</a></li>
+                <li>
+                    <a href="#233-%e6%8c%82%e8%bd%bd%e9%98%b6%e6%ae%b5" aria-label="2.3.3 挂载阶段">2.3.3 挂载阶段</a></li></ul>
+                </li>
+                <li>
+                    <a href="#24-%e6%b8%b2%e6%9f%93%e5%99%a8%e7%8a%b6%e6%80%81%e6%9b%b4%e6%96%b0" aria-label="2.4 渲染器状态更新">2.4 渲染器状态更新</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89%e8%b7%a8%e5%b9%b3%e5%8f%b0%e5%ae%9e%e7%8e%b0" aria-label="三、跨平台实现">三、跨平台实现</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e8%a7%86%e5%9b%be%e6%8b%8d%e5%b9%b3" aria-label="四、视图拍平">四、视图拍平</a></li>
+                <li>
+                    <a href="#%e4%ba%94%e7%ba%bf%e7%a8%8b%e6%a8%a1%e5%9e%8b" aria-label="五、线程模型">五、线程模型</a><ul>
+                        
+                <li>
+                    <a href="#51-%e6%b8%b2%e6%9f%93%e5%9c%ba%e6%99%af" aria-label="5.1 渲染场景">5.1 渲染场景</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%9c%a8%e5%90%8e%e5%8f%b0%e7%ba%bf%e7%a8%8b%e4%b8%ad%e6%b8%b2%e6%9f%93" aria-label="在后台线程中渲染">在后台线程中渲染</a></li>
+                <li>
+                    <a href="#%e5%9c%a8%e4%b8%bb%e7%ba%bf%e7%a8%8b%e4%b8%ad%e6%b8%b2%e6%9f%93" aria-label="在主线程中渲染">在主线程中渲染</a></li>
+                <li>
+                    <a href="#%e9%bb%98%e8%ae%a4%e6%88%96%e8%bf%9e%e7%bb%ad%e4%ba%8b%e4%bb%b6%e4%b8%ad%e6%96%ad" aria-label="默认或连续事件中断">默认或连续事件中断</a></li>
+                <li>
+                    <a href="#%e4%b8%8d%e7%9b%b8%e5%b9%b2%e7%9a%84%e4%ba%8b%e4%bb%b6%e4%b8%ad%e6%96%ad" aria-label="不相干的事件中断">不相干的事件中断</a></li>
+                <li>
+                    <a href="#%e6%9d%a5%e8%87%aa-javascript-%e7%ba%bf%e7%a8%8b%e7%9a%84%e5%90%8e%e5%8f%b0%e7%ba%bf%e7%a8%8b%e6%89%b9%e9%87%8f%e6%9b%b4%e6%96%b0" aria-label="来自 JavaScript 线程的后台线程批量更新">来自 JavaScript 线程的后台线程批量更新</a></li>
+                <li>
+                    <a href="#c-%e7%8a%b6%e6%80%81%e6%9b%b4%e6%96%b0" aria-label="C&#43;&#43; 状态更新">C++ 状态更新</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>目前 React Native 新架构所依赖的 React 18 已经发了 beta 版，React Native 新架构面向生态库和核心开发者的文档也正式发布，React Native 团队成员 Kevin Gozali 也在最近一次访谈中谈到新架构离正式发版还差最后一步延迟初始化，而最后一步工作大约会在 2022 年上半年完成。种种迹象表明，React Native 新架构真的要来了。</p>
+<p>前面，RN官方宣布：<a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fxiangzhihong8%2Farticle%2Fdetails%2F121061679%3Fops_request_misc%3D%25257B%252522request%25255Fid%252522%25253A%252522164051242216780274117564%252522%25252C%252522scm%252522%25253A%25252220140713.130102334.pc%25255Fblog.%252522%25257D%26request_id%3D164051242216780274117564%26biz_id%3D0%26utm_medium%3Ddistribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-121061679.nonecase%26utm_term%3Dreact%2520native%26spm%3D1018.2226.3001.4450" title="https://blog.csdn.net/xiangzhihong8/article/details/121061679?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164051242216780274117564%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&amp;request_id=164051242216780274117564&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-121061679.nonecase&amp;utm_term=react%20native&amp;spm=1018.2226.3001.4450">Hermes将成为React Native默认的JS引擎</a>。在文章中，我们简单的介绍了即将发布的新渲染器 Fabric，那么我们重点来认识下这个新的渲染器 Fabric 。</p>
+<h1 id="一fabric">一、Fabric<a hidden class="anchor" aria-hidden="true" href="#一fabric">#</a></h1>
+<h2 id="11-基本概念">1.1 基本概念<a hidden class="anchor" aria-hidden="true" href="#11-基本概念">#</a></h2>
+<p>Fabric 是 React Native 新架构的渲染系统，是从老架构的渲染系统演变而来的。核心原理是在 C++ 层统一更多的渲染逻辑，提升与宿主平台（host platforms）互操作性，即能够在 UI 线程上同步调用JavaScript代码，渲染效率得到明显的提高。Fabric研发始于 2018 年，Facebook 内部的很多React Native 应用使用的就是新的渲染器Fabric。</p>
+<p>在简介新渲染器（new renderer）之前，我们先介绍几个单词和概念：</p>
+<ul>
+<li><strong>宿主平台（Host platform）</strong>：React Native 嵌入的平台，比如 Android、iOS、Windows、macOS。</li>
+<li><strong>Fabric 渲染器（Fabric Renderer）</strong>：React Native 执行的 React 框架代码，和 React 在 Web 中执行代码是同一份。但是，React Native 渲染的是通用平台视图（宿主视图）而不是 DOM 节点（可以认为 DOM 是 Web 的宿主视图）。</li>
+</ul>
+<p>在更换了底层的渲染流程之后，Fabric 渲染器使得渲染宿主视图变得可行。Fabric 让 React 与各个平台直接通信并管理其宿主视图实例。Fabric 渲染器存在于 JavaScript 中，并且它调用的是由 C++ 代码暴露的接口。</p>
+<h2 id="12-新渲染器的初衷">1.2 新渲染器的初衷<a hidden class="anchor" aria-hidden="true" href="#12-新渲染器的初衷">#</a></h2>
+<p>开发新的渲染架构的初衷是为了更好的提升用户体验，而这种新体验是在老架构上是不可能实现的。主要体现为：</p>
+<ul>
+<li>提升宿主视图（host views）和 React 视图（React views）的互操作性，渲染器必须有能力同步地测量和渲染 React 界面。在老架构中，React Native 布局是异步的，这导致在宿主视图中渲染嵌套的 React Native 视图，会有布局“抖动”的问题。</li>
+<li>借助多优先级和同步事件的能力，渲染器可以提高用户交互的优先级，来确保他们的操作得到及时的处理。</li>
+<li>React Suspense 的集成，允许开发者在 React 中更合理的组织请求数据代码。</li>
+<li>允许开发者在 React Native 使用 React Concurrent 中断渲染功能。</li>
+<li>更容易的实现 React Native 的服务端渲染。</li>
+</ul>
+<p>除此之外，新的Fabric渲染器在代码质量、性能、可扩展性方面也是有了质的飞升。</p>
+<ul>
+<li><strong>类型安全</strong>：代码生成工具（code generation）确保了 JS 和宿主平台两方面的类型安全。代码生成工具使用 JavaScript 组件声明作为唯一事实源，生成 C++ 结构体来持有 props 属性。不会因为 JavaScript 和宿主组件 props 属性不匹配而出现构建错误。</li>
+<li><strong>共享 C++ core</strong>：渲染器是用 C++ 实现的，其核心 core 在平台之间是共享的。这增加了一致性并且使得新的平台能够更容易采用 React Native。（译注：例如 VR 新平台）</li>
+<li><strong>更好的宿主平台互操作性</strong>：当宿主组件集成到 React Native 时，同步和线程安全的布局计算提升了用户体验（译注：没有异步的【抖动】）。</li>
+<li><strong>性能提升</strong>：新的渲染系统的实现是跨平台的，每个平台都从那些原本只在某个特定平台的实现的性能优化中得到了更好的用户体验。比如拍平视图层级，原本只是 Android 上的性能优化方案，现在 Android 和 iOS 都直接有了。</li>
+<li><strong>一致性</strong>：新的渲染系统的实现是跨平台的，不同平台之间更容易保持一致。</li>
+<li><strong>更快的启动速度</strong>：默认情况下，宿主组件的初始化是懒执行的。</li>
+<li><strong>JS 和宿主平台之间的数据序列化更少</strong>：React 使用序列化 JSON 在 JavaScript 和宿主平台之间传递数据。新的渲染器用 JSI（JavaScript Interface）直接获取 JavaScript 数据。</li>
+</ul>
+<h1 id="二渲染流程">二、渲染流程<a hidden class="anchor" aria-hidden="true" href="#二渲染流程">#</a></h1>
+<h2 id="21-渲染流程">2.1 渲染流程<a hidden class="anchor" aria-hidden="true" href="#21-渲染流程">#</a></h2>
+<p>React Native 渲染器通过一系列加工处理，将 React 代码渲染到宿主平台。这一系列加工处理就是渲染流水线（pipeline），它的作用是初始化渲染和 UI 状态更新。接下来，我们重点介绍一下React Native 渲染流水线，及其在各种场景中的不同之处。</p>
+<p>渲染流水线可大致分为三个阶段：</p>
+<ul>
+<li><strong>渲染</strong>：在 JavaScript 中，React 执行那些产品逻辑代码创建 React 元素树（React Element Trees）。然后在 C++ 中，用 React 元素树创建 React 影子树（React Shadow Tree）。</li>
+<li><strong>提交</strong>：在 React 影子树完全创建后，渲染器会触发一次提交。这会将 React 元素树和新创建的 React 影子树的提升为“下一棵要挂载的树”。这个过程中也包括了布局信息计算。</li>
+<li><strong>挂载</strong>：React 影子树有了布局计算结果后，它会被转化为一个宿主视图树（Host View Tree）。</li>
+</ul>
+<p>这里有几个名词需要解释下：</p>
+<h4 id="react元素树">React元素树<a hidden class="anchor" aria-hidden="true" href="#react元素树">#</a></h4>
+<p>React 元素树是通过 JavaScript 中的 React 创建的，该树由一系类 React 元素组成。一个 React 元素就是一个普通的 JavaScript 对象，它描述了需要在屏幕中展示的内容。一个元素包括属性 props、样式 styles、子元素 children。React 元素分为两类：React 复合组件实例（React Composite Components）和 React 宿主组件（React Host Components）实例，并且它只存在于 JavaScript 中。</p>
+<h4 id="react-影子树">React 影子树<a hidden class="anchor" aria-hidden="true" href="#react-影子树">#</a></h4>
+<p>React 影子树是通过 Fabric 渲染器创建的，树由一系列 React 影子节点组成。一个 React 影子节点是一个对象，代表一个已经挂载的 React 宿主组件，其包含的属性 props 来自 JavaScript。它也包括布局信息，比如坐标系 x、y，宽高 width、height。在新渲染器 Fabric 中，React 影子节点对象只存在于 C++ 中。而在老架构中，它存在于手机运行时的堆栈中，比如 Android 的 JVM。</p>
+<h4 id="宿主视图树">宿主视图树<a hidden class="anchor" aria-hidden="true" href="#宿主视图树">#</a></h4>
+<p>宿主视图树就是一系列的宿主视图，宿主平台有 Android 平台、iOS 平台等等。在 Android 上，宿主视图就是 android.view.ViewGroup实例、 android.widget.TextView实例等等。宿主视图就像积木一样地构成了宿主视图树。每个宿主视图的大小和坐标位置基于的是 LayoutMetrics，而 LayoutMetrics是通过React Native得布局引擎 Yoga 计算出来的。宿主视图的样式和内容信息，是从 React 影子树中得到的。</p>
+<p>React Native渲染流水线的各个阶段可能发生在不同的线程中，参考线程模型部分。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0357bf631e794bf0a96706ebedd5e765~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 在React Native中，涉及渲染的操作通常有三种：</p>
+<ul>
+<li>初始化渲染</li>
+<li>React 状态更新</li>
+<li>React Native 渲染器的状态更新</li>
+</ul>
+<h2 id="22-初始化渲染">2.2 初始化渲染<a hidden class="anchor" aria-hidden="true" href="#22-初始化渲染">#</a></h2>
+<h3 id="221-渲染阶段">2.2.1 渲染阶段<a hidden class="anchor" aria-hidden="true" href="#221-渲染阶段">#</a></h3>
+<p>假如，有下面一个组件需要执行渲染：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function MyComponent() {   return (     &lt;View&gt;       &lt;Text&gt;Hello, World&lt;/Text&gt;     &lt;/View&gt;   ); }</code></p>
+<p>在上面的例子中，<code>&lt;MyComponent /&gt;</code>最终会被React 简化为最基础的React 宿主元素。每一次递归地调用函数组件 MyComponet ，或类组件的 render 方法，直至所有的组件都被调用过。最终，得到一棵 React 宿主组件的 React 元素树。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/408985f7670142f5a8b50f053134e392~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 在这里，有几个重要的名词需要解释下“</p>
+<ul>
+<li><strong>React 组件</strong>：React 组件就是 JavaScript 函数或者类，描述如何创建 React 元素。</li>
+<li><strong>React 复合组件</strong>：React 组件的 render 方法中，包括其他 React 复合组件和 React 宿主组件。（译注：复合组件就是开发者声明的组件）</li>
+<li><strong>React 宿主组件</strong>：React 组件的视图是通过宿主视图，比如 <code>&lt;View&gt;</code>、<code>&lt;Text&gt;</code>实现的。在 Web 中，ReactDOM 的宿主组件就是 <code>&lt;p&gt;</code>标签、<code>&lt;div&gt;</code>标签代表的组件。</li>
+</ul>
+<p>在元素简化的过程中，每调用一个 React 元素，渲染器同时会同步地创建 React 影子节点。这个过程只发生在 React 宿主组件上，不会发生在 React 复合组件上。比如，一个 <code>&lt;View&gt;</code>会创建一个 ViewShadowNode 对象，一个<code>&lt;Text&gt;</code>会创建一个TextShadowNode对象。而我们开发的组件，由于不是基础组件，因此没有直接的React 影子节点与之对应，所以<code>&lt;MyComponent&gt;</code>并没有直接对应的 React 影子节点。</p>
+<p>在 React 为两个 React 元素节点创建一对父子关系的同时，渲染器也会为对应的 React 影子节点创建一样的父子关系。上面代码，各个渲染阶段的产物如下图所示。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4f46a9b4e07847c5b77fed0650160796~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h3 id="222-提交阶段">2.2.2 提交阶段<a hidden class="anchor" aria-hidden="true" href="#222-提交阶段">#</a></h3>
+<p>在 React 影子树创建完成后，渲染器触发了一次 React 元素树的提交。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6aacdfb6bf64cb6ba26d06ddf4669f3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 提交阶段（Commit Phase）由两个操作组成：布局计算和树提升。</p>
+<h4 id="布局计算">布局计算<a hidden class="anchor" aria-hidden="true" href="#布局计算">#</a></h4>
+<p>这一步会计算每个 React 影子节点的位置和大小。在 React Native 中，每一个 React 影子节点的布局都是通过 Yoga 布局引擎来计算的。实际的计算需要考虑每一个 React 影子节点的样式，该样式来自于 JavaScript 中的 React 元素。计算还需要考虑 React 影子树的根节点的布局约束，这决定了最终节点能够拥有多少可用空间。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6398d4e98d44457cbe6c5fbe1dac15a7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="树提升">树提升<a hidden class="anchor" aria-hidden="true" href="#树提升">#</a></h4>
+<p>从新树到下一棵树（Tree Promotion，New Tree → Next Tree），这一步会将新的 React 影子树提升为要挂载的下一棵树。这次提升代表着新树拥有了所有要挂载的信息，并且能够代表 React 元素树的最新状态，下一棵树会在 UI 线程下一个“tick”进行挂载（译注：tick 是 CUP 的最小时间单元）。</p>
+<p>并且，绝大多数布局计算都是 C++ 中执行，只有某些组件，比如 Text、TextInput 组件等的布局计算是在宿主平台执行的。文字的大小和位置在每个宿主平台都是特别的，需要在宿主平台层进行计算。为此，Yoga 布局引擎调用了宿主平台的函数来计算这些组件的布局。</p>
+<h3 id="223-挂载阶段">2.2.3 挂载阶段<a hidden class="anchor" aria-hidden="true" href="#223-挂载阶段">#</a></h3>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0327995327614437803177adbece24c6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 挂载阶段（Mount Phase）会将已经包含布局计算数据的 React 影子树，转换为以像素形式渲染在屏幕中的宿主视图树。</p>
+<p>站在更高的抽象层次上，React Native 渲染器为每个 React 影子节点创建了对应的宿主视图，并且将它们挂载在屏幕上。在上面的例子中，渲染器为<code>&lt;View&gt;</code> 创建了android.view.ViewGroup 实例，为 <code>&lt;Text&gt;</code> 创建了文字内容为“Hello World”的 android.widget.TextView实例 。iOS 也是类似的，创建了一个 UIView 并调用 NSLayoutManager 创建文本。然后会为宿主视图配置来自 React 影子节点上的属性，这些宿主视图的大小位置都是通过计算好的布局信息配置的。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ab32efe3854441a483c1791a527ae893~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 挂载阶段又细分为三个步骤：</p>
+<ul>
+<li>
+<p><strong>树对比</strong>： 这个步骤完全用的是 C++ 计算的，会对比“已经渲染的树”和”下一棵树”之间的元素差异。计算的结果是一系列宿主平台上的原子变更操作，比如 createView, updateView, removeView, deleteView 等等。在这个步骤中，还会将 React 影子树重构，来避免不必要的宿主视图创建。</p>
+</li>
+<li>
+<p><strong>树提升，从下一棵树到已渲染树</strong>： 在这个步骤中，会自动将“下一棵树”提升为“先前渲染的树”，因此在下一个挂载阶段，树的对比计算用的是正确的树。</p>
+</li>
+<li>
+<p><strong>视图挂载</strong>： 这个步骤会在对应的原生视图上执行原子变更操作，该步骤是发生在原生平台的 UI 线程的。</p>
+</li>
+</ul>
+<p>同时，挂载阶段的所有操作都是在 UI 线程同步执行的。如果提交阶段是在后台线程执行，那么在挂载阶段会在 UI 线程的下一个“tick”执行。另外，如果提交阶段是在 UI 线程执行的，那么挂载阶段也是在 UI 线程执行。挂载阶段的调度和执行很大程度取决于宿主平台。例如，当前 Android 和 iOS 挂载层的渲染架构是不一样的。</p>
+<h2 id="23-react-状态更新">2.3 React 状态更新<a hidden class="anchor" aria-hidden="true" href="#23-react-状态更新">#</a></h2>
+<p>接下来，我们继续看 React 状态更新时，渲染流水线的各个阶段的情况。假设，在初始化渲染时渲染的是如下组件。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function MyComponent() {   return (     &lt;View&gt;       &lt;View         style={{ backgroundColor: 'red', height: 20, width: 20 }}       /&gt;       &lt;View         style={{ backgroundColor: 'blue', height: 20, width: 20 }}       /&gt;     &lt;/View&gt;   ); }</code></p>
+<p>通过初始化渲染部分学的知识，我们可以得到如下的三棵树： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5b9500b4eec2471785d82416270f1d59~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 可以看到，节点 3 对应的宿主视图背景是 红的，而 节点 4 对应的宿主视图背景是 蓝的。假设 JavaScript 的产品逻辑是，将第一个内嵌的的背景颜色由红色改为黄色。新的 React 元素树看起来大概是这样的。</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;View&gt;   &lt;View     style={{ backgroundColor: 'yellow', height: 20, width: 20 }}   /&gt;   &lt;View     style={{ backgroundColor: 'blue', height: 20, width: 20 }}   /&gt; &lt;/View&gt;</code></p>
+<p>此时，我们或许会有一个疑问：React Native 是如何处理这个更新的呢？</p>
+<p>从概念上讲，当发生状态更新时，为了更新已经挂载的宿主视图，渲染器需要直接更新 React 元素树。但是为了线程的安全，React 元素树和 React 影子树都必须是不可变的（immutable）。这意味着 React 并不能直接改变当前的 React 元素树和 React 影子树，而是必须为每棵树创建一个包含新属性、新样式和新子节点的新副本。</p>
+<h3 id="231-渲染阶段">2.3.1 渲染阶段<a hidden class="anchor" aria-hidden="true" href="#231-渲染阶段">#</a></h3>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bc57e8a47a5440a893899ce06e7eff88~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ React 要创建了一个包含新状态的新的 React 元素树，它就要复制所有变更的 React 元素和 React 影子节点。复制后，再提交新的 React 元素树。</p>
+<p>React Native 渲染器利用结构共享的方式，将不可变特性的开销变得最小。为了更新 React 元素的新状态，从该元素到根元素路径上的所有元素都需要复制。但 React 只会复制有新属性、新样式或新子元素的 React 元素，任何没有因状态更新发生变动的 React 元素都不会复制，而是由新树和旧树共享。</p>
+<p>在上面的例子中，React 创建新树使用了下面这些操作：</p>
+<ol>
+<li>CloneNode(Node 3, {backgroundColor: &lsquo;yellow&rsquo;}) → Node 3&rsquo;</li>
+<li>CloneNode(Node 2) → Node 2'</li>
+<li>AppendChild(Node 2&rsquo;, Node 3')</li>
+<li>AppendChild(Node 2&rsquo;, Node 4)</li>
+<li>CloneNode(Node 1) → Node 1'</li>
+<li>AppendChild(Node 1&rsquo;, Node 2')</li>
+</ol>
+<p>操作完成后，节点 1&rsquo;（Node 1&rsquo;） 就是新的 React 元素树的根节点，我们用 T 代表“先前渲染的树”，用 T&rsquo; 代表“新树”。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a741b22c8ca46afb6f9747393766d16~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 注意，节点 4 在 T and T&rsquo; 之间是共享的。结构共享提升了性能并减少了内存的使用。</p>
+<h3 id="232-提交阶段">2.3.2 提交阶段<a hidden class="anchor" aria-hidden="true" href="#232-提交阶段">#</a></h3>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7ccd7f3d72c54f909814135fbe0d7510~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 在 React 创建完新的 React 元素树和 React 影子树后，需要提交它们，也会涉及以下几个步骤：</p>
+<ul>
+<li><strong>布局计算</strong>： 状态更新时的布局计算，和初始化渲染的布局计算类似。一个重要的不同之处是布局计算可能会导致共享的 React 影子节点被复制。这是因为，如果共享的 React 影子节点的父节点引起了布局改变，共享的 React 影子节点的布局也可能发生改变。</li>
+<li><strong>树提升</strong>: 和初始化渲染的树提升类似。</li>
+<li><strong>树对比</strong>： 这个步骤会计算“先前渲染的树”（T）和“下一棵树”（T&rsquo;）的区别。计算的结果是原生视图的变更操作。</li>
+</ul>
+<p>在上面的例子中，这些操作包括：UpdateView(<strong>&lsquo;Node 3&rsquo;</strong>, {backgroundColor: &lsquo;yellow&rsquo;})</p>
+<h3 id="233-挂载阶段">2.3.3 挂载阶段<a hidden class="anchor" aria-hidden="true" href="#233-挂载阶段">#</a></h3>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a40d4a99c23e4c60a6d3b2a197db60d4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<ul>
+<li><strong>树提升</strong>：在这个步骤中，会自动将“下一棵树”提升为“先前渲染的树”，因此在下一个挂载阶段，树的对比计算用的是正确的树。</li>
+<li><strong>视图挂载</strong>：这个步骤会在对应的原生视图上执行原子变更操作。在上面的例子中，只有 视图 3（View 3） 的背景颜色会更新，变为黄色。</li>
+</ul>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7d517b1d400e4545b6f0953c30439c34~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h2 id="24-渲染器状态更新">2.4 渲染器状态更新<a hidden class="anchor" aria-hidden="true" href="#24-渲染器状态更新">#</a></h2>
+<p>对于影子树中的大多数信息而言，React 是唯一所有方也是唯一事实源。并且所有来源于 React 的数据都是单向流动的。</p>
+<p>但有一个例外。这个例外是一种非常重要的机制：C++ 组件可以拥有状态，且该状态可以不直接暴露给 JavaScript，这时候 JavaScript （或 React）就不是唯一事实源了。通常，只有复杂的宿主组件才会用到 C++ 状态，绝大多数宿主组件都不需要此功能。</p>
+<p>例如，ScrollView 使用这种机制让渲染器知道当前的偏移量是多少。偏移量的更新是宿主平台的触发，具体地说是 ScrollView 组件。这些偏移量信息在 React Native 的 measure 等 API 中有用到。因为偏移量数据是由 C++ 状态持有的，所以源于宿主平台更新，不影响 React 元素树。</p>
+<p>从概念上讲，C++ 状态更新类似于我们前面提到的 React 状态更新，但有两点不同：</p>
+<ul>
+<li>因为不涉及 React，所以跳过了“渲染阶段”（Render phase）。</li>
+<li>更新可以源自和发生在任何线程，包括主线程。</li>
+</ul>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4d2c2619fedf4ba8b779960fb3786304~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 提交阶段（Commit Phase）：在执行 C++ 状态更新时，会有一段代码把影子节点 （N） 的 C++ 状态设置为值 S。React Native 渲染器会反复尝试获取 N 的最新提交版本，并使用新状态 S 复制它 ，并将新的影子节点 N&rsquo; 提交给影子树。如果 React 在此期间执行了另一次提交，或者其他 C++ 状态有了更新，本次 C++ 状态提交失败。这时渲染器将多次重试 C++ 状态更新，直到提交成功，这可以防止真实源的冲突和竞争。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7cdce1f53ee34db78a3ca4a011aad45a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 挂载阶段（Mount Phase）实际上与 React 状态更新的挂载阶段相同。渲染器仍然需要重新计算布局、执行树对比等操作。</p>
+<h1 id="三跨平台实现">三、跨平台实现<a hidden class="anchor" aria-hidden="true" href="#三跨平台实现">#</a></h1>
+<p>在上一代 React Native 渲染器中，React 影子树、布局逻辑、视图拍平算法是在各个平台单独实现的。当前的渲染器的设计上采用的是跨平台的解决方案，共享了核心的 C++ 实现。而Fabric渲染器直接使用 C++ core 渲染实现了跨平台共享。</p>
+<p>使用 C++ 作为核心渲染系统有以下几个优点。</p>
+<ul>
+<li>单一实现降低了开发和维护成本。</li>
+<li>提升了创建 React 影子树的性能，同时在 Android 上，也因为不再使用 JNI for Yoga，降低了 Yoga 渲染引擎的开销，布局计算的性能也有所提升。</li>
+<li>每个 React 影子节点在 C++ 中占用的内存，比在 Kotlin 或 Swift 中占用的要小。</li>
+</ul>
+<p>同时，React Native 团队还使用了强制不可变的 C++ 特性，来确保并发访问时共享资源即便不加锁保护，也不会有问题。但在 Android 端还有两种例外，渲染器依然会有 JNI 的开销：</p>
+<ul>
+<li>复杂视图，比如 Text、TextInput 等，依然会使用 JNI 来传输属性 props。</li>
+<li>在挂载阶段依然会使用 JNI 来发送变更操作。</li>
+</ul>
+<p>React Native 团队在探索使用 ByteBuffer 序列化数据这种新的机制，来替换 ReadableMap，减少 JNI 的开销，目标是将 JNI 的开销减少 35~50%。</p>
+<p>渲染器提供了 C++ 与两边通信的 API：</p>
+<ul>
+<li>与 React 通信</li>
+<li>与宿主平台通信</li>
+</ul>
+<p>关于 React 与渲染器的通信，包括 渲染（render） React 树和监听 事件（event），比如 onLayout、onKeyPress、touch 等。而React Native 渲染器与宿主平台的通信，包括在屏幕上 挂载（mount） 宿主视图，包括 create、insert、update、delete 宿主视图，和监听用户在宿主平台产生的 事件（event）。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0cf908b940714fe1a91f663b8719385b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h1 id="四视图拍平">四、视图拍平<a hidden class="anchor" aria-hidden="true" href="#四视图拍平">#</a></h1>
+<p>视图拍平（View Flattening）是 React Native 渲染器避免布局嵌套太深的优化手段。React API 在设计上希望通过组合的方式，实现组件声明和重用，这为更简单的开发提供了一个很好的模型。但是在实现中，API 的这些特性会导致一些 React 元素会嵌套地很深，而其中大部分 React 元素节点只会影响视图布局，并不会在屏幕中渲染任何内容。这就是所谓的 “只参与布局” 类型节点。</p>
+<p>从概念上讲，React 元素树的节点数量和屏幕上的视图数量应该是 1:1 的关系。但是，渲染一个很深的“只参与布局”的 React 元素会导致性能变慢。假如，有一个应用，应用中拥有外边距 ContainerComponent的容器组件，容器组件的子组件是 TitleComponent 标题组件，标题组件包括一个图片和一行文字。React 代码示例如下：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function MyComponent() {   return (     &lt;View&gt;                          // ReactAppComponent       &lt;View style={{margin: 10}} /&gt; // ContainerComponent         &lt;View style={{margin: 10}}&gt; // TitleComponent           &lt;Image {...} /&gt;           &lt;Text {...}&gt;This is a title&lt;/Text&gt;         &lt;/View&gt;       &lt;/View&gt;     &lt;/View&gt;   ); }</code></p>
+<p>React Native 在渲染时，会生成以下三棵树： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/53018049b9284cb68d84ae4980f963d6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 在视图 2 和视图 3 是“只参与布局”的视图，因为它们在屏幕上渲染只是为了提供 10 像素的外边距。</p>
+<p>为了提升 React 元素树中“只参与布局”类型的性能，渲染器实现了一种视图拍平的机制来合并或拍平这类节点，减少屏幕中宿主视图的层级深度。该算法考虑到了如下属性，比如 margin、padding、backgroundColor和opacity等等。</p>
+<p>视图拍平算法是渲染器的对比（diffing）阶段的一部分，这样设计的好处是我们不需要额外的 CUP 耗时，来拍平 React 元素树中“只参与布局”的视图。此外，作为 C++ 核心的一部分，视图拍平算法默认是全平台共用的。</p>
+<p>在前面的例子中，视图 2 和视图 3 会作为“对比算法”（diffing algorithm）的一部分被拍平，而它们的样式结果会被合并到视图 1 中。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/284bd7fb17574692a81df77f5356412f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 不过，虽然这种优化让渲染器少创建和渲染两个宿主视图，但从用户的角度看屏幕内容没有任何区别。</p>
+<h1 id="五线程模型">五、线程模型<a hidden class="anchor" aria-hidden="true" href="#五线程模型">#</a></h1>
+<p>React Native 渲染器是线程安全的。从更高的视角看，在框架内部线程安全是通过不可变的数据结果保障的，其使用的是 C++ 的 const correctness 特性。这意味着，在渲染器中 React 的每次更新都会重新创建或复制新对象，而不是更新原有的数据结构。这是框架把线程安全和同步 API 暴露给 React 的前提。</p>
+<p>在React Native中，渲染器使用三个不同的线程：</p>
+<ul>
+<li><strong>UI 线程</strong>：唯一可以操作宿主视图的线程。</li>
+<li><strong>JavaScript 线程</strong>：这是执行 React 渲染阶段的地方。</li>
+<li><strong>后台线程</strong>：专门用于布局的线程。</li>
+</ul>
+<p>下图描述了React Native渲染的完整流程： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/09e5db670ba54b2daea3a692be143177~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h2 id="51-渲染场景">5.1 渲染场景<a hidden class="anchor" aria-hidden="true" href="#51-渲染场景">#</a></h2>
+<h4 id="在后台线程中渲染">在后台线程中渲染<a hidden class="anchor" aria-hidden="true" href="#在后台线程中渲染">#</a></h4>
+<p>这是最常见的场景，大多数的渲染流水线发生在 JavaScript 线程和后台线程。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/39d6f85bc1094791aa3ed09a084cc057~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="在主线程中渲染">在主线程中渲染<a hidden class="anchor" aria-hidden="true" href="#在主线程中渲染">#</a></h4>
+<p>当 UI 线程上有高优先级事件时，渲染器能够在 UI 线程上同步执行所有渲染流水线。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7c7bfe77ac634d47aa7ddd1c257e54ae~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="默认或连续事件中断">默认或连续事件中断<a hidden class="anchor" aria-hidden="true" href="#默认或连续事件中断">#</a></h4>
+<p>在这个场景中，UI 线程的低优先级事件中断了渲染步骤。React 和 React Native 渲染器能够中断渲染步骤，并把它的状态和一个在 UI 线程执行的低优先级事件合并。在这个例子中渲染过程会继续在后台线程中执行。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6750655ac1a8450c9f920b7d14ffdb7e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="不相干的事件中断">不相干的事件中断<a hidden class="anchor" aria-hidden="true" href="#不相干的事件中断">#</a></h4>
+<p>渲染步骤是可中断的。在这个场景中， UI 线程的高优先级事件中断了渲染步骤。React 和渲染器是能够打断渲染步骤的，并把它的状态和 UI 线程执行的高优先级事件合并。在 UI 线程渲染步骤是同步执行的。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c85bc464bb44423d88262f927cd486d5~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="来自-javascript-线程的后台线程批量更新">来自 JavaScript 线程的后台线程批量更新<a hidden class="anchor" aria-hidden="true" href="#来自-javascript-线程的后台线程批量更新">#</a></h4>
+<p>在后台线程将更新分派给 UI 线程之前，它会检查是否有新的更新来自 JavaScript。这样，当渲染器知道新的状态要到来时，它就不会直接渲染旧的状态。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b6e5089ddd07434082fd1246256499cd~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="c-状态更新">C++ 状态更新<a hidden class="anchor" aria-hidden="true" href="#c-状态更新">#</a></h4>
+<p>更新来自 UI 线程，并会跳过渲染步骤。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/04a55f2f621d482997696e9d8a7a7a00~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/reactnative/">ReactNative</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%9C%A8vue2%E4%B8%AD%E4%BD%BF%E7%94%A8jsx%E5%86%99%E7%BB%84%E4%BB%B6propsdataslot%E5%88%B0%E5%BA%95%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%86%99/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>在Vue2中使用JSX写组件，props、data、slot到底应该怎么写？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%8E%8C%E6%8F%A1webworkers%E5%BD%BB%E5%BA%95%E8%A7%A3%E9%94%81%E5%89%8D%E7%AB%AF%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E7%9A%84%E6%BD%9C%E5%8A%9B/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>掌握WebWorkers：彻底解锁前端多线程编程的潜力</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative新架构是如何工作的 on x"
+            href="https://x.com/intent/tweet/?text=ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cReactNative">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative新架构是如何工作的 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f&amp;title=ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84&amp;summary=ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative新架构是如何工作的 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f&title=ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative新架构是如何工作的 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative新架构是如何工作的 on whatsapp"
+            href="https://api.whatsapp.com/send?text=ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative新架构是如何工作的 on telegram"
+            href="https://telegram.me/share/url?text=ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share ReactNative新架构是如何工作的 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=ReactNative%e6%96%b0%e6%9e%b6%e6%9e%84%e6%98%af%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c%e7%9a%84&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2freactnative%25E6%2596%25B0%25E6%259E%25B6%25E6%259E%2584%25E6%2598%25AF%25E5%25A6%2582%25E4%25BD%2595%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

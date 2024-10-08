@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 | PaperMod</title>
+<meta name="keywords" content="后端, 面试, Java">
+<meta name="description" content="最近做Java面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：我看到这问题都有点懵逼，现实项目中怎么可能会有10000个ifelse的代码，至少我工作10余年没见过样的代码。">
+<meta name="author" content="Spring源码项目进行时">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E7%BE%8E%E5%9B%A2%E4%B8%80%E9%9D%A2%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%9C%8910000%E4%B8%AAifelse%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%83%B3%E4%BA%86%E5%8D%8A%E5%A4%A9%E8%A2%AB%E9%97%AE%E6%87%B5%E4%BA%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E7%BE%8E%E5%9B%A2%E4%B8%80%E9%9D%A2%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%9C%8910000%E4%B8%AAifelse%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%83%B3%E4%BA%86%E5%8D%8A%E5%A4%A9%E8%A2%AB%E9%97%AE%E6%87%B5%E4%BA%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了" />
+<meta property="og:description" content="最近做Java面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：我看到这问题都有点懵逼，现实项目中怎么可能会有10000个ifelse的代码，至少我工作10余年没见过样的代码。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E7%BE%8E%E5%9B%A2%E4%B8%80%E9%9D%A2%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%9C%8910000%E4%B8%AAifelse%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%83%B3%E4%BA%86%E5%8D%8A%E5%A4%A9%E8%A2%AB%E9%97%AE%E6%87%B5%E4%BA%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-05-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-05-15T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了"/>
+<meta name="twitter:description" content="最近做Java面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：我看到这问题都有点懵逼，现实项目中怎么可能会有10000个ifelse的代码，至少我工作10余年没见过样的代码。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了",
+      "item": "http://localhost:1313/posts/juejin/%E7%BE%8E%E5%9B%A2%E4%B8%80%E9%9D%A2%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%9C%8910000%E4%B8%AAifelse%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%83%B3%E4%BA%86%E5%8D%8A%E5%A4%A9%E8%A2%AB%E9%97%AE%E6%87%B5%E4%BA%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了",
+  "name": "美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了",
+  "description": "最近做Java面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：我看到这问题都有点懵逼，现实项目中怎么可能会有10000个ifelse的代码，至少我工作10余年没见过样的代码。",
+  "keywords": [
+    "后端", "面试", "Java"
+  ],
+  "articleBody": " 来源：mp.weixin.qq.com/s/MlGkFx5Ei…\n作者：Java技术栈（欢迎大家关注）\n最近做 Java 面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：\n一万个 if else 如何优化，有好的解决方案吗？\n我看到这问题都有点懵逼，现实项目中怎么可能会有 10000 个 if else 的代码，至少我工作 10 余年没见过样的代码。\n关键要写完这 10000 行的 if else 代码，如果每天写 100 个，是不是意味着也要 100 天才能写完，并且每次请求都要执行几千上万次的判断，代码难以维护不说，还会严重影响系统性能。\n很显然，面试官考察的不是一般的八股文，这个问题可以看作是一道场景题，它考察一个程序员在面对复杂逻辑判断时的优化能力，也是在考察一个程序员临场发挥技术能力。\n这兄弟虽然说上了策略模式，但显然不是完美和唯一的解决方案，另外像责任链模式等其他设计模式都会存在这样的问题，所以具体的问题还得具体分析。\n所以这题可以这样回答：\n如果这 1 万个 if else 是在同一个代码块流程里面，这就要考虑这 1 万 if else 存在的意义了，因为这么量极的 if else 会很难维护，也会极其影响性能，需要具体分析然后再去分析如何去分解和优化。 如果这 1 万个 if else 分散在同一个项目里面，那么优化 if else 的方式有很多种，包括.…… 下面我说说几种方案，欢迎大家拍砖。\nif else 优化方案 方案1：策略模式 这个兄弟也说到了策略模式，策略模式介绍及实战看这篇：\n别在再满屏的 if/ else 了，试试策略模式，真香！！\n使用策略模式确实可以提升代码的优雅性，但也会存在以下问题：\n如果是大量的 if else 分支，比如这 1 万个，那就会有 1 万个策略类，此时就会造成类膨胀，并且随着时间的推移逐渐变得更加庞大而复杂。 如果是多层的 if else 嵌套，策略模式可能也无法派上用场了。 策略模式的优点是可以很方便的解耦，适用于有多种不同逻辑和算法的 if 场景，但不适用于大量的 if else 场景。\n方案2：策略模式变体 这是策略模式的一种变体：\ndart\n代码解读\n复制代码\nMap actionMap = new HashMap\u003c\u003e(); actionMap.put(\"condition1\", () -\u003e { /* 分支1的执行逻辑 */ }); actionMap.put(\"condition2\", () -\u003e { /* 分支2的执行逻辑 */ }); actionMap.put(\"conditionN\", () -\u003e { /* 分支N的执行逻辑 */ }); // 根据条件获取执行逻辑 Runnable action = actionMap.get(\"condition1\"); if (action != null) { action.run(); }\n这种把业务逻辑代码分离出去了，简化了单个类的代码，也省去了策略实现类，让策略类不会得到膨胀，但如果有大量的条件映射，依然会造成单个类的膨胀和难以维护。\n这里使用的是线程异步执行的案例，还可以把要执行的逻辑代码存储在其他类、数据库中，然后再用反射或者动态编译的方式加载进去并执行。\n方案3：多级嵌套优化 上面说的两种方案嵌套可能无法解决，如果是这种带层级的判断是可以优化的：\nscss\n代码解读\n复制代码\n/* * 来源公众号：Java技术栈 */ if(xxxOrder != null){ if(xxxOrder.getXxxShippingInfo() != null){ if(xxxOrder.getXxxShippingInfo().getXxxShipmentDetails() != null){ if(xxxOrder.getXxxShippingInfo().getXxxShipmentDetails().getXxxTrackingInfo() != null){ ... } } } }\n这种 if 嵌套层级太多，极不优雅，怎么优化见我之前写的这篇：\nif else 太多？看我用 Java 8 轻松干掉！\n方案4：使用三目运算符 如果判断条件不多，只有 2、3 个的情况下可以使用三目运算符简化 if else 分支。\n比如以下代码：\nini\n代码解读\n复制代码\nString desc; if (condition1) { desc = \"XX1\"; } else if (condition2) { desc = \"XX2\"; } else { desc = \"XX3\"; }\n使用三目运算符一行搞定：\nini\n代码解读\n复制代码\nString desc = condition1 ? \"XX1\" : (condition2 ? \"XX2\" : \"XX3\");\n超过 3 个条件就不建议使用了，不然代码可读性会大大降低。\n方案5：使用枚举 枚举类型可以用来表示一组固定的值，例如星期几、月份、颜色等，它提供了一种更简洁、可读性更高的方式来表示一组相关的常量。\n如以下示例代码：\ntypescript\n代码解读\n复制代码\n/** * 公众号：Java技术栈 */ public class Test { public static void main(String[] args) { Day today = Day.MONDAY; System.out.println(\"Today is \" + today); System.out.println(\"Today is \" + today.getChineseName()); } enum Day { MONDAY(\"星期一\"), TUESDAY(\"星期二\"), WEDNESDAY(\"星期三\"), THURSDAY(\"星期四\"), FRIDAY(\"星期五\"), SATURDAY(\"星期六\"), SUNDAY(\"星期日\"); private String chineseName; Day(String chineseName) { this.chineseName = chineseName; } public String getChineseName() { return chineseName; } } }\n这里我只写了一个字段，我们可以在枚举属性里面定义多个字段，这样就无需大量的 if else 判断，直接通过枚举来获取某个某一组固定的值了。\n方案6：使用 Optional Java 8 提供了一个 Optional 新特性，它是一个可以包含 null 值的容器对象，可以用来代替 xx != null 的判断。\n参考我之前写的这篇：\nJDK 8 新特性之 Optional\n如果项目中存在大量 xx != null 的判断，可以使用 Optional 来优化。\n方案7：尽快返回 分析业务，根据 if else 的执行次数按降序排，把执行次数较多的 if 放在最前面，如果符合条件，就使用 return 返回，如下面代码：\nkotlin\n代码解读\n复制代码\nif (条件1) { return } if (条件2) { return } ...\n这样改可能是比较简单的方式，在很大程度上可以提升系统的性能，但是还存在以下问题：\n有的条件不能按执行次数排序，存在先后或者互斥关系。 如果新增一个条件，可能无法马上判定它的执行次数，如果放在后面可能也还会影响性能。 对类的继续膨胀和代码维护没有任何帮助。 方案8：去除没必要的 if else 比如这种：\nkotlin\n代码解读\n复制代码\nif (condition) { ... } else { return; }\n优化后：\nkotlin\n代码解读\n复制代码\nif（!condition）{ return; }\n或者是这样：\nkotlin\n代码解读\n复制代码\nreturn !condition\n方案9：合并条件 考虑这 1 万 if else 是不是真的每个都有必要，是不是可以合并归类，比如是不是可以把几百、几千个相似逻辑的归为一类，这样也能大大简化 if else 数量。\n比如以下代码：\ncsharp\n代码解读\n复制代码\ndouble calculateShipping() { if (orderAmount \u003e 1000) { return 0.5; } if (customerLoyaltyLevel \u003e 5) { return 0.5; } if (promotionIsActive) { return 0.5; } }\n优化后：\ncsharp\n代码解读\n复制代码\ndouble calculateShipping() { if (orderAmount \u003e 1000 || customerLoyaltyLevel \u003e 5 || promotionIsActive) { return 0.5; } }\n这样就把返回相同值的 if 归为一类了，如果 if 较大就能大大简化代码量。\n方案10：规则引擎 对于复杂的业务逻辑，业务规则经常变化，规则制定不依赖于技术团队，需要实现可配置的逻辑处理，此时可以考虑使用规则引擎来处理，比如 Drools。\n规则引擎系统可用于执行一组规则，在许多业务应用程序中，业务决策可以通过一系列的逻辑规则来定义，规则引擎允许这些规则在运行时执行，而无需硬编码在应用程序之中。\n规则引擎的好处是：\n业务逻辑可以和程序代码解耦； 提高业务逻辑的可管理性； 提高系统的灵活性和可扩展性； 业务人员可参与决策过程； 总结 掌握优化 if else 的方法很重要，有时候面试官可能会换着法子问你，比如我们面试辅导这位兄弟遇到的这个面试官，你可以问清楚这一万个 if else 是在一个代码块中，还是在一个项目中，然后再去解答，如果不了解清楚业务场景，盲目回答又会被面试官绕进去。\n本文我也总结了 10 种优化 if else 的方法，其实还不止，根据不同的场景还可以使用多态、责任链模式、模板方法模式等更多方法来消除 if else。\n总之，消除 if else 并没有万能的方法，也不可能全部优化掉，在实际开发中需要根据实际场景使用不同的方法，以及多种方法组合使用，这样才是正确的方式。\n",
+  "wordCount" : "465",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-05-15T00:00:00Z",
+  "dateModified": "2024-05-15T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Spring源码项目进行时"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E7%BE%8E%E5%9B%A2%E4%B8%80%E9%9D%A2%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%9C%8910000%E4%B8%AAifelse%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%83%B3%E4%BA%86%E5%8D%8A%E5%A4%A9%E8%A2%AB%E9%97%AE%E6%87%B5%E4%BA%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了
+    </h1>
+    <div class="post-description">
+      最近做Java面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：我看到这问题都有点懵逼，现实项目中怎么可能会有10000个ifelse的代码，至少我工作10余年没见过样的代码。
+    </div>
+    <div class="post-meta"><span title='2024-05-15 00:00:00 +0000 UTC'>五月 15, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;Spring源码项目进行时&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#if-else-%e4%bc%98%e5%8c%96%e6%96%b9%e6%a1%88" aria-label="if else 优化方案">if else 优化方案</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%881%e7%ad%96%e7%95%a5%e6%a8%a1%e5%bc%8f" aria-label="方案1：策略模式">方案1：策略模式</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%882%e7%ad%96%e7%95%a5%e6%a8%a1%e5%bc%8f%e5%8f%98%e4%bd%93" aria-label="方案2：策略模式变体">方案2：策略模式变体</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%883%e5%a4%9a%e7%ba%a7%e5%b5%8c%e5%a5%97%e4%bc%98%e5%8c%96" aria-label="方案3：多级嵌套优化">方案3：多级嵌套优化</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%884%e4%bd%bf%e7%94%a8%e4%b8%89%e7%9b%ae%e8%bf%90%e7%ae%97%e7%ac%a6" aria-label="方案4：使用三目运算符">方案4：使用三目运算符</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%885%e4%bd%bf%e7%94%a8%e6%9e%9a%e4%b8%be" aria-label="方案5：使用枚举">方案5：使用枚举</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%886%e4%bd%bf%e7%94%a8-optional" aria-label="方案6：使用 Optional">方案6：使用 Optional</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%887%e5%b0%bd%e5%bf%ab%e8%bf%94%e5%9b%9e" aria-label="方案7：尽快返回">方案7：尽快返回</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%888%e5%8e%bb%e9%99%a4%e6%b2%a1%e5%bf%85%e8%a6%81%e7%9a%84-if-else" aria-label="方案8：去除没必要的 if else">方案8：去除没必要的 if else</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%889%e5%90%88%e5%b9%b6%e6%9d%a1%e4%bb%b6" aria-label="方案9：合并条件">方案9：合并条件</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%8810%e8%a7%84%e5%88%99%e5%bc%95%e6%93%8e" aria-label="方案10：规则引擎">方案10：规则引擎</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>来源：<a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FMlGkFx5EimiLmBa5bckKoA" title="https://mp.weixin.qq.com/s/MlGkFx5EimiLmBa5bckKoA">mp.weixin.qq.com/s/MlGkFx5Ei…</a></p>
+<p>作者：Java技术栈（欢迎大家关注）</p>
+</blockquote>
+<p>最近做 Java 面试辅导，有个兄弟面试美团，遇到一个特别有意思的问题：</p>
+<blockquote>
+<p><strong>一万个 if else 如何优化，有好的解决方案吗？</strong></p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1965d70f3a4546c3bf433641b179ebac~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=1951&amp;s=138074&amp;e=jpg&amp;b=f0efef" alt=""  />
+</p>
+<p>我看到这问题都有点懵逼，现实项目中怎么可能会有 10000 个 if else 的代码，至少我工作 10 余年没见过样的代码。</p>
+<p>关键要写完这 10000 行的 if else 代码，如果每天写 100 个，是不是意味着也要 100 天才能写完，并且每次请求都要执行几千上万次的判断，<strong>代码难以维护不说，还会严重影响系统性能</strong>。</p>
+<p>很显然，面试官考察的不是一般的八股文，这个问题可以看作是一道场景题，<strong>它考察一个程序员在面对复杂逻辑判断时的优化能力，也是在考察一个程序员临场发挥技术能力</strong>。</p>
+<p>这兄弟虽然说上了策略模式，但显然不是完美和唯一的解决方案，另外像责任链模式等其他设计模式都会存在这样的问题，所以具体的问题还得具体分析。</p>
+<p>所以这题可以这样回答：</p>
+<ul>
+<li>如果这 1 万个 if else 是在同一个代码块流程里面，这就要考虑这 1 万 if else 存在的意义了，因为这么量极的 if else 会很难维护，也会极其影响性能，需要具体分析然后再去分析如何去分解和优化。</li>
+<li>如果这 1 万个 if else 分散在同一个项目里面，那么优化 if else 的方式有很多种，包括.……</li>
+</ul>
+<p>下面我说说几种方案，欢迎大家拍砖。</p>
+<h1 id="if-else-优化方案">if else 优化方案<a hidden class="anchor" aria-hidden="true" href="#if-else-优化方案">#</a></h1>
+<h1 id="方案1策略模式">方案1：策略模式<a hidden class="anchor" aria-hidden="true" href="#方案1策略模式">#</a></h1>
+<p>这个兄弟也说到了策略模式，策略模式介绍及实战看这篇：</p>
+<blockquote>
+<p>别在再满屏的 if/ else 了，试试策略模式，真香！！</p>
+</blockquote>
+<p>使用策略模式确实可以提升代码的优雅性，但也会存在以下问题：</p>
+<ul>
+<li>如果是大量的 if else 分支，比如这 1 万个，<strong>那就会有 1 万个策略类，此时就会造成类膨胀，并且随着时间的推移逐渐变得更加庞大而复杂</strong>。</li>
+<li>如果是多层的 if else 嵌套，策略模式可能也无法派上用场了。</li>
+</ul>
+<p>策略模式的优点是可以很方便的解耦，适用于有多种不同逻辑和算法的 if 场景，但不适用于大量的 if else 场景。</p>
+<h1 id="方案2策略模式变体">方案2：策略模式变体<a hidden class="anchor" aria-hidden="true" href="#方案2策略模式变体">#</a></h1>
+<p>这是策略模式的一种变体：</p>
+<p>dart</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Map&lt;Integer, Runnable&gt; actionMap = new HashMap&lt;&gt;(); actionMap.put(&quot;condition1&quot;, () -&gt; { /* 分支1的执行逻辑 */ }); actionMap.put(&quot;condition2&quot;, () -&gt; { /* 分支2的执行逻辑 */ }); actionMap.put(&quot;conditionN&quot;, () -&gt; { /* 分支N的执行逻辑 */ }); // 根据条件获取执行逻辑 Runnable action = actionMap.get(&quot;condition1&quot;); if (action != null) {     action.run(); }</code></p>
+<p>这种把业务逻辑代码分离出去了，简化了单个类的代码，也省去了策略实现类，让策略类不会得到膨胀，但如果有大量的条件映射，依然会造成单个类的膨胀和难以维护。</p>
+<p>这里使用的是线程异步执行的案例，还可以把要执行的逻辑代码存储在其他类、数据库中，然后再用反射或者动态编译的方式加载进去并执行。</p>
+<h1 id="方案3多级嵌套优化">方案3：多级嵌套优化<a hidden class="anchor" aria-hidden="true" href="#方案3多级嵌套优化">#</a></h1>
+<p>上面说的两种方案嵌套可能无法解决，如果是这种带层级的判断是可以优化的：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/* * 来源公众号：Java技术栈  */ if(xxxOrder != null){  if(xxxOrder.getXxxShippingInfo() != null){   if(xxxOrder.getXxxShippingInfo().getXxxShipmentDetails() != null){    if(xxxOrder.getXxxShippingInfo().getXxxShipmentDetails().getXxxTrackingInfo() != null){     ...    }   }  } }</code></p>
+<p>这种 if 嵌套层级太多，极不优雅，怎么优化见我之前写的这篇：</p>
+<blockquote>
+<p>if else 太多？看我用 Java 8 轻松干掉！</p>
+</blockquote>
+<h1 id="方案4使用三目运算符">方案4：使用三目运算符<a hidden class="anchor" aria-hidden="true" href="#方案4使用三目运算符">#</a></h1>
+<p>如果判断条件不多，只有 2、3 个的情况下可以使用三目运算符简化 if else 分支。</p>
+<p>比如以下代码：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>String desc; if (condition1) {     desc = &quot;XX1&quot;; } else if (condition2) {     desc = &quot;XX2&quot;; } else {     desc = &quot;XX3&quot;; }</code></p>
+<p>使用三目运算符一行搞定：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>String desc = condition1 ? &quot;XX1&quot; : (condition2 ? &quot;XX2&quot; : &quot;XX3&quot;);</code></p>
+<p>超过 3 个条件就不建议使用了，不然代码可读性会大大降低。</p>
+<h1 id="方案5使用枚举">方案5：使用枚举<a hidden class="anchor" aria-hidden="true" href="#方案5使用枚举">#</a></h1>
+<p>枚举类型可以用来表示一组固定的值，例如星期几、月份、颜色等，它提供了一种更简洁、可读性更高的方式来表示一组相关的常量。</p>
+<p>如以下示例代码：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 公众号：Java技术栈  */ public class Test {          public static void main(String[] args) {         Day today = Day.MONDAY;         System.out.println(&quot;Today is &quot; + today);         System.out.println(&quot;Today is &quot; + today.getChineseName());     }     enum Day {         MONDAY(&quot;星期一&quot;),         TUESDAY(&quot;星期二&quot;),         WEDNESDAY(&quot;星期三&quot;),         THURSDAY(&quot;星期四&quot;),         FRIDAY(&quot;星期五&quot;),         SATURDAY(&quot;星期六&quot;),         SUNDAY(&quot;星期日&quot;);         private String chineseName;         Day(String chineseName) {             this.chineseName = chineseName;         }         public String getChineseName() {             return chineseName;         }     }      }</code></p>
+<p>这里我只写了一个字段，我们可以在枚举属性里面定义多个字段，这样就无需大量的 if else 判断，直接通过枚举来获取某个某一组固定的值了。</p>
+<h1 id="方案6使用-optional">方案6：使用 Optional<a hidden class="anchor" aria-hidden="true" href="#方案6使用-optional">#</a></h1>
+<p>Java 8 提供了一个 Optional 新特性，它是一个可以包含 null 值的容器对象，可以用来代替 xx != null 的判断。</p>
+<p>参考我之前写的这篇：</p>
+<blockquote>
+<p>JDK 8 新特性之 Optional</p>
+</blockquote>
+<p>如果项目中存在大量 xx != null 的判断，可以使用 Optional 来优化。</p>
+<h1 id="方案7尽快返回">方案7：尽快返回<a hidden class="anchor" aria-hidden="true" href="#方案7尽快返回">#</a></h1>
+<p>分析业务，根据 if else 的执行次数按降序排，把执行次数较多的 if 放在最前面，如果符合条件，就使用 return 返回，如下面代码：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if (条件1) {     return } if (条件2) {     return } ...</code></p>
+<p>这样改可能是比较简单的方式，<strong>在很大程度上可以提升系统的性能</strong>，但是还存在以下问题：</p>
+<ul>
+<li>有的条件不能按执行次数排序，存在先后或者互斥关系。</li>
+<li>如果新增一个条件，可能无法马上判定它的执行次数，如果放在后面可能也还会影响性能。</li>
+<li>对类的继续膨胀和代码维护没有任何帮助。</li>
+</ul>
+<h1 id="方案8去除没必要的-if-else">方案8：去除没必要的 if else<a hidden class="anchor" aria-hidden="true" href="#方案8去除没必要的-if-else">#</a></h1>
+<p>比如这种：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if (condition) {     ... } else {     return; }</code></p>
+<p>优化后：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>if（!condition）{     return; }</code></p>
+<p>或者是这样：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>return !condition</code></p>
+<h1 id="方案9合并条件">方案9：合并条件<a hidden class="anchor" aria-hidden="true" href="#方案9合并条件">#</a></h1>
+<p>考虑这 1 万 if else 是不是真的每个都有必要，是不是可以合并归类，比如是不是可以把几百、几千个相似逻辑的归为一类，这样也能大大简化 if else 数量。</p>
+<p>比如以下代码：</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>double calculateShipping() {     if (orderAmount &gt; 1000) {         return 0.5;     }     if (customerLoyaltyLevel &gt; 5) {         return 0.5;     }     if (promotionIsActive) {         return 0.5;     } }</code></p>
+<p>优化后：</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>double calculateShipping() {     if (orderAmount &gt; 1000 || customerLoyaltyLevel &gt; 5 || promotionIsActive) {         return 0.5;     } }</code></p>
+<p>这样就把返回相同值的 if 归为一类了，如果 if 较大就能大大简化代码量。</p>
+<h1 id="方案10规则引擎">方案10：规则引擎<a hidden class="anchor" aria-hidden="true" href="#方案10规则引擎">#</a></h1>
+<p>对于复杂的业务逻辑，业务规则经常变化，规则制定不依赖于技术团队，需要实现可配置的逻辑处理，此时可以考虑使用规则引擎来处理，比如 Drools。</p>
+<p>规则引擎系统可用于执行一组规则，在许多业务应用程序中，业务决策可以通过一系列的逻辑规则来定义，规则引擎允许这些规则在运行时执行，而无需硬编码在应用程序之中。</p>
+<p>规则引擎的好处是：</p>
+<ul>
+<li>业务逻辑可以和程序代码解耦；</li>
+<li>提高业务逻辑的可管理性；</li>
+<li>提高系统的灵活性和可扩展性；</li>
+<li>业务人员可参与决策过程；</li>
+</ul>
+<h1 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h1>
+<p>掌握优化 if else 的方法很重要，有时候面试官可能会换着法子问你，比如我们面试辅导这位兄弟遇到的这个面试官，你可以问清楚这一万个 if else 是在一个代码块中，还是在一个项目中，然后再去解答，如果不了解清楚业务场景，盲目回答又会被面试官绕进去。</p>
+<p>本文我也总结了 10 种优化 if else 的方法，其实还不止，根据不同的场景还可以使用多态、责任链模式、模板方法模式等更多方法来消除 if else。</p>
+<p>总之，消除 if else 并没有万能的方法，也不可能全部优化掉，在实际开发中需要根据实际场景使用不同的方法，以及多种方法组合使用，这样才是正确的方式。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BF%98%E8%AE%B0%E5%AF%86%E7%A0%81%E8%A6%81%E9%87%8D%E7%BD%AE%E8%80%8C%E4%B8%8D%E6%98%AF%E5%91%8A%E8%AF%89%E4%BD%A0%E5%8E%9F%E5%AF%86%E7%A0%81/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>面试官：为什么忘记密码要重置而不是告诉你原密码？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E5%81%87%E5%A6%82%E6%9C%89%E5%87%A0%E5%8D%81%E4%B8%AA%E8%AF%B7%E6%B1%82%E5%A6%82%E4%BD%95%E5%8E%BB%E6%8E%A7%E5%88%B6%E5%B9%B6%E5%8F%91/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>面试官：假如有几十个请求，如何去控制并发？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 on x"
+            href="https://x.com/intent/tweet/?text=%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2c%e9%9d%a2%e8%af%95%2cJava">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f&amp;title=%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86&amp;summary=%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f&title=%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 on telegram"
+            href="https://telegram.me/share/url?text=%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 美团一面：项目中有10000个ifelse如何优化？想了半天，被问懵了 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e7%be%8e%e5%9b%a2%e4%b8%80%e9%9d%a2%ef%bc%9a%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%8910000%e4%b8%aaifelse%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%ef%bc%9f%e6%83%b3%e4%ba%86%e5%8d%8a%e5%a4%a9%ef%bc%8c%e8%a2%ab%e9%97%ae%e6%87%b5%e4%ba%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BE%258E%25E5%259B%25A2%25E4%25B8%2580%25E9%259D%25A2%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E6%259C%258910000%25E4%25B8%25AAifelse%25E5%25A6%2582%25E4%25BD%2595%25E4%25BC%2598%25E5%258C%2596%25E6%2583%25B3%25E4%25BA%2586%25E5%258D%258A%25E5%25A4%25A9%25E8%25A2%25AB%25E9%2597%25AE%25E6%2587%25B5%25E4%25BA%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>谈谈我做Electron应用的这一两年 | PaperMod</title>
+<meta name="keywords" content="前端">
+<meta name="description" content="大家好，我是徐徐。今天和大家谈谈我做Electron桌面端应用的这一两年，把一些经验和想法分享给大家。">
+<meta name="author" content="前端徐徐">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E8%B0%88%E8%B0%88%E6%88%91%E5%81%9Aelectron%E5%BA%94%E7%94%A8%E7%9A%84%E8%BF%99%E4%B8%80%E4%B8%A4%E5%B9%B4/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E8%B0%88%E8%B0%88%E6%88%91%E5%81%9Aelectron%E5%BA%94%E7%94%A8%E7%9A%84%E8%BF%99%E4%B8%80%E4%B8%A4%E5%B9%B4/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="谈谈我做Electron应用的这一两年" />
+<meta property="og:description" content="大家好，我是徐徐。今天和大家谈谈我做Electron桌面端应用的这一两年，把一些经验和想法分享给大家。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E8%B0%88%E8%B0%88%E6%88%91%E5%81%9Aelectron%E5%BA%94%E7%94%A8%E7%9A%84%E8%BF%99%E4%B8%80%E4%B8%A4%E5%B9%B4/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-05T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="谈谈我做Electron应用的这一两年"/>
+<meta name="twitter:description" content="大家好，我是徐徐。今天和大家谈谈我做Electron桌面端应用的这一两年，把一些经验和想法分享给大家。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "谈谈我做Electron应用的这一两年",
+      "item": "http://localhost:1313/posts/juejin/%E8%B0%88%E8%B0%88%E6%88%91%E5%81%9Aelectron%E5%BA%94%E7%94%A8%E7%9A%84%E8%BF%99%E4%B8%80%E4%B8%A4%E5%B9%B4/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "谈谈我做Electron应用的这一两年",
+  "name": "谈谈我做Electron应用的这一两年",
+  "description": "大家好，我是徐徐。今天和大家谈谈我做Electron桌面端应用的这一两年，把一些经验和想法分享给大家。",
+  "keywords": [
+    "前端"
+  ],
+  "articleBody": "大家好，我是徐徐。今天和大家谈谈我做 Electron 桌面端应用的这一两年，把一些经验和想法分享给大家。\n前言 入职现在这家公司三年了，刚进公司的时候是 21 年年初，那时候会做一些稍微复杂的后台管理系统以及一些简单的 C 端 SDK。准备开始做 Electron 项目是因为我所在的是安全部门，急需一款桌面管控软件来管理（监控）员工的电脑安全以及入网准入，可以理解为一款零信任的桌面软件。其实之前公司也有一款安全管控的软件，但是Windows 和 Mac是分端构建的，而且维护成本极高，Windows 是使用的 C#, Mac 是用的 Objective-C，开发和发版效率低下，最后在研发老大的同意下，我和另外一个同事开始研究如何用 Electron 这个框架来做一款桌面端软件。\n我们发起这个项目大概是在 21 年年底，Windows 版本上线是在上海疫情封城期间，2022年4月份的时候，疫情结束后由于事业部业务方向的调整，又被抽调到了另外一个组去做一个 C 端的创业项目，后面项目结束了，又回来做 Electron 相关的工作直到现在，之所以是一两年，其实就是这个时间线。\n对桌面端开发的一些看法 如果你是前端的话，多一门桌面端开发的技能也不是坏事，相当是你的一个亮点，进可攻，退可守。因为桌面端开发到后期的架构可以非常的复杂，不亚于服务端（chromium 就是一个例子），当然也取决于你所应对的场景的挑战，如果所做的产品跟普通前端无异，那也不能说是一个亮点，但是如果你的工作已经触及到一些操作系统的底层，那肯定是一个亮点。\n当然也有人说，做桌面端可能就路越走越窄了，但是我想说的是深度和广度其实也可以理解为一个维度，对于技术人来说，知道得越多就行，因为到后期你要成为某个方面的专家，就是可能会非常深入某一块，换一种思路其实也是叫知道得越多。所以，我觉得前端能有做桌面端的机会也是非常好的，即拓展了自己的技能，还能深入底层，因为现阶段由于业务方向的需要，我已经开始看 chromium 源码了，前端的老祖宗。当然，以上这些只代表自己的观点，大家自行斟酌。\n谈谈 Electron 其实刚刚工作前两年我就知道这个框架了，当时也做过小 demo，而且还在当时的团队里面分享过这个技术，但是当时对这门技术的认知是非常浅薄的，就知道前端可以做桌面端了，好厉害，大概就停留在这个层面。后面在真正需要用到这门技术去做一个企业级的桌面应用的时候才去真正调研了一下这个框架，然后才发现它真的非常强大，强大到几乎可以实现你桌面端的任何需求。网上关于 Electron 与其他框架的对比实在是太多了，Google 或者 Baidu 都能找到你想要的答案，好与不好完全看自己的业务场景以及自己所在团队的情况。\n谈谈自己的感受，什么情况下可以用这门框架\n追求效率，节省人力财力 团队前端居多 UI交互多 什么情况下不适合这门框架呢？\n包体积限制 性能消耗较高的应用 多窗口应用 我们当时的情况就是要追求效率，双端齐头并进，所以最后经过综合对比，选择了 Electron。毕竟 Vscode 就是用它做的，给了我们十足的信心和勇气，一点都不虚。\n一图抵千字，我拿出这张图你自己就有所判断了，还是那句话，仁者见仁，智者见智，完全看自己情况。\n图片来源：www.electronjs.org/apps\n技术整体架构 这里我画了一张我所从事 Electron 产品的整体技术架构图。 整个项目基于 Vite 开发构建的，基础设施就是常见的安全策略，然后加上一些本地存储方案，外加一个外部插件，这个插件是用 Tauri 做的 Webview，至于为什么要做这个插件我会在后面的段落说明。应用层面的框架主要是分三个大块，下面主要是为了构建一些基础底座，然后将架构进行分层设计，添加一些原生扩展，上面就是基础的应用管理和 GUI 相关的东西，有了这个整体的框架在后面实现一些业务场景的时候就会变得易如反掌（夸张了一点，因为有的技术细节真的很磨人😐）。\n当然这里只是一个整体的架构图，其实还有很多技术细节的流程图以及业务场景图并没有在这里体现出来，不过我也会挑选一些方案在后面的篇幅里面做出相应的讲解。\n挑战和方案 桌面端开发会遇到一些挑战，这些挑战大部分来源于特殊的业务场景，框架只能解决一些比较常见的应用场景，当然不仅仅是桌面端，其实移动端或者是 Web 端我相信大家都会遇到或多或少的挑战，我这里遇到的一些挑战和响应的方案不一定适合你，只是做单纯的记录分享，如果有帮助到你，我很开心。下面我挑选软件升级更新，任务队列设计，性能检测优化以及一些特殊的需求这几个方面来聊聊相应的挑战和方案。\n软件升级更新 桌面端的软件更新升级是桌面端开发中非常重要的一环，一个好的商业产品必须有稳定好用的解决方案。桌面端的升级跟 C 端 App 的升级其实也是差不多的思路，虽然我所做的产品是公司内部人使用，但是用户也是你面向公司所有用户的，所以跟 C 端产品的解决思路其实是无异的。\n升级更新主要是需要做到定向灰度。这个功能是非常重要的，应该大部分的应用都有定向灰度的功能，所以我们为了让软件能够平滑升级，第一步就是实现定向灰度，达到效果可回收，性能可监控，错误可告警的目的。定向更新的功能实现了之后，后面有再多的功能需要实现都有基础保障了，下面是更新相关的能力图。\n整个更新模块的设计是分为两大块，一块是后台管理系统，一块是客户端。后台管理系统主要是维护相应的策略配置，比如哪些设备需要定向更新，哪些需要自动更新，不需要更新的白名单以及更新后是需要提醒用户相应的更新功能还是就静默更新。客户端主要就是拉取相应的策略，然后执行相应的更新动作。\n由于我们的软件是比较特殊的一个产品，他是需要长期保活的，Mac 端上了文件锁是无法删除的。所以我们在执行更新的时候和常规的软件更新是不一样的，软件的更新下载是利用了 electron-update 相应的钩子，但是安装的时候并没有使用相应的钩子函数，而是自己研究了 electron 的更新源码后做了自己的更新脚本。 因为electron 的更新它自己也会注册一个保活的更新任务的服务，但是这个和我们的文件锁和保活是冲突的，所以是需要禁用掉它的保活服务，完成自己的更新。\n整体来说，这一块是花了很多时间去研究的，windows 还好，没有破坏其整个生命周期，傻瓜式的配置一下electron-update 相关的函数钩子就可以了。Mac 的更新花了很多时间，因为破坏了文件的生命周期，再加上保活任务，所以会对 electron-update 的更新钩子进行毁灭性的破坏，最后也只能研究其源码然后自己去实现特殊场景下的更新了。\n任务队列设计 任务模块的实现在我们这个软件里面也是非常重要的一环，因为客户端会跑非常多的定时任务。刚开始研发这个产品的时候其实还好，定时任务屈指可数，但是随着长时间的迭代，端上要执行的任务越来越多，每个任务的触发时间，触发条件都不一样，以及还要考虑任务的并发情况和对性能的影响，所以在中后期我们对整个任务模块都做了相应的改造。\n下面是整个任务模块的核心能力图。 业界也有一些任务相关的开源工具包，比如 node-schedule、node-cron、cron，这些都是很优秀的库，但是我在使用过程中发现他们好像不具备并发限制的场景，比如有很多任务我们在开始设置的时候都会有个时间间隔，这些任务的时间间隔都是可以在后台随意配置的，如果端上不做并发限制会导致一个问题，就是用户某一瞬间会觉得电脑非常卡。\n比如你有 4 个 10 分钟间隔的任务 和 2 个五分钟间隔的任务，那么到某一个时间段，他最大并发可能就是 6，如果刚好这 6 个任务都是非常耗费 CPU 的任务，那他们一起执行的时候就会导致整个终端CPU 飙升，导致用户感觉卡顿，这样就会收到相应的 Diss。\n安全类的软件产品其实有的时候不需要太过醒目，后台默默运行就行，所以我们的宗旨就是稳定运行，不超载。为此我们就自己实现了相应的任务队列模式，然后去控制任务并发。其实底层逻辑也不难，就是一个 setInterval 的函数，然后不断的创建销毁，读取队列的函数，执行相应的函数。\n性能优化 Electron相关的性能优化其实网上也有非常多的文章，我这里说说我的实践和感受。\n首先，性能优化你需要优化什么？这个就是你的出发点了，我们要解决一个问题，首先得知道问题的现状，如果你都不知道现在的性能是什么样子，如何去优化呢？所以发现问题是性能优化的最重要的一步。\n这里就推荐两个工具，一个是chrome dev-tool，一个是electron 的 inspector，第一个可以观测渲染进程相关的性能情况，第二个可以观测主进程相关的性能情况。\n具体可参考以下网址：\ndeveloper.chrome.com/docs/devtoo… www.electronjs.org/zh/docs/lat… 有了工具之后我们就需要用工具去分析一些数据和问题，这里面最重要的就是内存相关的分析，你通过内存相关的分析可以看到 CPU 占用高的动作，以及提前检测出内存泄漏的风险。只要把这两个关键的东西抓住了，应用的稳定性就可以得到保障了，我的经验就是每次发布之前都会跑一遍内存快照，内存没有异常才进行发布动作，内存泄漏是最后的底线。\n我说说我大概的操作步骤。\n通过Performance确认大体的溢出位置 使用Memory进行细粒度的问题分析 根据heap snapshot，判断内存溢出的代码位置 调试相应的代码块 循环往复上面的步骤 上面的步骤在主进程和渲染进程都适用，每一步实际操作在这里就不详细展开了，主要是提供一个思路和方法，因为 dev-tool 的面板东西非常多，扩展开来都可以当一个专题了。\n然后我再说说桌面端什么地方可能会内存泄漏或者溢出，下面这些都是我血和泪的教训。\n创建的子进程没有及时销毁： 如果子进程在完成任务后未被正确终止，这些进程会继续运行并占用系统资源，导致内存泄漏和资源浪费。\n假设你的 Electron 应用启动了一个子进程来执行某些计算任务，但在计算完成后未调用 childProcess.kill() 或者未确保子进程已正常退出，那么这些子进程会一直存在，占用系统内存。\njavascript\n代码解读\n复制代码\nconst { spawn } = require('child_process'); const child = spawn('someCommand'); child.on('exit', () =\u003e { console.log('Child process exited'); }); // 未正确终止子进程可能导致内存泄漏\nHTTP 请求时间过长没有正确处理： 长时间未响应的 HTTP 请求如果没有设定超时机制，会使得这些请求占用内存资源，导致内存泄漏。\n在使用 fetch 或 axios 进行 HTTP 请求时，如果服务器长时间不响应且没有设置超时处理，内存会被这些未完成的请求占用。\njavascript\n代码解读\n复制代码\nconst fetch = require('node-fetch'); fetch('https://example.com/long-request') .then(response =\u003e response.json()) .catch(error =\u003e console.error('Error:', error)); // 应该设置请求超时 const controller = new AbortController(); const timeout = setTimeout(() =\u003e { controller.abort(); }, 5000); // 5秒超时 fetch('https://example.com/long-request', { signal: controller.signal }) .then(response =\u003e response.json()) .catch(error =\u003e console.error('Error:', error));\n事件处理器没有移除 未正确移除不再需要的事件处理器会导致内存一直被占用，因为这些处理器仍然存在并监听事件。\n在添加事件监听器后，未在适当时机移除它们会导致内存泄漏。\njavascript\n代码解读\n复制代码\nconst handleEvent = () =\u003e { console.log('Event triggered'); }; window.addEventListener('resize', handleEvent); // 在不再需要时移除事件监听器 window.removeEventListener('resize', handleEvent);\n定时任务未被正确销毁 未在适当时候清除不再需要的定时任务（如 setInterval）会导致内存持续占用。\n使用 setInterval 创建的定时任务，如果未在不需要时清除，会导致内存泄漏。\njavascript\n代码解读\n复制代码\nconst intervalId = setInterval(() =\u003e { console.log('Interval task running'); }, 1000); // 在适当时机清除定时任务 clearInterval(intervalId);\nJavaScript 对象未正确释放 长时间保留不再使用的 JavaScript 对象会导致内存占用无法释放，特别是当这些对象被全局变量或闭包引用时。\n创建了大量对象但未在适当时机将它们置为 null 或解除引用。\njavascript\n代码解读\n复制代码\nlet bigArray = new Array(1000000).fill('data'); // 当不再需要时，应释放内存 bigArray = null;\n窗口实例未被正确销毁 未关闭或销毁不再使用的窗口实例会继续占用内存资源，即使用户已经关闭了窗口界面。\n创建了一个新的 BrowserWindow 实例，但在窗口关闭后未销毁它。\njavascript\n代码解读\n复制代码\nconst { BrowserWindow } = require('electron'); let win = new BrowserWindow({ width: 800, height: 600 }); win.on('closed', () =\u003e { win = null; }); // 应确保在窗口关闭时正确释放资源\n大文件或大数据量的处理 处理大文件或大量数据时，如果没有进行内存优化和分批处理，会导致内存溢出和性能问题。\n在读取一个大文件时，未采用流式处理，而是一次性加载整个文件到内存中。\njavascript\n代码解读\n复制代码\nconst fs = require('fs'); // 不推荐的方式：一次性读取大文件 fs.readFile('largeFile.txt', (err, data) =\u003e { if (err) throw err; console.log(data); }); // 推荐的方式：流式读取大文件 const readStream = fs.createReadStream('largeFile.txt'); readStream.on('data', (chunk) =\u003e { console.log(chunk); });\n一些特殊的需求 做这个产品也遇到一些特殊的需求，有的需求还挺磨人的，这里也和大家分享一下。\n保活和文件锁 作为一个前端，桌面端的保活和文件锁这种需求基本是之前不可能接触到的，为了做这个需求也去了解了一下业界的实现，其实实现都还好，主要是它会带来一些问题，诸如打包构建需要自定义前置脚本和后置脚本，root 用户环境下 mac 端无法输入中文，上面提到的用 Tauri 构建一个 webview 组件就是为了解决 root 用户无法输入中文的场景。\n静默安装应用 这个需求也是很绝的一个需求。我想如果是做常规的前端开发，估计一般都不会遇到这种需求，你需要从头到尾实现一个下载器，一个软件安装器，而且还要双端适配，不仅如此，还需要实现 exe、zip、dmg、pkg 等各种软件格式的安装，里面包含重试机制，断点下载，队列下载等各种技术细节。当时接到这个需求头也特别大，不过技术方案做出来后感觉也还好，再复杂的需求只要能理清思路，其实都可以慢慢解决。\nVPN 和 访问记录监控 这种需求对一个前端来说更是无从入手，但是好在之前有老版本的 VPN 做参考，就是根据相应的代码翻译一遍也能实现，大部分可以用命令行解决。至于访问记录监控这个玩意咋说呢，客户端做其实也挺费神的，如果不借助第三方的开源框架，自己是非常难实现的，所以这种就是需要疯狂的翻国外的网站，就GitHub，Stackoverflow啰，总有一款适合你，这里就不具体说明了。\n进程禁用 违规进程禁用其实在安全软件的应用场景是非常常见的，它需要实时性，而且对性能要求很高，一个是不能影响用户正常使用，还要精准杀掉后台配置的违规进程，这个地方其实也是做了很多版优化，但是最后的感觉还是觉得任务队列有性能瓶颈，无法达到要求，现阶段我们也在想用另外的方式去改造，要么就是上全局钩子，要么就是直接把相应的进程文件上锁或者改文件权限。\n上面所提到的需求只是一小部例子，还好很多奇奇怪怪的需求没有举例，这些奇怪的需求就像小怪物，不断挑战我的边界，让我也了解和学习和很多奇奇怪怪的知识，有的时候我就会发出这样的感叹：我去，还能这样？\n结语 洋洋洒洒，不知不觉已经写了 5000 字了，其实做 Electron 桌面端应用的这一两年自我感觉还是成长了不少，不管是技术方面还是产品设计方面，自己的能力都有所提升。但是同样会遇到瓶颈，就是一个东西一直做一直做，到后面创新会比较难，取得的成就也会慢慢变少。\n另外就是安全类的桌面端产品在整个软件开发的里其实是非常冷门的一个领域，他有他的独特性，也有相应的价值，他需要默默的运行，稳定的运行，出问题可以监控到，该提醒的时候提醒用户。你说他低调吧，有时候也挺高调的，真的不好定论，你说没影响力吧，有的时候没他还真不行。让用户不反感这种软件，拥抱这种软件其实挺难的。从一个前端开发的视角来看，桌面端的体验的确很重要，不管是流畅度还是美观度，都不能太差，这也是我们现阶段追求的一个点，就是不断提升用户体验。\n路漫漫其修远兮，吾将上下而求索。前端开发这条路的确很长，如果你想朝某个方面深度发展，你会发现边界是非常难触达的，当然也看所处的环境和对应的机遇，就从技术来说的话，前端的天花板也可以很高，不管是桌面端，服务端，移动端，Web端，每个方向前端的天花板都非常难触摸到。\n最后，祝大家在自己的领域越来越深，早日触摸到天花板。\n原文链接 mp.weixin.qq.com/s/SzN8wvqxj…\n",
+  "wordCount" : "404",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-08-05T00:00:00Z",
+  "dateModified": "2024-08-05T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "前端徐徐"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E8%B0%88%E8%B0%88%E6%88%91%E5%81%9Aelectron%E5%BA%94%E7%94%A8%E7%9A%84%E8%BF%99%E4%B8%80%E4%B8%A4%E5%B9%B4/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      谈谈我做Electron应用的这一两年
+    </h1>
+    <div class="post-description">
+      大家好，我是徐徐。今天和大家谈谈我做Electron桌面端应用的这一两年，把一些经验和想法分享给大家。
+    </div>
+    <div class="post-meta"><span title='2024-08-05 00:00:00 +0000 UTC'>八月 5, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端徐徐&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e5%af%b9%e6%a1%8c%e9%9d%a2%e7%ab%af%e5%bc%80%e5%8f%91%e7%9a%84%e4%b8%80%e4%ba%9b%e7%9c%8b%e6%b3%95" aria-label="对桌面端开发的一些看法">对桌面端开发的一些看法</a></li>
+                <li>
+                    <a href="#%e8%b0%88%e8%b0%88-electron" aria-label="谈谈 Electron">谈谈 Electron</a></li>
+                <li>
+                    <a href="#%e6%8a%80%e6%9c%af%e6%95%b4%e4%bd%93%e6%9e%b6%e6%9e%84" aria-label="技术整体架构">技术整体架构</a></li>
+                <li>
+                    <a href="#%e6%8c%91%e6%88%98%e5%92%8c%e6%96%b9%e6%a1%88" aria-label="挑战和方案">挑战和方案</a><ul>
+                        
+                <li>
+                    <a href="#%e8%bd%af%e4%bb%b6%e5%8d%87%e7%ba%a7%e6%9b%b4%e6%96%b0" aria-label="软件升级更新">软件升级更新</a></li>
+                <li>
+                    <a href="#%e4%bb%bb%e5%8a%a1%e9%98%9f%e5%88%97%e8%ae%be%e8%ae%a1" aria-label="任务队列设计">任务队列设计</a></li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96" aria-label="性能优化">性能优化</a></li>
+                <li>
+                    <a href="#%e4%b8%80%e4%ba%9b%e7%89%b9%e6%ae%8a%e7%9a%84%e9%9c%80%e6%b1%82" aria-label="一些特殊的需求">一些特殊的需求</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%93%e8%af%ad" aria-label="结语">结语</a></li>
+                <li>
+                    <a href="#%e5%8e%9f%e6%96%87%e9%93%be%e6%8e%a5" aria-label="原文链接">原文链接</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>大家好，我是徐徐。今天和大家谈谈我做 Electron 桌面端应用的这一两年，把一些经验和想法分享给大家。</p>
+<h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<p>入职现在这家公司三年了，刚进公司的时候是 21 年年初，那时候会做一些稍微复杂的后台管理系统以及一些简单的 C 端 SDK。准备开始做 Electron 项目是因为我所在的是安全部门，急需一款桌面管控软件来管理（监控）员工的电脑安全以及入网准入，可以理解为一款零信任的桌面软件。其实之前公司也有一款安全管控的软件，但是Windows 和 Mac是分端构建的，而且维护成本极高，Windows 是使用的 C#, Mac 是用的 Objective-C，开发和发版效率低下，最后在研发老大的同意下，我和另外一个同事开始研究如何用 Electron 这个框架来做一款桌面端软件。</p>
+<p>我们发起这个项目大概是在 21 年年底，Windows 版本上线是在上海疫情封城期间，2022年4月份的时候，疫情结束后由于事业部业务方向的调整，又被抽调到了另外一个组去做一个 C 端的创业项目，后面项目结束了，又回来做 Electron 相关的工作直到现在，之所以是一两年，其实就是这个时间线。</p>
+<h2 id="对桌面端开发的一些看法">对桌面端开发的一些看法<a hidden class="anchor" aria-hidden="true" href="#对桌面端开发的一些看法">#</a></h2>
+<p>如果你是前端的话，多一门桌面端开发的技能也不是坏事，相当是你的一个亮点，进可攻，退可守。因为桌面端开发到后期的架构可以非常的复杂，不亚于服务端（chromium 就是一个例子），当然也取决于你所应对的场景的挑战，如果所做的产品跟普通前端无异，那也不能说是一个亮点，但是如果你的工作已经触及到一些操作系统的底层，那肯定是一个亮点。</p>
+<p>当然也有人说，做桌面端可能就路越走越窄了，但是我想说的是深度和广度其实也可以理解为一个维度，对于技术人来说，知道得越多就行，因为到后期你要成为某个方面的专家，就是可能会非常深入某一块，换一种思路其实也是叫知道得越多。所以，我觉得前端能有做桌面端的机会也是非常好的，即拓展了自己的技能，还能深入底层，因为现阶段由于业务方向的需要，我已经开始看 chromium 源码了，前端的老祖宗。当然，以上这些只代表自己的观点，大家自行斟酌。</p>
+<h2 id="谈谈-electron">谈谈 Electron<a hidden class="anchor" aria-hidden="true" href="#谈谈-electron">#</a></h2>
+<p>其实刚刚工作前两年我就知道这个框架了，当时也做过小 demo，而且还在当时的团队里面分享过这个技术，但是当时对这门技术的认知是非常浅薄的，就知道前端可以做桌面端了，好厉害，大概就停留在这个层面。后面在真正需要用到这门技术去做一个企业级的桌面应用的时候才去真正调研了一下这个框架，然后才发现它真的非常强大，强大到几乎可以实现你桌面端的任何需求。网上关于 Electron 与其他框架的对比实在是太多了，Google 或者 Baidu 都能找到你想要的答案，好与不好完全看自己的业务场景以及自己所在团队的情况。</p>
+<p>谈谈自己的感受，什么情况下可以用这门框架</p>
+<ul>
+<li>追求效率，节省人力财力</li>
+<li>团队前端居多</li>
+<li>UI交互多</li>
+</ul>
+<p>什么情况下不适合这门框架呢？</p>
+<ul>
+<li>包体积限制</li>
+<li>性能消耗较高的应用</li>
+<li>多窗口应用</li>
+</ul>
+<p>我们当时的情况就是要追求效率，双端齐头并进，所以最后经过综合对比，选择了 Electron。毕竟 Vscode 就是用它做的，给了我们十足的信心和勇气，一点都不虚。</p>
+<p>一图抵千字，我拿出这张图你自己就有所判断了，还是那句话，仁者见仁，智者见智，完全看自己情况。</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/116675da10894141b5bfb06ca39c060e~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5b6Q5b6Q:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727855645&amp;x-signature=MoRaKAO0suEQ9f6jpXmB2KykC1k%3D" alt="image.png"  />
+ 图片来源：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.electronjs.org%2Fapps" title="https://www.electronjs.org/apps">www.electronjs.org/apps</a></p>
+<h2 id="技术整体架构">技术整体架构<a hidden class="anchor" aria-hidden="true" href="#技术整体架构">#</a></h2>
+<p>这里我画了一张我所从事 Electron 产品的整体技术架构图。 <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/bd8f08b154684382b67258de95127d80~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5b6Q5b6Q:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727855645&amp;x-signature=3A804hYLyra%2FjVMckln4a91W5V8%3D" alt=""  />
+ 整个项目基于 Vite 开发构建的，基础设施就是常见的安全策略，然后加上一些本地存储方案，外加一个外部插件，这个插件是用 Tauri 做的 Webview，至于为什么要做这个插件我会在后面的段落说明。应用层面的框架主要是分三个大块，下面主要是为了构建一些基础底座，然后将架构进行分层设计，添加一些原生扩展，上面就是基础的应用管理和 GUI 相关的东西，有了这个整体的框架在后面实现一些业务场景的时候就会变得易如反掌（夸张了一点，因为有的技术细节真的很磨人😐）。</p>
+<p>当然这里只是一个整体的架构图，其实还有很多技术细节的流程图以及业务场景图并没有在这里体现出来，不过我也会挑选一些方案在后面的篇幅里面做出相应的讲解。</p>
+<h2 id="挑战和方案">挑战和方案<a hidden class="anchor" aria-hidden="true" href="#挑战和方案">#</a></h2>
+<p>桌面端开发会遇到一些挑战，这些挑战大部分来源于特殊的业务场景，框架只能解决一些比较常见的应用场景，当然不仅仅是桌面端，其实移动端或者是 Web 端我相信大家都会遇到或多或少的挑战，我这里遇到的一些挑战和响应的方案不一定适合你，只是做单纯的记录分享，如果有帮助到你，我很开心。下面我挑选软件升级更新，任务队列设计，性能检测优化以及一些特殊的需求这几个方面来聊聊相应的挑战和方案。</p>
+<h3 id="软件升级更新">软件升级更新<a hidden class="anchor" aria-hidden="true" href="#软件升级更新">#</a></h3>
+<p>桌面端的软件更新升级是桌面端开发中非常重要的一环，一个好的商业产品必须有稳定好用的解决方案。桌面端的升级跟 C 端 App 的升级其实也是差不多的思路，虽然我所做的产品是公司内部人使用，但是用户也是你面向公司所有用户的，所以跟 C 端产品的解决思路其实是无异的。</p>
+<p>升级更新主要是需要做到定向灰度。这个功能是非常重要的，应该大部分的应用都有定向灰度的功能，所以我们为了让软件能够平滑升级，第一步就是实现定向灰度，达到效果可回收，性能可监控，错误可告警的目的。定向更新的功能实现了之后，后面有再多的功能需要实现都有基础保障了，下面是更新相关的能力图。</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/696641ef270c48bc8cd4c2c72395d258~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5b6Q5b6Q:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727855645&amp;x-signature=QotJi8VhNt0jHNPKlR8S31fQB1U%3D" alt=""  />
+</p>
+<p>整个更新模块的设计是分为两大块，一块是后台管理系统，一块是客户端。后台管理系统主要是维护相应的策略配置，比如哪些设备需要定向更新，哪些需要自动更新，不需要更新的白名单以及更新后是需要提醒用户相应的更新功能还是就静默更新。客户端主要就是拉取相应的策略，然后执行相应的更新动作。</p>
+<p>由于我们的软件是比较特殊的一个产品，他是需要长期保活的，Mac 端上了文件锁是无法删除的。所以我们在执行更新的时候和常规的软件更新是不一样的，软件的更新下载是利用了 electron-update 相应的钩子，但是安装的时候并没有使用相应的钩子函数，而是自己研究了 electron 的更新源码后做了自己的更新脚本。 因为electron 的更新它自己也会注册一个保活的更新任务的服务，但是这个和我们的文件锁和保活是冲突的，所以是需要禁用掉它的保活服务，完成自己的更新。</p>
+<p>整体来说，这一块是花了很多时间去研究的，windows 还好，没有破坏其整个生命周期，傻瓜式的配置一下electron-update 相关的函数钩子就可以了。Mac 的更新花了很多时间，因为破坏了文件的生命周期，再加上保活任务，所以会对 electron-update 的更新钩子进行毁灭性的破坏，最后也只能研究其源码然后自己去实现特殊场景下的更新了。</p>
+<h3 id="任务队列设计">任务队列设计<a hidden class="anchor" aria-hidden="true" href="#任务队列设计">#</a></h3>
+<p>任务模块的实现在我们这个软件里面也是非常重要的一环，因为客户端会跑非常多的定时任务。刚开始研发这个产品的时候其实还好，定时任务屈指可数，但是随着长时间的迭代，端上要执行的任务越来越多，每个任务的触发时间，触发条件都不一样，以及还要考虑任务的并发情况和对性能的影响，所以在中后期我们对整个任务模块都做了相应的改造。</p>
+<p>下面是整个任务模块的核心能力图。 <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/745117ab129e4c49a7f9e105bf2dfdd1~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5b6Q5b6Q:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727855645&amp;x-signature=A80w0rerTWKkzimFPGLnVHBvkpg%3D" alt=""  />
+</p>
+<p>业界也有一些任务相关的开源工具包，比如 node-schedule、node-cron、cron，这些都是很优秀的库，但是我在使用过程中发现他们好像不具备并发限制的场景，比如有很多任务我们在开始设置的时候都会有个时间间隔，这些任务的时间间隔都是可以在后台随意配置的，如果端上不做并发限制会导致一个问题，就是用户某一瞬间会觉得电脑非常卡。</p>
+<p>比如你有 4 个 10 分钟间隔的任务 和 2 个五分钟间隔的任务，那么到某一个时间段，他最大并发可能就是 6，如果刚好这 6 个任务都是非常耗费 CPU 的任务，那他们一起执行的时候就会导致整个终端CPU 飙升，导致用户感觉卡顿，这样就会收到相应的 Diss。</p>
+<p>安全类的软件产品其实有的时候不需要太过醒目，后台默默运行就行，所以我们的宗旨就是稳定运行，不超载。为此我们就自己实现了相应的任务队列模式，然后去控制任务并发。其实底层逻辑也不难，就是一个 setInterval 的函数，然后不断的创建销毁，读取队列的函数，执行相应的函数。</p>
+<h3 id="性能优化">性能优化<a hidden class="anchor" aria-hidden="true" href="#性能优化">#</a></h3>
+<p>Electron相关的性能优化其实网上也有非常多的文章，我这里说说我的实践和感受。</p>
+<p>首先，性能优化你需要优化什么？这个就是你的出发点了，我们要解决一个问题，首先得知道问题的现状，如果你都不知道现在的性能是什么样子，如何去优化呢？所以发现问题是性能优化的最重要的一步。</p>
+<p>这里就推荐两个工具，一个是chrome dev-tool，一个是electron 的 inspector，第一个可以观测渲染进程相关的性能情况，第二个可以观测主进程相关的性能情况。</p>
+<p>具体可参考以下网址：</p>
+<ul>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.chrome.com%2Fdocs%2Fdevtools%2Foverview%3Fhl%3Dzh-cn" title="https://developer.chrome.com/docs/devtools/overview?hl=zh-cn">developer.chrome.com/docs/devtoo…</a></li>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.electronjs.org%2Fzh%2Fdocs%2Flatest%2Ftutorial%2Fdebugging-main-process" title="https://www.electronjs.org/zh/docs/latest/tutorial/debugging-main-process">www.electronjs.org/zh/docs/lat…</a></li>
+</ul>
+<p>有了工具之后我们就需要用工具去分析一些数据和问题，这里面最重要的就是内存相关的分析，你通过内存相关的分析可以看到 CPU 占用高的动作，以及提前检测出内存泄漏的风险。只要把这两个关键的东西抓住了，应用的稳定性就可以得到保障了，我的经验就是每次发布之前都会跑一遍内存快照，内存没有异常才进行发布动作，内存泄漏是最后的底线。</p>
+<p>我说说我大概的操作步骤。</p>
+<ul>
+<li>通过Performance确认大体的溢出位置</li>
+<li>使用Memory进行细粒度的问题分析</li>
+<li>根据heap snapshot，判断内存溢出的代码位置</li>
+<li>调试相应的代码块</li>
+<li>循环往复上面的步骤</li>
+</ul>
+<p>上面的步骤在主进程和渲染进程都适用，每一步实际操作在这里就不详细展开了，主要是提供一个思路和方法，因为 dev-tool 的面板东西非常多，扩展开来都可以当一个专题了。</p>
+<p>然后我再说说桌面端什么地方可能会内存泄漏或者溢出，下面这些都是我血和泪的教训。</p>
+<ul>
+<li><strong>创建的子进程没有及时销毁</strong>：</li>
+</ul>
+<p>如果子进程在完成任务后未被正确终止，这些进程会继续运行并占用系统资源，导致内存泄漏和资源浪费。</p>
+<p>假设你的 Electron 应用启动了一个子进程来执行某些计算任务，但在计算完成后未调用 <code>childProcess.kill()</code> 或者未确保子进程已正常退出，那么这些子进程会一直存在，占用系统内存。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const { spawn } = require('child_process'); const child = spawn('someCommand'); child.on('exit', () =&gt; {     console.log('Child process exited'); }); // 未正确终止子进程可能导致内存泄漏</code></p>
+<ul>
+<li><strong>HTTP 请求时间过长没有正确处理</strong>：</li>
+</ul>
+<p>长时间未响应的 HTTP 请求如果没有设定超时机制，会使得这些请求占用内存资源，导致内存泄漏。</p>
+<p>在使用 <code>fetch</code> 或 <code>axios</code> 进行 HTTP 请求时，如果服务器长时间不响应且没有设置超时处理，内存会被这些未完成的请求占用。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const fetch = require('node-fetch'); fetch('https://example.com/long-request')     .then(response =&gt; response.json())     .catch(error =&gt; console.error('Error:', error)); // 应该设置请求超时 const controller = new AbortController(); const timeout = setTimeout(() =&gt; {     controller.abort(); }, 5000); // 5秒超时 fetch('https://example.com/long-request', { signal: controller.signal })     .then(response =&gt; response.json())     .catch(error =&gt; console.error('Error:', error));</code></p>
+<ul>
+<li><strong>事件处理器没有移除</strong></li>
+</ul>
+<p>未正确移除不再需要的事件处理器会导致内存一直被占用，因为这些处理器仍然存在并监听事件。</p>
+<p>在添加事件监听器后，未在适当时机移除它们会导致内存泄漏。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const handleEvent = () =&gt; {     console.log('Event triggered'); }; window.addEventListener('resize', handleEvent); // 在不再需要时移除事件监听器 window.removeEventListener('resize', handleEvent);</code></p>
+<ul>
+<li><strong>定时任务未被正确销毁</strong></li>
+</ul>
+<p>未在适当时候清除不再需要的定时任务（如 <code>setInterval</code>）会导致内存持续占用。</p>
+<p>使用 <code>setInterval</code> 创建的定时任务，如果未在不需要时清除，会导致内存泄漏。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const intervalId = setInterval(() =&gt; {     console.log('Interval task running'); }, 1000); // 在适当时机清除定时任务 clearInterval(intervalId);</code></p>
+<ul>
+<li><strong>JavaScript 对象未正确释放</strong></li>
+</ul>
+<p>长时间保留不再使用的 JavaScript 对象会导致内存占用无法释放，特别是当这些对象被全局变量或闭包引用时。</p>
+<p>创建了大量对象但未在适当时机将它们置为 <code>null</code> 或解除引用。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let bigArray = new Array(1000000).fill('data'); // 当不再需要时，应释放内存 bigArray = null;</code></p>
+<ul>
+<li><strong>窗口实例未被正确销毁</strong></li>
+</ul>
+<p>未关闭或销毁不再使用的窗口实例会继续占用内存资源，即使用户已经关闭了窗口界面。</p>
+<p>创建了一个新的 BrowserWindow 实例，但在窗口关闭后未销毁它。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const { BrowserWindow } = require('electron'); let win = new BrowserWindow({ width: 800, height: 600 }); win.on('closed', () =&gt; {     win = null; }); // 应确保在窗口关闭时正确释放资源</code></p>
+<ul>
+<li><strong>大文件或大数据量的处理</strong></li>
+</ul>
+<p>处理大文件或大量数据时，如果没有进行内存优化和分批处理，会导致内存溢出和性能问题。</p>
+<p>在读取一个大文件时，未采用流式处理，而是一次性加载整个文件到内存中。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const fs = require('fs'); // 不推荐的方式：一次性读取大文件 fs.readFile('largeFile.txt', (err, data) =&gt; {     if (err) throw err;     console.log(data); }); // 推荐的方式：流式读取大文件 const readStream = fs.createReadStream('largeFile.txt'); readStream.on('data', (chunk) =&gt; {     console.log(chunk); });</code></p>
+<h3 id="一些特殊的需求">一些特殊的需求<a hidden class="anchor" aria-hidden="true" href="#一些特殊的需求">#</a></h3>
+<p>做这个产品也遇到一些特殊的需求，有的需求还挺磨人的，这里也和大家分享一下。</p>
+<ul>
+<li>保活和文件锁</li>
+</ul>
+<p>作为一个前端，桌面端的保活和文件锁这种需求基本是之前不可能接触到的，为了做这个需求也去了解了一下业界的实现，其实实现都还好，主要是它会带来一些问题，诸如打包构建需要自定义前置脚本和后置脚本，root 用户环境下 mac 端无法输入中文，上面提到的用 Tauri 构建一个 webview 组件就是为了解决 root 用户无法输入中文的场景。</p>
+<ul>
+<li>静默安装应用</li>
+</ul>
+<p>这个需求也是很绝的一个需求。我想如果是做常规的前端开发，估计一般都不会遇到这种需求，你需要从头到尾实现一个下载器，一个软件安装器，而且还要双端适配，不仅如此，还需要实现 exe、zip、dmg、pkg 等各种软件格式的安装，里面包含重试机制，断点下载，队列下载等各种技术细节。当时接到这个需求头也特别大，不过技术方案做出来后感觉也还好，再复杂的需求只要能理清思路，其实都可以慢慢解决。</p>
+<ul>
+<li>VPN 和 访问记录监控</li>
+</ul>
+<p>这种需求对一个前端来说更是无从入手，但是好在之前有老版本的 VPN 做参考，就是根据相应的代码翻译一遍也能实现，大部分可以用命令行解决。至于访问记录监控这个玩意咋说呢，客户端做其实也挺费神的，如果不借助第三方的开源框架，自己是非常难实现的，所以这种就是需要疯狂的翻国外的网站，就GitHub，Stackoverflow啰，总有一款适合你，这里就不具体说明了。</p>
+<ul>
+<li>进程禁用</li>
+</ul>
+<p>违规进程禁用其实在安全软件的应用场景是非常常见的，它需要实时性，而且对性能要求很高，一个是不能影响用户正常使用，还要精准杀掉后台配置的违规进程，这个地方其实也是做了很多版优化，但是最后的感觉还是觉得任务队列有性能瓶颈，无法达到要求，现阶段我们也在想用另外的方式去改造，要么就是上全局钩子，要么就是直接把相应的进程文件上锁或者改文件权限。</p>
+<p>上面所提到的需求只是一小部例子，还好很多奇奇怪怪的需求没有举例，这些奇怪的需求就像小怪物，不断挑战我的边界，让我也了解和学习和很多奇奇怪怪的知识，有的时候我就会发出这样的感叹：我去，还能这样？</p>
+<h2 id="结语">结语<a hidden class="anchor" aria-hidden="true" href="#结语">#</a></h2>
+<p>洋洋洒洒，不知不觉已经写了 5000 字了，其实做 Electron 桌面端应用的这一两年自我感觉还是成长了不少，不管是技术方面还是产品设计方面，自己的能力都有所提升。但是同样会遇到瓶颈，就是一个东西一直做一直做，到后面创新会比较难，取得的成就也会慢慢变少。</p>
+<p>另外就是安全类的桌面端产品在整个软件开发的里其实是非常冷门的一个领域，他有他的独特性，也有相应的价值，他需要默默的运行，稳定的运行，出问题可以监控到，该提醒的时候提醒用户。你说他低调吧，有时候也挺高调的，真的不好定论，你说没影响力吧，有的时候没他还真不行。让用户不反感这种软件，拥抱这种软件其实挺难的。从一个前端开发的视角来看，桌面端的体验的确很重要，不管是流畅度还是美观度，都不能太差，这也是我们现阶段追求的一个点，就是不断提升用户体验。</p>
+<p>路漫漫其修远兮，吾将上下而求索。前端开发这条路的确很长，如果你想朝某个方面深度发展，你会发现边界是非常难触达的，当然也看所处的环境和对应的机遇，就从技术来说的话，前端的天花板也可以很高，不管是桌面端，服务端，移动端，Web端，每个方向前端的天花板都非常难触摸到。</p>
+<p>最后，祝大家在自己的领域越来越深，早日触摸到天花板。</p>
+<h2 id="原文链接">原文链接<a hidden class="anchor" aria-hidden="true" href="#原文链接">#</a></h2>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FSzN8wvqxjWVwZln6qMmKTg" title="https://mp.weixin.qq.com/s/SzN8wvqxjWVwZln6qMmKTg">mp.weixin.qq.com/s/SzN8wvqxj…</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%8B%86%E8%A7%A3%E4%B8%8B%E6%8A%80%E6%9C%AF%E5%A4%A7%E4%BD%AC--%E7%A8%8B%E5%BA%8F%E5%91%98%E9%B1%BC%E7%9A%AE/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>拆解下技术大佬--程序员鱼皮</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%88%91%E7%A6%BB%E8%81%8C%E4%BA%86/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>我离职了</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 谈谈我做Electron应用的这一两年 on x"
+            href="https://x.com/intent/tweet/?text=%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f&amp;hashtags=%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 谈谈我做Electron应用的这一两年 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f&amp;title=%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4&amp;summary=%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 谈谈我做Electron应用的这一两年 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f&title=%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 谈谈我做Electron应用的这一两年 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 谈谈我做Electron应用的这一两年 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 谈谈我做Electron应用的这一两年 on telegram"
+            href="https://telegram.me/share/url?text=%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 谈谈我做Electron应用的这一两年 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e8%b0%88%e8%b0%88%e6%88%91%e5%81%9aElectron%e5%ba%94%e7%94%a8%e7%9a%84%e8%bf%99%e4%b8%80%e4%b8%a4%e5%b9%b4&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25B0%2588%25E8%25B0%2588%25E6%2588%2591%25E5%2581%259Aelectron%25E5%25BA%2594%25E7%2594%25A8%25E7%259A%2584%25E8%25BF%2599%25E4%25B8%2580%25E4%25B8%25A4%25E5%25B9%25B4%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

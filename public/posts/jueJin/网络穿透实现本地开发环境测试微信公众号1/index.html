@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>网络穿透,实现本地开发环境测试微信公众号(1) | PaperMod</title>
+<meta name="keywords" content="后端, 微信, SpringBoot">
+<meta name="description" content="持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第26天，点击查看活动详情1.写在前面有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。">
+<meta name="author" content="llsydn">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E7%BD%91%E7%BB%9C%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%B5%8B%E8%AF%95%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B71/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E7%BD%91%E7%BB%9C%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%B5%8B%E8%AF%95%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B71/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="网络穿透,实现本地开发环境测试微信公众号(1)" />
+<meta property="og:description" content="持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第26天，点击查看活动详情1.写在前面有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E7%BD%91%E7%BB%9C%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%B5%8B%E8%AF%95%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B71/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-19T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="网络穿透,实现本地开发环境测试微信公众号(1)"/>
+<meta name="twitter:description" content="持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第26天，点击查看活动详情1.写在前面有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "网络穿透,实现本地开发环境测试微信公众号(1)",
+      "item": "http://localhost:1313/posts/juejin/%E7%BD%91%E7%BB%9C%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%B5%8B%E8%AF%95%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B71/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "网络穿透,实现本地开发环境测试微信公众号(1)",
+  "name": "网络穿透,实现本地开发环境测试微信公众号(1)",
+  "description": "持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第26天，点击查看活动详情1.写在前面有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。",
+  "keywords": [
+    "后端", "微信", "SpringBoot"
+  ],
+  "articleBody": "持续创作，加速成长！这是我参与「掘金日新计划 · 6 月更文挑战」的第26天，点击查看活动详情\n1.写在前面 有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。\n例如：微信扫一扫、拍照或从手机相册中选图接口\n当然啦，还有很多JS-SDK的api，详情可查看微信公众号的文档：点击查看\n可以看到，在使用JS-SDK前，需要进行上面这5个步骤\n可以很多人，就很纳闷了，我一个本地开发环境，哪里搞域名绑定呢？\n这就导致了，很多时候，一个开发人员写好了功能代码，但是没有经过测试。只能部署到线上环境，才能进行测试。\n那这个开发人员，多少心里是没有底的，毕竟谁也不能保证，自己写的代码，是不会出现bug的吧。\n哈哈，反正，我也不太敢保证啦！！！T_T\n那我们今天，就来分享一个工具，可以让我们在本地开发环境，也能进行微信公众号的测试。\n那就是网络传统工具：natapp，可以将我们本地环境的服务向外暴露，使得微信服务器能访问到我们本地电脑的服务。\n来自百度百科的解析如下：\n内网穿透，也即 NAT 穿透，进行 NAT 穿透是为了使具有某一个特定源 IP 地址和源端口号的数据包不被 NAT 设备屏蔽而正确路由到内网主机。\n那就，开干吧！！！\n2.natapp使用 natapp官网：点击查看、官方使用文档：点击查看\n我们先注册和登录。 然后，我们可以购买一个免费隧道（白嫖，真香！！！） 购买成功，记录authtoken 客户端下载，选择windows版本 运行natapp 这样就表示运行成功了\nf67pgj.natappfree.cc就是，外网访问的域名。\n这里要注意，每次重启natapp，这个域名都会变。\n这里说一下，为什么我比较推荐使用这个natapp网络穿透工具？\n因为这个生成的域名，在真实的手机微信中，也能访问，这就很强大了，手机也能进行测试。\n其他的网络穿透工具，例如：网穿透、 Ngrok、路由侠\n这里效果，都不怎么好，生成的域名，手机微信不能访问的。\n当然，不知道还有没有其他的网络穿透工具，这里哥们已经很久没有深入研究这块。\n有更好的网络穿透工具的，大家伙可以分享一下，让哥们也及时更新下工具，哈哈！！！\n提到的网络穿透工具，可能说得不是很对，大家伙轻点喷！！！\n3.微信公众号测试 上面已经成功启动了natapp，对本地的网络进行网络穿透了，那我们就可以进行微信公众号的测试了。\n微信官方，也是有提供测试的入口：点击这里\n用自己的微信号，扫码登录即可 提交，校验通过即可。\n这个校验的接口，这里贴一下springboot的代码： java\n代码解读\n复制代码\n/** * 微信接入 */ @RestController @RequestMapping(\"/wechat/wx\") public class WeChatPortController { final Logger logger = LoggerFactory.getLogger(this.getClass()); @Value(\"${wx.token:djys2020}\") private String token; /** * 微信校验签名接入 */ @GetMapping public String check(String signature, String timestamp, String nonce, String echostr) { logger.info(\"微信-开始校验签名\"); logger.info(\"收到来自微信的 echostr 字符串:{}\", echostr); //加密/校验流程如下: //1. 将token、timestamp、nonce三个参数进行字典序排序 //2. 将三个参数字符串拼接成一个字符串进行sha1加密 //3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信 // 1.排序 if (token == null || timestamp == null || nonce == null) { logger.error(\"微信-签名校验失败\"); return \"\"; } String sortString = sort(token, timestamp, nonce); // 2.sha1加密 String myString = sha1(sortString); // 3.字符串校验 if (myString != null \u0026\u0026 myString != \"\" \u0026\u0026 myString.equals(signature)) { logger.info(\"微信-签名校验通过\"); //如果检验成功原样返回echostr，微信服务器接收到此输出，才会确认检验完成。 logger.info(\"回复给微信的 echostr 字符串:{}\", echostr); return echostr; } else { logger.error(\"微信-签名校验失败\"); return \"\"; } } /** * 排序方法 * * @param token Token * @param timestamp 时间戳 * @param nonce 随机数 * @return */ public String sort(String token, String timestamp, String nonce) { String[] strArray = {token, timestamp, nonce}; Arrays.sort(strArray); StringBuilder sb = new StringBuilder(); for (String str : strArray) { sb.append(str); } return sb.toString(); } /** * 将字符串进行sha1加密 * * @param str 需要加密的字符串 * @return 加密后的内容 */ public String sha1(String str) { try { MessageDigest digest = MessageDigest.getInstance(\"SHA-1\"); digest.update(str.getBytes()); byte messageDigest[] = digest.digest(); // 创建 16进制字符串 StringBuffer hexString = new StringBuffer(); // 字节数组转换为 十六进制 数 for (int i = 0; i \u003c messageDigest.length; i++) { String shaHex = Integer.toHexString(messageDigest[i] \u0026 0xFF); if (shaHex.length() \u003c 2) { hexString.append(0); } hexString.append(shaHex); } return hexString.toString(); } catch (NoSuchAlgorithmException e) { e.printStackTrace(); } return \"\"; } }\n校验微信signature等信息，校验通过，然后返回echostr即可\n这里校验通过，就已经完成了第一步了。\n剩下的，就留着下次再说了！！！^_^\n好了，以上就是我个人的实操了。\n个人理解，可能也不够全面，班门弄斧了。\n好了，今天就先到这里了！！！^_^\n如果觉得有收获的，帮忙点赞、评论、收藏一下呗！！！\n",
+  "wordCount" : "296",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-06-19T00:00:00Z",
+  "dateModified": "2022-06-19T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "llsydn"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E7%BD%91%E7%BB%9C%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%B5%8B%E8%AF%95%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B71/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      网络穿透,实现本地开发环境测试微信公众号(1)
+    </h1>
+    <div class="post-description">
+      持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第26天，点击查看活动详情1.写在前面有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。
+    </div>
+    <div class="post-meta"><span title='2022-06-19 00:00:00 +0000 UTC'>六月 19, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;llsydn&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f,%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1%e5%86%99%e5%9c%a8%e5%89%8d%e9%9d%a2" aria-label="1.写在前面">1.写在前面</a></li>
+                <li>
+                    <a href="#2natapp%e4%bd%bf%e7%94%a8" aria-label="2.natapp使用">2.natapp使用</a></li>
+                <li>
+                    <a href="#3%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%e6%b5%8b%e8%af%95" aria-label="3.微信公众号测试">3.微信公众号测试</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>持续创作，加速成长！这是我参与「掘金日新计划 · 6 月更文挑战」的第26天，<a href="https://juejin.cn/post/7099702781094674468" title="https://juejin.cn/post/7099702781094674468">点击查看活动详情</a></p>
+<hr>
+<h3 id="1写在前面">1.写在前面<a hidden class="anchor" aria-hidden="true" href="#1写在前面">#</a></h3>
+<p>有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。</p>
+<p>例如：<strong>微信扫一扫</strong>、<strong>拍照或从手机相册中选图接口</strong></p>
+<p>当然啦，还有很多JS-SDK的api，详情可查看微信公众号的文档：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.weixin.qq.com%2Fdoc%2Foffiaccount%2FOA_Web_Apps%2FJS-SDK.html" title="https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html">点击查看</a></p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a3e270b713b7439e8a3ffc8608cd4830~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<blockquote>
+<p>可以看到，在使用<strong>JS-SDK</strong>前，需要进行上面这5个步骤</p>
+</blockquote>
+<p>可以很多人，就很纳闷了，我一个本地开发环境，哪里搞域名绑定呢？</p>
+<p>这就导致了，很多时候，一个开发人员写好了功能代码，但是没有经过测试。只能部署到线上环境，才能进行测试。</p>
+<p>那这个开发人员，多少心里是没有底的，毕竟谁也不能保证，自己写的代码，是不会出现bug的吧。</p>
+<p>哈哈，反正，我也不太敢保证啦！！！T_T</p>
+<p>那我们今天，就来分享一个工具，可以让我们在本地开发环境，也能进行微信公众号的测试。</p>
+<p>那就是<strong>网络传统工具</strong>：<strong>natapp</strong>，可以将我们本地环境的服务向外暴露，使得微信服务器能访问到我们本地电脑的服务。</p>
+<p>来自百度百科的解析如下：</p>
+<blockquote>
+<p>内网穿透，也即 NAT 穿透，进行 NAT 穿透是为了使具有某一个特定源 IP 地址和源端口号的数据包不被 NAT 设备屏蔽而正确路由到内网主机。</p>
+</blockquote>
+<p>那就，开干吧！！！</p>
+<h3 id="2natapp使用">2.natapp使用<a hidden class="anchor" aria-hidden="true" href="#2natapp使用">#</a></h3>
+<p>natapp官网：<a href="https://link.juejin.cn?target=https%3A%2F%2Fnatapp.cn%2F" title="https://natapp.cn/">点击查看</a>、官方使用文档：<a href="https://link.juejin.cn?target=https%3A%2F%2Fnatapp.cn%2Farticle%2Fnatapp_newbie" title="https://natapp.cn/article/natapp_newbie">点击查看</a></p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/79b25522377d40c7922060be78bba3b6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<ul>
+<li>我们先注册和登录。</li>
+</ul>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f499f597931a41b18ab80ca181cc2687~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<ul>
+<li>然后，我们可以购买一个<strong>免费隧道</strong>（白嫖，真香！！！）</li>
+</ul>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2562150ef4b84e2ead283b2415bab5a9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<ul>
+<li>购买成功，记录<strong>authtoken</strong></li>
+</ul>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9c7fcf97b13849e7bb53e07b93c1772e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<ul>
+<li>客户端下载，选择<strong>windows</strong>版本</li>
+</ul>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/93f4ca47339747e78871be78577871a6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<ul>
+<li>运行natapp</li>
+</ul>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1245b68c6619463f851e4e048f732103~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/815b01fb83b74426b58a797fd73e2c5c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4c262e03ecd346859f8eaea21d62c36f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<blockquote>
+<p>这样就表示运行成功了</p>
+</blockquote>
+<blockquote>
+<p><strong>f67pgj.natappfree.cc</strong>就是，外网访问的域名。</p>
+<p>这里要注意，每次重启natapp，这个域名都会变。</p>
+</blockquote>
+<blockquote>
+<p>这里说一下，为什么我比较推荐使用这个<strong>natapp</strong>网络穿透工具？</p>
+<p>因为这个生成的域名，在真实的手机微信中，也能访问，这就很强大了，手机也能进行测试。</p>
+<p>其他的网络穿透工具，例如：<strong><a href="https://link.juejin.cn?target=http%3A%2F%2Fblog.xiaomy.net%2Farchives%2F200.html" title="http://blog.xiaomy.net/archives/200.html">网穿透</a></strong>、 <strong><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.ngrok.cc%2F_book%2Fstart%2Fngrok_windows.html" title="https://www.ngrok.cc/_book/start/ngrok_windows.html">Ngrok</a></strong>、<strong><a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.luyouxia.com%2F" title="http://www.luyouxia.com/">路由侠</a></strong></p>
+<p>这里效果，都不怎么好，生成的域名，手机微信不能访问的。</p>
+</blockquote>
+<p>当然，不知道还有没有其他的网络穿透工具，这里哥们已经很久没有深入研究这块。</p>
+<p>有更好的网络穿透工具的，大家伙可以分享一下，让哥们也及时更新下工具，哈哈！！！</p>
+<p>提到的网络穿透工具，可能说得不是很对，大家伙轻点喷！！！</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6cab449d76394780bc4ab9a364bf8a19~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<h3 id="3微信公众号测试">3.微信公众号测试<a hidden class="anchor" aria-hidden="true" href="#3微信公众号测试">#</a></h3>
+<p>上面已经成功启动了<strong>natapp</strong>，对本地的网络进行网络穿透了，那我们就可以进行微信公众号的测试了。</p>
+<p>微信官方，也是有提供测试的入口：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.weixin.qq.com%2Fdoc%2Foffiaccount%2FBasic_Information%2FRequesting_an_API_Test_Account.html" title="https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Requesting_an_API_Test_Account.html">点击这里</a></p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1d84b884a04e4bf19778501684d6e1ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<ul>
+<li>用自己的微信号，扫码登录即可</li>
+</ul>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/461391f3d1f2468b9cd632ddcc0a83d8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<blockquote>
+<p><strong>提交</strong>，校验通过即可。</p>
+</blockquote>
+<ul>
+<li>这个校验的接口，这里贴一下<strong>springboot</strong>的代码：</li>
+</ul>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 微信接入  */ @RestController @RequestMapping(&quot;/wechat/wx&quot;) public class WeChatPortController {     final Logger logger = LoggerFactory.getLogger(this.getClass());     @Value(&quot;${wx.token:djys2020}&quot;)     private String token;     /**      * 微信校验签名接入      */     @GetMapping     public String check(String signature, String timestamp, String nonce, String echostr) {         logger.info(&quot;微信-开始校验签名&quot;);         logger.info(&quot;收到来自微信的 echostr 字符串:{}&quot;, echostr);         //加密/校验流程如下:         //1. 将token、timestamp、nonce三个参数进行字典序排序         //2. 将三个参数字符串拼接成一个字符串进行sha1加密         //3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信         // 1.排序         if (token == null || timestamp == null || nonce == null) {             logger.error(&quot;微信-签名校验失败&quot;);             return &quot;&quot;;         }         String sortString = sort(token, timestamp, nonce);         // 2.sha1加密         String myString = sha1(sortString);         // 3.字符串校验         if (myString != null &amp;&amp; myString != &quot;&quot; &amp;&amp; myString.equals(signature)) {             logger.info(&quot;微信-签名校验通过&quot;);             //如果检验成功原样返回echostr，微信服务器接收到此输出，才会确认检验完成。             logger.info(&quot;回复给微信的 echostr 字符串:{}&quot;, echostr);             return echostr;         } else {             logger.error(&quot;微信-签名校验失败&quot;);             return &quot;&quot;;         }     }     /**      * 排序方法      *      * @param token     Token      * @param timestamp 时间戳      * @param nonce     随机数      * @return      */     public String sort(String token, String timestamp, String nonce) {         String[] strArray = {token, timestamp, nonce};         Arrays.sort(strArray);         StringBuilder sb = new StringBuilder();         for (String str : strArray) {             sb.append(str);         }         return sb.toString();     }     /**      * 将字符串进行sha1加密      *      * @param str 需要加密的字符串      * @return 加密后的内容      */     public String sha1(String str) {         try {             MessageDigest digest = MessageDigest.getInstance(&quot;SHA-1&quot;);             digest.update(str.getBytes());             byte messageDigest[] = digest.digest();             // 创建 16进制字符串             StringBuffer hexString = new StringBuffer();             // 字节数组转换为 十六进制 数             for (int i = 0; i &lt; messageDigest.length; i++) {                 String shaHex = Integer.toHexString(messageDigest[i] &amp; 0xFF);                 if (shaHex.length() &lt; 2) {                     hexString.append(0);                 }                 hexString.append(shaHex);             }             return hexString.toString();         } catch (NoSuchAlgorithmException e) {             e.printStackTrace();         }         return &quot;&quot;;     } }</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5e6d55d0ca53467985e6dceb3354f0ed~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<blockquote>
+<p>校验微信<strong>signature</strong>等信息，校验通过，然后返回<strong>echostr</strong>即可</p>
+</blockquote>
+<p>这里校验通过，就已经完成了第一步了。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8fe9be493f4d4ce888a3222a0854bec6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>剩下的，就留着下次再说了！！！^_^</p>
+<hr>
+<p>好了，以上就是我个人的实操了。</p>
+<p>个人理解，可能也不够全面，班门弄斧了。</p>
+<p>好了，今天就先到这里了！！！^_^</p>
+<p>如果觉得有收获的，帮忙<code>点赞、评论、收藏</code>一下呗！！！</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f5a08fb01ba14e8baaf6f2cc8db2b449~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%BE%AE%E4%BF%A1/">微信</a></li>
+      <li><a href="http://localhost:1313/tags/springboot/">SpringBoot</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E8%AE%B0%E4%B8%80%E6%AC%A1vulnstack%E9%9D%B6%E5%9C%BA%E6%B8%97%E9%80%8F%E6%B5%81%E7%A8%8B/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>记一次vulnstack靶场渗透流程</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%88%91%E4%BB%AC%E5%8F%91%E5%B8%83%E4%BA%86%E4%B8%80%E4%B8%AA%E5%8F%AA%E6%9C%893mb%E7%9A%84electronniva/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>我们发布了一个只有3MB的Electron——Niva</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 网络穿透,实现本地开发环境测试微信公众号(1) on x"
+            href="https://x.com/intent/tweet/?text=%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f%2c%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2c%e5%be%ae%e4%bf%a1%2cSpringBoot">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 网络穿透,实现本地开发环境测试微信公众号(1) on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f&amp;title=%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f%2c%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29&amp;summary=%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f%2c%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 网络穿透,实现本地开发环境测试微信公众号(1) on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f&title=%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f%2c%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 网络穿透,实现本地开发环境测试微信公众号(1) on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 网络穿透,实现本地开发环境测试微信公众号(1) on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f%2c%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 网络穿透,实现本地开发环境测试微信公众号(1) on telegram"
+            href="https://telegram.me/share/url?text=%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f%2c%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 网络穿透,实现本地开发环境测试微信公众号(1) on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e7%bd%91%e7%bb%9c%e7%a9%bf%e9%80%8f%2c%e5%ae%9e%e7%8e%b0%e6%9c%ac%e5%9c%b0%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e6%b5%8b%e8%af%95%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%281%29&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%25A9%25BF%25E9%2580%258F%25E5%25AE%259E%25E7%258E%25B0%25E6%259C%25AC%25E5%259C%25B0%25E5%25BC%2580%25E5%258F%2591%25E7%258E%25AF%25E5%25A2%2583%25E6%25B5%258B%25E8%25AF%2595%25E5%25BE%25AE%25E4%25BF%25A1%25E5%2585%25AC%25E4%25BC%2597%25E5%258F%25B71%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

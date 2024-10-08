@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ | PaperMod</title>
+<meta name="keywords" content="Node.js, JavaScript">
+<meta name="description" content="闹铃提醒很机械，时间久了就会免疫，更不会检测打卡状态，发出主动提醒。这个小工具就来实现检测打卡状态并循环提醒。">
+<meta name="author" content="杨成功">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E7%BB%84%E5%91%98%E8%80%81%E6%98%AF%E5%BF%98%E8%AE%B0%E6%89%93%E5%8D%A1%E6%88%91%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E6%AC%BE%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AE%A9%E5%85%A8%E7%BB%84%E4%B8%89%E4%B8%AA%E6%9C%88%E5%85%A8%E5%8B%A4/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E7%BB%84%E5%91%98%E8%80%81%E6%98%AF%E5%BF%98%E8%AE%B0%E6%89%93%E5%8D%A1%E6%88%91%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E6%AC%BE%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AE%A9%E5%85%A8%E7%BB%84%E4%B8%89%E4%B8%AA%E6%9C%88%E5%85%A8%E5%8B%A4/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！" />
+<meta property="og:description" content="闹铃提醒很机械，时间久了就会免疫，更不会检测打卡状态，发出主动提醒。这个小工具就来实现检测打卡状态并循环提醒。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E7%BB%84%E5%91%98%E8%80%81%E6%98%AF%E5%BF%98%E8%AE%B0%E6%89%93%E5%8D%A1%E6%88%91%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E6%AC%BE%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AE%A9%E5%85%A8%E7%BB%84%E4%B8%89%E4%B8%AA%E6%9C%88%E5%85%A8%E5%8B%A4/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-08-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-08-26T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！"/>
+<meta name="twitter:description" content="闹铃提醒很机械，时间久了就会免疫，更不会检测打卡状态，发出主动提醒。这个小工具就来实现检测打卡状态并循环提醒。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！",
+      "item": "http://localhost:1313/posts/juejin/%E7%BB%84%E5%91%98%E8%80%81%E6%98%AF%E5%BF%98%E8%AE%B0%E6%89%93%E5%8D%A1%E6%88%91%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E6%AC%BE%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AE%A9%E5%85%A8%E7%BB%84%E4%B8%89%E4%B8%AA%E6%9C%88%E5%85%A8%E5%8B%A4/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！",
+  "name": "组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！",
+  "description": "闹铃提醒很机械，时间久了就会免疫，更不会检测打卡状态，发出主动提醒。这个小工具就来实现检测打卡状态并循环提醒。",
+  "keywords": [
+    "Node.js", "JavaScript"
+  ],
+  "articleBody": "大家好，我是杨成功。\n我司使用钉钉考勤打卡，人事要求的比较严格，两次未打卡记缺勤一天。但我们组醉心于工作，老是上下班忘记打卡，每月的工资被扣到肉疼。\n开始的时候我们都设置了一个打卡闹铃，下班后准时提醒，但有的时候加班，加完班回家又忘记打卡了。还有的时候迷之自信的以为自己打卡了，第二天看考勤记录发现没打卡。\n为了彻底解决这个问题，守住我们的钱袋子，我开发了一款打卡提醒工具，让全组连续三个月全勤！\n下面介绍一下，这个小工具是如何实现的。\n小工具实现思路 首先思考一下：闹铃提醒为什么不能百分之百有用？\n机械的提醒 闹铃提醒很机械，每天一个点固定提醒，时间久了人就会免疫。就像起床闹铃用久了，慢慢的那个声音对你不起作用了，此时不得不换个铃声才行。\n不能重复提醒 闹铃只会在固定时间提醒一次，没有办法判断是否打卡，更不会智能地发现你没有打卡，再提醒一次。\n既然闹铃做不到，那我们就用程序来实现吧。按照上述两个原因，我们要实现的提醒工具必须包含两个功能：\n检测用户是否打卡，未打卡则提醒，已打卡不提醒。 对未打卡用户循环检测，重复提醒，直到打卡为止。 如果能实现这两个功能，那么忘记打卡的问题多半也就解决了。\n打卡数据需要从钉钉获取，并且钉钉有推送功能。因此我们的方案是：利用 Node.js + 钉钉 API 来实现打卡状态检测和精准的提醒推送。\n认识钉钉 API 钉钉是企业版的即时通讯软件。与微信最大的区别是，它提供了开放能力，可以用 API 来实现创建群组，发送消息等功能，这意味使着用钉钉可以实现高度定制的通讯能力。\n我们这里用到的钉钉 API 主要有以下几个：\n获取凭证 获取用户 ID 检查打卡状态 群内消息推送 @某人推送 在使用钉钉 API 之前，首先要确认有公司级别的钉钉账号（使用过钉钉打卡功能一般就有公司账号），后面的步骤都是在这个账号下实现。\n申请开放平台应用 钉钉开发第一步，先去钉钉开放平台申请一个应用，拿到 appKey 和 appSecret。\n钉钉开放平台地址：open.dingtalk.com/developer\n进入平台后，点击“开发者后台”，如下图：\n开发者后台就是管理自己开发的钉钉应用的地方，进入后选择“应用开发-\u003e企业内部开发”，如下图：\n进入这个页面可能提示暂无权限，这是因为开发企业钉钉应用需要开发者权限，这个权限需要管理员在后台添加。\n管理员加开发者权限方式：\n进入 OA 管理后台，选择设置-权限管理-管理组-添加开发者权限下的对应权限。\n进入之后，选择【创建应用 -\u003e H5 微应用】，根据提示创建应用。创建之后在【应用信息】中可以看到两个关键字段：\nAppKey AppSecret 这两个字段非常重要，获取接口调用凭证时需要将它们作为参数传递。AppKey 是企业内部应用的唯一身份标识，AppSecret 是对应的调用密钥。\n搭建服务端应用 钉钉 API 需要在服务端调用。也就是说，我们需要搭建一个服务端应用来请求钉钉 API。\n切记不可以在客户端直接调用钉钉 API，因为 AppKey 和 AppSecret 都是保密的，绝不可以直接暴露在客户端。\n我们使用 Node.js 的 Express 框架来搭建一个简单的服务端应用，在这个应用上与钉钉 API 交互。搭建好的 Express 目录结构如下：\njs\n代码解读\n复制代码\n|-- app.js // 入口文件 |-- catch // 缓存目录 |-- router // 路由目录 | |-- ding.js // 钉钉路由 |-- utils // 工具目录 | |-- token.js // token相关\napp.js 是入口文件，也是应用核心逻辑，代码简单书写如下：\njs\n代码解读\n复制代码\nconst express = require('express'); const app = express(); const bodyParser = require('body-parser'); const cors = require('cors'); app.use(bodyParser.json()); app.use(cors()); // 路由配置 app.use('/ding', require('./router/ding')); // 捕获404 app.use((req, res, next) =\u003e { res.status(404).send('Not Found'); }); // 捕获异常 app.use((err, req, res, next) =\u003e { console.error(err); res.status(err.status || 500).send(err.inner || err.stack); }); app.listen(8080, () =\u003e { console.log(`listen to http://localhost:8080`); });\n另一个 router/ding.js 文件是 Express 标准的路由文件，在这里编写钉钉 API 的相关逻辑，代码基础结构如下：\njs\n代码解读\n复制代码\n// router/ding.js var express = require('express'); var router = express.Router(); router.get('/', (req, res, next) =\u003e { res.send('钉钉API'); }); module.exports = router;\n现在将应用运行起来：\nsh\n代码解读\n复制代码\n$ node app.js\n然后访问 http://localhost:8080/ding，浏览器页面显示出 “钉钉 API” 几个字，表示运行成功。\n对接钉钉应用 一个简单的服务端应用搭建好之后，就可以准备接入钉钉 API 了。\n接入步骤参考开发文档，文档地址在这里。\n1. 获取 API 调用凭证 钉钉 API 需要验证权限才可以调用。验证权限的方式是，根据上一步拿到的 AppKey 和 AppSecret 获取一个 access_token，这个 access_token 就是钉钉 API 的调用凭证。\n后续在调用其他 API 时，只要携带 access_token 即可验证权限。\n钉钉 API 分为新版和旧版两个版本，为了兼容性我们使用旧版。旧版 API 的 URL 根路径是https://oapi.dingtalk.com，下文用 baseURL 这个变量替代。\n根据文档，获取 access_token 的接口是 ${baseURL}/gettoken。在 utils/ding.js 文件中定义一个获取 token 的方法，使用 GET 请求获取 access_token，代码如下：\njs\n代码解读\n复制代码\nconst fetchToken = async () =\u003e { try { let params = { appkey: 'xxx', appsecret: 'xxx', }; let url = `${baseURL}/gettoken`; let result = await axios.get(url, { params }); if (result.data.errcode != 0) { throw result.data; } else { return result.data; } } catch (error) { console.log(error); } };\n上述代码写好之后，就可以调用 fetchToken 函数获取 access_token 了。\n获取到 access_token 之后需要持久化的存储起来供后续使用。在浏览器端，我们可以保存在 localStorage 中，而在 Node.js 端，最简单的方法是直接保存在文件中。\n写一个将 access_token 保存为文件，并且可读取的类，代码如下：\njs\n代码解读\n复制代码\nvar fs = require('fs'); var path = require('path'); var catch_dir = path.resolve(__dirname, '../', 'catch'); class DingToken { get() { let res = fs.readFileSync(`${catch_dir}/ding_token.json`); return res.toString() || null; } set(token) { fs.writeFileSync(`${catch_dir}/ding_token.json`, token); } }\n写好之后，现在我们获取 access_token 并存储：\njs\n代码解读\n复制代码\nvar res = await fetchToken(); if (res) { new DingToken().set(res.access_token); }\n在下面的接口调用时，就可以通过 new DingToken().get() 来获取到 access_token 了。\n2. 查找组员 ID 有了 access_token 之后，第一个调用的钉钉 API 是获取员工的 userid。userid 是员工在钉钉中的唯一标识。\n有了 userid 之后，我们才可以获取组员对应的打卡状态。最简单的方法是通过手机号获取员工的 userid，手机号可以直接在钉钉上查到。\n根据手机号查询用户文档在这里。\n接口调用代码如下：\njs\n代码解读\n复制代码\nlet access_token = new DingToken().get(); let params = { access_token, }; axios .post( `${baseURL}/topapi/v2/user/getbymobile`, { mobile: 'xxx', // 用户手机号 }, { params }, ) .then((res) =\u003e { console.log(res); });\n通过上面请求方法，逐个获取所有组员的 userid 并保存下来，我们在下一步使用。\n3. 获取打卡状态 拿到组员的 userid 列表，我们就可以获取所有组员的打卡状态了。\n钉钉获取打卡状态，需要在 H5 应用中申请权限。打开前面创建的应用，点击【权限管理 -\u003e 考勤】，批量添加所有权限：\n接着进入【开发管理】，配置一下服务器出口 IP。这个 IP 指的是我们调用钉钉 API 的服务器 IP 地址，开发的时候可以填为 127.0.0.1，部署后更换为真实的 IP 地址。\n做好这些准备工作，我们就可以获取打卡状态了。获取打卡状态的 API 如下：\nAPI 地址：${baseURL}/attendance/list\n请求方法：POST\n这个 API 的请求体是一个对象，对象必须包含的属性如下：\nworkDateFrom：查询考勤打卡记录的起始工作日。 workDateTo：查询考勤打卡记录的结束工作日。 userIdList：查询用户的用户 ID 列表。 offset：数据起始点，用于分页，传 0 即可。 limit：获取考勤条数，最大 50 条。 这里的字段解释一下。workDateFrom 和 workDateTo 表示查询考勤的时间范围，因为我们只需要查询当天的数据，因此事件范围就是当天的 0 点到 24 点。\nuserIdList 就是我们上一步取到的所有组员的 userid 列表。\n将获取打卡状态写为一个单独的方法，代码如下：\njs\n代码解读\n复制代码\nconst dayjs = require('dayjs'); const access_token = new DingToken().get(); // 获取打卡状态 const getAttendStatus = (userIdList) =\u003e { let params = { access_token, }; let body = { workDateFrom: dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss'), workDateTo: dayjs().endOf('day').format('YYYY-MM-DD HH:mm:ss'), userIdList, // userid 列表 offset: 0, limit: 40, }; return axios.post(`${baseURL}/attendance/list`, body, { params }); };\n查询考勤状态的返回结果是一个列表，列表项的关键字段如下：\nuserId：打卡人的用户 ID。 userCheckTime：用户实际打卡时间。 timeResult：用户打卡结果。Normal：正常，NotSigned：未打卡。 checkType：考勤类型。OnDuty：上班，OffDuty：下班。 其他更多字段的含义请参考文档\n上面的 4 个字段可以轻松判断出谁应该打卡，打卡是否正常，这样我们就能筛选出没有打卡的用户，对这些未打卡的用户精准提醒。\n筛选打卡状态分为两种情况：\n上班打卡 下班打卡 上下班打卡要筛选不同的返回数据。假设获取的打卡数据存储在变量 attendList 中，获取方式如下：\njs\n代码解读\n复制代码\n// 获取上班打卡记录 const getOnUids = () =\u003e attendList .filter((row) =\u003e row.checkType == 'OnDuty') .map((row) =\u003e row.userId); // 获取下班打卡记录 const getOffUids = () =\u003e attendList .filter((row) =\u003e row.checkType == 'OffDut') .map((row) =\u003e row.userId);\n获取到已打卡的用户，接着找到未打卡用户，就可以发送通知提醒了。\n4. 发送提醒通知 在钉钉中最常用的消息推送方式是：在群聊中添加一个机器人，向这个机器人的 webhook 地址发送消息，即可实现自定义推送。\n还是进入前面创建的 H5 应用，在菜单中找到【应用功能 -\u003e 消息推送 -\u003e 机器人】，根据提示配置好机器人。\n创建好机器人后，打开组员所在的钉钉群（已有群或新建群都可）。点击【群设置 -\u003e 智能群助手 -\u003e 添加机器人】，选择刚才创建的机器人，就可以将机器人绑定在群里了。\n绑定机器人后，点击机器人设置，会看到一个 Webhook 地址，请求这个地址即可向群聊发送消息。对应的 API 如下：\nAPI 地址：${baseURL}/robot/send?access_token=xxx\n请求方法：POST\n现在发送一条“我是打卡机器人”，实现代码如下：\njs\n代码解读\n复制代码\nconst sendNotify = (msg, atuids = []) =\u003e { let access_token = 'xxx'; // Webhook 地址上的 access_token // 消息模版配置 let infos = { msgtype: 'text', text: { content: msg, }, at: { atUserIds: atuids, }, }; // API 发送消息 axios.post(`${baseURL}/robot/send`, infos, { params: { access_token }, }); }; sendNotify('我是打卡机器人');\n解释一下：代码中的 atUserIds 属性表示要 @ 的用户，它的值是一个 userid 数组，可以 @ 群里的某几个成员，这样消息推送就会更精准。\n发送之后会在钉钉群收到消息，效果如下：\n综合代码实现 前面几步创建了钉钉应用，获取了打卡状态，并用机器人发送了群通知。现在将这些功能结合起来，写一个检查考勤状态，并对未打卡用户发送提醒的接口。\n在路由文件 router/ding.js 中创建一个路由方法实现这个功能：\njs\n代码解读\n复制代码\nvar dayjs = require('dayjs'); router.post('/attend-send', async (req, res, next) =\u003e { try { // 需要检测打卡的 userid 数组 let alluids = [\"xxx\", \"xxxx\"]; // 获取打卡状态 let attendList = await getAttendStatus(alluids); // 是否9点前（上班时间） let isOnDuty = dayjs().isBefore(dayjs().hour(9).minute(0)); // 是否18点后（下班时间） let isOffDuty = dayjs().isAfter(dayjs().hour(18).minute(0)); if (isOnDuty) { // 已打卡用户 let uids = getOnUids(attendList); if (alluids.length \u003e uids.length) { // 未打卡用户 let txuids = alluids.filter((r) =\u003e !uids.includes(r)); sendNotify(\"上班没打卡，小心扣钱！\", txuids); } } else if (isOffDuty) { // 已打卡用户 let uids = getOffUids(attendList); if (alluids.length \u003e uids.length) { // 未打卡用户 let txuids = alluids.filter((r) =\u003e !uids.includes(r)); sendNotify(\"下班没打卡，小心扣钱！\", txuids); } } else { return res.send(\"不在打卡时间\"); } res.send(\"没有未打卡的同学\"); } catch (error) { res.status(error.status || 500).send(error); } });\n上述接口写好之后，我们只需要调用一下这个接口，就能实现自动检测上班或下班的打卡情况。如果有未打卡的组员，那么机器人会在群里发通知提醒，并且 @ 未打卡的组员。\nsh\n代码解读\n复制代码\n# 调用接口 $ curl -X POST http://localhost:8080/ding/attend-send\n检查打卡状态并提醒的功能实现了，现在还差一个“循环提醒”功能。\n循环提醒的实现思路是，在某个时间段内，每隔几分钟调用一次接口。如果检测到未打卡的状态，就会循环提醒。\n假设上下班时间分别是上午 9 点和下午 18 点，那么检测的时间段可以划分为：\n上班：8:30-9:00 之间，每 5 分钟检测一次； 下班：18:00-19:00 之间，每 10 分钟检测一次； 上班打卡相对比较紧急，所以时间检测短，频率高。下班打卡相对比较宽松，下班时间也不固定，因此检测时间长，频率低一些。\n确定好检测规则之后，我们使用 Linux 的定时任务 crontab 来实现上述功能。\n首先将上面写好的 Node.js 代码部署到 Linux 服务器，部署后可在 Linux 内部调用接口。\ncrontab 配置解析 简单说一下 crontab 定时任务如何配置。它的配置方式是一行一个任务，每行的配置字段如下：\njs\n代码解读\n复制代码\n// 分别表示：分钟、小时、天、月、周、要执行的命令 minute hour day month weekday cmd\n每个字段用具体的数字表示，如果要全部匹配，则用 * 表示。上班打卡检测的配置如下：\njs\n代码解读\n复制代码\n29-59/5 8 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send\n上面的 29-59/5 8 表示在 8:29 到 8:59 之间，每 5 分钟执行一次；1-5 表示周一到周五，这样就配置好了。\n同样的道理，下班打卡检测的配置如下：\njs\n代码解读\n复制代码\n*/10 18-19 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send\n在 Linux 中执行 crontab -e 打开编辑页面，写入上面的两个配置并保存，然后查看是否生效：\nsh\n代码解读\n复制代码\n$ crontab -l 29-59/5 8 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send */10 18-19 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send\n看到上述输出，表示定时任务创建成功。\n现在每天上班前和下班后，小工具会自动检测组员的打卡状态并循环提醒。最终效果如下：\n总结 这个小工具是基于钉钉 API + Node.js 实现，思路比较有意思，解决了实际问题。并且这个小项目非常适合学习 Node.js，代码精简干净，易于理解和阅读。\n再次感谢您的阅读。\n",
+  "wordCount" : "936",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-08-26T00:00:00Z",
+  "dateModified": "2022-08-26T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "杨成功"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E7%BB%84%E5%91%98%E8%80%81%E6%98%AF%E5%BF%98%E8%AE%B0%E6%89%93%E5%8D%A1%E6%88%91%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E6%AC%BE%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AE%A9%E5%85%A8%E7%BB%84%E4%B8%89%E4%B8%AA%E6%9C%88%E5%85%A8%E5%8B%A4/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！
+    </h1>
+    <div class="post-description">
+      闹铃提醒很机械，时间久了就会免疫，更不会检测打卡状态，发出主动提醒。这个小工具就来实现检测打卡状态并循环提醒。
+    </div>
+    <div class="post-meta"><span title='2022-08-26 00:00:00 +0000 UTC'>八月 26, 2022</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;杨成功&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%b0%8f%e5%b7%a5%e5%85%b7%e5%ae%9e%e7%8e%b0%e6%80%9d%e8%b7%af" aria-label="小工具实现思路">小工具实现思路</a></li>
+                <li>
+                    <a href="#%e8%ae%a4%e8%af%86%e9%92%89%e9%92%89-api" aria-label="认识钉钉 API">认识钉钉 API</a><ul>
+                        
+                <li>
+                    <a href="#%e7%94%b3%e8%af%b7%e5%bc%80%e6%94%be%e5%b9%b3%e5%8f%b0%e5%ba%94%e7%94%a8" aria-label="申请开放平台应用">申请开放平台应用</a></li>
+                <li>
+                    <a href="#%e6%90%ad%e5%bb%ba%e6%9c%8d%e5%8a%a1%e7%ab%af%e5%ba%94%e7%94%a8" aria-label="搭建服务端应用">搭建服务端应用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%af%b9%e6%8e%a5%e9%92%89%e9%92%89%e5%ba%94%e7%94%a8" aria-label="对接钉钉应用">对接钉钉应用</a><ul>
+                        
+                <li>
+                    <a href="#1-%e8%8e%b7%e5%8f%96-api-%e8%b0%83%e7%94%a8%e5%87%ad%e8%af%81" aria-label="1. 获取 API 调用凭证">1. 获取 API 调用凭证</a></li>
+                <li>
+                    <a href="#2-%e6%9f%a5%e6%89%be%e7%bb%84%e5%91%98-id" aria-label="2. 查找组员 ID">2. 查找组员 ID</a></li>
+                <li>
+                    <a href="#3-%e8%8e%b7%e5%8f%96%e6%89%93%e5%8d%a1%e7%8a%b6%e6%80%81" aria-label="3. 获取打卡状态">3. 获取打卡状态</a></li>
+                <li>
+                    <a href="#4-%e5%8f%91%e9%80%81%e6%8f%90%e9%86%92%e9%80%9a%e7%9f%a5" aria-label="4. 发送提醒通知">4. 发送提醒通知</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%bc%e5%90%88%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0" aria-label="综合代码实现">综合代码实现</a><ul>
+                        
+                <li>
+                    <a href="#crontab-%e9%85%8d%e7%bd%ae%e8%a7%a3%e6%9e%90" aria-label="crontab 配置解析">crontab 配置解析</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>大家好，我是杨成功。</p>
+<p>我司使用钉钉考勤打卡，人事要求的比较严格，两次未打卡记缺勤一天。但我们组醉心于工作，老是上下班忘记打卡，每月的工资被扣到肉疼。</p>
+<p>开始的时候我们都设置了一个打卡闹铃，下班后准时提醒，但有的时候加班，加完班回家又忘记打卡了。还有的时候迷之自信的以为自己打卡了，第二天看考勤记录发现没打卡。</p>
+<p>为了彻底解决这个问题，守住我们的钱袋子，我开发了一款打卡提醒工具，让全组连续三个月全勤！</p>
+<p>下面介绍一下，这个小工具是如何实现的。</p>
+<h2 id="小工具实现思路">小工具实现思路<a hidden class="anchor" aria-hidden="true" href="#小工具实现思路">#</a></h2>
+<p>首先思考一下：闹铃提醒为什么不能百分之百有用？</p>
+<ol>
+<li>机械的提醒</li>
+</ol>
+<p>闹铃提醒很机械，每天一个点固定提醒，时间久了人就会免疫。就像起床闹铃用久了，慢慢的那个声音对你不起作用了，此时不得不换个铃声才行。</p>
+<ol start="2">
+<li>不能重复提醒</li>
+</ol>
+<p>闹铃只会在固定时间提醒一次，没有办法判断是否打卡，更不会智能地发现你没有打卡，再提醒一次。</p>
+<p>既然闹铃做不到，那我们就用程序来实现吧。按照上述两个原因，我们要实现的提醒工具必须包含两个功能：</p>
+<ol>
+<li>检测用户是否打卡，未打卡则提醒，已打卡不提醒。</li>
+<li>对未打卡用户循环检测，重复提醒，直到打卡为止。</li>
+</ol>
+<p>如果能实现这两个功能，那么忘记打卡的问题多半也就解决了。</p>
+<p>打卡数据需要从钉钉获取，并且钉钉有推送功能。因此我们的方案是：利用 Node.js + 钉钉 API 来实现打卡状态检测和精准的提醒推送。</p>
+<h2 id="认识钉钉-api">认识钉钉 API<a hidden class="anchor" aria-hidden="true" href="#认识钉钉-api">#</a></h2>
+<p>钉钉是企业版的即时通讯软件。与微信最大的区别是，它提供了开放能力，可以用 API 来实现创建群组，发送消息等功能，这意味使着用钉钉可以实现高度定制的通讯能力。</p>
+<p>我们这里用到的钉钉 API 主要有以下几个：</p>
+<ul>
+<li>获取凭证</li>
+<li>获取用户 ID</li>
+<li>检查打卡状态</li>
+<li>群内消息推送</li>
+<li>@某人推送</li>
+</ul>
+<p>在使用钉钉 API 之前，首先要确认有公司级别的钉钉账号（使用过钉钉打卡功能一般就有公司账号），后面的步骤都是在这个账号下实现。</p>
+<h3 id="申请开放平台应用">申请开放平台应用<a hidden class="anchor" aria-hidden="true" href="#申请开放平台应用">#</a></h3>
+<p>钉钉开发第一步，先去钉钉开放平台申请一个应用，拿到 appKey 和 appSecret。</p>
+<blockquote>
+<p>钉钉开放平台地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fopen.dingtalk.com%2Fdeveloper" title="https://open.dingtalk.com/developer">open.dingtalk.com/developer</a></p>
+</blockquote>
+<p>进入平台后，点击“开发者后台”，如下图：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dd006aceaf2043b5a6cc32a37e6b8f47~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2344&amp;h=840&amp;s=509257&amp;e=png&amp;b=edf3fa" alt="2022-08-10-06-22-22.png"  />
+</p>
+<p>开发者后台就是管理自己开发的钉钉应用的地方，进入后选择“应用开发-&gt;企业内部开发”，如下图：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/37b93abdc05c4ebd8f6d0f20929697d2~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1426&amp;h=604&amp;s=113217&amp;e=png&amp;b=fefefe" alt="2022-08-10-06-28-26.png"  />
+</p>
+<p>进入这个页面可能提示暂无权限，这是因为开发企业钉钉应用需要开发者权限，这个权限需要管理员在后台添加。</p>
+<blockquote>
+<p>管理员加开发者权限方式：<br>
+进入 <a href="https://link.juejin.cn?target=https%3A%2F%2Foa.dingtalk.com%2F" title="https://oa.dingtalk.com/">OA 管理后台</a>，选择设置-权限管理-管理组-添加开发者权限下的对应权限。</p>
+</blockquote>
+<p>进入之后，选择【创建应用 -&gt; H5 微应用】，根据提示创建应用。创建之后在【应用信息】中可以看到两个关键字段：</p>
+<ul>
+<li>AppKey</li>
+<li>AppSecret</li>
+</ul>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/466e5f070f3f464db7170b5010a4f129~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1604&amp;h=768&amp;s=306652&amp;e=png&amp;b=fefefe" alt="2022-08-14-10-40-02.png"  />
+</p>
+<p>这两个字段非常重要，获取接口调用凭证时需要将它们作为参数传递。AppKey 是企业内部应用的唯一身份标识，AppSecret 是对应的调用密钥。</p>
+<h3 id="搭建服务端应用">搭建服务端应用<a hidden class="anchor" aria-hidden="true" href="#搭建服务端应用">#</a></h3>
+<p>钉钉 API 需要在服务端调用。也就是说，我们需要搭建一个服务端应用来请求钉钉 API。</p>
+<p>切记不可以在客户端直接调用钉钉 API，因为 AppKey 和 AppSecret 都是保密的，绝不可以直接暴露在客户端。</p>
+<p>我们使用 Node.js 的 <code>Express</code> 框架来搭建一个简单的服务端应用，在这个应用上与钉钉 API 交互。搭建好的 Express 目录结构如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>|-- app.js // 入口文件 |-- catch // 缓存目录 |-- router // 路由目录 |   |-- ding.js // 钉钉路由 |-- utils // 工具目录 |   |-- token.js // token相关</code></p>
+<p>app.js 是入口文件，也是应用核心逻辑，代码简单书写如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const express = require('express'); const app = express(); const bodyParser = require('body-parser'); const cors = require('cors'); app.use(bodyParser.json()); app.use(cors()); // 路由配置 app.use('/ding', require('./router/ding')); // 捕获404 app.use((req, res, next) =&gt; {   res.status(404).send('Not Found'); }); // 捕获异常 app.use((err, req, res, next) =&gt; {   console.error(err);   res.status(err.status || 500).send(err.inner || err.stack); }); app.listen(8080, () =&gt; {   console.log(`listen to http://localhost:8080`); });</code></p>
+<p>另一个 router/ding.js 文件是 Express 标准的路由文件，在这里编写钉钉 API 的相关逻辑，代码基础结构如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// router/ding.js var express = require('express'); var router = express.Router(); router.get('/', (req, res, next) =&gt; {   res.send('钉钉API'); }); module.exports = router;</code></p>
+<p>现在将应用运行起来：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ node app.js</code></p>
+<p>然后访问 <code>http://localhost:8080/ding</code>，浏览器页面显示出 “钉钉 API” 几个字，表示运行成功。</p>
+<h2 id="对接钉钉应用">对接钉钉应用<a hidden class="anchor" aria-hidden="true" href="#对接钉钉应用">#</a></h2>
+<p>一个简单的服务端应用搭建好之后，就可以准备接入钉钉 API 了。</p>
+<p>接入步骤参考开发文档，文档地址在<a href="https://link.juejin.cn?target=https%3A%2F%2Fopen.dingtalk.com%2Fdocument%2Forg%2Fapplication-types" title="https://open.dingtalk.com/document/org/application-types">这里</a>。</p>
+<h3 id="1-获取-api-调用凭证">1. 获取 API 调用凭证<a hidden class="anchor" aria-hidden="true" href="#1-获取-api-调用凭证">#</a></h3>
+<p>钉钉 API 需要验证权限才可以调用。验证权限的方式是，根据上一步拿到的 AppKey 和 AppSecret 获取一个 access_token，这个 access_token 就是钉钉 API 的调用凭证。</p>
+<p>后续在调用其他 API 时，只要携带 access_token 即可验证权限。</p>
+<p>钉钉 API 分为新版和旧版两个版本，为了兼容性我们使用旧版。旧版 API 的 URL 根路径是<code>https://oapi.dingtalk.com</code>，下文用 baseURL 这个变量替代。</p>
+<p>根据文档，获取 access_token 的接口是 <code>${baseURL}/gettoken</code>。在 utils/ding.js 文件中定义一个获取 token 的方法，使用 GET 请求获取 access_token，代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const fetchToken = async () =&gt; {   try {     let params = {       appkey: 'xxx',       appsecret: 'xxx',     };     let url = `${baseURL}/gettoken`;     let result = await axios.get(url, { params });     if (result.data.errcode != 0) {       throw result.data;     } else {       return result.data;     }   } catch (error) {     console.log(error);   } };</code></p>
+<p>上述代码写好之后，就可以调用 fetchToken 函数获取 access_token 了。</p>
+<p>获取到 access_token 之后需要持久化的存储起来供后续使用。在浏览器端，我们可以保存在 localStorage 中，而在 Node.js 端，最简单的方法是直接保存在文件中。</p>
+<p>写一个将 access_token 保存为文件，并且可读取的类，代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var fs = require('fs'); var path = require('path'); var catch_dir = path.resolve(__dirname, '../', 'catch'); class DingToken {   get() {     let res = fs.readFileSync(`${catch_dir}/ding_token.json`);     return res.toString() || null;   }   set(token) {     fs.writeFileSync(`${catch_dir}/ding_token.json`, token);   } }</code></p>
+<p>写好之后，现在我们获取 access_token 并存储：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var res = await fetchToken(); if (res) {   new DingToken().set(res.access_token); }</code></p>
+<p>在下面的接口调用时，就可以通过 <code>new DingToken().get()</code> 来获取到 access_token 了。</p>
+<h3 id="2-查找组员-id">2. 查找组员 ID<a hidden class="anchor" aria-hidden="true" href="#2-查找组员-id">#</a></h3>
+<p>有了 access_token 之后，第一个调用的钉钉 API 是获取员工的 userid。userid 是员工在钉钉中的唯一标识。</p>
+<p>有了 userid 之后，我们才可以获取组员对应的打卡状态。最简单的方法是通过手机号获取员工的 userid，手机号可以直接在钉钉上查到。</p>
+<blockquote>
+<p>根据手机号查询用户文档在<a href="https://link.juejin.cn?target=https%3A%2F%2Fopen.dingtalk.com%2Fdocument%2Forgapp-server%2Fquery-users-by-phone-number" title="https://open.dingtalk.com/document/orgapp-server/query-users-by-phone-number">这里</a>。</p>
+</blockquote>
+<p>接口调用代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let access_token = new DingToken().get(); let params = {   access_token, }; axios   .post(     `${baseURL}/topapi/v2/user/getbymobile`,     {       mobile: 'xxx', // 用户手机号     },     { params },   )   .then((res) =&gt; {     console.log(res);   });</code></p>
+<p>通过上面请求方法，逐个获取所有组员的 userid 并保存下来，我们在下一步使用。</p>
+<h3 id="3-获取打卡状态">3. 获取打卡状态<a hidden class="anchor" aria-hidden="true" href="#3-获取打卡状态">#</a></h3>
+<p>拿到组员的 userid 列表，我们就可以获取所有组员的打卡状态了。</p>
+<p>钉钉获取打卡状态，需要在 H5 应用中申请权限。打开前面创建的应用，点击【权限管理 -&gt; 考勤】，批量添加所有权限：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a46df2aba5749b48dd979707563bd85~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2318&amp;h=862&amp;s=534193&amp;e=png&amp;b=fefefe" alt="2022-08-14-10-35-18.png"  />
+</p>
+<p>接着进入【开发管理】，配置一下服务器出口 IP。这个 IP 指的是我们调用钉钉 API 的服务器 IP 地址，开发的时候可以填为 127.0.0.1，部署后更换为真实的 IP 地址。</p>
+<p>做好这些准备工作，我们就可以获取打卡状态了。获取打卡状态的 API 如下：</p>
+<blockquote>
+<p>API 地址：${baseURL}/attendance/list<br>
+请求方法：POST</p>
+</blockquote>
+<p>这个 API 的请求体是一个对象，对象必须包含的属性如下：</p>
+<ul>
+<li><code>workDateFrom</code>：查询考勤打卡记录的起始工作日。</li>
+<li><code>workDateTo</code>：查询考勤打卡记录的结束工作日。</li>
+<li><code>userIdList</code>：查询用户的用户 ID 列表。</li>
+<li><code>offset</code>：数据起始点，用于分页，传 0 即可。</li>
+<li><code>limit</code>：获取考勤条数，最大 50 条。</li>
+</ul>
+<p>这里的字段解释一下。workDateFrom 和 workDateTo 表示查询考勤的时间范围，因为我们只需要查询当天的数据，因此事件范围就是当天的 0 点到 24 点。</p>
+<p>userIdList 就是我们上一步取到的所有组员的 userid 列表。</p>
+<p>将获取打卡状态写为一个单独的方法，代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const dayjs = require('dayjs'); const access_token = new DingToken().get(); // 获取打卡状态 const getAttendStatus = (userIdList) =&gt; {   let params = {     access_token,   };   let body = {     workDateFrom: dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss'),     workDateTo: dayjs().endOf('day').format('YYYY-MM-DD HH:mm:ss'),     userIdList, // userid 列表     offset: 0,     limit: 40,   };   return axios.post(`${baseURL}/attendance/list`, body, { params }); };</code></p>
+<p>查询考勤状态的返回结果是一个列表，列表项的关键字段如下：</p>
+<ul>
+<li><code>userId</code>：打卡人的用户 ID。</li>
+<li><code>userCheckTime</code>：用户实际打卡时间。</li>
+<li><code>timeResult</code>：用户打卡结果。Normal：正常，NotSigned：未打卡。</li>
+<li><code>checkType</code>：考勤类型。OnDuty：上班，OffDuty：下班。</li>
+</ul>
+<p>其他更多字段的含义请参考<a href="https://link.juejin.cn?target=https%3A%2F%2Fopen.dingtalk.com%2Fdocument%2Forgapp-server%2Fopen-attendance-clock-in-data" title="https://open.dingtalk.com/document/orgapp-server/open-attendance-clock-in-data">文档</a></p>
+<p>上面的 4 个字段可以轻松判断出谁应该打卡，打卡是否正常，这样我们就能筛选出没有打卡的用户，对这些未打卡的用户精准提醒。</p>
+<p>筛选打卡状态分为两种情况：</p>
+<ul>
+<li>上班打卡</li>
+<li>下班打卡</li>
+</ul>
+<p>上下班打卡要筛选不同的返回数据。假设获取的打卡数据存储在变量 attendList 中，获取方式如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 获取上班打卡记录 const getOnUids = () =&gt;   attendList     .filter((row) =&gt; row.checkType == 'OnDuty')     .map((row) =&gt; row.userId); // 获取下班打卡记录 const getOffUids = () =&gt;   attendList     .filter((row) =&gt; row.checkType == 'OffDut')     .map((row) =&gt; row.userId);</code></p>
+<p>获取到已打卡的用户，接着找到未打卡用户，就可以发送通知提醒了。</p>
+<h3 id="4-发送提醒通知">4. 发送提醒通知<a hidden class="anchor" aria-hidden="true" href="#4-发送提醒通知">#</a></h3>
+<p>在钉钉中最常用的消息推送方式是：在群聊中添加一个机器人，向这个机器人的 webhook 地址发送消息，即可实现自定义推送。</p>
+<p>还是进入前面创建的 H5 应用，在菜单中找到【应用功能 -&gt; 消息推送 -&gt; 机器人】，根据提示配置好机器人。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/78b27799193747ed97d888fc72896502~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1484&amp;h=262&amp;s=39696&amp;e=png&amp;b=fefdfd" alt="2022-08-17-23-38-21.png"  />
+</p>
+<p>创建好机器人后，打开组员所在的钉钉群（已有群或新建群都可）。点击【群设置 -&gt; 智能群助手 -&gt; 添加机器人】，选择刚才创建的机器人，就可以将机器人绑定在群里了。</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6cc3f4f01441474d89cabcd31001f0e0~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1394&amp;h=340&amp;s=43007&amp;e=png&amp;b=2c2f32" alt="2022-08-18-07-50-46.png"  />
+</p>
+<p>绑定机器人后，点击机器人设置，会看到一个 Webhook 地址，请求这个地址即可向群聊发送消息。对应的 API 如下：</p>
+<blockquote>
+<p>API 地址：${baseURL}/robot/send?access_token=xxx<br>
+请求方法：POST</p>
+</blockquote>
+<p>现在发送一条“我是打卡机器人”，实现代码如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const sendNotify = (msg, atuids = []) =&gt; {   let access_token = 'xxx'; // Webhook 地址上的 access_token   // 消息模版配置   let infos = {     msgtype: 'text',     text: {       content: msg,     },     at: {       atUserIds: atuids,     },   };   // API 发送消息   axios.post(`${baseURL}/robot/send`, infos, {     params: { access_token },   }); }; sendNotify('我是打卡机器人');</code></p>
+<p>解释一下：代码中的 <code>atUserIds</code> 属性表示要 @ 的用户，它的值是一个 userid 数组，可以 @ 群里的某几个成员，这样消息推送就会更精准。</p>
+<p>发送之后会在钉钉群收到消息，效果如下：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2fd96c2b779b420da822dd4abd17bcec~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=682&amp;h=188&amp;s=27186&amp;e=png&amp;b=141617" alt="2022-08-18-14-44-54.png"  />
+</p>
+<h2 id="综合代码实现">综合代码实现<a hidden class="anchor" aria-hidden="true" href="#综合代码实现">#</a></h2>
+<p>前面几步创建了钉钉应用，获取了打卡状态，并用机器人发送了群通知。现在将这些功能结合起来，写一个检查考勤状态，并对未打卡用户发送提醒的接口。</p>
+<p>在路由文件 router/ding.js 中创建一个路由方法实现这个功能：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var dayjs = require('dayjs'); router.post('/attend-send', async (req, res, next) =&gt; {   try {     // 需要检测打卡的 userid 数组     let alluids = [&quot;xxx&quot;, &quot;xxxx&quot;];     // 获取打卡状态     let attendList = await getAttendStatus(alluids);     // 是否9点前（上班时间）     let isOnDuty = dayjs().isBefore(dayjs().hour(9).minute(0));     // 是否18点后（下班时间）     let isOffDuty = dayjs().isAfter(dayjs().hour(18).minute(0));     if (isOnDuty) {       // 已打卡用户       let uids = getOnUids(attendList);       if (alluids.length &gt; uids.length) {         // 未打卡用户         let txuids = alluids.filter((r) =&gt; !uids.includes(r));         sendNotify(&quot;上班没打卡，小心扣钱！&quot;, txuids);       }     } else if (isOffDuty) {       // 已打卡用户       let uids = getOffUids(attendList);       if (alluids.length &gt; uids.length) {         // 未打卡用户         let txuids = alluids.filter((r) =&gt; !uids.includes(r));         sendNotify(&quot;下班没打卡，小心扣钱！&quot;, txuids);       }     } else {       return res.send(&quot;不在打卡时间&quot;);     }     res.send(&quot;没有未打卡的同学&quot;);   } catch (error) {     res.status(error.status || 500).send(error);   } });</code></p>
+<p>上述接口写好之后，我们只需要调用一下这个接口，就能实现自动检测上班或下班的打卡情况。如果有未打卡的组员，那么机器人会在群里发通知提醒，并且 @ 未打卡的组员。</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 调用接口 $ curl -X POST http://localhost:8080/ding/attend-send</code></p>
+<p>检查打卡状态并提醒的功能实现了，现在还差一个“<strong>循环提醒</strong>”功能。</p>
+<p>循环提醒的实现思路是，在某个时间段内，每隔几分钟调用一次接口。如果检测到未打卡的状态，就会循环提醒。</p>
+<p>假设上下班时间分别是上午 9 点和下午 18 点，那么检测的时间段可以划分为：</p>
+<ul>
+<li>上班：8:30-9:00 之间，每 5 分钟检测一次；</li>
+<li>下班：18:00-19:00 之间，每 10 分钟检测一次；</li>
+</ul>
+<p>上班打卡相对比较紧急，所以时间检测短，频率高。下班打卡相对比较宽松，下班时间也不固定，因此检测时间长，频率低一些。</p>
+<p>确定好检测规则之后，我们使用 Linux 的定时任务 <code>crontab</code> 来实现上述功能。</p>
+<p>首先将上面写好的 Node.js 代码部署到 Linux 服务器，部署后可在 Linux 内部调用接口。</p>
+<h3 id="crontab-配置解析">crontab 配置解析<a hidden class="anchor" aria-hidden="true" href="#crontab-配置解析">#</a></h3>
+<p>简单说一下 crontab 定时任务如何配置。它的配置方式是一行一个任务，每行的配置字段如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 分别表示：分钟、小时、天、月、周、要执行的命令 minute hour day month weekday cmd</code></p>
+<p>每个字段用具体的数字表示，如果要全部匹配，则用 * 表示。上班打卡检测的配置如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>29-59/5 8 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send</code></p>
+<p>上面的 <code>29-59/5 8</code> 表示在 8:29 到 8:59 之间，每 5 分钟执行一次；1-5 表示周一到周五，这样就配置好了。</p>
+<p>同样的道理，下班打卡检测的配置如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>*/10 18-19 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send</code></p>
+<p>在 Linux 中执行 <code>crontab -e</code> 打开编辑页面，写入上面的两个配置并保存，然后查看是否生效：</p>
+<p>sh</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>$ crontab -l 29-59/5 8 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send */10 18-19 * * 1-5 curl -X POST http://localhost:8080/ding/attend-send</code></p>
+<p>看到上述输出，表示定时任务创建成功。</p>
+<p>现在每天上班前和下班后，小工具会自动检测组员的打卡状态并循环提醒。最终效果如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8611a7d33f34690a33e409ea08f1729~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=732&amp;h=245&amp;s=50395&amp;e=png&amp;b=17181a" alt="image.png"  />
+</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>这个小工具是基于钉钉 API + Node.js 实现，思路比较有意思，解决了实际问题。并且这个小项目非常适合学习 Node.js，代码精简干净，易于理解和阅读。</p>
+<p>再次感谢您的阅读。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/node.js/">Node.js</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%B8%80%E4%B8%8D%E5%B0%8F%E5%BF%83%E5%BC%80%E6%BA%90%E4%BA%86%E4%B8%80%E4%B8%AAflutter%E5%BF%AB%E9%80%9F%E5%BC%80%E5%8F%91%E6%A8%A1%E6%9D%BF/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>一不小心开源了一个Flutter快速开发模板</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E7%8E%B0%E4%BB%A3%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97yaml%E6%AF%94json%E9%AB%98%E7%BA%A7%E5%9C%A8%E5%93%AA/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>现代配置指南——YAML比JSON高级在哪？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ on x"
+            href="https://x.com/intent/tweet/?text=%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f&amp;hashtags=Node.js%2cJavaScript">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f&amp;title=%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81&amp;summary=%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f&title=%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ on telegram"
+            href="https://telegram.me/share/url?text=%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e7%bb%84%e5%91%98%e8%80%81%e6%98%af%e5%bf%98%e8%ae%b0%e6%89%93%e5%8d%a1%ef%bc%8c%e6%88%91%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e6%ac%be%e5%b0%8f%e5%b7%a5%e5%85%b7%ef%bc%8c%e8%ae%a9%e5%85%a8%e7%bb%84%e4%b8%89%e4%b8%aa%e6%9c%88%e5%85%a8%e5%8b%a4%ef%bc%81&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%25BB%2584%25E5%2591%2598%25E8%2580%2581%25E6%2598%25AF%25E5%25BF%2598%25E8%25AE%25B0%25E6%2589%2593%25E5%258D%25A1%25E6%2588%2591%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E6%25AC%25BE%25E5%25B0%258F%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AE%25A9%25E5%2585%25A8%25E7%25BB%2584%25E4%25B8%2589%25E4%25B8%25AA%25E6%259C%2588%25E5%2585%25A8%25E5%258B%25A4%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>用一周时间开发了一个微信小程序，我遇到了哪些问题？ | PaperMod</title>
+<meta name="keywords" content="微信小程序">
+<meta name="description" content="我用一周的时间做了一个粗糙的电商微信小程序，实现了一个卖花的电商基本业务。具体功能实现了自定义tabbar，request封装，自定义组件，分包，store状态管理，vant组件库配置，上拉加载更多等">
+<meta name="author" content="白哥学前端">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E7%94%A8%E4%B8%80%E5%91%A8%E6%97%B6%E9%97%B4%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E4%B8%AA%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%88%91%E9%81%87%E5%88%B0%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E7%94%A8%E4%B8%80%E5%91%A8%E6%97%B6%E9%97%B4%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E4%B8%AA%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%88%91%E9%81%87%E5%88%B0%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="用一周时间开发了一个微信小程序，我遇到了哪些问题？" />
+<meta property="og:description" content="我用一周的时间做了一个粗糙的电商微信小程序，实现了一个卖花的电商基本业务。具体功能实现了自定义tabbar，request封装，自定义组件，分包，store状态管理，vant组件库配置，上拉加载更多等" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E7%94%A8%E4%B8%80%E5%91%A8%E6%97%B6%E9%97%B4%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E4%B8%AA%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%88%91%E9%81%87%E5%88%B0%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-02-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-02-21T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="用一周时间开发了一个微信小程序，我遇到了哪些问题？"/>
+<meta name="twitter:description" content="我用一周的时间做了一个粗糙的电商微信小程序，实现了一个卖花的电商基本业务。具体功能实现了自定义tabbar，request封装，自定义组件，分包，store状态管理，vant组件库配置，上拉加载更多等"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "用一周时间开发了一个微信小程序，我遇到了哪些问题？",
+      "item": "http://localhost:1313/posts/juejin/%E7%94%A8%E4%B8%80%E5%91%A8%E6%97%B6%E9%97%B4%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E4%B8%AA%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%88%91%E9%81%87%E5%88%B0%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "用一周时间开发了一个微信小程序，我遇到了哪些问题？",
+  "name": "用一周时间开发了一个微信小程序，我遇到了哪些问题？",
+  "description": "我用一周的时间做了一个粗糙的电商微信小程序，实现了一个卖花的电商基本业务。具体功能实现了自定义tabbar，request封装，自定义组件，分包，store状态管理，vant组件库配置，上拉加载更多等",
+  "keywords": [
+    "微信小程序"
+  ],
+  "articleBody": "功能截图 特别说明：由于本项目是用于教学案例，并没有上线的二维码供大家体验。\n开发版本 微信开发者工具版本：1.06 调试基础库：2.30 代码仓库 gitee：gitee.com/guigu-fe/gu…\ngithub：github.com/xiumubai/gu…\n建议全文参考源代码观看效果更佳，代码可直接在微信开发者工具当中打开预览，appid需要替换成自己的。\n获取用户信息变化 用户头像昵称获取规则已调整，现在微信小程序已经获取不到用户昵称和头像了，只能已通过用户回填（提供给用户一个修改昵称和头像的表单页面）的方式来实现。不过还是可以获取到code跟后端换取token的方式来进行登录。\n具体参考 用户信息接口调整说明、小程序用户头像昵称获取规则调整公告\nvant weapp组件库的使用 1.需要使用npm构建的能力，用 npm 构建前，请先阅读微信官方的 npm 支持。初始化package.json\nshell\n代码解读\n复制代码\nnpm init\n2.安装@vant/weapp\nshell\n代码解读\n复制代码\n# 通过 npm 安装 npm i @vant/weapp -S --production # 通过 yarn 安装 yarn add @vant/weapp --production # 安装 0.x 版本 npm i vant-weapp -S --production\n2.修改 app.json 将 app.json 中的 “style”: “v2” 去除，小程序的新版基础组件强行加上了许多样式，难以覆盖，不关闭将造成部分组件样式混乱。 3.修改 project.config.json 开发者工具创建的项目，miniprogramRoot 默认为 miniprogram，package.json 在其外部，npm 构建无法正常工作。 需要手动在 project.config.json 内添加如下配置，使开发者工具可以正确索引到 npm 依赖的位置。\nshell\n代码解读\n复制代码\n{ ... \"setting\": { ... \"packNpmManually\": true, \"packNpmRelationList\": [ { \"packageJsonPath\": \"./package.json\", \"miniprogramNpmDistDir\": \"./miniprogram/\" } ] } }\n注意： 由于目前新版开发者工具创建的小程序目录文件结构问题，npm构建的文件目录为miniprogram_npm，并且开发工具会默认在当前目录下创建miniprogram_npm的文件名，所以新版本的miniprogramNpmDistDir配置为'./'即可。 4.构建 npm 包 打开微信开发者工具，点击 工具 -\u003e 构建 npm，并勾选 使用 npm 模块 选项，构建完成后，即可引入组件。 使用组件 引入组件\njavascript\n代码解读\n复制代码\n// 通过 npm 安装 // app.json \"usingComponents\": { \"van-button\": \"@vant/weapp/button/index\" }\n使用组件\nshell\n代码解读\n复制代码\n按钮\n如果预览没有效果，从新构建一次npm，然后重新打开此项目。\n自定义tabbar 这里我的购物车使用了徽标，所以需要自定义一个tabbar，这里自定义以后，会引发后面的一系列连锁反应（比如内容区域高度塌陷，导致tabbar遮挡内容区域），后面会讲如何计算。效果如下图： 1. 配置信息 在 app.json 中的 tabBar 项指定 custom 字段，同时其余 tabBar 相关配置也补充完整。 所有 tab 页的 json 里需声明 usingComponents 项，也可以在 app.json 全局开启。 示例：\njavascript\n代码解读\n复制代码\n{ \"tabBar\": { \"custom\": true, \"color\": \"#000000\", \"selectedColor\": \"#000000\", \"backgroundColor\": \"#000000\", \"list\": [{ \"pagePath\": \"page/component/index\", \"text\": \"组件\" }, { \"pagePath\": \"page/API/index\", \"text\": \"接口\" }] }, \"usingComponents\": {} }\n2. 添加 tabBar 代码文件 需要跟pages目录同级，创建一个custom-tab-bar目录。 .wxml代码如下：\njavascript\n代码解读\n复制代码\n{{cartCount}} {{item.text}} 注意这里的徽标控制我是通过info字段来控制的，然后数量cartCount单独第一个了一个字段，这个字段是通过store来管理的，后面会讲为什么通过stroe来控制的。\n3. 编写 tabBar 代码 用自定义组件的方式编写即可，该自定义组件完全接管 tabBar 的渲染。另外，自定义组件新增 getTabBar 接口，可获取当前页面下的自定义 tabBar 组件实例。\njavascript\n代码解读\n复制代码\nimport { storeBindingsBehavior } from 'mobx-miniprogram-bindings'; import { store } from '../store/index'; Component({ behaviors: [storeBindingsBehavior], storeBindings: { store, fields: { count: 'count', }, actions: [], }, observers: { count: function (val) { // 更新购物车的数量 this.setData({ cartCount: val }); }, }, data: { selected: 0, color: '#252933', selectedColor: '#FF734C', cartCount: 0, list: [ { pagePath: '/pages/index/index', text: '首页', iconPath: '/static/tabbar/home-icon1.png', selectedIconPath: '/static/tabbar/home-icon1-1.png', }, { pagePath: '/pages/category/category', text: '分类', iconPath: '/static/tabbar/home-icon2.png', selectedIconPath: '/static/tabbar/home-icon2-2.png', }, { pagePath: '/pages/cart/cart', text: '购物车', iconPath: '/static/tabbar/home-icon3.png', selectedIconPath: '/static/tabbar/home-icon3-3.png', info: true, }, { pagePath: '/pages/info/info', text: '我的', iconPath: '/static/tabbar/home-icon4.png', selectedIconPath: '/static/tabbar/home-icon4-4.png', }, ], }, lifetimes: {}, methods: { // 改变tab的时候，记录index值 switchTab(e) { const { path, index } = e.currentTarget.dataset; wx.switchTab({ url: path }); this.setData({ selected: index, }); }, }, });\n这里的store大家不用理会，只需要记住是设置徽标的值就可以了。\n4.设置样式 css\n代码解读\n复制代码\n.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 48px; background: white; display: flex; padding-bottom: env(safe-area-inset-bottom); }\n这里的样式单独贴出来说明一下：\nshell\n代码解读\n复制代码\npadding-bottom: env(safe-area-inset-bottom);\n可以让出底部安全区域，不然的话tabbar会直接沉到底部 别忘了在index.json中设置component=true\nshell\n代码解读\n复制代码\n{ \"component\": true }\n5.tabbar页面设置index 上面的代码添加完毕以后，我们的tabbar就出来了，但是有个问题，就是在点击tab的时候，样式不会改变，必须再点击一次，这是因为当你切换页面或者刷新页面的时候，index的值会重置，为了解决这个问题，我们需要在每个tabbar的页面添加下面的代码：\njavascript\n代码解读\n复制代码\n/** * 生命周期函数--监听页面显示 */ onShow() { if (typeof this.getTabBar === 'function' \u0026\u0026 this.getTabBar()) { this.getTabBar().setData({ selected: 0, }); } },\n当页面每次show的时候，设置一下selected的值，也就是选中的index就可以了。其他的tabbar页面同样也是如此设置即可。\n添加store状态管理 接下来我们来讲讲微信小程序如何用store来管理我们的数据。 上面我们说了我们需要实现一个tabbar的徽标，起初我想的是直接用个缓存来解决就完事了，后来发现我太天真了，忘记了这个字段是一个响应式的，它是需要渲染到页面上的，它变了，页面中的数据也得跟着一起变。后来我想通过globalData来实现，也不行。后来我又又想到了把这个数据响应式监听一下不就行了？于是通过proxy，跟vue3的处理方式一样，监听一下这个字段的改变就可以了。在购物车这个页面触发的时候是挺好，可当我切换到其他tabbar页面的时候它就不见了。我忽略了一个问题，它是全局响应的啊。于是最后才想到了使用store的方式来实现。 我找到了一个针对微信小程序的解决方法，就是使用mobx-miniprogram-bindings和mobx-miniprogram这两个库来解决。真是帮了我的大忙了。 下面我们直接来使用。 先安装两个插件：\nshell\n代码解读\n复制代码\nnpm install --save mobx-miniprogram mobx-miniprogram-bindings\n方式跟安装vant weapp一样，npm安装完成以后，在微信开发者工具当中构建npm即可。 下面我们来通过如何实现一个tabbar徽标的场景来学习如何在微信小程序中使用store来管理全局数据。\ntabbar徽标实现 1.定义store javascript\n代码解读\n复制代码\nimport { observable, action, runInAction } from 'mobx-miniprogram'; import { getCartList } from './cart'; // 获取购物车数量 export const store = observable({ /** 数据字段 */ count: 0, /** 异步方法 */ getCartListCount: async function () { const num = await getCartList(); runInAction(() =\u003e { this.count = num; }); }, /** 更新购物车的数量 */ updateCount: action(function (num) { this.count = num; }), });\n看起来是不是非常简单。这里我们定义了一个count，然后定义了两个方法，这两个方法有点区别：\nupdateCount用来更新count getCartListCount用来异步更新count，因为这里我们在进入小程序的时候就需要获取count的初始值，这个值的计算又的依赖接口，所以需要使用异步的方式。 好了，现在我们字段有了，设置初始值的方法有了，更新字段的方法也有了。下面我们来看一下如何使用。\n2.使用store 回到我们的tabbr组件，在custom-tab-bari/ndex.js中，我们贴一下主要的代码：\njavascript\n代码解读\n复制代码\nimport { storeBindingsBehavior } from 'mobx-miniprogram-bindings'; import { store } from '../store/index'; Component({ behaviors: [storeBindingsBehavior], storeBindings: { store, fields: { count: 'count', }, actions: [], }, observers: { count: function (val) { // 更新购物车的数量 this.setData({ cartCount: val }); }, }, data: { cartCount: 0, }, });\n解释一下，这里我们只是获取了count的值，然后通过observers的方式监听了一下count，然后赋值给了cartCount,这里你直接使用count渲染到页面上也是没有问题的。我这里只是为了演示一下observers的使用方式才这么写的。这样设置以后，tabbar上面的徽标数字已经可以正常展示了。 现在当我们的购物车数字改变以后，就要更新count的值了。\n3.使用action 找到我们的cart页面，下面是具体的逻辑：\njavascript\n代码解读\n复制代码\nimport { findCartList, deleteCart, checkCart, addToCart, checkAllCart, } from '../../utils/api'; import { createStoreBindings } from 'mobx-miniprogram-bindings'; import { store } from '../../store/index'; import { getCartTotalCount } from '../../store/cart'; const app = getApp(); Page({ data: { list: [], totalCount: 0, }, /** * 生命周期函数--监听页面加载 */ onLoad(options) { this.storeBindings = createStoreBindings(this, { store, fields: ['count'], actions: ['updateCount'], }); }, /** * 声明周期函数--监听页面卸载 */ onUnload() { this.storeBindings.destroyStoreBindings(); }, /** * 生命周期函数--监听页面显示 */ onShow() { if (typeof this.getTabBar === 'function' \u0026\u0026 this.getTabBar()) { this.getTabBar().setData({ selected: 2, }); } this.getCartList(); }, /** * 获取购物车列表 */ async getCartList() { const res = await findCartList(); this.setData({ list: res.data, }); this.computedTotalCount(res.data); }, /** * 修改购物车数量 */ async onChangeCount(event) { const newCount = event.detail; const goodsId = event.target.dataset.goodsid; const originCount = event.target.dataset.count; // 这里如果直接拿+以后的数量，接口的处理方式是直接在上次的基础累加的， // 所以传给接口的购物车数量的计算方式如下： // 购物车添加的数量=本次的数量-上次的数量 const count = newCount - originCount; const res = await addToCart({ goodsId, count, }); if (res.code === 200) { this.getCartList(); } }, /** * 计算购物车总数量 */ computedTotalCount(list) { // 获取购物车选中数量 const total = getCartTotalCount(list); // 设置购物车徽标数量 this.updateCount(total); }, });\n上面的代码有所删减。在page和component中使用action方法有所区别，需要在onUnload的时候销毁一下我们的storeBindings。当修改购物车数量的时候，我这里会重新请求一次接口，然后计算一下totalCount的数量，通过updateCount来修改count的值。到了这里，我们的徽标就可以正常的使用了。不管是切换到哪一个tabbar页面，徽标都会保持状态。\n4.使用异步action 现在还剩最后一个问题，就是如何设置count的初始值，这个值还得从接口获取过来。下面是实现思路。 首先我们在store中定义了一个一步方法：\njavascript\n代码解读\n复制代码\nimport { observable, action, runInAction } from 'mobx-miniprogram'; import { getCartList } from './cart'; // 获取购物车数量 export const store = observable({ /** 数据字段 */ count: 0, /** 异步方法 */ getCartListCount: async function () { const num = await getCartList(); runInAction(() =\u003e { this.count = num; }); }, /** 更新购物车的数量 */ updateCount: action(function (num) { this.count = num; }), });\n可以看到，异步action的实现跟同步的区别很大，使用了runInAction这个方法，在它的回调函数中去修改count的值。很坑的是，这个方法在[mobx-miniprogram-bindings](https://www.npmjs.com/package/mobx-miniprogram-bindings)中的官方文档中没有做任何说明，我百度了好久才找到。 现在，我们有了这个方法，在哪里触发好合适呢？答案是app.js中的onShow生命周期函数中。也就是每次我们进入小程序，就会设置一下count的初始值了。下面是代码：\njavascript\n代码解读\n复制代码\n// app.js import { createStoreBindings } from 'mobx-miniprogram-bindings'; import { store } from './store/index'; App({ onShow() { this.storeBindings = createStoreBindings(this, { store, fields: [], actions: ['getCartListCount'], }); // 在页面初始化的时候，更新购物车徽标的数量 this.getCartListCount(); }, });\n到此为止，整个完整的徽标响应式改变和store的使用完美的融合了。 参考文章：blog.csdn.net/ice_stone_k…\n如何获取tabbar的高度 当我们自定义tabbar以后，由于tabbar是使用的fixed定位，我们的内容区域如果不做任何限制，底部的内容就会被tabbar遮挡，所以我们需要给内容区域整体设置一个padding-bottom,那这个值是多少呢？有的人可能会说，直接把tabbar的高度固定，然后padding-bottom设置成这个高度的值不就可以了吗？你别忘了，现在五花八门的手机下面还有一个叫做安全区域的东西，如下图：\n如果你没有把这个高度加上，那内容区域还是会被tabbar遮挡。下面我们就来看看这个高度具体如何计算呢？ 我们以通过wx.getSystemInfoSync()获取机型的各种信息。 其中screenHeight是屏幕高度，safeArea的bottom属性会自动计算安全区域也就是去除tabBar下面的空白区域后有用区域的纵坐标。如此我们就可以就算出来tabber的高度：\njavascript\n代码解读\n复制代码\nconst res = wx.getSystemInfoSync() const { screenHeight, safeArea: { bottom } } = res if (screenHeight \u0026\u0026 bottom){ let safeBottom = screenHeight - bottom const tabbarHeight = 48 + safeBottom }\n这里48是tabbar的高度，我们固定是48px。拿到tabbarHeight以后，把它设置成一个globalData，我们就可以给其他页面设置padding-bottom了。 我这里还使用了其他的一些属性，具体参考代码如下：\njavascript\n代码解读\n复制代码\n// app.js App({ onLaunch() { // 获取高度 this.getHeight(); }, onShow() { }, globalData: { // tabber+安全区域高度 tabbarHeight: 0, // 安全区域的高度 safeAreaHeight: 0, // 内容区域高度 contentHeight: 0, }, getHeight() { const res = wx.getSystemInfoSync(); // 胶囊按钮位置信息 const menuButtonInfo = wx.getMenuButtonBoundingClientRect(); const { screenHeight, statusBarHeight, safeArea: { bottom }, } = res; // console.log('resHeight', res); if (screenHeight \u0026\u0026 bottom) { // 安全区域高度 const safeBottom = screenHeight - bottom; // 导航栏高度 = 状态栏到胶囊的间距（胶囊距上距离-状态栏高度） * 2 + 胶囊高度 + 状态栏高度 const navBarHeight = (menuButtonInfo.top - statusBarHeight) * 2 + menuButtonInfo.height + statusBarHeight; // tabbar高度+安全区域高度 this.globalData.tabbarHeight = 48 + safeBottom; this.globalData.safeAreaHeight = safeBottom; // 内容区域高度，用来设置内容区域最小高度 this.globalData.contentHeight = screenHeight - navBarHeight; } }, });\n假如我们需要给首页设置一个首页设置一个padding-bottom：\njavascript\n代码解读\n复制代码\n// components/layout/index.js const app = getApp(); Component({ /** * 组件的属性列表 */ properties: { bottom: { type: Number, value: 48, }, }, /** * 组件的方法列表 */ methods: {}, });\njavascript\n代码解读\n复制代码\n这里我简单粗暴的直接在外层套了一个组件，统一设置了padding-bottom。 除了自定义tabbar，还可以自定义navbar，这里我没这个功能，所以不展开讲了，这里放一个参考文章： 获取状态栏的高度。这个文章把如何自定义navbar，如何获取navbar的高度，讲的很通透，感兴趣的仔细拜读。\n分页版上拉加载更多 为什么我称作是分页版本的上拉加载更多呢，因为就是上拉然后多加载一页，没有做那种虚拟加载，感兴趣的可以参考这篇文章（我觉得写的非常到位了）。下面我以商品列表为例，代码在pages/goods/list下，讲讲简单版本的实现：\njavascript\n代码解读\n复制代码\n查看其他商品 javascript\n代码解读\n复制代码\n// pages/goods/list/index.js import { findGoodsList } from '../../../utils/api'; const app = getApp(); Page({ /** * 页面的初始数据 */ data: { page: 1, limit: 10, list: [], options: {}, loadStatus: 0, contentHeight: app.globalData.contentHeight, safeAreaHeight: app.globalData.safeAreaHeight, }, /** * 生命周期函数--监听页面加载 */ onLoad(options) { this.setData({ options }); this.loadGoodsList(true); }, /** * 页面上拉触底事件的处理函数 */ onReachBottom() { // 还有数据，继续请求接口 if (this.data.loadStatus === 0) { this.loadGoodsList(); } }, /** * 商品列表 */ async loadGoodsList(fresh = false) { // wx.stopPullDownRefresh(); this.setData({ loadStatus: 1 }); let page = fresh ? 1 : this.data.page + 1; // 组装查询参数 const params = { page, limit: this.data.limit, ...this.data.options, }; try { // loadstatus说明： 0-加载完毕，隐藏加载状态 1-正在加载 2-全部加载 3-加载失败 const res = await findGoodsList(params); const data = res.data.records; if (data.length \u003e 0) { this.setData({ list: fresh ? data : this.data.list.concat(data), loadStatus: data.length === this.data.limit ? 0 : 2, page, }); } else { // 数据全部加载完毕 this.setData({ loadStatus: 2, }); } } catch { // 错误请求 this.setData({ loadStatus: 3, }); } }, });\n代码已经很详细了，我再展开说明一下。\nonLoad的时候第一次请求商品列表数据loadGoodsList，这里我加了一个fresh字段，用来区分是不是第一次加载，从而且控制page是不是等于1 触发onReachBottom的时候，先判断loadStatus === 0，表示接口数据还没加载完，继续请求loadGoodsList 在loadGoodsList里面，先设置loadStatus = 1，表示状态为加载中。如果fresh为false，则表示要请求下一页的数据了，page+1。 接口请求成功，给了list添加数据的时候要注意了，这里需要再上次list的基础上拼接数据，所以得用concat。同时修改loadStatus状态，如果当前请求回来的数据条数小与limit（每页数据大小），则表示没有更对的数据了，loadStatus = 2，反之为0。 最后为了防止特殊情况出现，还有个loadStatus = 3，表示加载失败的情况。 这里我封装了一个load-more组件，里面就是对loadStatus各种不同状态的处理。具体详情看看源码。 思考：如果加上个下拉刷新，跟上拉加载放在一起，如何实现呢？\n如何分包 为什么要做小程序分包？先来看看小程序对文件包的大小限制 在不使用分包的时候，代码总包的大小限制为2M，如果使用了分包，总包大小可以达到20M，也就是我们能分10个包。 那么如何分包？非常的简单。代码如下：\njavascript\n代码解读\n复制代码\n{ \"pages\": [ \"pages/index/index\", \"pages/category/category\", \"pages/cart/cart\", \"pages/info/info\", \"pages/login/index\" ], \"subpackages\": [ { \"root\": \"pages/goods\", \"pages\": [ \"list/index\", \"detail/index\" ] }, { \"root\": \"pages/address\", \"pages\": [ \"list/index\", \"add/index\" ] }, { \"root\": \"pages/order\", \"pages\": [ \"pay/index\", \"list/index\", \"result/index\", \"detail/index\" ] } ], }\n目录结构如下： 解释一下： 我们subpackages下面的就是分包的内容，里面的每一个root就是一个包，pages里面的内容只能是这样的字符串路径，添加别的内容会报错。分包的逻辑：业务相关的页面放在一个包下，也就是一个目录下即可。 ⚠️注意：tabbar的页面不能放在分包里面。 下面是分包以后的代码依赖分析截图： 后续更新计划 小程序如何自定义navbar 小程序如何添加typescript 在小程序中如何做表单校验的小技巧 微信支付流程 如何在小程序中mock数据 如何优化小程序 本文章可以随意转载。转给更多需要帮助的人。看了源码觉得有帮助的可以点个star。我会持续更新更多系列教程。\n",
+  "wordCount" : "1330",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-02-21T00:00:00Z",
+  "dateModified": "2023-02-21T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "白哥学前端"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E7%94%A8%E4%B8%80%E5%91%A8%E6%97%B6%E9%97%B4%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E4%B8%AA%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%88%91%E9%81%87%E5%88%B0%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      用一周时间开发了一个微信小程序，我遇到了哪些问题？
+    </h1>
+    <div class="post-description">
+      我用一周的时间做了一个粗糙的电商微信小程序，实现了一个卖花的电商基本业务。具体功能实现了自定义tabbar，request封装，自定义组件，分包，store状态管理，vant组件库配置，上拉加载更多等
+    </div>
+    <div class="post-meta"><span title='2023-02-21 00:00:00 +0000 UTC'>二月 21, 2023</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;白哥学前端&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd%e6%88%aa%e5%9b%be" aria-label="功能截图">功能截图</a></li>
+                <li>
+                    <a href="#%e5%bc%80%e5%8f%91%e7%89%88%e6%9c%ac" aria-label="开发版本">开发版本</a></li>
+                <li>
+                    <a href="#%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93" aria-label="代码仓库">代码仓库</a></li>
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96%e7%94%a8%e6%88%b7%e4%bf%a1%e6%81%af%e5%8f%98%e5%8c%96" aria-label="获取用户信息变化">获取用户信息变化</a></li>
+                <li>
+                    <a href="#vant-weapphttpslinkjuejincntargethttps3a2f2fvant-contribgiteeio2fvant-weapp2f232fhome-httpsvant-contribgiteeiovant-weapphome%e7%bb%84%e4%bb%b6%e5%ba%93%e7%9a%84%e4%bd%bf%e7%94%a8" aria-label="vant weapp组件库的使用">vant weapp组件库的使用</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e7%bb%84%e4%bb%b6" aria-label="使用组件">使用组件</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89tabbar" aria-label="自定义tabbar">自定义tabbar</a><ul>
+                        
+                <li>
+                    <a href="#1-%e9%85%8d%e7%bd%ae%e4%bf%a1%e6%81%af" aria-label="1. 配置信息">1. 配置信息</a></li>
+                <li>
+                    <a href="#2-%e6%b7%bb%e5%8a%a0-tabbar-%e4%bb%a3%e7%a0%81%e6%96%87%e4%bb%b6" aria-label="2. 添加 tabBar 代码文件">2. 添加 tabBar 代码文件</a></li>
+                <li>
+                    <a href="#3-%e7%bc%96%e5%86%99-tabbar-%e4%bb%a3%e7%a0%81" aria-label="3. 编写 tabBar 代码">3. 编写 tabBar 代码</a></li>
+                <li>
+                    <a href="#4%e8%ae%be%e7%bd%ae%e6%a0%b7%e5%bc%8f" aria-label="4.设置样式">4.设置样式</a></li>
+                <li>
+                    <a href="#5tabbar%e9%a1%b5%e9%9d%a2%e8%ae%be%e7%bd%aeindex" aria-label="5.tabbar页面设置index">5.tabbar页面设置index</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b7%bb%e5%8a%a0store%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86" aria-label="添加store状态管理">添加store状态管理</a></li>
+                <li>
+                    <a href="#tabbar%e5%be%bd%e6%a0%87%e5%ae%9e%e7%8e%b0" aria-label="tabbar徽标实现">tabbar徽标实现</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%ae%9a%e4%b9%89store" aria-label="1.定义store">1.定义store</a></li>
+                <li>
+                    <a href="#2%e4%bd%bf%e7%94%a8store" aria-label="2.使用store">2.使用store</a></li>
+                <li>
+                    <a href="#3%e4%bd%bf%e7%94%a8action" aria-label="3.使用action">3.使用action</a></li>
+                <li>
+                    <a href="#4%e4%bd%bf%e7%94%a8%e5%bc%82%e6%ad%a5action" aria-label="4.使用异步action">4.使用异步action</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e8%8e%b7%e5%8f%96tabbar%e7%9a%84%e9%ab%98%e5%ba%a6" aria-label="如何获取tabbar的高度">如何获取tabbar的高度</a></li>
+                <li>
+                    <a href="#%e5%88%86%e9%a1%b5%e7%89%88%e4%b8%8a%e6%8b%89%e5%8a%a0%e8%bd%bd%e6%9b%b4%e5%a4%9a" aria-label="分页版上拉加载更多">分页版上拉加载更多</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e5%88%86%e5%8c%85" aria-label="如何分包">如何分包</a></li>
+                <li>
+                    <a href="#%e5%90%8e%e7%bb%ad%e6%9b%b4%e6%96%b0%e8%ae%a1%e5%88%92" aria-label="后续更新计划">后续更新计划</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="功能截图">功能截图<a hidden class="anchor" aria-hidden="true" href="#功能截图">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8a418494b2154c619be3a233c05210d6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="home.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3267d8d14e9a411783fac2ef43a45333~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="info.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a255e0d64771466995f2241e5a8b129f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="address-add.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/16e5313a342e442db082957d0b1423b1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="address-list.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d5a04b1ef7ab4953af694f632666444d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="cart-list.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eb37736a6a244450b904bc6a983e1c91~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="category.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3536f5d7b8cc4b04b9e2ef32e0c3780d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="goods-detail.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/83e6d8baabdf4dfc83a005656a577068~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="order-list.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/16adadd5fe2c48a8b28aca351f17fda3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="goods-list.pic.jpg"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dda4d2d97b0c4a4686fc032c9ffb139f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="order-detail.pic.jpg"  />
+</p>
+<p>特别说明：由于本项目是用于教学案例，并没有上线的二维码供大家体验。</p>
+<h2 id="开发版本">开发版本<a hidden class="anchor" aria-hidden="true" href="#开发版本">#</a></h2>
+<ul>
+<li>微信开发者工具版本：1.06</li>
+<li>调试基础库：2.30</li>
+</ul>
+<h2 id="代码仓库">代码仓库<a hidden class="anchor" aria-hidden="true" href="#代码仓库">#</a></h2>
+<ul>
+<li>
+<p>gitee：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgitee.com%2Fguigu-fe%2Fguigu-flower-mall" title="https://gitee.com/guigu-fe/guigu-flower-mall">gitee.com/guigu-fe/gu…</a></p>
+</li>
+<li>
+<p>github：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fxiumubai%2Fguigu-flower-mall" title="https://github.com/xiumubai/guigu-flower-mall">github.com/xiumubai/gu…</a></p>
+</li>
+</ul>
+<p>建议全文参考源代码观看效果更佳，代码可直接在微信开发者工具当中打开预览，appid需要替换成自己的。</p>
+<h2 id="获取用户信息变化">获取用户信息变化<a hidden class="anchor" aria-hidden="true" href="#获取用户信息变化">#</a></h2>
+<p>用户头像昵称获取规则已调整，现在微信小程序已经获取不到用户昵称和头像了，只能已通过用户回填（提供给用户一个修改昵称和头像的表单页面）的方式来实现。不过还是可以获取到code跟后端换取token的方式来进行登录。</p>
+<blockquote>
+<p><strong>具体参考 <strong><a href="https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.weixin.qq.com%2Fcommunity%2Fdevelop%2Fdoc%2F000cacfa20ce88df04cb468bc52801" title="https://developers.weixin.qq.com/community/develop/doc/000cacfa20ce88df04cb468bc52801">用户信息接口调整说明</a></strong>、</strong><a href="https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.weixin.qq.com%2Fcommunity%2Fdevelop%2Fdoc%2F00022c683e8a80b29bed2142b56c01" title="https://developers.weixin.qq.com/community/develop/doc/00022c683e8a80b29bed2142b56c01">小程序用户头像昵称获取规则调整公告</a></p>
+</blockquote>
+<h2 id="vant-weapphttpslinkjuejincntargethttps3a2f2fvant-contribgiteeio2fvant-weapp2f232fhome-httpsvant-contribgiteeiovant-weapphome组件库的使用"><a href="https://link.juejin.cn?target=https%3A%2F%2Fvant-contrib.gitee.io%2Fvant-weapp%2F%23%2Fhome" title="https://vant-contrib.gitee.io/vant-weapp/#/home">vant weapp</a>组件库的使用<a hidden class="anchor" aria-hidden="true" href="#vant-weapphttpslinkjuejincntargethttps3a2f2fvant-contribgiteeio2fvant-weapp2f232fhome-httpsvant-contribgiteeiovant-weapphome组件库的使用">#</a></h2>
+<p>1.需要使用npm构建的能力，用 npm 构建前，请先阅读微信官方的 <a href="https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.weixin.qq.com%2Fminiprogram%2Fdev%2Fdevtools%2Fnpm.html" title="https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html">npm 支持</a>。初始化<code>package.json</code></p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm init</code></p>
+<p>2.安装<code>@vant/weapp</code></p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 通过 npm 安装 npm i @vant/weapp -S --production # 通过 yarn 安装 yarn add @vant/weapp --production # 安装 0.x 版本 npm i vant-weapp -S --production</code></p>
+<p>2.修改 app.json 将 app.json 中的 <strong>&ldquo;style&rdquo;: &ldquo;v2&rdquo;</strong> 去除，小程序的<a href="https://link.juejin.cn?target=https%3A%2F%2Fdevelopers.weixin.qq.com%2Fminiprogram%2Fdev%2Freference%2Fconfiguration%2Fapp.html%23style" title="https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html#style">新版基础组件</a>强行加上了许多样式，难以覆盖，不关闭将造成部分组件样式混乱。 3.修改 project.config.json 开发者工具创建的项目，<strong>miniprogramRoot</strong> 默认为 <strong>miniprogram</strong>，<strong>package.json</strong> 在其外部，npm 构建无法正常工作。 需要手动在 <strong>project.config.json</strong> 内添加如下配置，使开发者工具可以正确索引到 npm 依赖的位置。</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   ...   &quot;setting&quot;: {     ...     &quot;packNpmManually&quot;: true,     &quot;packNpmRelationList&quot;: [       {         &quot;packageJsonPath&quot;: &quot;./package.json&quot;,         &quot;miniprogramNpmDistDir&quot;: &quot;./miniprogram/&quot;       }     ]   } }</code></p>
+<p>注意： 由于目前新版开发者工具创建的小程序目录文件结构问题，npm构建的文件目录为<code>miniprogram_npm</code>，并且开发工具会默认在当前目录下创建<code>miniprogram_npm</code>的文件名，所以新版本的<code>miniprogramNpmDistDir</code>配置为<code>'./'</code>即可。 4.构建 npm 包 打开微信开发者工具，点击 <strong>工具 -&gt; 构建 npm</strong>，并勾选 <strong>使用 npm 模块</strong> 选项，构建完成后，即可引入组件。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/04e0e5dac8f1411bb29df8428372bef2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h3 id="使用组件">使用组件<a hidden class="anchor" aria-hidden="true" href="#使用组件">#</a></h3>
+<p>引入组件</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 通过 npm 安装 // app.json &quot;usingComponents&quot;: {   &quot;van-button&quot;: &quot;@vant/weapp/button/index&quot; }</code></p>
+<p>使用组件</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;van-button type=&quot;primary&quot;&gt;按钮&lt;/van-button&gt;</code></p>
+<p>如果预览没有效果，从新构建一次npm，然后<code>重新打开此项目</code>。</p>
+<h2 id="自定义tabbar">自定义tabbar<a hidden class="anchor" aria-hidden="true" href="#自定义tabbar">#</a></h2>
+<p>这里我的购物车使用了徽标，所以需要自定义一个tabbar，这里自定义以后，会引发后面的一系列连锁反应（比如内容区域高度塌陷，导致tabbar遮挡内容区域），后面会讲如何计算。效果如下图： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/649a7baf343d4a08921daae2aedaf189~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h3 id="1-配置信息">1. 配置信息<a hidden class="anchor" aria-hidden="true" href="#1-配置信息">#</a></h3>
+<ul>
+<li>在 app.json 中的 tabBar 项指定 custom 字段，同时其余 tabBar 相关配置也补充完整。</li>
+<li>所有 tab 页的 json 里需声明 usingComponents 项，也可以在 app.json 全局开启。</li>
+</ul>
+<p>示例：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   &quot;tabBar&quot;: {     &quot;custom&quot;: true,     &quot;color&quot;: &quot;#000000&quot;,     &quot;selectedColor&quot;: &quot;#000000&quot;,     &quot;backgroundColor&quot;: &quot;#000000&quot;,     &quot;list&quot;: [{       &quot;pagePath&quot;: &quot;page/component/index&quot;,       &quot;text&quot;: &quot;组件&quot;     }, {       &quot;pagePath&quot;: &quot;page/API/index&quot;,       &quot;text&quot;: &quot;接口&quot;     }]   },   &quot;usingComponents&quot;: {} }</code></p>
+<h3 id="2-添加-tabbar-代码文件">2. 添加 tabBar 代码文件<a hidden class="anchor" aria-hidden="true" href="#2-添加-tabbar-代码文件">#</a></h3>
+<p>需要跟pages目录同级，创建一个<code>custom-tab-bar</code>目录。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9946d055cb664b49ba1f1c673b6b672b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+ <code>.wxml</code>代码如下：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!--miniprogram/custom-tab-bar/index.wxml--&gt; &lt;cover-view class=&quot;tab-bar&quot;&gt;   &lt;cover-view class=&quot;tab-bar-border&quot;&gt;&lt;/cover-view&gt;   &lt;cover-view wx:for=&quot;{{list}}&quot;      wx:key=&quot;index&quot;      class=&quot;tab-bar-item&quot;      data-path=&quot;{{item.pagePath}}&quot;      data-index=&quot;{{index}}&quot;      bindtap=&quot;switchTab&quot;&gt;     &lt;cover-view class=&quot;tab-img-wrap&quot;&gt;       &lt;cover-image src=&quot;{{selected === index ? item.selectedIconPath : item.iconPath}}&quot;&gt;&lt;/cover-image&gt;       &lt;cover-view wx-if=&quot;{{item.info &amp;&amp; cartCount &gt; 0}}&quot;class=&quot;tab-badge&quot;&gt;{{cartCount}}&lt;/cover-view&gt;     &lt;/cover-view&gt;     &lt;cover-view style=&quot;color: {{selected === index ? selectedColor : color}}&quot;&gt;{{item.text}}&lt;/cover-view&gt;   &lt;/cover-view&gt; &lt;/cover-view&gt;</code></p>
+<p>注意这里的徽标控制我是通过<code>info</code>字段来控制的，然后数量<code>cartCount</code>单独第一个了一个字段，这个字段是通过<code>store</code>来管理的，后面会讲为什么通过<code>stroe</code>来控制的。</p>
+<h3 id="3-编写-tabbar-代码">3. 编写 tabBar 代码<a hidden class="anchor" aria-hidden="true" href="#3-编写-tabbar-代码">#</a></h3>
+<p>用自定义组件的方式编写即可，该自定义组件完全接管 tabBar 的渲染。另外，自定义组件新增 getTabBar 接口，可获取当前页面下的自定义 tabBar 组件实例。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { storeBindingsBehavior } from 'mobx-miniprogram-bindings'; import { store } from '../store/index'; Component({   behaviors: [storeBindingsBehavior],   storeBindings: {     store,     fields: {       count: 'count',     },     actions: [],   },   observers: {     count: function (val) {       // 更新购物车的数量       this.setData({ cartCount: val });     },   },   data: {     selected: 0,     color: '#252933',     selectedColor: '#FF734C',     cartCount: 0,     list: [       {         pagePath: '/pages/index/index',         text: '首页',         iconPath: '/static/tabbar/home-icon1.png',         selectedIconPath: '/static/tabbar/home-icon1-1.png',       },       {         pagePath: '/pages/category/category',         text: '分类',         iconPath: '/static/tabbar/home-icon2.png',         selectedIconPath: '/static/tabbar/home-icon2-2.png',       },       {         pagePath: '/pages/cart/cart',         text: '购物车',         iconPath: '/static/tabbar/home-icon3.png',         selectedIconPath: '/static/tabbar/home-icon3-3.png',         info: true,       },       {         pagePath: '/pages/info/info',         text: '我的',         iconPath: '/static/tabbar/home-icon4.png',         selectedIconPath: '/static/tabbar/home-icon4-4.png',       },     ],   },   lifetimes: {},   methods: { 	  // 改变tab的时候，记录index值     switchTab(e) {       const { path, index } = e.currentTarget.dataset;       wx.switchTab({ url: path });       this.setData({         selected: index,       });     },   }, });</code></p>
+<p>这里的store大家不用理会，只需要记住是设置徽标的值就可以了。</p>
+<h3 id="4设置样式">4.设置样式<a hidden class="anchor" aria-hidden="true" href="#4设置样式">#</a></h3>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>.tab-bar {   position: fixed;   bottom: 0;   left: 0;   right: 0;   height: 48px;   background: white;   display: flex;   padding-bottom: env(safe-area-inset-bottom); }</code></p>
+<p>这里的样式单独贴出来说明一下：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>padding-bottom: env(safe-area-inset-bottom);</code></p>
+<p>可以让出底部安全区域，不然的话tabbar会直接沉到底部 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0fed9c3cf3d045f99cf0090866c21f1c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+ 别忘了在<code>index.json</code>中设置<code>component=true</code></p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   &quot;component&quot;: true }</code></p>
+<h3 id="5tabbar页面设置index">5.tabbar页面设置index<a hidden class="anchor" aria-hidden="true" href="#5tabbar页面设置index">#</a></h3>
+<p>上面的代码添加完毕以后，我们的tabbar就出来了，但是有个问题，就是在点击tab的时候，样式不会改变，必须再点击一次，这是因为当你切换页面或者刷新页面的时候，index的值会重置，为了解决这个问题，我们需要在每个tabbar的页面添加下面的代码：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 生命周期函数--监听页面显示  */ onShow() {   if (typeof this.getTabBar === 'function' &amp;&amp; this.getTabBar()) {     this.getTabBar().setData({       selected: 0,     });   } },</code></p>
+<p>当页面每次show的时候，设置一下selected的值，也就是选中的index就可以了。其他的tabbar页面同样也是如此设置即可。</p>
+<h2 id="添加store状态管理">添加store状态管理<a hidden class="anchor" aria-hidden="true" href="#添加store状态管理">#</a></h2>
+<p>接下来我们来讲讲微信小程序如何用store来管理我们的数据。 上面我们说了我们需要实现一个tabbar的徽标，起初我想的是直接用个缓存来解决就完事了，后来发现我太天真了，忘记了这个字段是一个响应式的，它是需要渲染到页面上的，它变了，页面中的数据也得跟着一起变。后来我想通过<code>globalData</code>来实现，也不行。后来我又又想到了把这个数据响应式监听一下不就行了？于是通过proxy，跟vue3的处理方式一样，监听一下这个字段的改变就可以了。在购物车这个页面触发的时候是挺好，可当我切换到其他tabbar页面的时候它就不见了。我忽略了一个问题，它是全局响应的啊。于是最后才想到了使用store的方式来实现。 我找到了一个针对微信小程序的解决方法，就是使用<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fmobx-miniprogram-bindings" title="https://www.npmjs.com/package/mobx-miniprogram-bindings">mobx-miniprogram-bindings</a>和<code>mobx-miniprogram</code>这两个库来解决。真是帮了我的大忙了。 下面我们直接来使用。 先安装两个插件：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install --save mobx-miniprogram mobx-miniprogram-bindings</code></p>
+<p>方式跟安装<code>vant weapp</code>一样，npm安装完成以后，在微信开发者工具当中构建<code>npm</code>即可。 下面我们来通过如何实现一个tabbar徽标的场景来学习如何在微信小程序中使用store来管理全局数据。</p>
+<h2 id="tabbar徽标实现">tabbar徽标实现<a hidden class="anchor" aria-hidden="true" href="#tabbar徽标实现">#</a></h2>
+<h3 id="1定义store">1.定义store<a hidden class="anchor" aria-hidden="true" href="#1定义store">#</a></h3>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { observable, action, runInAction } from 'mobx-miniprogram'; import { getCartList } from './cart'; // 获取购物车数量 export const store = observable({   /** 数据字段 */   count: 0,   /** 异步方法 */   getCartListCount: async function () {     const num = await getCartList();     runInAction(() =&gt; {       this.count = num;     });   },   /** 更新购物车的数量 */   updateCount: action(function (num) {     this.count = num;   }), });</code></p>
+<p>看起来是不是非常简单。这里我们定义了一个<code>count</code>，然后定义了两个方法，这两个方法有点区别：</p>
+<ul>
+<li><code>updateCount</code>用来更新<code>count</code></li>
+<li><code>getCartListCount</code>用来异步更新<code>count</code>，因为这里我们在进入小程序的时候就需要获取<code>count</code>的初始值，这个值的计算又的依赖接口，所以需要使用异步的方式。</li>
+</ul>
+<p>好了，现在我们字段有了，设置初始值的方法有了，更新字段的方法也有了。下面我们来看一下如何使用。</p>
+<h3 id="2使用store">2.使用store<a hidden class="anchor" aria-hidden="true" href="#2使用store">#</a></h3>
+<p>回到我们的tabbr组件，在<code>custom-tab-bari/ndex.js</code>中，我们贴一下主要的代码：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { storeBindingsBehavior } from 'mobx-miniprogram-bindings'; import { store } from '../store/index'; Component({   behaviors: [storeBindingsBehavior],   storeBindings: {     store,     fields: {       count: 'count',     },     actions: [],   },   observers: {     count: function (val) {       // 更新购物车的数量       this.setData({ cartCount: val });     },   },   data: {     cartCount: 0,   }, });</code></p>
+<p>解释一下，这里我们只是获取了<code>count</code>的值，然后通过observers的方式监听了一下<code>count</code>，然后赋值给了<code>cartCount</code>,这里你直接使用<code>count</code>渲染到页面上也是没有问题的。我这里只是为了演示一下<code>observers</code>的使用方式才这么写的。这样设置以后，tabbar上面的徽标数字已经可以正常展示了。 现在当我们的购物车数字改变以后，就要更新<code>count</code>的值了。</p>
+<h3 id="3使用action">3.使用action<a hidden class="anchor" aria-hidden="true" href="#3使用action">#</a></h3>
+<p>找到我们的<code>cart</code>页面，下面是具体的逻辑：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import {   findCartList,   deleteCart,   checkCart,   addToCart,   checkAllCart, } from '../../utils/api'; import { createStoreBindings } from 'mobx-miniprogram-bindings'; import { store } from '../../store/index'; import { getCartTotalCount } from '../../store/cart'; const app = getApp(); Page({   data: {     list: [],     totalCount: 0,   },   /**    * 生命周期函数--监听页面加载    */   onLoad(options) {     this.storeBindings = createStoreBindings(this, {       store,       fields: ['count'],       actions: ['updateCount'],     });   },   /**    * 声明周期函数--监听页面卸载    */   onUnload() {     this.storeBindings.destroyStoreBindings();   },   /**    * 生命周期函数--监听页面显示    */   onShow() {     if (typeof this.getTabBar === 'function' &amp;&amp; this.getTabBar()) {       this.getTabBar().setData({         selected: 2,       });     }     this.getCartList();   },   /**    * 获取购物车列表    */   async getCartList() {     const res = await findCartList();     this.setData({       list: res.data,     });     this.computedTotalCount(res.data);   },   /**    * 修改购物车数量    */   async onChangeCount(event) {     const newCount = event.detail;     const goodsId = event.target.dataset.goodsid;     const originCount = event.target.dataset.count;     // 这里如果直接拿+以后的数量，接口的处理方式是直接在上次的基础累加的，     // 所以传给接口的购物车数量的计算方式如下：     // 购物车添加的数量=本次的数量-上次的数量     const count = newCount - originCount;     const res = await addToCart({       goodsId,       count,     });     if (res.code === 200) {       this.getCartList();     }   },   /**    * 计算购物车总数量    */   computedTotalCount(list) {     // 获取购物车选中数量     const total = getCartTotalCount(list);     // 设置购物车徽标数量     this.updateCount(total);   },    });</code></p>
+<p>上面的代码有所删减。在page和component中使用action方法有所区别，需要在<code>onUnload</code>的时候销毁一下我们的<code>storeBindings</code>。当修改购物车数量的时候，我这里会重新请求一次接口，然后计算一下totalCount的数量，通过<code>updateCount</code>来修改<code>count</code>的值。到了这里，我们的徽标就可以正常的使用了。不管是切换到哪一个<code>tabbar</code>页面，徽标都会保持状态。</p>
+<h3 id="4使用异步action">4.使用异步action<a hidden class="anchor" aria-hidden="true" href="#4使用异步action">#</a></h3>
+<p>现在还剩最后一个问题，就是如何设置count的初始值，这个值还得从接口获取过来。下面是实现思路。 首先我们在store中定义了一个一步方法：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { observable, action, runInAction } from 'mobx-miniprogram'; import { getCartList } from './cart'; // 获取购物车数量 export const store = observable({   /** 数据字段 */   count: 0,   /** 异步方法 */   getCartListCount: async function () {     const num = await getCartList();     runInAction(() =&gt; {       this.count = num;     });   },   /** 更新购物车的数量 */   updateCount: action(function (num) {     this.count = num;   }), });</code></p>
+<p>可以看到，异步action的实现跟同步的区别很大，使用了<code>runInAction</code>这个方法，在它的回调函数中去修改count的值。很坑的是，这个方法在<code>[mobx-miniprogram-bindings](https://www.npmjs.com/package/mobx-miniprogram-bindings)</code>中的官方文档中没有做任何说明，我百度了好久才找到。 现在，我们有了这个方法，在哪里触发好合适呢？答案是<code>app.js</code>中的<code>onShow</code>生命周期函数中。也就是每次我们进入小程序，就会设置一下count的初始值了。下面是代码：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// app.js import { createStoreBindings } from 'mobx-miniprogram-bindings'; import { store } from './store/index'; App({   onShow() {     this.storeBindings = createStoreBindings(this, {       store,       fields: [],       actions: ['getCartListCount'],     });     // 在页面初始化的时候，更新购物车徽标的数量     this.getCartListCount();   }, });</code></p>
+<p>到此为止，整个完整的徽标响应式改变和store的使用完美的融合了。 参考文章：<a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fice_stone_kai%2Farticle%2Fdetails%2F126920723" title="https://blog.csdn.net/ice_stone_kai/article/details/126920723">blog.csdn.net/ice_stone_k…</a></p>
+<h2 id="如何获取tabbar的高度">如何获取tabbar的高度<a hidden class="anchor" aria-hidden="true" href="#如何获取tabbar的高度">#</a></h2>
+<p>当我们自定义tabbar以后，由于tabbar是使用的fixed定位，我们的内容区域如果不做任何限制，底部的内容就会被tabbar遮挡，所以我们需要给内容区域整体设置一个<code>padding-bottom</code>,那这个值是多少呢？有的人可能会说，直接把tabbar的高度固定，然后<code>padding-bottom</code>设置成这个高度的值不就可以了吗？你别忘了，现在五花八门的手机下面还有一个叫做安全区域的东西，如下图：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c9eb5ac4bdff410aa264b8c1fb015bb8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>如果你没有把这个高度加上，那内容区域还是会被tabbar遮挡。下面我们就来看看这个高度具体如何计算呢？ 我们以通过<code>wx.getSystemInfoSync()</code>获取机型的各种信息。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3d1e56b7594d4b1fb7648147fde2f885~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>其中<code>screenHeight</code>是屏幕高度，<code>safeArea</code>的<code>bottom</code>属性会自动计算安全区域也就是去除tabBar下面的空白区域后有用区域的纵坐标。如此我们就可以就算出来tabber的高度：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const res = wx.getSystemInfoSync() const { screenHeight, safeArea: { bottom } } = res if (screenHeight &amp;&amp; bottom){   let safeBottom = screenHeight - bottom   const tabbarHeight = 48 + safeBottom }</code></p>
+<p>这里48是tabbar的高度，我们固定是<code>48px</code>。拿到<code>tabbarHeight</code>以后，把它设置成一个<code>globalData</code>，我们就可以给其他页面设置<code>padding-bottom</code>了。 我这里还使用了其他的一些属性，具体参考代码如下：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// app.js App({   onLaunch() {     // 获取高度     this.getHeight();   },   onShow() {   },   globalData: {     // tabber+安全区域高度     tabbarHeight: 0,     // 安全区域的高度     safeAreaHeight: 0,     // 内容区域高度     contentHeight: 0,   },   getHeight() {     const res = wx.getSystemInfoSync();     // 胶囊按钮位置信息     const menuButtonInfo = wx.getMenuButtonBoundingClientRect();     const {       screenHeight,       statusBarHeight,       safeArea: { bottom },     } = res;     // console.log('resHeight', res);     if (screenHeight &amp;&amp; bottom) {       // 安全区域高度       const safeBottom = screenHeight - bottom;       // 导航栏高度 = 状态栏到胶囊的间距（胶囊距上距离-状态栏高度） * 2 + 胶囊高度 + 状态栏高度       const navBarHeight =         (menuButtonInfo.top - statusBarHeight) * 2 +         menuButtonInfo.height +         statusBarHeight;       // tabbar高度+安全区域高度       this.globalData.tabbarHeight = 48 + safeBottom;       this.globalData.safeAreaHeight = safeBottom;       // 内容区域高度，用来设置内容区域最小高度       this.globalData.contentHeight = screenHeight - navBarHeight;     }   }, });</code></p>
+<p>假如我们需要给首页设置一个首页设置一个<code>padding-bottom</code>：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// components/layout/index.js const app = getApp(); Component({   /**    * 组件的属性列表    */   properties: {     bottom: {       type: Number,       value: 48,     },   },   /**    * 组件的方法列表    */   methods: {}, });</code></p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;view class=&quot;layout&quot; style=&quot;padding-bottom: {{bottom}}px&quot;&gt;   &lt;slot&gt;&lt;/slot&gt; &lt;/view&gt;</code></p>
+<p>这里我简单粗暴的直接在外层套了一个组件，统一设置了padding-bottom。 除了自定义tabbar，还可以自定义navbar，这里我没这个功能，所以不展开讲了，这里放一个参考文章： <a href="https://juejin.cn/post/6844904136866021389" title="https://juejin.cn/post/6844904136866021389">获取状态栏的高度</a>。这个文章把如何自定义navbar，如何获取navbar的高度，讲的很通透，感兴趣的仔细拜读。</p>
+<h2 id="分页版上拉加载更多">分页版上拉加载更多<a hidden class="anchor" aria-hidden="true" href="#分页版上拉加载更多">#</a></h2>
+<p>为什么我称作是分页版本的上拉加载更多呢，因为就是上拉然后多加载一页，没有做那种虚拟加载，感兴趣的可以参考这篇<a href="https://juejin.cn/post/7168645862296879117" title="https://juejin.cn/post/7168645862296879117">文章</a>（我觉得写的非常到位了）。下面我以商品列表为例，代码在<code>pages/goods/list</code>下，讲讲简单版本的实现：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!--pages/goods/list/index.wxml--&gt; &lt;view class=&quot;container&quot; style=&quot;min-height: {{contentHeight}}px; padding-bottom: {{safeAreaHeight}}px&quot;&gt;   &lt;view class=&quot;goods-list&quot; wx:if=&quot;{{list.length &gt; 0}}&quot;&gt;     &lt;goods-card wx:for=&quot;{{list}}&quot; wx:key=&quot;index&quot; item=&quot;{{item}}&quot;&gt;&lt;/goods-card&gt;     &lt;!-- 上拉加载更多 --&gt;     &lt;load-more        list-is-empty=&quot;{{!list.length}}&quot;        status=&quot;{{loadStatus}}&quot;      /&gt;   &lt;/view&gt;   &lt;van-empty wx:else description=&quot;该分类下暂无商品，去看看其他的商品吧～&quot;&gt;     &lt;van-button        round        type=&quot;danger&quot;        class=&quot;bottom-button&quot;        bindtap=&quot;gotoBack&quot;&gt;       查看其他商品     &lt;/van-button&gt;   &lt;/van-empty&gt; &lt;/view&gt;</code></p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// pages/goods/list/index.js import { findGoodsList } from '../../../utils/api'; const app = getApp(); Page({   /**    * 页面的初始数据    */   data: {     page: 1,     limit: 10,     list: [],     options: {},     loadStatus: 0,     contentHeight: app.globalData.contentHeight,     safeAreaHeight: app.globalData.safeAreaHeight,   },   /**    * 生命周期函数--监听页面加载    */   onLoad(options) {     this.setData({ options });     this.loadGoodsList(true);   },   /**    * 页面上拉触底事件的处理函数    */   onReachBottom() {     // 还有数据，继续请求接口     if (this.data.loadStatus === 0) {       this.loadGoodsList();     }   },   /**    * 商品列表    */   async loadGoodsList(fresh = false) {     // wx.stopPullDownRefresh();     this.setData({ loadStatus: 1 });     let page = fresh ? 1 : this.data.page + 1;     // 组装查询参数     const params = {       page,       limit: this.data.limit,       ...this.data.options,     };     try {       // loadstatus说明： 0-加载完毕，隐藏加载状态 1-正在加载 2-全部加载 3-加载失败       const res = await findGoodsList(params);       const data = res.data.records;       if (data.length &gt; 0) {         this.setData({           list: fresh ? data : this.data.list.concat(data),           loadStatus: data.length === this.data.limit ? 0 : 2,           page,         });       } else {         // 数据全部加载完毕         this.setData({           loadStatus: 2,         });       }     } catch {       // 错误请求       this.setData({         loadStatus: 3,       });     }   }, });</code></p>
+<p>代码已经很详细了，我再展开说明一下。</p>
+<ul>
+<li><code>onLoad</code>的时候第一次请求商品列表数据<code>loadGoodsList</code>，这里我加了一个fresh字段，用来区分是不是第一次加载，从而且控制page是不是等于1</li>
+<li>触发<code>onReachBottom</code>的时候，先判断<code>loadStatus === 0</code>，表示接口数据还没加载完，继续请求<code>loadGoodsList</code></li>
+<li>在<code>loadGoodsList</code>里面，先设置<code>loadStatus = 1</code>，表示状态为加载中。如果fresh为false，则表示要请求下一页的数据了，page+1。</li>
+<li>接口请求成功，给了list添加数据的时候要注意了，这里需要再上次list的基础上拼接数据，所以得用<code>concat</code>。同时修改<code>loadStatus</code>状态，如果当前请求回来的数据条数小与limit（每页数据大小），则表示没有更对的数据了，<code>loadStatus = 2</code>，反之为0。</li>
+<li>最后为了防止特殊情况出现，还有个<code>loadStatus = 3</code>，表示加载失败的情况。</li>
+</ul>
+<p>这里我封装了一个<code>load-more</code>组件，里面就是对<code>loadStatus</code>各种不同状态的处理。具体详情看看源码。 思考：如果加上个下拉刷新，跟上拉加载放在一起，如何实现呢？</p>
+<h2 id="如何分包">如何分包<a hidden class="anchor" aria-hidden="true" href="#如何分包">#</a></h2>
+<p>为什么要做小程序分包？先来看看小程序对文件包的大小限制 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a4878e5725214e6995e28914955e4aeb~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+ 在不使用分包的时候，代码总包的大小限制为2M，如果使用了分包，总包大小可以达到20M，也就是我们能分10个包。 那么如何分包？非常的简单。代码如下：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{ 	&quot;pages&quot;: [     &quot;pages/index/index&quot;,     &quot;pages/category/category&quot;,     &quot;pages/cart/cart&quot;,     &quot;pages/info/info&quot;,     &quot;pages/login/index&quot;   ],   &quot;subpackages&quot;: [     {       &quot;root&quot;: &quot;pages/goods&quot;,       &quot;pages&quot;: [         &quot;list/index&quot;,         &quot;detail/index&quot;       ]     },     {       &quot;root&quot;: &quot;pages/address&quot;,       &quot;pages&quot;: [         &quot;list/index&quot;,         &quot;add/index&quot;       ]     },     {       &quot;root&quot;: &quot;pages/order&quot;,       &quot;pages&quot;: [         &quot;pay/index&quot;,         &quot;list/index&quot;,         &quot;result/index&quot;,         &quot;detail/index&quot;       ]     }   ], }</code></p>
+<p>目录结构如下： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f07c633652e64a64971b59dc5799bd4a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+ 解释一下： 我们subpackages下面的就是分包的内容，里面的每一个root就是一个包，pages里面的内容只能是这样的字符串路径，添加别的内容会报错。分包的逻辑：业务相关的页面放在一个包下，也就是一个目录下即可。 ⚠️注意：<code>tabbar</code>的页面不能放在分包里面。 下面是分包以后的代码依赖分析截图： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/110c7bf5894e4d4e88b5931cea73bbf8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h2 id="后续更新计划">后续更新计划<a hidden class="anchor" aria-hidden="true" href="#后续更新计划">#</a></h2>
+<ul>
+<li>小程序如何自定义navbar</li>
+<li>小程序如何添加typescript</li>
+<li>在小程序中如何做表单校验的小技巧</li>
+<li>微信支付流程</li>
+<li>如何在小程序中mock数据</li>
+<li>如何优化小程序</li>
+</ul>
+<p>本文章可以随意转载。转给更多需要帮助的人。看了源码觉得有帮助的可以点个star。我会持续更新更多系列教程。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/">微信小程序</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E8%8A%B1%E4%BA%86%E4%B8%80%E5%A4%A9%E6%97%B6%E9%97%B4%E6%90%9C%E5%88%AE%E7%9A%84%E4%B8%AA%E4%BA%BA%E8%A7%89%E5%BE%97%E4%B8%8D%E9%94%99%E7%9A%8416%E5%A5%97vue3%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E6%A8%A1%E7%89%88/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>花了一天时间,搜刮的个人觉得不错的16套vue3后台管理模版</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%88%86%E4%BA%AB5%E6%AC%BE%E5%BC%80%E6%BA%90%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%90%8E%E5%8F%B0%E6%A8%A1%E7%89%88%E5%BC%80%E5%8F%91%E9%A1%B9%E7%9B%AE%E5%BF%85%E5%A4%87/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>分享5款开源企业级后台模版，开发项目必备</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用一周时间开发了一个微信小程序，我遇到了哪些问题？ on x"
+            href="https://x.com/intent/tweet/?text=%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f&amp;hashtags=%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用一周时间开发了一个微信小程序，我遇到了哪些问题？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f&amp;title=%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f&amp;summary=%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用一周时间开发了一个微信小程序，我遇到了哪些问题？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f&title=%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用一周时间开发了一个微信小程序，我遇到了哪些问题？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用一周时间开发了一个微信小程序，我遇到了哪些问题？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用一周时间开发了一个微信小程序，我遇到了哪些问题？ on telegram"
+            href="https://telegram.me/share/url?text=%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用一周时间开发了一个微信小程序，我遇到了哪些问题？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e7%94%a8%e4%b8%80%e5%91%a8%e6%97%b6%e9%97%b4%e5%bc%80%e5%8f%91%e4%ba%86%e4%b8%80%e4%b8%aa%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%ef%bc%8c%e6%88%91%e9%81%87%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E7%2594%25A8%25E4%25B8%2580%25E5%2591%25A8%25E6%2597%25B6%25E9%2597%25B4%25E5%25BC%2580%25E5%258F%2591%25E4%25BA%2586%25E4%25B8%2580%25E4%25B8%25AA%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E6%2588%2591%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E5%2593%25AA%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

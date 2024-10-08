@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>FFmpeg命令行音视频处理 | PaperMod</title>
+<meta name="keywords" content="音视频开发, FFmpeg">
+<meta name="description" content="MacOS下，FFmpeg6.0命令行音视频处理，包括音视频录制、裁剪、合并、提取、添加封面等常见应用。">
+<meta name="author" content="人月神话Lee">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/ffmpeg%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/ffmpeg%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="FFmpeg命令行音视频处理" />
+<meta property="og:description" content="MacOS下，FFmpeg6.0命令行音视频处理，包括音视频录制、裁剪、合并、提取、添加封面等常见应用。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/ffmpeg%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-10-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-10-25T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="FFmpeg命令行音视频处理"/>
+<meta name="twitter:description" content="MacOS下，FFmpeg6.0命令行音视频处理，包括音视频录制、裁剪、合并、提取、添加封面等常见应用。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "FFmpeg命令行音视频处理",
+      "item": "http://localhost:1313/posts/juejin/ffmpeg%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "FFmpeg命令行音视频处理",
+  "name": "FFmpeg命令行音视频处理",
+  "description": "MacOS下，FFmpeg6.0命令行音视频处理，包括音视频录制、裁剪、合并、提取、添加封面等常见应用。",
+  "keywords": [
+    "音视频开发", "FFmpeg"
+  ],
+  "articleBody": "1\n命令行工具\nFFmpeg 的 bin 目录下有三个工具，可在终端直接输入命令执行\nffmpeg ( ffmpeg.org/ffmpeg.html )是一个通用的媒体转换器。它可以读取各种输入，包括实时抓取/录制设备-过滤，并将它们转码为多种输出格式。\nffplay ( ffmpeg.org/ffplay.html )是一款基于 FFmpeg 库和 SDL 库的简单媒体播放器。它主要用作各种 FFmpeg API 的测试平台。\nffprobe ( ffmpeg.org/ffprobe.htm… )是一个多媒体分析器，并以人类和机器可读的方式打印出从多媒体中收集的信息。\n2\nffmpeg 命令\n终端直接输入 ffmpeg，可以获得用法提示\nvbnet\n代码解读\n复制代码\nusage: ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}... Use -h to get full help or, even better, run 'man ffmpeg'\n可以看到它有 5 个参数，简化一下就是：ffmpeg {1} {2} -i {3} {4} {5}，5 个参数含义分别如下：\n全局参数\n输入文件参数\n输入文件\n输出文件参数\n输出文件\n详细用法可以查阅官方文档，或者查阅 man page，或者输入下面命令查阅说明：\nffmpeg -h：简易版说明\nffmpeg -h long：详细版说明\nffmpeg -h full：完整版说明\n部分参数解释：\ncss\n代码解读\n复制代码\n\\-i input\\_file：指定输入文件的路径和名称。示例：-i input.mp4\nruby\n代码解读\n复制代码\n\\-ss position：指定从输入文件的哪个时间位置开始处理，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。示例：-ss 00:01:30.500 表示从 1 分 30.5 秒开始处理。\nruby\n代码解读\n复制代码\n\\-t duration：指定处理的持续时间，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。示例：-t 00:00:45 表示处理 45 秒的内容。\narduino\n代码解读\n复制代码\n\\-vf filtergraph：指定视频过滤器图形，用于对视频进行各种处理，如调整大小、裁剪、旋转、滤镜等。示例：-vf \"scale=640:480\" 表示将视频调整为 640x480 的大小。\narduino\n代码解读\n复制代码\n\\-af filtergraph：指定音频过滤器图形，用于对音频进行各种处理，如音频增益、降噪、混音等。示例：-af \"volume=2.0\" 表示将音频增益调整为原来的 2 倍。\nr\n代码解读\n复制代码\n\\-c:v codec：指定视频编解码器。示例：-c:v libx264 表示使用 libx264 编码器进行视频编码。\nr\n代码解读\n复制代码\n\\-c:a codec：指定音频编解码器。示例：-c:a aac 表示使用 AAC 编码器进行音频编码。\ncss\n代码解读\n复制代码\n\\-b:v bitrate：指定视频的比特率，即视频的质量。较高的比特率通常意味着更好的视频质量，但文件大小也会增加。示例：-b:v 1000k 表示视频比特率为 1000kbps。\ncss\n代码解读\n复制代码\n\\-b:a bitrate：指定音频的比特率，即音频的质量。较高的比特率通常意味着更好的音频质量，但文件大小也会增加。示例：-b:a 128k 表示音频比特率为 128kbps。\n代码解读\n复制代码\n\\-r framerate：指定视频的帧率，即每秒播放的画面数量。较高的帧率可以获得更流畅的视频，但也会增加文件大小。示例：-r 30 表示视频帧率为 30 帧每秒。\n2.1\n查看设备\n代码解读\n复制代码\nffmpeg -devices\n当前电脑输出的可用设备如下：\nlua\n代码解读\n复制代码\nDevices: D. = Demuxing supported .E = Muxing supported -- E audiotoolbox AudioToolbox output device D avfoundation AVFoundation input device D lavfi Libavfilter virtual input device E sdl,sdl2 SDL2 output device D x11grab X11 screen capture, using XCB\n在多媒体处理中，“demuxer”（解封装器）和\"muxer\"（封装器）是两个常用的概念，用于描述多媒体文件的解封装和封装操作。\n1、Demuxer（解封装器） 是一个用于将多媒体文件（如音频或视频文件）解封装为原始音频流、视频流和其他相关数据的组件。它读取多媒体文件的容器格式（如 MP4、AVI、MKV）并解析其中的音频、视频和其他流，将它们提供给后续处理的组件（如解码器）进行解码和处理。Demuxer 将多媒体文件中的不同媒体流分离开来，以便进行独立的处理。\n2、Muxer（封装器） 是一个用于将音频流、视频流和其他相关数据封装到容器格式中的组件。它接收来自解码器或其他处理组件的音频流、视频流等数据，并将它们合并到指定的容器格式中（如 MP4、AVI、MKV），生成一个包含音视频数据的完整多媒体文件。Muxer 负责将不同的音频和视频流合并，并添加必要的容器元数据和索引信息。\nAVFoundation 对于 iOS 开发者来说再熟悉不过了，输入如下命令可以查看支持 avfoundation 支持的设备：\nbash\n代码解读\n复制代码\nffmpeg -f avfoundation -list_devices true -i ''\n输出结果如下：\nless\n代码解读\n复制代码\n[AVFoundation indev @ 0x7fd0621043c0] AVFoundation video devices: [AVFoundation indev @ 0x7fd0621043c0] [0] FaceTime HD Camera (Built-in) [AVFoundation indev @ 0x7fd0621043c0] [1] Capture screen 0 [AVFoundation indev @ 0x7fd0621043c0] AVFoundation audio devices: [AVFoundation indev @ 0x7fd0621043c0] [0] Built-in Microphone\n对于 Windows 平台则是查看 dshow（DirectShow）输入支持的设备：\narduino\n代码解读\n复制代码\nffmpeg -f dshow -list_devices true -i dummy\n使用以下命令查看 FFmpeg 是否支持特定设备：\n代码解读\n复制代码\nffmpeg -sources DEVICE\n其中，DEVICE 是要查询的设备名称，例如 alsa、pulse、v4l2 等。\n2.2\n音频处理\n1、录制音频在 Mac OS 使用 FFmpeg 录制音频，可以使用如下命令：\nlua\n代码解读\n复制代码\nffmpeg -f avfoundation -i \":0\" output.wav\n这个命令使用了 FFmpeg 的 avfoundation 输入设备，从 Mac 的音频输入设备（通常是麦克风）录制音频。\":0\"参数表示默认的音频输入设备，output.wav 是要保存音频的文件名和格式。可以将其更改为所需的文件名和扩展名。\n执行命令后，FFmpeg 将开始录制音频，并在后台显示进度信息。要停止录制，可以按下 Ctrl+C。\n2、查看音频信息\ncss\n代码解读\n复制代码\nffmpeg -i output.wav\n输出结果如下：\nyaml\n代码解读\n复制代码\nInput #0, wav, from 'output.wav': Metadata: encoder : Lavf60.3.100 Duration: 00:00:19.56, bitrate: 1411 kb/s Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, 2 channels, s16, 1411 kb/s\n当然，该命令也可以查看视频文件信息，例如查看前几天在 YouTube 上下载的一个视频信息：\nyaml\n代码解读\n复制代码\nInput #0, mov,mp4,m4a,3gp,3g2,mj2, from 'test.mp4': Metadata: major_brand : mp42 minor_version : 0 compatible_brands: isommp42 creation_time : 2023-10-13T02:00:12.000000Z Duration: 00:12:11.92, start: 0.000000, bitrate: 1134 kb/s Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1280x720 [SAR 1:1 DAR 16:9], 1003 kb/s, 30 fps, 30 tbr, 15360 tbn (default) Metadata: creation_time : 2023-10-13T02:00:12.000000Z handler_name : ISO Media file produced by Google Inc. Created on: 10/12/2023. vendor_id : [0][0][0][0] Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default) Metadata: creation_time : 2023-10-13T02:00:12.000000Z handler_name : ISO Media file produced by Google Inc. Created on: 10/12/2023. vendor_id : [0][0][0][0]\n3、提取音频\n比如，从上面的 test.mp4 视频中提取音频：\ncss\n代码解读\n复制代码\nffmpeg -i test.mp4 -vn test.mp3\n-vn 表示去除视频流，处理信息如下：\nyaml\n代码解读\n复制代码\nInput #0, mov,mp4,m4a,3gp,3g2,mj2, from 'test.mp4': Metadata: major_brand : mp42 minor_version : 0 compatible_brands: isommp42 creation_time : 2023-10-13T02:00:12.000000Z Duration: 00:12:11.92, start: 0.000000, bitrate: 1134 kb/s Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1280x720 [SAR 1:1 DAR 16:9], 1003 kb/s, 30 fps, 30 tbr, 15360 tbn (default) Metadata: creation_time : 2023-10-13T02:00:12.000000Z handler_name : ISO Media file produced by Google Inc. Created on: 10/12/2023. vendor_id : [0][0][0][0] Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default) Metadata: creation_time : 2023-10-13T02:00:12.000000Z handler_name : ISO Media file produced by Google Inc. Created on: 10/12/2023. vendor_id : [0][0][0][0] Stream mapping: Stream #0:1 -\u003e #0:0 (aac (native) -\u003e mp3 (libmp3lame)) Press [q] to stop, [?] for help Output #0, mp3, to 'test.mp3': Metadata: major_brand : mp42 minor_version : 0 compatible_brands: isommp42 TSSE : Lavf60.3.100 Stream #0:0(eng): Audio: mp3, 44100 Hz, stereo, fltp (default) Metadata: creation_time : 2023-10-13T02:00:12.000000Z handler_name : ISO Media file produced by Google Inc. Created on: 10/12/2023. vendor_id : [0][0][0][0] encoder : Lavc60.3.100 libmp3lame size= 11437kB time=00:12:11.89 bitrate= 128.0kbits/s speed=58.3x video:0kB audio:11437kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.002946%\n4、转换音频格式\n将上面的 output.wav 转换成 output.mp3：\nlua\n代码解读\n复制代码\nffmpeg -i output.wav -c:a libmp3lame output.mp3\n5、调整音频音量\n将上面的 output.mp3 调成 2 倍音量并保存为 output_dvolume.mp3：\nlua\n代码解读\n复制代码\nffmpeg -i output.mp3 -af \"volume=2.0\" output_dvolume.mp3\n6、合并音频\n将上面的 output.mp3 与 output_dvolume.mp3 两个音频文件合并成一个新的音频文件并保存 merge_output.mp3：\ncss\n代码解读\n复制代码\nffmpeg -i output.mp3 -i output_dvolume.mp3 -filter_complex \"[0:a][1:a]concat=n=2:v=0:a=1[out]\" -map \"[out]\" merge_output.mp3\n7、剪切音频\n从输入文件 test.mp3 中剪切出从 1 分 30 秒到 2 分 30 秒的部分，并保存为 test_cut.mp3：\ncss\n代码解读\n复制代码\nffmpeg -i test.mp3 -ss 00:01:30 -to 00:02:30 -c copy test_cut.mp3\n-c copy 表示不改变音频和视频的编码格式，直接拷贝，提升效率\n8、添加音频效果\n将对输入文件 test_cut.mp3 应用音频效果，包括加速 2 倍(atempo)、高通滤波器(highpass)和低通滤波器(lowpass)，并保存为 test_cut_ahl.mp3：\narduino\n代码解读\n复制代码\nffmpeg -i test_cut.mp3 -af \"atempo=2.0, highpass=f=200, lowpass=f=3000\" test_cut_ahl.mp3\n9、添加封面\ngo\n代码解读\n复制代码\nffmpeg -i test.mp3 -i test.jpeg -map 0 -map 1 -c copy -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (Front)\" test_cover.mp3\n从 test.mp3 音频文件中提取音频流，并从 test.jpeg 图像文件中提取封面图像。然后，它将使用-map 选项将音频流和封面图像流映射到输出文件。-c copy 选项用于直接复制音频流和封面图像流，而不进行重新编码。-id3v2_version 3 选项用于设置 ID3 标签版本为 3，以确保兼容性。-metadata:s:v 选项用于指定封面图像的元数据，如标题和注释。\n添加封面后，文件变大了，这是意料之中的。下面的打印信息中也可表明标题和注释添加成功了。\nyaml\n代码解读\n复制代码\nInput #0, mp3, from 'test_cover.mp3': Metadata: major_brand : mp42 minor_version : 0 compatible_brands: isommp42 encoder : Lavf60.3.100 Duration: 00:12:11.95, start: 0.025056, bitrate: 129 kb/s Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s Metadata: encoder : Lavc60.3. Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 1024x1024 [SAR 96:96 DAR 1:1], 90k tbr, 90k tbn (attached pic) Metadata: title : Album cover comment : Cover (front)\n2.3\n视频处理\n视频有很多跟音频类似的处理操作，这里只简单列举几种用法，更多用法需要时再查阅文档。\n1、录制视频\ncsharp\n代码解读\n复制代码\nffmpeg -f avfoundation -i “1:0” out.avi\n将视频设备 1 中的视频和音频设备 0 中的音频录制到 out.avi\n2、视频转码\ncsharp\n代码解读\n复制代码\nffmpeg -i out.avi out.mp4\n将视频 out.avi 转为 out.mp4\n3、视频截图\ncsharp\n代码解读\n复制代码\nffmpeg -i out.mp4 -ss 00:00:10 -vframes 1 output.jpg\n从上面的 out.mp4 中提取第 10 秒的视频帧，并将其保存为输出文件 output.jpg。参数-vframes 1表示只提取一帧。\n3\nffplay 命令\n其实，在上面音视频的处理过程中，经常用到了 ffplay 命令，以测试一部分音视频处理是否成功。相比 ffmpeg 命令，ffplay 就简单多了。\ncss\n代码解读\n复制代码\nffplay [options] [input_url]\n这个命令会打开一个窗口，并播放指定的输入文件。常用的参数：\ncss\n代码解读\n复制代码\n\\-i input\\_file：指定输入文件的路径和名称。\nruby\n代码解读\n复制代码\n\\-ss position：指定从输入文件的哪个时间位置开始播放，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。\nruby\n代码解读\n复制代码\n\\-t duration：指定播放的持续时间，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。\n代码解读\n复制代码\n\\-vf filtergraph：指定视频过滤器图形，用于对视频进行各种处理，如调整大小、裁剪、旋转、滤镜等。\n代码解读\n复制代码\n\\-af filtergraph：指定音频过滤器图形，用于对音频进行各种处理，如音频增益、降噪、混音等。\n代码解读\n复制代码\n\\-volume volume：指定播放音量的大小，取值范围为 0.0 到 1.0。\n代码解读\n复制代码\n\\-nodisp：禁用显示窗口，只进行音频的播放。\n代码解读\n复制代码\n\\-an：禁用音频播放。\n代码解读\n复制代码\n\\-vn：禁用视频播放。\n代码解读\n复制代码\n\\-stats：显示播放统计信息，如帧率、比特率等。\narduino\n代码解读\n复制代码\n\\-loop n：循环播放输入文件 n 次。\n也可以使用键盘上的一些快捷键进行控制，例如：\n空格键：暂停/恢复播放。\n左方向键：后退 10 秒。\n右方向键：快进 10 秒。\n上方向键：增加音量。\n下方向键：减小音量。\nq 键：退出播放。\n4\nffprobe 命令\nffprobe 是 FFmpeg 提供的一个命令行工具，用于分析媒体文件的详细信息。它可以提供音视频流的元数据、编解码器信息、时长、帧率等数据。语法如下：\ncss\n代码解读\n复制代码\nffprobe [options] input_url\n常用的参数：\ncss\n代码解读\n复制代码\n\\-i input\\_file：指定输入文件的路径和名称。\npython\n代码解读\n复制代码\n\\-show\\_format：显示媒体文件的格式信息。\nsql\n代码解读\n复制代码\n\\-show\\_streams：显示媒体文件中的音视频流信息。\nsql\n代码解读\n复制代码\n\\-show\\_packets：显示媒体文件中的数据包信息。\nsql\n代码解读\n复制代码\n\\-show\\_frames：显示媒体文件中的帧信息。\nsql\n代码解读\n复制代码\n\\-show\\_programs：显示媒体文件中的节目信息。\nsql\n代码解读\n复制代码\n\\-show\\_chapters：显示媒体文件中的章节信息。\nsql\n代码解读\n复制代码\n\\-show\\_data：显示媒体文件中的数据信息。\nsql\n代码解读\n复制代码\n\\-show\\_error：显示错误信息。\narduino\n代码解读\n复制代码\n\\-of format：指定输出格式，默认为 default。可以选择的输出格式有 default、json、xml、csv 等。\ncsharp\n代码解读\n复制代码\n\\-select\\_streams stream\\_specifier：选择特定的音视频流进行分析。stream\\_specifier 可以是 a（音频流）、v（视频流）、s（字幕流）等。\n代码解读\n复制代码\n\\-sexagesimal：以时分秒格式显示时间相关信息。\n代码解读\n复制代码\n\\-count\\_frames：计算媒体文件中的帧数。\n代码解读\n复制代码\n\\-count\\_packets：计算媒体文件中的数据包数。\n简单举个例子，ffprobe -show_format out.mp4，输出部分信息如下：\nini\n代码解读\n复制代码\nfilename=out.mp4 nb_streams=2 nb_programs=0 format_name=mov,mp4,m4a,3gp,3g2,mj2 format_long_name=QuickTime / MOV start_time=0.000000 duration=23.966667 size=18413363 bit_rate=6146324 probe_score=100 TAG:major_brand=isom TAG:minor_version=512 TAG:compatible_brands=isomiso2avc1mp41 TAG:encoder=Lavf60.3.100\n5\n参考\n1、官网文档 ( ffmpeg.org/documentati… )\n2、阮一峰 FFmpeg 视频处理入门教程 ( ruanyifeng.com/blog/2020/0… )\n3、FFMPEG ENCODING AND EDITING COURSE ( slhck.info/ffmpeg-enco… )\n6\n笔记及代码地址，供参考\n本文使用 文章同步助手 同步\n",
+  "wordCount" : "1143",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-10-25T00:00:00Z",
+  "dateModified": "2023-10-25T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "人月神话Lee"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/ffmpeg%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      FFmpeg命令行音视频处理
+    </h1>
+    <div class="post-description">
+      MacOS下，FFmpeg6.0命令行音视频处理，包括音视频录制、裁剪、合并、提取、添加封面等常见应用。
+    </div>
+    <div class="post-meta"><span title='2023-10-25 00:00:00 +0000 UTC'>十月 25, 2023</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;人月神话Lee&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> 
+
+  <div class="post-content"><p><strong><em>1</em></strong></p>
+<p><strong>命令行工具</strong></p>
+<p>FFmpeg 的 bin 目录下有三个工具，可在终端直接输入命令执行</p>
+<blockquote>
+<ul>
+<li>
+<p>ffmpeg ( <a href="https://link.juejin.cn?target=https%3A%2F%2Fffmpeg.org%2Fffmpeg.html" title="https://ffmpeg.org/ffmpeg.html">ffmpeg.org/ffmpeg.html</a> )是一个通用的媒体转换器。它可以读取各种输入，包括实时抓取/录制设备-过滤，并将它们转码为多种输出格式。</p>
+</li>
+<li>
+<p>ffplay ( <a href="https://link.juejin.cn?target=https%3A%2F%2Fffmpeg.org%2Fffplay.html" title="https://ffmpeg.org/ffplay.html">ffmpeg.org/ffplay.html</a> )是一款基于 FFmpeg 库和 SDL 库的简单媒体播放器。它主要用作各种 FFmpeg API 的测试平台。</p>
+</li>
+<li>
+<p>ffprobe ( <a href="https://link.juejin.cn?target=https%3A%2F%2Fffmpeg.org%2Fffprobe.html" title="https://ffmpeg.org/ffprobe.html">ffmpeg.org/ffprobe.htm…</a> )是一个多媒体分析器，并以人类和机器可读的方式打印出从多媒体中收集的信息。</p>
+</li>
+</ul>
+</blockquote>
+<p><strong><em>2</em></strong></p>
+<p><strong>ffmpeg 命令</strong></p>
+<p>终端直接输入 ffmpeg，可以获得用法提示</p>
+<p>vbnet</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>usage: ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}... Use -h to get full help or, even better, run 'man ffmpeg'</code></p>
+<p>可以看到它有 5 个参数，简化一下就是：ffmpeg {1} {2} -i {3} {4} {5}，5 个参数含义分别如下：</p>
+<blockquote>
+<ul>
+<li>
+<p>全局参数</p>
+</li>
+<li>
+<p>输入文件参数</p>
+</li>
+<li>
+<p>输入文件</p>
+</li>
+<li>
+<p>输出文件参数</p>
+</li>
+<li>
+<p>输出文件</p>
+</li>
+</ul>
+</blockquote>
+<p>详细用法可以查阅官方文档，或者查阅 man page，或者输入下面命令查阅说明：</p>
+<blockquote>
+<ul>
+<li>
+<p>ffmpeg -h：简易版说明</p>
+</li>
+<li>
+<p>ffmpeg -h long：详细版说明</p>
+</li>
+<li>
+<p>ffmpeg -h full：完整版说明</p>
+</li>
+</ul>
+</blockquote>
+<p>部分参数解释：</p>
+<blockquote>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-i input\_file：指定输入文件的路径和名称。示例：-i input.mp4</code></p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-ss position：指定从输入文件的哪个时间位置开始处理，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。示例：-ss 00:01:30.500 表示从 1 分 30.5 秒开始处理。</code></p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-t duration：指定处理的持续时间，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。示例：-t 00:00:45 表示处理 45 秒的内容。</code></p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-vf filtergraph：指定视频过滤器图形，用于对视频进行各种处理，如调整大小、裁剪、旋转、滤镜等。示例：-vf &quot;scale=640:480&quot; 表示将视频调整为 640x480 的大小。</code></p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-af filtergraph：指定音频过滤器图形，用于对音频进行各种处理，如音频增益、降噪、混音等。示例：-af &quot;volume=2.0&quot; 表示将音频增益调整为原来的 2 倍。</code></p>
+<p>r</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-c:v codec：指定视频编解码器。示例：-c:v libx264 表示使用 libx264 编码器进行视频编码。</code></p>
+<p>r</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-c:a codec：指定音频编解码器。示例：-c:a aac 表示使用 AAC 编码器进行音频编码。</code></p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-b:v bitrate：指定视频的比特率，即视频的质量。较高的比特率通常意味着更好的视频质量，但文件大小也会增加。示例：-b:v 1000k 表示视频比特率为 1000kbps。</code></p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-b:a bitrate：指定音频的比特率，即音频的质量。较高的比特率通常意味着更好的音频质量，但文件大小也会增加。示例：-b:a 128k 表示音频比特率为 128kbps。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-r framerate：指定视频的帧率，即每秒播放的画面数量。较高的帧率可以获得更流畅的视频，但也会增加文件大小。示例：-r 30 表示视频帧率为 30 帧每秒。</code></p>
+</blockquote>
+<p><strong><em>2.1</em></strong></p>
+<p><strong><strong>查看设备</strong></strong></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -devices</code></p>
+<p>当前电脑输出的可用设备如下：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Devices:  D. = Demuxing supported  .E = Muxing supported  --   E audiotoolbox    AudioToolbox output device  D  avfoundation    AVFoundation input device  D  lavfi           Libavfilter virtual input device   E sdl,sdl2        SDL2 output device  D  x11grab         X11 screen capture, using XCB</code></p>
+<p>在多媒体处理中，&ldquo;demuxer&rdquo;（解封装器）和&quot;muxer&quot;（封装器）是两个常用的概念，用于描述多媒体文件的解封装和封装操作。</p>
+<p>1、Demuxer（解封装器） 是一个用于将多媒体文件（如音频或视频文件）解封装为原始音频流、视频流和其他相关数据的组件。它读取多媒体文件的容器格式（如 MP4、AVI、MKV）并解析其中的音频、视频和其他流，将它们提供给后续处理的组件（如解码器）进行解码和处理。Demuxer 将多媒体文件中的不同媒体流分离开来，以便进行独立的处理。</p>
+<p>2、Muxer（封装器） 是一个用于将音频流、视频流和其他相关数据封装到容器格式中的组件。它接收来自解码器或其他处理组件的音频流、视频流等数据，并将它们合并到指定的容器格式中（如 MP4、AVI、MKV），生成一个包含音视频数据的完整多媒体文件。Muxer 负责将不同的音频和视频流合并，并添加必要的容器元数据和索引信息。</p>
+<p>AVFoundation 对于 iOS 开发者来说再熟悉不过了，输入如下命令可以查看支持 avfoundation 支持的设备：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f avfoundation -list_devices true -i ''</code></p>
+<p>输出结果如下：</p>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[AVFoundation indev @ 0x7fd0621043c0] AVFoundation video devices: [AVFoundation indev @ 0x7fd0621043c0] [0] FaceTime HD Camera (Built-in) [AVFoundation indev @ 0x7fd0621043c0] [1] Capture screen 0 [AVFoundation indev @ 0x7fd0621043c0] AVFoundation audio devices: [AVFoundation indev @ 0x7fd0621043c0] [0] Built-in Microphone</code></p>
+<p>对于 Windows 平台则是查看 dshow（DirectShow）输入支持的设备：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f dshow -list_devices true -i dummy</code></p>
+<p>使用以下命令查看 FFmpeg 是否支持特定设备：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -sources DEVICE</code></p>
+<p>其中，DEVICE 是要查询的设备名称，例如 alsa、pulse、v4l2 等。</p>
+<p><strong><em>2.2</em></strong></p>
+<p><strong><strong>音频处理</strong></strong></p>
+<p>1、录制音频在 Mac OS 使用 FFmpeg 录制音频，可以使用如下命令：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f avfoundation -i &quot;:0&quot; output.wav</code></p>
+<p>这个命令使用了 FFmpeg 的 avfoundation 输入设备，从 Mac 的音频输入设备（通常是麦克风）录制音频。&quot;:0&quot;参数表示默认的音频输入设备，output.wav 是要保存音频的文件名和格式。可以将其更改为所需的文件名和扩展名。</p>
+<p>执行命令后，FFmpeg 将开始录制音频，并在后台显示进度信息。要停止录制，可以按下 Ctrl+C。</p>
+<p>2、查看音频信息</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i output.wav</code></p>
+<p>输出结果如下：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Input #0, wav, from 'output.wav':   Metadata:     encoder         : Lavf60.3.100   Duration: 00:00:19.56, bitrate: 1411 kb/s   Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, 2 channels, s16, 1411 kb/s</code></p>
+<p>当然，该命令也可以查看视频文件信息，例如查看前几天在 YouTube 上下载的一个视频信息：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'test.mp4':   Metadata:     major_brand     : mp42     minor_version   : 0     compatible_brands: isommp42     creation_time   : 2023-10-13T02:00:12.000000Z   Duration: 00:12:11.92, start: 0.000000, bitrate: 1134 kb/s   Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1280x720 [SAR 1:1 DAR 16:9], 1003 kb/s, 30 fps, 30 tbr, 15360 tbn (default)     Metadata:       creation_time   : 2023-10-13T02:00:12.000000Z       handler_name    : ISO Media file produced by Google Inc. Created on: 10/12/2023.       vendor_id       : [0][0][0][0]   Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default)     Metadata:       creation_time   : 2023-10-13T02:00:12.000000Z       handler_name    : ISO Media file produced by Google Inc. Created on: 10/12/2023.       vendor_id       : [0][0][0][0]</code></p>
+<p>3、提取音频</p>
+<p>比如，从上面的 test.mp4 视频中提取音频：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i test.mp4 -vn test.mp3</code></p>
+<p>-vn 表示去除视频流，处理信息如下：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'test.mp4':   Metadata:     major_brand     : mp42     minor_version   : 0     compatible_brands: isommp42     creation_time   : 2023-10-13T02:00:12.000000Z   Duration: 00:12:11.92, start: 0.000000, bitrate: 1134 kb/s   Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1280x720 [SAR 1:1 DAR 16:9], 1003 kb/s, 30 fps, 30 tbr, 15360 tbn (default)     Metadata:       creation_time   : 2023-10-13T02:00:12.000000Z       handler_name    : ISO Media file produced by Google Inc. Created on: 10/12/2023.       vendor_id       : [0][0][0][0]   Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default)     Metadata:       creation_time   : 2023-10-13T02:00:12.000000Z       handler_name    : ISO Media file produced by Google Inc. Created on: 10/12/2023.       vendor_id       : [0][0][0][0] Stream mapping:   Stream #0:1 -&gt; #0:0 (aac (native) -&gt; mp3 (libmp3lame)) Press [q] to stop, [?] for help Output #0, mp3, to 'test.mp3':   Metadata:     major_brand     : mp42     minor_version   : 0     compatible_brands: isommp42     TSSE            : Lavf60.3.100   Stream #0:0(eng): Audio: mp3, 44100 Hz, stereo, fltp (default)     Metadata:       creation_time   : 2023-10-13T02:00:12.000000Z       handler_name    : ISO Media file produced by Google Inc. Created on: 10/12/2023.       vendor_id       : [0][0][0][0]       encoder         : Lavc60.3.100 libmp3lame size=   11437kB time=00:12:11.89 bitrate= 128.0kbits/s speed=58.3x video:0kB audio:11437kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.002946%</code></p>
+<p>4、转换音频格式</p>
+<p>将上面的 output.wav 转换成 output.mp3：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i output.wav -c:a libmp3lame output.mp3</code></p>
+<p>5、调整音频音量</p>
+<p>将上面的 output.mp3 调成 2 倍音量并保存为 output_dvolume.mp3：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i output.mp3 -af &quot;volume=2.0&quot; output_dvolume.mp3</code></p>
+<p>6、合并音频</p>
+<p>将上面的 output.mp3 与 output_dvolume.mp3 两个音频文件合并成一个新的音频文件并保存 merge_output.mp3：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i output.mp3 -i output_dvolume.mp3 -filter_complex &quot;[0:a][1:a]concat=n=2:v=0:a=1[out]&quot; -map &quot;[out]&quot; merge_output.mp3</code></p>
+<p>7、剪切音频</p>
+<p>从输入文件 test.mp3 中剪切出从 1 分 30 秒到 2 分 30 秒的部分，并保存为 test_cut.mp3：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i test.mp3 -ss 00:01:30 -to 00:02:30 -c copy test_cut.mp3</code></p>
+<p>-c copy 表示不改变音频和视频的编码格式，直接拷贝，提升效率</p>
+<p>8、添加音频效果</p>
+<p>将对输入文件 test_cut.mp3 应用音频效果，包括加速 2 倍(atempo)、高通滤波器(highpass)和低通滤波器(lowpass)，并保存为 test_cut_ahl.mp3：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i test_cut.mp3 -af &quot;atempo=2.0, highpass=f=200, lowpass=f=3000&quot; test_cut_ahl.mp3</code></p>
+<p>9、添加封面</p>
+<p>go</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i test.mp3 -i test.jpeg -map 0 -map 1 -c copy -id3v2_version 3 -metadata:s:v title=&quot;Album cover&quot; -metadata:s:v comment=&quot;Cover (Front)&quot; test_cover.mp3</code></p>
+<p>从 test.mp3 音频文件中提取音频流，并从 test.jpeg 图像文件中提取封面图像。然后，它将使用-map 选项将音频流和封面图像流映射到输出文件。-c copy 选项用于直接复制音频流和封面图像流，而不进行重新编码。-id3v2_version 3 选项用于设置 ID3 标签版本为 3，以确保兼容性。-metadata:s:v 选项用于指定封面图像的元数据，如标题和注释。</p>
+<p>添加封面后，文件变大了，这是意料之中的。下面的打印信息中也可表明标题和注释添加成功了。</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Input #0, mp3, from 'test_cover.mp3':   Metadata:     major_brand     : mp42     minor_version   : 0     compatible_brands: isommp42     encoder         : Lavf60.3.100   Duration: 00:12:11.95, start: 0.025056, bitrate: 129 kb/s   Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s     Metadata:       encoder         : Lavc60.3.   Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 1024x1024 [SAR 96:96 DAR 1:1], 90k tbr, 90k tbn (attached pic)     Metadata:       title           : Album cover       comment         : Cover (front)</code></p>
+<p><strong><em>2.3</em></strong></p>
+<p><strong><strong>视频处理</strong></strong></p>
+<p>视频有很多跟音频类似的处理操作，这里只简单列举几种用法，更多用法需要时再查阅文档。</p>
+<p>1、录制视频</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f avfoundation -i “1:0” out.avi</code></p>
+<p>将视频设备 1 中的视频和音频设备 0 中的音频录制到 out.avi</p>
+<p>2、视频转码</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.avi out.mp4</code></p>
+<p>将视频 out.avi 转为 out.mp4</p>
+<p>3、视频截图</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4 -ss 00:00:10 -vframes 1 output.jpg</code></p>
+<p>从上面的 out.mp4 中提取第 10 秒的视频帧，并将其保存为输出文件 output.jpg。参数-vframes 1表示只提取一帧。</p>
+<p><strong><em>3</em></strong></p>
+<p><strong>ffplay 命令</strong></p>
+<p>其实，在上面音视频的处理过程中，经常用到了 ffplay 命令，以测试一部分音视频处理是否成功。相比 ffmpeg 命令，ffplay 就简单多了。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffplay [options] [input_url]</code></p>
+<p>这个命令会打开一个窗口，并播放指定的输入文件。常用的参数：</p>
+<blockquote>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-i input\_file：指定输入文件的路径和名称。</code></p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-ss position：指定从输入文件的哪个时间位置开始播放，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。</code></p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-t duration：指定播放的持续时间，格式为 HH:MM:SS.xxx（小时:分钟:秒.毫秒）。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-vf filtergraph：指定视频过滤器图形，用于对视频进行各种处理，如调整大小、裁剪、旋转、滤镜等。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-af filtergraph：指定音频过滤器图形，用于对音频进行各种处理，如音频增益、降噪、混音等。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-volume volume：指定播放音量的大小，取值范围为 0.0 到 1.0。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-nodisp：禁用显示窗口，只进行音频的播放。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-an：禁用音频播放。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-vn：禁用视频播放。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-stats：显示播放统计信息，如帧率、比特率等。</code></p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-loop n：循环播放输入文件 n 次。</code></p>
+</blockquote>
+<p>也可以使用键盘上的一些快捷键进行控制，例如：</p>
+<blockquote>
+<ul>
+<li>
+<p>空格键：暂停/恢复播放。</p>
+</li>
+<li>
+<p>左方向键：后退 10 秒。</p>
+</li>
+<li>
+<p>右方向键：快进 10 秒。</p>
+</li>
+<li>
+<p>上方向键：增加音量。</p>
+</li>
+<li>
+<p>下方向键：减小音量。</p>
+</li>
+<li>
+<p>q 键：退出播放。</p>
+</li>
+</ul>
+</blockquote>
+<p><strong><em>4</em></strong></p>
+<p><strong>ffprobe 命令</strong></p>
+<p>ffprobe 是 FFmpeg 提供的一个命令行工具，用于分析媒体文件的详细信息。它可以提供音视频流的元数据、编解码器信息、时长、帧率等数据。语法如下：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffprobe [options] input_url</code></p>
+<p>常用的参数：</p>
+<blockquote>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-i input\_file：指定输入文件的路径和名称。</code></p>
+<p>python</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_format：显示媒体文件的格式信息。</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_streams：显示媒体文件中的音视频流信息。</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_packets：显示媒体文件中的数据包信息。</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_frames：显示媒体文件中的帧信息。</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_programs：显示媒体文件中的节目信息。</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_chapters：显示媒体文件中的章节信息。</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_data：显示媒体文件中的数据信息。</code></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-show\_error：显示错误信息。</code></p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-of format：指定输出格式，默认为 default。可以选择的输出格式有 default、json、xml、csv 等。</code></p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-select\_streams stream\_specifier：选择特定的音视频流进行分析。stream\_specifier 可以是 a（音频流）、v（视频流）、s（字幕流）等。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-sexagesimal：以时分秒格式显示时间相关信息。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-count\_frames：计算媒体文件中的帧数。</code></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>\-count\_packets：计算媒体文件中的数据包数。</code></p>
+</blockquote>
+<p>简单举个例子，ffprobe -show_format out.mp4，输出部分信息如下：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>filename=out.mp4 nb_streams=2 nb_programs=0 format_name=mov,mp4,m4a,3gp,3g2,mj2 format_long_name=QuickTime / MOV start_time=0.000000 duration=23.966667 size=18413363 bit_rate=6146324 probe_score=100 TAG:major_brand=isom TAG:minor_version=512 TAG:compatible_brands=isomiso2avc1mp41 TAG:encoder=Lavf60.3.100</code></p>
+<p><strong><em>5</em></strong></p>
+<p><strong>参考</strong></p>
+<p>1、官网文档 ( <a href="https://link.juejin.cn?target=https%3A%2F%2Fffmpeg.org%2Fdocumentation.html" title="https://ffmpeg.org/documentation.html">ffmpeg.org/documentati…</a> )</p>
+<p>2、阮一峰 FFmpeg 视频处理入门教程 ( <a href="https://link.juejin.cn?target=https%3A%2F%2Fruanyifeng.com%2Fblog%2F2020%2F01%2Fffmpeg.html" title="https://ruanyifeng.com/blog/2020/01/ffmpeg.html">ruanyifeng.com/blog/2020/0…</a> )</p>
+<p>3、FFMPEG ENCODING AND EDITING COURSE ( <a href="https://link.juejin.cn?target=https%3A%2F%2Fslhck.info%2Fffmpeg-encoding-course%2F" title="https://slhck.info/ffmpeg-encoding-course/">slhck.info/ffmpeg-enco…</a> )</p>
+<p><strong><em>6</em></strong></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FFreakLee%2FAudio_Video_Learning" title="https://github.com/FreakLee/Audio_Video_Learning">笔记及代码地址</a>，供参考</p>
+<blockquote>
+<p>本文使用 <a href="https://juejin.cn/post/6940875049587097631" title="https://juejin.cn/post/6940875049587097631">文章同步助手</a> 同步</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E9%9F%B3%E8%A7%86%E9%A2%91%E5%BC%80%E5%8F%91/">音视频开发</a></li>
+      <li><a href="http://localhost:1313/tags/ffmpeg/">FFmpeg</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/es6%E6%A8%A1%E5%9D%97%E5%AF%BC%E5%85%A5/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>【ES6】模块导入</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%B9%B2%E8%B4%A7%E5%BF%AB%E9%80%9F%E7%88%AC%E5%8F%96%E6%9F%90%E6%8B%9B%E8%81%98%E7%AB%99%E7%82%B9%E7%9A%84%E5%87%A0%E4%B8%AA%E6%80%9D%E8%B7%AF/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>【干货】快速爬取某招聘站点的几个思路</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FFmpeg命令行音视频处理 on x"
+            href="https://x.com/intent/tweet/?text=FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f&amp;hashtags=%e9%9f%b3%e8%a7%86%e9%a2%91%e5%bc%80%e5%8f%91%2cFFmpeg">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FFmpeg命令行音视频处理 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f&amp;title=FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;summary=FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FFmpeg命令行音视频处理 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f&title=FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FFmpeg命令行音视频处理 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FFmpeg命令行音视频处理 on whatsapp"
+            href="https://api.whatsapp.com/send?text=FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FFmpeg命令行音视频处理 on telegram"
+            href="https://telegram.me/share/url?text=FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share FFmpeg命令行音视频处理 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=FFmpeg%e5%91%bd%e4%bb%a4%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

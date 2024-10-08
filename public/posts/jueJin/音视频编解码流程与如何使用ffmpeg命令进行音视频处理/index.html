@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>音视频编解码流程与如何使用FFMPEG命令进行音视频处理 | PaperMod</title>
+<meta name="keywords" content="音视频开发, FFmpeg, 人工智能">
+<meta name="description" content="FFMPEG是特别强大的专门用于处理音视频的开源库。你既可以使用它的API对音视频进行处理，也可以使用它提供的工具，如ffmpeg,ffplay,ffprobe，来编辑你的音视频文件。">
+<meta name="author" content="RTE开发者社区">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E9%9F%B3%E8%A7%86%E9%A2%91%E7%BC%96%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ffmpeg%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E9%9F%B3%E8%A7%86%E9%A2%91%E7%BC%96%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ffmpeg%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="音视频编解码流程与如何使用FFMPEG命令进行音视频处理" />
+<meta property="og:description" content="FFMPEG是特别强大的专门用于处理音视频的开源库。你既可以使用它的API对音视频进行处理，也可以使用它提供的工具，如ffmpeg,ffplay,ffprobe，来编辑你的音视频文件。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E9%9F%B3%E8%A7%86%E9%A2%91%E7%BC%96%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ffmpeg%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-09-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-15T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="音视频编解码流程与如何使用FFMPEG命令进行音视频处理"/>
+<meta name="twitter:description" content="FFMPEG是特别强大的专门用于处理音视频的开源库。你既可以使用它的API对音视频进行处理，也可以使用它提供的工具，如ffmpeg,ffplay,ffprobe，来编辑你的音视频文件。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "音视频编解码流程与如何使用FFMPEG命令进行音视频处理",
+      "item": "http://localhost:1313/posts/juejin/%E9%9F%B3%E8%A7%86%E9%A2%91%E7%BC%96%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ffmpeg%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "音视频编解码流程与如何使用FFMPEG命令进行音视频处理",
+  "name": "音视频编解码流程与如何使用FFMPEG命令进行音视频处理",
+  "description": "FFMPEG是特别强大的专门用于处理音视频的开源库。你既可以使用它的API对音视频进行处理，也可以使用它提供的工具，如ffmpeg,ffplay,ffprobe，来编辑你的音视频文件。",
+  "keywords": [
+    "音视频开发", "FFmpeg", "人工智能"
+  ],
+  "articleBody": "\r一、前言 FFMPEG 是特别强大的专门用于处理音视频的开源库。你既可以使用它的 API 对音视频进行处理，也可以使用它提供的工具，如 ffmpeg, ffplay, ffprobe，来编辑你的音视频文件。\n本文将简要介绍一下 FFMPEG 库的基本目录结构及其功能，然后详细介绍一下我们在日常工作中，如何使用 ffmpeg 提供的工具来处理音视频文件。\n二、FFMPEG 目录及作用 libavcodec： 提供了一系列编码器的实现。\nlibavformat： 实现在流协议，容器格式及其本 IO 访问。\nlibavutil： 包括了 hash 器，解码器和各利工具函数。\nlibavfilter： 提供了各种音视频过滤器。\nlibavdevice： 提供了访问捕获设备和回放设备的接口。\nlibswresample： 实现了混音和重采样。\nlibswscale： 实现了色彩转换和缩放工能。\n三、FFMPEG 基本概念 在讲解 FFMPEG 命令之前，我们先要介绍一些音视频格式的基要概念。\n(1) 音／视频流 在音视频领域，我们把一路音／视频称为一路流。如我们小时候经常使用 VCD 看港片，在里边可以选择粤语或国语声音，其实就是 CD 视频文件中存放了两路音频流，用户可以选择其中一路进行播放。\n(2) 容器 我们一般把 MP4､ FLV、MOV 等文件格式称之为容器。也就是在这些常用格式文件中，可以存放多路音视频文件。以 MP4 为例，就可以存放一路视频流，多路音频流，多路字幕流。\n(3) channel channel 是音频中的概念，称之为声道。在一路音频流中，可以有单声道，双声道或立体声。\n四、FFMPEG 功能分类 我们按使用目的可以将 FFMPEG 命令分成以下几类：\n基本信息查询命令 录制 分解/复用 处理原始数据 滤镜 切割与合并 图／视互转 直播相关 除了 FFMPEG 的基本信息查询命令外，其它命令都按下图所示的流程处理音视频。\n然后将编码的数据包传送给解码器（除非为数据流选择了流拷贝，请参阅进一步描述）。 解码器产生未压缩的帧（原始视频/ PCM 音频/ …），可以通过滤波进一步处理（见下一节）。 在过滤之后，帧被传递到编码器，编码器并输出编码的数据包。 最后，这些传递给复用器，将编码的数据包写入输出文件。\n默认情况下，ffmpeg 只包含输入文件中每种类型（视频，音频，字幕）的一个流，并将其添加到每个输出文件中。 它根据以下标准挑选每一个的“最佳”：对于视频，它是具有最高分辨率的流，对于音频，它是具有最多 channel 的流，对于字幕，是第一个字幕流。 在相同类型的几个流相等的情况下，选择具有最低索引的流。\n您可以通过使用-vn / -an / -sn / -dn 选项来禁用某些默认设置。 要进行全面的手动控制，请使用-map 选项，该选项禁用刚描述的默认设置。\n五、基本信息查询命令 MPEG 可以使用下面的参数进行基本信息查询。例如，想查询一下现在使用的 FFMPEG 都支持哪些 filter，就可以用 ffmpeg -filters 来查询。详细参数说明如下：\n参数 说明\n-version 显示版本。\n-formats 显示可用的格式（包括设备）。\n-demuxers 显示可用的 demuxers。\n-muxers 显示可用的 muxers。\n-devices 显示可用的设备。\n-codecs 显示 libavcodec 已知的所有编解码器。\n-decoders 显示可用的解码器。\n-encoders 显示所有可用的编码器。\n-bsfs 显示可用的比特流 filter。\n-protocols 显示可用的协议。\n-filters 显示可用的 libavfilter 过滤器。\n-pix_fmts 显示可用的像素格式。\n-sample_fmts 显示可用的采样格式。\n-layouts 显示 channel 名称和标准 channel 布局。\n-colors 显示识别的颜色名称。\n接下来介绍的是 FFMPEG 处理音视频时使用的命令格式与参数\n六、命令基本格式及参数 下面是 FFMPEG 的基本命令格式：\ncss\n代码解读\n复制代码\nffmpeg [global_options] {[input_file_options] -i input_url} ... {[output_file_options] output_url} ...\nffmpeg 通过 -i 选项读取输任意数量的输入“文件”（可以是常规文件，管道，网络流，抓取设备等，并写入任意数量的输出“文件”。\n原则上，每个输入/输出“文件”都可以包含任意数量的不同类型的视频流（视频/音频/字幕/附件/数据）。 流的数量和/或类型是由容器格式来限制。 选择从哪个输入进入到哪个输出将自动完成或使用 -map 选项。\n要引用选项中的输入文件，您必须使用它们的索引（从 0 开始）。 例如。 第一个输入文件是 0，第二个输入文件是 1，等等。类似地，文件内的流被它们的索引引用。 例如。 2：3 是指第三个输入文件中的第四个流。\n上面就是 FFMPEG 处理音视频的常用命令，下面是一些常用参数：\n(1) 主要参数\n-f fmt（输入/输出）\n强制输入或输出文件格式。 格式通常是自动检测输入文件，并从输出文件的文件扩展名中猜测出来，所以在大多数情况下这个选项是不需要的。\n-i url（输入）\n输入文件的网址\n-y（全局参数）\n覆盖输出文件而不询问。\n-n（全局参数）\n不要覆盖输出文件，如果指定的输出文件已经存在，请立即退出。\n-c [：stream_specifier] codec（输入/输出，每个流）\n选择一个编码器（当在输出文件之前使用）或解码器（当在输入文件之前使用时）用于一个或多个流。codec 是解码器/编码器的名称或 copy（仅输出）以指示该流不被重新编码。如：ffmpeg -i INPUT -map 0 -c:v libx264 -c:a copy OUTPUT\n-codec [：stream_specifier]编解码器（输入/输出，每个流）\n同 -c\n-t duration（输入/输出）\n当用作输入选项（在-i 之前）时，限制从输入文件读取的数据的持续时间。当用作输出选项时（在输出 url 之前），在持续时间到达持续时间之后停止输出。\n-ss 位置（输入/输出）\n当用作输入选项时（在-i 之前），在这个输入文件中寻找位置。 请注意，在大多数格式中，不可能精确搜索，因此 ffmpeg 将在位置之前寻找最近的搜索点。 当转码和-accurate_seek 被启用时（默认），搜索点和位置之间的这个额外的分段将被解码和丢弃。 当进行流式复制或使用-noaccurate_seek 时，它将被保留。当用作输出选项（在输出 url 之前）时，解码但丢弃输入，直到时间戳到达位置。\n-frames [：stream_specifier] framecount（output，per-stream）\n停止在帧计数帧之后写入流。\n-filter [：stream_specifier] filtergraph（output，per-stream）\n创建由 filtergraph 指定的过滤器图，并使用它来过滤流。filtergraph 是应用于流的 filtergraph 的描述，并且必须具有相同类型的流的单个输入和单个输出。在过滤器图形中，输入与标签中的标签相关联，标签中的输出与标签相关联。有关 filtergraph 语法的更多信息，请参阅 ffmpeg-filters 手册。\n(2) 视频参数 -vframes num（输出）\n设置要输出的视频帧的数量。对于-frames：v，这是一个过时的别名，您应该使用它。\n-r [：stream_specifier] fps（输入/输出，每个流）\n设置帧率（Hz 值，分数或缩写）。作为输入选项，忽略存储在文件中的任何时间戳，根据速率生成新的时间戳。这与用于-framerate 选项不同（它在 FFmpeg 的旧版本中使用的是相同的）。如果有疑问，请使用-framerate 而不是输入选项-r。作为输出选项，复制或丢弃输入帧以实现恒定输出帧频 fps。\n-s [：stream_specifier]大小（输入/输出，每个流）\n设置窗口大小。作为输入选项，这是 video_size 专用选项的快捷方式，由某些分帧器识别，其帧尺寸未被存储在文件中。作为输出选项，这会将缩放视频过滤器插入到相应过滤器图形的末尾。请直接使用比例过滤器将其插入到开头或其他地方。格式是’wxh’（默认 - 与源相同）。\n-aspect [：stream_specifier] 宽高比（输出，每个流）\n设置方面指定的视频显示宽高比。aspect 可以是浮点数字符串，也可以是 num：den 形式的字符串，其中 num 和 den 是宽高比的分子和分母。例如“4：3”，“16：9”，“1.3333”和“1.7777”是有效的参数值。如果与-vcodec 副本一起使用，则会影响存储在容器级别的宽高比，但不会影响存储在编码帧中的宽高比（如果存在）。\n-vn（输出）\n禁用视频录制。\n-vcodec 编解码器（输出）\n设置视频编解码器。这是-codec：v 的别名。\n-vf filtergraph（输出）\n创建由 filtergraph 指定的过滤器图，并使用它来过滤流。\n(3) 音频参数 -aframes（输出）\n设置要输出的音频帧的数量。这是-frames：a 的一个过时的别名。\n-ar [：stream_specifier] freq（输入/输出，每个流）\n设置音频采样频率。对于输出流，它默认设置为相应输入流的频率。对于输入流，此选项仅适用于音频捕获设备和原始分路器，并映射到相应的分路器选件。\n-ac [：stream_specifier]通道（输入/输出，每个流）\n设置音频通道的数量。对于输出流，它默认设置为输入音频通道的数量。对于输入流，此选项仅适用于音频捕获设备和原始分路器，并映射到相应的分路器选件。\n-an（输出）\n禁用录音。\n-acodec 编解码器（输入/输出）\n设置音频编解码器。这是-codec 的别名：a。\n-sample_fmt [：stream_specifier] sample_fmt（输出，每个流）\n设置音频采样格式。使用-sample_fmts 获取支持的样本格式列表。\n-af filtergraph（输出）\n创建由 filtergraph 指定的过滤器图，并使用它来过滤流。\n七、功能说明 (1) 录制 arduino\n代码解读\n复制代码\nffmpeg -f avfoundation -list_devices true -i \"\"\n(2) 录屏 csharp\n代码解读\n复制代码\nffmpeg -f avfoundation -i 1 -r 30 out.yuv\n-f 指定使用 avfoundation 采集数据。 -i 指定从哪儿采集数据，它是一个文件索引号。在我的电脑上，1 代表桌面（可以通过上面的命令查询设备索引号）。 -r 指定帧率。按 ffmpeg 官方文档说-r 与-framerate 作用相同，但实际测试时发现不同。-framerate 用于限制输入，而-r 用于限制输出。 注意，桌面的输入对帧率没有要求，所以不用限制桌面的帧率。其实限制了也没用。\n(3) 录屏+声音 less\n代码解读\n复制代码\nffmpeg -f avfoundation -i 1:0 -r 29.97 -c:v libx264 -crf 0 -c:a libfdk_aac -profile:a aac_he_v2 -b:a 32k out.flv\n-i 1:0 冒号前面的 “1” 代表的屏幕索引号。冒号后面的\"0\"代表的声音索相号。 -c:v 与参数 -vcodec 一样，表示视频编码器。c 是 codec 的缩写，v 是 video 的缩写。 -crf 是 x264 的参数。 0 表式无损压缩。 -c:a 与参数 -acodec 一样，表示音频编码器。 -profile 是 fdk_aac 的参数。 aac_he_v2 表式使用 AAC_HE v2 压缩数据。 -b:a 指定音频码率。 b 是 bitrate 的缩写, a 是 audio 的缩与。 (4) 录视频 csharp\n代码解读\n复制代码\nffmpeg -framerate 30 -f avfoundation -i 0 out.mp4\n-framerate 限制视频的采集帧率。这个必须要根据提示要求进行设置，如果不设置就会报错。 -f 指定使用 avfoundation 采集数据。 -i 指定视频设备的索引号。 (5) 视频+音频 csharp\n代码解读\n复制代码\nffmpeg -framerate 30 -f avfoundation -i 0:0 out.mp4\n(6) 录音 csharp\n代码解读\n复制代码\nffmpeg -f avfoundation -i :0 out.wav\n(7) 录制音频裸数据 csharp\n代码解读\n复制代码\nffmpeg -f avfoundation -i :0 -ar 44100 -f s16le out.pcm\n(8) 分解与复用 流拷贝是通过将 copy 参数提供给-codec 选项来选择流的模式。它使得 ffmpeg 省略了指定流的解码和编码步骤，所以它只能进行多路分解和多路复用。 这对于更改容器格式或修改容器级元数据很有用。 在这种情况下，上图将简化为：\n由于没有解码或编码，速度非常快，没有质量损失。 但是，由于许多因素，在某些情况下可能无法正常工作。 应用过滤器显然也是不可能的，因为过滤器处理未压缩的数据。\n(9) 抽取音频流 css\n代码解读\n复制代码\nffmpeg -i input.mp4 -acodec copy -vn out.aac\nacodec: 指定音频编码器，copy 指明只拷贝，不做编解码。 vn: v 代表视频，n 代表 no 也就是无视频的意思。 (10) 转换为 MP3 格式 css\n代码解读\n复制代码\nffmpeg -i input.mp4 -acodec libmp3lame out.mp3\n(11) 抽取视频流 css\n代码解读\n复制代码\nffmpeg -i input.mp4 -vcodec copy -an out.h264\nvcodec: 指定视频编码器，copy 指明只拷贝，不做编解码。 an: a 代表视频，n 代表 no 也就是无音频的意思。 (12) 转格式 objectivec\n代码解读\n复制代码\nffmpeg -i out.mp4 -vcodec copy -acodec copy out.flv\n上面的命令表式的音频、视频都直接 copy，只是将 mp4 的封装格式转成了 flv。\n(13) 音视频合并 objectivec\n代码解读\n复制代码\nffmpeg -i out.h264 -i out.aac -vcodec copy -acodec copy out.mp4\n(14) 提取 YUV 数据 csharp\n代码解读\n复制代码\nffmpeg -i input.mp4 -an -c:v rawvideo -pixel_format yuv420p out.yuv # 播放 ffplay -s wxh out.yuv\n-c:v rawvideo 指定将视频转成原始数据 -pixel_format yuv420p 指定转换格式为 yuv420p (15) YUV 转 H264 csharp\n代码解读\n复制代码\nffmpeg -f rawvideo -pix_fmt yuv420p -s 320x240 -r 30 -i out.yuv -c:v libx264 -f rawvideo out.h264\n(16) 提取 PCM 数据 csharp\n代码解读\n复制代码\nffmpeg -i out.mp4 -vn -ar 44100 -ac 2 -f s16le out.pcm # 播放 ffplay -ar 44100 -ac 2 -f s16le -i out.pcm\n(17) PCM 转 WAV css\n代码解读\n复制代码\nffmpeg -f s16be -ar 8000 -ac 2 -acodec pcm_s16be -i input.raw output.wav\n(18) 简单滤镜 在编码之前，ffmpeg 可以使用 libavfilter 库中的过滤器处理原始音频和视频帧。 几个链式过滤器形成一个过滤器图形。 ffmpeg 区分两种类型的过滤器图形：简单和复杂。\n简单的过滤器图是那些只有一个输入和输出，都是相同的类型。 在上面的图中，它们可以通过在解码和编码之间插入一个额外的步骤来表示：\n简单的 filtergraphs 配置了 per-stream-filter 选项（分别为视频和音频使用-vf 和-af 别名）。 一个简单的视频 filtergraph 可以看起来像这样的例子：\n请注意，某些滤镜会更改帧属性，但不会改变帧内容。 例如。 上例中的 fps 过滤器会改变帧数，但不会触及帧内容。 另一个例子是 setpts 过滤器，它只设置时间戳，否则不改变帧。\n(19) 复杂滤镜 复杂的过滤器图是那些不能简单描述为应用于一个流的线性处理链的过滤器图。 例如，当图形有多个输入和/或输出，或者当输出流类型与输入不同时，就是这种情况。 他们可以用下图来表示：\n复杂的过滤器图使用-filter_complex 选项进行配置。 请注意，此选项是全局性的，因为复杂的过滤器图形本质上不能与单个流或文件明确关联。\n-lavfi 选项等同于-filter_complex。\n一个复杂的过滤器图的一个简单的例子是覆盖过滤器，它有两个视频输入和一个视频输出，包含一个视频叠加在另一个上面。 它的音频对应是 amix 滤波器。\n(20) 添加水印 css\n代码解读\n复制代码\nffmpeg -i out.mp4 -vf \"movie=logo.png,scale=64:48[watermask];[in][watermask] overlay=30:10 [out]\" water.mp4\n-vf 中的 movie 指定 logo 位置。scale 指定 logo 大小。overlay 指定 logo 摆放的位置。 (21) 删除水印 先通过 ffplay 找到要删除 LOGO 的位置\nruby\n代码解读\n复制代码\nffplay -i test.flv -vf delogo=x=806:y=20:w=70:h=80:show=1\n使用 delogo 滤镜删除 LOGO\nruby\n代码解读\n复制代码\nffmpeg -i test.flv -vf delogo=x=806:y=20:w=70:h=80 output.flv\n(22) 视频缩小一倍 ini\n代码解读\n复制代码\nfmpeg -i out.mp4 -vf scale=iw/2:-1 scale.mp4\n-vf scale 指定使用简单过滤器 scale，iw/2:-1 中的 iw 指定按整型取视频的宽度。 -1 表示高度随宽度一起变化。 (23) 视频裁剪 ini\n代码解读\n复制代码\nffmpeg -i VR.mov -vf crop=in_w-200:in_h-200 -c:v libx264 -c:a copy -video_size 1280x720 vr_new.mp4\ncrop 格式：crop=out_w:out_h❌y\nout_w: 输出的宽度。可以使用 in_w 表式输入视频的宽度。 out_h: 输出的高度。可以使用 in_h 表式输入视频的高度。 x : X 坐标 y : Y 坐标 如果 x 和 y 设置为 0,说明从左上角开始裁剪。如果不写是从中心点裁剪。\n(24) 倍速播放 css\n代码解读\n复制代码\nffmpeg -i out.mp4 -filter_complex \"[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]\" -map \"[v]\" -map \"[a]\" speed2.0.mp4\n-filter_complex 复杂滤镜，[0:v]表示第一个（文件索引号是 0）文件的视频作为输入。setpts=0.5*PTS 表示每帧视频的 pts 时间戳都乘 0.5 ，也就是差少一半。[v]表示输出的别名。音频同理就不详述了。\nmap 可用于处理复杂输出，如可以将指定的多路流输出到一个输出文件，也可以指定输出到多个文件。\"[v]\" 复杂滤镜输出的别名作为输出文件的一路流。上面 map 的用法是将复杂滤镜输出的视频和音频输出到指定文件中。\n(25) 对称视频 css\n代码解读\n复制代码\nffmpeg -i out.mp4 -filter_complex \"[0:v]pad=w=2*iw[a];[0:v]hflip[b];[a][b]overlay=x=w\" duicheng.mp4\nhflip 水平翻转 如果要修改为垂直翻转可以用 vflip。\n(26) 画中画 css\n代码解读\n复制代码\nffmpeg -i out.mp4 -i out1.mp4 -filter_complex \"[1:v]scale=w=176:h=144:force_original_aspect_ratio=decrease[ckout];[0:v][ckout]overlay=x=W-w-10:y=0[out]\" -map \"[out]\" -movflags faststart new.mp4\n(27) 录制画中画 less\n代码解读\n复制代码\nffmpeg -f avfoundation -i \"1\" -framerate 30 -f avfoundation -i \"0:0\" -r 30 -c:v libx264 -preset ultrafast -c:a libfdk_aac -profile:a aac_he_v2 -ar 44100 -ac 2 -filter_complex \"[1:v]scale=w=176:h=144:force_original_aspect_ratio=decrease[a];[0:v][a]overlay=x=W-w-10:y=0[out]\" -map \"[out]\" -movflags faststart -map 1:a b.mp4\n(28) 多路视频拼接 less\n代码解读\n复制代码\nffmpeg -f avfoundation -i \"1\" -framerate 30 -f avfoundation -i \"0:0\" -r 30 -c:v libx264 -preset ultrafast -c:a libfdk_aac -profile:a aac_he_v2 -ar 44100 -ac 2 -filter_complex \"[0:v]scale=320:240[a];[a]pad=640:240[b];[b][1:v]overlay=320:0[out]\" -map \"[out]\" -movflags faststart -map 1:a c.mp4\n(29) 裁剪 csharp\n代码解读\n复制代码\nffmpeg -i out.mp4 -ss 00:00:00 -t 10 out1.mp4\n-ss 指定裁剪的开始时间，精确到秒 -t 被裁剪后的时长。 (30) 合并 首先创建一个 inputs.txt 文件，文件内容如下：\nfile ‘1.flv’\nfile ‘2.flv’\nfile ‘3.flv’\n然后执行下面的命令：\nffmpeg -f concat -i inputs.txt -c copy output.flv\n(31) hls 切片 csharp\n代码解读\n复制代码\nffmpeg -i out.mp4 -c:v libx264 -c:a libfdk_aac -strict -2 -f hls out.m3u8\n-strict -2 指明音频使有 AAC。 -f hls 转成 m3u8 格式。 (32) 视频转 JPEG arduino\n代码解读\n复制代码\nffmpeg -i test.flv -r 1 -f image2 image-%3d.jpeg\n(33) 视频转 gif arduino\n代码解读\n复制代码\nffmpeg -i test.flv -r 1 -f image2 image-%3d.jpeg\n(34) 图片转视频 arduino\n代码解读\n复制代码\nffmpeg -f image2 -i image-%3d.jpeg images.mp4\n(35) 推流 objectivec\n代码解读\n复制代码\nffmpeg -re -i out.mp4 -c copy -f flv rtmp://server/live/streamName\n(36) 拉流保存 arduino\n代码解读\n复制代码\nffmpeg -i rtmp://server/live/streamName -c copy dump.flv\n(37) 转流 ruby\n代码解读\n复制代码\nffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v copy -f flv rtmp://server/live/h264Stream\n(38) 实时推流 bash\n代码解读\n复制代码\nffmpeg -framerate 15 -f avfoundation -i \"1\" -s 1280x720 -c:v libx264 -f flv rtmp://localhost:1935/live/room\n(39) 播放 YUV 数据 代码解读\n复制代码\nffplay -pix_fmt nv12 -s 192x144 1.yuv\n(40) 播放 YUV 中的 Y 平面 ini\n代码解读\n复制代码\nffplay -pix_fmt nv21 -s 640x480 -vf extractplanes='y' 1.yuv\n",
+  "wordCount" : "1186",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-09-15T00:00:00Z",
+  "dateModified": "2021-09-15T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "RTE开发者社区"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E9%9F%B3%E8%A7%86%E9%A2%91%E7%BC%96%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ffmpeg%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      音视频编解码流程与如何使用FFMPEG命令进行音视频处理
+    </h1>
+    <div class="post-description">
+      FFMPEG是特别强大的专门用于处理音视频的开源库。你既可以使用它的API对音视频进行处理，也可以使用它提供的工具，如ffmpeg,ffplay,ffprobe，来编辑你的音视频文件。
+    </div>
+    <div class="post-meta"><span title='2021-09-15 00:00:00 +0000 UTC'>九月 15, 2021</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;RTE开发者社区&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e5%89%8d%e8%a8%80" aria-label="一、前言">一、前言</a></li>
+                <li>
+                    <a href="#%e4%ba%8cffmpeg-%e7%9b%ae%e5%bd%95%e5%8f%8a%e4%bd%9c%e7%94%a8" aria-label="二、FFMPEG 目录及作用">二、FFMPEG 目录及作用</a></li>
+                <li>
+                    <a href="#%e4%b8%89ffmpeg-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5" aria-label="三、FFMPEG 基本概念">三、FFMPEG 基本概念</a><ul>
+                        
+                <li>
+                    <a href="#1-%e9%9f%b3%e8%a7%86%e9%a2%91%e6%b5%81" aria-label="(1) 音／视频流">(1) 音／视频流</a></li>
+                <li>
+                    <a href="#2-%e5%ae%b9%e5%99%a8" aria-label="(2) 容器">(2) 容器</a></li>
+                <li>
+                    <a href="#3-channel" aria-label="(3) channel">(3) channel</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9bffmpeg-%e5%8a%9f%e8%83%bd%e5%88%86%e7%b1%bb" aria-label="四、FFMPEG 功能分类">四、FFMPEG 功能分类</a></li>
+                <li>
+                    <a href="#%e4%ba%94%e5%9f%ba%e6%9c%ac%e4%bf%a1%e6%81%af%e6%9f%a5%e8%af%a2%e5%91%bd%e4%bb%a4" aria-label="五、基本信息查询命令">五、基本信息查询命令</a></li>
+                <li>
+                    <a href="#%e5%85%ad%e5%91%bd%e4%bb%a4%e5%9f%ba%e6%9c%ac%e6%a0%bc%e5%bc%8f%e5%8f%8a%e5%8f%82%e6%95%b0" aria-label="六、命令基本格式及参数">六、命令基本格式及参数</a><ul>
+                        
+                <li>
+                    <a href="#2-%e8%a7%86%e9%a2%91%e5%8f%82%e6%95%b0" aria-label="(2) 视频参数">(2) 视频参数</a></li>
+                <li>
+                    <a href="#3-%e9%9f%b3%e9%a2%91%e5%8f%82%e6%95%b0" aria-label="(3) 音频参数">(3) 音频参数</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%83%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e" aria-label="七、功能说明">七、功能说明</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%bd%95%e5%88%b6" aria-label="(1) 录制">(1) 录制</a></li>
+                <li>
+                    <a href="#2-%e5%bd%95%e5%b1%8f" aria-label="(2) 录屏">(2) 录屏</a></li>
+                <li>
+                    <a href="#3-%e5%bd%95%e5%b1%8f%e5%a3%b0%e9%9f%b3" aria-label="(3) 录屏&#43;声音">(3) 录屏+声音</a></li>
+                <li>
+                    <a href="#4-%e5%bd%95%e8%a7%86%e9%a2%91" aria-label="(4) 录视频">(4) 录视频</a></li>
+                <li>
+                    <a href="#5-%e8%a7%86%e9%a2%91%e9%9f%b3%e9%a2%91" aria-label="(5) 视频&#43;音频">(5) 视频+音频</a></li>
+                <li>
+                    <a href="#6-%e5%bd%95%e9%9f%b3" aria-label="(6) 录音">(6) 录音</a></li>
+                <li>
+                    <a href="#7-%e5%bd%95%e5%88%b6%e9%9f%b3%e9%a2%91%e8%a3%b8%e6%95%b0%e6%8d%ae" aria-label="(7) 录制音频裸数据">(7) 录制音频裸数据</a></li>
+                <li>
+                    <a href="#8-%e5%88%86%e8%a7%a3%e4%b8%8e%e5%a4%8d%e7%94%a8" aria-label="(8) 分解与复用">(8) 分解与复用</a></li>
+                <li>
+                    <a href="#9-%e6%8a%bd%e5%8f%96%e9%9f%b3%e9%a2%91%e6%b5%81" aria-label="(9) 抽取音频流">(9) 抽取音频流</a></li>
+                <li>
+                    <a href="#10-%e8%bd%ac%e6%8d%a2%e4%b8%ba-mp3-%e6%a0%bc%e5%bc%8f" aria-label="(10) 转换为 MP3 格式">(10) 转换为 MP3 格式</a></li>
+                <li>
+                    <a href="#11-%e6%8a%bd%e5%8f%96%e8%a7%86%e9%a2%91%e6%b5%81" aria-label="(11) 抽取视频流">(11) 抽取视频流</a></li>
+                <li>
+                    <a href="#12-%e8%bd%ac%e6%a0%bc%e5%bc%8f" aria-label="(12) 转格式">(12) 转格式</a></li>
+                <li>
+                    <a href="#13-%e9%9f%b3%e8%a7%86%e9%a2%91%e5%90%88%e5%b9%b6" aria-label="(13) 音视频合并">(13) 音视频合并</a></li>
+                <li>
+                    <a href="#14-%e6%8f%90%e5%8f%96-yuv-%e6%95%b0%e6%8d%ae" aria-label="(14) 提取 YUV 数据">(14) 提取 YUV 数据</a></li>
+                <li>
+                    <a href="#15-yuv-%e8%bd%ac-h264" aria-label="(15) YUV 转 H264">(15) YUV 转 H264</a></li>
+                <li>
+                    <a href="#16-%e6%8f%90%e5%8f%96-pcm-%e6%95%b0%e6%8d%ae" aria-label="(16) 提取 PCM 数据">(16) 提取 PCM 数据</a></li>
+                <li>
+                    <a href="#17-pcm-%e8%bd%ac-wav" aria-label="(17) PCM 转 WAV">(17) PCM 转 WAV</a></li>
+                <li>
+                    <a href="#18-%e7%ae%80%e5%8d%95%e6%bb%a4%e9%95%9c" aria-label="(18) 简单滤镜">(18) 简单滤镜</a></li>
+                <li>
+                    <a href="#19-%e5%a4%8d%e6%9d%82%e6%bb%a4%e9%95%9c" aria-label="(19) 复杂滤镜">(19) 复杂滤镜</a></li>
+                <li>
+                    <a href="#20-%e6%b7%bb%e5%8a%a0%e6%b0%b4%e5%8d%b0" aria-label="(20) 添加水印">(20) 添加水印</a></li>
+                <li>
+                    <a href="#21-%e5%88%a0%e9%99%a4%e6%b0%b4%e5%8d%b0" aria-label="(21) 删除水印">(21) 删除水印</a></li>
+                <li>
+                    <a href="#22-%e8%a7%86%e9%a2%91%e7%bc%a9%e5%b0%8f%e4%b8%80%e5%80%8d" aria-label="(22) 视频缩小一倍">(22) 视频缩小一倍</a></li>
+                <li>
+                    <a href="#23-%e8%a7%86%e9%a2%91%e8%a3%81%e5%89%aa" aria-label="(23) 视频裁剪">(23) 视频裁剪</a></li>
+                <li>
+                    <a href="#24-%e5%80%8d%e9%80%9f%e6%92%ad%e6%94%be" aria-label="(24) 倍速播放">(24) 倍速播放</a></li>
+                <li>
+                    <a href="#25-%e5%af%b9%e7%a7%b0%e8%a7%86%e9%a2%91" aria-label="(25) 对称视频">(25) 对称视频</a></li>
+                <li>
+                    <a href="#26-%e7%94%bb%e4%b8%ad%e7%94%bb" aria-label="(26) 画中画">(26) 画中画</a></li>
+                <li>
+                    <a href="#27-%e5%bd%95%e5%88%b6%e7%94%bb%e4%b8%ad%e7%94%bb" aria-label="(27) 录制画中画">(27) 录制画中画</a></li>
+                <li>
+                    <a href="#28-%e5%a4%9a%e8%b7%af%e8%a7%86%e9%a2%91%e6%8b%bc%e6%8e%a5" aria-label="(28) 多路视频拼接">(28) 多路视频拼接</a></li>
+                <li>
+                    <a href="#29-%e8%a3%81%e5%89%aa" aria-label="(29) 裁剪">(29) 裁剪</a></li>
+                <li>
+                    <a href="#30-%e5%90%88%e5%b9%b6" aria-label="(30) 合并">(30) 合并</a></li>
+                <li>
+                    <a href="#31-hls-%e5%88%87%e7%89%87" aria-label="(31) hls 切片">(31) hls 切片</a></li>
+                <li>
+                    <a href="#32-%e8%a7%86%e9%a2%91%e8%bd%ac-jpeg" aria-label="(32) 视频转 JPEG">(32) 视频转 JPEG</a></li>
+                <li>
+                    <a href="#33-%e8%a7%86%e9%a2%91%e8%bd%ac-gif" aria-label="(33) 视频转 gif">(33) 视频转 gif</a></li>
+                <li>
+                    <a href="#34-%e5%9b%be%e7%89%87%e8%bd%ac%e8%a7%86%e9%a2%91" aria-label="(34) 图片转视频">(34) 图片转视频</a></li>
+                <li>
+                    <a href="#35-%e6%8e%a8%e6%b5%81" aria-label="(35) 推流">(35) 推流</a></li>
+                <li>
+                    <a href="#36-%e6%8b%89%e6%b5%81%e4%bf%9d%e5%ad%98" aria-label="(36) 拉流保存">(36) 拉流保存</a></li>
+                <li>
+                    <a href="#37-%e8%bd%ac%e6%b5%81" aria-label="(37) 转流">(37) 转流</a></li>
+                <li>
+                    <a href="#38-%e5%ae%9e%e6%97%b6%e6%8e%a8%e6%b5%81" aria-label="(38) 实时推流">(38) 实时推流</a></li>
+                <li>
+                    <a href="#39-%e6%92%ad%e6%94%be-yuv-%e6%95%b0%e6%8d%ae" aria-label="(39) 播放 YUV 数据">(39) 播放 YUV 数据</a></li>
+                <li>
+                    <a href="#40-%e6%92%ad%e6%94%be-yuv-%e4%b8%ad%e7%9a%84-y-%e5%b9%b3%e9%9d%a2" aria-label="(40) 播放 YUV 中的 Y 平面">(40) 播放 YUV 中的 Y 平面</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b8edf6ba6bd4729b95e79f36ffcc521~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="音视频编解码流程与如何使用FFMPEG命令进行音视频处理"  />
+</p>
+<h4 id="一前言">一、前言<a hidden class="anchor" aria-hidden="true" href="#一前言">#</a></h4>
+<blockquote>
+<p>FFMPEG 是特别强大的专门用于处理音视频的开源库。你既可以使用它的 API 对音视频进行处理，也可以使用它提供的工具，如 <strong>ffmpeg</strong>, <strong>ffplay</strong>, <strong>ffprobe</strong>，来编辑你的音视频文件。</p>
+<p>本文将简要介绍一下 FFMPEG 库的基本目录结构及其功能，然后详细介绍一下我们在日常工作中，如何使用 ffmpeg 提供的工具来处理音视频文件。</p>
+</blockquote>
+<hr>
+<h4 id="二ffmpeg-目录及作用">二、FFMPEG 目录及作用<a hidden class="anchor" aria-hidden="true" href="#二ffmpeg-目录及作用">#</a></h4>
+<blockquote>
+<p><strong>libavcodec：</strong> 提供了一系列编码器的实现。</p>
+<p><strong>libavformat：</strong> 实现在流协议，容器格式及其本 IO 访问。</p>
+<p><strong>libavutil：</strong> 包括了 hash 器，解码器和各利工具函数。</p>
+<p><strong>libavfilter：</strong> 提供了各种音视频过滤器。</p>
+<p><strong>libavdevice：</strong> 提供了访问捕获设备和回放设备的接口。</p>
+<p><strong>libswresample：</strong> 实现了混音和重采样。</p>
+<p><strong>libswscale：</strong> 实现了色彩转换和缩放工能。</p>
+</blockquote>
+<hr>
+<h4 id="三ffmpeg-基本概念">三、FFMPEG 基本概念<a hidden class="anchor" aria-hidden="true" href="#三ffmpeg-基本概念">#</a></h4>
+<p>在讲解 FFMPEG 命令之前，我们先要介绍一些音视频格式的基要概念。</p>
+<h5 id="1-音视频流">(1) 音／视频流<a hidden class="anchor" aria-hidden="true" href="#1-音视频流">#</a></h5>
+<blockquote>
+<p>在音视频领域，我们把一路音／视频称为一路<strong>流</strong>。如我们小时候经常使用 VCD 看港片，在里边可以选择粤语或国语声音，其实就是 CD 视频文件中存放了两路音频流，用户可以选择其中一路进行播放。</p>
+</blockquote>
+<h5 id="2-容器">(2) 容器<a hidden class="anchor" aria-hidden="true" href="#2-容器">#</a></h5>
+<blockquote>
+<p>我们一般把 MP4､ FLV、MOV 等文件格式称之为<strong>容器</strong>。也就是在这些常用格式文件中，可以存放多路音视频文件。以 MP4 为例，就可以存放一路视频流，多路音频流，多路字幕流。</p>
+</blockquote>
+<h5 id="3-channel">(3) channel<a hidden class="anchor" aria-hidden="true" href="#3-channel">#</a></h5>
+<blockquote>
+<p>channel 是音频中的概念，称之为声道。在一路音频流中，可以有单声道，双声道或立体声。</p>
+</blockquote>
+<hr>
+<h4 id="四ffmpeg-功能分类">四、FFMPEG 功能分类<a hidden class="anchor" aria-hidden="true" href="#四ffmpeg-功能分类">#</a></h4>
+<p>我们按使用目的可以将 FFMPEG 命令分成以下几类：</p>
+<blockquote>
+<ul>
+<li>基本信息查询命令</li>
+<li>录制</li>
+<li>分解/复用</li>
+<li>处理原始数据</li>
+<li>滤镜</li>
+<li>切割与合并</li>
+<li>图／视互转</li>
+<li>直播相关</li>
+</ul>
+</blockquote>
+<p>除了 FFMPEG 的基本信息查询命令外，其它命令都按下图所示的流程处理音视频。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cd92eac220604c4394d08491a2687282~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<blockquote>
+<p>然后将编码的数据包传送给解码器（除非为数据流选择了流拷贝，请参阅进一步描述）。 解码器产生未压缩的帧（原始视频/ PCM 音频/ &hellip;），可以通过滤波进一步处理（见下一节）。 在过滤之后，帧被传递到编码器，编码器并输出编码的数据包。 最后，这些传递给复用器，将编码的数据包写入输出文件。</p>
+<p>默认情况下，ffmpeg 只包含输入文件中每种类型（视频，音频，字幕）的一个流，并将其添加到每个输出文件中。 它根据以下标准挑选每一个的“最佳”：对于视频，它是具有最高分辨率的流，对于音频，它是具有最多 channel 的流，对于字幕，是第一个字幕流。 在相同类型的几个流相等的情况下，选择具有最低索引的流。</p>
+<p>您可以通过使用-vn / -an / -sn / -dn 选项来禁用某些默认设置。 要进行全面的手动控制，请使用-map 选项，该选项禁用刚描述的默认设置。</p>
+</blockquote>
+<hr>
+<h4 id="五基本信息查询命令">五、基本信息查询命令<a hidden class="anchor" aria-hidden="true" href="#五基本信息查询命令">#</a></h4>
+<p>MPEG 可以使用下面的参数进行基本信息查询。例如，想查询一下现在使用的 FFMPEG 都支持哪些 filter，就可以用 <strong>ffmpeg -filters</strong> 来查询。详细参数说明如下：</p>
+<p><strong>参数 说明</strong></p>
+<hr>
+<p>-version 显示版本。</p>
+<hr>
+<p>-formats 显示可用的格式（包括设备）。</p>
+<hr>
+<p>-demuxers 显示可用的 demuxers。</p>
+<hr>
+<p>-muxers 显示可用的 muxers。</p>
+<hr>
+<p>-devices 显示可用的设备。</p>
+<hr>
+<p>-codecs 显示 libavcodec 已知的所有编解码器。</p>
+<hr>
+<p>-decoders 显示可用的解码器。</p>
+<hr>
+<p>-encoders 显示所有可用的编码器。</p>
+<hr>
+<p>-bsfs 显示可用的比特流 filter。</p>
+<hr>
+<p>-protocols 显示可用的协议。</p>
+<hr>
+<p>-filters 显示可用的 libavfilter 过滤器。</p>
+<hr>
+<p>-pix_fmts 显示可用的像素格式。</p>
+<hr>
+<p>-sample_fmts 显示可用的采样格式。</p>
+<hr>
+<p>-layouts 显示 channel 名称和标准 channel 布局。</p>
+<hr>
+<p>-colors 显示识别的颜色名称。</p>
+<hr>
+<p>接下来介绍的是 FFMPEG 处理音视频时使用的命令格式与参数</p>
+<h4 id="六命令基本格式及参数">六、命令基本格式及参数<a hidden class="anchor" aria-hidden="true" href="#六命令基本格式及参数">#</a></h4>
+<p>下面是 FFMPEG 的基本命令格式：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg [global_options] {[input_file_options] -i input_url} ...                          {[output_file_options] output_url} ...</code></p>
+<blockquote>
+<p>ffmpeg 通过 -i 选项读取输任意数量的输入“文件”（可以是常规文件，管道，网络流，抓取设备等，并写入任意数量的输出“文件”。</p>
+<p>原则上，每个输入/输出“文件”都可以包含任意数量的不同类型的视频流（视频/音频/字幕/附件/数据）。 流的数量和/或类型是由容器格式来限制。 选择从哪个输入进入到哪个输出将自动完成或使用 -map 选项。</p>
+<p>要引用选项中的输入文件，您必须使用它们的索引（从 0 开始）。 例如。 第一个输入文件是 0，第二个输入文件是 1，等等。类似地，文件内的流被它们的索引引用。 例如。 2：3 是指第三个输入文件中的第四个流。</p>
+</blockquote>
+<hr>
+<p>上面就是 FFMPEG 处理音视频的常用命令，下面是一些常用参数：</p>
+<p>(1) 主要参数</p>
+<p><strong>-f fmt（输入/输出）</strong></p>
+<blockquote>
+<p>强制输入或输出文件格式。 格式通常是自动检测输入文件，并从输出文件的文件扩展名中猜测出来，所以在大多数情况下这个选项是不需要的。</p>
+</blockquote>
+<p><strong>-i url（输入）</strong></p>
+<blockquote>
+<p>输入文件的网址</p>
+</blockquote>
+<p><strong>-y（全局参数）</strong></p>
+<blockquote>
+<p>覆盖输出文件而不询问。</p>
+</blockquote>
+<p><strong>-n（全局参数）</strong></p>
+<blockquote>
+<p>不要覆盖输出文件，如果指定的输出文件已经存在，请立即退出。</p>
+</blockquote>
+<p><strong>-c [：stream_specifier] codec（输入/输出，每个流）</strong></p>
+<blockquote>
+<p>选择一个编码器（当在输出文件之前使用）或解码器（当在输入文件之前使用时）用于一个或多个流。codec 是解码器/编码器的名称或 copy（仅输出）以指示该流不被重新编码。如：ffmpeg -i INPUT -map 0 -c:v libx264 -c:a copy OUTPUT</p>
+</blockquote>
+<p><strong>-codec [：stream_specifier]编解码器（输入/输出，每个流）</strong></p>
+<blockquote>
+<p>同 -c</p>
+</blockquote>
+<p><strong>-t duration（输入/输出）</strong></p>
+<blockquote>
+<p>当用作输入选项（在-i 之前）时，限制从输入文件读取的数据的持续时间。当用作输出选项时（在输出 url 之前），在持续时间到达持续时间之后停止输出。</p>
+</blockquote>
+<p><strong>-ss 位置（输入/输出）</strong></p>
+<blockquote>
+<p>当用作输入选项时（在-i 之前），在这个输入文件中寻找位置。 请注意，在大多数格式中，不可能精确搜索，因此 ffmpeg 将在位置之前寻找最近的搜索点。 当转码和-accurate_seek 被启用时（默认），搜索点和位置之间的这个额外的分段将被解码和丢弃。 当进行流式复制或使用-noaccurate_seek 时，它将被保留。当用作输出选项（在输出 url 之前）时，解码但丢弃输入，直到时间戳到达位置。</p>
+</blockquote>
+<p><strong>-frames [：stream_specifier] framecount（output，per-stream）</strong></p>
+<blockquote>
+<p>停止在帧计数帧之后写入流。</p>
+</blockquote>
+<p><strong>-filter [：stream_specifier] filtergraph（output，per-stream）</strong></p>
+<blockquote>
+<p>创建由 filtergraph 指定的过滤器图，并使用它来过滤流。filtergraph 是应用于流的 filtergraph 的描述，并且必须具有相同类型的流的单个输入和单个输出。在过滤器图形中，输入与标签中的标签相关联，标签中的输出与标签相关联。有关 filtergraph 语法的更多信息，请参阅 ffmpeg-filters 手册。</p>
+</blockquote>
+<hr>
+<h5 id="2-视频参数">(2) 视频参数<a hidden class="anchor" aria-hidden="true" href="#2-视频参数">#</a></h5>
+<p><strong>-vframes num（输出）</strong></p>
+<blockquote>
+<p>设置要输出的视频帧的数量。对于-frames：v，这是一个过时的别名，您应该使用它。</p>
+</blockquote>
+<p><strong>-r [：stream_specifier] fps（输入/输出，每个流）</strong></p>
+<blockquote>
+<p>设置帧率（Hz 值，分数或缩写）。作为输入选项，忽略存储在文件中的任何时间戳，根据速率生成新的时间戳。这与用于-framerate 选项不同（它在 FFmpeg 的旧版本中使用的是相同的）。如果有疑问，请使用-framerate 而不是输入选项-r。作为输出选项，复制或丢弃输入帧以实现恒定输出帧频 fps。</p>
+</blockquote>
+<p><strong>-s [：stream_specifier]大小（输入/输出，每个流）</strong></p>
+<blockquote>
+<p>设置窗口大小。作为输入选项，这是 video_size 专用选项的快捷方式，由某些分帧器识别，其帧尺寸未被存储在文件中。作为输出选项，这会将缩放视频过滤器插入到相应过滤器图形的末尾。请直接使用比例过滤器将其插入到开头或其他地方。格式是&rsquo;wxh&rsquo;（默认 - 与源相同）。</p>
+</blockquote>
+<p><strong>-aspect [：stream_specifier] 宽高比（输出，每个流）</strong></p>
+<blockquote>
+<p>设置方面指定的视频显示宽高比。aspect 可以是浮点数字符串，也可以是 num：den 形式的字符串，其中 num 和 den 是宽高比的分子和分母。例如“4：3”，“16：9”，“1.3333”和“1.7777”是有效的参数值。如果与-vcodec 副本一起使用，则会影响存储在容器级别的宽高比，但不会影响存储在编码帧中的宽高比（如果存在）。</p>
+</blockquote>
+<p><strong>-vn（输出）</strong></p>
+<blockquote>
+<p>禁用视频录制。</p>
+</blockquote>
+<p><strong>-vcodec 编解码器（输出）</strong></p>
+<blockquote>
+<p>设置视频编解码器。这是-codec：v 的别名。</p>
+</blockquote>
+<p><strong>-vf filtergraph（输出）</strong></p>
+<blockquote>
+<p>创建由 filtergraph 指定的过滤器图，并使用它来过滤流。</p>
+</blockquote>
+<hr>
+<h5 id="3-音频参数">(3) 音频参数<a hidden class="anchor" aria-hidden="true" href="#3-音频参数">#</a></h5>
+<p><strong>-aframes（输出）</strong></p>
+<blockquote>
+<p>设置要输出的音频帧的数量。这是-frames：a 的一个过时的别名。</p>
+</blockquote>
+<p><strong>-ar [：stream_specifier] freq（输入/输出，每个流）</strong></p>
+<blockquote>
+<p>设置音频采样频率。对于输出流，它默认设置为相应输入流的频率。对于输入流，此选项仅适用于音频捕获设备和原始分路器，并映射到相应的分路器选件。</p>
+</blockquote>
+<p><strong>-ac [：stream_specifier]通道（输入/输出，每个流）</strong></p>
+<blockquote>
+<p>设置音频通道的数量。对于输出流，它默认设置为输入音频通道的数量。对于输入流，此选项仅适用于音频捕获设备和原始分路器，并映射到相应的分路器选件。</p>
+</blockquote>
+<p><strong>-an（输出）</strong></p>
+<blockquote>
+<p>禁用录音。</p>
+</blockquote>
+<p><strong>-acodec 编解码器（输入/输出）</strong></p>
+<blockquote>
+<p>设置音频编解码器。这是-codec 的别名：a。</p>
+</blockquote>
+<p><strong>-sample_fmt [：stream_specifier] sample_fmt（输出，每个流）</strong></p>
+<blockquote>
+<p>设置音频采样格式。使用-sample_fmts 获取支持的样本格式列表。</p>
+</blockquote>
+<p><strong>-af filtergraph（输出）</strong></p>
+<blockquote>
+<p>创建由 filtergraph 指定的过滤器图，并使用它来过滤流。</p>
+</blockquote>
+<hr>
+<h4 id="七功能说明">七、功能说明<a hidden class="anchor" aria-hidden="true" href="#七功能说明">#</a></h4>
+<h5 id="1-录制">(1) 录制<a hidden class="anchor" aria-hidden="true" href="#1-录制">#</a></h5>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f avfoundation -list_devices true -i &quot;&quot;</code></p>
+<h5 id="2-录屏">(2) 录屏<a hidden class="anchor" aria-hidden="true" href="#2-录屏">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f avfoundation -i 1 -r 30 out.yuv</code></p>
+<blockquote>
+<ul>
+<li>-f 指定使用 avfoundation 采集数据。</li>
+<li>-i 指定从哪儿采集数据，它是一个文件索引号。在我的电脑上，1 代表桌面（可以通过上面的命令查询设备索引号）。</li>
+<li>-r 指定帧率。按 ffmpeg 官方文档说-r 与-framerate 作用相同，但实际测试时发现不同。-framerate 用于限制输入，而-r 用于限制输出。</li>
+</ul>
+<p>注意，桌面的输入对帧率没有要求，所以不用限制桌面的帧率。其实限制了也没用。</p>
+</blockquote>
+<h5 id="3-录屏声音">(3) 录屏+声音<a hidden class="anchor" aria-hidden="true" href="#3-录屏声音">#</a></h5>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg  -f avfoundation -i 1:0  -r 29.97 -c:v libx264 -crf 0 -c:a libfdk_aac -profile:a aac_he_v2 -b:a 32k  out.flv</code></p>
+<blockquote>
+<ul>
+<li>-i 1:0 冒号前面的 &ldquo;1&rdquo; 代表的屏幕索引号。冒号后面的&quot;0&quot;代表的声音索相号。</li>
+<li>-c:v 与参数 -vcodec 一样，表示视频编码器。c 是 codec 的缩写，v 是 video 的缩写。</li>
+<li>-crf 是 x264 的参数。 0 表式无损压缩。</li>
+<li>-c:a 与参数 -acodec 一样，表示音频编码器。</li>
+<li>-profile 是 fdk_aac 的参数。 aac_he_v2 表式使用 AAC_HE v2 压缩数据。</li>
+<li>-b:a 指定音频码率。 b 是 bitrate 的缩写, a 是 audio 的缩与。</li>
+</ul>
+</blockquote>
+<h5 id="4-录视频">(4) 录视频<a hidden class="anchor" aria-hidden="true" href="#4-录视频">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -framerate 30 -f avfoundation -i 0 out.mp4</code></p>
+<blockquote>
+<ul>
+<li>-framerate 限制视频的采集帧率。这个必须要根据提示要求进行设置，如果不设置就会报错。</li>
+<li>-f 指定使用 avfoundation 采集数据。</li>
+<li>-i 指定视频设备的索引号。</li>
+</ul>
+</blockquote>
+<h5 id="5-视频音频">(5) 视频+音频<a hidden class="anchor" aria-hidden="true" href="#5-视频音频">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -framerate 30 -f avfoundation -i 0:0 out.mp4</code></p>
+<h5 id="6-录音">(6) 录音<a hidden class="anchor" aria-hidden="true" href="#6-录音">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f avfoundation -i :0 out.wav</code></p>
+<h5 id="7-录制音频裸数据">(7) 录制音频裸数据<a hidden class="anchor" aria-hidden="true" href="#7-录制音频裸数据">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg  -f avfoundation -i :0 -ar 44100 -f s16le out.pcm</code></p>
+<h5 id="8-分解与复用">(8) 分解与复用<a hidden class="anchor" aria-hidden="true" href="#8-分解与复用">#</a></h5>
+<blockquote>
+<p>流拷贝是通过将 copy 参数提供给-codec 选项来选择流的模式。它使得 ffmpeg 省略了指定流的解码和编码步骤，所以它只能进行多路分解和多路复用。 这对于更改容器格式或修改容器级元数据很有用。 在这种情况下，上图将简化为：</p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a973205bf61047969f772c2197cb1f2a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<blockquote>
+<p>由于没有解码或编码，速度非常快，没有质量损失。 但是，由于许多因素，在某些情况下可能无法正常工作。 应用过滤器显然也是不可能的，因为过滤器处理未压缩的数据。</p>
+</blockquote>
+<h5 id="9-抽取音频流">(9) 抽取音频流<a hidden class="anchor" aria-hidden="true" href="#9-抽取音频流">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i input.mp4 -acodec copy -vn out.aac</code></p>
+<blockquote>
+<ul>
+<li>acodec: 指定音频编码器，copy 指明只拷贝，不做编解码。</li>
+<li>vn: v 代表视频，n 代表 no 也就是无视频的意思。</li>
+</ul>
+</blockquote>
+<h5 id="10-转换为-mp3-格式">(10) 转换为 MP3 格式<a hidden class="anchor" aria-hidden="true" href="#10-转换为-mp3-格式">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i input.mp4 -acodec libmp3lame  out.mp3</code></p>
+<h5 id="11-抽取视频流">(11) 抽取视频流<a hidden class="anchor" aria-hidden="true" href="#11-抽取视频流">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i input.mp4 -vcodec copy -an out.h264</code></p>
+<blockquote>
+<ul>
+<li>vcodec: 指定视频编码器，copy 指明只拷贝，不做编解码。</li>
+<li>an: a 代表视频，n 代表 no 也就是无音频的意思。</li>
+</ul>
+</blockquote>
+<h5 id="12-转格式">(12) 转格式<a hidden class="anchor" aria-hidden="true" href="#12-转格式">#</a></h5>
+<p>objectivec</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4 -vcodec copy -acodec copy out.flv</code></p>
+<blockquote>
+<p>上面的命令表式的音频、视频都直接 copy，只是将 mp4 的封装格式转成了 flv。</p>
+</blockquote>
+<h5 id="13-音视频合并">(13) 音视频合并<a hidden class="anchor" aria-hidden="true" href="#13-音视频合并">#</a></h5>
+<p>objectivec</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.h264 -i out.aac -vcodec copy -acodec copy out.mp4</code></p>
+<h5 id="14-提取-yuv-数据">(14) 提取 YUV 数据<a hidden class="anchor" aria-hidden="true" href="#14-提取-yuv-数据">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i input.mp4 -an -c:v rawvideo -pixel_format yuv420p out.yuv # 播放 ffplay -s wxh out.yuv</code></p>
+<blockquote>
+<ul>
+<li>-c:v rawvideo 指定将视频转成原始数据</li>
+<li>-pixel_format yuv420p 指定转换格式为 yuv420p</li>
+</ul>
+</blockquote>
+<h5 id="15-yuv-转-h264">(15) YUV 转 H264<a hidden class="anchor" aria-hidden="true" href="#15-yuv-转-h264">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f rawvideo -pix_fmt yuv420p -s 320x240 -r 30 -i out.yuv -c:v libx264 -f rawvideo out.h264</code></p>
+<h5 id="16-提取-pcm-数据">(16) 提取 PCM 数据<a hidden class="anchor" aria-hidden="true" href="#16-提取-pcm-数据">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4 -vn -ar 44100 -ac 2 -f s16le out.pcm # 播放 ffplay -ar 44100 -ac 2 -f s16le -i out.pcm</code></p>
+<h5 id="17-pcm-转-wav">(17) PCM 转 WAV<a hidden class="anchor" aria-hidden="true" href="#17-pcm-转-wav">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -f s16be -ar 8000 -ac 2 -acodec pcm_s16be -i input.raw output.wav</code></p>
+<h5 id="18-简单滤镜">(18) 简单滤镜<a hidden class="anchor" aria-hidden="true" href="#18-简单滤镜">#</a></h5>
+<blockquote>
+<p>在编码之前，ffmpeg 可以使用 libavfilter 库中的过滤器处理原始音频和视频帧。 几个链式过滤器形成一个过滤器图形。 ffmpeg 区分两种类型的过滤器图形：简单和复杂。</p>
+</blockquote>
+<blockquote>
+<p>简单的过滤器图是那些只有一个输入和输出，都是相同的类型。 在上面的图中，它们可以通过在解码和编码之间插入一个额外的步骤来表示：</p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f5923f134187487d94d2617c14a30a98~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<blockquote>
+<p>简单的 filtergraphs 配置了 per-stream-filter 选项（分别为视频和音频使用-vf 和-af 别名）。 一个简单的视频 filtergraph 可以看起来像这样的例子：</p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c68f6c38da7346b896bbd8d8f8fa1174~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<blockquote>
+<p>请注意，某些滤镜会更改帧属性，但不会改变帧内容。 例如。 上例中的 fps 过滤器会改变帧数，但不会触及帧内容。 另一个例子是 setpts 过滤器，它只设置时间戳，否则不改变帧。</p>
+</blockquote>
+<h5 id="19-复杂滤镜">(19) 复杂滤镜<a hidden class="anchor" aria-hidden="true" href="#19-复杂滤镜">#</a></h5>
+<blockquote>
+<p>复杂的过滤器图是那些不能简单描述为应用于一个流的线性处理链的过滤器图。 例如，当图形有多个输入和/或输出，或者当输出流类型与输入不同时，就是这种情况。 他们可以用下图来表示：</p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a7866e0270fd4a94ab27ee94648d7277~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="img"  />
+</p>
+<blockquote>
+<p>复杂的过滤器图使用-filter_complex 选项进行配置。 请注意，此选项是全局性的，因为复杂的过滤器图形本质上不能与单个流或文件明确关联。</p>
+<p>-lavfi 选项等同于-filter_complex。</p>
+<p>一个复杂的过滤器图的一个简单的例子是覆盖过滤器，它有两个视频输入和一个视频输出，包含一个视频叠加在另一个上面。 它的音频对应是 amix 滤波器。</p>
+</blockquote>
+<h5 id="20-添加水印">(20) 添加水印<a hidden class="anchor" aria-hidden="true" href="#20-添加水印">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4  -vf &quot;movie=logo.png,scale=64:48[watermask];[in][watermask] overlay=30:10 [out]&quot; water.mp4</code></p>
+<blockquote>
+<ul>
+<li>-vf 中的 movie 指定 logo 位置。scale 指定 logo 大小。overlay 指定 logo 摆放的位置。</li>
+</ul>
+</blockquote>
+<h5 id="21-删除水印">(21) 删除水印<a hidden class="anchor" aria-hidden="true" href="#21-删除水印">#</a></h5>
+<blockquote>
+<p>先通过 ffplay 找到要删除 LOGO 的位置</p>
+</blockquote>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffplay -i test.flv -vf delogo=x=806:y=20:w=70:h=80:show=1</code></p>
+<blockquote>
+<p>使用 delogo 滤镜删除 LOGO</p>
+</blockquote>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i test.flv -vf delogo=x=806:y=20:w=70:h=80 output.flv</code></p>
+<h5 id="22-视频缩小一倍">(22) 视频缩小一倍<a hidden class="anchor" aria-hidden="true" href="#22-视频缩小一倍">#</a></h5>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>fmpeg -i out.mp4 -vf scale=iw/2:-1 scale.mp4</code></p>
+<blockquote>
+<ul>
+<li>-vf scale 指定使用简单过滤器 scale，iw/2:-1 中的 iw 指定按整型取视频的宽度。 -1 表示高度随宽度一起变化。</li>
+</ul>
+</blockquote>
+<h5 id="23-视频裁剪">(23) 视频裁剪<a hidden class="anchor" aria-hidden="true" href="#23-视频裁剪">#</a></h5>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i VR.mov  -vf crop=in_w-200:in_h-200 -c:v libx264 -c:a copy -video_size 1280x720 vr_new.mp4</code></p>
+<blockquote>
+<p>crop 格式：crop=out_w:out_h&#x274c;y</p>
+<ul>
+<li>out_w: 输出的宽度。可以使用 in_w 表式输入视频的宽度。</li>
+<li>out_h: 输出的高度。可以使用 in_h 表式输入视频的高度。</li>
+<li>x : X 坐标</li>
+<li>y : Y 坐标</li>
+</ul>
+<p>如果 x 和 y 设置为 0,说明从左上角开始裁剪。如果不写是从中心点裁剪。</p>
+</blockquote>
+<h5 id="24-倍速播放">(24) 倍速播放<a hidden class="anchor" aria-hidden="true" href="#24-倍速播放">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4 -filter_complex &quot;[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]&quot; -map &quot;[v]&quot; -map &quot;[a]&quot; speed2.0.mp4</code></p>
+<blockquote>
+<p>-filter_complex 复杂滤镜，[0:v]表示第一个（文件索引号是 0）文件的视频作为输入。setpts=0.5*PTS 表示每帧视频的 pts 时间戳都乘 0.5 ，也就是差少一半。[v]表示输出的别名。音频同理就不详述了。</p>
+<p>map 可用于处理复杂输出，如可以将指定的多路流输出到一个输出文件，也可以指定输出到多个文件。&quot;[v]&quot; 复杂滤镜输出的别名作为输出文件的一路流。上面 map 的用法是将复杂滤镜输出的视频和音频输出到指定文件中。</p>
+</blockquote>
+<h5 id="25-对称视频">(25) 对称视频<a hidden class="anchor" aria-hidden="true" href="#25-对称视频">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg  -i out.mp4 -filter_complex &quot;[0:v]pad=w=2*iw[a];[0:v]hflip[b];[a][b]overlay=x=w&quot; duicheng.mp4</code></p>
+<blockquote>
+<ul>
+<li>hflip 水平翻转</li>
+</ul>
+<p>如果要修改为垂直翻转可以用 vflip。</p>
+</blockquote>
+<h5 id="26-画中画">(26) 画中画<a hidden class="anchor" aria-hidden="true" href="#26-画中画">#</a></h5>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4 -i out1.mp4 -filter_complex &quot;[1:v]scale=w=176:h=144:force_original_aspect_ratio=decrease[ckout];[0:v][ckout]overlay=x=W-w-10:y=0[out]&quot; -map &quot;[out]&quot; -movflags faststart new.mp4</code></p>
+<h5 id="27-录制画中画">(27) 录制画中画<a hidden class="anchor" aria-hidden="true" href="#27-录制画中画">#</a></h5>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg  -f avfoundation -i &quot;1&quot; -framerate 30 -f avfoundation -i &quot;0:0&quot; -r 30 -c:v libx264 -preset ultrafast -c:a libfdk_aac -profile:a aac_he_v2 -ar 44100 -ac 2 -filter_complex &quot;[1:v]scale=w=176:h=144:force_original_aspect_ratio=decrease[a];[0:v][a]overlay=x=W-w-10:y=0[out]&quot; -map &quot;[out]&quot; -movflags faststart -map 1:a b.mp4</code></p>
+<h5 id="28-多路视频拼接">(28) 多路视频拼接<a hidden class="anchor" aria-hidden="true" href="#28-多路视频拼接">#</a></h5>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg  -f avfoundation -i &quot;1&quot; -framerate 30 -f avfoundation   -i &quot;0:0&quot; -r 30 -c:v libx264 -preset ultrafast -c:a libfdk_aac -profile:a aac_he_v2 -ar 44100 -ac 2 -filter_complex &quot;[0:v]scale=320:240[a];[a]pad=640:240[b];[b][1:v]overlay=320:0[out]&quot; -map &quot;[out]&quot; -movflags faststart  -map 1:a  c.mp4</code></p>
+<h5 id="29-裁剪">(29) 裁剪<a hidden class="anchor" aria-hidden="true" href="#29-裁剪">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4 -ss 00:00:00 -t 10 out1.mp4</code></p>
+<blockquote>
+<ul>
+<li>-ss 指定裁剪的开始时间，精确到秒</li>
+<li>-t 被裁剪后的时长。</li>
+</ul>
+</blockquote>
+<h5 id="30-合并">(30) 合并<a hidden class="anchor" aria-hidden="true" href="#30-合并">#</a></h5>
+<blockquote>
+<p>首先创建一个 inputs.txt 文件，文件内容如下：</p>
+<p>file &lsquo;1.flv&rsquo;</p>
+<p>file &lsquo;2.flv&rsquo;</p>
+<p>file &lsquo;3.flv&rsquo;</p>
+<p>然后执行下面的命令：</p>
+<p>ffmpeg -f concat -i inputs.txt -c copy output.flv</p>
+</blockquote>
+<h5 id="31-hls-切片">(31) hls 切片<a hidden class="anchor" aria-hidden="true" href="#31-hls-切片">#</a></h5>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i out.mp4 -c:v libx264 -c:a libfdk_aac -strict -2 -f hls  out.m3u8</code></p>
+<blockquote>
+<ul>
+<li>-strict -2 指明音频使有 AAC。</li>
+<li>-f hls 转成 m3u8 格式。</li>
+</ul>
+</blockquote>
+<h5 id="32-视频转-jpeg">(32) 视频转 JPEG<a hidden class="anchor" aria-hidden="true" href="#32-视频转-jpeg">#</a></h5>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i test.flv -r 1 -f image2 image-%3d.jpeg</code></p>
+<h5 id="33-视频转-gif">(33) 视频转 gif<a hidden class="anchor" aria-hidden="true" href="#33-视频转-gif">#</a></h5>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i test.flv -r 1 -f image2 image-%3d.jpeg</code></p>
+<h5 id="34-图片转视频">(34) 图片转视频<a hidden class="anchor" aria-hidden="true" href="#34-图片转视频">#</a></h5>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg  -f image2 -i image-%3d.jpeg images.mp4</code></p>
+<h5 id="35-推流">(35) 推流<a hidden class="anchor" aria-hidden="true" href="#35-推流">#</a></h5>
+<p>objectivec</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -re -i out.mp4 -c copy -f flv rtmp://server/live/streamName</code></p>
+<h5 id="36-拉流保存">(36) 拉流保存<a hidden class="anchor" aria-hidden="true" href="#36-拉流保存">#</a></h5>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i rtmp://server/live/streamName -c copy dump.flv</code></p>
+<h5 id="37-转流">(37) 转流<a hidden class="anchor" aria-hidden="true" href="#37-转流">#</a></h5>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v copy -f flv rtmp://server/live/h264Stream</code></p>
+<h5 id="38-实时推流">(38) 实时推流<a hidden class="anchor" aria-hidden="true" href="#38-实时推流">#</a></h5>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -framerate 15 -f avfoundation -i &quot;1&quot; -s 1280x720 -c:v libx264  -f  flv rtmp://localhost:1935/live/room</code></p>
+<h5 id="39-播放-yuv-数据">(39) 播放 YUV 数据<a hidden class="anchor" aria-hidden="true" href="#39-播放-yuv-数据">#</a></h5>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffplay -pix_fmt nv12 -s 192x144 1.yuv</code></p>
+<h5 id="40-播放-yuv-中的-y-平面">(40) 播放 YUV 中的 Y 平面<a hidden class="anchor" aria-hidden="true" href="#40-播放-yuv-中的-y-平面">#</a></h5>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffplay -pix_fmt nv21 -s 640x480 -vf extractplanes='y' 1.yuv</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E9%9F%B3%E8%A7%86%E9%A2%91%E5%BC%80%E5%8F%91/">音视频开发</a></li>
+      <li><a href="http://localhost:1313/tags/ffmpeg/">FFmpeg</a></li>
+      <li><a href="http://localhost:1313/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%89%8D%E7%AB%AF%E4%B8%8D%E8%83%BD%E6%B2%A1%E6%9C%89%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>为什么前端不能没有监控系统？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%9D%A5%E6%88%91%E5%85%AC%E5%8F%B8%E5%86%99%E7%88%AC%E8%99%AB%E5%90%97%E4%BC%9A%E5%9D%90%E7%89%A2%E7%9A%84%E9%82%A3%E7%A7%8D%E4%B8%80/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>来我公司写爬虫吗？会坐牢的那种!(一)</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 音视频编解码流程与如何使用FFMPEG命令进行音视频处理 on x"
+            href="https://x.com/intent/tweet/?text=%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f&amp;hashtags=%e9%9f%b3%e8%a7%86%e9%a2%91%e5%bc%80%e5%8f%91%2cFFmpeg%2c%e4%ba%ba%e5%b7%a5%e6%99%ba%e8%83%bd">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 音视频编解码流程与如何使用FFMPEG命令进行音视频处理 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f&amp;title=%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;summary=%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 音视频编解码流程与如何使用FFMPEG命令进行音视频处理 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f&title=%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 音视频编解码流程与如何使用FFMPEG命令进行音视频处理 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 音视频编解码流程与如何使用FFMPEG命令进行音视频处理 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 音视频编解码流程与如何使用FFMPEG命令进行音视频处理 on telegram"
+            href="https://telegram.me/share/url?text=%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 音视频编解码流程与如何使用FFMPEG命令进行音视频处理 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e9%9f%b3%e8%a7%86%e9%a2%91%e7%bc%96%e8%a7%a3%e7%a0%81%e6%b5%81%e7%a8%8b%e4%b8%8e%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8FFMPEG%e5%91%bd%e4%bb%a4%e8%bf%9b%e8%a1%8c%e9%9f%b3%e8%a7%86%e9%a2%91%e5%a4%84%e7%90%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E7%25BC%2596%25E8%25A7%25A3%25E7%25A0%2581%25E6%25B5%2581%25E7%25A8%258B%25E4%25B8%258E%25E5%25A6%2582%25E4%25BD%2595%25E4%25BD%25BF%25E7%2594%25A8ffmpeg%25E5%2591%25BD%25E4%25BB%25A4%25E8%25BF%259B%25E8%25A1%258C%25E9%259F%25B3%25E8%25A7%2586%25E9%25A2%2591%25E5%25A4%2584%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

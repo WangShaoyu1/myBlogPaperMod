@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 | PaperMod</title>
+<meta name="keywords" content="后端">
+<meta name="description" content="一、工具简介这些工具都是与多媒体处理和流媒体相关的开源工具，它们都属于FFmpeg多媒体框架。FFmpeg是一个用于处理多媒体内容（音频、视频、图像等）的命令行工具。它可以执行各种各样的操作">
+<meta name="author" content="杰哥的技术杂货铺">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/linux%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85ffmpegffprobeffplay%E4%BB%A5%E5%8F%8A%E5%9C%A8linux%E4%B8%8A%E7%9A%84%E4%BD%BF%E7%94%A8/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/linux%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85ffmpegffprobeffplay%E4%BB%A5%E5%8F%8A%E5%9C%A8linux%E4%B8%8A%E7%9A%84%E4%BD%BF%E7%94%A8/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用" />
+<meta property="og:description" content="一、工具简介这些工具都是与多媒体处理和流媒体相关的开源工具，它们都属于FFmpeg多媒体框架。FFmpeg是一个用于处理多媒体内容（音频、视频、图像等）的命令行工具。它可以执行各种各样的操作" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/linux%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85ffmpegffprobeffplay%E4%BB%A5%E5%8F%8A%E5%9C%A8linux%E4%B8%8A%E7%9A%84%E4%BD%BF%E7%94%A8/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-03-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-24T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用"/>
+<meta name="twitter:description" content="一、工具简介这些工具都是与多媒体处理和流媒体相关的开源工具，它们都属于FFmpeg多媒体框架。FFmpeg是一个用于处理多媒体内容（音频、视频、图像等）的命令行工具。它可以执行各种各样的操作"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用",
+      "item": "http://localhost:1313/posts/juejin/linux%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85ffmpegffprobeffplay%E4%BB%A5%E5%8F%8A%E5%9C%A8linux%E4%B8%8A%E7%9A%84%E4%BD%BF%E7%94%A8/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用",
+  "name": "Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用",
+  "description": "一、工具简介这些工具都是与多媒体处理和流媒体相关的开源工具，它们都属于FFmpeg多媒体框架。FFmpeg是一个用于处理多媒体内容（音频、视频、图像等）的命令行工具。它可以执行各种各样的操作",
+  "keywords": [
+    "后端"
+  ],
+  "articleBody": "一、工具简介 这些工具都是与多媒体处理和流媒体相关的开源工具，它们都属于 FFmpeg 多媒体框架。\nFFmpeg 是一个用于处理多媒体内容（音频、视频、图像等）的命令行工具。它可以执行各种各样的操作，包括转码、剪辑、合并、分离、编码、解码等。FFmpeg 是一个功能强大且广泛使用的工具，可以在多种平台上运行。\nFFplay 是 FFmpeg 提供的一个简单的媒体播放器，它可以播放各种格式的音频和视频文件。FFplay 是基于 FFmpeg 库构建的，它提供了一个轻量级的命令行界面，可用于快速播放多媒体文件，适用于测试和简单的播放任务。\nFFprobe 是一个用于分析多媒体文件的工具。它提供了详细的信息，包括多媒体文件的编解码器、格式、流信息等。FFprobe 可以帮助用户了解多媒体文件的特性，例如分辨率、帧率、比特率等，这对于诊断和处理多媒体文件非常有用。\nFFserver 是一个流媒体服务器，可以用于实时转码和分发音频/视频流。它可以接受来自各种来源（如摄像头、音频接口等）的多媒体流，并将其转码为不同的格式和分辨率，然后通过网络分发给客户端。FFserver 可以用于构建自己的流媒体平台，例如音视频直播服务或视频点播服务。\n二、CentOS7上安装FFmpeg 在CentOS7 上安装FFmpeg 安装FFmpeg有两种方法，一种是使用源代码构建，一种是使用Nux Dextop存储库使用yum安装，源代码构建相对会麻烦一些麻烦\n2.1 方法一：yum安装 1、启用EPEL存储库（如果已启动可以跳过此步骤） arduino\n代码解读\n复制代码\nyum install epel-release\n2、安装rpm软件包来启用Nux存储库 ruby\n代码解读\n复制代码\nrpm -v --import http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm\n3、安装FFmpeg 代码解读\n复制代码\nyum install ffmpeg ffmpeg-devel\n4、测试是否安装成功 代码解读\n复制代码\nffmpeg -version ffprobe -version\n2.2 方法二：源码安装 1、下载 源码下载地址：ffmpeg.org/download.ht… 选择最新版本的xz 压缩包\n2、源码解压 上一步我们下载ffmpeg到我们的windows硬盘了 然后我们上传到我们的linux服务器，我选择了SFTP的方式进行上传\n在usr/local下创建ffmpeg文件夹，并进入ffmpeg文件夹下\nbash\n代码解读\n复制代码\ncd /usr/local/ mkdir ffmpeg cd ffmpeg\n3、解压安装包 代码解读\n复制代码\ntar -xjvf ffmpeg-4.4.1.tar.xz\n4、编译准备 bash\n代码解读\n复制代码\nyum install gcc # 安装gcc编译器 yum install yasm # 安装yasm编译器\n5、安装 bash\n代码解读\n复制代码\ncd ffmpeg-4.4.1 ./configure --enable-shared --prefix=/usr/local/ffmpeg/ffmpeg-4.4.1 make make install\n6、将lib目录加载到系统库链接 添加ffmpeg文件，并修改内容\nbash\n代码解读\n复制代码\nvim /etc/ld.so.conf.d/ffmpeg.conf\n写入内容：\nbash\n代码解读\n复制代码\n/usr/local/ffmpeg/ffmpeg-4.4.1/lib\n执行：\n代码解读\n复制代码\nldconfig\n7、检测是否安装成功 在ffmpeg-4.4.1文件夹里执行： bash\n代码解读\n复制代码\n./ffmpeg -version\n8、添加到全局变量 修改配置文件：\nbash\n代码解读\n复制代码\nvim /etc/profile\n在最后一行添加：\nruby\n代码解读\n复制代码\nexport PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/usr/local/ffmpeg/ffmpeg-4.4.1/lib/pkgconfig export FFMPEG_HOME=/usr/local/ffmpeg/ffmpeg-4.4.1 export PATH=$PATH:$FFMPEG_HOME\n使配置生效：\nbash\n代码解读\n复制代码\nsource /etc/profile\n三、ffprobe 在linux中的用法 ffprobe 是 FFmpeg 套件中的一个工具，用于分析多媒体数据。它可以用来检查多媒体文件（如音频、视频和字幕文件）的格式、编解码器信息、元数据等。在 Linux 中，ffprobe 的基本用法是通过命令行界面进行的。\n3.1 显示多媒体文件的基本信息 这个命令会输出一个 JSON 格式的字符串，包含输入文件（input.mp4）的格式和流信息。\ncss\n代码解读\n复制代码\nffprobe -v quiet -print_format json -show_format -show_streams input.mp4\n输出信息：\njson\n代码解读\n复制代码\n{ \"streams\": [ { \"index\": 0, \"codec_name\": \"h264\", \"codec_long_name\": \"H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10\", \"profile\": \"High\", \"codec_type\": \"video\", \"codec_time_base\": \"1/50000\", \"codec_tag_string\": \"avc1\", \"codec_tag\": \"0x31637661\", \"width\": 1080, \"height\": 1920, \"coded_width\": 1088, \"coded_height\": 1920, \"has_b_frames\": 2, \"sample_aspect_ratio\": \"1:1\", \"display_aspect_ratio\": \"9:16\", \"pix_fmt\": \"yuv420p\", \"level\": 40, \"color_range\": \"tv\", \"color_space\": \"bt709\", \"chroma_location\": \"left\", \"refs\": 4, \"is_avc\": \"1\", \"nal_length_size\": \"4\", \"r_frame_rate\": \"25/1\", \"avg_frame_rate\": \"25/1\", \"time_base\": \"1/25000\", \"start_pts\": 0, \"start_time\": \"0.000000\", \"duration_ts\": 9471000, \"duration\": \"378.840000\", \"bit_rate\": \"771385\", \"bits_per_raw_sample\": \"8\", \"nb_frames\": \"9471\", \"disposition\": { \"default\": 1, \"dub\": 0, \"original\": 0, \"comment\": 0, \"lyrics\": 0, \"karaoke\": 0, \"forced\": 0, \"hearing_impaired\": 0, \"visual_impaired\": 0, \"clean_effects\": 0, \"attached_pic\": 0 }, \"tags\": { \"creation_time\": \"2024-03-04 09:08:06\", \"language\": \"und\" } }, { \"index\": 1, \"codec_name\": \"aac\", \"codec_long_name\": \"AAC (Advanced Audio Coding)\", \"profile\": \"LC\", \"codec_type\": \"audio\", \"codec_time_base\": \"1/48000\", \"codec_tag_string\": \"mp4a\", \"codec_tag\": \"0x6134706d\", \"sample_fmt\": \"fltp\", \"sample_rate\": \"48000\", \"channels\": 2, \"channel_layout\": \"stereo\", \"bits_per_sample\": 0, \"r_frame_rate\": \"0/0\", \"avg_frame_rate\": \"0/0\", \"time_base\": \"1/48000\", \"start_pts\": 0, \"start_time\": \"0.000000\", \"duration_ts\": 18188288, \"duration\": \"378.922667\", \"bit_rate\": \"128102\", \"max_bit_rate\": \"153976\", \"nb_frames\": \"17762\", \"disposition\": { \"default\": 1, \"dub\": 0, \"original\": 0, \"comment\": 0, \"lyrics\": 0, \"karaoke\": 0, \"forced\": 0, \"hearing_impaired\": 0, \"visual_impaired\": 0, \"clean_effects\": 0, \"attached_pic\": 0 }, \"tags\": { \"creation_time\": \"2024-03-04 09:07:59\", \"language\": \"und\" } } ], \"format\": { \"filename\": \"input.mp4\", \"nb_streams\": 2, \"nb_programs\": 0, \"format_name\": \"mov,mp4,m4a,3gp,3g2,mj2\", \"format_long_name\": \"QuickTime / MOV\", \"start_time\": \"0.000000\", \"duration\": \"378.921667\", \"size\": \"42792276\", \"bit_rate\": \"903453\", \"probe_score\": 100, \"tags\": { \"major_brand\": \"isom\", \"minor_version\": \"1\", \"compatible_brands\": \"isom\", \"creation_time\": \"2024-03-04 09:09:41\" } } }\n3.2 显示特定流的信息 如果你只对音频流或视频流感兴趣，你可以使用 -select_streams 选项来指定。例如，显示视频流信息：\narduino\n代码解读\n复制代码\n# ffprobe -v quiet -print_format json -show_streams -select_streams v input.mp4\n或者显示音频流信息：\ncss\n代码解读\n复制代码\nffprobe -v quiet -print_format json -show_streams -select_streams a input.mp3\n以下是返回信息：\njson\n代码解读\n复制代码\n{ \"streams\": [ { \"index\": 0, \"codec_name\": \"h264\", \"codec_long_name\": \"H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10\", \"profile\": \"High\", \"codec_type\": \"video\", \"codec_time_base\": \"1/50000\", \"codec_tag_string\": \"avc1\", \"codec_tag\": \"0x31637661\", \"width\": 1080, \"height\": 1920, \"coded_width\": 1088, \"coded_height\": 1920, \"has_b_frames\": 2, \"sample_aspect_ratio\": \"1:1\", \"display_aspect_ratio\": \"9:16\", \"pix_fmt\": \"yuv420p\", \"level\": 40, \"color_range\": \"tv\", \"color_space\": \"bt709\", \"chroma_location\": \"left\", \"refs\": 4, \"is_avc\": \"1\", \"nal_length_size\": \"4\", \"r_frame_rate\": \"25/1\", \"avg_frame_rate\": \"25/1\", \"time_base\": \"1/25000\", \"start_pts\": 0, \"start_time\": \"0.000000\", \"duration_ts\": 9471000, \"duration\": \"378.840000\", \"bit_rate\": \"771385\", \"bits_per_raw_sample\": \"8\", \"nb_frames\": \"9471\", \"disposition\": { \"default\": 1, \"dub\": 0, \"original\": 0, \"comment\": 0, \"lyrics\": 0, \"karaoke\": 0, \"forced\": 0, \"hearing_impaired\": 0, \"visual_impaired\": 0, \"clean_effects\": 0, \"attached_pic\": 0 }, \"tags\": { \"creation_time\": \"2024-03-04 09:08:06\", \"language\": \"und\" } } ] }\n3.3 获取音视频的时长 如果你只想获取视频的时长，可以使用 -show_entries 选项来指定 format=duration，并且设置输出格式为纯文本：\n以下是使用ffprobe获取视频时长的基本命令：\nlua\n代码解读\n复制代码\nffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input.mp4\n以下是使用ffprobe获取音频时长的基本命令：\nlua\n代码解读\n复制代码\nffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input.mp3\n输出：\n代码解读\n复制代码\n378.921667\n在这个命令中：\n-v error：设置日志级别为error，以减少输出中的非必要信息。 -show_entries format=duration：指定要显示的条目为format下的duration，即视频的时长。 -of default=noprint_wrappers=1:nokey=1：设置输出格式为默认格式，并去除包装器和键名，只输出时长值。 input.mp4：替换为你的视频文件名。 执行这个命令后，ffprobe会输出视频的时长，以秒为单位。 注意：使用以上命令时，确保你已经安装了FFmpeg，并且ffprobe命令在你的系统路径中可用。如果你没有安装FFmpeg，你可以通过包管理器（如apt、yum或pacman）来安装它。\n",
+  "wordCount" : "615",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-03-24T00:00:00Z",
+  "dateModified": "2024-03-24T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "杰哥的技术杂货铺"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/linux%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85ffmpegffprobeffplay%E4%BB%A5%E5%8F%8A%E5%9C%A8linux%E4%B8%8A%E7%9A%84%E4%BD%BF%E7%94%A8/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用
+    </h1>
+    <div class="post-description">
+      一、工具简介这些工具都是与多媒体处理和流媒体相关的开源工具，它们都属于FFmpeg多媒体框架。FFmpeg是一个用于处理多媒体内容（音频、视频、图像等）的命令行工具。它可以执行各种各样的操作
+    </div>
+    <div class="post-meta"><span title='2024-03-24 00:00:00 +0000 UTC'>三月 24, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;杰哥的技术杂货铺&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e5%b7%a5%e5%85%b7%e7%ae%80%e4%bb%8b" aria-label="一、工具简介">一、工具简介</a></li>
+                <li>
+                    <a href="#%e4%ba%8ccentos7%e4%b8%8a%e5%ae%89%e8%a3%85ffmpeg" aria-label="二、CentOS7上安装FFmpeg">二、CentOS7上安装FFmpeg</a><ul>
+                        
+                <li>
+                    <a href="#21-%e6%96%b9%e6%b3%95%e4%b8%80yum%e5%ae%89%e8%a3%85" aria-label="2.1 方法一：yum安装">2.1 方法一：yum安装</a></li>
+                <li>
+                    <a href="#22-%e6%96%b9%e6%b3%95%e4%ba%8c%e6%ba%90%e7%a0%81%e5%ae%89%e8%a3%85" aria-label="2.2 方法二：源码安装">2.2 方法二：源码安装</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89ffprobe-%e5%9c%a8linux%e4%b8%ad%e7%9a%84%e7%94%a8%e6%b3%95" aria-label="三、ffprobe 在linux中的用法">三、ffprobe 在linux中的用法</a><ul>
+                        
+                <li>
+                    <a href="#31-%e6%98%be%e7%a4%ba%e5%a4%9a%e5%aa%92%e4%bd%93%e6%96%87%e4%bb%b6%e7%9a%84%e5%9f%ba%e6%9c%ac%e4%bf%a1%e6%81%af" aria-label="3.1 显示多媒体文件的基本信息">3.1 显示多媒体文件的基本信息</a></li>
+                <li>
+                    <a href="#32-%e6%98%be%e7%a4%ba%e7%89%b9%e5%ae%9a%e6%b5%81%e7%9a%84%e4%bf%a1%e6%81%af" aria-label="3.2 显示特定流的信息">3.2 显示特定流的信息</a></li>
+                <li>
+                    <a href="#33-%e8%8e%b7%e5%8f%96%e9%9f%b3%e8%a7%86%e9%a2%91%e7%9a%84%e6%97%b6%e9%95%bf" aria-label="3.3 获取音视频的时长">3.3 获取音视频的时长</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="一工具简介">一、工具简介<a hidden class="anchor" aria-hidden="true" href="#一工具简介">#</a></h1>
+<p>这些工具都是与多媒体处理和流媒体相关的开源工具，它们都属于 FFmpeg 多媒体框架。</p>
+<ul>
+<li>FFmpeg</li>
+</ul>
+<p>是一个用于处理多媒体内容（音频、视频、图像等）的命令行工具。它可以执行各种各样的操作，包括转码、剪辑、合并、分离、编码、解码等。FFmpeg 是一个功能强大且广泛使用的工具，可以在多种平台上运行。</p>
+<ul>
+<li>FFplay</li>
+</ul>
+<p>是 FFmpeg 提供的一个简单的媒体播放器，它可以播放各种格式的音频和视频文件。FFplay 是基于 FFmpeg 库构建的，它提供了一个轻量级的命令行界面，可用于快速播放多媒体文件，适用于测试和简单的播放任务。</p>
+<ul>
+<li>FFprobe</li>
+</ul>
+<p>是一个用于分析多媒体文件的工具。它提供了详细的信息，包括多媒体文件的编解码器、格式、流信息等。FFprobe 可以帮助用户了解多媒体文件的特性，例如分辨率、帧率、比特率等，这对于诊断和处理多媒体文件非常有用。</p>
+<ul>
+<li>FFserver</li>
+</ul>
+<p>是一个流媒体服务器，可以用于实时转码和分发音频/视频流。它可以接受来自各种来源（如摄像头、音频接口等）的多媒体流，并将其转码为不同的格式和分辨率，然后通过网络分发给客户端。FFserver 可以用于构建自己的流媒体平台，例如音视频直播服务或视频点播服务。</p>
+<h1 id="二centos7上安装ffmpeg">二、CentOS7上安装FFmpeg<a hidden class="anchor" aria-hidden="true" href="#二centos7上安装ffmpeg">#</a></h1>
+<p>在CentOS7 上安装FFmpeg 安装FFmpeg有两种方法，一种是使用源代码构建，一种是使用Nux Dextop存储库使用yum安装，源代码构建相对会麻烦一些麻烦</p>
+<h2 id="21-方法一yum安装">2.1 方法一：yum安装<a hidden class="anchor" aria-hidden="true" href="#21-方法一yum安装">#</a></h2>
+<ul>
+<li>1、启用EPEL存储库（如果已启动可以跳过此步骤）</li>
+</ul>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>yum install epel-release</code></p>
+<ul>
+<li>2、安装rpm软件包来启用Nux存储库</li>
+</ul>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>rpm -v --import http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm</code></p>
+<ul>
+<li>3、安装FFmpeg</li>
+</ul>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>yum install ffmpeg ffmpeg-devel</code></p>
+<ul>
+<li>4、测试是否安装成功</li>
+</ul>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -version ffprobe -version</code></p>
+<h2 id="22-方法二源码安装">2.2 方法二：源码安装<a hidden class="anchor" aria-hidden="true" href="#22-方法二源码安装">#</a></h2>
+<ul>
+<li><strong>1、下载</strong> 源码下载地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html%23releases" title="https://ffmpeg.org/download.html#releases">ffmpeg.org/download.ht…</a></li>
+</ul>
+<blockquote>
+<p>选择最新版本的xz 压缩包</p>
+</blockquote>
+<ul>
+<li><strong>2、源码解压</strong> 上一步我们下载ffmpeg到我们的windows硬盘了</li>
+</ul>
+<p>然后我们上传到我们的linux服务器，我选择了SFTP的方式进行上传</p>
+<p>在usr/local下创建ffmpeg文件夹，并进入ffmpeg文件夹下</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cd /usr/local/ mkdir ffmpeg cd ffmpeg</code></p>
+<ul>
+<li><strong>3、解压安装包</strong></li>
+</ul>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>tar -xjvf ffmpeg-4.4.1.tar.xz</code></p>
+<ul>
+<li><strong>4、编译准备</strong></li>
+</ul>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>yum install gcc              # 安装gcc编译器 yum install yasm         # 安装yasm编译器</code></p>
+<ul>
+<li><strong>5、安装</strong></li>
+</ul>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>cd ffmpeg-4.4.1 ./configure --enable-shared --prefix=/usr/local/ffmpeg/ffmpeg-4.4.1 make make install</code></p>
+<ul>
+<li><strong>6、将lib目录加载到系统库链接</strong></li>
+</ul>
+<p>添加ffmpeg文件，并修改内容</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>vim /etc/ld.so.conf.d/ffmpeg.conf</code></p>
+<p>写入内容：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/usr/local/ffmpeg/ffmpeg-4.4.1/lib</code></p>
+<p>执行：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ldconfig</code></p>
+<ul>
+<li><strong>7、检测是否安装成功</strong> 在ffmpeg-4.4.1文件夹里执行：</li>
+</ul>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>./ffmpeg -version</code></p>
+<ul>
+<li><strong>8、添加到全局变量</strong></li>
+</ul>
+<p>修改配置文件：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>vim /etc/profile</code></p>
+<p>在最后一行添加：</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/usr/local/ffmpeg/ffmpeg-4.4.1/lib/pkgconfig export FFMPEG_HOME=/usr/local/ffmpeg/ffmpeg-4.4.1 export PATH=$PATH:$FFMPEG_HOME</code></p>
+<p>使配置生效：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>source /etc/profile</code></p>
+<h1 id="三ffprobe-在linux中的用法">三、ffprobe 在linux中的用法<a hidden class="anchor" aria-hidden="true" href="#三ffprobe-在linux中的用法">#</a></h1>
+<p>ffprobe 是 FFmpeg 套件中的一个工具，用于分析多媒体数据。它可以用来检查多媒体文件（如音频、视频和字幕文件）的格式、编解码器信息、元数据等。在 Linux 中，ffprobe 的基本用法是通过命令行界面进行的。</p>
+<h2 id="31-显示多媒体文件的基本信息">3.1 显示多媒体文件的基本信息<a hidden class="anchor" aria-hidden="true" href="#31-显示多媒体文件的基本信息">#</a></h2>
+<p>这个命令会输出一个 JSON 格式的字符串，包含输入文件（input.mp4）的格式和流信息。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffprobe -v quiet -print_format json -show_format -show_streams input.mp4</code></p>
+<p>输出信息：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{     &quot;streams&quot;: [         {             &quot;index&quot;: 0,             &quot;codec_name&quot;: &quot;h264&quot;,             &quot;codec_long_name&quot;: &quot;H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10&quot;,             &quot;profile&quot;: &quot;High&quot;,             &quot;codec_type&quot;: &quot;video&quot;,             &quot;codec_time_base&quot;: &quot;1/50000&quot;,             &quot;codec_tag_string&quot;: &quot;avc1&quot;,             &quot;codec_tag&quot;: &quot;0x31637661&quot;,             &quot;width&quot;: 1080,             &quot;height&quot;: 1920,             &quot;coded_width&quot;: 1088,             &quot;coded_height&quot;: 1920,             &quot;has_b_frames&quot;: 2,             &quot;sample_aspect_ratio&quot;: &quot;1:1&quot;,             &quot;display_aspect_ratio&quot;: &quot;9:16&quot;,             &quot;pix_fmt&quot;: &quot;yuv420p&quot;,             &quot;level&quot;: 40,             &quot;color_range&quot;: &quot;tv&quot;,             &quot;color_space&quot;: &quot;bt709&quot;,             &quot;chroma_location&quot;: &quot;left&quot;,             &quot;refs&quot;: 4,             &quot;is_avc&quot;: &quot;1&quot;,             &quot;nal_length_size&quot;: &quot;4&quot;,             &quot;r_frame_rate&quot;: &quot;25/1&quot;,             &quot;avg_frame_rate&quot;: &quot;25/1&quot;,             &quot;time_base&quot;: &quot;1/25000&quot;,             &quot;start_pts&quot;: 0,             &quot;start_time&quot;: &quot;0.000000&quot;,             &quot;duration_ts&quot;: 9471000,             &quot;duration&quot;: &quot;378.840000&quot;,             &quot;bit_rate&quot;: &quot;771385&quot;,             &quot;bits_per_raw_sample&quot;: &quot;8&quot;,             &quot;nb_frames&quot;: &quot;9471&quot;,             &quot;disposition&quot;: {                 &quot;default&quot;: 1,                 &quot;dub&quot;: 0,                 &quot;original&quot;: 0,                 &quot;comment&quot;: 0,                 &quot;lyrics&quot;: 0,                 &quot;karaoke&quot;: 0,                 &quot;forced&quot;: 0,                 &quot;hearing_impaired&quot;: 0,                 &quot;visual_impaired&quot;: 0,                 &quot;clean_effects&quot;: 0,                 &quot;attached_pic&quot;: 0             },             &quot;tags&quot;: {                 &quot;creation_time&quot;: &quot;2024-03-04 09:08:06&quot;,                 &quot;language&quot;: &quot;und&quot;             }         },         {             &quot;index&quot;: 1,             &quot;codec_name&quot;: &quot;aac&quot;,             &quot;codec_long_name&quot;: &quot;AAC (Advanced Audio Coding)&quot;,             &quot;profile&quot;: &quot;LC&quot;,             &quot;codec_type&quot;: &quot;audio&quot;,             &quot;codec_time_base&quot;: &quot;1/48000&quot;,             &quot;codec_tag_string&quot;: &quot;mp4a&quot;,             &quot;codec_tag&quot;: &quot;0x6134706d&quot;,             &quot;sample_fmt&quot;: &quot;fltp&quot;,             &quot;sample_rate&quot;: &quot;48000&quot;,             &quot;channels&quot;: 2,             &quot;channel_layout&quot;: &quot;stereo&quot;,             &quot;bits_per_sample&quot;: 0,             &quot;r_frame_rate&quot;: &quot;0/0&quot;,             &quot;avg_frame_rate&quot;: &quot;0/0&quot;,             &quot;time_base&quot;: &quot;1/48000&quot;,             &quot;start_pts&quot;: 0,             &quot;start_time&quot;: &quot;0.000000&quot;,             &quot;duration_ts&quot;: 18188288,             &quot;duration&quot;: &quot;378.922667&quot;,             &quot;bit_rate&quot;: &quot;128102&quot;,             &quot;max_bit_rate&quot;: &quot;153976&quot;,             &quot;nb_frames&quot;: &quot;17762&quot;,             &quot;disposition&quot;: {                 &quot;default&quot;: 1,                 &quot;dub&quot;: 0,                 &quot;original&quot;: 0,                 &quot;comment&quot;: 0,                 &quot;lyrics&quot;: 0,                 &quot;karaoke&quot;: 0,                 &quot;forced&quot;: 0,                 &quot;hearing_impaired&quot;: 0,                 &quot;visual_impaired&quot;: 0,                 &quot;clean_effects&quot;: 0,                 &quot;attached_pic&quot;: 0             },             &quot;tags&quot;: {                 &quot;creation_time&quot;: &quot;2024-03-04 09:07:59&quot;,                 &quot;language&quot;: &quot;und&quot;             }         }     ],     &quot;format&quot;: {         &quot;filename&quot;: &quot;input.mp4&quot;,         &quot;nb_streams&quot;: 2,         &quot;nb_programs&quot;: 0,         &quot;format_name&quot;: &quot;mov,mp4,m4a,3gp,3g2,mj2&quot;,         &quot;format_long_name&quot;: &quot;QuickTime / MOV&quot;,         &quot;start_time&quot;: &quot;0.000000&quot;,         &quot;duration&quot;: &quot;378.921667&quot;,         &quot;size&quot;: &quot;42792276&quot;,         &quot;bit_rate&quot;: &quot;903453&quot;,         &quot;probe_score&quot;: 100,         &quot;tags&quot;: {             &quot;major_brand&quot;: &quot;isom&quot;,             &quot;minor_version&quot;: &quot;1&quot;,             &quot;compatible_brands&quot;: &quot;isom&quot;,             &quot;creation_time&quot;: &quot;2024-03-04 09:09:41&quot;         }     } }</code></p>
+<h2 id="32-显示特定流的信息">3.2 显示特定流的信息<a hidden class="anchor" aria-hidden="true" href="#32-显示特定流的信息">#</a></h2>
+<p>如果你只对音频流或视频流感兴趣，你可以使用 <strong>-select_streams</strong> 选项来指定。例如，显示视频流信息：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># ffprobe -v quiet -print_format json -show_streams -select_streams v input.mp4</code></p>
+<p>或者显示音频流信息：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffprobe -v quiet -print_format json -show_streams -select_streams a input.mp3</code></p>
+<p>以下是返回信息：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{     &quot;streams&quot;: [         {             &quot;index&quot;: 0,             &quot;codec_name&quot;: &quot;h264&quot;,             &quot;codec_long_name&quot;: &quot;H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10&quot;,             &quot;profile&quot;: &quot;High&quot;,             &quot;codec_type&quot;: &quot;video&quot;,             &quot;codec_time_base&quot;: &quot;1/50000&quot;,             &quot;codec_tag_string&quot;: &quot;avc1&quot;,             &quot;codec_tag&quot;: &quot;0x31637661&quot;,             &quot;width&quot;: 1080,             &quot;height&quot;: 1920,             &quot;coded_width&quot;: 1088,             &quot;coded_height&quot;: 1920,             &quot;has_b_frames&quot;: 2,             &quot;sample_aspect_ratio&quot;: &quot;1:1&quot;,             &quot;display_aspect_ratio&quot;: &quot;9:16&quot;,             &quot;pix_fmt&quot;: &quot;yuv420p&quot;,             &quot;level&quot;: 40,             &quot;color_range&quot;: &quot;tv&quot;,             &quot;color_space&quot;: &quot;bt709&quot;,             &quot;chroma_location&quot;: &quot;left&quot;,             &quot;refs&quot;: 4,             &quot;is_avc&quot;: &quot;1&quot;,             &quot;nal_length_size&quot;: &quot;4&quot;,             &quot;r_frame_rate&quot;: &quot;25/1&quot;,             &quot;avg_frame_rate&quot;: &quot;25/1&quot;,             &quot;time_base&quot;: &quot;1/25000&quot;,             &quot;start_pts&quot;: 0,             &quot;start_time&quot;: &quot;0.000000&quot;,             &quot;duration_ts&quot;: 9471000,             &quot;duration&quot;: &quot;378.840000&quot;,             &quot;bit_rate&quot;: &quot;771385&quot;,             &quot;bits_per_raw_sample&quot;: &quot;8&quot;,             &quot;nb_frames&quot;: &quot;9471&quot;,             &quot;disposition&quot;: {                 &quot;default&quot;: 1,                 &quot;dub&quot;: 0,                 &quot;original&quot;: 0,                 &quot;comment&quot;: 0,                 &quot;lyrics&quot;: 0,                 &quot;karaoke&quot;: 0,                 &quot;forced&quot;: 0,                 &quot;hearing_impaired&quot;: 0,                 &quot;visual_impaired&quot;: 0,                 &quot;clean_effects&quot;: 0,                 &quot;attached_pic&quot;: 0             },             &quot;tags&quot;: {                 &quot;creation_time&quot;: &quot;2024-03-04 09:08:06&quot;,                 &quot;language&quot;: &quot;und&quot;             }         }     ] }</code></p>
+<h2 id="33-获取音视频的时长">3.3 获取音视频的时长<a hidden class="anchor" aria-hidden="true" href="#33-获取音视频的时长">#</a></h2>
+<p>如果你只想获取视频的时长，可以使用 <strong>-show_entries</strong> 选项来指定 <strong>format=duration</strong>，并且设置输出格式为纯文本：</p>
+<p>以下是使用ffprobe获取视频时长的基本命令：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input.mp4</code></p>
+<p>以下是使用ffprobe获取音频时长的基本命令：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 input.mp3</code></p>
+<p>输出：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>378.921667</code></p>
+<p>在这个命令中：</p>
+<ul>
+<li>-v error：设置日志级别为error，以减少输出中的非必要信息。</li>
+<li>-show_entries format=duration：指定要显示的条目为format下的duration，即视频的时长。</li>
+<li>-of default=noprint_wrappers=1:nokey=1：设置输出格式为默认格式，并去除包装器和键名，只输出时长值。</li>
+<li>input.mp4：替换为你的视频文件名。</li>
+<li>执行这个命令后，ffprobe会输出视频的时长，以秒为单位。</li>
+</ul>
+<blockquote>
+<p>注意：使用以上命令时，确保你已经安装了FFmpeg，并且ffprobe命令在你的系统路径中可用。如果你没有安装FFmpeg，你可以通过包管理器（如apt、yum或pacman）来安装它。</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/nodejs%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0ffmpeg/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Nodejs第十六章ffmpeg</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%8E%A2%E7%B4%A2ffmpeg%E5%BC%BA%E5%A4%A7%E7%9A%84%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86%E5%B7%A5%E5%85%B7/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>深入探索FFmpeg：强大的多媒体处理工具</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 on x"
+            href="https://x.com/intent/tweet/?text=Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f&amp;hashtags=%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f&amp;title=Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8&amp;summary=Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f&title=Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 on telegram"
+            href="https://telegram.me/share/url?text=Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Linux快速安装FFmpeg、ffprobe、ffplay以及在Linux上的使用 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Linux%e5%bf%ab%e9%80%9f%e5%ae%89%e8%a3%85FFmpeg%e3%80%81ffprobe%e3%80%81ffplay%e4%bb%a5%e5%8f%8a%e5%9c%a8Linux%e4%b8%8a%e7%9a%84%e4%bd%bf%e7%94%a8&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2flinux%25E5%25BF%25AB%25E9%2580%259F%25E5%25AE%2589%25E8%25A3%2585ffmpegffprobeffplay%25E4%25BB%25A5%25E5%258F%258A%25E5%259C%25A8linux%25E4%25B8%258A%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

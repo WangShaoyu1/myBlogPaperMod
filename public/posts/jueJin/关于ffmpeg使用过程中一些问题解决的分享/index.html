@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>关于FFmpeg使用过程中一些问题解决的分享 | PaperMod</title>
+<meta name="keywords" content="FFmpeg">
+<meta name="description" content="关于FFmpeg使用过程中一些问题解决的分享近期项目开发中使用到了FFmpeg，由于也是第一次使用，所以在这将其中遇到的一些问题及解决办法，在这里进行一个汇总。">
+<meta name="author" content="LiDaTou">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8Effmpeg%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E7%9A%84%E5%88%86%E4%BA%AB/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8Effmpeg%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E7%9A%84%E5%88%86%E4%BA%AB/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="关于FFmpeg使用过程中一些问题解决的分享" />
+<meta property="og:description" content="关于FFmpeg使用过程中一些问题解决的分享近期项目开发中使用到了FFmpeg，由于也是第一次使用，所以在这将其中遇到的一些问题及解决办法，在这里进行一个汇总。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8Effmpeg%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E7%9A%84%E5%88%86%E4%BA%AB/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-15T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="关于FFmpeg使用过程中一些问题解决的分享"/>
+<meta name="twitter:description" content="关于FFmpeg使用过程中一些问题解决的分享近期项目开发中使用到了FFmpeg，由于也是第一次使用，所以在这将其中遇到的一些问题及解决办法，在这里进行一个汇总。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "关于FFmpeg使用过程中一些问题解决的分享",
+      "item": "http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8Effmpeg%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E7%9A%84%E5%88%86%E4%BA%AB/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "关于FFmpeg使用过程中一些问题解决的分享",
+  "name": "关于FFmpeg使用过程中一些问题解决的分享",
+  "description": "关于FFmpeg使用过程中一些问题解决的分享近期项目开发中使用到了FFmpeg，由于也是第一次使用，所以在这将其中遇到的一些问题及解决办法，在这里进行一个汇总。",
+  "keywords": [
+    "FFmpeg"
+  ],
+  "articleBody": "关于FFmpeg使用过程中一些问题解决的分享 近期项目开发中使用到了FFmpeg，由于也是第一次使用，所以在这将其中遇到的一些问题及解决办法，在这里进行一个汇总。 关于FFmpeg的使用方法并不多做解释，自行寻找使用方法：\nFFmpeg官网：ffmpeg.org/\n（1）如果通过命令行处理视频则需要从官网下载对应的ffmpeg，并配置环境变量或通过当前目录执行。 （2）若想在项目中使用，只要引用对应jar包既可。但需要注意一点，项目中引用jar在windows和mac环境中可直接运行，但在linux中需要编译对应的so文件。（因为这个问题折腾了一天多）\njavascript\n代码解读\n复制代码\n2022-06-01 09:35:47 [http-nio-8090-exec-4] ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Handler dispatch failed; nested exception is java.lang.UnsatisfiedLinkError: no jniavutil in java.library.path] with root cause java.lang.UnsatisfiedLinkError: /root/.javacpp/cache/ffmpeg-5.0-1.5.7-linux-x86_64.jar/org/bytedeco/ffmpeg/linux-x86_64/libjniavutil.so: /lib64/libc.so.6: version `GLIBC_2.14' not found (required by /root/.javacpp/cache/ffmpeg-5.0-1.5.7-linux-x86_64.jar/org/bytedeco/ffmpeg/linux-x86_64/libjniavutil.so)\n下面是解决问题时参考的链接：\nblog.csdn.net/maoxiang/ar…\nblog.csdn.net/weixin_3569…\nstackoverflow.com/questions/6…\n非常重要：编译so文件时建议配置科学上网，有些依赖下载非常慢，并且会超时\n（1）单张图片生成视频 arduino\n代码解读\n复制代码\nffmpeg -loop 1 -r 1 -t 5 -i xxxxx.jpg -c:v h264 -pix_fmt yuv420p out.mp4\n-loop 1 循环。因为就一张图片\n-r 1 帧率。1 是每秒一帧\n-t 5 时长。秒为单位。生成5秒长的视频\n-c:v h264 视频输出的编码格式。 h264是mp4格式常用的编码\n-pix_fmt yux420p 像素格式。支持的类型可以查看ffmpeg帮助查询\n上面的命令是生成一个5秒长的mp4格式视频文件out.mp4。 其他参数可根据需要添加。\n（2）给生成的视频添加空音轨 这个具体看自己的需求。以上面的命令为例子，生成的out.mp4视频是只有视频轨道，没有音频轨道。如果你将视频拖入类似PR这种视频处理软件中，就能看出来。\n那么这种情况，想用ffmpeg从里面提取音频或以此视频进行其他操作可能会有异常。例如用concat命令操作两个视频的时候，可能出现下面的问题：\narduino\n代码解读\n复制代码\nStream specifier ':1' in filtergraph description\n这种情况就是因为一个没有音轨的视频拼接一个有音轨的视频的时候出现了这个问题。那么就需要在生成视频文件的时候插入一个空音轨，命令如下：\ncss\n代码解读\n复制代码\nffmpeg -i xxxx.mp4 -f lavfi -t 5 -i anullsrc=cl=stereo:r=48000 -c:v libx264 -pix_fmt yuv420p out.mp4\n-f lavfi format一个格式，具体并没有弄清楚，可以自己行了解\n-t 5 时长，如果不指定将一直生成视频，如果仅仅是插入一个空音轨，可以比视频短或跟视频长度相等\n-i anullsrc=cl=stereo:r=48000 最主要的就是这个，anullsrc音频空链接，意思是没有输入文件cl是通道布局，r是采样率，具体可查看官网文档\n上面的命令是将xxxx.mp4视频转换成out.mp4并插入一个空音轨\n（3）两个视频拼接处的过渡 xfade命令实现的过渡效果比较多，也可自定义过渡效果。需要用到一个参数：-filter_complex\ncss\n代码解读\n复制代码\nffmpeg -i xxx.mp4 -i yyy.mp4 -filter_complex \"xfade=transition=fade:offset=7:duration=0.5\" out.mp4\ntransition 效果，具体可以去查xfade命令\noffset 偏移量，可以理解成从第几秒开始，但是好像不能超过第一个视频的长度\nduration 持续时间\n但是这个命令要求比较苛刻，要求两个输入必须是恒定的帧速率，并且具有相同的分辨率、像素格式、帧速率和时基\n最厉害的就是这个时基（timebase）。对不起，我没弄明白。会出现下面这个问题：\nlua\n代码解读\n复制代码\nFirst input link main timebase (1/12800) do not match the corresponding second input link xfade timebase (1/25000)\n解决办法：\ncss\n代码解读\n复制代码\nffmpeg -i xxx.mp4 -i yyy.mp4 -filter_complex \"[0]settb=AVTB[v0];[1]settb=AVTB[v1];[v0][v1]xfade=transition=fade:offset=7:duration=0.5\" out.mp4\n[0]/[1] 是输入流的下标，可以这么理解\n[v0]/[v1] 是处理后的流标识\nsettb=AVTB 设置视频的时基, AVTB是默认时基\n就是将两个不同时基的视频设置一个相同的时基，然后再进行xfade操作。\n（4）concat操作 less\n代码解读\n复制代码\nffmpeg -i xxx.mp4 -i yyy.mp4 -filter_complex \"[0:0][0:1][1:0][1:1]concat=n=2:v=1:a=1[v][a]\" -map [v] -map[a] out.mp4\n参考链接：blog.csdn.net/chaijunkun/…\nn=2 2个输入流\nv=1 每个流中存在一个视频流\na=1 每个流中存在一个音频流\nconcat操作的参数可能比较懵，需要知道视频流中存在的视频通道和音频通道有几个，假如两个视频中，A视频存在2个视频流和一个音频流，B视频中存在1个视频流一个音频流，那么处理时会出现问题。不知有没有办法避免，本人还未找到合适的方法。\n注意：本人使用concat合并视频的结果视频文件中会产生两个视频流一个音频流。 如果使用这个文件在进行合并时需注意。\n在合并时产生的日志中有详细信息，可自行查找：\nyaml\n代码解读\n复制代码\nInput #0, mov,mp4,m4a,3gp,3g2,mj2, from '/xxx/aaa.mp4': Metadata: major_brand : isom minor_version : 512 compatible_brands: isomiso2mp41 encoder : Lavf59.16.100 Duration: 00:00:03.48, start: 0.000000, bitrate: 748 kb/s Stream #0:0[0x1](und): Video: mpeg4 (Simple Profile) (mp4v / 0x7634706D), yuv420p, 720x1280 [SAR 1:1 DAR 9:16], 885 kb/s, 30 fps, 30 tbr, 15360 tbn (default) Metadata: handler_name : VideoHandler vendor_id : [0][0][0][0] Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 2 kb/s (default) Metadata: handler_name : SoundHandler vendor_id : [0][0][0][0] Input #1, mov,mp4,m4a,3gp,3g2,mj2, from '/xxx/bbb.mp4': Metadata: major_brand : isom minor_version : 512 compatible_brands: isomiso2avc1mp41 encoder : Lavf59.16.100 Duration: 00:00:20.00, start: 0.000000, bitrate: 399 kb/s Stream #1:0[0x1](und): Video: h264 (Constrained Baseline) (avc1 / 0x31637661), yuv420p(progressive), 720x1280, 392 kb/s, 25 fps, 25 tbr, 12800 tbn (default) Metadata: handler_name : VideoHandler vendor_id : [0][0][0][0] Stream #1:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, mono, fltp, 1 kb/s (default) Metadata: handler_name : SoundHandler vendor_id : [0][0][0][0]\n（4）drawtext字幕 css\n代码解读\n复制代码\n./ffmpeg -i test_1.mp4 -filter_complex \"drawtext=fontfile=FZYDZHJW.TTF: text='这是一行居中的文字第一行':x=(w-tw)/2:y=((h-text_h)/2)+(text_h-(th/4)): fontsize=55: fontcolor=green\" test_drawtext.mp4\ndrawtext 过滤器名称\nfontfile 指定字体文件（font可指定本机存在的字体名称，不用文件）\ntext 要显示的文本（textfile可指定一个文本文件）\nx/y 在视频中的显示位置\n其他参数可查询drawtext，其中有些参数可以在过滤器中使用，但不可进行设置值。比如text_h、main_h等。drawtext绘制的文本未输入文本格式，不会自动换行，需自行调整。可接受\"\\n\"、\"\\t\"等。如果需要每行都居中显示，则需要拼接多个drawtext过滤器使用。\n（5）crop裁剪 ini\n代码解读\n复制代码\ncrop=w:h:x:y\nw 裁剪的宽\nh 裁剪的高\nx 裁剪的起始x坐标值\ny 裁剪的起始y坐标值\n如果想单独裁剪图片并没有什么问题，但是想裁剪完成后再overlay到某个视频或图片上，可能会出现色差，这个问题是因为输入的图片像素类型不对。图片输入的格式一般是yuvj444p，可从日志中查看。\n（6）100 buffers queued in out_0_2, something may be wrong警告 此警告有点无关痛痒，可以输出最终视频。但在我使用中，出现这个警告会导致两个视频过渡中的效果加不上，找了资料，在命令中加上fifo。\ncss\n代码解读\n复制代码\nffmpeg -i aaa.mp4 -i bbb.mp4 -filter_complex \"[0]fifo,settb=AVTB[v0];[1]fifo,settb=AVTB[v1];[v0][v1]xfade=transition=fade:offset=4:duration=0.5\" out.mp4\n官网对fifo 或 afifo 没有过多解释，只有三句话：\nvbnet\n代码解读\n复制代码\nBuffer input images and send them when they are requested. It is mainly useful when auto-inserted by the libavfilter framework. It does not take parameters.\n以上，就是在使用过程中出现的问题，望可以对各位有所帮助。\n",
+  "wordCount" : "462",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-06-15T00:00:00Z",
+  "dateModified": "2022-06-15T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "LiDaTou"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8Effmpeg%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E7%9A%84%E5%88%86%E4%BA%AB/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      关于FFmpeg使用过程中一些问题解决的分享
+    </h1>
+    <div class="post-description">
+      关于FFmpeg使用过程中一些问题解决的分享近期项目开发中使用到了FFmpeg，由于也是第一次使用，所以在这将其中遇到的一些问题及解决办法，在这里进行一个汇总。
+    </div>
+    <div class="post-meta"><span title='2022-06-15 00:00:00 +0000 UTC'>六月 15, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;LiDaTou&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%85%b3%e4%ba%8effmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab" aria-label="关于FFmpeg使用过程中一些问题解决的分享">关于FFmpeg使用过程中一些问题解决的分享</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1%e5%8d%95%e5%bc%a0%e5%9b%be%e7%89%87%e7%94%9f%e6%88%90%e8%a7%86%e9%a2%91" aria-label="（1）单张图片生成视频">（1）单张图片生成视频</a></li>
+                <li>
+                    <a href="#2%e7%bb%99%e7%94%9f%e6%88%90%e7%9a%84%e8%a7%86%e9%a2%91%e6%b7%bb%e5%8a%a0%e7%a9%ba%e9%9f%b3%e8%bd%a8" aria-label="（2）给生成的视频添加空音轨">（2）给生成的视频添加空音轨</a></li>
+                <li>
+                    <a href="#3%e4%b8%a4%e4%b8%aa%e8%a7%86%e9%a2%91%e6%8b%bc%e6%8e%a5%e5%a4%84%e7%9a%84%e8%bf%87%e6%b8%a1" aria-label="（3）两个视频拼接处的过渡">（3）两个视频拼接处的过渡</a></li>
+                <li>
+                    <a href="#4concat%e6%93%8d%e4%bd%9c" aria-label="（4）concat操作">（4）concat操作</a></li>
+                <li>
+                    <a href="#4drawtext%e5%ad%97%e5%b9%95" aria-label="（4）drawtext字幕">（4）drawtext字幕</a></li>
+                <li>
+                    <a href="#5crop%e8%a3%81%e5%89%aa" aria-label="（5）crop裁剪">（5）crop裁剪</a></li>
+                <li>
+                    <a href="#6100-buffers-queued-in-out_0_2-something-may-be-wrong%e8%ad%a6%e5%91%8a" aria-label="（6）100 buffers queued in out_0_2, something may be wrong警告">（6）100 buffers queued in out_0_2, something may be wrong警告</a>
+                </li>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="关于ffmpeg使用过程中一些问题解决的分享">关于FFmpeg使用过程中一些问题解决的分享<a hidden class="anchor" aria-hidden="true" href="#关于ffmpeg使用过程中一些问题解决的分享">#</a></h2>
+<p>近期项目开发中使用到了<strong>FFmpeg</strong>，由于也是第一次使用，所以在这将其中遇到的一些问题及解决办法，在这里进行一个汇总。 关于FFmpeg的使用方法并不多做解释，自行寻找使用方法：</p>
+<p>FFmpeg官网：<a href="https://link.juejin.cn?target=https%3A%2F%2Fffmpeg.org%2F" title="https://ffmpeg.org/">ffmpeg.org/</a></p>
+<p>（1）如果通过命令行处理视频则需要从官网下载对应的ffmpeg，并配置环境变量或通过当前目录执行。 （2）若想在项目中使用，只要引用对应jar包既可。但需要注意一点，项目中引用jar在windows和mac环境中可直接运行，但在linux中需要编译对应的so文件。（因为这个问题折腾了一天多）</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>2022-06-01 09:35:47 [http-nio-8090-exec-4] ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Handler dispatch failed; nested exception is java.lang.UnsatisfiedLinkError: no jniavutil in java.library.path] with root cause java.lang.UnsatisfiedLinkError: /root/.javacpp/cache/ffmpeg-5.0-1.5.7-linux-x86_64.jar/org/bytedeco/ffmpeg/linux-x86_64/libjniavutil.so: /lib64/libc.so.6: version `GLIBC_2.14' not found (required by /root/.javacpp/cache/ffmpeg-5.0-1.5.7-linux-x86_64.jar/org/bytedeco/ffmpeg/linux-x86_64/libjniavutil.so)</code></p>
+<p>下面是解决问题时参考的链接：<br>
+<a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fmaoxiang%2Farticle%2Fdetails%2F38388387" title="https://blog.csdn.net/maoxiang/article/details/38388387">blog.csdn.net/maoxiang/ar…</a><br>
+<a href="https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fweixin_35691526%2Farticle%2Fdetails%2F114977856" title="https://blog.csdn.net/weixin_35691526/article/details/114977856">blog.csdn.net/weixin_3569…</a><br>
+<a href="https://link.juejin.cn?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F61866772%2Ffailed-to-execute-goal-org-bytedecojavacpp1-5-3build-javacpp-cppbuild-compil" title="https://stackoverflow.com/questions/61866772/failed-to-execute-goal-org-bytedecojavacpp1-5-3build-javacpp-cppbuild-compil">stackoverflow.com/questions/6…</a></p>
+<p><strong>非常重要：编译so文件时建议配置科学上网，有些依赖下载非常慢，并且会超时</strong></p>
+<h4 id="1单张图片生成视频">（1）单张图片生成视频<a hidden class="anchor" aria-hidden="true" href="#1单张图片生成视频">#</a></h4>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -loop 1 -r 1 -t 5 -i xxxxx.jpg -c:v h264 -pix_fmt yuv420p out.mp4</code></p>
+<p><strong>-loop 1</strong> 循环。因为就一张图片<br>
+<strong>-r 1</strong> 帧率。1 是每秒一帧<br>
+<strong>-t 5</strong> 时长。秒为单位。生成5秒长的视频<br>
+<strong>-c:v h264</strong> 视频输出的编码格式。 h264是mp4格式常用的编码<br>
+<strong>-pix_fmt yux420p</strong> 像素格式。支持的类型可以查看ffmpeg帮助查询</p>
+<p><strong>上面的命令是生成一个5秒长的mp4格式视频文件out.mp4。</strong> 其他参数可根据需要添加。</p>
+<h4 id="2给生成的视频添加空音轨">（2）给生成的视频添加空音轨<a hidden class="anchor" aria-hidden="true" href="#2给生成的视频添加空音轨">#</a></h4>
+<p>这个具体看自己的需求。以上面的命令为例子，生成的out.mp4视频是只有视频轨道，没有音频轨道。如果你将视频拖入类似PR这种视频处理软件中，就能看出来。<br>
+那么这种情况，想用ffmpeg从里面提取音频或以此视频进行其他操作可能会有异常。例如用<strong>concat</strong>命令操作两个视频的时候，可能出现下面的问题：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Stream specifier ':1' in filtergraph description</code></p>
+<p>这种情况就是因为一个没有音轨的视频拼接一个有音轨的视频的时候出现了这个问题。那么就需要在生成视频文件的时候插入一个空音轨，命令如下：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i xxxx.mp4 -f lavfi -t 5 -i anullsrc=cl=stereo:r=48000 -c:v libx264 -pix_fmt yuv420p out.mp4</code></p>
+<p><strong>-f lavfi</strong> format一个格式，具体并没有弄清楚，可以自己行了解<br>
+<strong>-t 5</strong> 时长，如果不指定将一直生成视频，如果仅仅是插入一个空音轨，可以比视频短或跟视频长度相等<br>
+<strong>-i anullsrc=cl=stereo:r=48000</strong> 最主要的就是这个，anullsrc音频空链接，意思是没有输入文件cl是通道布局，r是采样率，具体可查看官网文档</p>
+<p><strong>上面的命令是将xxxx.mp4视频转换成out.mp4并插入一个空音轨</strong></p>
+<h4 id="3两个视频拼接处的过渡">（3）两个视频拼接处的过渡<a hidden class="anchor" aria-hidden="true" href="#3两个视频拼接处的过渡">#</a></h4>
+<p><strong>xfade</strong>命令实现的过渡效果比较多，也可自定义过渡效果。需要用到一个参数：<strong>-filter_complex</strong></p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i xxx.mp4 -i yyy.mp4 -filter_complex &quot;xfade=transition=fade:offset=7:duration=0.5&quot; out.mp4</code></p>
+<p><strong>transition</strong> 效果，具体可以去查xfade命令<br>
+<strong>offset</strong> 偏移量，可以理解成从第几秒开始，但是好像不能超过第一个视频的长度<br>
+<strong>duration</strong> 持续时间</p>
+<p>但是这个命令要求比较苛刻，要求<strong>两个输入必须是恒定的帧速率，并且具有相同的分辨率、像素格式、帧速率和时基</strong></p>
+<p>最厉害的就是这个时基（<strong>timebase</strong>）。对不起，我没弄明白。会出现下面这个问题：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>First input link main timebase (1/12800) do not match the corresponding second input link xfade timebase (1/25000)</code></p>
+<p>解决办法：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i xxx.mp4 -i yyy.mp4 -filter_complex &quot;[0]settb=AVTB[v0];[1]settb=AVTB[v1];[v0][v1]xfade=transition=fade:offset=7:duration=0.5&quot; out.mp4</code></p>
+<p><strong>[0]/[1]</strong> 是输入流的下标，可以这么理解<br>
+<strong>[v0]/[v1]</strong> 是处理后的流标识<br>
+<strong>settb=AVTB</strong> 设置视频的时基, AVTB是默认时基</p>
+<p>就是将两个不同时基的视频设置一个相同的时基，然后再进行xfade操作。</p>
+<h4 id="4concat操作">（4）concat操作<a hidden class="anchor" aria-hidden="true" href="#4concat操作">#</a></h4>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i xxx.mp4 -i yyy.mp4 -filter_complex &quot;[0:0][0:1][1:0][1:1]concat=n=2:v=1:a=1[v][a]&quot; -map [v] -map[a] out.mp4</code></p>
+<p>参考链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fblog.csdn.net%2Fchaijunkun%2Farticle%2Fdetails%2F116237809" title="http://blog.csdn.net/chaijunkun/article/details/116237809">blog.csdn.net/chaijunkun/…</a></p>
+<p><strong>n=2</strong> 2个输入流<br>
+<strong>v=1</strong> 每个流中存在一个视频流<br>
+<strong>a=1</strong> 每个流中存在一个音频流</p>
+<p><strong>concat</strong>操作的参数可能比较懵，需要知道视频流中存在的视频通道和音频通道有几个，假如两个视频中，A视频存在2个视频流和一个音频流，B视频中存在1个视频流一个音频流，那么处理时会出现问题。不知有没有办法避免，本人还未找到合适的方法。</p>
+<p><strong>注意：本人使用concat合并视频的结果视频文件中会产生两个视频流一个音频流。</strong> 如果使用这个文件在进行合并时需注意。</p>
+<p>在合并时产生的日志中有详细信息，可自行查找：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/xxx/aaa.mp4':   Metadata:     major_brand     : isom     minor_version   : 512     compatible_brands: isomiso2mp41     encoder         : Lavf59.16.100   Duration: 00:00:03.48, start: 0.000000, bitrate: 748 kb/s   Stream #0:0[0x1](und): Video: mpeg4 (Simple Profile) (mp4v / 0x7634706D), yuv420p, 720x1280 [SAR 1:1 DAR 9:16], 885 kb/s, 30 fps, 30 tbr, 15360 tbn (default)     Metadata:       handler_name    : VideoHandler       vendor_id       : [0][0][0][0]   Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 2 kb/s (default)     Metadata:       handler_name    : SoundHandler       vendor_id       : [0][0][0][0] Input #1, mov,mp4,m4a,3gp,3g2,mj2, from '/xxx/bbb.mp4':   Metadata:     major_brand     : isom     minor_version   : 512     compatible_brands: isomiso2avc1mp41     encoder         : Lavf59.16.100   Duration: 00:00:20.00, start: 0.000000, bitrate: 399 kb/s   Stream #1:0[0x1](und): Video: h264 (Constrained Baseline) (avc1 / 0x31637661), yuv420p(progressive), 720x1280, 392 kb/s, 25 fps, 25 tbr, 12800 tbn (default)     Metadata:       handler_name    : VideoHandler       vendor_id       : [0][0][0][0]   Stream #1:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, mono, fltp, 1 kb/s (default)     Metadata:       handler_name    : SoundHandler       vendor_id       : [0][0][0][0]</code></p>
+<h4 id="4drawtext字幕">（4）drawtext字幕<a hidden class="anchor" aria-hidden="true" href="#4drawtext字幕">#</a></h4>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>./ffmpeg -i test_1.mp4 -filter_complex &quot;drawtext=fontfile=FZYDZHJW.TTF: text='这是一行居中的文字第一行':x=(w-tw)/2:y=((h-text_h)/2)+(text_h-(th/4)): fontsize=55: fontcolor=green&quot; test_drawtext.mp4</code></p>
+<p><strong>drawtext</strong> 过滤器名称<br>
+<strong>fontfile</strong> 指定字体文件（font可指定本机存在的字体名称，不用文件）<br>
+<strong>text</strong> 要显示的文本（textfile可指定一个文本文件）<br>
+<strong>x/y</strong> 在视频中的显示位置</p>
+<p>其他参数可查询drawtext，其中有些参数可以在过滤器中使用，但不可进行设置值。比如<strong>text_h、main_h</strong>等。drawtext绘制的文本未输入文本格式，不会自动换行，需自行调整。可接受&quot;\n&quot;、&quot;\t&quot;等。如果需要每行都居中显示，则需要拼接多个drawtext过滤器使用。</p>
+<h4 id="5crop裁剪">（5）crop裁剪<a hidden class="anchor" aria-hidden="true" href="#5crop裁剪">#</a></h4>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>crop=w:h:x:y</code></p>
+<p><strong>w</strong> 裁剪的宽<br>
+<strong>h</strong> 裁剪的高<br>
+<strong>x</strong> 裁剪的起始x坐标值<br>
+<strong>y</strong> 裁剪的起始y坐标值</p>
+<p>如果想单独裁剪图片并没有什么问题，但是想裁剪完成后再<strong>overlay</strong>到某个视频或图片上，可能会出现色差，这个问题是因为输入的图片像素类型不对。图片输入的格式一般是yuvj444p，可从日志中查看。</p>
+<h4 id="6100-buffers-queued-in-out_0_2-something-may-be-wrong警告">（6）100 buffers queued in out_0_2, something may be wrong警告<a hidden class="anchor" aria-hidden="true" href="#6100-buffers-queued-in-out_0_2-something-may-be-wrong警告">#</a></h4>
+<p>此警告有点无关痛痒，可以输出最终视频。但在我使用中，出现这个警告会导致两个视频过渡中的效果加不上，找了资料，在命令中加上<strong>fifo</strong>。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ffmpeg -i aaa.mp4 -i bbb.mp4 -filter_complex &quot;[0]fifo,settb=AVTB[v0];[1]fifo,settb=AVTB[v1];[v0][v1]xfade=transition=fade:offset=4:duration=0.5&quot; out.mp4</code></p>
+<p>官网对<strong>fifo</strong> 或 <strong>afifo</strong> 没有过多解释，只有三句话：</p>
+<p>vbnet</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Buffer input images and send them when they are requested. It is mainly useful when auto-inserted by the libavfilter framework. It does not take parameters.</code></p>
+<p>以上，就是在使用过程中出现的问题，望可以对各位有所帮助。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/ffmpeg/">FFmpeg</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%9D%A5%E6%88%91%E5%85%AC%E5%8F%B8%E5%86%99%E7%88%AC%E8%99%AB%E5%90%97%E4%BC%9A%E5%9D%90%E7%89%A2%E7%9A%84%E9%82%A3%E7%A7%8D%E4%B8%80/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>来我公司写爬虫吗？会坐牢的那种!(一)</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%9C%AC%E7%A7%91%E9%80%80%E5%AD%A6%E5%88%B0%E5%86%8D%E6%8B%BF%E6%9C%AC%E7%A7%912021%E6%88%91%E7%9A%845%E5%B9%B4%E6%8A%80%E6%9C%AF%E5%BC%AF%E8%B7%AF%E5%9B%9E%E8%BD%A8%E4%BA%861.2w%E5%AD%97/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>从本科退学，到再拿本科，2021我的5年技术“弯路”回轨了｜1.2w字</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 关于FFmpeg使用过程中一些问题解决的分享 on x"
+            href="https://x.com/intent/tweet/?text=%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f&amp;hashtags=FFmpeg">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 关于FFmpeg使用过程中一些问题解决的分享 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f&amp;title=%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab&amp;summary=%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 关于FFmpeg使用过程中一些问题解决的分享 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f&title=%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 关于FFmpeg使用过程中一些问题解决的分享 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 关于FFmpeg使用过程中一些问题解决的分享 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 关于FFmpeg使用过程中一些问题解决的分享 on telegram"
+            href="https://telegram.me/share/url?text=%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 关于FFmpeg使用过程中一些问题解决的分享 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%85%b3%e4%ba%8eFFmpeg%e4%bd%bf%e7%94%a8%e8%bf%87%e7%a8%8b%e4%b8%ad%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3%e7%9a%84%e5%88%86%e4%ba%ab&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2585%25B3%25E4%25BA%258Effmpeg%25E4%25BD%25BF%25E7%2594%25A8%25E8%25BF%2587%25E7%25A8%258B%25E4%25B8%25AD%25E4%25B8%2580%25E4%25BA%259B%25E9%2597%25AE%25E9%25A2%2598%25E8%25A7%25A3%25E5%2586%25B3%25E7%259A%2584%25E5%2588%2586%25E4%25BA%25AB%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

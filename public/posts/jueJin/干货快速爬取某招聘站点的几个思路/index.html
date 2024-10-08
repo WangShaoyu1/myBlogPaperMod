@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>【干货】快速爬取某招聘站点的几个思路 | PaperMod</title>
+<meta name="keywords" content="Python, 爬虫, Xposed">
+<meta name="description" content="🤡认识杰哥的读者都知道，Python实战类的文章灵感都来源于生活，休完陪产假没多久，素材就来了。一位资深产品兼原创音乐人朋友在群里@我">
+<meta name="author" content="coder_pig">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%B9%B2%E8%B4%A7%E5%BF%AB%E9%80%9F%E7%88%AC%E5%8F%96%E6%9F%90%E6%8B%9B%E8%81%98%E7%AB%99%E7%82%B9%E7%9A%84%E5%87%A0%E4%B8%AA%E6%80%9D%E8%B7%AF/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%B9%B2%E8%B4%A7%E5%BF%AB%E9%80%9F%E7%88%AC%E5%8F%96%E6%9F%90%E6%8B%9B%E8%81%98%E7%AB%99%E7%82%B9%E7%9A%84%E5%87%A0%E4%B8%AA%E6%80%9D%E8%B7%AF/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="【干货】快速爬取某招聘站点的几个思路" />
+<meta property="og:description" content="🤡认识杰哥的读者都知道，Python实战类的文章灵感都来源于生活，休完陪产假没多久，素材就来了。一位资深产品兼原创音乐人朋友在群里@我" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%B9%B2%E8%B4%A7%E5%BF%AB%E9%80%9F%E7%88%AC%E5%8F%96%E6%9F%90%E6%8B%9B%E8%81%98%E7%AB%99%E7%82%B9%E7%9A%84%E5%87%A0%E4%B8%AA%E6%80%9D%E8%B7%AF/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-03-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-03-01T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="【干货】快速爬取某招聘站点的几个思路"/>
+<meta name="twitter:description" content="🤡认识杰哥的读者都知道，Python实战类的文章灵感都来源于生活，休完陪产假没多久，素材就来了。一位资深产品兼原创音乐人朋友在群里@我"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "【干货】快速爬取某招聘站点的几个思路",
+      "item": "http://localhost:1313/posts/juejin/%E5%B9%B2%E8%B4%A7%E5%BF%AB%E9%80%9F%E7%88%AC%E5%8F%96%E6%9F%90%E6%8B%9B%E8%81%98%E7%AB%99%E7%82%B9%E7%9A%84%E5%87%A0%E4%B8%AA%E6%80%9D%E8%B7%AF/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【干货】快速爬取某招聘站点的几个思路",
+  "name": "【干货】快速爬取某招聘站点的几个思路",
+  "description": "🤡认识杰哥的读者都知道，Python实战类的文章灵感都来源于生活，休完陪产假没多久，素材就来了。一位资深产品兼原创音乐人朋友在群里@我",
+  "keywords": [
+    "Python", "爬虫", "Xposed"
+  ],
+  "articleBody": "严正声明：\n本文仅用于记录爬虫技术研究学习，不提供爬取脚本，所爬数据已删除，读者用于非法用途造成损失，与本文无关。爬虫技术本身并无违法违规之处，爬什么，怎么爬才是导致锒铛入狱的罪魁祸首。\n0x0、引言 感觉距离上次发文已经过了很久，结果一看才25天，得益于 娃的呱(gū)呱坠地，每天的时间被延长了许多。当然期间最深的感受莫过于：上班比在家奶娃要轻松太多！\n认识杰哥的读者都知道，Python实战类的文章灵感都来源于生活，休完陪产假没多久，素材就来了。一位 资深产品兼原创音乐人 朋友在群里@我：\n秒懂，就是想搞多点数据，恰逢金三银四，杰哥也想了解下Android岗位的行情，索性就折腾一下~\n0x1、思路一：浏览器模拟访问 打开招聘站点，搜索 “产品经理”，滑动到底部发现果然只有10页：\n尝试切到第2页，页面URL发生变化：\nini\n代码解读\n复制代码\nhttps://xxx/web/geek/job?query=产品经理\u0026city=101280600\u0026page=2\n尝试把page改成11，能请求，但页面数据和第10页是相同的，果然 一次搜索结果最多搞到300条数据。\n不过注意，它是 条件搜索，这个条件能搜300条，换个条件又能搜到300条。\n换而言之，我们可以通过 设置不同的条件，来采集更多的数据，留意网页顶部的 修改城市和区域：\n很明显，我们只要覆盖尽可能多的 城市-区-地名 组合，就可以采集到大量数据。接着就是批量爬取这三层条件的可选值。F12打开 开发者工具 开始抓包，对应的接口都很好抓，顺带写出爬取代码，先是 → 城市编码：\nbash\n代码解读\n复制代码\nhttps://xxx/wapi/zpCommon/data/cityGroup.json\n然后到 → 区编码和地名编码：\nini\n代码解读\n复制代码\nhttps://xxx/wapi/zpgeek/businessDistrict.json?cityCode={}\n可以，万事俱备，只欠拿这些参数去批量调 搜索岗位的接口 了：\ncss\n代码解读\n复制代码\nhttps://xxx/wapi/zpgeek/search/joblist.json?scene=1\u0026query=产品经理\u0026city={}\u0026experience=\u0026degree=\u0026industry=\u0026scale=\u0026stage=\u0026position=\u0026jobType=\u0026salary=\u0026multiBusinessDistrict={}:25\u0026multiSubway=\u0026page=1\u0026pageSize=30\n正当我以为可以挂机去泡杯茶喝喝，结果一运行：\n笑死，调这个接口直接触发站点的 反爬，尝试解决：\n复制粘贴浏览器请求的所有 请求头，设置到requests中 → 没用； ip访问次数限制？上 代理隧道 → 没用，淦，我还以为设置代理没生效； Cookies问题？复制浏览器请求里的Cookies塞requests中 → 没用； 又细看了一下，发现是 Cookies加密，每次请求Cookies中的 zp_stoken 都是变化的。\n又试了下 M端接口，一样会触发反爬，逆向js太磨人，朋友要得也急，木得时间慢慢玩破解，直接上传统艺能 浏览器自动化。无脑 pyppeteer 模拟，先跳转登录页，预留足够的时间登陆：\n登陆完就可以关页面了，这一步主要是让浏览器处于 登录态，接着就是 拼接url访问 → 获得页面源码 → 提取数据：\n爬取后的数据：\n遍历文件统计下总共爬取到多少条：\n18663条，还凑合，不过混进来一些 脏东西：\n需要对数据进行清洗，这里判断职位包含\"**产品\"**字眼为有效数据，朋友说最好是Excel，帮人帮到底：\n运行后总共输出有效数据13928条，同时区分城市，写入到excel中~\n→ 时间关系，只爬取到 区，而且只包含了北上广深杭的数据，不过朋友说够用了，就先酱吧~\n0x2、思路二：手机adb模拟访问 其实中途还想过从移动端入手，抓了一波包：\n2333，接口加密 + 返回数据加密，最便捷的爬取思路还是自动化啊，在《杰哥带你玩转Android自动化》 中提到过：\n所有Android自动化框架和工具中 操作Android设备的功能实现 都基于 adb 和 无障碍服务AccessibilityService。\n这里直接用adb来模拟，思路也很简单：无限向上滑动，同时解析布局xml提取所需数据。\n先写个导出当前布局xml的工具代码：\n接着写个根据resourc_id递归，获取目标结点的方法：\n打开导出的布局xml：\n可以看到结点对应的资源id，岗位列表 → xxx:id/recyclerView_list，岗位名称 → xxx:id/tv_position_name。\n接着干嘛？加上死循环滑动+解析xml提取数据，一步到位？兄嘚想多了，有个难搞的问题：\n如何精确控制Recyclerview滑动距离？\n怎么说？\n你得保证每次滑动准确滑动到 下三项，而且每一项都要 显示完整，因为 uiautomator dump 出的是当前界面的xml。如果滑动到的位置不对，就会出现这种缺失结点的错误数据：\n滑太多又会丢失数据，看了一圈没有找到计算RecyclerView滑动距离的公式，想搞清楚，估计得去啃Recyclerview的源码。\n这里笔者取下巧：每次滑动尽量少的距离 (不超过一项) + 完整数据校验 (节点数\u003e10) + 结点去重(key：岗位+薪资)，直接肝出代码：\n挂机午睡，睡醒发现脚本停了，一看数据量：\n擦，APP端也限制了搜索结果的条数，只能查询30页，而且总数据还不够300条。\n想采集更多数据，可以像思路一一样，通过切换不同的 搜索条件 来达成，检测到数据很久没增加了，就模拟点击切换城市：\n0x3、思路三：Xposed Hook 说实话，思路二这种模拟访问解析xml的方式不太靠谱，而且还 慢。我们可以换个角度：\n请求返回的数据是 加密 的，但设置到UI控件上的数据是 解密 过的。\n所以最简单的思路就是 → Hook UI控件设置数据的方法，拿到解密过的数据。\n看了下APK，没加密，直接 jadx反编译，adb获取当前页面的包名和类名：\n定位到 GeekSearchActivity\n结合APP页面，不难看出 GeekSearchResultFragment 用于显示搜索结果，跟下：\nSearchPositionFragment 明显用于显示搜索到的岗位，尝试定位布局xml，搜 R.layout. 没找着，看来是做了 资源混淆。\n在Fragment初始化布局，一般会把代码写到 onCreateView() 中，但没在这个类里找到，估计是在父类里进行了封装，跟一下：SearchBaseFragment → BaseAwareFragment → LazyLoadFragment：\n吼，定义了抽象方法 getLayoutResId() 用于设置布局，回到 SearchPositionFragment 搜下这个方法：\n打开布局文件：\n定位到了Recyclerview，跟上面我们adb导出的xml id一致，哈哈，从控件资源id着手定位目标代码也是一个小技巧。\nRecyclerview设置数据，肯定是通过 Adapter，搜一下，发现了 SearchPositionAdapter，不过源码中没找到设置数据的方法，又是封装了好几层。\n溯源后发现，顶层父类是 com.chad.library.adapter.base.BaseQuickAdapter，哈，这不就是开源库CymChad/BaseRecyclerViewAdapterHelper 么？这个库设置数据的方法很简单 setNewData() 和 addData()，搜一下发现这里调用到了：\nHook这两个方法，就可以拿到数据啦，这里要注意一点：\n因为子类SearchPositionAdapter并没有重写这两个方法，调用的是父类方法，所以需要 Hook父类。\n直接写出Hook代码：\n运行后打开招聘软件，可以看到陆续输出一些日志，毕竟Hook的是父类，几乎所有列表设置数据都会调这两个方法。\n来到搜索页，输入搜索词搜索，上拉加载更多，可以看到岗位相关的数据被打印出来：\n但都是自定义数据类型，我们需要的是它里面岗位信息的字段，直接定位 SearchPositionItemModel：\n明显具体数据类型是这个泛型父类：\ndata是父类的私有属性，这里通过 反射 来获取，需要修改下访问权限：\n运行后重复之前的操作，发现还套了一层：\n打开 SearchPositionBean：\n嗯哼，这就是岗位信息相关的字段，可以按需反射获取，也可以直接遍历获取，这里直接打印出来：\n运行操作后的输出日志：\n可以看到具体的岗位信息了，但依旧有嵌套的Bean，按上面的方法还得打开对应Bean的源码，抠字段，有些蠢了。完全可以写一个 递归获取字段的方法，这里顺带将输出信息组合成Json的形式，方便采集到的数据保存。\n运行操作后的输出日志：\n看着还不是很整齐，不过Copy到Json格式化工具是没问题的：\n如果有数据采集需求，调个第三方json库格式化下，然后 导出文件 或者 调用自己写的数据上传接口(推荐，直接入库美滋滋)。\n接着解决第二个问题 → 单次搜索结果30页限制，从哪里入手呢？现象：\n列表滑动到底部，触发上拉加载Loading，然后列表添加数据，当加载到30页后，直接不显示上拉Loading。\n跟下这个上拉加载的组件：ZPUIRefreshLayout → com.scwang.smart.refresh.layout.SmartRefreshLayout\n哟，这不是刷新库么 scwang90/SmartRefreshLayout，老朋友了，它提供了一个禁用上拉加载的API：\narduino\n代码解读\n复制代码\nrefreshLayout.setEnableLoadMore(false); //是否启用上拉加载功能\n因为SmartRefreshLayout自带混淆，所以没法直接搜这个方法，先找到控件实例：SearchPositionFragment → SearchBaseFragment：\n接着回到 SearchPositionFragment，开启 正则搜索，搜 this.d.*?(false)\n就两个匹配结果，很明显是第一个，判断 geekSearchCardResponse == null 就禁用上拉加载，而它是由 gVar.f41043b 赋值的，参数类型是 g，跟下：\n哦吼，不知道都是些啥，hook下这个方法，把入参的字段打印出来：\n运行后，第一次加载和上拉加载更多输出日志如下：\n不难看出：a → 当前页数，e → 数据总条数，每次加载15条数据。\n滑动到30页时，b这个字段为空，有两种可能：后台真的没有返回 或者 后台有返回但客户端做了限制。\n我在原先打日志的基础上，又加了判空，到第30页时，我发现有数据：\n搜了下\u003c30，\u003c=30，\u003c31，\u003c=31，\u003e30 都没匹配到想要的结果，em…不知道具体做了什么操作。\n那就粗暴点，直接Hook SmartRefreshLayout#b(Boolean)，把入参设置为true，即：禁止关闭上拉加载\n接着adb无限滚动：\n可以数据不止30页，看了下数据也没有重复，问题二解决~\n非常简单，不过本节也到这了，读者感兴趣的话，可以自己试着往下扒，比如：请求的构造规则、响应数据的解密 等，谢谢~\n",
+  "wordCount" : "253",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-03-01T00:00:00Z",
+  "dateModified": "2023-03-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "coder_pig"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%B9%B2%E8%B4%A7%E5%BF%AB%E9%80%9F%E7%88%AC%E5%8F%96%E6%9F%90%E6%8B%9B%E8%81%98%E7%AB%99%E7%82%B9%E7%9A%84%E5%87%A0%E4%B8%AA%E6%80%9D%E8%B7%AF/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      【干货】快速爬取某招聘站点的几个思路
+    </h1>
+    <div class="post-description">
+      🤡认识杰哥的读者都知道，Python实战类的文章灵感都来源于生活，休完陪产假没多久，素材就来了。一位资深产品兼原创音乐人朋友在群里@我
+    </div>
+    <div class="post-meta"><span title='2023-03-01 00:00:00 +0000 UTC'>三月 1, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;coder_pig&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#0x0%e5%bc%95%e8%a8%80" aria-label="0x0、引言">0x0、引言</a></li>
+                <li>
+                    <a href="#0x1%e6%80%9d%e8%b7%af%e4%b8%80%e6%b5%8f%e8%a7%88%e5%99%a8%e6%a8%a1%e6%8b%9f%e8%ae%bf%e9%97%ae" aria-label="0x1、思路一：浏览器模拟访问">0x1、思路一：浏览器模拟访问</a></li>
+                <li>
+                    <a href="#0x2%e6%80%9d%e8%b7%af%e4%ba%8c%e6%89%8b%e6%9c%baadb%e6%a8%a1%e6%8b%9f%e8%ae%bf%e9%97%ae" aria-label="0x2、思路二：手机adb模拟访问">0x2、思路二：手机adb模拟访问</a></li>
+                <li>
+                    <a href="#0x3%e6%80%9d%e8%b7%af%e4%b8%89xposed-hook" aria-label="0x3、思路三：Xposed Hook">0x3、思路三：Xposed Hook</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>严正声明</strong>：</p>
+<blockquote>
+<p>本文仅用于记录爬虫技术研究学习，不提供爬取脚本，所爬数据已删除，读者用于非法用途造成损失，与本文无关。爬虫技术本身并无违法违规之处，爬什么，怎么爬才是导致锒铛入狱的罪魁祸首。</p>
+</blockquote>
+<h2 id="0x0引言">0x0、引言<a hidden class="anchor" aria-hidden="true" href="#0x0引言">#</a></h2>
+<p>感觉距离上次发文已经过了很久，结果一看才25天，得益于 <strong>娃的呱(gū)呱坠地</strong>，每天的时间被延长了许多。当然期间最深的感受莫过于：<strong>上班比在家奶娃要轻松太多</strong>！</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f18b6f0469424673b1361565a4be1c09~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>认识杰哥的读者都知道，Python实战类的文章灵感都来源于生活，休完陪产假没多久，素材就来了。一位 <strong>资深产品兼原创音乐人</strong> 朋友在群里@我：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0d5d601490774d25828f31224c3a986e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>秒懂，就是想搞多点数据，恰逢金三银四，杰哥也想了解下Android岗位的行情，索性就折腾一下~</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/49904945722346a1b678cdc959953899~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<hr>
+<h2 id="0x1思路一浏览器模拟访问">0x1、思路一：浏览器模拟访问<a hidden class="anchor" aria-hidden="true" href="#0x1思路一浏览器模拟访问">#</a></h2>
+<p>打开招聘站点，搜索 &ldquo;产品经理&rdquo;，滑动到底部发现果然只有10页：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4393d694bc3647839b8c18eef1a57244~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p><strong>尝试切到第2页</strong>，页面URL发生变化：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>https://xxx/web/geek/job?query=产品经理&amp;city=101280600&amp;page=2</code></p>
+<p><strong>尝试把page改成11</strong>，能请求，但页面数据和第10页是相同的，果然 <strong>一次搜索结果最多搞到300条数据</strong>。</p>
+<p>不过注意，它是 <strong>条件搜索</strong>，这个条件能搜300条，换个条件又能搜到300条。</p>
+<p>换而言之，我们可以通过 <strong>设置不同的条件</strong>，来采集更多的数据，留意网页顶部的 <strong>修改城市和区域</strong>：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cbcba4ee8c6f47c2ba3d8997a995b78c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>很明显，我们只要覆盖尽可能多的 <strong>城市-区-地名</strong> 组合，就可以采集到大量数据。接着就是批量爬取这三层条件的可选值。F12打开 <strong>开发者工具</strong> 开始抓包，对应的接口都很好抓，顺带写出爬取代码，先是 → <strong>城市编码</strong>：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>https://xxx/wapi/zpCommon/data/cityGroup.json</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/20150a21e3de4baf851d459175ac6107~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>然后到 → <strong>区编码和地名编码</strong>：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>https://xxx/wapi/zpgeek/businessDistrict.json?cityCode={}</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/321cb6761ac54b818e0eed12aad65f04~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>可以，万事俱备，只欠拿这些参数去批量调 <strong>搜索岗位的接口</strong> 了：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>https://xxx/wapi/zpgeek/search/joblist.json?scene=1&amp;query=产品经理&amp;city={}&amp;experience=&amp;degree=&amp;industry=&amp;scale=&amp;stage=&amp;position=&amp;jobType=&amp;salary=&amp;multiBusinessDistrict={}:25&amp;multiSubway=&amp;page=1&amp;pageSize=30</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a96b39c37f1b4ab09eb56b8f960ae572~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>正当我以为可以挂机去泡杯茶喝喝，结果一运行：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/137814c016504e6eae8f7ea3a36ea6c7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>笑死，调这个接口直接触发站点的 <strong>反爬</strong>，尝试解决：</p>
+<ul>
+<li>复制粘贴浏览器请求的所有 <strong>请求头</strong>，设置到requests中 → <strong>没用</strong>；</li>
+<li><strong>ip访问次数限制</strong>？上 <strong>代理隧道</strong> → <strong>没用</strong>，淦，我还以为设置代理没生效；</li>
+<li><strong>Cookies问题</strong>？复制浏览器请求里的Cookies塞requests中 → <strong>没用</strong>；</li>
+</ul>
+<p>又细看了一下，发现是 <strong>Cookies加密</strong>，每次请求Cookies中的 <strong><strong>zp_stoken</strong></strong> 都是变化的。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/879874594acd4b06ac5a35ce3f8937c5~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>又试了下 <strong>M端接口</strong>，一样会触发反爬，逆向js太磨人，朋友要得也急，木得时间慢慢玩破解，直接上传统艺能 <strong>浏览器自动化</strong>。无脑 <strong>pyppeteer</strong> 模拟，先跳转登录页，预留足够的时间登陆：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f46c62070de146818050f4a4f057efb6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>登陆完就可以关页面了，这一步主要是让浏览器处于 <strong>登录态</strong>，接着就是 <strong>拼接url访问</strong> → <strong>获得页面源码</strong> → <strong>提取数据</strong>：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f454c8c0c1934faeb8c89bbd9c5b2911~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>爬取后的数据：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9d358376fcd14a179ee569f78cc3c43f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>遍历文件统计下总共爬取到多少条：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9828618f2a7e400ab5a44f23e0187b81~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>18663条，还凑合，不过混进来一些 <strong>脏东西</strong>：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e853430742af497299a9d723a50558b8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>需要对数据进行清洗，这里判断职位包含&quot;**产品&quot;**字眼为有效数据，朋友说最好是Excel，帮人帮到底：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/461bec52f25a4062b2c16904b0f5534f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>运行后总共输出有效数据13928条，同时区分城市，写入到excel中~</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/201f1451431b4953bd53df072f7e835c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+ → <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64458b61b00d4932af4203b15e66c877~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>时间关系，只爬取到 <strong>区</strong>，而且只包含了北上广深杭的数据，不过朋友说够用了，就先酱吧~</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/df4e9f8ea936449692ccdfe53d952b77~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<hr>
+<h2 id="0x2思路二手机adb模拟访问">0x2、思路二：手机adb模拟访问<a hidden class="anchor" aria-hidden="true" href="#0x2思路二手机adb模拟访问">#</a></h2>
+<p>其实中途还想过从移动端入手，抓了一波包：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6a502cae40348f7a49249ea6bbae988~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>2333，<strong>接口加密</strong> + <strong>返回数据加密</strong>，最便捷的爬取思路还是自动化啊，在<a href="https://juejin.cn/column/7141282957876002852" title="https://juejin.cn/column/7141282957876002852">《杰哥带你玩转Android自动化》</a> 中提到过：</p>
+<blockquote>
+<p>所有Android自动化框架和工具中 操作Android设备的功能实现 都基于 <strong>adb</strong> 和 <strong>无障碍服务AccessibilityService</strong>。</p>
+</blockquote>
+<p>这里直接用adb来模拟，思路也很简单：<strong>无限向上滑动，同时解析布局xml提取所需数据</strong>。</p>
+<p>先写个导出当前布局xml的工具代码：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/475466d1bffc4476b0876a21146ba9d9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>接着写个根据resourc_id递归，获取目标结点的方法：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7c0b4025170e4193a44056604285ba6d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>打开导出的布局xml：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/24f9fdcc9b9d4898a7f3a88dd3e198df~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>可以看到结点对应的资源id，岗位列表 → xxx:id/recyclerView_list，岗位名称 → xxx:id/tv_position_name。</p>
+<p>接着干嘛？<strong>加上死循环滑动+解析xml提取数据</strong>，一步到位？兄嘚想多了，有个难搞的问题：</p>
+<blockquote>
+<p>如何精确控制Recyclerview滑动距离？</p>
+</blockquote>
+<p>怎么说？</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d587d217a5b840b6b375aef36af2bd7a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>你得保证每次滑动准确滑动到 <strong>下三项</strong>，而且每一项都要 <strong>显示完整</strong>，因为 <strong>uiautomator dump</strong> 出的是当前界面的xml。如果滑动到的位置不对，就会出现这种缺失结点的错误数据：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/442f92b60de5490ab2233bc8ae14f9fc~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>滑太多又会丢失数据，看了一圈没有找到计算RecyclerView滑动距离的公式，想搞清楚，估计得去啃Recyclerview的源码。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/56ab3b6171bb406e995c23175186b853~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>这里笔者取下巧：<strong>每次滑动尽量少的距离</strong> (不超过一项) + <strong>完整数据校验</strong> (节点数&gt;10) + <strong>结点去重</strong>(key：岗位+薪资)，直接肝出代码：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a55740a5571f4db0a4b8ec0dd7f98947~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>挂机午睡，睡醒发现脚本停了，一看数据量：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/410f7e02a3114a64be2886dcddc168ff~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>擦，APP端也限制了搜索结果的条数，只能查询30页，而且总数据还不够300条。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8515f3543a3746289883de0da7d95307~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>想采集更多数据，可以像思路一一样，通过切换不同的 <strong>搜索条件</strong> 来达成，检测到数据很久没增加了，就模拟点击切换城市：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6d6057dc4b334964a641e5ec706a6847~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<hr>
+<h2 id="0x3思路三xposed-hook">0x3、思路三：Xposed Hook<a hidden class="anchor" aria-hidden="true" href="#0x3思路三xposed-hook">#</a></h2>
+<p>说实话，思路二这种模拟访问解析xml的方式不太靠谱，而且还 <strong>慢</strong>。我们可以换个角度：</p>
+<blockquote>
+<p>请求返回的数据是 <strong>加密</strong> 的，但设置到UI控件上的数据是 <strong>解密</strong> 过的。</p>
+</blockquote>
+<p>所以最简单的思路就是 → <strong>Hook UI控件设置数据的方法，拿到解密过的数据</strong>。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3f84e5ea379a40338685734df3f28f8f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>看了下APK，没加密，直接 <strong>jadx反编译</strong>，adb获取当前页面的包名和类名：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/517fdca22e34461cab4c721571be6d7a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>定位到 <strong><code>GeekSearchActivity</code></strong></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/418a14b9e51b437c81a411482530cdeb~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>结合APP页面，不难看出 <strong><code>GeekSearchResultFragment</code></strong> 用于显示搜索结果，跟下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/27b3e03c74074d799f4129147ee0ac48~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p><strong><code>SearchPositionFragment</code></strong> 明显用于显示搜索到的岗位，尝试定位布局xml，搜 <strong><code>R.layout.</code></strong> 没找着，看来是做了 <strong>资源混淆</strong>。</p>
+<p>在Fragment初始化布局，一般会把代码写到 <strong><code>onCreateView()</code></strong> 中，但没在这个类里找到，估计是在父类里进行了封装，跟一下：<strong><code>SearchBaseFragment</code></strong> → <strong><code>BaseAwareFragment</code></strong> → <strong><code>LazyLoadFragment</code></strong>：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c5f69a806ffe445491db0105d1b0978e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>吼，定义了抽象方法 <strong><code>getLayoutResId()</code></strong> 用于设置布局，回到 <strong><code>SearchPositionFragment</code></strong> 搜下这个方法：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0ae19dbc146a4efba60dee888ee9f8bb~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>打开布局文件：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/11e8dff2aade439897af1f69d7e3c78e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>定位到了Recyclerview，跟上面我们adb导出的xml id一致，哈哈，从控件资源id着手定位目标代码也是一个小技巧。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/93c35603245040de88cca62a8b4b65c2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>Recyclerview设置数据，肯定是通过 <strong>Adapter</strong>，搜一下，发现了 <strong><code>SearchPositionAdapter</code></strong>，不过源码中没找到设置数据的方法，又是封装了好几层。</p>
+<p>溯源后发现，顶层父类是 <strong><code>com.chad.library.adapter.base.BaseQuickAdapter</code></strong>，哈，这不就是开源库<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FCymChad%2FBaseRecyclerViewAdapterHelper" title="https://github.com/CymChad/BaseRecyclerViewAdapterHelper">CymChad/BaseRecyclerViewAdapterHelper</a> 么？这个库设置数据的方法很简单 <strong><code>setNewData()</code></strong> 和 <strong><code>addData()</code></strong>，搜一下发现这里调用到了：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d2995c9a7a984f85aa85656af338a35f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>Hook这两个方法，就可以拿到数据啦，这里要注意一点：</p>
+<blockquote>
+<p>因为子类SearchPositionAdapter并没有重写这两个方法，调用的是父类方法，所以需要 <strong>Hook父类</strong>。</p>
+</blockquote>
+<p>直接写出Hook代码：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00a13ba98c3041648af05a37c0538665~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>运行后打开招聘软件，可以看到陆续输出一些日志，毕竟Hook的是父类，几乎所有列表设置数据都会调这两个方法。</p>
+<p>来到搜索页，输入搜索词搜索，上拉加载更多，可以看到岗位相关的数据被打印出来：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dfadaf0972574d389ac6bbd5860a648a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>但都是自定义数据类型，我们需要的是它里面岗位信息的字段，直接定位 <strong><code>SearchPositionItemModel</code></strong>：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/392215d3ffe948b4bd86fe9e04b9fffe~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>明显具体数据类型是这个泛型父类：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/939eb9628ca54b1db1bf72437dcfff4d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>data是父类的私有属性，这里通过 <strong>反射</strong> 来获取，需要修改下访问权限：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/202c9cdd79f141ce988836e4db889e9d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>运行后重复之前的操作，发现还套了一层：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/58d679b7f9364f26bb687b435e09105f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>打开 <strong><code>SearchPositionBean</code></strong>：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f31f8d6fe50c42618283430185adcb87~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>嗯哼，这就是岗位信息相关的字段，可以按需反射获取，也可以直接遍历获取，这里直接打印出来：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cef32a1b63694486a371dd869d9128a0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>运行操作后的输出日志：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/48850f630cb4437b8fc04ceea9fdf2a5~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>可以看到具体的岗位信息了，但依旧有嵌套的Bean，按上面的方法还得打开对应Bean的源码，抠字段，有些蠢了。完全可以写一个 <strong>递归获取字段的方法</strong>，这里顺带将输出信息组合成Json的形式，方便采集到的数据保存。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5b4eb2c8e43a4b8cb9fcaa5bb98e4791~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>运行操作后的输出日志：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/98f7068496c442b4862b145a2427d019~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>看着还不是很整齐，不过Copy到Json格式化工具是没问题的：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b47fa68cf71e4a69ad308a5330656371~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>如果有数据采集需求，调个第三方json库格式化下，然后 <strong>导出文件</strong> 或者 <strong>调用自己写的数据上传接口(推荐，直接入库美滋滋)</strong>。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/98ebf1f496b647b7a900d8aa7dcf7895~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>接着解决第二个问题 → <strong>单次搜索结果30页限制</strong>，从哪里入手呢？现象：</p>
+<blockquote>
+<p>列表滑动到底部，触发上拉加载Loading，然后列表添加数据，当加载到30页后，直接不显示上拉Loading。</p>
+</blockquote>
+<p>跟下这个上拉加载的组件：<strong><code>ZPUIRefreshLayout</code></strong> → <strong><code>com.scwang.smart.refresh.layout.SmartRefreshLayout</code></strong></p>
+<p>哟，这不是刷新库么 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fscwang90%2FSmartRefreshLayout" title="https://github.com/scwang90/SmartRefreshLayout">scwang90/SmartRefreshLayout</a>，老朋友了，它提供了一个禁用上拉加载的API：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>refreshLayout.setEnableLoadMore(false); //是否启用上拉加载功能</code></p>
+<p>因为SmartRefreshLayout自带混淆，所以没法直接搜这个方法，先找到控件实例：<strong><code>SearchPositionFragment</code></strong> → <strong><code>SearchBaseFragment</code></strong>：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/231d5ba588784e5f82b99b9776684a90~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>接着回到 <strong><code>SearchPositionFragment</code></strong>，开启 <strong>正则搜索</strong>，搜 <strong><code>this.d.*?(false)</code></strong></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f9e96957ef014928818276062a7eb45f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>就两个匹配结果，很明显是第一个，判断 <strong><code>geekSearchCardResponse == null</code></strong> 就禁用上拉加载，而它是由 <strong><code>gVar.f41043b</code></strong> 赋值的，参数类型是 <strong><code>g</code></strong>，跟下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e21b8832ea34ff0bf9da480c64e92a4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>哦吼，不知道都是些啥，hook下这个方法，把入参的字段打印出来：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/12998f90fc974010a691206bd4bfc915~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>运行后，第一次加载和上拉加载更多输出日志如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc141b5b2a124b96861ccc115fede83e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>不难看出：a → <strong>当前页数</strong>，e → <strong>数据总条数</strong>，每次加载15条数据。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/614853a61ec745bdb8a3de52827849f4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>滑动到30页时，b这个字段为空，有两种可能：<strong>后台真的没有返回</strong> 或者 <strong>后台有返回但客户端做了限制</strong>。</p>
+<p>我在原先打日志的基础上，又加了判空，到第30页时，我发现有数据：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8389dcadd18d40aaaefa6b8082bc331b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>搜了下&lt;30，&lt;=30，&lt;31，&lt;=31，&gt;30 都没匹配到想要的结果，em&hellip;不知道具体做了什么操作。</p>
+<p>那就粗暴点，直接Hook <strong><code>SmartRefreshLayout#b(Boolean)</code></strong>，把入参设置为true，即：<strong>禁止关闭上拉加载</strong></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9b7a44c26fb84f66a66d99b1a98e3de2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>接着adb无限滚动：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/16185851058a44bbb9a291f1a85c8cbe~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>可以数据不止30页，看了下数据也没有重复，问题二解决~</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a2c0f5623f6b4097b587b0f50417f588~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>非常简单，不过本节也到这了，读者感兴趣的话，可以自己试着往下扒，比如：<strong>请求的构造规则</strong>、<strong>响应数据的解密</strong> 等，谢谢~</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5e166702562e4636bf3037018c789832~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/python/">Python</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%88%AC%E8%99%AB/">爬虫</a></li>
+      <li><a href="http://localhost:1313/tags/xposed/">Xposed</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/ffmpeg%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>FFmpeg命令行音视频处理</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E9%9A%8F%E6%98%93%E5%91%A8%E5%88%8A%E7%AC%AC002%E6%9C%9F-%E5%9B%9B%E8%B1%A1/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>随易周刊第002期-四象</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【干货】快速爬取某招聘站点的几个思路 on x"
+            href="https://x.com/intent/tweet/?text=%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f&amp;hashtags=Python%2c%e7%88%ac%e8%99%ab%2cXposed">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【干货】快速爬取某招聘站点的几个思路 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f&amp;title=%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af&amp;summary=%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【干货】快速爬取某招聘站点的几个思路 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f&title=%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【干货】快速爬取某招聘站点的几个思路 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【干货】快速爬取某招聘站点的几个思路 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【干货】快速爬取某招聘站点的几个思路 on telegram"
+            href="https://telegram.me/share/url?text=%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 【干货】快速爬取某招聘站点的几个思路 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e3%80%90%e5%b9%b2%e8%b4%a7%e3%80%91%e5%bf%ab%e9%80%9f%e7%88%ac%e5%8f%96%e6%9f%90%e6%8b%9b%e8%81%98%e7%ab%99%e7%82%b9%e7%9a%84%e5%87%a0%e4%b8%aa%e6%80%9d%e8%b7%af&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25B9%25B2%25E8%25B4%25A7%25E5%25BF%25AB%25E9%2580%259F%25E7%2588%25AC%25E5%258F%2596%25E6%259F%2590%25E6%258B%259B%25E8%2581%2598%25E7%25AB%2599%25E7%2582%25B9%25E7%259A%2584%25E5%2587%25A0%25E4%25B8%25AA%25E6%2580%259D%25E8%25B7%25AF%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>性能优化之preload、prefetch、preconnect的区别与使用 | PaperMod</title>
+<meta name="keywords" content="前端, 性能优化, JavaScript">
+<meta name="description" content="今天讲的三个属性都是在link标签上使用的，使用形式如下：初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如奈飞通过使用prefetch把TTI(Time">
+<meta name="author" content="mysteryven">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8Bpreloadprefetchpreconnect%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8Bpreloadprefetchpreconnect%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="性能优化之preload、prefetch、preconnect的区别与使用" />
+<meta property="og:description" content="今天讲的三个属性都是在link标签上使用的，使用形式如下：初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如奈飞通过使用prefetch把TTI(Time" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8Bpreloadprefetchpreconnect%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E4%BD%BF%E7%94%A8/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-08-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-08-05T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="性能优化之preload、prefetch、preconnect的区别与使用"/>
+<meta name="twitter:description" content="今天讲的三个属性都是在link标签上使用的，使用形式如下：初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如奈飞通过使用prefetch把TTI(Time"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "性能优化之preload、prefetch、preconnect的区别与使用",
+      "item": "http://localhost:1313/posts/juejin/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8Bpreloadprefetchpreconnect%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E4%BD%BF%E7%94%A8/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "性能优化之preload、prefetch、preconnect的区别与使用",
+  "name": "性能优化之preload、prefetch、preconnect的区别与使用",
+  "description": "今天讲的三个属性都是在link标签上使用的，使用形式如下：初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如奈飞通过使用prefetch把TTI(Time",
+  "keywords": [
+    "前端", "性能优化", "JavaScript"
+  ],
+  "articleBody": "今天讲的三个属性都是在 link 标签上使用的，使用形式如下：\nini\n代码解读\n复制代码\n初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如 奈飞 通过使用 prefetch 把 TTI ( Time-to-Interactive) 的时间减少了 30 %。\npreload、prefetch 都有助于优化 TTI、FCP ( First Content Paint ) 。为了让大家更好的理解 preload、prefetch 的好处，我们简单了解一下这两个指标代表的含义。\n为了直观的认识，可以打开一个 Chrome 的控制台，进入 LightHouse 跑跑分，下图就是我跑的 Github 的分数，可以看到，头两个指标就是 FCP（First Contentful Paint） 和 TTI ( Time to Interactive)。\nFCP 也叫做首次内容绘制，指的是从开始加载页面内容到任何部分的内容在屏幕上渲染出来了，这里的内容，可以是一个文本，也可以是一个图片（背景图片也算）。\nTTI 也叫做可交互时间，计算规则稍微有一点复杂，它是以 FCP 结束的时间作为起始，也就是有任何内容出现在屏幕上了，这个点就作为 TTI 的时间点。\n有了起始点之后，它会寻找一个长度至少是 5 S 的安静窗口（安静窗口是没有耗时超过 50 ms 的任务，并且不超过两个正在处理的请求），找到安静窗口之后，会再往回找，找到离这个安静窗口最近的长任务，这个时间点就是 TTI 的时间点，如果 FCP 后没有任何长任务，那此时 FCP 就会等于 TTI，上面截图也表现了这一点。\n举一个例子来说明 TTI：假设 FCP 时间点是 0.8 S，之后在 1 S 时有了一个长度为 100 ms 的长任务，执行后，就来到了 1.1 S，之后就没有任何任务和请求了。过了 5 秒，发现找到了一个安静窗口，会再往前找最近的一个长任务，时间点是 1.1 S，那 TTI 就是 1.1 S。\n通过了解了两个常见的性能指标，我们大概对 preload、prefetch 的作用有了更好的理解了，接下来便开始今天的内容。\nTL;DR prefetch 用于在浏览器的空闲时间请求资源 preload 用于提前加载在页面初始化加载（page load）时用到的资源 preconnect 用于提前和一个网站建立起连接 在谈这三个属性之前，我们先对浏览器请求各种资源的优先级顺序有一个大概的认识，在默认情况下，有如下的划分：\n第一个级别就是这个页面的主资源，它所包含的当前主页（index.html）、 css 资源、font 资源 第二个级别就是 JS 资源、在视口区域的图片、Fetch API、XHR 第三个级别可以是我们网站的标题的图标 Favicon 第四个级别是 async/defer 标签的 JS 资源、不在视口里的图片、视频这些 上面优先级的叙述省略了一些细节，比如 CSS、JS 也是分 early 和 later 的，以至于他们优先级不同，如果想了解完整的内容，可以看 这篇文章\n下面，我们来谈一谈这三个属性的细节。\npreload 最基本的使用就像这样子：\nbash\n代码解读\n复制代码\n值得关注的就是 as 属性，preload 的优先级顺序和这个属性指定的资源类型相关。\n举一个例子，假如我们指定了 as 的值是 style，也就是把它当做 css 资源，那它的优先级就会变得最高。\n但是也有一个例外：虽然 font 的优先级是最高，但把 as 的值指定为 font 并不会把此资源的优先级放到最高，文档专门为 font 的 preload 指定了优先级：位于第二级。目前来说，除了 font，其他都按照和资源优先级相同的规则。\nas 属性可以说是必须要设置的，除了上面可以给优先级排级别以外，还有一个原因：如果不设置的话，它会被作为一个 XHR 请求去触发，浏览器可能不能正确的认识到，我们其实已经把资源预加载了，这样子就会加载两次了，完全没有了优化的效果。\n不指定 as 浏览器也会有警告：\npreload 只会加载，真正执行要等到资源被用到的地方。\n接下来再给大家介绍一个它的应用场景。\n现在我们的文件是这样的：\ncss\n代码解读\n复制代码\nindex.html |--main.js |--styles.css\n我们有一个 main.js ，它会在 200 ms 后下载完，在它的内部会加载一段 CSS 来控制页面的样式，它也需要下载 200 ms。虽然 style.css 我们肯定会用到，但是浏览器必须要等下载、解析完 main.js 才开始下载 style.css，这就白白浪费了至少 200 ms。这里我们就可以把 style.css 用 preload 优化：把 style.css 标识为 preload 的资源。\n也不是所有的资源都适合用 preload，它只适合用于 page load 阶段的资源。毕竟，它的优先级还是很高的，乱用的话，一个是占请求线程，一个是占浏览器的缓存。如果我们 preload 的资源在 load 事件几秒后没有用，控制台还会警告我们。比如我们上面的例子，没有实际引用 style.css，就有下面的警告：\n如果我们想预加载一些资源不那么着急用的，接下来介绍的 prefetch 是更好的选择。\n在 Webpack 中使用 官网在 这里 有介绍基本的用法。Webpack 的官网对这里的解释延续了它含糊其辞的作风，这一部分依然没法看。所以我专门的介绍一下 preload 在 Webpack 中要怎么使用。\n我们想预加载 lodash 这个库。假设有一个入口文件 index.js，最直觉的，我们想直接在这个文件里写：\njs\n代码解读\n复制代码\nimport(/* webpackPreload: true */ 'lodash').then(res =\u003e { console.log(res) })\n但是其实不会生效，我们看打包出来的文件并没有加这块内容：\n真正的写法是这样的，我们先写一个中间文件，姑且叫做 a.js，然后 index.js 动态引入 a.js，再把上面的内容放到 a.js里，最后形式如下：\njs\n代码解读\n复制代码\n//filename: index.js import(\"./a.js\") // filename: a.js import(/* webpackPreload: true */ 'lodash').then(res =\u003e { console.log(res) })\n最后打包产物也有这部分内容了：\n在页面上也看到了加好的 link 标签：\n总结来说，需要有一个中间的过渡。\nVite 是如何 polyfill ModulePreload 功能的 ModulePreload 和 preload 的功能一样，不过，前者是针对 module scripts 的，并且支持性不太好，截止目前（2022.08.10），只有 73.33 % 的支持率。\nini\n代码解读\n复制代码\nVite 有一个特性，自动为它的入口 chunk 和它的直接引用生成 modulepreload。同时，在 vite 的打包配置中，有 build.polyfillModulePreload 这个配置。开启了它，就会自动给浏览器注入下面一段代码:\narduino\n代码解读\n复制代码\nimport 'vite/modulepreload-polyfill'\n这段代码就是为了兼容那些不知道 ModulePreload 的浏览器。我们来看一下这段代码怎么写的，通过阅读这段代码，来学习如何 polyfill。\n简化的伪代码就是：\n扫描 DOM，找出所有带有 modulepreload 标识的 link 标签，使用 fetch 去获取资源，fetch 获取资源后就会存在浏览器缓存里，算是得到和 preload 相同的结果； dart\n代码解读\n复制代码\nfor ( const link of document.querySelectorAll('link[rel=\"modulepreload\"]') ) { fetch(link.href) }\n监听 DOM，以后有了添加的 link 标签带有 modulepreload 标识，也进行下载 javascript\n代码解读\n复制代码\nnew MutationObserver((mutations: any) =\u003e { for (const mutation of mutations) { if (mutation.type !== 'childList') { continue } for (const node of mutation.addedNodes) { if (node.tagName === 'LINK' \u0026\u0026 node.rel === 'modulepreload') fetch(node.href) } } }).observe(document, { childList: true, subtree: true })\nprefetch 它的使用方法和 preload 非常像。\n首先，prefetch 的请求的优先级是在上面几个的最后面。也就是说，在第五个级别。\n明白了这一点，我们大概就知道它的应用场景了，一个典型的应用场景就是 prefetch 在未来可能打开的路由页面。举一个例子来说明这个问题，假如有一个搜索页面，点击搜索出来的结果是跳转新的路由，其实如果搜索结果好，一般用户都会点击前几条，所以我们就可以 prefetch 前几条搜索结果对应的路由。\n像我们的现在的应用，一般都会有懒加载，我们可以给非首页但是打开频率很高的页面加 prefetch。\n它的使用就是直接加一个 link 标签，这样它就会在浏览器空闲的时候下载了：\nini\n代码解读\n复制代码\n其中 as 的取值有 document 、style、script、images …\n如果使用 webpack ，没有使用 preload 那么坑，可以直接在引入的地方加魔法注释：\ngo\n代码解读\n复制代码\nimport(/*webpackPrefetch: true */ 'a.bundle.js')\n截止目前（2022-08-05），prefetch的支持性没有特别好，只覆盖了 80 % 的浏览器 。所以我们一般都是需要 polyfill 的，可以使用 XHR 或者 fetch 去模拟，由于上面我们给出来 fetch 的模拟方法，现在给出 XHR 的模拟方法：\narduino\n代码解读\n复制代码\nconst xhrRequest = new XMLHttpRequest() xhrRequest.open('GET', './bundle.js', true) xhrRequest.send()\n除了直接给资源加 prefetch 标签。还有一个触发 prefetch 的思路，我们可以在入口到达可视窗口的时候，自动 prefetch。这个库 就实现了这样的功能。它使用了 Intersection API 监听元素到达可视窗口，到达了就进行 prefetch。\nprefetch 的内容会被缓存起来，但是也是有有效期的，Chrome 中是 5 分钟。这一点我们使用的时候也可以注意一下。\n同时，一般只在用户网络比较好的情况下才预加载，浏览器也有监听网速的 API：\nini\n代码解读\n复制代码\nlet prefetch = true; const connection = navigator.connection; if (connection) { if (connection.effectiveType === 'slow-2g') { prefetch = false; } }\npreconnect 这是最简单的一个了。\n它的作用使用了提前和第三方资源建立连接的。在我们请求一个资源之前，可能会涉及 DNS 寻址、TLS 握手、TCP 握手、重定向等。这期间就花费了很多时间了。如果我们加上 preconnect：\nini\n代码解读\n复制代码\n浏览器就知道我们将要连接这个网站，跳转也好、请求资源也好，它会做好早期的连接工作。但是浏览器只会保留 10 S，如果 10 S 不用就会浪费了这资源了。\n还有一个和它很相似的 dns-prefetch，只不过这个只预解析 DNS ：\nini\n代码解读\n复制代码\n.\n不知道你有没有使用过 preconnect，个人感觉，这个其实用起来不是那么舒服，我在工作中只使用到了 preload 和 prefetch。\n以上就是关于这三个的讲解，谢谢阅读 :)\n",
+  "wordCount" : "534",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-08-05T00:00:00Z",
+  "dateModified": "2022-08-05T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "mysteryven"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8Bpreloadprefetchpreconnect%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E4%BD%BF%E7%94%A8/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      性能优化之preload、prefetch、preconnect的区别与使用
+    </h1>
+    <div class="post-description">
+      今天讲的三个属性都是在link标签上使用的，使用形式如下：初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如奈飞通过使用prefetch把TTI(Time
+    </div>
+    <div class="post-meta"><span title='2022-08-05 00:00:00 +0000 UTC'>八月 5, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;mysteryven&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#tldr" aria-label="TL;DR">TL;DR</a></li>
+                <li>
+                    <a href="#preload" aria-label="preload">preload</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%a8-webpack-%e4%b8%ad%e4%bd%bf%e7%94%a8" aria-label="在 Webpack 中使用">在 Webpack 中使用</a></li>
+                <li>
+                    <a href="#vite-%e6%98%af%e5%a6%82%e4%bd%95-polyfill-modulepreload-%e5%8a%9f%e8%83%bd%e7%9a%84" aria-label="Vite 是如何 polyfill ModulePreload 功能的">Vite 是如何 polyfill ModulePreload 功能的</a></li></ul>
+                </li>
+                <li>
+                    <a href="#prefetch" aria-label="prefetch">prefetch</a></li>
+                <li>
+                    <a href="#preconnect" aria-label="preconnect">preconnect</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>今天讲的三个属性都是在 link 标签上使用的，使用形式如下：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;link rel=&quot;preload&quot; as=&quot;script&quot; src=&quot;./a.js&quot;&gt;</code></p>
+<p>初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如 <a href="https://link.juejin.cn?target=https%3A%2F%2Fmedium.com%2Fdev-channel%2Fa-netflix-web-performance-case-study-c0bcde26a9d9" title="https://medium.com/dev-channel/a-netflix-web-performance-case-study-c0bcde26a9d9">奈飞</a> 通过使用 prefetch 把 TTI ( Time-to-Interactive) 的时间减少了 30 %。</p>
+<p>preload、prefetch 都有助于优化 TTI、FCP ( First Content Paint ) 。为了让大家更好的理解 preload、prefetch 的好处，我们简单了解一下这两个指标代表的含义。</p>
+<p>为了直观的认识，可以打开一个 Chrome 的控制台，进入 LightHouse 跑跑分，下图就是我跑的 Github 的分数，可以看到，头两个指标就是 FCP（First Contentful Paint） 和 TTI ( Time to Interactive)。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bf59a1e12b81477a896f5b71d64959c8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>FCP 也叫做首次内容绘制，指的是从开始加载页面内容到任何部分的内容在屏幕上渲染出来了，这里的内容，可以是一个文本，也可以是一个图片（背景图片也算）。</p>
+<p>TTI 也叫做可交互时间，计算规则稍微有一点复杂，它是以 FCP 结束的时间作为起始，也就是有任何内容出现在屏幕上了，这个点就作为 TTI 的时间点。</p>
+<p>有了起始点之后，它会寻找一个长度至少是 5 S 的安静窗口（安静窗口是没有耗时超过 50 ms 的任务，并且不超过两个正在处理的请求），找到安静窗口之后，会再往回找，找到离这个安静窗口最近的长任务，这个时间点就是 TTI 的时间点，如果 FCP 后没有任何长任务，那此时 FCP 就会等于 TTI，上面截图也表现了这一点。</p>
+<p>举一个例子来说明 TTI：假设 FCP 时间点是 0.8 S，之后在 1 S 时有了一个长度为 100 ms 的长任务，执行后，就来到了 1.1 S，之后就没有任何任务和请求了。过了 5 秒，发现找到了一个安静窗口，会再往前找最近的一个长任务，时间点是 1.1 S，那 TTI 就是 1.1 S。</p>
+<p>通过了解了两个常见的性能指标，我们大概对 preload、prefetch 的作用有了更好的理解了，接下来便开始今天的内容。</p>
+<h2 id="tldr">TL;DR<a hidden class="anchor" aria-hidden="true" href="#tldr">#</a></h2>
+<ul>
+<li>prefetch 用于在浏览器的空闲时间请求资源</li>
+<li>preload 用于提前加载在页面初始化加载（page load）时用到的资源</li>
+<li>preconnect 用于提前和一个网站建立起连接</li>
+</ul>
+<p>在谈这三个属性之前，我们先对浏览器请求各种资源的优先级顺序有一个大概的认识，在默认情况下，有如下的划分：</p>
+<ol>
+<li>第一个级别就是这个页面的主资源，它所包含的当前主页（index.html）、 css 资源、font 资源</li>
+<li>第二个级别就是 JS 资源、在视口区域的图片、Fetch API、XHR</li>
+<li>第三个级别可以是我们网站的标题的图标 Favicon</li>
+<li>第四个级别是 async/defer 标签的 JS 资源、不在视口里的图片、视频这些</li>
+</ol>
+<blockquote>
+<p>上面优先级的叙述省略了一些细节，比如 CSS、JS 也是分 early 和 later 的，以至于他们优先级不同，如果想了解完整的内容，可以看 <a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.google.com%2Fdocument%2Fd%2F1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc%2Fedit" title="https://docs.google.com/document/d/1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc/edit">这篇文章</a></p>
+</blockquote>
+<p>下面，我们来谈一谈这三个属性的细节。</p>
+<h2 id="preload">preload<a hidden class="anchor" aria-hidden="true" href="#preload">#</a></h2>
+<p>最基本的使用就像这样子：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;head&gt;   &lt;link rel=&quot;preload&quot; as=&quot;script&quot; href=&quot;foo.js&quot;&gt; &lt;/head&gt;</code></p>
+<p>值得关注的就是 as 属性，preload 的优先级顺序和这个属性指定的资源类型相关。</p>
+<p>举一个例子，假如我们指定了 as 的值是 style，也就是把它当做 css 资源，那它的优先级就会变得最高。</p>
+<p>但是也有一个例外：虽然 font 的优先级是最高，但把 as 的值指定为 font 并不会把此资源的优先级放到最高，文档专门为 font 的 preload 指定了优先级：位于第二级。目前来说，除了 font，其他都按照和资源优先级相同的规则。</p>
+<p>as 属性可以说是必须要设置的，除了上面可以给优先级排级别以外，还有一个原因：如果不设置的话，它会被作为一个 XHR 请求去触发，浏览器可能不能正确的认识到，我们其实已经把资源预加载了，这样子就会加载两次了，完全没有了优化的效果。</p>
+<p>不指定 as 浏览器也会有警告：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/150ae5fe8aa046ea95b3aa26e7814a3f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>preload 只会加载，真正执行要等到资源被用到的地方。</p>
+<p>接下来再给大家介绍一个它的应用场景。</p>
+<p>现在我们的文件是这样的：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>index.html |--main.js    |--styles.css</code></p>
+<p>我们有一个 main.js ，它会在 200 ms 后下载完，在它的内部会加载一段 CSS 来控制页面的样式，它也需要下载 200 ms。虽然 style.css 我们肯定会用到，但是浏览器必须要等下载、解析完 main.js 才开始下载 style.css，这就白白浪费了至少 200 ms。这里我们就可以把 style.css 用 preload 优化：把 style.css 标识为 preload 的资源。</p>
+<p>也不是所有的资源都适合用 preload，它只适合用于 page load 阶段的资源。毕竟，它的优先级还是很高的，乱用的话，一个是占请求线程，一个是占浏览器的缓存。如果我们 preload 的资源在 load 事件几秒后没有用，控制台还会警告我们。比如我们上面的例子，没有实际引用 style.css，就有下面的警告：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70e6d631af934631a21835f77ed10bcf~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>如果我们想预加载一些资源不那么着急用的，接下来介绍的 prefetch 是更好的选择。</p>
+<h3 id="在-webpack-中使用">在 Webpack 中使用<a hidden class="anchor" aria-hidden="true" href="#在-webpack-中使用">#</a></h3>
+<p>官网在 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwebpack.js.org%2Fapi%2Fmodule-methods%2F%23magic-comments" title="https://webpack.js.org/api/module-methods/#magic-comments">这里</a> 有介绍基本的用法。Webpack 的官网对这里的解释延续了它含糊其辞的作风，这一部分依然没法看。所以我专门的介绍一下 preload 在 Webpack 中要怎么使用。</p>
+<p>我们想预加载 lodash 这个库。假设有一个入口文件 <code>index.js</code>，最直觉的，我们想直接在这个文件里写：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import(/* webpackPreload: true */ 'lodash').then(res =&gt; {     console.log(res) })</code></p>
+<p>但是其实不会生效，我们看打包出来的文件并没有加这块内容：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dd79401d03854ca487000568612f0449~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>真正的写法是这样的，我们先写一个中间文件，姑且叫做 <code>a.js</code>，然后 <code>index.js</code> 动态引入 <code>a.js</code>，再把上面的内容放到 <code>a.js</code>里，最后形式如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>//filename: index.js import(&quot;./a.js&quot;) // filename: a.js import(/* webpackPreload: true */ 'lodash').then(res =&gt; {     console.log(res) })</code></p>
+<p>最后打包产物也有这部分内容了：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cde2c50df1be4af6baebce91e26bafa2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>在页面上也看到了加好的 link 标签：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c00a8155182e4e29aa8d50545f79439b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>总结来说，需要有一个中间的过渡。</p>
+<h3 id="vite-是如何-polyfill-modulepreload-功能的">Vite 是如何 polyfill ModulePreload 功能的<a hidden class="anchor" aria-hidden="true" href="#vite-是如何-polyfill-modulepreload-功能的">#</a></h3>
+<p>ModulePreload 和 preload 的功能一样，不过，前者是针对 module scripts 的，并且支持性不太好，截止目前（2022.08.10），只有 73.33 % 的支持率。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;link rel=&quot;modulepreload&quot;&gt;</code></p>
+<p>Vite 有一个特性，自动为它的入口 chunk 和它的直接引用生成 modulepreload。同时，在 vite 的打包配置中，有 <a href="https://link.juejin.cn?target=https%3A%2F%2Fvitejs.dev%2Fconfig%2Fbuild-options.html%23build-polyfillmodulepreload" title="https://vitejs.dev/config/build-options.html#build-polyfillmodulepreload">build.polyfillModulePreload</a> 这个配置。开启了它，就会自动给浏览器注入下面一段代码:</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import 'vite/modulepreload-polyfill'</code></p>
+<p>这段代码就是为了兼容那些不知道 ModulePreload 的浏览器。我们来看一下这段代码怎么写的，通过阅读<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvitejs%2Fvite%2Fblob%2F2b7e836f84b56b5f3dc81e0f5f161a9b5f9154c0%2Fpackages%2Fvite%2Fsrc%2Fnode%2Fplugins%2FmodulePreloadPolyfill.ts%23L58" title="https://github.com/vitejs/vite/blob/2b7e836f84b56b5f3dc81e0f5f161a9b5f9154c0/packages/vite/src/node/plugins/modulePreloadPolyfill.ts#L58">这段代码</a>，来学习如何 polyfill。</p>
+<p>简化的伪代码就是：</p>
+<ol>
+<li>扫描 DOM，找出所有带有 modulepreload 标识的 link 标签，使用 fetch 去获取资源，fetch 获取资源后就会存在浏览器缓存里，算是得到和 preload 相同的结果；</li>
+</ol>
+<p>dart</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>for (     const link of document.querySelectorAll('link[rel=&quot;modulepreload&quot;]')  ) {        fetch(link.href) }</code></p>
+<ol start="2">
+<li>监听 DOM，以后有了添加的 link 标签带有 modulepreload 标识，也进行下载</li>
+</ol>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>new MutationObserver((mutations: any) =&gt; {   for (const mutation of mutations) {     if (mutation.type !== 'childList') {       continue     }     for (const node of mutation.addedNodes) {       if (node.tagName === 'LINK' &amp;&amp; node.rel === 'modulepreload')         fetch(node.href)     }   } }).observe(document, { childList: true, subtree: true })</code></p>
+<h2 id="prefetch">prefetch<a hidden class="anchor" aria-hidden="true" href="#prefetch">#</a></h2>
+<p>它的使用方法和 preload 非常像。</p>
+<p>首先，prefetch 的请求的优先级是在上面几个的最后面。也就是说，在第五个级别。</p>
+<p>明白了这一点，我们大概就知道它的应用场景了，一个典型的应用场景就是 prefetch 在未来可能打开的路由页面。举一个例子来说明这个问题，假如有一个搜索页面，点击搜索出来的结果是跳转新的路由，其实如果搜索结果好，一般用户都会点击前几条，所以我们就可以 prefetch 前几条搜索结果对应的路由。</p>
+<p>像我们的现在的应用，一般都会有懒加载，我们可以给非首页但是打开频率很高的页面加 prefetch。</p>
+<p>它的使用就是直接加一个 link 标签，这样它就会在浏览器空闲的时候下载了：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;link rel=&quot;prefetch&quot; as=&quot;script&quot; href=&quot;a.bundle.js&quot;&gt;</code></p>
+<p>其中 as 的取值有 <code>document</code> 、<code>style</code>、<code>script</code>、<code>images</code> &hellip;</p>
+<p>如果使用 webpack ，没有使用 preload 那么坑，可以直接在引入的地方加魔法注释：</p>
+<p>go</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import(/*webpackPrefetch: true */ 'a.bundle.js')</code></p>
+<p>截止目前（2022-08-05），prefetch的支持性没有特别好，只覆盖了 80 % 的浏览器 。所以我们一般都是需要 polyfill 的，可以使用 XHR 或者 fetch 去模拟，由于上面我们给出来 fetch 的模拟方法，现在给出 XHR 的模拟方法：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const xhrRequest = new XMLHttpRequest() xhrRequest.open('GET', './bundle.js', true) xhrRequest.send()</code></p>
+<p>除了直接给资源加 prefetch 标签。还有一个触发 prefetch 的思路，我们可以在入口到达可视窗口的时候，自动 prefetch。<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FGoogleChromeLabs%2Fquicklink" title="https://github.com/GoogleChromeLabs/quicklink">这个库</a> 就实现了这样的功能。它使用了 Intersection API 监听元素到达可视窗口，到达了就进行 prefetch。</p>
+<p>prefetch 的内容会被缓存起来，但是也是有有效期的，Chrome 中是 5 分钟。这一点我们使用的时候也可以注意一下。</p>
+<p>同时，一般只在用户网络比较好的情况下才预加载，浏览器也有监听网速的 API：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let prefetch = true; const connection = navigator.connection; if (connection) {   if (connection.effectiveType === 'slow-2g') {     prefetch = false;   } }</code></p>
+<h2 id="preconnect">preconnect<a hidden class="anchor" aria-hidden="true" href="#preconnect">#</a></h2>
+<p>这是最简单的一个了。</p>
+<p>它的作用使用了提前和第三方资源建立连接的。在我们请求一个资源之前，可能会涉及 DNS 寻址、TLS 握手、TCP 握手、重定向等。这期间就花费了很多时间了。如果我们加上 preconnect：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;link rel=&quot;preconnect&quot; href=&quot;https://example.com&quot;&gt;</code></p>
+<p>浏览器就知道我们将要连接这个网站，跳转也好、请求资源也好，它会做好早期的连接工作。但是浏览器只会保留 10 S，如果 10 S 不用就会浪费了这资源了。</p>
+<p>还有一个和它很相似的 dns-prefetch，只不过这个只预解析 DNS ：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;link rel=&quot;dns-prefetch&quot; href=&quot;https://example.com&quot;&gt;.</code></p>
+<p>不知道你有没有使用过 preconnect，个人感觉，这个其实用起来不是那么舒服，我在工作中只使用到了 preload 和 prefetch。</p>
+<p>以上就是关于这三个的讲解，谢谢阅读 :)</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/dockerdesktop%E5%A4%AA%E8%B4%B5%E4%BA%86%E8%AF%95%E8%AF%95%E8%BF%99%E6%AC%BE%E6%96%B0%E5%B7%A5%E5%85%B7%E6%88%96%E8%AE%B8%E8%AE%A9%E4%BD%A0%E7%9C%81%E4%B8%8B%E4%B8%80%E5%A4%A7%E7%AC%94/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>DockerDesktop太贵了？试试这款新工具，或许让你省下一大笔！</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%96%9C%E8%BF%8E%E5%9B%BD%E5%BA%86%E7%94%A8compose%E8%B5%B6%E5%88%B6%E4%B8%80%E9%9D%A2%E4%BA%94%E6%98%9F%E7%BA%A2%E6%97%97/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>喜迎国庆，用Compose赶制一面五星红旗</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 性能优化之preload、prefetch、preconnect的区别与使用 on x"
+            href="https://x.com/intent/tweet/?text=%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2c%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%2cJavaScript">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 性能优化之preload、prefetch、preconnect的区别与使用 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f&amp;title=%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8&amp;summary=%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 性能优化之preload、prefetch、preconnect的区别与使用 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f&title=%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 性能优化之preload、prefetch、preconnect的区别与使用 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 性能优化之preload、prefetch、preconnect的区别与使用 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 性能优化之preload、prefetch、preconnect的区别与使用 on telegram"
+            href="https://telegram.me/share/url?text=%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 性能优化之preload、prefetch、preconnect的区别与使用 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e4%b9%8bpreload%e3%80%81prefetch%e3%80%81preconnect%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e4%bd%bf%e7%94%a8&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2580%25A7%25E8%2583%25BD%25E4%25BC%2598%25E5%258C%2596%25E4%25B9%258Bpreloadprefetchpreconnect%25E7%259A%2584%25E5%258C%25BA%25E5%2588%25AB%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

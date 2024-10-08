@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>基于源代码泄露的安全渗透测试 | PaperMod</title>
+<meta name="keywords" content="安全">
+<meta name="description" content="背景某小型互联网公司，自述公司“专注于互联网领域，在互联网行业经过14年的发展，现已拥有一支强大的专业团队。”但今天我们进行初步web渗透过程，发现存在严重安全漏洞，详细过程如下，大家一起来反思">
+<meta name="author" content="PetterHillWater">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E7%9A%84%E5%AE%89%E5%85%A8%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E7%9A%84%E5%AE%89%E5%85%A8%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="基于源代码泄露的安全渗透测试" />
+<meta property="og:description" content="背景某小型互联网公司，自述公司“专注于互联网领域，在互联网行业经过14年的发展，现已拥有一支强大的专业团队。”但今天我们进行初步web渗透过程，发现存在严重安全漏洞，详细过程如下，大家一起来反思" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E7%9A%84%E5%AE%89%E5%85%A8%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-30T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-30T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="基于源代码泄露的安全渗透测试"/>
+<meta name="twitter:description" content="背景某小型互联网公司，自述公司“专注于互联网领域，在互联网行业经过14年的发展，现已拥有一支强大的专业团队。”但今天我们进行初步web渗透过程，发现存在严重安全漏洞，详细过程如下，大家一起来反思"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "基于源代码泄露的安全渗透测试",
+      "item": "http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E7%9A%84%E5%AE%89%E5%85%A8%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "基于源代码泄露的安全渗透测试",
+  "name": "基于源代码泄露的安全渗透测试",
+  "description": "背景某小型互联网公司，自述公司“专注于互联网领域，在互联网行业经过14年的发展，现已拥有一支强大的专业团队。”但今天我们进行初步web渗透过程，发现存在严重安全漏洞，详细过程如下，大家一起来反思",
+  "keywords": [
+    "安全"
+  ],
+  "articleBody": "背景 某小型互联网公司，自述公司“专注于互联网领域，在互联网行业经过14年的发展，现已拥有一支强大的专业团队。” 但今天我们进行初步web渗透过程，发现存在严重安全漏洞，详细过程如下，大家一起来反思\n一. 动态扫描网站入口 通过【企查查】查询该公司基本工商信息，通过官网发现与获取到其建设的SaaS平台URL，使用APPSCAN 初步快速扫描，获取相关信息\nAPPSCAN漏洞概要\n发现一些服务器信息暴露， AppScan 扫描出中级与低级安全漏洞\n二. 发现登录接口与风险 初步尝试，发现这个接口可以Replay attack, 基于弱口令探测\n模拟请求\n原因这个登录接口没有配置行为验证码机制。\n风险与影响 暴力破解攻击\n风险描述：\n攻击者可以利用自动化工具，通过不断尝试不同的用户名和密码组合，对登录接口进行暴力破解。由于没有验证码的限制，攻击者可以无限制地发送登录请求，直到找到有效的凭据为止。 安全影响：\n用户的账户安全受到严重威胁，一旦密码被破解，攻击者可以轻易地访问用户的敏感信息。\n网站的整体安全性下降，可能导致大量用户账户被盗用。\n资源耗尽攻击（DoS/DDoS）\n风险描述：\n攻击者可以通过反复请求登录接口，消耗服务器的大量计算资源和网络资源，从而引发拒绝服务攻击（DoS）或分布式拒绝服务攻击（DDoS）。 安全影响：\n网站的可用性降低，正常用户可能无法访问网站。\n服务器资源被耗尽，可能导致其他服务也受到影响。\n账户锁定策略绕过\n风险描述：\n虽然有些网站会实施账户锁定策略，即当用户连续多次输入错误密码时，会暂时锁定账户。但是，如果没有验证码的限制，攻击者可以通过更换IP地址或使用代理服务器等方式绕过这一策略。 安全影响：\n账户锁定策略的有效性降低，无法有效阻止暴力破解攻击。\n攻击者可以持续尝试破解用户的密码，直到成功为止。\n敏感信息泄露\n风险描述：\n在反复请求登录接口的过程中，如果网站没有妥善处理错误信息，可能会泄露敏感信息，如用户名是否存在等。这些信息可以被攻击者利用来进一步实施攻击。 安全影响：\n用户的隐私泄露，攻击者可能通过获取的用户名列表来实施更有针对性的攻击。\n网站的安全性进一步降低，可能导致更多用户账户被盗用。\n防护措施建议 为了应对上述安全风险，网站可以采取以下防护措施：\n实施验证码机制： 在登录接口中添加验证码机制，要求用户输入验证码后才能进行登录尝试。这样可以有效防止自动化工具的暴力破解攻击。\n限制登录尝试次数： 设置合理的登录尝试次数限制，并在达到限制后暂时锁定账户。同时，可以记录用户的IP地址和登录尝试时间，以便后续分析和处理。\n使用HTTPS协议： 确保登录接口使用HTTPS协议进行通信，以保护用户输入的用户名和密码等敏感信息不被截获或篡改。\n加强错误信息处理：\n在处理登录请求时，避免泄露敏感信息，如用户名是否存在等。同时，可以统一错误信息提示，避免给攻击者提供额外的线索。\n定期安全审计和漏洞扫描： 定期对网站进行安全审计和漏洞扫描，及时发现并修复潜在的安全漏洞和弱点。同时，加强对网站的安全监控和日志记录工作，以便及时发现和应对安全威胁。\n三. 通过Google搜索发现其源代码仓库暴露互联网 git仓库研发没有注意，访问权限设置为public， 可以下载代码，如下是上传gitee源代码仓库\n源代码仓库暴露互联网\n通过分析，了解到\n1）前端基于Vue.js技术栈， Uni-app小程序\n2）后端接口路径暴露\n四. 存在匿名访问头像上传接口 通过阅读前面泄露的代码发现，如下片段\n源代码解读\n这段代码是用 Uni-app 编写的微信小程序中的一个方法 onChooseAvatar，用于处理用户选择头像后的操作。具体来说，它将用户选择的头像上传到后端服务器。让我们逐步解析这段代码，并构建一个HTTP原始报文示例。\n代码解析 事件触发：当用户选择了某个头像时，会触发此方法。 提取头像URL：从事件对象 e 中获取用户选择的头像的URL，存储在变量 avatarUrl 中。 使用 wx.uploadFile API 发起文件上传请求： URL：url 参数指定了上传文件的后端API地址。\n文件路径：filePath 参数指定了要上传的文件路径（这里是用户选择的头像的URL）。\n文件字段名：name 参数指定了表单中文件字段的名称，在服务器端可以通过这个名称来获取文件。\n额外的数据：formData 参数可以用来发送额外的数据，这里发送了一个字段 from 表示上传来源。\n成功回调：success回调函数会在上传成功后执行，解析服务器返回的数据，并根据返回的状态码进行相应处理。\n失败回调：fail 回调函数会在上传失败时执行\n我们模拟请求成功，成功上传图片\n模拟请求成功\n可以看出图片上传到某个OSS上，拼接URL得到\n这个漏洞形成一个免费“ 图床”。\n图床可能的安全漏洞\n敏感信息泄露：图床在处理图片上传时，如果未对图片中的EXIF（Exchangeable Image File Format）信息或其他元数据进行处理，可能会泄露拍摄设备、位置等敏感信息。此外，如果图床系统存在配置不当或漏洞，攻击者可能通过上传包含恶意代码的图片来利用这些漏洞，进而获取更多敏感信息或执行未授权操作。\n跨站脚本攻击（XSS）：如果图床系统未对上传的图片内容或链接进行充分过滤和验证，攻击者可能通过上传包含恶意脚本的图片或链接，在用户浏览图片时触发XSS攻击，从而窃取用户信息、会话令牌等敏感数据。\n文件上传漏洞：图床的核心功能之一是处理图片上传，如果上传功能存在漏洞，如未对文件类型、大小、内容等进行严格限制和验证，攻击者可能上传恶意文件（如Webshell、病毒等），进而控制服务器或执行其他恶意操作。\n对标OWASP Top 10 2023，我们可以从以下几个方面来分析可能存在的漏洞：\n敏感信息泄露（A3: Sensitive Data Exposure）\n问题描述：图床在处理图片上传时，如果未对图片中的EXIF信息或其他元数据进行处理，可能会泄露拍摄设备、位置等敏感信息。此外，如果图床系统存在配置不当或漏洞，攻击者可能通过上传包含恶意代码的图片来利用这些漏洞，进而获取更多敏感信息。\n对应OWASP Top 10 2023：这一漏洞直接对应于OWASP Top 10 2023中的A3（敏感数据泄露）。敏感数据泄露是Web应用程序中常见的安全风险之一，它可能导致个人隐私泄露、商业机密被窃取等严重后果。\n跨站脚本攻击（XSS）（A7: Cross-Site Scripting (XSS)）\n问题描述：如果图床系统未对上传的图片内容或链接进行充分过滤和验证，攻击者可能通过上传包含恶意脚本的图片或链接，在用户浏览图片时触发XSS攻击。XSS攻击允许攻击者在用户浏览器中执行恶意脚本，从而窃取用户信息、会话令牌等敏感数据。\n对应OWASP Top 10 2023：这一漏洞直接对应于OWASP Top 10 2023中的A7（跨站脚本）。XSS是一种常见的Web安全漏洞，它利用Web应用程序对用户输入数据的不当处理，使得攻击者能够在用户浏览器中执行恶意脚本。\n文件上传漏洞（可能涉及A8: Insecure Deserialization 或 A9: Using Components with Known Vulnerabilities）\n问题描述：图床的核心功能之一是处理图片上传，如果上传功能存在漏洞，如未对文件类型、大小、内容等进行严格限制和验证，攻击者可能上传恶意文件（如Webshell、病毒等），进而控制服务器或执行其他恶意操作。虽然文件上传漏洞本身没有直接对应的OWASP Top 10 2023项，但它可以视为一种特殊的输入验证问题，也可能由于使用了含有已知漏洞的组件（如文件处理库）而导致。\n对应OWASP Top 10 2023：文件上传漏洞可能间接对应于A8（不安全的反序列化）或A9（使用含有已知漏洞的组件）。然而，更直接地，它可能被视为一种未受保护的输入验证问题，其严重性足以引起高度重视。在OWASP Top 10 2023中，虽然没有直接列出文件上传漏洞作为单独的项，但强调了输入验证和使用安全组件的重要性，这些都是防止文件上传漏洞的关键措施。\n访问控制不当（可能涉及A5: Broken Access Control）\n问题描述：如果图床系统的访问控制机制存在漏洞，如权限设置不当、认证机制不完善等，攻击者可能绕过正常的访问控制流程，访问或修改未授权的资源。\n对应OWASP Top 10 2023：这一漏洞可能间接对应于OWASP Top 10 2023中的A5（失效的访问控制）。失效的访问控制是Web应用程序中常见的安全风险之一，它可能导致未授权用户访问敏感数据或执行敏感操作。在图床系统中，如果访问控制不当，攻击者可能利用这一漏洞获取敏感信息或执行恶意操作。\n四. 接口信息探测与嗅探 通过后台代码，发现视频上传接口，我们在浏览器访问如下Request GET,响应HTTP 405，证明这个接口路径是存的\n接口信息探测\n五. 服务端接口文档泄露 推测该公司是为了方便，接口文档防止互联网，但没有授权访问。与swagger.json暴露是相同安全漏洞\n服务端接口文档泄露\n风险与影响 1. 敏感信息暴露\n风险描述：\n服务端接口文档中可能包含大量敏感信息，如API的URL、请求参数、响应格式、错误代码以及业务逻辑细节等。这些信息如果被恶意利用，可能对网站的业务和数据安全造成重大威胁。\n安全影响：\n攻击者可以了解系统内部的工作流程和逻辑，进而发现并利用安全漏洞。\n敏感信息的泄露可能导致业务数据被非法访问或篡改。\n2. 非法访问和未授权操作\n风险描述：\n攻击者利用接口文档中的信息，可以构造恶意请求，尝试绕过系统的访问控制机制，实现非法访问和未授权操作。\n安全影响：\n攻击者可能访问或修改用户的敏感数据。\n攻击者可能执行未授权的业务操作，如恶意下单、虚假交易等。\n3. API滥用和过度消耗资源\n风险描述：\n攻击者可以利用接口文档中的信息，编写自动化脚本，对网站的服务端接口进行大规模请求，导致API被滥用和服务器资源被过度消耗。\n安全影响：\n服务器可能因负载过高而无法正常响应合法请求。\n在极端情况下，服务器可能因资源耗尽而完全瘫痪。\n4. 供应链攻击\n风险描述：\n如果泄露的接口文档包含了对第三方服务的调用信息（如API密钥、认证信息等），那么这些第三方服务也可能成为攻击的目标。一旦第三方服务被攻破，攻击者可以通过它们进一步攻击原始网站。\n安全影响：\n扩大了攻击面，增加了被攻击的风险。\n可能导致多个系统和服务同时受到影响\n5. 声誉损害和法律风险\n风险描述：\n服务端接口文档的泄露可能导致公众对网站安全性的质疑和信任度下降，从而对网站的声誉造成损害。此外，如果泄露的敏感信息中包含用户隐私数据或受法律保护的敏感信息（如个人信息、商业秘密等），网站还可能面临法律风险。\n安全影响：\n用户流失和市场份额下降。\n面临罚款、诉讼等法律后果。\n防护措施建议 为了降低服务端接口文档泄露带来的安全风险，网站可以采取以下防护措施：\n严格访问控制： 对接口文档实施严格的访问控制策略，确保只有授权人员才能访问。\n使用强密码、双因素认证等安全措施来保护访问权限。\n加密和脱敏处理： 对接口文档中的敏感信息进行加密或脱敏处理，以降低泄露后的风险。\n最小化原则： 遵循最小化原则，仅将必要的接口信息记录在文档中，避免包含过多的敏感信息。\n定期审查和更新： 定期对接口文档进行审查和更新，及时删除不再使用的接口信息，并修复可能存在的安全漏洞。\n安全审计和监控： 加强对接口文档的安全审计和监控工作，及时发现并处理异常访问和潜在的安全威胁。\n培训和教育： 加强对开发人员和安全人员的培训和教育，提高他们的安全意识和技能水平，确保他们能够正确处理接口文档和其他敏感信息。\n案例分析 案例名称：XX科技公司源代码泄露导致的安全攻击事件\n背景：\nXX科技公司是一家位于某沿海地区的知名科技公司，负责开发了多个重要的IT系统，包括医疗、教育等领域的系统。 该公司使用Git作为代码管理工具，但由于配置错误或疏忽，部分系统的源代码被意外上传到了公开的Git仓库中。 事件经过： 1）源代码泄露：\nXX科技公司的研发工程师在将代码上传至Git仓库时，未正确设置访问权限，导致包含敏感信息和潜在漏洞的源代码被公开。 2）漏洞发现与利用：\n攻击者利用搜索引擎或专业的漏洞扫描工具，发现了这些公开的源代码仓库。 通过分析源代码，攻击者发现了多个未修复的安全漏洞，包括SQL注入、跨站脚本攻击(XSS)等。 攻击者利用这些漏洞，成功渗透了XX科技公司的系统，获取了敏感数据，并对系统进行了进一步的攻击和破坏。 3）影响：\n泄露的源代码中包含了数据库连接信息、API密钥等敏感数据，导致大量用户信息和个人隐私数据被泄露。 公司系统遭受了严重的攻击，部分服务中断，给公司业务和客户带来了重大损失。 公司的声誉和信任度受到严重损害，合作伙伴和客户对公司的技术能力和数据安全能力产生了质疑。 后续处理：\nXX科技公司迅速响应，关闭了泄露的源代码仓库，并启动了应急响应机制。 公司对受影响的系统进行了全面的安全检查和修复，加固了系统的安全防护措施。 同时，公司加强了内部的安全培训和意识提升工作，防止类似事件再次发生。 注意事项 以上案例为框架性描述，实际事件可能更为复杂和多变。\n源代码泄露是公司面临的一种严重安全风险，需要引起高度重视和警惕。\n公司应建立完善的源代码管理制度和保密协议，确保源代码的安全性和保密性。\n同时，公司应定期进行代码审查和漏洞扫描工作，及时发现和修复潜在的安全漏洞\n结论 通过以上暴露出该公司研发安全过程缺失，重要源头从研发工程师把源代码上传互联网公开代码GIT仓库安全风险。\n风险主要可以归纳为以下几个方面：\n1. 技术秘密泄露 核心算法和业务逻辑暴露：源代码中可能包含公司的核心算法、业务逻辑和独特的技术实现，这些信息的公开将直接威胁到公司的技术优势和竞争力。 知识产权侵犯：源代码的公开可能导致公司面临知识产权被侵犯的风险，包括著作权和专利权的争议。 2. 敏感信息泄露 数据库连接信息：源代码中可能包含数据库的连接字符串、用户名和密码等敏感信息，这些信息一旦被泄露，将给公司的数据安全带来严重威胁。 API密钥和凭据：API密钥、OAuth令牌等敏感凭据也可能被包含在源代码中，它们的泄露将使得攻击者能够未经授权地访问公司的服务或数据。 客户数据：如果源代码中包含了处理客户数据的逻辑，那么客户数据的隐私和安全也将受到威胁。 3. 网络安全事件 恶意代码注入：公开的代码仓库可能成为恶意代码注入的温床，攻击者可以在代码中植入恶意代码，通过更新或依赖关系传播到使用这些代码的项目中。 漏洞利用：源代码的公开使得潜在的漏洞更容易被发现和利用，攻击者可以利用这些漏洞对公司系统进行攻击。 4. 法律和合规风险 违反保密协议：研发工程师可能与公司签订了保密协议，将源代码上传至公开仓库将违反这些协议，导致公司面临法律诉讼和罚款的风险。 数据保护法规：如果源代码中包含了受数据保护法规（如GDPR、CCPA等）保护的个人数据，那么公开源代码将违反这些法规，给公司带来严重的法律后果。 5. 声誉和信任损失 客户信任下降：源代码的泄露可能导致客户对公司技术能力和数据安全能力的信任下降，进而影响公司的业务和市场地位。 合作伙伴关系受损：如果源代码中包含了与合作伙伴共享的技术或数据，那么泄露将损害与合作伙伴的关系，甚至导致合作关系的破裂。 应对措施 为了降低这些安全风险，公司可以采取以下措施：\n签署保密协议：与员工签署保密协议，特别是关键岗位和特别权限的员工，应签署更为严格的保密协议。 建立保密制度：在公司内部建立完善的商业秘密管理制度，明确源代码等敏感信息的保护要求和责任。 定期培训和意识提升：定期与员工进行保密培训，分享典型案例，提升员工的保密意识和安全素养。 代码审查和监控：建立代码审查和监控机制，对源代码的上传和共享进行严格把关，防止敏感信息泄露。 使用私有仓库：对于敏感项目的源代码，应使用私有仓库进行存储和管理，限制访问权限和范围。 ",
+  "wordCount" : "286",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-08-30T00:00:00Z",
+  "dateModified": "2024-08-30T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "PetterHillWater"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E7%9A%84%E5%AE%89%E5%85%A8%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      基于源代码泄露的安全渗透测试
+    </h1>
+    <div class="post-description">
+      背景某小型互联网公司，自述公司“专注于互联网领域，在互联网行业经过14年的发展，现已拥有一支强大的专业团队。”但今天我们进行初步web渗透过程，发现存在严重安全漏洞，详细过程如下，大家一起来反思
+    </div>
+    <div class="post-meta"><span title='2024-08-30 00:00:00 +0000 UTC'>八月 30, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;PetterHillWater&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                <li>
+                    <a href="#%e4%b8%80-%e5%8a%a8%e6%80%81%e6%89%ab%e6%8f%8f%e7%bd%91%e7%ab%99%e5%85%a5%e5%8f%a3" aria-label="一. 动态扫描网站入口">一. 动态扫描网站入口</a></li>
+                <li>
+                    <a href="#%e4%ba%8c-%e5%8f%91%e7%8e%b0%e7%99%bb%e5%bd%95%e6%8e%a5%e5%8f%a3%e4%b8%8e%e9%a3%8e%e9%99%a9" aria-label="二. 发现登录接口与风险">二. 发现登录接口与风险</a><ul>
+                        
+                <li>
+                    <a href="#%e9%a3%8e%e9%99%a9%e4%b8%8e%e5%bd%b1%e5%93%8d" aria-label="风险与影响">风险与影响</a></li>
+                <li>
+                    <a href="#%e9%98%b2%e6%8a%a4%e6%8e%aa%e6%96%bd%e5%bb%ba%e8%ae%ae" aria-label="防护措施建议">防护措施建议</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89-%e9%80%9a%e8%bf%87google%e6%90%9c%e7%b4%a2%e5%8f%91%e7%8e%b0%e5%85%b6%e6%ba%90%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93%e6%9a%b4%e9%9c%b2%e4%ba%92%e8%81%94%e7%bd%91" aria-label="三. 通过Google搜索发现其源代码仓库暴露互联网">三. 通过Google搜索发现其源代码仓库暴露互联网</a></li>
+                <li>
+                    <a href="#%e5%9b%9b-%e5%ad%98%e5%9c%a8%e5%8c%bf%e5%90%8d%e8%ae%bf%e9%97%ae%e5%a4%b4%e5%83%8f%e4%b8%8a%e4%bc%a0%e6%8e%a5%e5%8f%a3" aria-label="四. 存在匿名访问头像上传接口">四. 存在匿名访问头像上传接口</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%a3%e7%a0%81%e8%a7%a3%e6%9e%90" aria-label="代码解析">代码解析</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9b-%e6%8e%a5%e5%8f%a3%e4%bf%a1%e6%81%af%e6%8e%a2%e6%b5%8b%e4%b8%8e%e5%97%85%e6%8e%a2" aria-label="四. 接口信息探测与嗅探">四. 接口信息探测与嗅探</a></li>
+                <li>
+                    <a href="#%e4%ba%94-%e6%9c%8d%e5%8a%a1%e7%ab%af%e6%8e%a5%e5%8f%a3%e6%96%87%e6%a1%a3%e6%b3%84%e9%9c%b2" aria-label="五. 服务端接口文档泄露">五. 服务端接口文档泄露</a><ul>
+                        
+                <li>
+                    <a href="#%e9%a3%8e%e9%99%a9%e4%b8%8e%e5%bd%b1%e5%93%8d-1" aria-label="风险与影响">风险与影响</a></li>
+                <li>
+                    <a href="#%e9%98%b2%e6%8a%a4%e6%8e%aa%e6%96%bd%e5%bb%ba%e8%ae%ae-1" aria-label="防护措施建议">防护措施建议</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%a1%88%e4%be%8b%e5%88%86%e6%9e%90" aria-label="案例分析">案例分析</a><ul>
+                        
+                <li>
+                    <a href="#%e4%ba%8b%e4%bb%b6%e7%bb%8f%e8%bf%87" aria-label="事件经过：">事件经过：</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%93%e8%ae%ba" aria-label="结论">结论</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%8a%80%e6%9c%af%e7%a7%98%e5%af%86%e6%b3%84%e9%9c%b2" aria-label="1. 技术秘密泄露">1. 技术秘密泄露</a></li>
+                <li>
+                    <a href="#2-%e6%95%8f%e6%84%9f%e4%bf%a1%e6%81%af%e6%b3%84%e9%9c%b2" aria-label="2. 敏感信息泄露">2. 敏感信息泄露</a></li>
+                <li>
+                    <a href="#3-%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8%e4%ba%8b%e4%bb%b6" aria-label="3. 网络安全事件">3. 网络安全事件</a></li>
+                <li>
+                    <a href="#4-%e6%b3%95%e5%be%8b%e5%92%8c%e5%90%88%e8%a7%84%e9%a3%8e%e9%99%a9" aria-label="4. 法律和合规风险">4. 法律和合规风险</a></li>
+                <li>
+                    <a href="#5-%e5%a3%b0%e8%aa%89%e5%92%8c%e4%bf%a1%e4%bb%bb%e6%8d%9f%e5%a4%b1" aria-label="5. 声誉和信任损失">5. 声誉和信任损失</a></li>
+                <li>
+                    <a href="#%e5%ba%94%e5%af%b9%e6%8e%aa%e6%96%bd" aria-label="应对措施">应对措施</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h2>
+<p>某小型互联网公司，自述公司“专注于互联网领域，在互联网行业经过14年的发展，现已拥有一支强大的专业团队。” 但今天我们进行初步web渗透过程，发现存在严重安全漏洞，详细过程如下，大家一起来反思</p>
+<h2 id="一-动态扫描网站入口">一. 动态扫描网站入口<a hidden class="anchor" aria-hidden="true" href="#一-动态扫描网站入口">#</a></h2>
+<p>通过【企查查】查询该公司基本工商信息，通过官网发现与获取到其建设的SaaS平台URL，使用APPSCAN 初步快速扫描，获取相关信息</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimg2023.cnblogs.com%2Fblog%2F15172%2F202408%2F15172-20240828221655823-1243179183.jpg" title="https://img2023.cnblogs.com/blog/15172/202408/15172-20240828221655823-1243179183.jpg"><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/355e725f55a24f42a718313323adcbf1~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=cXi2Pqlvk2BfkWT7yCSdKsDcY7I%3D" alt="huploadfileloginissue1"  title="huploadfileloginissue1"  />
+</a></p>
+<p>APPSCAN漏洞概要</p>
+<p>发现一些服务器信息暴露， AppScan 扫描出中级与低级安全漏洞</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimg2023.cnblogs.com%2Fblog%2F15172%2F202408%2F15172-20240828221657059-999077857.jpg" title="https://img2023.cnblogs.com/blog/15172/202408/15172-20240828221657059-999077857.jpg"><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/ffeab6026cbb4076a8affec96b161d9a~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=gbpD1YN6xifcnpAm16aOi4VBTew%3D" alt="huploadfileloginissue2"  title="huploadfileloginissue2"  />
+</a></p>
+<h2 id="二-发现登录接口与风险">二. 发现登录接口与风险<a hidden class="anchor" aria-hidden="true" href="#二-发现登录接口与风险">#</a></h2>
+<p>初步尝试，发现这个接口可以Replay attack, 基于弱口令探测</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimg2023.cnblogs.com%2Fblog%2F15172%2F202408%2F15172-20240828221658318-1878969736.jpg" title="https://img2023.cnblogs.com/blog/15172/202408/15172-20240828221658318-1878969736.jpg"><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/5a7e6ffaa4804bfa83f74a09988aec04~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=MroZ80zKU7Gl%2BNV88ayBSSYt3Vw%3D" alt="huploadfileloginissue0"  title="huploadfileloginissue0"  />
+</a></p>
+<p>模拟请求</p>
+<p>原因这个登录接口没有配置行为验证码机制。</p>
+<h3 id="风险与影响">风险与影响<a hidden class="anchor" aria-hidden="true" href="#风险与影响">#</a></h3>
+<ol>
+<li>暴力破解攻击<br>
+风险描述：<br>
+攻击者可以利用自动化工具，通过不断尝试不同的用户名和密码组合，对登录接口进行暴力破解。由于没有验证码的限制，攻击者可以无限制地发送登录请求，直到找到有效的凭据为止。</li>
+</ol>
+<p>安全影响：</p>
+<p>用户的账户安全受到严重威胁，一旦密码被破解，攻击者可以轻易地访问用户的敏感信息。<br>
+网站的整体安全性下降，可能导致大量用户账户被盗用。</p>
+<ol start="2">
+<li>资源耗尽攻击（DoS/DDoS）<br>
+风险描述：<br>
+攻击者可以通过反复请求登录接口，消耗服务器的大量计算资源和网络资源，从而引发拒绝服务攻击（DoS）或分布式拒绝服务攻击（DDoS）。</li>
+</ol>
+<p>安全影响：</p>
+<p>网站的可用性降低，正常用户可能无法访问网站。<br>
+服务器资源被耗尽，可能导致其他服务也受到影响。</p>
+<ol start="3">
+<li>账户锁定策略绕过<br>
+风险描述：<br>
+虽然有些网站会实施账户锁定策略，即当用户连续多次输入错误密码时，会暂时锁定账户。但是，如果没有验证码的限制，攻击者可以通过更换IP地址或使用代理服务器等方式绕过这一策略。</li>
+</ol>
+<p>安全影响：</p>
+<p>账户锁定策略的有效性降低，无法有效阻止暴力破解攻击。<br>
+攻击者可以持续尝试破解用户的密码，直到成功为止。</p>
+<ol start="4">
+<li>敏感信息泄露<br>
+风险描述：<br>
+在反复请求登录接口的过程中，如果网站没有妥善处理错误信息，可能会泄露敏感信息，如用户名是否存在等。这些信息可以被攻击者利用来进一步实施攻击。</li>
+</ol>
+<p>安全影响：</p>
+<p>用户的隐私泄露，攻击者可能通过获取的用户名列表来实施更有针对性的攻击。<br>
+网站的安全性进一步降低，可能导致更多用户账户被盗用。</p>
+<h3 id="防护措施建议"><strong>防护措施建议</strong><a hidden class="anchor" aria-hidden="true" href="#防护措施建议">#</a></h3>
+<p>为了应对上述安全风险，网站可以采取以下防护措施：</p>
+<p><strong>实施验证码机制：</strong> 在登录接口中添加验证码机制，要求用户输入验证码后才能进行登录尝试。这样可以有效防止自动化工具的暴力破解攻击。</p>
+<p><strong>限制登录尝试次数：</strong> 设置合理的登录尝试次数限制，并在达到限制后暂时锁定账户。同时，可以记录用户的IP地址和登录尝试时间，以便后续分析和处理。</p>
+<p><strong>使用HTTPS协议：</strong> 确保登录接口使用HTTPS协议进行通信，以保护用户输入的用户名和密码等敏感信息不被截获或篡改。</p>
+<p><strong>加强错误信息处理：</strong><br>
+在处理登录请求时，避免泄露敏感信息，如用户名是否存在等。同时，可以统一错误信息提示，避免给攻击者提供额外的线索。</p>
+<p><strong>定期安全审计和漏洞扫描：</strong> 定期对网站进行安全审计和漏洞扫描，及时发现并修复潜在的安全漏洞和弱点。同时，加强对网站的安全监控和日志记录工作，以便及时发现和应对安全威胁。</p>
+<h2 id="三-通过google搜索发现其源代码仓库暴露互联网">三. 通过Google搜索发现其源代码仓库暴露互联网<a hidden class="anchor" aria-hidden="true" href="#三-通过google搜索发现其源代码仓库暴露互联网">#</a></h2>
+<p>git仓库研发没有注意，访问权限设置为public， 可以下载代码，如下是上传gitee源代码仓库</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimg2023.cnblogs.com%2Fblog%2F15172%2F202408%2F15172-20240828221659669-1857747239.jpg" title="https://img2023.cnblogs.com/blog/15172/202408/15172-20240828221659669-1857747239.jpg"><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/e37e31d1257447c1a7f7977c8526bf18~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=oZbLNtL%2FwJBg6Q%2B3a8wT%2FCXVZh0%3D" alt="huploadfileissue0"  title="huploadfileissue0"  />
+</a></p>
+<p>源代码仓库暴露互联网</p>
+<p>通过分析，了解到</p>
+<p>1）前端基于Vue.js技术栈， Uni-app小程序</p>
+<p>2）后端接口路径暴露</p>
+<h2 id="四-存在匿名访问头像上传接口">四. 存在匿名访问头像上传接口<a hidden class="anchor" aria-hidden="true" href="#四-存在匿名访问头像上传接口">#</a></h2>
+<p>通过阅读前面泄露的代码发现，如下片段</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimg2023.cnblogs.com%2Fblog%2F15172%2F202408%2F15172-20240828221700849-483716404.png" title="https://img2023.cnblogs.com/blog/15172/202408/15172-20240828221700849-483716404.png"><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/41c34137ecfe4411b6a8b5cf5e10bb42~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=fVdu2oAvASzCu1bNE%2FQNo2EUvOg%3D" alt="image"  title="image"  />
+</a></p>
+<p>源代码解读</p>
+<p>这段代码是用 Uni-app 编写的<a href="https://link.juejin.cn?target=https%3A%2F%2Fzhida.zhihu.com%2Fsearch%3Fq%3D%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%26zhida_source%3Dentity%26is_preview%3D1" title="https://zhida.zhihu.com/search?q=%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F&amp;zhida_source=entity&amp;is_preview=1">微信小程序</a>中的一个方法 <code>onChooseAvatar</code>，用于处理用户选择头像后的操作。具体来说，它将用户选择的头像上传到后端服务器。让我们逐步解析这段代码，并构建一个HTTP原始报文示例。</p>
+<h3 id="代码解析">代码解析<a hidden class="anchor" aria-hidden="true" href="#代码解析">#</a></h3>
+<ol>
+<li>事件触发：当用户选择了某个头像时，会触发此方法。</li>
+<li>提取头像URL：从事件对象 <code>e</code> 中获取用户选择的头像的URL，存储在变量 <code>avatarUrl</code> 中。</li>
+<li>使用 <code>wx.uploadFile</code> API 发起文件上传请求：</li>
+</ol>
+<ul>
+<li>
+<p>URL：<code>url</code> 参数指定了上传文件的后端API地址。</p>
+</li>
+<li>
+<p>文件路径：<code>filePath</code> 参数指定了要上传的文件路径（这里是用户选择的头像的URL）。</p>
+</li>
+<li>
+<p>文件字段名：<code>name</code> 参数指定了表单中文件字段的名称，在服务器端可以通过这个名称来获取文件。</p>
+</li>
+<li>
+<p>额外的数据：<code>formData</code> 参数可以用来发送额外的数据，这里发送了一个字段 <code>from</code> 表示上传来源。</p>
+</li>
+<li>
+<p>成功回调：<code>success</code>回调函数会在上传成功后执行，解析服务器返回的数据，并根据返回的状态码进行相应处理。</p>
+</li>
+<li>
+<p>失败回调：<code>fail</code> 回调函数会在上传失败时执行</p>
+</li>
+</ul>
+<p>我们模拟请求成功，成功上传图片</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimg2023.cnblogs.com%2Fblog%2F15172%2F202408%2F15172-20240828221701890-1126336547.jpg" title="https://img2023.cnblogs.com/blog/15172/202408/15172-20240828221701890-1126336547.jpg"><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/afb5986388384f8290c7acf165f83496~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=gP5ixL2pnToZBOTRabdDDsJ5bBE%3D" alt="huploadfileissue1"  title="huploadfileissue1"  />
+</a></p>
+<p>模拟请求成功</p>
+<p>可以看出图片上传到某个OSS上，拼接URL得到</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/970acaac55a4465d8854c1e2f4587b89~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=v%2B4e%2BIA2OXxqj%2FSUB98lS6Pv%2FaA%3D" alt="image.png"  />
+</p>
+<p>这个漏洞形成一个免费“ 图床”。</p>
+<p><strong>图床可能的安全漏洞</strong><br>
+敏感信息泄露：图床在处理图片上传时，如果未对图片中的EXIF（Exchangeable Image File Format）信息或其他元数据进行处理，可能会泄露拍摄设备、位置等敏感信息。此外，如果图床系统存在配置不当或漏洞，攻击者可能通过上传包含恶意代码的图片来利用这些漏洞，进而获取更多敏感信息或执行未授权操作。</p>
+<p>跨站脚本攻击（XSS）：如果图床系统未对上传的图片内容或链接进行充分过滤和验证，攻击者可能通过上传包含恶意脚本的图片或链接，在用户浏览图片时触发XSS攻击，从而窃取用户信息、会话令牌等敏感数据。<br>
+文件上传漏洞：图床的核心功能之一是处理图片上传，如果上传功能存在漏洞，如未对文件类型、大小、内容等进行严格限制和验证，攻击者可能上传恶意文件（如Webshell、病毒等），进而控制服务器或执行其他恶意操作。</p>
+<p>对标OWASP Top 10 2023，我们可以从以下几个方面来分析可能存在的漏洞：</p>
+<ol>
+<li>
+<p>敏感信息泄露（A3: Sensitive Data Exposure）<br>
+问题描述：图床在处理图片上传时，如果未对图片中的EXIF信息或其他元数据进行处理，可能会泄露拍摄设备、位置等敏感信息。此外，如果图床系统存在配置不当或漏洞，攻击者可能通过上传包含恶意代码的图片来利用这些漏洞，进而获取更多敏感信息。<br>
+对应OWASP Top 10 2023：这一漏洞直接对应于OWASP Top 10 2023中的A3（敏感数据泄露）。敏感数据泄露是Web应用程序中常见的安全风险之一，它可能导致个人隐私泄露、商业机密被窃取等严重后果。</p>
+</li>
+<li>
+<p>跨站脚本攻击（XSS）（A7: Cross-Site Scripting (XSS)）<br>
+问题描述：如果图床系统未对上传的图片内容或链接进行充分过滤和验证，攻击者可能通过上传包含恶意脚本的图片或链接，在用户浏览图片时触发XSS攻击。XSS攻击允许攻击者在用户浏览器中执行恶意脚本，从而窃取用户信息、会话令牌等敏感数据。<br>
+对应OWASP Top 10 2023：这一漏洞直接对应于OWASP Top 10 2023中的A7（跨站脚本）。XSS是一种常见的Web安全漏洞，它利用Web应用程序对用户输入数据的不当处理，使得攻击者能够在用户浏览器中执行恶意脚本。</p>
+</li>
+<li>
+<p>文件上传漏洞（可能涉及A8: Insecure Deserialization 或 A9: Using Components with Known Vulnerabilities）<br>
+问题描述：图床的核心功能之一是处理图片上传，如果上传功能存在漏洞，如未对文件类型、大小、内容等进行严格限制和验证，攻击者可能上传恶意文件（如Webshell、病毒等），进而控制服务器或执行其他恶意操作。虽然文件上传漏洞本身没有直接对应的OWASP Top 10 2023项，但它可以视为一种特殊的输入验证问题，也可能由于使用了含有已知漏洞的组件（如文件处理库）而导致。<br>
+对应OWASP Top 10 2023：文件上传漏洞可能间接对应于A8（不安全的反序列化）或A9（使用含有已知漏洞的组件）。然而，更直接地，它可能被视为一种未受保护的输入验证问题，其严重性足以引起高度重视。在OWASP Top 10 2023中，虽然没有直接列出文件上传漏洞作为单独的项，但强调了输入验证和使用安全组件的重要性，这些都是防止文件上传漏洞的关键措施。</p>
+</li>
+<li>
+<p>访问控制不当（可能涉及A5: Broken Access Control）</p>
+</li>
+</ol>
+<p>问题描述：如果图床系统的<a href="https://link.juejin.cn?target=https%3A%2F%2Fzhida.zhihu.com%2Fsearch%3Fq%3D%25E8%25AE%25BF%25E9%2597%25AE%25E6%258E%25A7%25E5%2588%25B6%25E6%259C%25BA%25E5%2588%25B6%26zhida_source%3Dentity%26is_preview%3D1" title="https://zhida.zhihu.com/search?q=%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E6%9C%BA%E5%88%B6&amp;zhida_source=entity&amp;is_preview=1">访问控制机制</a>存在漏洞，如权限设置不当、认证机制不完善等，攻击者可能绕过正常的访问控制流程，访问或修改未授权的资源。<br>
+对应OWASP Top 10 2023：这一漏洞可能间接对应于OWASP Top 10 2023中的A5（失效的访问控制）。失效的访问控制是Web应用程序中常见的安全风险之一，它可能导致未授权用户访问敏感数据或执行敏感操作。在图床系统中，如果访问控制不当，攻击者可能利用这一漏洞获取敏感信息或执行恶意操作。</p>
+<h2 id="四-接口信息探测与嗅探">四. 接口信息探测与嗅探<a hidden class="anchor" aria-hidden="true" href="#四-接口信息探测与嗅探">#</a></h2>
+<p>通过后台代码，发现视频上传接口，我们在浏览器访问如下Request GET,响应HTTP 405，证明这个接口路径是存的</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fimg2023.cnblogs.com%2Fblog%2F15172%2F202408%2F15172-20240828221704483-456027696.jpg" title="https://img2023.cnblogs.com/blog/15172/202408/15172-20240828221704483-456027696.jpg"><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7dbe1a72eda449b2a7b2d60e49b7362d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=YIws6Fa9yx9DtIa0wyDtjAWpXAI%3D" alt="huploadfilebackissue0"  title="huploadfilebackissue0"  />
+</a></p>
+<p>接口信息探测</p>
+<h2 id="五-服务端接口文档泄露">五. 服务端接口文档泄露<a hidden class="anchor" aria-hidden="true" href="#五-服务端接口文档泄露">#</a></h2>
+<p>推测该公司是为了方便，接口文档防止互联网，但没有授权访问。与swagger.json暴露是相同安全漏洞</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/65189761691042ed984718f8e76b4dc9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgUGV0dGVySGlsbFdhdGVy:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727429501&amp;x-signature=5X%2BjU0h44%2B9S%2BqGaqVOP07s%2F448%3D" alt="image.png"  />
+</p>
+<p>服务端接口文档泄露</p>
+<h3 id="风险与影响-1">风险与影响<a hidden class="anchor" aria-hidden="true" href="#风险与影响-1">#</a></h3>
+<p><strong>1. 敏感信息暴露</strong></p>
+<p>风险描述：<br>
+服务端接口文档中可能包含大量敏感信息，如API的URL、请求参数、响应格式、错误代码以及业务逻辑细节等。这些信息如果被恶意利用，可能对网站的业务和数据安全造成重大威胁。</p>
+<p>安全影响：<br>
+攻击者可以了解系统内部的工作流程和逻辑，进而发现并利用安全漏洞。<br>
+敏感信息的泄露可能导致业务数据被非法访问或篡改。</p>
+<p><strong>2. 非法访问和未授权操作</strong><br>
+风险描述：<br>
+攻击者利用接口文档中的信息，可以构造恶意请求，尝试绕过系统的访问控制机制，实现非法访问和未授权操作。</p>
+<p>安全影响：<br>
+攻击者可能访问或修改用户的敏感数据。<br>
+攻击者可能执行未授权的业务操作，如恶意下单、虚假交易等。</p>
+<p><strong>3. API滥用和过度消耗资源</strong></p>
+<p>风险描述：<br>
+攻击者可以利用接口文档中的信息，编写自动化脚本，对网站的服务端接口进行大规模请求，导致API被滥用和服务器资源被过度消耗。</p>
+<p>安全影响：<br>
+服务器可能因负载过高而无法正常响应合法请求。<br>
+在极端情况下，服务器可能因资源耗尽而完全瘫痪。</p>
+<p><strong>4. 供应链攻击</strong></p>
+<p>风险描述：<br>
+如果泄露的接口文档包含了对第三方服务的调用信息（如API密钥、认证信息等），那么这些第三方服务也可能成为攻击的目标。一旦第三方服务被攻破，攻击者可以通过它们进一步攻击原始网站。</p>
+<p>安全影响：<br>
+扩大了攻击面，增加了被攻击的风险。<br>
+可能导致多个系统和服务同时受到影响</p>
+<p><strong>5. 声誉损害和法律风险</strong></p>
+<p>风险描述：<br>
+服务端接口文档的泄露可能导致公众对网站安全性的质疑和信任度下降，从而对网站的声誉造成损害。此外，如果泄露的敏感信息中包含用户隐私数据或受法律保护的敏感信息（如个人信息、商业秘密等），网站还可能面临法律风险。</p>
+<p>安全影响：<br>
+用户流失和市场份额下降。<br>
+面临罚款、诉讼等法律后果。</p>
+<h3 id="防护措施建议-1"><strong>防护措施建议</strong><a hidden class="anchor" aria-hidden="true" href="#防护措施建议-1">#</a></h3>
+<p>为了降低服务端接口文档泄露带来的安全风险，网站可以采取以下防护措施：</p>
+<p><strong>严格访问控制：</strong> 对接口文档实施严格的访问控制策略，确保只有授权人员才能访问。<br>
+使用强密码、双因素认证等安全措施来保护访问权限。</p>
+<p><strong>加密和脱敏处理</strong>： 对接口文档中的敏感信息进行加密或脱敏处理，以降低泄露后的风险。</p>
+<p><strong>最小化原则：</strong> 遵循最小化原则，仅将必要的接口信息记录在文档中，避免包含过多的敏感信息。</p>
+<p><strong>定期审查和更新：</strong> 定期对接口文档进行审查和更新，及时删除不再使用的接口信息，并修复可能存在的安全漏洞。</p>
+<p><strong>安全审计和监控：</strong> 加强对接口文档的安全审计和监控工作，及时发现并处理异常访问和潜在的安全威胁。</p>
+<p><strong>培训和教育：</strong> 加强对开发人员和安全人员的培训和教育，提高他们的安全意识和技能水平，确保他们能够正确处理接口文档和其他敏感信息。</p>
+<h2 id="案例分析">案例分析<a hidden class="anchor" aria-hidden="true" href="#案例分析">#</a></h2>
+<p>案例名称：XX科技公司源代码泄露导致的安全攻击事件</p>
+<p>背景：</p>
+<ul>
+<li>XX科技公司是一家位于某沿海地区的知名科技公司，负责开发了多个重要的IT系统，包括医疗、教育等领域的系统。</li>
+<li>该公司使用Git作为代码管理工具，但由于配置错误或疏忽，部分系统的源代码被意外上传到了公开的Git仓库中。</li>
+</ul>
+<h3 id="事件经过">事件经过：<a hidden class="anchor" aria-hidden="true" href="#事件经过">#</a></h3>
+<p>1）源代码泄露：</p>
+<ul>
+<li>
+<ul>
+<li>XX科技公司的研发工程师在将代码上传至Git仓库时，未正确设置访问权限，导致包含敏感信息和潜在漏洞的源代码被公开。</li>
+</ul>
+</li>
+</ul>
+<p>2）漏洞发现与利用：</p>
+<ul>
+<li>
+<ul>
+<li>攻击者利用搜索引擎或专业的漏洞扫描工具，发现了这些公开的源代码仓库。</li>
+<li>通过分析源代码，攻击者发现了多个未修复的安全漏洞，包括SQL注入、跨站脚本攻击(XSS)等。</li>
+<li>攻击者利用这些漏洞，成功渗透了XX科技公司的系统，获取了敏感数据，并对系统进行了进一步的攻击和破坏。</li>
+</ul>
+</li>
+</ul>
+<p>3）影响：</p>
+<ul>
+<li>
+<ul>
+<li>泄露的源代码中包含了数据库连接信息、API密钥等敏感数据，导致大量用户信息和个人隐私数据被泄露。</li>
+<li>公司系统遭受了严重的攻击，部分服务中断，给公司业务和客户带来了重大损失。</li>
+<li>公司的声誉和信任度受到严重损害，合作伙伴和客户对公司的技术能力和数据安全能力产生了质疑。</li>
+</ul>
+</li>
+</ul>
+<p>后续处理：</p>
+<ul>
+<li>XX科技公司迅速响应，关闭了泄露的源代码仓库，并启动了<a href="https://link.juejin.cn?target=https%3A%2F%2Fzhida.zhihu.com%2Fsearch%3Fq%3D%25E5%25BA%2594%25E6%2580%25A5%25E5%2593%258D%25E5%25BA%2594%25E6%259C%25BA%25E5%2588%25B6%26zhida_source%3Dentity%26is_preview%3D1" title="https://zhida.zhihu.com/search?q=%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94%E6%9C%BA%E5%88%B6&amp;zhida_source=entity&amp;is_preview=1">应急响应机制</a>。</li>
+<li>公司对受影响的系统进行了全面的安全检查和修复，加固了系统的安全防护措施。</li>
+<li>同时，公司加强了内部的安全培训和意识提升工作，防止类似事件再次发生。</li>
+</ul>
+<h3 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h3>
+<ul>
+<li>
+<p>以上案例为框架性描述，实际事件可能更为复杂和多变。</p>
+</li>
+<li>
+<p>源代码泄露是公司面临的一种严重安全风险，需要引起高度重视和警惕。</p>
+</li>
+<li>
+<p>公司应建立完善的源代码管理制度和保密协议，确保源代码的安全性和保密性。</p>
+</li>
+<li>
+<p>同时，公司应定期进行代码审查和漏洞扫描工作，及时发现和修复潜在的安全漏洞</p>
+</li>
+</ul>
+<h2 id="结论">结论<a hidden class="anchor" aria-hidden="true" href="#结论">#</a></h2>
+<p>通过以上暴露出该公司研发安全过程缺失，重要源头从研发工程师把源代码上传互联网公开代码GIT仓库安全风险。</p>
+<p>风险主要可以归纳为以下几个方面：</p>
+<h3 id="1-技术秘密泄露">1. 技术秘密泄露<a hidden class="anchor" aria-hidden="true" href="#1-技术秘密泄露">#</a></h3>
+<ul>
+<li>核心算法和业务逻辑暴露：源代码中可能包含公司的核心算法、业务逻辑和独特的技术实现，这些信息的公开将直接威胁到公司的技术优势和竞争力。</li>
+<li>知识产权侵犯：源代码的公开可能导致公司面临知识产权被侵犯的风险，包括著作权和专利权的争议。</li>
+</ul>
+<h3 id="2-敏感信息泄露">2. 敏感信息泄露<a hidden class="anchor" aria-hidden="true" href="#2-敏感信息泄露">#</a></h3>
+<ul>
+<li>数据库连接信息：源代码中可能包含数据库的连接字符串、用户名和密码等敏感信息，这些信息一旦被泄露，将给公司的数据安全带来严重威胁。</li>
+<li>API密钥和凭据：API密钥、OAuth令牌等敏感凭据也可能被包含在源代码中，它们的泄露将使得攻击者能够未经授权地访问公司的服务或数据。</li>
+<li>客户数据：如果源代码中包含了处理客户数据的逻辑，那么客户数据的隐私和安全也将受到威胁。</li>
+</ul>
+<h3 id="3-网络安全事件">3. 网络安全事件<a hidden class="anchor" aria-hidden="true" href="#3-网络安全事件">#</a></h3>
+<ul>
+<li>恶意代码注入：公开的代码仓库可能成为恶意代码注入的温床，攻击者可以在代码中植入恶意代码，通过更新或依赖关系传播到使用这些代码的项目中。</li>
+<li>漏洞利用：源代码的公开使得潜在的漏洞更容易被发现和利用，攻击者可以利用这些漏洞对公司系统进行攻击。</li>
+</ul>
+<h3 id="4-法律和合规风险">4. 法律和合规风险<a hidden class="anchor" aria-hidden="true" href="#4-法律和合规风险">#</a></h3>
+<ul>
+<li>违反保密协议：研发工程师可能与公司签订了保密协议，将源代码上传至公开仓库将违反这些协议，导致公司面临法律诉讼和罚款的风险。</li>
+<li>数据保护法规：如果源代码中包含了受数据保护法规（如GDPR、CCPA等）保护的个人数据，那么公开源代码将违反这些法规，给公司带来严重的法律后果。</li>
+</ul>
+<h3 id="5-声誉和信任损失">5. 声誉和信任损失<a hidden class="anchor" aria-hidden="true" href="#5-声誉和信任损失">#</a></h3>
+<ul>
+<li>客户信任下降：源代码的泄露可能导致客户对公司技术能力和数据安全能力的信任下降，进而影响公司的业务和市场地位。</li>
+<li>合作伙伴关系受损：如果源代码中包含了与合作伙伴共享的技术或数据，那么泄露将损害与合作伙伴的关系，甚至导致合作关系的破裂。</li>
+</ul>
+<h3 id="应对措施">应对措施<a hidden class="anchor" aria-hidden="true" href="#应对措施">#</a></h3>
+<p>为了降低这些安全风险，公司可以采取以下措施：</p>
+<ul>
+<li>签署保密协议：与员工签署保密协议，特别是关键岗位和特别权限的员工，应签署更为严格的保密协议。</li>
+<li>建立保密制度：在公司内部建立完善的商业秘密管理制度，明确源代码等敏感信息的保护要求和责任。</li>
+<li>定期培训和意识提升：定期与员工进行保密培训，分享典型案例，提升员工的保密意识和安全素养。</li>
+<li>代码审查和监控：建立代码审查和监控机制，对源代码的上传和共享进行严格把关，防止敏感信息泄露。</li>
+<li>使用私有仓库：对于敏感项目的源代码，应使用私有仓库进行存储和管理，限制访问权限和范围。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%AE%89%E5%85%A8/">安全</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%BB%80%E4%B9%88%E6%98%AFelectronvue%E5%A6%82%E4%BD%95%E5%BA%94%E7%94%A8electron/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>什么是electron，vue如何应用electron</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E7%8B%AC%E7%AB%8B%E5%BC%80%E5%8F%91%E8%80%85%E6%9C%88%E5%85%A55%E4%BD%8D%E6%95%B0%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>独立开发者月入5位数的百宝箱</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于源代码泄露的安全渗透测试 on x"
+            href="https://x.com/intent/tweet/?text=%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f&amp;hashtags=%e5%ae%89%e5%85%a8">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于源代码泄露的安全渗透测试 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f&amp;title=%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95&amp;summary=%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于源代码泄露的安全渗透测试 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f&title=%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于源代码泄露的安全渗透测试 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于源代码泄露的安全渗透测试 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于源代码泄露的安全渗透测试 on telegram"
+            href="https://telegram.me/share/url?text=%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于源代码泄露的安全渗透测试 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%9f%ba%e4%ba%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e6%b3%84%e9%9c%b2%e7%9a%84%e5%ae%89%e5%85%a8%e6%b8%97%e9%80%8f%e6%b5%8b%e8%af%95&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E6%25BA%2590%25E4%25BB%25A3%25E7%25A0%2581%25E6%25B3%2584%25E9%259C%25B2%25E7%259A%2584%25E5%25AE%2589%25E5%2585%25A8%25E6%25B8%2597%25E9%2580%258F%25E6%25B5%258B%25E8%25AF%2595%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

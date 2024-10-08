@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>vue3admin保姆教学指南｜后台管理系统的Layout实现 | PaperMod</title>
+<meta name="keywords" content="前端, Vue.js">
+<meta name="description" content="在上一篇文章中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。布局分析首先我们来分析一下整个页面：整体布局分为五大块：Logo、SubMenu、">
+<meta name="author" content="白哥学前端">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84layout%E5%AE%9E%E7%8E%B0/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84layout%E5%AE%9E%E7%8E%B0/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="vue3admin保姆教学指南｜后台管理系统的Layout实现" />
+<meta property="og:description" content="在上一篇文章中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。布局分析首先我们来分析一下整个页面：整体布局分为五大块：Logo、SubMenu、" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84layout%E5%AE%9E%E7%8E%B0/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-03-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-03-27T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="vue3admin保姆教学指南｜后台管理系统的Layout实现"/>
+<meta name="twitter:description" content="在上一篇文章中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。布局分析首先我们来分析一下整个页面：整体布局分为五大块：Logo、SubMenu、"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "vue3admin保姆教学指南｜后台管理系统的Layout实现",
+      "item": "http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84layout%E5%AE%9E%E7%8E%B0/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "vue3admin保姆教学指南｜后台管理系统的Layout实现",
+  "name": "vue3admin保姆教学指南｜后台管理系统的Layout实现",
+  "description": "在上一篇文章中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。布局分析首先我们来分析一下整个页面：整体布局分为五大块：Logo、SubMenu、",
+  "keywords": [
+    "前端", "Vue.js"
+  ],
+  "articleBody": "在上一篇文章中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。\n布局分析 首先我们来分析一下整个页面：\n整体布局分为五大块：Logo、SubMenu、Header、Main、Footer。按照功能划分，我们的目录结构可以是下面这样的子：\n我们先来搭个主体结构，在sec/layouts下面新建index.vue文件：\nxml\n代码解读\n复制代码\n先来说说布局。\n在最外层有个,为了让整个页面高度撑开，我们把最外层的高度设置为height: 100vh。 由于头部是用的fixed，layout-container-vertical整体需要设置一个padding-top,值是头部的高度。 LayoutSideBar是SubMenu，需要固定在左侧，所以layout-main需要设置一个padding-left，值是SubMenu的宽度。 接下来就是collapse，当点击展开收起SubMenu的时候，SubMenu的宽度layout-main的padding-left需要变化。\n上面的这些css变量需要使用variable.scss提前声明好：\ncss\n代码解读\n复制代码\n// 横向布局时top-bar、logo、一级菜单的高度 $base-top-bar-height: 60px; // 纵向布局时logo的高度 $base-logo-height: 75px; // 顶部nav-bar的高度 $base-nav-bar-height: 60px; // 顶部多标签页tabs-bar的高度 $base-tabs-bar-height: 55px; // 顶部多标签页tabs-bar中每一个item的高度 $base-tag-item-height: 34px; // 菜单li标签的高度 $base-menu-item-height: 50px; // 头部高度 $base-header-height: calc(#{$base-nav-bar-height} + #{$base-tabs-bar-height}); // app-footer高度 $base-app-footer-height: 55px; // app-main的高度 $base-app-main-height: calc( 100vh - $base-nav-bar-height - $base-tabs-bar-height - 56px - 40px ); // 纵向布局时左侧导航未折叠时的宽度 $base-left-menu-width: 256px; // 纵向布局时左侧导航未折叠时右侧内容的宽度 $base-right-content-width: calc(100% - #{$base-left-menu-width}); // 纵向布局时左侧导航已折叠时的宽度 $base-left-menu-width-min: 64px; // 纵向布局时左侧导航已折叠时右侧内容的宽度 $base-right-content-width-min: calc(100% - #{$base-left-menu-width-min});\n页面整体的样式如下：\ncss\n代码解读\n复制代码\n@mixin fix-header { position: fixed; top: 0; right: 0; z-index: $base-z-index - 2; width: calc(100% - $base-left-menu-width); } .layout-container-vertical { \u0026.fixed { padding-top: calc(#{$base-top-bar-height} + #{$base-tabs-bar-height}); } .layout-main { min-height: 100%; margin-left: $base-left-menu-width; \u0026.is-collapse { margin-left: $base-left-menu-width-min; border-right: 0; } .layout-header { box-shadow: 0 1px 4px rgb(0 21 41 / 8%); \u0026.fixed-header { @include fix-header; } \u0026.is-collapse { width: calc(100% - $base-left-menu-width-min); } } .app-main-container { padding: 20px; } } }\n接下来我们来实现侧边栏。\n侧边栏实现 侧边栏组件为LayoutSideBar。这里我们把Logo部分也包含进去了。布局如下：\nruby\n代码解读\n复制代码\n这里主要用el-menu，设置一下侧边栏的整体背景颜色，文字默认颜色，选中文字颜色，默认激活路由，展开收起等状态。里面套了一个子组件：sub-menu，来须渲染路由菜单menuList\n在sub-menu组件中，就是通过组件递归的形式，来循环渲染菜单。\nxml\n代码解读\n复制代码\n{{ subItem.meta.title }} {{ subItem.children[0].meta.title }} {{ subItem.meta.title }} 这里之所以做了这么多的判断，是因为当路由只有一层，也就是children只有一个的时候，比如首页路由：\nyaml\n代码解读\n复制代码\n{ path: '/', name: 'LAYOUT', component: LAYOUT, redirect: HOME_URL, meta: { title: '首页', icon: 'HomeFilled', }, children: [ { path: '/index', name: 'Index', component: () =\u003e import('@/views/home/index.vue'), meta: { title: '首页', icon: 'HomeFilled', affix: true, }, }, ], },\n这种情况下，只需要渲染第一层就OK了。也就是这样：\n如果路由有children并且不止一个的时候，就需要用到组件递归：\nini\n代码解读\n复制代码\n添加事件，点击每一个菜单需要跳转路由：\nxml\n代码解读\n复制代码\n这里判断了是不是外部连接，通过meta.isLink来区别。不是外部连接，就通过router.push来跳转路由。\nOK，现在侧边栏有了，当我们点击菜单的时候，跳转到不同的路由，需要渲染不同的页面内容，也就是改变Main区域的内容。\nMain实现 Main区域的实现只有下面这些代码：\nxml\n代码解读\n复制代码\n先注意Main区域的高度，因为要主区域撑满整个屏幕，所以要把它的高度需要减去Header和Footer的高度，这我们已经通过scss变量的形式计算好了：\ncss\n代码解读\n复制代码\n// app-main的高度,这里额外减掉了padding的值 $base-app-main-height: calc( 100vh - $base-nav-bar-height - $base-tabs-bar-height - 56px - 40px );\n渲染组件的时候我们使用router-view插槽的形式，具体用法参考链 的 v-slot。\n现在基本上已经可以正常使用了。下面我们添加更多的功能。\nNavBar实现 在NavBar组件中，包含以下功能：\n左侧为collapse和Breadcrumb，右侧为功能按钮和user信息展示。\n布局如下：\nruby\n代码解读\n复制代码\ncollapse实现 collapse是一个全局配置字段，我们通过pinia来管理。事件触发的时候，通过\nscss\n代码解读\n复制代码\nsettingsStore.changeCollapse()\n来修改collapse的值。在useSettingsStore中是这样设置的：\njavascript\n代码解读\n复制代码\nimport { defineStore } from 'pinia' export const useSettingsStore = defineStore({ id: 'app-settings', state: (): SettingsState =\u003e ({ collapse: false, }), actions: { changeCollapse() { this.collapse = !this.collapse }, }, persist: true, })\n当我们缩小浏览器宽度的时候，当屏幕宽度小于1200px的时候，会收起SubMenu。在src/layouts/index.vue中添加下面的逻辑即可：\nscss\n代码解读\n复制代码\nsetup() { const settingsStore = useSettingsStore() const collapse = computed(() =\u003e settingsStore.collapse) // 监听窗口大小变化，折叠侧边栏 const screenWidth = ref(0) const listeningWindow = useDebounceFn(() =\u003e { screenWidth.value = document.body.clientWidth if (!collapse.value \u0026\u0026 screenWidth.value \u003c 1200) settingsStore.changeCollapse() if (collapse.value \u0026\u0026 screenWidth.value \u003e 1200) settingsStore.changeCollapse() }, 100) window.addEventListener('resize', listeningWindow, false) onBeforeUnmount(() =\u003e { window.removeEventListener('resize', listeningWindow) }) }\nBreadcrumb实现 面包屑的实现也很简单，就是通过route.matched来获取菜单的匹配：\nxml\n代码解读\n复制代码\n{{ item.meta.title }} {{ item.meta.title }} Refresh实现 Refresh是刷新当前路由，刷新以后，页面路由会刷新\nxml\n代码解读\n复制代码\n这里修改了refresh的值以后，在Main组件中，\nini\n代码解读\n复制代码\nwatch( () =\u003e settingsStore.refresh, () =\u003e { isShow.value = false nextTick(() =\u003e { isShow.value = true }) }, )\n通过watch监听refresh的值，一旦变化，就从新赋值isShow的值为false，这个组件就会隐藏，然后在nextTick中又赋值为true，组件又会重新渲染一次。这样就做到了路由重新渲染的目的，非常巧妙。\nScreeFull实现 ScreeFull是进行全屏的操作。这里使用了@vueuse/core中的useFullscreen方法，具体写大如下：\nxml\n代码解读\n复制代码\nuseFullscreen具体原理我们不做深究。\n主题设置我们单独放一个小节讲，我们把主题设置和暗黑模式统一进行处理。\n用户信息展示 用户信息这里就展示一个头像和用户名。还有个退出登陆的操作。我们主要讲讲退出登陆执行的逻辑。\nxml\n代码解读\n复制代码\n{{ name }} 退出登陆 点击退出登陆，请求退出登陆接口，跳转到登陆页面。在useUserStore中处理了退出登陆的逻辑\njavascript\n代码解读\n复制代码\nimport { defineStore } from 'pinia' import { logout } from '@/api' import { RESEETSTORE } from '@/utils/reset' export const useUserStore = defineStore({ id: 'app-user', state: (): UserState =\u003e ({ token: '', userInfo: null, }), actions: { async Logout() { await logout() RESEETSTORE() }, }, // 设置为true，缓存state persist: true, })\n这里的RESEETSTORE方法我们之前已经讲过了，重置一下useUserStore和useAuthStore，清空用户信息缓存。\njavascript\n代码解读\n复制代码\nimport { useUserStore } from '@/store/modules/user' import { useAuthStore } from '@/store/modules/auth' export function RESEETSTORE() { const userStore = useUserStore() const authStore = useAuthStore() userStore.$reset() authStore.$reset() // 清除用户信息缓存 localStorage.removeItem('app-user') }\nTabsBar实现 逻辑有些多，这里讲个大概思路。\n首先从authMenuList获取默认的TabsBar信息，在添加路由的时候，我们在路由中通过meta.affix: true声明的会默认显示在TabsBar中：\nyaml\n代码解读\n复制代码\n{ path: '/', name: 'LAYOUT', component: LAYOUT, redirect: HOME_URL, meta: { title: '首页', icon: 'HomeFilled', }, children: [ { path: '/index', name: 'Index', component: () =\u003e import('@/views/home/index.vue'), meta: { title: '首页', icon: 'HomeFilled', affix: true, }, }, ], },\n在TabsBar组件初始化的时候，在onMountend中，初始化TabsBar的列表数据,存储到pinia中：\ntypescript\n代码解读\n复制代码\n在pinia中，单独对TabsBar做了管理，addVisitedView方法会对每个tab进行添加，然后统一放到visitedViews中，最终会通过visitedViews来渲染，下面是useTabsBarStore：\nkotlin\n代码解读\n复制代码\n// tabsBar.ts import { defineStore } from 'pinia' import router from '@/router/index' import { RouteRecordRaw } from 'vue-router' export const useTabsBarStore = defineStore({ // id: 必须的，在所有 Store 中唯一 id: 'app-tabsBar', // state: 返回对象的函数 state: (): { activeTabsValue: string visitedViews: RouteRecordRaw[] cachedViews: any[] } =\u003e ({ activeTabsValue: '/index', visitedViews: [], // 选中过的路由表 cachedViews: [], // 使用 keepAlive 时的缓存 }), getters: {}, // 可以同步 也可以异步 actions: { setTabsMenuValue(val: string) { this.activeTabsValue = val }, addView(view: RouteRecordRaw) { this.addVisitedView(view) }, removeView(routes: RouteRecordRaw[]) { return new Promise((resolve) =\u003e { this.visitedViews = this.visitedViews.filter( (item) =\u003e !routes.includes((item as any).path), ) resolve(null) }) }, addVisitedView(view: RouteRecordRaw) { this.setTabsMenuValue(view.path) if (this.visitedViews.some((v) =\u003e v.path === view.path) || !view.meta) return this.visitedViews.push( Object.assign({}, view, { title: view.meta.title || 'no-name', }), ) if (view.meta.keepAlive \u0026\u0026 view.name) { this.cachedViews.push(view.name) } }, delView(activeTabPath: any) { return new Promise((resolve) =\u003e { this.delVisitedView(activeTabPath) this.delCachedView(activeTabPath) resolve({ visitedViews: [...this.visitedViews], cachedViews: [...this.cachedViews], }) }) }, toLastView(activeTabPath: string) { const index = this.visitedViews.findIndex( (item) =\u003e item.path === activeTabPath, ) const nextTab = this.visitedViews[index + 1] || this.visitedViews[index - 1] if (!nextTab) return router.push(nextTab.path) this.addVisitedView(nextTab) }, delVisitedView(path: string) { return new Promise((resolve) =\u003e { this.visitedViews = this.visitedViews.filter((v) =\u003e { if (!v.meta) return return v.path !== path || v.meta.affix }) this.cachedViews = this.cachedViews.filter((v) =\u003e { return v.path !== path || v.meta.affix }) resolve([...this.visitedViews]) }) }, delCachedView(view: RouteRecordRaw) { return new Promise((resolve) =\u003e { const index = this.cachedViews.indexOf(view.name) index \u003e -1 \u0026\u0026 this.cachedViews.splice(index, 1) resolve([...this.cachedViews]) }) }, clearVisitedView() { this.delAllViews() }, delAllViews() { this.visitedViews = this.visitedViews.filter( (v) =\u003e v.meta \u0026\u0026 v.meta.affix, ) this.cachedViews = this.visitedViews.filter((v) =\u003e v.meta \u0026\u0026 v.meta.affix) }, delOtherViews(path: string) { this.visitedViews = this.visitedViews.filter((item) =\u003e { return item.path === path || (item.meta \u0026\u0026 item.meta.affix) }) this.cachedViews = this.visitedViews.filter((item) =\u003e { return item.path === path || (item.meta \u0026\u0026 item.meta.affix) }) }, goHome() { this.activeTabsValue = '/index' router.push({ path: '/index' }) }, updateVisitedView(view: RouteRecordRaw) { for (let v of this.visitedViews) { if (v.path === view.path) { v = Object.assign(v, view) break } } }, }, })\n当个进行tab切换的时候，拿到当前点击的path，直接通过router.push进行跳转：\ntypescript\n代码解读\n复制代码\n// 点击事件 const tabClick = (tabItem: TabsPaneContext) =\u003e { let path = tabItem.props.name as string router.push(path) }\n当我们切换路由的时候，会监听路由的变化，然后添加新的tab到visitedViews当中：\nkotlin\n代码解读\n复制代码\n// 添加当前路由 const addTags = () =\u003e { const { name } = route if (name === 'Login') { return } if (name) { tabsBarStore.addView(route as unknown as RouteRecordRaw) } return false }\naddView方法是一个action\njavascript\n代码解读\n复制代码\naddView(view: RouteRecordRaw) { this.addVisitedView(view) }, addVisitedView(view: RouteRecordRaw) { this.setTabsMenuValue(view.path) if (this.visitedViews.some((v) =\u003e v.path === view.path) || !view.meta) return this.visitedViews.push( Object.assign({}, view, { title: view.meta.title || 'no-name', }), ) if (view.meta.keepAlive \u0026\u0026 view.name) { this.cachedViews.push(view.name) } },\n这里会判断当前tab是否已经添加过了。\n当然这里还有关系当前tab，关闭其他tab，关闭所有tab等等操作。\n具体逻辑可以自行查看项目下的代码：src/layouts/TabsBar/index.vue，这里不再赘述。\n总体布局如下：\nini\n代码解读\n复制代码\n{{ item.title }} 关闭当前 关闭其他 关闭所有 到此，Layout布局已经实现完毕。下一节我们来实现主题切换和暗黑模式的切换。\n代码地址 gitee.com/guigu-fe/gu…\n文章教程系列 vue3 admin 保姆教学指南 ｜ 项目规范集成教程，看完秒懂项目中各种奇怪的文件和配置 vue3 admin 保姆教学指南 ｜ 一文让你彻底上手 vue3 全家桶，集成 pinia+element-plus+vue-router@4 vue3 admin 保姆教学指南｜关于使用 typescript 二次封装 Axios 的特别说明 vue3 admin 保姆教学指南｜关于 pinia 的使用 vue3 admin 保姆教学指南｜登录和菜单权限的实现 vue3 admin 保姆教学指南｜ element-plus 如何实现主题切换和暗黑模式 vue3 admin 开发中的奇淫巧技｜在 vue 中如何刷新当前页面 ",
+  "wordCount" : "2299",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-03-27T00:00:00Z",
+  "dateModified": "2023-03-27T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "白哥学前端"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84layout%E5%AE%9E%E7%8E%B0/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      vue3admin保姆教学指南｜后台管理系统的Layout实现
+    </h1>
+    <div class="post-description">
+      在上一篇文章中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。布局分析首先我们来分析一下整个页面：整体布局分为五大块：Logo、SubMenu、
+    </div>
+    <div class="post-meta"><span title='2023-03-27 00:00:00 +0000 UTC'>三月 27, 2023</span>&nbsp;·&nbsp;11 分钟&nbsp;·&nbsp;白哥学前端&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%b8%83%e5%b1%80%e5%88%86%e6%9e%90" aria-label="布局分析">布局分析</a></li>
+                <li>
+                    <a href="#%e4%be%a7%e8%be%b9%e6%a0%8f%e5%ae%9e%e7%8e%b0" aria-label="侧边栏实现">侧边栏实现</a></li>
+                <li>
+                    <a href="#main%e5%ae%9e%e7%8e%b0" aria-label="Main实现">Main实现</a></li>
+                <li>
+                    <a href="#navbar%e5%ae%9e%e7%8e%b0" aria-label="NavBar实现">NavBar实现</a><ul>
+                        
+                <li>
+                    <a href="#collapse%e5%ae%9e%e7%8e%b0" aria-label="collapse实现">collapse实现</a></li>
+                <li>
+                    <a href="#breadcrumb%e5%ae%9e%e7%8e%b0" aria-label="Breadcrumb实现">Breadcrumb实现</a></li>
+                <li>
+                    <a href="#refresh%e5%ae%9e%e7%8e%b0" aria-label="Refresh实现">Refresh实现</a></li>
+                <li>
+                    <a href="#screefull%e5%ae%9e%e7%8e%b0" aria-label="ScreeFull实现">ScreeFull实现</a></li>
+                <li>
+                    <a href="#%e7%94%a8%e6%88%b7%e4%bf%a1%e6%81%af%e5%b1%95%e7%a4%ba" aria-label="用户信息展示">用户信息展示</a></li></ul>
+                </li>
+                <li>
+                    <a href="#tabsbar%e5%ae%9e%e7%8e%b0" aria-label="TabsBar实现">TabsBar实现</a></li>
+                <li>
+                    <a href="#%e4%bb%a3%e7%a0%81%e5%9c%b0%e5%9d%80" aria-label="代码地址">代码地址</a></li>
+                <li>
+                    <a href="#%e6%96%87%e7%ab%a0%e6%95%99%e7%a8%8b%e7%b3%bb%e5%88%97" aria-label="文章教程系列">文章教程系列</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>在<a href="https://juejin.cn/post/7215035912186413115" title="https://juejin.cn/post/7215035912186413115">上一篇文章</a>中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。</p>
+<h2 id="布局分析">布局分析<a hidden class="anchor" aria-hidden="true" href="#布局分析">#</a></h2>
+<p>首先我们来分析一下整个页面：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5035c21891b648c6a3c9d2b545b95066~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>整体布局分为五大块：Logo、SubMenu、Header、Main、Footer。按照功能划分，我们的目录结构可以是下面这样的子：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/49a4257bfcc147d0a3b20f64858e3aa0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>我们先来搭个主体结构，在<code>sec/layouts</code>下面新建<code>index.vue</code>文件：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;layout-admin-wrapper&quot;&gt;     &lt;div class=&quot;layout-container-vertical fixed&quot;&gt;       &lt;!-- SubMenu --&gt;       &lt;LayoutSideBar /&gt;       &lt;div class=&quot;layout-main&quot; :class=&quot;{ 'is-collapse': collapse }&quot;&gt;         &lt;!-- Header --&gt;         &lt;div           class=&quot;layout-header fixed-header&quot;           :class=&quot;{ 'is-collapse': collapse }&quot;         &gt;           &lt;LayoutNavBar /&gt;           &lt;LayoutTabsBar /&gt;         &lt;/div&gt;         &lt;div class=&quot;app-main-container&quot;&gt;           &lt;!-- Main --&gt;           &lt;LayoutMain /&gt;           &lt;!-- Footer --&gt;           &lt;LayoutFooter /&gt;         &lt;/div&gt;       &lt;/div&gt;     &lt;/div&gt;   &lt;/div&gt; &lt;/template&gt;</code></p>
+<p>先来说说布局。</p>
+<ul>
+<li>在最外层有个<code>&lt;div id=&quot;app&quot;&gt;&lt;div&gt;</code>,为了让整个页面高度撑开，我们把最外层的高度设置为<code>height: 100vh</code>。</li>
+<li>由于头部是用的fixed，<code>layout-container-vertical</code>整体需要设置一个<code>padding-top</code>,值是头部的高度。</li>
+<li><code>LayoutSideBar</code>是<code>SubMenu</code>，需要固定在左侧，所以<code>layout-main</code>需要设置一个<code>padding-left</code>，值是<code>SubMenu</code>的宽度。</li>
+</ul>
+<p>接下来就是<code>collapse</code>，当点击展开收起SubMenu的时候，SubMenu的宽度<code>layout-main</code>的<code>padding-left</code>需要变化。</p>
+<p>上面的这些css变量需要使用<code>variable.scss</code>提前声明好：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 横向布局时top-bar、logo、一级菜单的高度 $base-top-bar-height: 60px; // 纵向布局时logo的高度 $base-logo-height: 75px; // 顶部nav-bar的高度 $base-nav-bar-height: 60px; // 顶部多标签页tabs-bar的高度 $base-tabs-bar-height: 55px; // 顶部多标签页tabs-bar中每一个item的高度 $base-tag-item-height: 34px; // 菜单li标签的高度 $base-menu-item-height: 50px; // 头部高度 $base-header-height: calc(#{$base-nav-bar-height} + #{$base-tabs-bar-height}); // app-footer高度 $base-app-footer-height: 55px; // app-main的高度 $base-app-main-height: calc(   100vh - $base-nav-bar-height - $base-tabs-bar-height - 56px - 40px ); // 纵向布局时左侧导航未折叠时的宽度 $base-left-menu-width: 256px; // 纵向布局时左侧导航未折叠时右侧内容的宽度 $base-right-content-width: calc(100% - #{$base-left-menu-width}); // 纵向布局时左侧导航已折叠时的宽度 $base-left-menu-width-min: 64px; // 纵向布局时左侧导航已折叠时右侧内容的宽度 $base-right-content-width-min: calc(100% - #{$base-left-menu-width-min});</code></p>
+<p>页面整体的样式如下：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@mixin fix-header {   position: fixed;   top: 0;   right: 0;   z-index: $base-z-index - 2;   width: calc(100% - $base-left-menu-width); } .layout-container-vertical {   &amp;.fixed {     padding-top: calc(#{$base-top-bar-height} + #{$base-tabs-bar-height});   }   .layout-main {     min-height: 100%;     margin-left: $base-left-menu-width;     &amp;.is-collapse {       margin-left: $base-left-menu-width-min;       border-right: 0;     }     .layout-header {       box-shadow: 0 1px 4px rgb(0 21 41 / 8%);       &amp;.fixed-header {         @include fix-header;       }       &amp;.is-collapse {         width: calc(100% - $base-left-menu-width-min);       }     }     .app-main-container {       padding: 20px;     }   } }</code></p>
+<p>接下来我们来实现侧边栏。</p>
+<h2 id="侧边栏实现">侧边栏实现<a hidden class="anchor" aria-hidden="true" href="#侧边栏实现">#</a></h2>
+<p>侧边栏组件为<code>LayoutSideBar</code>。这里我们把Logo部分也包含进去了。布局如下：</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;layout-sidebar-container&quot; :class=&quot;{ 'is-collapse': collapse }&quot;&gt;     &lt;logo /&gt;     &lt;el-scrollbar&gt;       &lt;el-menu         background-color=&quot;#001529&quot;         text-color=&quot;hsla(0,0%,100%,.65)&quot;         active-text-color=&quot;#fff&quot;         :defaultActive=&quot;activeMenu&quot;         :collapse=&quot;collapse&quot;         :unique-opened=&quot;true&quot;       &gt;         &lt;sub-menu :menuList=&quot;menuList&quot;&gt;&lt;/sub-menu&gt;       &lt;/el-menu&gt;     &lt;/el-scrollbar&gt;   &lt;/div&gt; &lt;/template&gt;</code></p>
+<p>这里主要用<code>el-menu</code>，设置一下侧边栏的整体背景颜色，文字默认颜色，选中文字颜色，默认激活路由，展开收起等状态。里面套了一个子组件：<code>sub-menu</code>，来须渲染路由菜单<code>menuList</code></p>
+<p>在<code>sub-menu</code>组件中，就是通过组件递归的形式，来循环渲染菜单。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;template v-for=&quot;subItem in menuList&quot; :key=&quot;subItem.path&quot;&gt;     &lt;el-sub-menu       v-if=&quot;subItem.children &amp;&amp; subItem.children.length &gt; 1&quot;       :index=&quot;subItem.path&quot;     &gt;       &lt;template #title&gt;         &lt;el-icon&gt;           &lt;component :is=&quot;subItem.meta.icon&quot;&gt;&lt;/component&gt;         &lt;/el-icon&gt;         &lt;span&gt;{{ subItem.meta.title }}&lt;/span&gt;       &lt;/template&gt;       &lt;!-- 有children递归本次组件 --&gt;       &lt;sub-menu :menuList=&quot;subItem.children&quot; /&gt;     &lt;/el-sub-menu&gt;     &lt;el-menu-item       v-else-if=&quot;subItem.children &amp;&amp; subItem.children.length == 1&quot;       :index=&quot;subItem.children[0].path&quot;       @click=&quot;handleClickMenu(subItem.children[0])&quot;     &gt;       &lt;el-icon&gt;         &lt;component :is=&quot;subItem.children[0].meta.icon&quot;&gt;&lt;/component&gt;       &lt;/el-icon&gt;       &lt;template #title&gt;         &lt;span&gt;{{ subItem.children[0].meta.title }}&lt;/span&gt;       &lt;/template&gt;     &lt;/el-menu-item&gt;     &lt;el-menu-item       v-else       :index=&quot;subItem.path&quot;       @click=&quot;handleClickMenu(subItem)&quot;     &gt;       &lt;el-icon&gt;         &lt;component :is=&quot;subItem.meta.icon&quot;&gt;&lt;/component&gt;       &lt;/el-icon&gt;       &lt;template #title&gt;         &lt;span&gt;{{ subItem.meta.title }}&lt;/span&gt;       &lt;/template&gt;     &lt;/el-menu-item&gt;   &lt;/template&gt; &lt;/template&gt;</code></p>
+<p>这里之所以做了这么多的判断，是因为当路由只有一层，也就是children只有一个的时候，比如首页路由：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{     path: '/',     name: 'LAYOUT',     component: LAYOUT,     redirect: HOME_URL,     meta: {       title: '首页',       icon: 'HomeFilled',     },     children: [       {         path: '/index',         name: 'Index',         component: () =&gt; import('@/views/home/index.vue'),         meta: {           title: '首页',           icon: 'HomeFilled',           affix: true,         },       },     ],   },</code></p>
+<p>这种情况下，只需要渲染第一层就OK了。也就是这样：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f27810d994e34f41b923928ef85709b3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>如果路由有children并且不止一个的时候，就需要用到组件递归：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;sub-menu :menuList=&quot;subItem.children&quot; /&gt;</code></p>
+<p>添加事件，点击每一个菜单需要跳转路由：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script lang=&quot;ts&quot;&gt; import { Menu } from '@element-plus/icons-vue' import { defineComponent } from 'vue' import { useRouter } from 'vue-router' export default defineComponent({   name: 'SubMenu',   props: {     menuList: {       type: Menu.MenuOptions,       default: () =&gt; {         return []       },     },   },   setup() {     const router = useRouter()     function handleClickMenu(subItem: Menu.MenuOptions) {       // 跳转外部链接       if (subItem.meta.isLink) return window.open(subItem.meta.isLink, '_blank')       router.push(subItem.path)     }     return {       handleClickMenu,     }   }, }) &lt;/script&gt;</code></p>
+<p>这里判断了是不是外部连接，通过<code>meta.isLink</code>来区别。不是外部连接，就通过<code>router.push</code>来跳转路由。</p>
+<p>OK，现在侧边栏有了，当我们点击菜单的时候，跳转到不同的路由，需要渲染不同的页面内容，也就是改变Main区域的内容。</p>
+<h2 id="main实现">Main实现<a hidden class="anchor" aria-hidden="true" href="#main实现">#</a></h2>
+<p>Main区域的实现只有下面这些代码：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;section class=&quot;app-mian-height&quot;&gt;     &lt;router-view v-slot=&quot;{ Component, route }&quot; v-if=&quot;isShow&quot;&gt;       &lt;transition appear name=&quot;fade-transform&quot; mode=&quot;out-in&quot;&gt;         &lt;component :is=&quot;Component&quot; :key=&quot;route.path&quot; /&gt;       &lt;/transition&gt;     &lt;/router-view&gt;   &lt;/section&gt; &lt;/template&gt; &lt;script lang=&quot;ts&quot;&gt; import { defineComponent, nextTick, ref, watch } from 'vue' import { useSettingsStore } from '@/store/modules/settings' export default defineComponent({   setup() {     const settingsStore = useSettingsStore()     const isShow = ref(true)     watch(       () =&gt; settingsStore.refresh,       () =&gt; {         isShow.value = false         nextTick(() =&gt; {           isShow.value = true         })       },     )     return { isShow }   }, }) &lt;/script&gt; &lt;style scoped lang=&quot;scss&quot;&gt; .app-mian-height {   min-height: $base-app-main-height;   // padding: 20px;   background-color: inherit; } &lt;/style&gt;</code></p>
+<p>先注意Main区域的高度，因为要主区域撑满整个屏幕，所以要把它的高度需要减去Header和Footer的高度，这我们已经通过scss变量的形式计算好了：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// app-main的高度,这里额外减掉了padding的值 $base-app-main-height: calc(   100vh - $base-nav-bar-height - $base-tabs-bar-height - 56px - 40px );</code></p>
+<p>渲染组件的时候我们使用<code>router-view</code>插槽的形式，具体用法参考<a href="https://link.juejin.cn?target=https%3A%2F%2Frouter.vuejs.org%2Fzh%2Fapi%2F%23router-view-%25E7%259A%2584-v-slot" title="https://router.vuejs.org/zh/api/#router-view-%E7%9A%84-v-slot">链 的 v-slot</a>。</p>
+<p>现在基本上已经可以正常使用了。下面我们添加更多的功能。</p>
+<h2 id="navbar实现">NavBar实现<a hidden class="anchor" aria-hidden="true" href="#navbar实现">#</a></h2>
+<p>在NavBar组件中，包含以下功能：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d607ce23020e4535a2ca1b430a5a44d8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>左侧为collapse和Breadcrumb，右侧为功能按钮和user信息展示。</p>
+<p>布局如下：</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;nav-bar-container&quot;&gt;     &lt;el-row :gutter=&quot;15&quot;&gt;       &lt;el-col :sm=&quot;12&quot; :md=&quot;12&quot; :lg=&quot;12&quot; :xl=&quot;12&quot;&gt;         &lt;div class=&quot;left-panel&quot;&gt;           &lt;el-icon class=&quot;fold-unfold&quot; @click=&quot;handleCollapse&quot;&gt;             &lt;component :is=&quot;collapse ? 'Expand' : 'Fold'&quot;&gt;&lt;/component&gt;           &lt;/el-icon&gt;           &lt;Breadcrumb /&gt;         &lt;/div&gt;       &lt;/el-col&gt;       &lt;el-col :sm=&quot;12&quot; :md=&quot;12&quot; :lg=&quot;12&quot; :xl=&quot;12&quot;&gt;         &lt;div class=&quot;right-panel&quot;&gt;           &lt;Refresh /&gt;           &lt;ScreenFull /&gt;           &lt;Settings /&gt;           &lt;User /&gt;         &lt;/div&gt;       &lt;/el-col&gt;     &lt;/el-row&gt;   &lt;/div&gt; &lt;/template&gt;</code></p>
+<h3 id="collapse实现">collapse实现<a hidden class="anchor" aria-hidden="true" href="#collapse实现">#</a></h3>
+<p>collapse是一个全局配置字段，我们通过pinia来管理。事件触发的时候，通过</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>settingsStore.changeCollapse()</code></p>
+<p>来修改<code>collapse</code>的值。在<code>useSettingsStore</code>中是这样设置的：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { defineStore } from 'pinia' export const useSettingsStore = defineStore({   id: 'app-settings',   state: (): SettingsState =&gt; ({     collapse: false,   }),   actions: {     changeCollapse() {       this.collapse = !this.collapse     },   },   persist: true, })</code></p>
+<p>当我们缩小浏览器宽度的时候，当屏幕宽度小于1200px的时候，会收起SubMenu。在<code>src/layouts/index.vue</code>中添加下面的逻辑即可：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>setup() {   const settingsStore = useSettingsStore()   const collapse = computed(() =&gt; settingsStore.collapse)   // 监听窗口大小变化，折叠侧边栏   const screenWidth = ref(0)   const listeningWindow = useDebounceFn(() =&gt; {     screenWidth.value = document.body.clientWidth     if (!collapse.value &amp;&amp; screenWidth.value &lt; 1200)       settingsStore.changeCollapse()     if (collapse.value &amp;&amp; screenWidth.value &gt; 1200)       settingsStore.changeCollapse()   }, 100)   window.addEventListener('resize', listeningWindow, false)   onBeforeUnmount(() =&gt; {     window.removeEventListener('resize', listeningWindow)   }) }</code></p>
+<h3 id="breadcrumb实现">Breadcrumb实现<a hidden class="anchor" aria-hidden="true" href="#breadcrumb实现">#</a></h3>
+<p>面包屑的实现也很简单，就是通过<code>route.matched</code>来获取菜单的匹配：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;el-breadcrumb class=&quot;app-breadcrumb&quot; separator-icon=&quot;ArrowRight&quot;&gt;     &lt;transition-group name=&quot;breadcrumb&quot; mode=&quot;out-in&quot;&gt;       &lt;el-breadcrumb-item v-for=&quot;(item, index) in matched&quot; :key=&quot;item.path&quot;&gt;         &lt;el-icon size=&quot;14&quot;&gt;           &lt;component :is=&quot;item.meta.icon&quot;&gt;&lt;/component&gt;         &lt;/el-icon&gt;         &lt;span           v-if=&quot;item.redirect === 'noRedirect' || index == matched.length - 1&quot;           class=&quot;no-redirect&quot;         &gt;           {{ item.meta.title }}         &lt;/span&gt;         &lt;a v-else @click.prevent=&quot;handleLink(item)&quot;&gt;{{ item.meta.title }}&lt;/a&gt;       &lt;/el-breadcrumb-item&gt;     &lt;/transition-group&gt;   &lt;/el-breadcrumb&gt; &lt;/template&gt; &lt;script lang=&quot;ts&quot;&gt; import { defineComponent } from 'vue' import { useRoute, useRouter, RouteRecordRaw } from 'vue-router' import { computed } from 'vue' export default defineComponent({   setup() {     const route = useRoute()     const router = useRouter()     const handleLink = (item: RouteRecordRaw) =&gt; {       router.push({         path: item.path,       })     }     const matched = computed(() =&gt;       route.matched.filter(         (item) =&gt;           item.meta &amp;&amp;           item.meta.title &amp;&amp;           item.meta.breadcrumb !== false &amp;&amp;           item.children.length !== 1,       ),     )     return {       handleLink,       matched,     }   }, }) &lt;/script&gt;</code></p>
+<h3 id="refresh实现">Refresh实现<a hidden class="anchor" aria-hidden="true" href="#refresh实现">#</a></h3>
+<p>Refresh是刷新当前路由，刷新以后，页面路由会刷新</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;btn&quot;&gt;     &lt;el-tooltip content=&quot;刷新&quot;&gt;       &lt;el-button circle @click=&quot;onRefresh&quot;&gt;         &lt;IconifyIcon icon=&quot;ri:refresh-line&quot; height=&quot;16&quot; /&gt;       &lt;/el-button&gt;     &lt;/el-tooltip&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script lang=&quot;ts&quot;&gt; import { defineComponent } from 'vue' import { useSettingsStore } from '@/store/modules/settings' import { IconifyIcon } from '@/components/IconifyIcon' export default defineComponent({   components: {     IconifyIcon,   },   setup() {     const settingsStore = useSettingsStore()     const onRefresh = () =&gt; {       settingsStore.setRefresh()     }     return { onRefresh }   }, }) &lt;/script&gt; &lt;style scoped lang=&quot;scss&quot;&gt; .btn {   margin-right: 20px;   cursor: pointer;   transition: all 0.3s; } &lt;/style&gt;</code></p>
+<p>这里修改了refresh的值以后，在Main组件中，</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;router-view v-slot=&quot;{ Component, route }&quot; v-if=&quot;isShow&quot;&gt;   &lt;transition appear name=&quot;fade-transform&quot; mode=&quot;out-in&quot;&gt;     &lt;component :is=&quot;Component&quot; :key=&quot;route.path&quot; /&gt;   &lt;/transition&gt; &lt;/router-view&gt; watch(   () =&gt; settingsStore.refresh,   () =&gt; {     isShow.value = false     nextTick(() =&gt; {       isShow.value = true     }) 	}, )</code></p>
+<p>通过<code>watch</code>监听<code>refresh</code>的值，一旦变化，就从新赋值<code>isShow</code>的值为false，这个组件就会隐藏，然后在<code>nextTick</code>中又赋值为true，组件又会重新渲染一次。这样就做到了路由重新渲染的目的，非常巧妙。</p>
+<h3 id="screefull实现">ScreeFull实现<a hidden class="anchor" aria-hidden="true" href="#screefull实现">#</a></h3>
+<p>ScreeFull是进行全屏的操作。这里使用了<code>@vueuse/core</code>中的<code>useFullscreen</code>方法，具体写大如下：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;m-screenful&quot;&gt;     &lt;el-tooltip       effect=&quot;dark&quot;       :content=&quot;!isFullscreen ? '全屏' : '收起'&quot;       placement=&quot;bottom&quot;     &gt;       &lt;el-button circle @click=&quot;toggle&quot;&gt;         &lt;IconifyIcon           v-if=&quot;!isFullscreen&quot;           icon=&quot;fluent:full-screen-maximize-24-filled&quot;           height=&quot;16&quot;         /&gt;         &lt;IconifyIcon           v-else           icon=&quot;fluent:full-screen-minimize-24-filled&quot;           height=&quot;18&quot;         /&gt;       &lt;/el-button&gt;     &lt;/el-tooltip&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script lang=&quot;ts&quot;&gt; import { useFullscreen } from '@vueuse/core' import { defineComponent } from 'vue' export default defineComponent({   setup() {     const { toggle, isFullscreen } = useFullscreen()     return {       toggle,       isFullscreen,     }   }, }) &lt;/script&gt; &lt;style lang=&quot;scss&quot; scoped&gt; .m-screenful {   padding-right: 20px;   cursor: pointer;   transition: all 0.3s; } &lt;/style&gt;</code></p>
+<p><code>useFullscreen</code>具体原理我们不做深究。</p>
+<p>主题设置我们单独放一个小节讲，我们把主题设置和暗黑模式统一进行处理。</p>
+<h3 id="用户信息展示">用户信息展示<a hidden class="anchor" aria-hidden="true" href="#用户信息展示">#</a></h3>
+<p>用户信息这里就展示一个头像和用户名。还有个退出登陆的操作。我们主要讲讲退出登陆执行的逻辑。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;el-dropdown @visible-change=&quot;onChange&quot; @command=&quot;handleCommand&quot;&gt;     &lt;div class=&quot;avatar-dropdown&quot;&gt;       &lt;img class=&quot;user-avatar&quot; :src=&quot;avatar&quot; alt=&quot;&quot; /&gt;       &lt;div class=&quot;user-name&quot;&gt;{{ name }}&lt;/div&gt;       &lt;el-icon class=&quot;up-down&quot;&gt;         &lt;component :is=&quot;visible ? 'ArrowUp' : 'ArrowDown'&quot; /&gt;       &lt;/el-icon&gt;     &lt;/div&gt;     &lt;template #dropdown&gt;       &lt;el-dropdown-menu&gt;         &lt;el-dropdown-item command=&quot;logout&quot;&gt;           &lt;svg-icon name=&quot;logout&quot; size=&quot;16px&quot; /&gt;           &lt;span&gt;退出登陆&lt;/span&gt;         &lt;/el-dropdown-item&gt;       &lt;/el-dropdown-menu&gt;     &lt;/template&gt;   &lt;/el-dropdown&gt; &lt;/template&gt; &lt;script lang=&quot;ts&quot;&gt; import { defineComponent, ref } from 'vue' import { useRouter, useRoute } from 'vue-router' import { useUserStore } from '@/store/modules/user' import { ArrowUp, ArrowDown } from '@element-plus/icons-vue' import { ElMessage, ElMessageBox } from 'element-plus' import { LOGIN_URL } from '@/config/config' export default defineComponent({   components: {     ArrowUp,     ArrowDown,   },   setup() {     const router = useRouter()     const route = useRoute()     const userStore = useUserStore()     const { name, avatar } = userStore.userInfo || {}     const visible = ref(false)     function onChange(show: boolean) {       visible.value = show     }     function handleCommand(command: string) {       if (command === 'logout') {         logout()       }     }     // 退出登陆     function logout() {       ElMessageBox.confirm('您确定要退出吗？', '提示', {         confirmButtonText: '确认',         cancelButtonText: '取消',         type: 'warning',       }).then(async () =&gt; {         await userStore.Logout()         router.push({ path: LOGIN_URL, query: { redirect: route.fullPath } })         ElMessage.success('退出登录成功！')       })     }     return {       name,       avatar,       visible,       onChange,       handleCommand,     }   }, }) &lt;/script&gt;</code></p>
+<p>点击退出登陆，请求退出登陆接口，跳转到登陆页面。在<code>useUserStore</code>中处理了退出登陆的逻辑</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { defineStore } from 'pinia' import { logout } from '@/api' import { RESEETSTORE } from '@/utils/reset' export const useUserStore = defineStore({   id: 'app-user',   state: (): UserState =&gt; ({     token: '',     userInfo: null,   }),   actions: {     async Logout() {       await logout()       RESEETSTORE()     },   },   // 设置为true，缓存state   persist: true, })</code></p>
+<p>这里的<code>RESEETSTORE</code>方法我们之前已经讲过了，重置一下<code>useUserStore</code>和<code>useAuthStore</code>，清空用户信息缓存。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { useUserStore } from '@/store/modules/user' import { useAuthStore } from '@/store/modules/auth' export function RESEETSTORE() {   const userStore = useUserStore()   const authStore = useAuthStore()   userStore.$reset()   authStore.$reset()   // 清除用户信息缓存   localStorage.removeItem('app-user') }</code></p>
+<h2 id="tabsbar实现">TabsBar实现<a hidden class="anchor" aria-hidden="true" href="#tabsbar实现">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a4cc85b2fe7f4e7aa7039c93fdf9ccea~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>逻辑有些多，这里讲个大概思路。</p>
+<p>首先从authMenuList获取默认的TabsBar信息，在添加路由的时候，我们在路由中通过<code>meta.affix: true</code>声明的会默认显示在TabsBar中：</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{     path: '/',     name: 'LAYOUT',     component: LAYOUT,     redirect: HOME_URL,     meta: {       title: '首页',       icon: 'HomeFilled',     },     children: [       {         path: '/index',         name: 'Index',         component: () =&gt; import('@/views/home/index.vue'),         meta: {           title: '首页',           icon: 'HomeFilled',           affix: true,         },       },     ],   },</code></p>
+<p>在TabsBar组件初始化的时候，在<code>onMountend</code>中，初始化TabsBar的列表数据,存储到pinia中：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script lang=&quot;ts&quot;&gt; import { computed, defineComponent, ref, onMounted, watch } from 'vue' import { useTabsBarStore } from '@/store/modules/tabsBar' import { useRoute, useRouter, RouteRecordRaw } from 'vue-router' import path from 'path-browserify' import { useAuthStore } from '@/store/modules/auth' import { routersType } from './types' export default defineComponent({   setup() {     const tabsBarStore = useTabsBarStore()     const authStore = useAuthStore()     const routes = computed(() =&gt; authStore.authMenuList)     const visitedViews = computed&lt;routersType[]&gt;(       () =&gt; tabsBarStore.visitedViews,     )     const route = useRoute()     const router = useRouter()     let affixTags = ref&lt;RouteRecordRaw[]&gt;([])     // 添加当前路由     const addTags = () =&gt; {       const { name } = route       if (name === 'Login') {         return       }       if (name) {         tabsBarStore.addView(route as unknown as RouteRecordRaw)       }       return false     }     function filterAffixTags(routes: RouteRecordRaw[], basePath = '/') {       let tags = [] as any       routes.forEach((route) =&gt; {         if (route.meta &amp;&amp; route.meta.affix) {           // 获取 path           const tagPath = path.resolve(basePath, route.path)           tags.push({             fullPath: tagPath,             path: tagPath,             name: route.name,             meta: { ...route.meta },           })         }         if (route.children) {           const tempTags = filterAffixTags(route.children, route.path)           if (tempTags.length &gt;= 1) {             tags = [...tags, ...tempTags]           }         }       })       return tags     }     /**      * @description: 拿到需要固定的路由表，添加进 store      * @author: codeBo      */     const initTags = () =&gt; {       let routesNew = routes.value as RouteRecordRaw[]       let affixTag = (affixTags.value = filterAffixTags(routesNew))       for (const tag of affixTag) {         if (tag.name) {           tabsBarStore.addVisitedView(tag)         }       }     }     onMounted(() =&gt; {       initTags()       addTags()     })     watch(route, () =&gt; {       addTags()     })     const activeTabsValue = computed({       get: () =&gt; {         return tabsBarStore.activeTabsValue       },       set: (val) =&gt; {         tabsBarStore.setTabsMenuValue(val)       },     })     // 删除以后切换到下一个     function toLastView(activeTabPath: string) {       let index = visitedViews.value.findIndex(         (item) =&gt; item.path === activeTabPath,       )       const nextTab =         visitedViews.value[index + 1] || visitedViews.value[index - 1]       if (!nextTab) return       router.push(nextTab.path)       tabsBarStore.addVisitedView(nextTab)     }     // 点击事件     const tabClick = (tabItem: TabsPaneContext) =&gt; {       let path = tabItem.props.name as string       router.push(path)     }     const isActive = (path: string): boolean =&gt; {       return path === route.path     }     const removeTab = async (activeTabPath: TabPaneName): Promise&lt;any&gt; =&gt; {       if (isActive(activeTabPath as string)) {         toLastView(activeTabPath as string)       }       await tabsBarStore.delView(activeTabPath)     }     // 按钮事件     const closeCurrentTab = () =&gt; {       tabsBarStore.toLastView(route.path)       tabsBarStore.delView(route.path)     }     const closeOtherTab = () =&gt; {       tabsBarStore.delOtherViews(route.path)     }     const closeAllTab = async () =&gt; {       tabsBarStore.delAllViews()       tabsBarStore.goHome()     }     return {       activeTabsValue,       tabClick,       removeTab,       visitedViews,       closeCurrentTab,       closeOtherTab,       closeAllTab,     }   }, }) &lt;/script&gt;</code></p>
+<p>在pinia中，单独对TabsBar做了管理，addVisitedView方法会对每个tab进行添加，然后统一放到<code>visitedViews</code>中，最终会通过<code>visitedViews</code>来渲染，下面是<code>useTabsBarStore</code>：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// tabsBar.ts import { defineStore } from 'pinia' import router from '@/router/index' import { RouteRecordRaw } from 'vue-router' export const useTabsBarStore = defineStore({   // id: 必须的，在所有 Store 中唯一   id: 'app-tabsBar',   // state: 返回对象的函数   state: (): {     activeTabsValue: string     visitedViews: RouteRecordRaw[]     cachedViews: any[]   } =&gt; ({     activeTabsValue: '/index',     visitedViews: [], // 选中过的路由表     cachedViews: [], // 使用 keepAlive 时的缓存   }),   getters: {},   // 可以同步 也可以异步   actions: {     setTabsMenuValue(val: string) {       this.activeTabsValue = val     },     addView(view: RouteRecordRaw) {       this.addVisitedView(view)     },     removeView(routes: RouteRecordRaw[]) {       return new Promise((resolve) =&gt; {         this.visitedViews = this.visitedViews.filter(           (item) =&gt; !routes.includes((item as any).path),         )         resolve(null)       })     },     addVisitedView(view: RouteRecordRaw) {       this.setTabsMenuValue(view.path)       if (this.visitedViews.some((v) =&gt; v.path === view.path) || !view.meta)         return       this.visitedViews.push(         Object.assign({}, view, {           title: view.meta.title || 'no-name',         }),       )       if (view.meta.keepAlive &amp;&amp; view.name) {         this.cachedViews.push(view.name)       }     },     delView(activeTabPath: any) {       return new Promise((resolve) =&gt; {         this.delVisitedView(activeTabPath)         this.delCachedView(activeTabPath)         resolve({           visitedViews: [...this.visitedViews],           cachedViews: [...this.cachedViews],         })       })     },     toLastView(activeTabPath: string) {       const index = this.visitedViews.findIndex(         (item) =&gt; item.path === activeTabPath,       )       const nextTab =         this.visitedViews[index + 1] || this.visitedViews[index - 1]       if (!nextTab) return       router.push(nextTab.path)       this.addVisitedView(nextTab)     },     delVisitedView(path: string) {       return new Promise((resolve) =&gt; {         this.visitedViews = this.visitedViews.filter((v) =&gt; {           if (!v.meta) return           return v.path !== path || v.meta.affix         })         this.cachedViews = this.cachedViews.filter((v) =&gt; {           return v.path !== path || v.meta.affix         })         resolve([...this.visitedViews])       })     },     delCachedView(view: RouteRecordRaw) {       return new Promise((resolve) =&gt; {         const index = this.cachedViews.indexOf(view.name)         index &gt; -1 &amp;&amp; this.cachedViews.splice(index, 1)         resolve([...this.cachedViews])       })     },     clearVisitedView() {       this.delAllViews()     },     delAllViews() {       this.visitedViews = this.visitedViews.filter(         (v) =&gt; v.meta &amp;&amp; v.meta.affix,       )       this.cachedViews = this.visitedViews.filter((v) =&gt; v.meta &amp;&amp; v.meta.affix)     },     delOtherViews(path: string) {       this.visitedViews = this.visitedViews.filter((item) =&gt; {         return item.path === path || (item.meta &amp;&amp; item.meta.affix)       })       this.cachedViews = this.visitedViews.filter((item) =&gt; {         return item.path === path || (item.meta &amp;&amp; item.meta.affix)       })     },     goHome() {       this.activeTabsValue = '/index'       router.push({ path: '/index' })     },     updateVisitedView(view: RouteRecordRaw) {       for (let v of this.visitedViews) {         if (v.path === view.path) {           v = Object.assign(v, view)           break         }       }     },   }, })</code></p>
+<p>当个进行tab切换的时候，拿到当前点击的path，直接通过<code>router.push</code>进行跳转：</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 点击事件 const tabClick = (tabItem: TabsPaneContext) =&gt; {   let path = tabItem.props.name as string   router.push(path) }</code></p>
+<p>当我们切换路由的时候，会监听路由的变化，然后添加新的tab到<code>visitedViews</code>当中：</p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 添加当前路由 const addTags = () =&gt; {   const { name } = route   if (name === 'Login') {     return   }   if (name) {     tabsBarStore.addView(route as unknown as RouteRecordRaw)   }   return false }</code></p>
+<p><code>addView</code>方法是一个action</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>addView(view: RouteRecordRaw) {   this.addVisitedView(view) },  addVisitedView(view: RouteRecordRaw) {   this.setTabsMenuValue(view.path)   if (this.visitedViews.some((v) =&gt; v.path === view.path) || !view.meta)     return   this.visitedViews.push(     Object.assign({}, view, {       title: view.meta.title || 'no-name',     }),   )   if (view.meta.keepAlive &amp;&amp; view.name) {     this.cachedViews.push(view.name)   } },</code></p>
+<p>这里会判断当前tab是否已经添加过了。</p>
+<p>当然这里还有关系当前tab，关闭其他tab，关闭所有tab等等操作。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b27a2818e0484dcd9b2d9e20842310cd~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>具体逻辑可以自行查看项目下的代码：<code>src/layouts/TabsBar/index.vue</code>，这里不再赘述。</p>
+<p>总体布局如下：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;tabs-bar-container&quot;&gt;     &lt;div class=&quot;tabs-content&quot;&gt;       &lt;el-tabs         type=&quot;card&quot;         v-model=&quot;activeTabsValue&quot;         @tab-click=&quot;tabClick&quot;         @tab-remove=&quot;removeTab&quot;       &gt;         &lt;el-tab-pane           v-for=&quot;item in visitedViews&quot;           type=&quot;card&quot;           :key=&quot;item.path&quot;           :path=&quot;item.path&quot;           :label=&quot;item.title&quot;           :name=&quot;item.path&quot;           :closable=&quot;!(item.meta &amp;&amp; item.meta.affix)&quot;         &gt;           &lt;template #label&gt;             &lt;el-icon               size=&quot;16&quot;               class=&quot;tabs-icon&quot;               v-if=&quot;item.meta &amp;&amp; item.meta.icon&quot;             &gt;               &lt;component :is=&quot;item.meta.icon&quot;&gt;&lt;/component&gt;             &lt;/el-icon&gt;             {{ item.title }}           &lt;/template&gt;         &lt;/el-tab-pane&gt;       &lt;/el-tabs&gt;     &lt;/div&gt;     &lt;div class=&quot;tabs-action&quot;&gt;       &lt;el-dropdown trigger=&quot;hover&quot;&gt;         &lt;el-icon color=&quot;rgba(0, 0, 0, 0.65)&quot; :size=&quot;20&quot;&gt;           &lt;Menu /&gt;         &lt;/el-icon&gt;         &lt;template #dropdown&gt;           &lt;el-dropdown-menu&gt;             &lt;el-dropdown-item @click=&quot;closeCurrentTab&quot;&gt;               &lt;el-icon :size=&quot;14&quot;&gt;&lt;FolderRemove /&gt;&lt;/el-icon&gt;               关闭当前             &lt;/el-dropdown-item&gt;             &lt;el-dropdown-item @click=&quot;closeOtherTab&quot;&gt;               &lt;el-icon :size=&quot;14&quot;&gt;&lt;Close /&gt;&lt;/el-icon&gt;               关闭其他             &lt;/el-dropdown-item&gt;             &lt;el-dropdown-item @click=&quot;closeAllTab&quot;&gt;               &lt;el-icon :size=&quot;14&quot;&gt;&lt;FolderDelete /&gt;&lt;/el-icon&gt;               关闭所有             &lt;/el-dropdown-item&gt;           &lt;/el-dropdown-menu&gt;         &lt;/template&gt;       &lt;/el-dropdown&gt;     &lt;/div&gt;   &lt;/div&gt; &lt;/template&gt;</code></p>
+<p>到此，Layout布局已经实现完毕。下一节我们来实现主题切换和暗黑模式的切换。</p>
+<h2 id="代码地址">代码地址<a hidden class="anchor" aria-hidden="true" href="#代码地址">#</a></h2>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgitee.com%2Fguigu-fe%2Fguigu-sph-mall-admin" title="https://gitee.com/guigu-fe/guigu-sph-mall-admin">gitee.com/guigu-fe/gu…</a></p>
+<h2 id="文章教程系列">文章教程系列<a hidden class="anchor" aria-hidden="true" href="#文章教程系列">#</a></h2>
+<ul>
+<li><a href="https://juejin.cn/post/7195080019394166842" title="https://juejin.cn/post/7195080019394166842">vue3 admin 保姆教学指南 ｜ 项目规范集成教程，看完秒懂项目中各种奇怪的文件和配置</a></li>
+<li><a href="https://juejin.cn/post/7196852501190082616" title="https://juejin.cn/post/7196852501190082616">vue3 admin 保姆教学指南 ｜ 一文让你彻底上手 vue3 全家桶，集成 pinia+element-plus+vue-router@4</a></li>
+<li><a href="https://juejin.cn/post/7214146630467305530" title="https://juejin.cn/post/7214146630467305530">vue3 admin 保姆教学指南｜关于使用 typescript 二次封装 Axios 的特别说明</a></li>
+<li><a href="https://juejin.cn/post/7214342319348138041" title="https://juejin.cn/post/7214342319348138041">vue3 admin 保姆教学指南｜关于 pinia 的使用</a></li>
+<li><a href="https://juejin.cn/post/7215035912186413115" title="https://juejin.cn/post/7215035912186413115">vue3 admin 保姆教学指南｜登录和菜单权限的实现</a></li>
+<li><a href="https://juejin.cn/post/7215485221830852665" title="https://juejin.cn/post/7215485221830852665">vue3 admin 保姆教学指南｜ element-plus 如何实现主题切换和暗黑模式</a></li>
+<li><a href="https://juejin.cn/post/7216130963276644407" title="https://juejin.cn/post/7216130963276644407">vue3 admin 开发中的奇淫巧技｜在 vue 中如何刷新当前页面</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/springboot%E9%9B%86%E6%88%90redis%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E7%9B%B8%E4%BC%BC%E6%80%A7%E6%90%9C%E7%B4%A2/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>SpringBoot集成Redis向量数据库实现相似性搜索</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>从零开始学机器学习——逻辑回归</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share vue3admin保姆教学指南｜后台管理系统的Layout实现 on x"
+            href="https://x.com/intent/tweet/?text=vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share vue3admin保姆教学指南｜后台管理系统的Layout实现 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f&amp;title=vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0&amp;summary=vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share vue3admin保姆教学指南｜后台管理系统的Layout实现 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f&title=vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share vue3admin保姆教学指南｜后台管理系统的Layout实现 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share vue3admin保姆教学指南｜后台管理系统的Layout实现 on whatsapp"
+            href="https://api.whatsapp.com/send?text=vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share vue3admin保姆教学指南｜后台管理系统的Layout实现 on telegram"
+            href="https://telegram.me/share/url?text=vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share vue3admin保姆教学指南｜后台管理系统的Layout实现 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=vue3admin%e4%bf%9d%e5%a7%86%e6%95%99%e5%ad%a6%e6%8c%87%e5%8d%97%ef%bd%9c%e5%90%8e%e5%8f%b0%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f%e7%9a%84Layout%e5%ae%9e%e7%8e%b0&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3admin%25E4%25BF%259D%25E5%25A7%2586%25E6%2595%2599%25E5%25AD%25A6%25E6%258C%2587%25E5%258D%2597%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F%25E7%259A%2584layout%25E5%25AE%259E%25E7%258E%25B0%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

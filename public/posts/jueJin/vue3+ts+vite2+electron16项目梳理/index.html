@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 | PaperMod</title>
+<meta name="keywords" content="前端, Vue.js">
+<meta name="description" content="1.什么是Electron？Electron是一个跨平台的、基于Web前端技术的桌面GUI应用程序开发框架。2.什么时候使用Electron？1.公司没有专门的桌面应用开发者，而需">
+<meta name="author" content="黑色的枫">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/vue3&#43;ts&#43;vite2&#43;electron16%E9%A1%B9%E7%9B%AE%E6%A2%B3%E7%90%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/vue3&#43;ts&#43;vite2&#43;electron16%E9%A1%B9%E7%9B%AE%E6%A2%B3%E7%90%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理" />
+<meta property="og:description" content="1.什么是Electron？Electron是一个跨平台的、基于Web前端技术的桌面GUI应用程序开发框架。2.什么时候使用Electron？1.公司没有专门的桌面应用开发者，而需" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/vue3&#43;ts&#43;vite2&#43;electron16%E9%A1%B9%E7%9B%AE%E6%A2%B3%E7%90%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-12-06T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理"/>
+<meta name="twitter:description" content="1.什么是Electron？Electron是一个跨平台的、基于Web前端技术的桌面GUI应用程序开发框架。2.什么时候使用Electron？1.公司没有专门的桌面应用开发者，而需"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Vue3+TS+Vite2+Electron16项目梳理",
+      "item": "http://localhost:1313/posts/juejin/vue3+ts+vite2+electron16%E9%A1%B9%E7%9B%AE%E6%A2%B3%E7%90%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Vue3+TS+Vite2+Electron16项目梳理",
+  "name": "Vue3\u002bTS\u002bVite2\u002bElectron16项目梳理",
+  "description": "1.什么是Electron？Electron是一个跨平台的、基于Web前端技术的桌面GUI应用程序开发框架。2.什么时候使用Electron？1.公司没有专门的桌面应用开发者，而需",
+  "keywords": [
+    "前端", "Vue.js"
+  ],
+  "articleBody": "1. 什么是Electron？ Electron 是一个跨平台的、基于 Web 前端技术的桌面 GUI 应用程序开发框架。\n2. 什么时候使用Electron？ 1.公司没有专门的桌面应用开发者，而需要前端兼顾来进行开发时，用Electron就是一个不错的选择。\n2.一个应用需要同时开发Web端和桌面端的时候，那使用Electron来进行开发就对了。\n3.开发一些效率工具，比如API类的工具。\n3. Electron的优势 开源的核心扩展比较容易，加之现在 gyp 已经非常人性化了，使得c++ 和 js 搞基非常容易。\n界面定制性强，原则上只要是Web能做的他都能做。\n是目前最廉价的跨平台技术方案，HTML+JS 有大量的前端技术人员储备，而且有海量的现存web UI 库。大多都很靠谱。\n相对其他跨平台方案（如 QT GTK+ 等），更稳定，bug少， 毕竟只要浏览器外壳跑起来了，里面的问题不会太多 ，当然我也遇到过一些暗坑。\n方便热更新。下载覆盖完事。当然这是所有脚本共有的优点。\n4. Electron的劣势 1.卡，启动慢，这可能是webkit的锅。毕竟一个浏览器要支持的功能确实有点多。\n2.除了主进程 你可能还需要启动一些辅助进程来完成工作。而每当你新开一个进程，起步价就是一个nodejs的内存开销。\n3.丢帧，这个最严重，可我已习惯了native 的丝滑. mac下感觉还可以 win下有点够呛。\n4.打出来的包太大。（很显然，即便是一个空包，也至少包含了一个浏览器的体积），这里我解释一下：\n整个包的大小基于就是 Frameworks + Resources 的大小\nFrameworks electron核心（大小174M，版本9.0.0）基本没有可以优化的空间\n有一个electron-boilerplate包，是精简化的electron，但已经3年没有更新，用的人也不多\nResources app.asar主要是项目打包后的资源和主进程使用的node_modules，所以优化app.asar为主（win也是）\n5. Electron 把 HTML，CSS 和 JavaScript 组合的程序构建为跨平台桌面应用程序的原理 是什么? 原理为Electron通过将Chromium和Node.js合并到同一个运行时环境中，并将其打包为Mac，Windows和Linux系统下的应用来实现这一目的。\n6. electron + vue + ts方案 这一方案我们有比较成熟的库，Electron-vue。注意，electron需要有python环境，没有的记得提前安装。Python官网：www.python.org/。\n首先，全局安装vue-cli:\nnpm install -g vue-cli\n然后，进行初始化:\nvue init simulatedgreg/electron-vue vue-electron\n最后安依赖运行：\ncd vue-electron yarn # 或者 npm install yarn run dev # 或者 npm run dev\n运行效果：\n然后，我们分析下目录结构：\n可以看到src文件夹下有两个文件夹，main和renderer，也就是electron的两个进程。\n在main主进程中：\nindex.js就是主进程的进程js\n在renderer渲染进程中：\nassets：放置静态资源，如图片，视频，静态配置\ncommon：放置静态js，如页面需要的公共功能\ncommponents：放置vue页面\nrouter：放置页面路由\nstore： 放置公共模块，如vuex\n当我们想在项目里调用electron的api应该怎么操作：\n渲染进程发送数据:\njavascript\n代码解读\n复制代码\nsendMsg(){ this.$electron.ipcRenderer.send('toMain','我是渲染进程里面的数据') },\n主进程接收数据:\njavascript\n代码解读\n复制代码\nvar {ipcMain}=require('electron'); ipcMain.on('toMain',(event,data)=\u003e{ console.log(data); });\n项目里如何使用node：\njavascript\n代码解读\n复制代码\nvar fs = require('fs'); export default { data() { return { msg: '' } }, methods: { runNode() { fs.readFile('package.json',(err, data) =\u003e { if (err) { console.log(err); return; } console.log(data.toString()); }) } } }\n然后我们加上TS配置：\nsrc目录下创建vue.sfc.d.ts全局声明文件:\ntypescript\n代码解读\n复制代码\n// 配置ts读取.vue文件 declare module \"*.vue\"{ import Vue from 'vue' export default Vue }\n安装TS依赖：\n代码解读\n复制代码\nnpm install typescript -d npm install ts-loader -d\n在webpack.main.config.js 和 webpack.renderer.config.js加上TS配置：\ncss\n代码解读\n复制代码\n...... module: { rules: [ { test: /\\.ts$/, use: { loader: \"ts-loader\", options: { appendTsSuffixTo: [/\\.vue$/], } } }, ...... resolve: { extensions: ['.ts','.js', '.json', '.node'], }, ......\n增加了TS配置，就需要把原有js文件改为ts文件。然后我们必须在webpack.renderer.config.js配置一个东西:在whiteListedModules中多加一个vue-property-decorator的选项：\nbash\n代码解读\n复制代码\n//webpack.renderer.config.js let whiteListedModules = ['vue','vue-property-decorator']\ntsc –init 生成tsconfig.json\njson\n代码解读\n复制代码\n\"strict\": false, \"experimentalDecorators\":true,\n这样，我们就成功的引入了TS。\n网上有成功的案例可以参考：\ntiny-evt：Vite2 + Vue3 + Electron12 + TypeScript git： github.com/neatfx/tiny…\n因为要集成vite，所以我这边对比了下，选择了脚手架evv：\ncsharp\n代码解读\n复制代码\nnpm init evv\n7. electron + react + ts方案 创建react+ts项目：\nsql\n代码解读\n复制代码\nnpm install -g create-react-app create-react-app electron-react --template typescript cd electron-react npm start\n安装 react-app-rewired 、 cross-env 和 customize-cra npm i -D react-app-rewired cross-env customize-cra react-app-rewired2.x以后需要安装customize-cra来实现修改webpack配置 安装之后需要修改下package.json中scripts的一些配置，主要是将 start、build、test 命令的react-scripts改成react-app-rewired：\njson\n代码解读\n复制代码\n/* package.json */ \"scripts\": { \"start\": \"react-app-rewired start\", \"build\": \"react-app-rewired build\", \"test\": \"react-app-rewired test\", }\n引入babel-plugin-import： npm install babel-plugin-import --save-dev\n安装 react-app-rewired 、 cross-env 和 customize-cra： npm i -D react-app-rewired cross-env customize-cra\n创建 react-app-rewired 配置文件 config-overrides.js 用于扩展 webpack 配置：\nphp\n代码解读\n复制代码\n/* config-overrides.js */ const { override, fixBabelImports, } = require(\"customize-cra\"); module.exports = override( fixBabelImports(\"import\", { libraryName: \"antd\", libraryDirectory: \"es\", style: 'css', }), );\n安装 electron 环境并配置入口文件： npm i -D electron\nmain.js文件放在public下就好。\nini\n代码解读\n复制代码\n/* main.js */ const { app, BrowserWindow } = require('electron'); const path = require('path'); let mainWindow = null; const createWindow = () =\u003e { let mainWindow = new BrowserWindow({ width: 800, height: 600, webPreferences: { nodeIntegration: true, } }); /** * loadURL 分为两种情况 * 1.开发环境，指向 react 的开发环境地址 * 2.生产环境，指向 react build 后的 index.html */ const startUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : path.join(__dirname, \"/build/index.html\"); mainWindow.loadURL(startUrl); mainWindow.on('closed', function () { mainWindow = null; }); }; app.on('ready', createWindow); app.on('window-all-closed', function () { if (process.platform !== 'darwin') app.quit(); }); app.on('activate', function () { if (mainWindow === null) createWindow(); });\n修改下package文件：\ncss\n代码解读\n复制代码\n/* package.json */ \"main\": \"main.js\", \"author\": \"L\", \"description\": \"electron-react\", \"scripts\": { \"start\": \"cross-env BROWSER=none react-app-rewired start\", \"start-electron\": \"cross-env NODE_ENV=development electron .\", \"start-electron-prod\": \"electron .\" },\nnpm run start-electron\n运行即可。\n要求引入vite，所以我们需要把webpack替换为vite，经过思考，我选择了wp2vite。\n代码解读\n复制代码\nnpm install -g wp2vite npm install\nwp2vite是一个和工具，可以一键让使用webpack来进行开发和构建的项目支持使用vite来进行开发和构建(目前只支持vue和react)。\n8. 打包(electron-builder) electron-vue已经集成好了打包工具，但是还是有很多问题，这里我记录一下：\n依赖要用npm或者yarn，不能使用cnpm。 下载依赖后单独下载electron-build依赖，这里要用cnpm，npm和yarn无法下载。 build.js中出现命名重复的问题，有两对tasks，修改其中一对即可。 手动配置安装包，一定要这个路径：C:\\Users\\Administrator\\AppData\\Local\\electron\\Cache，把安装包放在该路径下，安装包名称为electron-v2.0.9-win32-x64.zip，我放到gitlab上了。 手动下载multispinner， npm install multispinner -D，build.js中添加 const Multispinner = require(‘multispinner’)。\n下面我们配置下electron-react的打包功能。 npm i -D electron-builder\n然后配置一些打包相关的参数：\nkotlin\n代码解读\n复制代码\n/* package.json */ \"homepage\": \".\", // 避免css等资源找不到的情况 \"scripts\": { \"build-electron\": \"electron-builder\" }, \"build\": { // 软件包名 \"appId\": \"com.xxx.xxx\", // 项目名，也是生成的安装文件名 \"productName\": \"L\", // 版权信息 \"copyright\": \"L © 2021\", // 不配置extends为null打包的时候会报错：Application entry file \"build/electron.js\" does not exist \"extends\": null, \"directories\": { // 输出文件路径 \"output\": \"build-electron\" }, \"files\": [ \"./build/**/*\", \"./main.js\", \"./package.json\" ], \"win\": { // win相关配置 \"icon\": \"./favicon_256.ico\", /* 打包生成的启动文件的命名方式 */ \"artifactName\": \"${productName}.${ext}\" }, \"nsis\": { // 是否一键安装，不可更改目录等选项，默认为true \"oneClick\": false, // 是否允许权限提升。如果为false，则用户必须使用提升的权限重新启动安装程序。 \"allowElevation\": true, // 是否允许更改安装路径 \"allowToChangeInstallationDirectory\": true, // 是否创建桌面图标 \"createDesktopShortcut\": true, // 创建开始菜单图标 \"createStartMenuShortcut\": true, // 安装完成请求运行 \"runAfterFinish\": true, // 安装包图标 \"installerIcon\": \"./favicon_256.ico\", //卸载程序图标 \"uninstallerIcon\": \"./favicon_256.ico\", // 安装时头部图标 \"installerHeaderIcon\": \"./build/icons/aaa.ico\", // 桌面图标名称 \"shortcutName\": \"L\" } },\n在public下新建electron.js文件，内容与main.js文件内容一致，然后将\nrust\n代码解读\n复制代码\nwin.loadURL('http://localhost:3000/');\n修改为\nbash\n代码解读\n复制代码\nwin.loadURL(`file://${__dirname}/index.html`);\n然后将package.json中的\"main\"项修改为\"public/electron.js\"，并增加\"build\"项：\ncss\n代码解读\n复制代码\n\"build\": { \"appId\": \"com.example.electron-cra\", \"files\": [ \"build/**/*\", \"node_modules/**/*\" ], \"directories\":{ \"buildResources\": \"assets\" }, \"extraMetadata\":{ \"main\":\"build/electron.js\" } }\nnpm run build-electron即可。\n9. Electron模块梳理 注： 只归纳了一些常用方法，具体可以看： www.w3cschool.cn/electronman…\n9.1 shell shell 模块提供了集成其他桌面客户端的关联功能.\n在用户默认浏览器中打开URL的示例:\nini\n代码解读\n复制代码\nvar shell = require('shell'); shell.openExternal('https://github.com');\n**9.1.1 shell.showItemInFolder(fullPath)**\n打开文件所在文件夹,一般情况下还会选中它。\n9.1.2 shell.openItem(fullPath)\n以默认打开方式打开文件。\n9.1.3 shell.openExternal(url)\n以系统默认设置打开外部协议.(例如,mailto: somebody@somewhere.io会打开用户默认的邮件客户端)。\n9.1.4 shell.moveItemToTrash(fullPath)\n删除指定路径文件,并返回此操作的状态值(boolean类型)。\n9.1.5 shell.beep()\n播放 beep 声音（也就是嘟嘟声）。\n9.2 screen screen 模块检索屏幕的 size，显示，鼠标位置等的信息。在 app 模块的ready 事件触发之前不可使用这个模块。\n注意: 在渲染进程 / 开发者工具栏, window.screen 是一个预设值的 DOM 属性, 所以这样写 var screen = require(’electron’).screen 将不会工作。\n示例：\nini\n代码解读\n复制代码\nconst electron = require('electron'); const app = electron.app; const BrowserWindow = electron.BrowserWindow; var mainWindow; app.on('ready', function() { var electronScreen = electron.screen; var size = electronScreen.getPrimaryDisplay().workAreaSize; mainWindow = new BrowserWindow({ width: size.width, height: size.height }); });\n**Display 对象：**\nDisplay 对象表示了物力方式连接系统. 一个伪造的 Display 或许存在于一个无头系统中，或者一个 Display 相当于一个远程的、虚拟的 display.\nscreen模块会触发三种事件： Event: ‘display-added’\n返回:\nevent Event newDisplay Object 当添加了 newDisplay 时发出事件\nEvent: ‘display-removed’\n返回:\nevent Event oldDisplay Object 当移出了 oldDisplay 时发出事件\nEvent: ‘display-metrics-changed’\n返回:\nevent Event display Object changedMetrics Array\n9.2.1 screen.getCursorScreenPoint()\n返回当前鼠标的绝对路径 .\nscreen.getPrimaryDisplay()\n返回最主要的 display.\nscreen.getAllDisplays()\n返回一个当前可用的 display 数组.\n9.2.2 screen.getDisplayNearestPoint(point)\npoint Object x Integer y Integer\n返回离指定点最近的 display.\n9.2.3 screen.getDisplayMatching(rect)\nrect Object x Integer y Integer width Integer height Integer\n返回与提供的边界范围最密切相关的 display.\n9.3 clipboard clipboard 模块提供方法来供复制和粘贴操作。\n示例：\nini\n代码解读\n复制代码\nconst clipboard = require('electron').clipboard; clipboard.writeText('Example String');\n**9.3.1 clipboard.readText([type])**\ntype String (可选)\n以纯文本形式从 clipboard 返回内容\n9.3.2 clipboard.writeText(text[, type])\ntext String type String (可选)\n以纯文本形式向 clipboard 添加内容\n9.3.3 clipboard.readHtml([type])\ntype String (可选)\n返回 clipboard 中的标记内容\n9.3.4 clipboard.writeHtml(markup[, type])\nmarkup String type String (可选)\n向 clipboard 添加 markup(标记) 内容\n9.3.5 clipboard.readImage([type])\ntype String (可选)\n从 clipboard 中返回 NativeImage(本地图像) 内容\n9.3.6 clipboard.writeImage(image[, type])\nimage NativeImage type String (可选)\n向 clipboard 中写入 image\n9.3.7 clipboard.clear([type])\ntype String (可选)\n清空 clipboard 内容\n9.4 crashReporter crash-reporter 模块开启发送应用崩溃报告。\n下面是一个自动提交崩溃报告给服务器的例子 :\nphp\n代码解读\n复制代码\nconst crashReporter = require('electron').crashReporter; crashReporter.start({ productName: 'YourName', companyName: 'YourCompany', submitURL: 'https://your-domain.com/url-to-submit', autoSubmit: true });\n**9.4.1 crashReporter.start(options)**\noptions:\ncompanyName String\nsubmitURL String - 崩溃报告发送的路径，以post方式.\nproductName String (可选) - 默认为 Electron.\nautoSubmit Boolean - 是否自动提交. 默认为 true.\nignoreSystemCrashHandler Boolean - 默认为 false.\nextra Object - 一个你可以定义的对象，附带在崩溃报告上一起发送 . 只有字符串属性可以被正确发送，不支持嵌套对象.\n注： 只可以在使用其它 crashReporter APIs 之前使用这个方法.\n9.4.2 crashReporter.getLastCrashReport()\n返回最后一个崩溃报告的日期和 ID.如果没有过崩溃报告发送过来，或者还没有开始崩溃报告搜集，将返回 null .\n9.4.3 crashReporter.getUploadedReports()\n返回所有上载的崩溃报告，每个报告包含了上载日期和 ID.\n9.5 nativeImage 在 Electron 中, 对所有创建 images 的 api 来说, 你可以使用文件路径或 nativeImage 实例. 如果使用 null ，将创建一个空的image 对象.\n当创建一个 tray(图标) 或设置窗口的图标时候，你可以使用一个字符串的图片路径 :\nini\n代码解读\n复制代码\nvar appIcon = new Tray('/Users/somebody/images/icon.png'); var window = new BrowserWindow({icon: '/Users/somebody/images/window.png'});\n或者从剪切板中读取图片，它返回的是 nativeImage:\nini\n代码解读\n复制代码\nvar image = clipboard.readImage(); var appIcon = new Tray(image);\n支持的格式\n当前支持 PNG 和 JPEG 图片格式. 推荐 PNG ，因为它支持透明和无损压缩.\n在 Windows, 你也可以使用 ICO 图标的格式.\n9.5.1 nativeImage.createEmpty()\n创建一个空的 nativeImage 实例.\n9.5.2 nativeImage.createFromPath(path)\npath String\n从指定 path 创建一个新的 nativeImage 实例 .\n9.5.3 nativeImage.createFromBuffer(buffer[, scaleFactor])\nbuffer Buffer scaleFactor Double (可选)\n从 buffer 创建一个新的 nativeImage 实例 .默认 scaleFactor 是 1.0.\n9.5.4 nativeImage.createFromDataURL(dataURL)\ndataURL String\n从 dataURL 创建一个新的 nativeImage 实例 .\n9.6 ipcRenderer ipcRenderer 模块是一个 EventEmitter(事件派发器) 类的实例. 它提供了有限的方法，你可以从渲染进程向主进程发送同步或异步消息. 也可以收到主进程的响应.\n9.6.1 ipcRenderer.on(channel, listener)\nchannel String listener Function\n监听 channel, 当有新消息到达，使用 listener(event, args…) 调用 listener .\n9.6.2 ipcRenderer.once(channel, listener)\nchannel String listener Function\n为这个事件添加一个一次性 listener 函数.这个 listener 将在下一次有新消息被发送到 channel 的时候被请求调用，之后就被删除了.\n9.6.3 ipcRenderer.removeListener(channel, listener)\nchannel String listener Function\n从指定的 channel 中的监听者数组删除指定的 listener .\n9.6.4 ipcRenderer.removeAllListeners([channel])\nchannel String (optional)\n删除所有的监听者，或者删除指定 channel 中的全部.\n9.6.5 ipcRenderer.send(channel[, arg1][, arg2][, …])\nchannel String arg (可选)\n通过 channel 向主进程发送异步消息，也可以发送任意参数.参数会被JSON序列化，之后就不会包含函数或原型链.\n主进程通过使用 ipcMain 模块来监听 channel，从而处理消息.\n9.6.6 ipcRenderer.sendToHost(channel[, arg1][, arg2][, …])\nchannel String arg (可选)\n类似 ipcRenderer.send ，但是它的事件将发往 host page 的 元素，而不是主进程.\n9.7 desktopCapturer desktopCapturer 模块可用来获取可用资源，这个资源可通过 getUserMedia 捕获得到。\nphp\n代码解读\n复制代码\n// 在渲染进程中. var desktopCapturer = require('electron').desktopCapturer; desktopCapturer.getSources({types: ['window', 'screen']}, function(error, sources) { if (error) throw error; for (var i = 0; i \u003c sources.length; ++i) { if (sources[i].name == \"Electron\") { navigator.webkitGetUserMedia({ audio: false, video: { mandatory: { chromeMediaSource: 'desktop', chromeMediaSourceId: sources[i].id, minWidth: 1280, maxWidth: 1280, minHeight: 720, maxHeight: 720 } } }, gotStream, getUserMediaError); return; } } }); function gotStream(stream) { document.querySelector('video').src = URL.createObjectURL(stream); } function getUserMediaError(e) { console.log('getUserMediaError'); }\n当调用 navigator.webkitGetUserMedia 时创建一个约束对象，如果使用 desktopCapturer 的资源，必须设置 chromeMediaSource 为 “desktop” ，并且 audio 为 false.\n如果你捕获整个桌面的 audio 和 video，你可以设置 chromeMediaSource 为 “screen” ，和 audio 为 true. 当使用这个方法的时候，不可以指定一个 chromeMediaSourceId.\n9.7.1 desktopCapturer.getSources(options, callback)\noptions Object types Array - 一个 String 数组，列出了可以捕获的桌面资源类型, 可用类型为 screen 和 window. thumbnailSize Object (可选) - 建议缩略可被缩放的 size, 默认为 {width: 150, height: 150}. callback Function\n发起一个请求，获取所有桌面资源，当请求完成的时候使用 callback(error, sources) 调用 callback .\n9.8 remote remote 模块提供了一种在渲染进程（网页）和主进程之间进行进程间通讯（IPC）的简便途径。\nElectron中, 与GUI相关的模块（如 dialog, menu 等)只存在于主进程，而不在渲染进程中 。为了能从渲染进程中使用它们，需要用ipc模块来给主进程发送进程间消息。使用 remote 模块，可以调用主进程对象的方法，而无需显式地发送进程间消息，这类似于 Java 的 RMI。\n下面是从渲染进程创建一个浏览器窗口的例子：\nini\n代码解读\n复制代码\nconst remote = require('electron').remote; const BrowserWindow = remote.BrowserWindow; var win = new BrowserWindow({ width: 800, height: 600 }); win.loadURL('https://github.com');\n注意: 反向操作（从主进程访问渲染进程），可以使用webContents.executeJavascript.\n9.8.1 remote.require(module)\nmodule String\n返回在主进程中执行 require(module) 所返回的对象。\n9.8.2 remote.getCurrentWindow()\n返回该网页所属的 BrowserWindow 对象。\n9.8.3 remote.getCurrentWebContents()\n返回该网页的 WebContents 对象\n9.8.4 remote.getGlobal(name)\nname String\n返回在主进程中名为 name 的全局变量(即 global[name]) 。\n9.8.5 remote.process\n返回主进程中的 process 对象。等同于 remote.getGlobal(‘process’) 但是有缓存。\n9.9 webFrame web-frame 模块允许你自定义如何渲染当前网页 .\n示例：放大当前页到 200%.\nini\n代码解读\n复制代码\nvar webFrame = require('electron').webFrame; webFrame.setZoomFactor(2);\n9.9.1 webFrame.setZoomFactor(factor)\nfactor Number - 缩放参数.\n将缩放参数修改为指定的参数值.缩放参数是百分制的，所以 300% = 3.0.\n9.9.2 webFrame.getZoomFactor()\n返回当前缩放参数值.\n9.9.3 webFrame.registerURLSchemeAsSecure(scheme)\nscheme String\n注册 scheme 为一个安全的 scheme.\n安全的 schemes 不会引发混合内容 warnings.例如, https 和 data 是安全的 schemes ，因为它们不能被活跃网络攻击而失效.\n9.9.4 webFrame.registerURLSchemeAsBypassingCSP(scheme)\nscheme String\n忽略当前网页内容的安全策略，直接从 scheme 加载.\n9.9.4 webFrame.executeJavaScript(code[, userGesture])\ncode String userGesture Boolean (可选) - 默认为 false.\n评估页面代码 .\n在浏览器窗口中，一些 HTML APIs ，例如 requestFullScreen，只可以通过用户手势来使用.设置userGesture 为 true 可以突破这个限制\n9.10 app app 模块是为了控制整个应用的生命周期设计的。\n示例：\n最后一个窗口被关闭时退出应用：\nini\n代码解读\n复制代码\nvar app = require('app'); app.on('window-all-closed', function() { app.quit(); });\n事件：‘ready’\n当 Electron 完成初始化时被触发。\n事件：‘window-all-closed’\n当所有的窗口都被关闭时触发。\n这个时间仅在应用还没有退出时才能触发。 如果用户按下了 Cmd + Q， 或者开发者调用了 app.quit() ，Electron 将会先尝试关闭所有的窗口再触发 will-quit 事件， 在这种情况下 window-all-closed 不会被触发。\n事件：‘before-quit’\n返回：\nevent Event\n在应用程序开始关闭它的窗口的时候被触发。 调用 event.preventDefault() 将会阻止终止应用程序的默认行为。\n事件：‘browser-window-focus’\n返回：\nevent Event\nwindow BrowserWindow\n当一个 BrowserWindow 获得焦点的时候触发。\n事件：‘browser-window-created’\n返回：\nevent Event\nwindow BrowserWindow\n当一个 BrowserWindow 被创建的时候触发。\n9.10.1 app.quit()\n试图关掉所有的窗口。before-quit 事件将会最先被触发。如果所有的窗口都被成功关闭了， will-quit事件将会被触发，默认下应用将会被关闭。\n这个方法保证了所有的 beforeunload 和 unload 事件处理器被正确执行。假如一个窗口的 beforeunload事件处理器返回 false，那么整个应用可能会取消退出。\n9.10.2 app.hide() OS X\n隐藏所有的应用窗口，不是最小化.\n9.10.3 app.getAppPath()\n返回当前应用所在的文件路径。\n9.10.4 app.clearRecentDocuments() OS X Windows\n清除最近访问的文档列表。\n9.10.5 app.isAeroGlassEnabled() Windows\n如果 DWM composition(Aero Glass) 启用 了，那么这个方法会返回 true，否则是 false。你可以用这个方法来决定是否要开启透明窗口特效，因为如果用户没开启 DWM，那么透明窗 口特效是无效的。\n9.11 BrowserWindow BrowserWindow\n类让你有创建一个浏览器窗口的权力。\nini\n代码解读\n复制代码\n// In the main process. const BrowserWindow = require('electron').BrowserWindow; // Or in the renderer process. const BrowserWindow = require('electron').remote.BrowserWindow; var win = new BrowserWindow({ width: 800, height: 600, show: false }); win.on('closed', function() { win = null; }); win.loadURL('https://github.com'); win.show();\n你也可以不通过chrome创建窗口，使用 Frameless Window(无框窗口) API.\nEvent: ‘page-title-updated’\n返回:\nevent Event\n当文档改变标题时触发,使用 event.preventDefault() 可以阻止原窗口的标题改变.\nEvent: ‘close’\n返回:\nevent Event 在窗口要关闭的时候触发. 它在DOM的 beforeunload and unload 事件之前触发.使用 event.preventDefault() 可以取消这个操作\n通常你想通过 beforeunload 处理器来决定是否关闭窗口，但是它也会在窗口重载的时候被触发。在 Electron 中，返回一个空的字符串或 false 可以取消关闭.\nEvent: ‘unresponsive’\n在界面卡死的时候触发事件.\nEvent: ‘minimize’\n在窗口最小化的时候触发.\nEvent: ‘scroll-touch-begin’ OS X\n在滚动条事件开始的时候触发.\nBrowserWindow.getAllWindows()\n返回一个所有已经打开了窗口的对象数组.\nBrowserWindow.getFocusedWindow()\n返回应用当前获得焦点窗口,如果没有就返回 null.\n使用 new BrowserWindow 创建的实例对象，有如下属性:\nless\n代码解读\n复制代码\n// In this example `win` is our instance var win = new BrowserWindow({ width: 800, height: 600 });\nwin.webContents\n这个窗口的 WebContents 对象，所有与界面相关的事件和方法都通过它完成的.\n查看 webContents documentation 的方法和事件.\nwin.id\n窗口的唯一id.\n实例方法\n使用 new BrowserWindow 创建的实例对象，有如下方法:\nwin.destroy()\n强制关闭窗口, unload and beforeunload 不会触发，并且 close 也不会触发, 但是它保证了 closed 触发.\nwin.close()\n尝试关闭窗口，这与用户点击关闭按钮的效果一样. 虽然网页可能会取消关闭，查看 close event.\nwin.focus()\n窗口获得焦点.\nwin.show()\n展示并且使窗口获得焦点.\nwin.hide()\n隐藏窗口.\nwin.maximize()\n窗口最大化.\nwin.minimize()\n窗口最小化. 在一些os中，它将在dock中显示.\nwin.setBounds(options[, animate])\noptions Object\nx Integer\ny Integer\nwidth Integer\nheight Integer\nanimate Boolean (可选) OS X\n重新设置窗口的宽高值，并且移动到指定的 x, y 位置.\nwin.getBounds()\n返回一个对象，它包含了窗口的宽，高，x坐标，y坐标.\nwin.setSize(width, height[, animate])\nwidth Integer\nheight Integer\nanimate Boolean (可选) OS X\n重新设置窗口的宽高值.\nwin.setContentSize(width, height[, animate])\nwidth Integer\nheight Integer\nanimate Boolean (可选) OS X\n重新设置窗口客户端的宽高值（例如网页界面）.\nwin.center()\n窗口居中.\n9.12 webContents webContents 是一个 事件发出者.\n它负责渲染并控制网页，也是 BrowserWindow 对象的属性.一个使用 webContents 的例子:\nini\n代码解读\n复制代码\nconst BrowserWindow = require('electron').BrowserWindow; var win = new BrowserWindow({width: 800, height: 1500}); win.loadURL(\"https://www.w3cschool.cn\"); var webContents = win.webContents;\nwebContents 对象可发出下列事件:\nEvent: ‘did-finish-load’\n当导航完成时发出事件，onload 事件也完成.\nEvent: ‘did-start-loading’\n当 tab 的spinner 开始 spinning的时候.\nEvent: ‘did-stop-loading’\n当 tab 的spinner 结束 spinning的时候.\nEvent: ’new-window’\n返回:\nevent Event\nurl String\nframeName String\ndisposition String - 可为 default, foreground-tab, background-tab, new-window 和 other.\noptions Object - 创建新的 BrowserWindow时使用的参数.\n当 page 请求打开指定 url 窗口的时候发出事件.这可以是通过 window.open 或一个外部连接\n发出的请求.\n默认指定 url 的 BrowserWindow 会被创建.\n调用 event.preventDefault() 可以用来阻止打开窗口.\nEvent: ‘will-navigate’ 返回:\nevent Event\nurl String\n当用户或 page 想要开始导航的时候发出事件.它可在当 window.location 对象改变或用户点击 page 中的链接的时候发生.\n当使用 api(如 webContents.loadURL 和 webContents.back) 以编程方式来启动导航的时候，这个事件将不会发出.\n它也不会在页内跳转发生， 例如点击锚链接或更新 window.location.hash.使用 did-navigate-in-page 事件可以达到目的.\n调用 event.preventDefault() 可以阻止导航.\nEvent: ‘did-navigate’\n返回:\nevent Event\nurl String\n当一个导航结束时候发出事件.\n页内跳转时不会发出这个事件，例如点击锚链接或更新 window.location.hash.使用 did-navigate-in-page 事件可以达到目的.\nEvent: ‘crashed’\n当渲染进程崩溃的时候发出事件.\nEvent: ‘destroyed’\n当 webContents 被删除的时候发出事件\nEvent: ’login’\n返回:\nevent Event\nrequest Object\nmethod String\nurl URL\nreferrer URL\nauthInfo Object\nisProxy Boolean\nscheme String\nhost String\nport Integer\nrealm String\ncallback Function\n当 webContents 想做基本验证的时候发出事件.\n使用方法类似 the login event of app.\n实例方法\nwebContents 对象有如下的实例方法:\n9.12.1 webContents.loadURL(url[, options])\nurl URL\noptions Object (可选)\nhttpReferrer String - A HTTP Referrer url.\nuserAgent String - 产生请求的用户代理\nextraHeaders String - 以 “\\n” 分隔的额外头\n在窗口中加载 url , url 必须包含协议前缀, 比如 http:// 或 file://. 如果加载想要忽略 http 缓存，可以使用 pragma 头来达到目的.\nini\n代码解读\n复制代码\nconst options = {\"extraHeaders\" : \"pragma: no-cache\\n\"} webContents.loadURL(url, options)\n9.12.2 webContents.isLoading()\n返回一个布尔值，标识当前页是否正在加载.\n9.12.3 webContents.isLoading()\n返回一个布尔值，标识当前页是否正在加载.\n9.12.4 webContents.reload()\n重载当前页.\n9.12.5 webContents.reloadIgnoringCache()\n重载当前页，忽略缓存.\n9.12.6 webContents.goBack()\n让浏览器回退到前一个page.\n9.12.7 webContents.goForward()\n让浏览器回前往下一个page.\n9.12.8 webContents.goToIndex(index)\nindex Integer\n让浏览器回前往指定 index 的page.\n实例属性\nWebContents 对象也有下列属性:\nwebContents.session\n返回这个 webContents 使用的 session 对象.\nwebContents.hostWebContents\n返回这个 webContents 的父 webContents .\n9.13 ipcMain ipcMain 模块是类 EventEmitter 的实例.当在主进程中使用它的时候，它控制着由渲染进程(web page)发送过来的异步或同步消息.从渲染进程发送过来的消息将触发事件.\n发送消息\n同样也可以从主进程向渲染进程发送消息，查看更多 webContents.send .\n发送消息，事件名为 channel.\n回应同步消息, 你可以设置 event.returnValue.\n回应异步消息, 你可以使用 event.sender.send(…).\n一个例子，在主进程和渲染进程之间发送和处理消息:\njavascript\n代码解读\n复制代码\n// In main process. const ipcMain = require('electron').ipcMain; ipcMain.on('asynchronous-message', function(event, arg) { console.log(arg); // prints \"ping\" event.sender.send('asynchronous-reply', 'pong'); }); ipcMain.on('synchronous-message', function(event, arg) { console.log(arg); // prints \"ping\" event.returnValue = 'pong'; }); // In renderer process (web page). const ipcRenderer = require('electron').ipcRenderer; console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints \"pong\" ipcRenderer.on('asynchronous-reply', function(event, arg) { console.log(arg); // prints \"pong\" }); ipcRenderer.send('asynchronous-message', 'ping');\n监听消息\nipcMain 模块有如下监听事件方法:\n9.13.1 ipcMain.on(channel, listener)\nchannel String\nlistener Function\n监听 channel, 当新消息到达，将通过 listener(event, args…) 调用 listener.\n9.13.2 ipcMain.once(channel, listener)\nchannel String\nlistener Function\n为事件添加一个一次性用的listener 函数.这个 listener 只有在下次的消息到达 channel 时被请求调用，之后就被删除了.\n9.13.3 ipcMain.removeListener(channel, listener)\nchannel String\nlistener Function\n为特定的 channel 从监听队列中删除特定的 listener 监听者.\n9.13.4 ipcMain.removeAllListeners([channel])\nchannel String (可选)\n删除所有监听者，或特指的 channel 的所有监听者.\n事件对象\n传递给 callback 的 event 对象有如下方法:\nevent.returnValue\n将此设置为在一个同步消息中返回的值.\nevent.sender\n返回发送消息的 webContents ，你可以调用 event.sender.send 来回复异步消息\n9.14 dialog dialog 模块提供了api来展示原生的系统对话框，例如打开文件框，alert框，所以web应用可以给用户带来跟系统应用相同的体验.\n对话框例子，展示了选择文件和目录:\nini\n代码解读\n复制代码\nvar win = ...; // BrowserWindow in which to show the dialog const dialog = require('electron').dialog; console.log(dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]}));\nOS X 上的注意事项: 如果你想像sheets一样展示对话框，只需要在browserWindow 参数中提供一个 BrowserWindow 的引用对象.\n9.14.1 dialog.showOpenDialog([browserWindow, ]options[, callback])\nbrowserWindow BrowserWindow (可选)\noptions Object\ntitle String\ndefaultPath String\nfilters Array\nproperties Array - 包含了对话框的特性值, 可以包含 openFile, openDirectory, multiSelections and createDirectory\ncallback Function (可选)\n成功使用这个方法的话，就返回一个可供用户选择的文件路径数组，失败返回 undefined.\nfilters 当需要限定用户的行为的时候，指定一个文件数组给用户展示或选择. 例如:\ncss\n代码解读\n复制代码\n{ filters: [ { name: 'Images', extensions: ['jpg', 'png', 'gif'] }, { name: 'Movies', extensions: ['mkv', 'avi', 'mp4'] }, { name: 'Custom File Type', extensions: ['as'] }, { name: 'All Files', extensions: ['*'] } ] }\nextensions 数组应当只包含扩展名，不应该包含通配符或’.‘号 (例如 ‘png’ 正确，但是 ‘.png’ 和 '\n.png’ 不正确). 展示全部文件的话, 使用 '\n’ 通配符 (不支持其他通配符).\n如果 callback 被调用, 将异步调用 API ，并且结果将用过 callback(filenames) 展示.\n注意: 在 Windows 和 Linux ，一个打开的 dialog 不能既是文件选择框又是目录选择框, 所以如果在这些平台上设置 properties 的值为 [‘openFile’, ‘openDirectory’] , 将展示一个目录选择框.\n9.14.2 dialog.showErrorBox(title, content)\n展示一个传统的包含错误信息的对话框.\n在 app 模块触发 ready 事件之前，这个 api 可以被安全调用，通常它被用来在启动的早期阶段报告错误. 在 Linux 上，如果在 app 模块触发 ready 事件之前调用，message 将会被触发显示stderr(输出文件)，并且没有实际GUI 框显示.\n9.15 menu menu 类可以用来创建原生菜单，它可用作应用菜单和 context 菜单.\n这个模块是一个主进程的模块，并且可以通过 remote 模块给渲染进程调用.\n每个菜单有一个或几个菜单项 menu items，并且每个菜单项可以有子菜单.\n下面这个例子是在网页(渲染进程)中通过 remote 模块动态创建的菜单，并且右键显示:\nxml\n代码解读\n复制代码\n9.15.1 Menu.setApplicationMenu(menu)\nmenu Menu\n在 OS X 上设置应用菜单 menu . 在windows 和 linux，是为每个窗口都在其顶部设置菜单 menu.\n9.15.2 Menu.sendActionToFirstResponder(action) OS X\naction String\n发送 action 给应用的第一个响应器.这个用来模仿 Cocoa 菜单的默认行为，通常你只需要使用 MenuItem的属性 role.\n9.15.3 Menu.buildFromTemplate(template)\ntemplate Array\n一般来说，template 只是用来创建 MenuItem 的数组 参数 .\n你也可以向 template元素添加其它东西，并且他们会变成已经有的菜单项的属性.\n实例方法\nmenu 对象有如下实例方法：\nmenu.popup([browserWindow, x, y, positioningItem])\nbrowserWindow BrowserWindow (可选) - 默认为 null.\nx Number (可选) - 默认为 -1.\ny Number (必须 如果x设置了) - 默认为 -1.\npositioningItem Number (可选) OS X - 在指定坐标鼠标位置下面的菜单项的索引. 默认为 -1. 在 browserWindow 中弹出 context menu .你可以选择性地提供指定的 x, y 来设置菜单应该放在哪里,否则它将默认地放在当前鼠标的位置.\nmenu.append(menuItem)\nmenuItem MenuItem\n添加菜单项.\nmenu.insert(pos, menuItem)\npos Integer\nmenuItem MenuItem\n在指定位置添加菜单项.\nmenu.items()\n获取一个菜单项数组.\n9.16 protocol protocol 模块可以注册一个自定义协议，或者使用一个已经存在的协议.\n例子，使用一个与 file:// 功能相似的协议 :\nini\n代码解读\n复制代码\nconst electron = require('electron'); const app = electron.app; const path = require('path'); app.on('ready', function() { var protocol = electron.protocol; protocol.registerFileProtocol('atom', function(request, callback) { var url = request.url.substr(7); callback({path: path.normalize(__dirname + '/' + url)}); }, function (error) { if (error) console.error('Failed to register protocol') }); });\n注意: 这个模块只有在 app 模块的 ready 事件触发之后才可使用.\n9.16.1 protocol.registerStandardSchemes(schemes)\nschemes Array - 将一个自定义的方案注册为标准的方案.\n一个标准的 scheme 遵循 RFC 3986 的 generic URI syntax 标准. 这包含了 file: 和 filesystem:.\n9.16.2 protocol.registerServiceWorkerSchemes(schemes)\nschemes Array - 将一个自定义的方案注册为处理 service workers.\n9.16.3 protocol.unregisterProtocol(scheme[, completion])\nscheme String\ncompletion Function (可选)\n注销自定义协议 scheme.\n9.17 session session 模块可以用来创建一个新的 Session 对象.\n你也可以通过使用 webContents 的属性 session 来使用一个已有页面的 session ，webContents是BrowserWindow 的属性.\nini\n代码解读\n复制代码\nconst BrowserWindow = require('electron').BrowserWindow; var win = new BrowserWindow({ width: 800, height: 600 }); win.loadURL(\"http://github.com\"); var ses = win.webContents.session;\n实例事件\n实例 Session 有以下事件:\nEvent: ‘will-download’\nevent Event\nitem DownloadItem\nwebContents WebContents\n当 Electron 将要从 webContents 下载 item 时触发.\n调用 event.preventDefault() 可以取消下载，并且在进程的下个 tick中，这个 item 也不可用.\njavascript\n代码解读\n复制代码\nsession.defaultSession.on('will-download', function(event, item, webContents) { event.preventDefault(); require('request')(item.getURL(), function(data) { require('fs').writeFileSync('/somewhere', data); }); });\n实例方法\n9.17.1 ses.cookies\ncookies 赋予你全力来查询和修改 cookies. 例如:\njavascript\n代码解读\n复制代码\n// 查询所有 cookies. session.defaultSession.cookies.get({}, function(error, cookies) { console.log(cookies); }); // 查询与指定 url 相关的所有 cookies. session.defaultSession.cookies.get({ url : \"http://www.github.com\" }, function(error, cookies) { console.log(cookies); }); // 设置 cookie; // may overwrite equivalent cookies if they exist. var cookie = { url : \"http://www.github.com\", name : \"dummy_name\", value : \"dummy\" }; session.defaultSession.cookies.set(cookie, function(error) { if (error) console.error(error); });\n9.17.2 ses.cookies.get(filter, callback)\nfilter Object\nurl String (可选) - 与获取 cookies 相关的 url.不设置的话就是从所有 url 获取 cookies .\nname String (可选) - 通过 name 过滤 cookies.\ndomain String (可选) - 获取对应域名或子域名的 cookies .\npath String (可选) - 获取对应路径的 cookies .\nsecure Boolean (可选) - 通过安全性过滤 cookies.\nsession Boolean (可选) - 过滤掉 session 或 持久的 cookies.\ncallback Function\n发送一个请求，希望获得所有匹配 details 的 cookies, 在完成的时候，将通过 callback(error, cookies) 调用 callback.\ncookies是一个 cookie 对象.\ncookie Object\nname String - cookie 名.\nvalue String - cookie值.\ndomain String - cookie域名.\nhostOnly String - 是否 cookie 是一个 host-only cookie.\npath String - cookie路径.\nsecure Boolean - 是否是安全 cookie.\nhttpOnly Boolean - 是否只是 HTTP cookie.\nsession Boolean - cookie 是否是一个 session cookie 或一个带截至日期的持久 cookie .\nexpirationDate Double (可选)-cookie的截至日期，数值为UNIX纪元以来的秒数. 对session cookies 不提供.\n9.17.3 ses.cookies.set(details, callback)\ndetails Object\nurl String - 与获取 cookies 相关的 url.\nname String - cookie 名. 忽略默认为空.\nvalue String - cookie 值. 忽略默认为空.\ndomain String - cookie的域名. 忽略默认为空.\npath String - cookie 的路径. 忽略默认为空.\nsecure Boolean - 是否已经进行了安全性标识. 默认为 false.\nsession Boolean - 是否已经 HttpOnly 标识. 默认为 false.\nexpirationDate Double - cookie的截至日期，数值为UNIX纪元以来的秒数. 如果忽略, cookie 变为 session cookie.\ncallback Function 使用 details 设置 cookie, 完成时使用 callback(error) 掉哟个 callback .\n9.17.4 ses.cookies.remove(url, name, callback)\nurl String - 与 cookies 相关的 url.\nname String - 需要删除的 cookie 名.\ncallback Function\n删除匹配 url 和 name 的 cookie, 完成时使用 callback()调用callback.\n9.17.5 ses.getCacheSize(callback)\ncallback Function\nsize Integer - 单位 bytes 的缓存 size.\n返回 session 的当前缓存 size .\n9.17.6 ses.clearCache(callback)\ncallback Function - 操作完成时调用\n清空 session 的 HTTP 缓存.\n9.18 Tray 用一个 Tray 来表示一个图标,这个图标处于正在运行的系统的通知区 ，通常被添加到一个 context menu 上.\nini\n代码解读\n复制代码\nconst electron = require('electron'); const app = electron.app; const Menu = electron.Menu; const Tray = electron.Tray; var appIcon = null; app.on('ready', function(){ appIcon = new Tray('/path/to/my/icon'); var contextMenu = Menu.buildFromTemplate([ { label: 'Item1', type: 'radio' }, { label: 'Item2', type: 'radio' }, { label: 'Item3', type: 'radio', checked: true }, { label: 'Item4', type: 'radio' } ]); appIcon.setToolTip('This is my application.'); appIcon.setContextMenu(contextMenu); });\n平台限制:\n在 Linux， 如果支持应用指示器则使用它，否则使用 GtkStatusIcon 代替.\n在 Linux ，配置了只有有了应用指示器的支持, 你必须安装 libappindicator1 来让 tray icon 执行.\n应用指示器只有在它拥有 context menu 时才会显示.\n当在linux 上使用了应用指示器，将忽略点击事件.\n在 Linux，为了让单独的 MenuItem 起效，需要再次调用 setContextMenu .例如:\nini\n代码解读\n复制代码\ncontextMenu.items[2].checked = false; appIcon.setContextMenu(contextMenu);\n如果想在所有平台保持完全相同的行为，不应该依赖点击事件，而是一直将一个 context menu 添加到 tray icon.\n9.18.1 Tray.destroy()\n立刻删除 tray icon.\n9.18.2 Tray.setImage(image)\nimage NativeImage\n让 image 与 tray icon 关联起来.\n9.18.3 Tray.setPressedImage(image) OS X\nimage NativeImage\n当在 OS X 上按压 tray icon 的时候， 让 image 与 tray icon 关联起来.\n9.18.4 Tray.setToolTip(toolTip)\ntoolTip String\n为 tray icon 设置 hover text.\n9.18.5 Tray.setTitle(title) OS X\ntitle String\n在状态栏沿着 tray icon 设置标题.\n9.18.6 Tray.setHighlightMode(highlight) OS X\nhighlight Boolean\n当 tray icon 被点击的时候，是否设置它的背景色变为高亮(blue).默认为 true.\n9.18.7 Tray.setContextMenu(menu)\nmenu Menu\n为这个 icon 设置 context menu .\n9.19 global-shortcut global-shortcut 模块可以便捷的为您设置(注册/注销)各种自定义操作的快捷键.\n使用此模块注册的快捷键是系统全局的(QQ截图那种), 不要在应用模块(app module)响应 ready 消息前使用此模块(注册快捷键).\njavascript\n代码解读\n复制代码\nvar app = require('app'); var globalShortcut = require('electron').globalShortcut; app.on('ready', function() { // Register a 'ctrl+x' shortcut listener. var ret = globalShortcut.register('ctrl+x', function() { console.log('ctrl+x is pressed'); }) if (!ret) { console.log('registration failed'); } // Check whether a shortcut is registered. console.log(globalShortcut.isRegistered('ctrl+x')); }); app.on('will-quit', function() { // Unregister a shortcut. globalShortcut.unregister('ctrl+x'); // Unregister all shortcuts. globalShortcut.unregisterAll(); });\n9.19.1 globalShortcut.register(accelerator, callback)\naccelerator Accelerator\ncallback Function\n注册 accelerator 快捷键. 当用户按下注册的快捷键时将会调用 callback 函数.\n9.19.2 globalShortcut.isRegistered(accelerator)\naccelerator Accelerator\n查询 accelerator 快捷键是否已经被注册过了,将会返回 true(已被注册) 或 false(未注册).\n9.19.3 globalShortcut.unregister(accelerator)\naccelerator Accelerator\n注销全局快捷键 accelerator.\n9.19.4 globalShortcut.unregisterAll()\n注销本应用注册的所有全局快捷键.\n9.20 contentTracing content-tracing 模块是用来收集由底层的Chromium content 模块 产生的搜索数据. 这个模块不具备web接口，所有需要我们在chrome浏览器中添加 chrome://tracing/ 来加载生成文件从而查看结果.\njavascript\n代码解读\n复制代码\nconst contentTracing = require('electron').contentTracing; const options = { categoryFilter: '*', traceOptions: 'record-until-full,enable-sampling' } contentTracing.startRecording(options, function() { console.log('Tracing started'); setTimeout(function() { contentTracing.stopRecording('', function(path) { console.log('Tracing data recorded to ' + path); }); }, 5000); });\n9.20.1 contentTracing.getCategories(callback)\ncallback Function\n获得一组分类组. 分类组可以更改为新的代码路径。\n一旦所有的子进程都接受到了getCategories方法请求, 分类组将调用 callback.\n9.20.2 contentTracing.startRecording(options, callback)\noptions Object\ncategoryFilter String\ntraceOptions String\ncallback Function\n开始向所有进程进行记录.(recording)\n一旦收到可以开始记录的请求，记录将会立马启动并且在子进程是异步记录听的. 当所有的子进程都收到 startRecording 请求的时候，callback 将会被调用.\ncategoryFilter是一个过滤器，它用来控制那些分类组应该被用来查找.过滤器应当有一个可选的 - 前缀来排除匹配的分类组.不允许同一个列表既是包含又是排斥.\n9.20.3 contentTracing.stopRecording(resultFilePath, callback)\nresultFilePath String\ncallback Function\n停止对所有子进程的记录.\n子进程通常缓存查找数据，并且仅仅将数据截取和发送给主进程.这有利于在通过 IPC 发送查找数据之前减小查找时的运行开销，这样做很有价值.因此，发送查找数据，我们应当异步通知所有子进程来截取任何待查找的数据.\n一旦所有子进程接收到了 stopRecording 请求，将调用 callback ，并且返回一个包含查找数据的文件.\n如果 resultFilePath 不为空，那么将把查找数据写入其中，否则写入一个临时文件.实际文件路径如果不为空，则将调用 callback .\n9.21 powerSaveBlocker powerSaveBlocker 模块是用来阻止应用系统进入睡眠模式的，因此这允许应用保持系统和屏幕继续工作.\nini\n代码解读\n复制代码\nconst powerSaveBlocker = require('electron').powerSaveBlocker; var id = powerSaveBlocker.start('prevent-display-sleep'); console.log(powerSaveBlocker.isStarted(id)); powerSaveBlocker.stop(id);\n9.21.1 powerSaveBlocker.start(type)\ntype String - 强行保存阻塞类型.\nprevent-app-suspension - 阻止应用挂起. 保持系统活跃，但是允许屏幕不亮. 用例: 下载文件或者播放音频.\nprevent-display-sleep- 阻止应用进入休眠. 保持系统和屏幕活跃，屏幕一直亮. 用例: 播放音频.\n开始阻止系统进入睡眠模式.返回一个整数，这个整数标识了保持活跃的blocker.\n注意: prevent-display-sleep 有更高的优先级 prevent-app-suspension. 只有最高优先级生效. 换句话说, prevent-display-sleep 优先级永远高于 prevent-app-suspension.\n例如, A 请求调用了 prevent-app-suspension, B请求调用了 prevent-display-sleep. prevent-display-sleep 将一直工作，直到B停止调用. 在那之后, prevent-app-suspension 才起效.\n9.21.2 powerSaveBlocker.stop(id)\nid Integer - 通过 powerSaveBlocker.start 返回的保持活跃的 blocker id. 让指定blocker 停止活跃.\n9.21.3 powerSaveBlocker.isStarted(id)\nid Integer - 通过 powerSaveBlocker.start 返回的保持活跃的 blocker id. 返回 boolean， 是否对应的 powerSaveBlocker 已经启动.\n9.22 powerMonitor power-monitor模块是用来监听能源区改变的.只能在主进程中使用.在 app 模块的 ready 事件触发之后就不能使用这个模块了.\njavascript\n代码解读\n复制代码\napp.on('ready', function() { require('electron').powerMonitor.on('suspend', function() { console.log('The system is going to sleep'); }); });\npower-monitor 模块可以触发下列事件:\nEvent: ‘suspend’\n在系统挂起的时候触发.\nEvent: ‘resume’\n在系统恢复继续工作的时候触发. Emitted when system is resuming.\nEvent: ‘on-ac’\n在系统使用交流电的时候触发. Emitted when the system changes to AC power.\nEvent: ‘on-battery’\n在系统使用电池电源的时候触发. Emitted when system changes to battery power.\n9.23 autoUpdater 这个模块提供了一个到 Squirrel 自动更新框架的接口。\n9.23.1 autoUpdater.setFeedURL(url)\nurl String\n设置检查更新的 url，并且初始化自动更新。这个 url 一旦设置就无法更改。\n9.23.2 autoUpdater.checkForUpdates()\n向服务端查询现在是否有可用的更新。在调用这个方法之前，必须要先调用 setFeedURL。\n9.23.3 autoUpdater.quitAndInstall()\n在下载完成后，重启当前的应用并且安装更新。这个方法应该仅在 update-downloaded 事件触发后被调用。\n10. 框架选择 通过vue3 + TS + electron16 + vite2 和 react + TS + electron16 + vite2，我们对两条路线有了较为具象的认识，所以接下来要做一个选择，到底选择哪个框架，以及后续的基础建设。\n10.1 MVVM和MVC Vue是MVVM，React是MVC。\nMVVM(Model-View-ViewModel)是在MVC(Model View Controller)的基础上，VM抽离Controller中展示的业务逻辑，而不是替代Controller，其它视图操作业务等还是应该放在Controller中实现。\n也就是说MVVM实现的是业务逻辑组件的重用，使开发更高效，结构更清晰，增加代码的复用性。\n可以理解为MVVM是MVC的升级版。\n虽然React不算一个完整的MVC框架，可以认为是MVC中的V(View)，但是Vue的MVVM还是更面向未来一些。\n10.2 数据绑定 vue是双向绑定，react是单向绑定。\n单向绑定的优点是相应的可以带来单向数据流，这样做的好处是所有状态变化都可以被记录、跟踪，状态变化通过手动调用通知，源头易追溯，没有“暗箱操作”。同时组件数据只有唯一的入口和出口，使得程序更直观更容易理解，有利于项目的可维护性。\n但是Vue虽然是双向绑定，但是也是单向数据流，它的双向绑定只是一个语法糖，想看正经的双向绑定可以去看下Dva。\n单向绑定的缺点则是代码量会相应的上升，数据的流转过程变长，从而出现很多类似的重复代码。同时由于对应用状态独立管理的严格要求(单一的全局store)，在处理局部状态较多的场景时(如用户输入交互较多的“富表单型”应用)，会显得冗余。\n双向绑定可以在表单交互较多的场景下，会简化大量业务无关的代码。\n我认为Vue的设计方案好一些，全局性数据流使用单向，局部性数据流使用双向。\n10.3 数据更新 10.3.1 React 更新流程\nReact 推崇 Immutable(不可变)，通过重新render去发现和更新自身。\n10.3.2 Vue 更新流程\nVue通过收集数据依赖去发现更新。\nVue很吸引人的就是它的响应式更新，Vue首次渲染触发data的getter，从而触发依赖收集，为对应的数据创建watcher，当数据发生更改的时候，setter被触发，然后通知各个watcher在下个tick的时候更新数据。\n所以说，如果data中某些数据没有在模板template 中使用的话，更新这些数据的时候，是不会触发更新的。这样的设计非常好，没有在模版上用到的变量，当它的值发生变化时，不更新视图，相当于内置了React的shouldComponentUpdate。\n10.3.3 更新比较\n获取数据更新的手段和更新的粒度不一样 Vue通过依赖收集，当数据更新时 ，Vue明确知道是哪些数据更新了，每个组件都有自己的渲渲染watcher，掌管当前组件的视图更新，所以可以精确地更新对应的组件，所以更新的粒度是组件级别的。\nReact会递归地把所有的子组件重新render一下，不管是不是更新的数据，此时，都是新的。然后通过 diff 算法 来决定更新哪部分的视图。所以，React 的更新粒度是一个整体。\n对更新数据是否需要渲染页面的处理不一样 只有依赖收集的数据发生更新，Vue 才会去重新渲染页面 只要数据有更新(setState，useState 等手段触发更新)，都会去重新渲染页面 （可以使用shouldComponentUpdate/ PureComponent 改善) Vue的文档里有一描述说，Vue是细粒度数据响应机制，所以说数据更新这一块，我认为Vue的设计方案好一些。\n10.4 性能对比 借用尤大大的一段话：\n模板在性能这块吊打 tsx，在 IDE 支持抹平了的前提下用 tsx 本质上是在为了开发者的偏好牺牲用户体验的性能（性能没遇到瓶颈就无所谓） 这边自己不维护框架的人吐槽吐槽我也能理解，毕竟作为使用者只需要考虑自己爽不爽。作为维护者，Vue 的已有的用户习惯、生态和历史包袱摆在那里，能激进的程度是有限的，Vue 3 的大部分设计都是戴着镣铐跳舞，需要做很多折衷。如果真要激进还不如开个新项目，或者没人用的玩票项目，想怎么设计都可以。 组件泛型的问题也有不少人提出了，这个目前确实不行，但不表示以后不会有。 最后实话实说，所有前端里面像这个问题下面的类型体操运动员们毕竟是少数，绝大部分有 intellisense + 类型校验就满足需求了。真的对类型特别特别较真的用 React 也没什么不好，无非就是性能差点。\n为什么模板性能吊打TSX？\ntsx和vue template其实都是一样的模版语言，tsx最终也会被编译成createElement，模板被编译成render函数，所以本质上两者都有compile-time和runtime，但tsx的特殊性在于它本身是在ts语义下的，过于灵活导致优化无从下手。但是vue的模板得益于自身本来就是DSL，有自己的文法和语义，所以vue在模板的compile-time做了巨多的优化，比如提升不变的vnode，以及blocktree配合patchflag靶向更新，这些优化在最终的runtime上会把性能拉开不少。\nDSL： 一种为特定领域设计的，具有受限表达性的编程语言。\n所以说Vue的性能是优于React的。\n10.5. React Hooks和Vue Hooks 其实 React Hook 的限制非常多，比如官方文档中就专门有一个**章节**介绍它的限制：\n不要在循环，条件或嵌套函数中调用 Hook 确保总是在你的 React 函数的最顶层调用他们。 遵守这条规则，你就能确保 Hook 在每一次渲染中都按照同样的顺序被调用。这让 React 能够在多次的 useState 和 useEffect 调用之间保持 hook 状态的正确。 而 Vue 带来的不同在于：\n与 React Hooks 相同级别的逻辑组合功能，但有一些重要的区别。 与 React Hook 不同，setup函数仅被调用一次，这在性能上比较占优。\n对调用顺序没什么要求，每次渲染中不会反复调用 Hook 函数，产生的的 GC 压力较小。\n不必考虑几乎总是需要 useCallback 的问题，以防止传递函数prop给子组件的引用变化，导致无必要的重新渲染。\nReact Hook 有臭名昭著的闭包陷阱问题，如果用户忘记传递正确的依赖项数组，useEffect 和 useMemo 可能会捕获过时的变量，这不受此问题的影响。 Vue 的自动依赖关系跟踪确保观察者和计算值始终正确无误。\n不得不提一句，React Hook 里的「依赖」是需要你去手动声明的，而且官方提供了一个 eslint 插件，这个插件虽然大部分时候挺有用的，但是有时候也特别烦人，需要你手动加一行丑陋的注释去关闭它。\n我们认可 React Hooks 的创造力，这也是 Vue-Composition-Api 的主要灵感来源。上面提到的问题确实存在于 React Hook 的设计中，我们注意到 Vue 的响应式模型恰好完美的解决了这些问题。\n-– 来自ssh\nVue的组合式API刚出来的时候确实一看好像React Hooks，我也对它的.value进行了吐槽，\n但是总体来说还是更偏向于Vue Hooks。\n10.6 写法 React的思路是all in js，通过js来生成html，所以设计了jsx，还有通过js来操作css，社区的styled-component、jss等，所以说React的写法感觉相对自由一些，逻辑正确老子想怎么写怎么写，对于我来说，我确实更偏向于React的写法。\nVue则是把html，css，js组合到一起，就像 Web 开发多年的传统开发方式一样， vue-loader会解析文件，提取每个语言块用各自的处理方式，vue有单文件组件(SFC)，可以把html、css、js写到一个文件中，html提供了模板引擎来处理。Vue感觉是给你搭了一个框架，告诉你什么地方该写什么东西，你只要按照他的要求向里面填内容就可以了，没有React那么自由，但是上手难度简单了许多。而且因为SFC，一个组件的代码会看起来很长，维护起来很头痛。\n然后考虑了下业务环境，我们要做的是多人视频及共享白板，所以对数据更新有比较高的要求，而Vue的dom渲染和数据处理是强于react的，所以最后我们选择的是Vue。\n11. 组件库选择 这边我思考了两个选择，一个是elemenmt-plus,另一个是ant-design-vue。\nelement-plus是一套为开发者、设计师和产品经理准备的基于 Vue 3 的桌面端组件库，他的针对性很强，vue3和桌面端都比较满足我们的需求。\nantd-vue是antd对vue的适配，我之前用过，感觉还可以。\n最后选择了针对性比较强的element-plus。\ncss\n代码解读\n复制代码\nnpm i element-plus --save\n然后全部引入就可以了。\njavascript\n代码解读\n复制代码\nimport { createApp } from 'vue'; import App from './App.vue'; import ElementPlus from 'element-plus' import 'element-plus/dist/index.css' createApp(App) .use(ElementPlus) .mount(\"#app\");\n12. ESLint 和 prettier 12.1 ESLint和TSLint ESLint是JavaScript代码检查工具，使用ESLint能让我们的代码遵循特定的样式格式。并且检查代码是否符合格式规范。\n可能有人听过TSLint，它是为TypeScript为生的。但在2019年，TSLint的团队决定不再继续维护，推荐使用ESLint来替代。主要不维护的原因就是TSLint和ESLint功能一致，有这大量重复的代码，所以不搞了。\n以后TypeScript的项目我们去使用ESLint就好了。\n12.2 配置ESLint 代码解读\n复制代码\nnpm install eslint -g\n全局安装ESLint后，插件中安装ESLint。\ncsharp\n代码解读\n复制代码\neslint --init\n初始化后，在当前目录下生成一个名为.eslintrc.js 的配置文件，可以自己按个人喜好进行配置，eslint.bootcss.com/docs/rules/…\n修改settings.json：\n12.3 prettier ESLint 和 Prettier 的区别是什么呢？\neslint（包括其他一些 lint 工具）的主要功能包含代码格式的校验，代码质量的校验。\n而 Prettier 只是代码格式的校验（并格式化代码），不会对代码质量进行校验。\ncss\n代码解读\n复制代码\nnpm install --save-dev --save-exact prettier\n在根目录下创建.prettierrc.js配置文件。\n在.prettierrc.js中写入以下内容：\njava\n代码解读\n复制代码\n//此处的规则供参考，其中多半其实都是默认值，可以根据个人习惯改写 module.exports = { printWidth: 80, //单行长度 tabWidth: 2, //缩进长度 useTabs: false, //使用空格代替tab缩进 semi: true, //句末使用分号 singleQuote: true, //使用单引号 quoteProps: 'as-needed', //仅在必需时为对象的key添加引号 jsxSingleQuote: true, // jsx中使用单引号 trailingComma: 'all', //多行时尽可能打印尾随逗号 bracketSpacing: true, //在对象前后添加空格-eg: { foo: bar } jsxBracketSameLine: true, //多属性html标签的‘\u003e’折行放置 arrowParens: 'always', //单参数箭头函数参数周围使用圆括号-eg: (x) =\u003e x requirePragma: false, //无需顶部注释即可格式化 insertPragma: false, //在已被preitter格式化的文件顶部加上标注 proseWrap: 'preserve', //不知道怎么翻译 htmlWhitespaceSensitivity: 'ignore', //对HTML全局空白不敏感 vueIndentScriptAndStyle: false, //不对vue中的script及style标签缩进 endOfLine: 'lf', //结束行形式 embeddedLanguageFormatting: 'auto', //对引用代码进行格式化 };\n13. 日志模块 我们的实现逻辑是，线上环境打印出错误时隐藏，把错误放在文件中，启动错误日志上传窗口，由用户自行判断该日志是否上传。\nini\n代码解读\n复制代码\n`window.onerror = function (message, source, lineno, colno, error) { exportRaw('报错信息：' + message + '文件位置：' + source, 'error'); return true; }; const exportRaw = (data, name) =\u003e { let urlObject = window.URL || window.webkitURL || window; let export_blob = new Blob([data]); let save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a', ); save_link.href = urlObject.createObjectURL(export_blob); save_link.download = name; save_link.click(); };` 14. 后续规划(基础建设及性能优化) 项目还在启动阶段，我有很多规划目前比较难以得到实施，比如：\n配置ESLint + prettier + yorkie(husky),git hooks 线上报警体统sentry.js 埋点，权限管理等配置 前后端交互方案(swagger/Yapi) 自动发布(jenkins) 内存走查和性能优化 有缘的话会把基础建设步骤和性能参数分析，以及性能优化及具体数据发出\n",
+  "wordCount" : "4003",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-12-06T00:00:00Z",
+  "dateModified": "2021-12-06T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "黑色的枫"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/vue3+ts+vite2+electron16%E9%A1%B9%E7%9B%AE%E6%A2%B3%E7%90%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理
+    </h1>
+    <div class="post-description">
+      1.什么是Electron？Electron是一个跨平台的、基于Web前端技术的桌面GUI应用程序开发框架。2.什么时候使用Electron？1.公司没有专门的桌面应用开发者，而需
+    </div>
+    <div class="post-meta"><span title='2021-12-06 00:00:00 +0000 UTC'>十二月 6, 2021</span>&nbsp;·&nbsp;19 分钟&nbsp;·&nbsp;黑色的枫&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Vue3&#43;TS&#43;Vite2&#43;Electron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e4%bb%80%e4%b9%88%e6%98%afelectron" aria-label="1. 什么是Electron？">1. 什么是Electron？</a></li>
+                <li>
+                    <a href="#2-%e4%bb%80%e4%b9%88%e6%97%b6%e5%80%99%e4%bd%bf%e7%94%a8electron" aria-label="2. 什么时候使用Electron？">2. 什么时候使用Electron？</a></li>
+                <li>
+                    <a href="#3-electron%e7%9a%84%e4%bc%98%e5%8a%bf" aria-label="3. Electron的优势">3. Electron的优势</a></li>
+                <li>
+                    <a href="#4-electron%e7%9a%84%e5%8a%a3%e5%8a%bf" aria-label="4. Electron的劣势">4. Electron的劣势</a></li>
+                <li>
+                    <a href="#5-electron-%e6%8a%8a-htmlcss-%e5%92%8c-javascript-%e7%bb%84%e5%90%88%e7%9a%84%e7%a8%8b%e5%ba%8f%e6%9e%84%e5%bb%ba%e4%b8%ba%e8%b7%a8%e5%b9%b3%e5%8f%b0%e6%a1%8c%e9%9d%a2%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e7%9a%84%e5%8e%9f%e7%90%86-%e6%98%af%e4%bb%80%e4%b9%88" aria-label="5. Electron 把 HTML，CSS 和 JavaScript 组合的程序构建为跨平台桌面应用程序的原理 是什么?">5. Electron 把 HTML，CSS 和 JavaScript 组合的程序构建为跨平台桌面应用程序的原理 是什么?</a></li>
+                <li>
+                    <a href="#6-electron--vue--ts%e6%96%b9%e6%a1%88" aria-label="6. electron &#43; vue &#43; ts方案">6. electron + vue + ts方案</a></li>
+                <li>
+                    <a href="#7-electron--react--ts%e6%96%b9%e6%a1%88" aria-label="7. electron &#43; react &#43; ts方案">7. electron + react + ts方案</a></li>
+                <li>
+                    <a href="#8-%e6%89%93%e5%8c%85electron-builder" aria-label="8. 打包(electron-builder)">8. 打包(electron-builder)</a></li>
+                <li>
+                    <a href="#9-electron%e6%a8%a1%e5%9d%97%e6%a2%b3%e7%90%86" aria-label="9. Electron模块梳理">9. Electron模块梳理</a><ul>
+                        
+                <li>
+                    <a href="#91-shell" aria-label="9.1 shell">9.1 shell</a></li>
+                <li>
+                    <a href="#92-screen" aria-label="9.2 screen">9.2 screen</a></li>
+                <li>
+                    <a href="#93-clipboard" aria-label="9.3 clipboard">9.3 clipboard</a></li>
+                <li>
+                    <a href="#94-crashreporter" aria-label="9.4 crashReporter">9.4 crashReporter</a></li>
+                <li>
+                    <a href="#95-nativeimage" aria-label="9.5 nativeImage">9.5 nativeImage</a></li>
+                <li>
+                    <a href="#96-ipcrenderer" aria-label="9.6 ipcRenderer">9.6 ipcRenderer</a></li>
+                <li>
+                    <a href="#97-desktopcapturer" aria-label="9.7 desktopCapturer">9.7 desktopCapturer</a></li>
+                <li>
+                    <a href="#98-remote" aria-label="9.8 remote">9.8 remote</a></li>
+                <li>
+                    <a href="#99-webframe" aria-label="9.9 webFrame">9.9 webFrame</a></li>
+                <li>
+                    <a href="#910-app" aria-label="9.10 app">9.10 app</a></li>
+                <li>
+                    <a href="#911-browserwindow" aria-label="9.11 BrowserWindow">9.11 BrowserWindow</a></li>
+                <li>
+                    <a href="#912-webcontents" aria-label="9.12 webContents">9.12 webContents</a></li>
+                <li>
+                    <a href="#913-ipcmain" aria-label="9.13 ipcMain">9.13 ipcMain</a></li>
+                <li>
+                    <a href="#914-dialog" aria-label="9.14 dialog">9.14 dialog</a></li>
+                <li>
+                    <a href="#915-menu" aria-label="9.15 menu">9.15 menu</a></li>
+                <li>
+                    <a href="#916-protocol" aria-label="9.16 protocol">9.16 protocol</a></li>
+                <li>
+                    <a href="#917-session" aria-label="9.17 session">9.17 session</a></li>
+                <li>
+                    <a href="#918-tray" aria-label="9.18 Tray">9.18 Tray</a></li>
+                <li>
+                    <a href="#919-global-shortcut" aria-label="9.19 global-shortcut">9.19 global-shortcut</a></li>
+                <li>
+                    <a href="#920-contenttracing" aria-label="9.20 contentTracing">9.20 contentTracing</a></li>
+                <li>
+                    <a href="#921-powersaveblocker" aria-label="9.21 powerSaveBlocker">9.21 powerSaveBlocker</a></li>
+                <li>
+                    <a href="#922-powermonitor" aria-label="9.22 powerMonitor">9.22 powerMonitor</a></li>
+                <li>
+                    <a href="#923-autoupdater" aria-label="9.23 autoUpdater">9.23 autoUpdater</a></li></ul>
+                </li>
+                <li>
+                    <a href="#10-%e6%a1%86%e6%9e%b6%e9%80%89%e6%8b%a9" aria-label="10. 框架选择">10. 框架选择</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#101-mvvm%e5%92%8cmvc" aria-label="10.1 MVVM和MVC">10.1 MVVM和MVC</a></li>
+                <li>
+                    <a href="#102-%e6%95%b0%e6%8d%ae%e7%bb%91%e5%ae%9a" aria-label="10.2 数据绑定">10.2 数据绑定</a></li>
+                <li>
+                    <a href="#103-%e6%95%b0%e6%8d%ae%e6%9b%b4%e6%96%b0" aria-label="10.3 数据更新">10.3 数据更新</a></li>
+                <li>
+                    <a href="#104-%e6%80%a7%e8%83%bd%e5%af%b9%e6%af%94" aria-label="10.4 性能对比">10.4 性能对比</a></li>
+                <li>
+                    <a href="#105-react-hooks%e5%92%8cvue-hooks" aria-label="10.5. React Hooks和Vue Hooks">10.5. React Hooks和Vue Hooks</a></li>
+                <li>
+                    <a href="#106-%e5%86%99%e6%b3%95" aria-label="10.6 写法">10.6 写法</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#11-%e7%bb%84%e4%bb%b6%e5%ba%93%e9%80%89%e6%8b%a9" aria-label="11. 组件库选择">11. 组件库选择</a></li>
+                <li>
+                    <a href="#12-eslint-%e5%92%8c-prettier" aria-label="12. ESLint 和 prettier">12. ESLint 和 prettier</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#121-eslint%e5%92%8ctslint" aria-label="12.1 ESLint和TSLint">12.1 ESLint和TSLint</a></li>
+                <li>
+                    <a href="#122-%e9%85%8d%e7%bd%aeeslint" aria-label="12.2 配置ESLint">12.2 配置ESLint</a></li>
+                <li>
+                    <a href="#123-prettier" aria-label="12.3 prettier">12.3 prettier</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#13-%e6%97%a5%e5%bf%97%e6%a8%a1%e5%9d%97" aria-label="13. 日志模块">13. 日志模块</a></li>
+                <li>
+                    <a href="#14-%e5%90%8e%e7%bb%ad%e8%a7%84%e5%88%92%e5%9f%ba%e7%a1%80%e5%bb%ba%e8%ae%be%e5%8f%8a%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96" aria-label="14. 后续规划(基础建设及性能优化)">14. 后续规划(基础建设及性能优化)</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="1-什么是electron">1. 什么是Electron？<a hidden class="anchor" aria-hidden="true" href="#1-什么是electron">#</a></h1>
+<p>Electron 是一个跨平台的、基于 Web 前端技术的桌面 GUI 应用程序开发框架。</p>
+<h1 id="2-什么时候使用electron">2. 什么时候使用Electron？<a hidden class="anchor" aria-hidden="true" href="#2-什么时候使用electron">#</a></h1>
+<p>1.公司没有专门的桌面应用开发者，而需要前端兼顾来进行开发时，用Electron就是一个不错的选择。</p>
+<p>2.一个应用需要同时开发Web端和桌面端的时候，那使用Electron来进行开发就对了。</p>
+<p>3.开发一些效率工具，比如API类的工具。</p>
+<h1 id="3-electron的优势">3. Electron的优势<a hidden class="anchor" aria-hidden="true" href="#3-electron的优势">#</a></h1>
+<ol>
+<li>
+<p>开源的核心扩展比较容易，加之现在 gyp 已经非常人性化了，使得c++ 和 js 搞基非常容易。</p>
+</li>
+<li>
+<p>界面定制性强，原则上只要是Web能做的他都能做。</p>
+</li>
+<li>
+<p>是目前最廉价的跨平台技术方案，HTML+JS 有大量的前端技术人员储备，而且有海量的现存web UI 库。大多都很靠谱。</p>
+</li>
+<li>
+<p>相对其他跨平台方案（如 QT GTK+ 等），更稳定，bug少， 毕竟只要浏览器外壳跑起来了，里面的问题不会太多 ，当然我也遇到过一些暗坑。</p>
+</li>
+<li>
+<p>方便热更新。下载覆盖完事。当然这是所有脚本共有的优点。</p>
+</li>
+</ol>
+<h1 id="4-electron的劣势">4. Electron的劣势<a hidden class="anchor" aria-hidden="true" href="#4-electron的劣势">#</a></h1>
+<p>1.卡，启动慢，这可能是webkit的锅。毕竟一个浏览器要支持的功能确实有点多。</p>
+<p>2.除了主进程 你可能还需要启动一些辅助进程来完成工作。而每当你新开一个进程，起步价就是一个nodejs的内存开销。</p>
+<p>3.丢帧，这个最严重，可我已习惯了native 的丝滑. mac下感觉还可以 win下有点够呛。</p>
+<p>4.打出来的包太大。（很显然，即便是一个空包，也至少包含了一个浏览器的体积），这里我解释一下：</p>
+<p>整个包的大小基于就是 Frameworks + Resources 的大小</p>
+<p>Frameworks electron核心（大小174M，版本9.0.0）基本没有可以优化的空间</p>
+<p>有一个electron-boilerplate包，是精简化的electron，但已经3年没有更新，用的人也不多</p>
+<p>Resources app.asar主要是项目打包后的资源和主进程使用的node_modules，所以优化app.asar为主（win也是）</p>
+<h1 id="5-electron-把-htmlcss-和-javascript-组合的程序构建为跨平台桌面应用程序的原理-是什么">5. Electron 把 HTML，CSS 和 JavaScript 组合的程序构建为跨平台桌面应用程序的原理 是什么?<a hidden class="anchor" aria-hidden="true" href="#5-electron-把-htmlcss-和-javascript-组合的程序构建为跨平台桌面应用程序的原理-是什么">#</a></h1>
+<p>原理为Electron通过将Chromium和Node.js合并到同一个运行时环境中，并将其打包为Mac，Windows和Linux系统下的应用来实现这一目的。</p>
+<h1 id="6-electron--vue--ts方案">6. electron + vue + ts方案<a hidden class="anchor" aria-hidden="true" href="#6-electron--vue--ts方案">#</a></h1>
+<p>这一方案我们有比较成熟的库，Electron-vue。注意，electron需要有python环境，没有的记得提前安装。Python官网：<a href="https://link.juejin.cn/?target=https%3A%2F%2Fwww.python.org%2F%25E3%2580%2582" title="https://link.juejin.cn/?target=https%3A%2F%2Fwww.python.org%2F%25E3%2580%2582">www.python.org/。</a></p>
+<p>首先，全局安装vue-cli:</p>
+<p><code>npm install -g vue-cli</code></p>
+<p>然后，进行初始化:</p>
+<p><code>vue init simulatedgreg/electron-vue vue-electron</code></p>
+<p>最后安依赖运行：</p>
+<p><code>cd vue-electron yarn # 或者 npm install yarn run dev # 或者 npm run dev</code></p>
+<p>运行效果：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bd08c8ab53b947098be1ac359c6a1fcb~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="homepage.png"  />
+</p>
+<p>然后，我们分析下目录结构：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c2434f083a60452b833600914d71f70d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="catalogue.png"  />
+</p>
+<p>可以看到src文件夹下有两个文件夹，main和renderer，也就是electron的两个进程。</p>
+<p><strong>在main主进程中：</strong></p>
+<p>index.js就是主进程的进程js</p>
+<p><strong>在renderer渲染进程中：</strong></p>
+<p>assets：放置静态资源，如图片，视频，静态配置</p>
+<p>common：放置静态js，如页面需要的公共功能</p>
+<p>commponents：放置vue页面</p>
+<p>router：放置页面路由</p>
+<p>store： 放置公共模块，如vuex</p>
+<p><strong>当我们想在项目里调用electron的api应该怎么操作：</strong></p>
+<p>渲染进程发送数据:</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>sendMsg(){     this.$electron.ipcRenderer.send('toMain','我是渲染进程里面的数据')  },</code></p>
+<p>主进程接收数据:</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var {ipcMain}=require('electron'); ipcMain.on('toMain',(event,data)=&gt;{       console.log(data); });</code></p>
+<p><strong>项目里如何使用node：</strong></p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var fs = require('fs'); export default {     data() {         return {             msg: ''         }     },     methods: {         runNode() {             fs.readFile('package.json',(err, data) =&gt; {                 if (err) {                     console.log(err);                     return;                 }                 console.log(data.toString());             })         }     } }</code></p>
+<p><strong>然后我们加上TS配置：</strong></p>
+<p>src目录下创建vue.sfc.d.ts全局声明文件:</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 配置ts读取.vue文件 declare module &quot;*.vue&quot;{   import Vue from 'vue'   export default Vue }</code></p>
+<p>安装TS依赖：</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install typescript -d npm install ts-loader -d</code></p>
+<p>在webpack.main.config.js 和 webpack.renderer.config.js加上TS配置：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>...... module: {     rules: [       {         test: /\.ts$/,         use: {         loader: &quot;ts-loader&quot;,         options: {            appendTsSuffixTo: [/\.vue$/],           }         }       }, ......  resolve: {     extensions: ['.ts','.js', '.json', '.node'],   }, ......</code></p>
+<p>增加了TS配置，就需要把原有js文件改为ts文件。然后我们必须在webpack.renderer.config.js配置一个东西:在whiteListedModules中多加一个vue-property-decorator的选项：</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>//webpack.renderer.config.js let whiteListedModules = ['vue','vue-property-decorator']</code></p>
+<p>tsc &ndash;init 生成tsconfig.json</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&quot;strict&quot;: false, &quot;experimentalDecorators&quot;:true,</code></p>
+<p>这样，我们就成功的引入了TS。</p>
+<p><strong>网上有成功的案例可以参考：</strong></p>
+<p>tiny-evt：Vite2 + Vue3 + Electron12 + TypeScript git： <a href="https://link.juejin.cn/?target=https%3A%2F%2Fgithub.com%2Fneatfx%2Ftiny-evt" title="https://link.juejin.cn/?target=https%3A%2F%2Fgithub.com%2Fneatfx%2Ftiny-evt">github.com/neatfx/tiny…</a></p>
+<p>因为要集成vite，所以我这边对比了下，选择了脚手架evv：</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm init evv</code></p>
+<h1 id="7-electron--react--ts方案">7. electron + react + ts方案<a hidden class="anchor" aria-hidden="true" href="#7-electron--react--ts方案">#</a></h1>
+<p><strong>创建react+ts项目：</strong></p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install -g create-react-app create-react-app electron-react --template typescript cd electron-react npm start</code></p>
+<p><strong>安装 react-app-rewired 、 cross-env 和 customize-cra</strong> <code>npm i -D react-app-rewired cross-env customize-cra</code> react-app-rewired2.x以后需要安装customize-cra来实现修改webpack配置 安装之后需要修改下package.json中scripts的一些配置，主要是将 start、build、test 命令的react-scripts改成react-app-rewired：</p>
+<p>json</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/* package.json */ &quot;scripts&quot;: {    &quot;start&quot;: &quot;react-app-rewired start&quot;,    &quot;build&quot;: &quot;react-app-rewired build&quot;,    &quot;test&quot;: &quot;react-app-rewired test&quot;, }</code></p>
+<p><strong>引入babel-plugin-import：</strong> <code>npm install babel-plugin-import --save-dev</code></p>
+<p><strong>安装 react-app-rewired 、 cross-env 和 customize-cra：</strong> <code>npm i -D react-app-rewired cross-env customize-cra</code></p>
+<p><strong>创建 react-app-rewired 配置文件 config-overrides.js 用于扩展 webpack 配置：</strong></p>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/* config-overrides.js */ const { override, fixBabelImports, } = require(&quot;customize-cra&quot;); module.exports = override(   fixBabelImports(&quot;import&quot;, {     libraryName: &quot;antd&quot;, libraryDirectory: &quot;es&quot;, style: 'css',   }), );</code></p>
+<p><strong>安装 electron 环境并配置入口文件：</strong> <code>npm i -D electron</code></p>
+<p>main.js文件放在public下就好。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/* main.js */ const { app, BrowserWindow } = require('electron'); const path = require('path'); let mainWindow = null; const createWindow = () =&gt; {   let mainWindow = new BrowserWindow({     width: 800,     height: 600,     webPreferences: {       nodeIntegration: true,     }   });   /**    * loadURL 分为两种情况    *  1.开发环境，指向 react 的开发环境地址    *  2.生产环境，指向 react build 后的 index.html    */   const startUrl =     process.env.NODE_ENV === 'development'       ? 'http://localhost:3000'       :  path.join(__dirname, &quot;/build/index.html&quot;);   mainWindow.loadURL(startUrl);   mainWindow.on('closed', function () {     mainWindow = null;   }); }; app.on('ready', createWindow); app.on('window-all-closed', function () {   if (process.platform !== 'darwin') app.quit(); }); app.on('activate', function () {   if (mainWindow === null) createWindow(); });</code></p>
+<p><strong>修改下package文件：</strong></p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/* package.json */ &quot;main&quot;: &quot;main.js&quot;, &quot;author&quot;: &quot;L&quot;, &quot;description&quot;: &quot;electron-react&quot;, &quot;scripts&quot;: {     &quot;start&quot;: &quot;cross-env BROWSER=none react-app-rewired start&quot;,     &quot;start-electron&quot;: &quot;cross-env NODE_ENV=development electron .&quot;,     &quot;start-electron-prod&quot;: &quot;electron .&quot; },</code></p>
+<p>npm run start-electron</p>
+<p>运行即可。</p>
+<p>要求引入vite，所以我们需要把webpack替换为vite，经过思考，我选择了wp2vite。</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install -g wp2vite npm install</code></p>
+<p>wp2vite是一个和工具，可以一键让使用webpack来进行开发和构建的项目支持使用vite来进行开发和构建(目前只支持vue和react)。</p>
+<h1 id="8-打包electron-builder">8. 打包(electron-builder)<a hidden class="anchor" aria-hidden="true" href="#8-打包electron-builder">#</a></h1>
+<p>electron-vue已经集成好了打包工具，但是还是有很多问题，这里我记录一下：</p>
+<ol>
+<li>依赖要用npm或者yarn，不能使用cnpm。</li>
+<li>下载依赖后单独下载electron-build依赖，这里要用cnpm，npm和yarn无法下载。</li>
+<li>build.js中出现命名重复的问题，有两对tasks，修改其中一对即可。</li>
+<li>手动配置安装包，一定要这个路径：C:\Users\Administrator\AppData\Local\electron\Cache，把安装包放在该路径下，安装包名称为electron-v2.0.9-win32-x64.zip，我放到gitlab上了。</li>
+<li>手动下载multispinner， npm install multispinner -D，build.js中添加</li>
+</ol>
+<p>const Multispinner = require(&lsquo;multispinner&rsquo;)。</p>
+<p>下面我们配置下electron-react的打包功能。 <code>npm i -D electron-builder</code></p>
+<p><strong>然后配置一些打包相关的参数：</strong></p>
+<p>kotlin</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/* package.json */   &quot;homepage&quot;: &quot;.&quot;, // 避免css等资源找不到的情况   &quot;scripts&quot;: {     &quot;build-electron&quot;: &quot;electron-builder&quot;   },   &quot;build&quot;: {     // 软件包名     &quot;appId&quot;: &quot;com.xxx.xxx&quot;,     // 项目名，也是生成的安装文件名     &quot;productName&quot;: &quot;L&quot;,     // 版权信息     &quot;copyright&quot;: &quot;L © 2021&quot;,     // 不配置extends为null打包的时候会报错：Application entry file &quot;build/electron.js&quot; does not exist     &quot;extends&quot;: null,     &quot;directories&quot;: {         // 输出文件路径       &quot;output&quot;: &quot;build-electron&quot;     },     &quot;files&quot;: [       &quot;./build/**/*&quot;,       &quot;./main.js&quot;,       &quot;./package.json&quot;     ],     &quot;win&quot;: { // win相关配置       &quot;icon&quot;: &quot;./favicon_256.ico&quot;,       /* 打包生成的启动文件的命名方式 */       &quot;artifactName&quot;: &quot;${productName}.${ext}&quot;     },     &quot;nsis&quot;: {        // 是否一键安装，不可更改目录等选项，默认为true       &quot;oneClick&quot;: false,       // 是否允许权限提升。如果为false，则用户必须使用提升的权限重新启动安装程序。       &quot;allowElevation&quot;: true,       // 是否允许更改安装路径       &quot;allowToChangeInstallationDirectory&quot;: true,       // 是否创建桌面图标       &quot;createDesktopShortcut&quot;: true,       // 创建开始菜单图标       &quot;createStartMenuShortcut&quot;: true,       // 安装完成请求运行       &quot;runAfterFinish&quot;: true,       // 安装包图标       &quot;installerIcon&quot;: &quot;./favicon_256.ico&quot;,        //卸载程序图标       &quot;uninstallerIcon&quot;: &quot;./favicon_256.ico&quot;,       // 安装时头部图标       &quot;installerHeaderIcon&quot;: &quot;./build/icons/aaa.ico&quot;,       // 桌面图标名称       &quot;shortcutName&quot;: &quot;L&quot;     }   },</code></p>
+<p>在public下新建electron.js文件，内容与main.js文件内容一致，然后将</p>
+<p>rust</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>win.loadURL('http://localhost:3000/');</code></p>
+<p>修改为</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>win.loadURL(`file://${__dirname}/index.html`);</code></p>
+<p>然后将package.json中的&quot;main&quot;项修改为&quot;public/electron.js&quot;，并增加&quot;build&quot;项：</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&quot;build&quot;: {   &quot;appId&quot;: &quot;com.example.electron-cra&quot;,   &quot;files&quot;: [     &quot;build/**/*&quot;,     &quot;node_modules/**/*&quot;   ],   &quot;directories&quot;:{     &quot;buildResources&quot;: &quot;assets&quot;   },   &quot;extraMetadata&quot;:{       &quot;main&quot;:&quot;build/electron.js&quot;     } }</code></p>
+<p>npm run build-electron即可。</p>
+<h1 id="9-electron模块梳理">9. Electron模块梳理<a hidden class="anchor" aria-hidden="true" href="#9-electron模块梳理">#</a></h1>
+<p>注： 只归纳了一些常用方法，具体可以看： <a href="https://link.juejin.cn/?target=https%3A%2F%2Fwww.w3cschool.cn%2Felectronmanual%2Felectronmanual-desktop-capturer.html" title="https://link.juejin.cn/?target=https%3A%2F%2Fwww.w3cschool.cn%2Felectronmanual%2Felectronmanual-desktop-capturer.html">www.w3cschool.cn/electronman…</a></p>
+<h2 id="91-shell">9.1 shell<a hidden class="anchor" aria-hidden="true" href="#91-shell">#</a></h2>
+<p>shell 模块提供了集成其他桌面客户端的关联功能.</p>
+<p>在用户默认浏览器中打开URL的示例:</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var shell = require('shell'); shell.openExternal('https://github.com');</code></p>
+<p>**9.1.1 shell.showItemInFolder(fullPath)**</p>
+<p>打开文件所在文件夹,一般情况下还会选中它。</p>
+<p><strong>9.1.2 shell.openItem(fullPath)</strong></p>
+<p>以默认打开方式打开文件。</p>
+<p><strong>9.1.3 shell.openExternal(url)</strong></p>
+<p>以系统默认设置打开外部协议.(例如,mailto: <a href="https://link.juejin.cn/?target=mailto%3Asomebody%40somewhere.io" title="https://link.juejin.cn/?target=mailto%3Asomebody%40somewhere.io">somebody@somewhere.io</a>会打开用户默认的邮件客户端)。</p>
+<p><strong>9.1.4 shell.moveItemToTrash(fullPath)</strong></p>
+<p>删除指定路径文件,并返回此操作的状态值(boolean类型)。</p>
+<p><strong>9.1.5 shell.beep()</strong></p>
+<p>播放 beep 声音（也就是嘟嘟声）。</p>
+<h2 id="92-screen">9.2 screen<a hidden class="anchor" aria-hidden="true" href="#92-screen">#</a></h2>
+<p>screen 模块检索屏幕的 size，显示，鼠标位置等的信息。在 app 模块的ready 事件触发之前不可使用这个模块。</p>
+<p>注意: 在渲染进程 / 开发者工具栏, window.screen 是一个预设值的 DOM 属性, 所以这样写 var screen = require(&rsquo;electron&rsquo;).screen 将不会工作。</p>
+<p>示例：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const electron = require('electron'); const app = electron.app; const BrowserWindow = electron.BrowserWindow; var mainWindow; app.on('ready', function() {   var electronScreen = electron.screen;   var size = electronScreen.getPrimaryDisplay().workAreaSize;   mainWindow = new BrowserWindow({ width: size.width, height: size.height }); });</code></p>
+<p>**Display 对象：**</p>
+<p>Display 对象表示了物力方式连接系统. 一个伪造的 Display 或许存在于一个无头系统中，或者一个 Display 相当于一个远程的、虚拟的 display.</p>
+<p><strong>screen模块会触发三种事件：</strong> Event: &lsquo;display-added&rsquo;</p>
+<p>返回:</p>
+<p>event Event newDisplay Object 当添加了 newDisplay 时发出事件</p>
+<p>Event: &lsquo;display-removed&rsquo;</p>
+<p>返回:</p>
+<p>event Event oldDisplay Object 当移出了 oldDisplay 时发出事件</p>
+<p>Event: &lsquo;display-metrics-changed&rsquo;</p>
+<p>返回:</p>
+<p>event Event display Object changedMetrics Array</p>
+<p><strong>9.2.1 screen.getCursorScreenPoint()</strong></p>
+<p>返回当前鼠标的绝对路径 .</p>
+<p>screen.getPrimaryDisplay()</p>
+<p>返回最主要的 display.</p>
+<p>screen.getAllDisplays()</p>
+<p>返回一个当前可用的 display 数组.</p>
+<p><strong>9.2.2 screen.getDisplayNearestPoint(point)</strong></p>
+<p>point Object x Integer y Integer</p>
+<p>返回离指定点最近的 display.</p>
+<p><strong>9.2.3 screen.getDisplayMatching(rect)</strong></p>
+<p>rect Object x Integer y Integer width Integer height Integer</p>
+<p>返回与提供的边界范围最密切相关的 display.</p>
+<h2 id="93-clipboard">9.3 clipboard<a hidden class="anchor" aria-hidden="true" href="#93-clipboard">#</a></h2>
+<p>clipboard 模块提供方法来供复制和粘贴操作。</p>
+<p>示例：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const clipboard = require('electron').clipboard; clipboard.writeText('Example String');</code></p>
+<p>**9.3.1 clipboard.readText([type])**</p>
+<p>type String (可选)</p>
+<p>以纯文本形式从 clipboard 返回内容</p>
+<p><strong>9.3.2 clipboard.writeText(text[, type])</strong></p>
+<p>text String type String (可选)</p>
+<p>以纯文本形式向 clipboard 添加内容</p>
+<p><strong>9.3.3 clipboard.readHtml([type])</strong></p>
+<p>type String (可选)</p>
+<p>返回 clipboard 中的标记内容</p>
+<p><strong>9.3.4 clipboard.writeHtml(markup[, type])</strong></p>
+<p>markup String type String (可选)</p>
+<p>向 clipboard 添加 markup(标记) 内容</p>
+<p><strong>9.3.5 clipboard.readImage([type])</strong></p>
+<p>type String (可选)</p>
+<p>从 clipboard 中返回 NativeImage(本地图像) 内容</p>
+<p><strong>9.3.6 clipboard.writeImage(image[, type])</strong></p>
+<p>image NativeImage type String (可选)</p>
+<p>向 clipboard 中写入 image</p>
+<p><strong>9.3.7 clipboard.clear([type])</strong></p>
+<p>type String (可选)</p>
+<p>清空 clipboard 内容</p>
+<h2 id="94-crashreporter">9.4 crashReporter<a hidden class="anchor" aria-hidden="true" href="#94-crashreporter">#</a></h2>
+<p>crash-reporter 模块开启发送应用崩溃报告。</p>
+<p>下面是一个自动提交崩溃报告给服务器的例子 :</p>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const crashReporter = require('electron').crashReporter; crashReporter.start({   productName: 'YourName',   companyName: 'YourCompany',   submitURL: 'https://your-domain.com/url-to-submit',   autoSubmit: true });</code></p>
+<p>**9.4.1 crashReporter.start(options)**</p>
+<p>options:</p>
+<p>companyName String</p>
+<p>submitURL String - 崩溃报告发送的路径，以post方式.</p>
+<p>productName String (可选) - 默认为 Electron.</p>
+<p>autoSubmit Boolean - 是否自动提交. 默认为 true.</p>
+<p>ignoreSystemCrashHandler Boolean - 默认为 false.</p>
+<p>extra Object - 一个你可以定义的对象，附带在崩溃报告上一起发送 . 只有字符串属性可以被正确发送，不支持嵌套对象.</p>
+<p>注： 只可以在使用其它 crashReporter APIs 之前使用这个方法.</p>
+<p><strong>9.4.2 crashReporter.getLastCrashReport()</strong></p>
+<p>返回最后一个崩溃报告的日期和 ID.如果没有过崩溃报告发送过来，或者还没有开始崩溃报告搜集，将返回 null .</p>
+<p><strong>9.4.3 crashReporter.getUploadedReports()</strong></p>
+<p>返回所有上载的崩溃报告，每个报告包含了上载日期和 ID.</p>
+<h2 id="95-nativeimage">9.5 nativeImage<a hidden class="anchor" aria-hidden="true" href="#95-nativeimage">#</a></h2>
+<p>在 Electron 中, 对所有创建 images 的 api 来说, 你可以使用文件路径或 nativeImage 实例. 如果使用 null ，将创建一个空的image 对象.</p>
+<p>当创建一个 tray(图标) 或设置窗口的图标时候，你可以使用一个字符串的图片路径 :</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var appIcon = new Tray('/Users/somebody/images/icon.png'); var window = new BrowserWindow({icon: '/Users/somebody/images/window.png'});</code></p>
+<p>或者从剪切板中读取图片，它返回的是 nativeImage:</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var image = clipboard.readImage(); var appIcon = new Tray(image);</code></p>
+<p><strong>支持的格式</strong></p>
+<p>当前支持 PNG 和 JPEG 图片格式. 推荐 PNG ，因为它支持透明和无损压缩.</p>
+<p>在 Windows, 你也可以使用 ICO 图标的格式.</p>
+<p><strong>9.5.1 nativeImage.createEmpty()</strong></p>
+<p>创建一个空的 nativeImage 实例.</p>
+<p><strong>9.5.2 nativeImage.createFromPath(path)</strong></p>
+<p>path String</p>
+<p>从指定 path 创建一个新的 nativeImage 实例 .</p>
+<p><strong>9.5.3 nativeImage.createFromBuffer(buffer[, scaleFactor])</strong></p>
+<p>buffer Buffer scaleFactor Double (可选)</p>
+<p>从 buffer 创建一个新的 nativeImage 实例 .默认 scaleFactor 是 1.0.</p>
+<p><strong>9.5.4 nativeImage.createFromDataURL(dataURL)</strong></p>
+<p>dataURL String</p>
+<p>从 dataURL 创建一个新的 nativeImage 实例 .</p>
+<h2 id="96-ipcrenderer">9.6 ipcRenderer<a hidden class="anchor" aria-hidden="true" href="#96-ipcrenderer">#</a></h2>
+<p>ipcRenderer 模块是一个 EventEmitter(事件派发器) 类的实例. 它提供了有限的方法，你可以从渲染进程向主进程发送同步或异步消息. 也可以收到主进程的响应.</p>
+<p><strong>9.6.1 ipcRenderer.on(channel, listener)</strong></p>
+<p>channel String listener Function</p>
+<p>监听 channel, 当有新消息到达，使用 listener(event, args&hellip;) 调用 listener .</p>
+<p><strong>9.6.2 ipcRenderer.once(channel, listener)</strong></p>
+<p>channel String listener Function</p>
+<p>为这个事件添加一个一次性 listener 函数.这个 listener 将在下一次有新消息被发送到 channel 的时候被请求调用，之后就被删除了.</p>
+<p><strong>9.6.3 ipcRenderer.removeListener(channel, listener)</strong></p>
+<p>channel String listener Function</p>
+<p>从指定的 channel 中的监听者数组删除指定的 listener .</p>
+<p><strong>9.6.4 ipcRenderer.removeAllListeners([channel])</strong></p>
+<p>channel String (optional)</p>
+<p>删除所有的监听者，或者删除指定 channel 中的全部.</p>
+<p><strong>9.6.5 ipcRenderer.send(channel[, arg1][, arg2][, &hellip;])</strong></p>
+<p>channel String arg (可选)</p>
+<p>通过 channel 向主进程发送异步消息，也可以发送任意参数.参数会被JSON序列化，之后就不会包含函数或原型链.</p>
+<p>主进程通过使用 ipcMain 模块来监听 channel，从而处理消息.</p>
+<p><strong>9.6.6 ipcRenderer.sendToHost(channel[, arg1][, arg2][, &hellip;])</strong></p>
+<p>channel String arg (可选)</p>
+<p>类似 ipcRenderer.send ，但是它的事件将发往 host page 的 元素，而不是主进程.</p>
+<h2 id="97-desktopcapturer">9.7 desktopCapturer<a hidden class="anchor" aria-hidden="true" href="#97-desktopcapturer">#</a></h2>
+<p>desktopCapturer 模块可用来获取可用资源，这个资源可通过 getUserMedia 捕获得到。</p>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 在渲染进程中. var desktopCapturer = require('electron').desktopCapturer; desktopCapturer.getSources({types: ['window', 'screen']}, function(error, sources) {   if (error) throw error;   for (var i = 0; i &lt; sources.length; ++i) {     if (sources[i].name == &quot;Electron&quot;) {       navigator.webkitGetUserMedia({         audio: false,         video: {           mandatory: {             chromeMediaSource: 'desktop',             chromeMediaSourceId: sources[i].id,             minWidth: 1280,             maxWidth: 1280,             minHeight: 720,             maxHeight: 720           }         }       }, gotStream, getUserMediaError);       return;     }   } }); function gotStream(stream) {   document.querySelector('video').src = URL.createObjectURL(stream); } function getUserMediaError(e) {   console.log('getUserMediaError'); }</code></p>
+<p>当调用 navigator.webkitGetUserMedia 时创建一个约束对象，如果使用 desktopCapturer 的资源，必须设置 chromeMediaSource 为 &ldquo;desktop&rdquo; ，并且 audio 为 false.</p>
+<p>如果你捕获整个桌面的 audio 和 video，你可以设置 chromeMediaSource 为 &ldquo;screen&rdquo; ，和 audio 为 true. 当使用这个方法的时候，不可以指定一个 chromeMediaSourceId.</p>
+<p><strong>9.7.1 desktopCapturer.getSources(options, callback)</strong></p>
+<p>options Object types Array - 一个 String 数组，列出了可以捕获的桌面资源类型, 可用类型为 screen 和 window. thumbnailSize Object (可选) - 建议缩略可被缩放的 size, 默认为 {width: 150, height: 150}. callback Function</p>
+<p>发起一个请求，获取所有桌面资源，当请求完成的时候使用 callback(error, sources) 调用 callback .</p>
+<h2 id="98-remote">9.8 remote<a hidden class="anchor" aria-hidden="true" href="#98-remote">#</a></h2>
+<p>remote 模块提供了一种在渲染进程（网页）和主进程之间进行进程间通讯（IPC）的简便途径。</p>
+<p>Electron中, 与GUI相关的模块（如 dialog, menu 等)只存在于主进程，而不在渲染进程中 。为了能从渲染进程中使用它们，需要用ipc模块来给主进程发送进程间消息。使用 remote 模块，可以调用主进程对象的方法，而无需显式地发送进程间消息，这类似于 Java 的 RMI。</p>
+<p>下面是从渲染进程创建一个浏览器窗口的例子：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const remote = require('electron').remote; const BrowserWindow = remote.BrowserWindow; var win = new BrowserWindow({ width: 800, height: 600 }); win.loadURL('https://github.com');</code></p>
+<p>注意: 反向操作（从主进程访问渲染进程），可以使用webContents.executeJavascript.</p>
+<p><strong>9.8.1 remote.require(module)</strong></p>
+<p>module String</p>
+<p>返回在主进程中执行 require(module) 所返回的对象。</p>
+<p><strong>9.8.2 remote.getCurrentWindow()</strong></p>
+<p>返回该网页所属的 BrowserWindow 对象。</p>
+<p><strong>9.8.3 remote.getCurrentWebContents()</strong></p>
+<p>返回该网页的 WebContents 对象</p>
+<p><strong>9.8.4 remote.getGlobal(name)</strong></p>
+<p>name String</p>
+<p>返回在主进程中名为 name 的全局变量(即 global[name]) 。</p>
+<p><strong>9.8.5 remote.process</strong></p>
+<p>返回主进程中的 process 对象。等同于 remote.getGlobal(&lsquo;process&rsquo;) 但是有缓存。</p>
+<h2 id="99-webframe">9.9 webFrame<a hidden class="anchor" aria-hidden="true" href="#99-webframe">#</a></h2>
+<p>web-frame 模块允许你自定义如何渲染当前网页 .</p>
+<p>示例：放大当前页到 200%.</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var webFrame = require('electron').webFrame; webFrame.setZoomFactor(2);</code></p>
+<p><strong>9.9.1 webFrame.setZoomFactor(factor)</strong></p>
+<p>factor Number - 缩放参数.</p>
+<p>将缩放参数修改为指定的参数值.缩放参数是百分制的，所以 300% = 3.0.</p>
+<p><strong>9.9.2 webFrame.getZoomFactor()</strong></p>
+<p>返回当前缩放参数值.</p>
+<p><strong>9.9.3 webFrame.registerURLSchemeAsSecure(scheme)</strong></p>
+<p>scheme String</p>
+<p>注册 scheme 为一个安全的 scheme.</p>
+<p>安全的 schemes 不会引发混合内容 warnings.例如, https 和 data 是安全的 schemes ，因为它们不能被活跃网络攻击而失效.</p>
+<p><strong>9.9.4 webFrame.registerURLSchemeAsBypassingCSP(scheme)</strong></p>
+<p>scheme String</p>
+<p>忽略当前网页内容的安全策略，直接从 scheme 加载.</p>
+<p><strong>9.9.4 webFrame.executeJavaScript(code[, userGesture])</strong></p>
+<p>code String userGesture Boolean (可选) - 默认为 false.</p>
+<p>评估页面代码 .</p>
+<p>在浏览器窗口中，一些 HTML APIs ，例如 requestFullScreen，只可以通过用户手势来使用.设置userGesture 为 true 可以突破这个限制</p>
+<h2 id="910-app">9.10 app<a hidden class="anchor" aria-hidden="true" href="#910-app">#</a></h2>
+<p>app 模块是为了控制整个应用的生命周期设计的。</p>
+<p>示例：</p>
+<p>最后一个窗口被关闭时退出应用：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var app = require('app'); app.on('window-all-closed', function() {   app.quit(); });</code></p>
+<p><strong>事件：&lsquo;ready&rsquo;</strong></p>
+<p>当 Electron 完成初始化时被触发。</p>
+<p><strong>事件：&lsquo;window-all-closed&rsquo;</strong></p>
+<p>当所有的窗口都被关闭时触发。</p>
+<p>这个时间仅在应用还没有退出时才能触发。 如果用户按下了 Cmd + Q， 或者开发者调用了 app.quit() ，Electron 将会先尝试关闭所有的窗口再触发 will-quit 事件， 在这种情况下 window-all-closed 不会被触发。</p>
+<p><strong>事件：&lsquo;before-quit&rsquo;</strong></p>
+<p>返回：</p>
+<p>event Event</p>
+<p>在应用程序开始关闭它的窗口的时候被触发。 调用 event.preventDefault() 将会阻止终止应用程序的默认行为。</p>
+<p><strong>事件：&lsquo;browser-window-focus&rsquo;</strong></p>
+<p>返回：</p>
+<p>event Event</p>
+<p>window BrowserWindow</p>
+<p>当一个 BrowserWindow 获得焦点的时候触发。</p>
+<p><strong>事件：&lsquo;browser-window-created&rsquo;</strong></p>
+<p>返回：</p>
+<p>event Event</p>
+<p>window BrowserWindow</p>
+<p>当一个 BrowserWindow 被创建的时候触发。</p>
+<p><strong>9.10.1 app.quit()</strong></p>
+<p>试图关掉所有的窗口。before-quit 事件将会最先被触发。如果所有的窗口都被成功关闭了， will-quit事件将会被触发，默认下应用将会被关闭。</p>
+<p>这个方法保证了所有的 beforeunload 和 unload 事件处理器被正确执行。假如一个窗口的 beforeunload事件处理器返回 false，那么整个应用可能会取消退出。</p>
+<p><strong>9.10.2 app.hide() OS X</strong></p>
+<p>隐藏所有的应用窗口，不是最小化.</p>
+<p><strong>9.10.3 app.getAppPath()</strong></p>
+<p>返回当前应用所在的文件路径。</p>
+<p><strong>9.10.4 app.clearRecentDocuments() OS X Windows</strong></p>
+<p>清除最近访问的文档列表。</p>
+<p><strong>9.10.5 app.isAeroGlassEnabled() Windows</strong></p>
+<p>如果 DWM composition(Aero Glass) 启用 了，那么这个方法会返回 true，否则是 false。你可以用这个方法来决定是否要开启透明窗口特效，因为如果用户没开启 DWM，那么透明窗 口特效是无效的。</p>
+<h2 id="911-browserwindow">9.11 BrowserWindow<a hidden class="anchor" aria-hidden="true" href="#911-browserwindow">#</a></h2>
+<p>BrowserWindow</p>
+<p>类让你有创建一个浏览器窗口的权力。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// In the main process. const BrowserWindow = require('electron').BrowserWindow; // Or in the renderer process. const BrowserWindow = require('electron').remote.BrowserWindow; var win = new BrowserWindow({ width: 800, height: 600, show: false }); win.on('closed', function() {   win = null; }); win.loadURL('https://github.com'); win.show();</code></p>
+<p>你也可以不通过chrome创建窗口，使用 Frameless Window(无框窗口) API.</p>
+<p><strong>Event: &lsquo;page-title-updated&rsquo;</strong></p>
+<p>返回:</p>
+<p>event Event</p>
+<p>当文档改变标题时触发,使用 event.preventDefault() 可以阻止原窗口的标题改变.</p>
+<p><strong>Event: &lsquo;close&rsquo;</strong></p>
+<p>返回:</p>
+<p>event Event 在窗口要关闭的时候触发. 它在DOM的 beforeunload and unload 事件之前触发.使用 event.preventDefault() 可以取消这个操作</p>
+<p>通常你想通过 beforeunload 处理器来决定是否关闭窗口，但是它也会在窗口重载的时候被触发。在 Electron 中，返回一个空的字符串或 false 可以取消关闭.</p>
+<p><strong>Event: &lsquo;unresponsive&rsquo;</strong></p>
+<p>在界面卡死的时候触发事件.</p>
+<p><strong>Event: &lsquo;minimize&rsquo;</strong></p>
+<p>在窗口最小化的时候触发.</p>
+<p><strong>Event: &lsquo;scroll-touch-begin&rsquo; OS X</strong></p>
+<p>在滚动条事件开始的时候触发.</p>
+<p><strong>BrowserWindow.getAllWindows()</strong></p>
+<p>返回一个所有已经打开了窗口的对象数组.</p>
+<p><strong>BrowserWindow.getFocusedWindow()</strong></p>
+<p>返回应用当前获得焦点窗口,如果没有就返回 null.</p>
+<p>使用 new BrowserWindow 创建的实例对象，有如下属性:</p>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// In this example `win` is our instance var win = new BrowserWindow({ width: 800, height: 600 });</code></p>
+<p>win.webContents</p>
+<p>这个窗口的 WebContents 对象，所有与界面相关的事件和方法都通过它完成的.</p>
+<p>查看 webContents documentation 的方法和事件.</p>
+<p>win.id</p>
+<p>窗口的唯一id.</p>
+<p><strong>实例方法</strong></p>
+<p>使用 new BrowserWindow 创建的实例对象，有如下方法:</p>
+<p><strong>win.destroy()</strong></p>
+<p>强制关闭窗口, unload and beforeunload 不会触发，并且 close 也不会触发, 但是它保证了 closed 触发.</p>
+<p><strong>win.close()</strong></p>
+<p>尝试关闭窗口，这与用户点击关闭按钮的效果一样. 虽然网页可能会取消关闭，查看 close event.</p>
+<p><strong>win.focus()</strong></p>
+<p>窗口获得焦点.</p>
+<p><strong>win.show()</strong></p>
+<p>展示并且使窗口获得焦点.</p>
+<p><strong>win.hide()</strong></p>
+<p>隐藏窗口.</p>
+<p><strong>win.maximize()</strong></p>
+<p>窗口最大化.</p>
+<p><strong>win.minimize()</strong></p>
+<p>窗口最小化. 在一些os中，它将在dock中显示.</p>
+<p><strong>win.setBounds(options[, animate])</strong></p>
+<p>options Object</p>
+<p>x Integer</p>
+<p>y Integer</p>
+<p>width Integer</p>
+<p>height Integer</p>
+<p>animate Boolean (可选) OS X</p>
+<p>重新设置窗口的宽高值，并且移动到指定的 x, y 位置.</p>
+<p><strong>win.getBounds()</strong></p>
+<p>返回一个对象，它包含了窗口的宽，高，x坐标，y坐标.</p>
+<p><strong>win.setSize(width, height[, animate])</strong></p>
+<p>width Integer</p>
+<p>height Integer</p>
+<p>animate Boolean (可选) OS X</p>
+<p>重新设置窗口的宽高值.</p>
+<p><strong>win.setContentSize(width, height[, animate])</strong></p>
+<p>width Integer</p>
+<p>height Integer</p>
+<p>animate Boolean (可选) OS X</p>
+<p>重新设置窗口客户端的宽高值（例如网页界面）.</p>
+<p><strong>win.center()</strong></p>
+<p>窗口居中.</p>
+<h2 id="912-webcontents">9.12 webContents<a hidden class="anchor" aria-hidden="true" href="#912-webcontents">#</a></h2>
+<p>webContents 是一个 事件发出者.</p>
+<p>它负责渲染并控制网页，也是 BrowserWindow 对象的属性.一个使用 webContents 的例子:</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const BrowserWindow = require('electron').BrowserWindow; var win = new BrowserWindow({width: 800, height: 1500}); win.loadURL(&quot;https://www.w3cschool.cn&quot;); var webContents = win.webContents;</code></p>
+<p>webContents 对象可发出下列事件:</p>
+<p><strong>Event: &lsquo;did-finish-load&rsquo;</strong></p>
+<p>当导航完成时发出事件，onload 事件也完成.</p>
+<p><strong>Event: &lsquo;did-start-loading&rsquo;</strong></p>
+<p>当 tab 的spinner 开始 spinning的时候.</p>
+<p><strong>Event: &lsquo;did-stop-loading&rsquo;</strong></p>
+<p>当 tab 的spinner 结束 spinning的时候.</p>
+<p><strong>Event: &rsquo;new-window&rsquo;</strong></p>
+<p>返回:</p>
+<p>event Event</p>
+<p>url String</p>
+<p>frameName String</p>
+<p>disposition String - 可为 default, foreground-tab, background-tab, new-window 和 other.</p>
+<p>options Object - 创建新的 BrowserWindow时使用的参数.</p>
+<p>当 page 请求打开指定 url 窗口的时候发出事件.这可以是通过 window.open 或一个外部连接</p>
+<p>发出的请求.</p>
+<p><a href="https://link.juejin.cn/?target=undefined" title="https://link.juejin.cn/?target=undefined"></a></p>
+<p>默认指定 url 的 BrowserWindow 会被创建.</p>
+<p>调用 event.preventDefault() 可以用来阻止打开窗口.</p>
+<p><strong>Event: &lsquo;will-navigate&rsquo;</strong> 返回:</p>
+<p>event Event</p>
+<p>url String</p>
+<p>当用户或 page 想要开始导航的时候发出事件.它可在当 window.location 对象改变或用户点击 page 中的链接的时候发生.</p>
+<p>当使用 api(如 webContents.loadURL 和 webContents.back) 以编程方式来启动导航的时候，这个事件将不会发出.</p>
+<p>它也不会在页内跳转发生， 例如点击锚链接或更新 window.location.hash.使用 did-navigate-in-page 事件可以达到目的.</p>
+<p>调用 event.preventDefault() 可以阻止导航.</p>
+<p><strong>Event: &lsquo;did-navigate&rsquo;</strong></p>
+<p>返回:</p>
+<p>event Event</p>
+<p>url String</p>
+<p>当一个导航结束时候发出事件.</p>
+<p>页内跳转时不会发出这个事件，例如点击锚链接或更新 window.location.hash.使用 did-navigate-in-page 事件可以达到目的.</p>
+<p><strong>Event: &lsquo;crashed&rsquo;</strong></p>
+<p>当渲染进程崩溃的时候发出事件.</p>
+<p><strong>Event: &lsquo;destroyed&rsquo;</strong></p>
+<p>当 webContents 被删除的时候发出事件</p>
+<p><strong>Event: &rsquo;login&rsquo;</strong></p>
+<p>返回:</p>
+<p>event Event</p>
+<p>request Object</p>
+<p>method String</p>
+<p>url URL</p>
+<p>referrer URL</p>
+<p>authInfo Object</p>
+<p>isProxy Boolean</p>
+<p>scheme String</p>
+<p>host String</p>
+<p>port Integer</p>
+<p>realm String</p>
+<p>callback Function</p>
+<p>当 webContents 想做基本验证的时候发出事件.</p>
+<p>使用方法类似 the login event of app.</p>
+<p><strong>实例方法</strong></p>
+<p>webContents 对象有如下的实例方法:</p>
+<p><strong>9.12.1 webContents.loadURL(url[, options])</strong></p>
+<p>url URL</p>
+<p>options Object (可选)</p>
+<p>httpReferrer String - A HTTP Referrer url.</p>
+<p>userAgent String - 产生请求的用户代理</p>
+<p>extraHeaders String - 以 &ldquo;\n&rdquo; 分隔的额外头</p>
+<p>在窗口中加载 url , url 必须包含协议前缀, 比如 http:// 或 file://. 如果加载想要忽略 http 缓存，可以使用 pragma 头来达到目的.</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const options = {&quot;extraHeaders&quot; : &quot;pragma: no-cache\n&quot;} webContents.loadURL(url, options)</code></p>
+<p><strong>9.12.2 webContents.isLoading()</strong></p>
+<p>返回一个布尔值，标识当前页是否正在加载.</p>
+<p><strong>9.12.3 webContents.isLoading()</strong></p>
+<p>返回一个布尔值，标识当前页是否正在加载.</p>
+<p><strong>9.12.4 webContents.reload()</strong></p>
+<p>重载当前页.</p>
+<p><strong>9.12.5 webContents.reloadIgnoringCache()</strong></p>
+<p>重载当前页，忽略缓存.</p>
+<p><strong>9.12.6 webContents.goBack()</strong></p>
+<p>让浏览器回退到前一个page.</p>
+<p><strong>9.12.7 webContents.goForward()</strong></p>
+<p>让浏览器回前往下一个page.</p>
+<p><strong>9.12.8 webContents.goToIndex(index)</strong></p>
+<p>index Integer</p>
+<p>让浏览器回前往指定 index 的page.</p>
+<p><strong>实例属性</strong></p>
+<p>WebContents 对象也有下列属性:</p>
+<p><strong>webContents.session</strong></p>
+<p>返回这个 webContents 使用的 session 对象.</p>
+<p><strong>webContents.hostWebContents</strong></p>
+<p>返回这个 webContents 的父 webContents .</p>
+<p><a href="https://link.juejin.cn/?target=undefined" title="https://link.juejin.cn/?target=undefined"></a></p>
+<p><a href="https://link.juejin.cn/?target=undefined" title="https://link.juejin.cn/?target=undefined"></a></p>
+<h2 id="913-ipcmain">9.13 ipcMain<a hidden class="anchor" aria-hidden="true" href="#913-ipcmain">#</a></h2>
+<p>ipcMain 模块是类 EventEmitter 的实例.当在主进程中使用它的时候，它控制着由渲染进程(web page)发送过来的异步或同步消息.从渲染进程发送过来的消息将触发事件.</p>
+<p><strong>发送消息</strong></p>
+<p>同样也可以从主进程向渲染进程发送消息，查看更多 webContents.send .</p>
+<p>发送消息，事件名为 channel.</p>
+<p>回应同步消息, 你可以设置 event.returnValue.</p>
+<p>回应异步消息, 你可以使用 event.sender.send(&hellip;).</p>
+<p>一个例子，在主进程和渲染进程之间发送和处理消息:</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// In main process. const ipcMain = require('electron').ipcMain; ipcMain.on('asynchronous-message', function(event, arg) {   console.log(arg);  // prints &quot;ping&quot;   event.sender.send('asynchronous-reply', 'pong'); }); ipcMain.on('synchronous-message', function(event, arg) {   console.log(arg);  // prints &quot;ping&quot;   event.returnValue = 'pong'; }); // In renderer process (web page). const ipcRenderer = require('electron').ipcRenderer; console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints &quot;pong&quot; ipcRenderer.on('asynchronous-reply', function(event, arg) {   console.log(arg); // prints &quot;pong&quot; }); ipcRenderer.send('asynchronous-message', 'ping');</code></p>
+<p><strong>监听消息</strong></p>
+<p>ipcMain 模块有如下监听事件方法:</p>
+<p><strong>9.13.1 ipcMain.on(channel, listener)</strong></p>
+<p>channel String</p>
+<p>listener Function</p>
+<p>监听 channel, 当新消息到达，将通过 listener(event, args&hellip;) 调用 listener.</p>
+<p><strong>9.13.2 ipcMain.once(channel, listener)</strong></p>
+<p>channel String</p>
+<p>listener Function</p>
+<p>为事件添加一个一次性用的listener 函数.这个 listener 只有在下次的消息到达 channel 时被请求调用，之后就被删除了.</p>
+<p><strong>9.13.3 ipcMain.removeListener(channel, listener)</strong></p>
+<p>channel String</p>
+<p>listener Function</p>
+<p>为特定的 channel 从监听队列中删除特定的 listener 监听者.</p>
+<p><strong>9.13.4 ipcMain.removeAllListeners([channel])</strong></p>
+<p>channel String (可选)</p>
+<p>删除所有监听者，或特指的 channel 的所有监听者.</p>
+<p><strong>事件对象</strong></p>
+<p>传递给 callback 的 event 对象有如下方法:</p>
+<p><strong>event.returnValue</strong></p>
+<p>将此设置为在一个同步消息中返回的值.</p>
+<p><strong>event.sender</strong></p>
+<p>返回发送消息的 webContents ，你可以调用 event.sender.send 来回复异步消息</p>
+<h2 id="914-dialog">9.14 dialog<a hidden class="anchor" aria-hidden="true" href="#914-dialog">#</a></h2>
+<p>dialog 模块提供了api来展示原生的系统对话框，例如打开文件框，alert框，所以web应用可以给用户带来跟系统应用相同的体验.</p>
+<p>对话框例子，展示了选择文件和目录:</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var win = ...;  // BrowserWindow in which to show the dialog const dialog = require('electron').dialog; console.log(dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]}));</code></p>
+<p>OS X 上的注意事项: 如果你想像sheets一样展示对话框，只需要在browserWindow 参数中提供一个 BrowserWindow 的引用对象.</p>
+<p><strong>9.14.1 dialog.showOpenDialog([browserWindow, ]options[, callback])</strong></p>
+<p>browserWindow BrowserWindow (可选)</p>
+<p>options Object</p>
+<p>title String</p>
+<p>defaultPath String</p>
+<p>filters Array</p>
+<p>properties Array - 包含了对话框的特性值, 可以包含 openFile, openDirectory, multiSelections and createDirectory</p>
+<p>callback Function (可选)</p>
+<p>成功使用这个方法的话，就返回一个可供用户选择的文件路径数组，失败返回 undefined.</p>
+<p>filters 当需要限定用户的行为的时候，指定一个文件数组给用户展示或选择. 例如:</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>{   filters: [     { name: 'Images', extensions: ['jpg', 'png', 'gif'] },     { name: 'Movies', extensions: ['mkv', 'avi', 'mp4'] },     { name: 'Custom File Type', extensions: ['as'] },     { name: 'All Files', extensions: ['*'] }   ] }</code></p>
+<p>extensions 数组应当只包含扩展名，不应该包含通配符或&rsquo;.&lsquo;号 (例如 &lsquo;png&rsquo; 正确，但是 &lsquo;.png&rsquo; 和 '</p>
+<p>.png&rsquo; 不正确). 展示全部文件的话, 使用 '</p>
+<p>&rsquo; 通配符 (不支持其他通配符).</p>
+<p>如果 callback 被调用, 将异步调用 API ，并且结果将用过 callback(filenames) 展示.</p>
+<p>注意: 在 Windows 和 Linux ，一个打开的 dialog 不能既是文件选择框又是目录选择框, 所以如果在这些平台上设置 properties 的值为 [&lsquo;openFile&rsquo;, &lsquo;openDirectory&rsquo;] , 将展示一个目录选择框.</p>
+<p><strong>9.14.2 dialog.showErrorBox(title, content)</strong></p>
+<p>展示一个传统的包含错误信息的对话框.</p>
+<p>在 app 模块触发 ready 事件之前，这个 api 可以被安全调用，通常它被用来在启动的早期阶段报告错误. 在 Linux 上，如果在 app 模块触发 ready 事件之前调用，message 将会被触发显示stderr(输出文件)，并且没有实际GUI 框显示.</p>
+<h2 id="915-menu">9.15 menu<a hidden class="anchor" aria-hidden="true" href="#915-menu">#</a></h2>
+<p>menu 类可以用来创建原生菜单，它可用作应用菜单和 context 菜单.</p>
+<p>这个模块是一个主进程的模块，并且可以通过 remote 模块给渲染进程调用.</p>
+<p>每个菜单有一个或几个菜单项 menu items，并且每个菜单项可以有子菜单.</p>
+<p>下面这个例子是在网页(渲染进程)中通过 remote 模块动态创建的菜单，并且右键显示:</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!-- index.html --&gt; &lt;script&gt; const remote = require('electron').remote; const Menu = remote.Menu; const MenuItem = remote.MenuItem; var menu = new Menu(); menu.append(new MenuItem({ label: 'MenuItem1', click: function() { console.log('item 1 clicked'); } })); menu.append(new MenuItem({ type: 'separator' })); menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true })); window.addEventListener('contextmenu', function (e) {   e.preventDefault();   menu.popup(remote.getCurrentWindow()); }, false); &lt;/script&gt;</code></p>
+<p><strong>9.15.1 Menu.setApplicationMenu(menu)</strong></p>
+<p>menu Menu</p>
+<p>在 OS X 上设置应用菜单 menu . 在windows 和 linux，是为每个窗口都在其顶部设置菜单 menu.</p>
+<p><strong>9.15.2 Menu.sendActionToFirstResponder(action) OS X</strong></p>
+<p>action String</p>
+<p>发送 action 给应用的第一个响应器.这个用来模仿 Cocoa 菜单的默认行为，通常你只需要使用 MenuItem的属性 role.</p>
+<p><strong>9.15.3 Menu.buildFromTemplate(template)</strong></p>
+<p>template Array</p>
+<p>一般来说，template 只是用来创建 MenuItem 的数组 参数 .</p>
+<p>你也可以向 template元素添加其它东西，并且他们会变成已经有的菜单项的属性.</p>
+<p><strong>实例方法</strong></p>
+<p>menu 对象有如下实例方法：</p>
+<p><strong>menu.popup([browserWindow, x, y, positioningItem])</strong></p>
+<p>browserWindow BrowserWindow (可选) - 默认为 null.</p>
+<p>x Number (可选) - 默认为 -1.</p>
+<p>y Number (必须 如果x设置了) - 默认为 -1.</p>
+<p>positioningItem Number (可选) OS X - 在指定坐标鼠标位置下面的菜单项的索引. 默认为 -1. 在 browserWindow 中弹出 context menu .你可以选择性地提供指定的 x, y 来设置菜单应该放在哪里,否则它将默认地放在当前鼠标的位置.</p>
+<p><strong>menu.append(menuItem)</strong></p>
+<p>menuItem MenuItem</p>
+<p>添加菜单项.</p>
+<p><strong>menu.insert(pos, menuItem)</strong></p>
+<p>pos Integer</p>
+<p>menuItem MenuItem</p>
+<p>在指定位置添加菜单项.</p>
+<p><strong>menu.items()</strong></p>
+<p>获取一个菜单项数组.</p>
+<h2 id="916-protocol">9.16 protocol<a hidden class="anchor" aria-hidden="true" href="#916-protocol">#</a></h2>
+<p>protocol 模块可以注册一个自定义协议，或者使用一个已经存在的协议.</p>
+<p>例子，使用一个与 file:// 功能相似的协议 :</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const electron = require('electron'); const app = electron.app; const path = require('path'); app.on('ready', function() {     var protocol = electron.protocol;     protocol.registerFileProtocol('atom', function(request, callback) {       var url = request.url.substr(7);       callback({path: path.normalize(__dirname + '/' + url)});     }, function (error) {       if (error)         console.error('Failed to register protocol')     }); });</code></p>
+<p>注意: 这个模块只有在 app 模块的 ready 事件触发之后才可使用.</p>
+<p><strong>9.16.1 protocol.registerStandardSchemes(schemes)</strong></p>
+<p>schemes Array - 将一个自定义的方案注册为标准的方案.</p>
+<p>一个标准的 scheme 遵循 RFC 3986 的 generic URI syntax 标准. 这包含了 file: 和 filesystem:.</p>
+<p><strong>9.16.2 protocol.registerServiceWorkerSchemes(schemes)</strong></p>
+<p>schemes Array - 将一个自定义的方案注册为处理 service workers.</p>
+<p><strong>9.16.3 protocol.unregisterProtocol(scheme[, completion])</strong></p>
+<p>scheme String</p>
+<p>completion Function (可选)</p>
+<p>注销自定义协议 scheme.</p>
+<h2 id="917-session">9.17 session<a hidden class="anchor" aria-hidden="true" href="#917-session">#</a></h2>
+<p>session 模块可以用来创建一个新的 Session 对象.</p>
+<p>你也可以通过使用 webContents 的属性 session 来使用一个已有页面的 session ，webContents是BrowserWindow 的属性.</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const BrowserWindow = require('electron').BrowserWindow; var win = new BrowserWindow({ width: 800, height: 600 }); win.loadURL(&quot;http://github.com&quot;); var ses = win.webContents.session;</code></p>
+<p><strong>实例事件</strong></p>
+<p>实例 Session 有以下事件:</p>
+<p><strong>Event: &lsquo;will-download&rsquo;</strong></p>
+<p>event Event</p>
+<p>item DownloadItem</p>
+<p>webContents WebContents</p>
+<p>当 Electron 将要从 webContents 下载 item 时触发.</p>
+<p>调用 event.preventDefault() 可以取消下载，并且在进程的下个 tick中，这个 item 也不可用.</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>session.defaultSession.on('will-download', function(event, item, webContents) {   event.preventDefault();   require('request')(item.getURL(), function(data) {     require('fs').writeFileSync('/somewhere', data);   }); });</code></p>
+<p><strong>实例方法</strong></p>
+<p><strong>9.17.1 ses.cookies</strong></p>
+<p>cookies 赋予你全力来查询和修改 cookies. 例如:</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 查询所有 cookies. session.defaultSession.cookies.get({}, function(error, cookies) {   console.log(cookies); }); // 查询与指定 url 相关的所有 cookies. session.defaultSession.cookies.get({ url : &quot;http://www.github.com&quot; }, function(error, cookies) {   console.log(cookies); }); // 设置 cookie; // may overwrite equivalent cookies if they exist. var cookie = { url : &quot;http://www.github.com&quot;, name : &quot;dummy_name&quot;, value : &quot;dummy&quot; }; session.defaultSession.cookies.set(cookie, function(error) {   if (error)     console.error(error); });</code></p>
+<p><strong>9.17.2 ses.cookies.get(filter, callback)</strong></p>
+<p>filter Object</p>
+<p>url String (可选) - 与获取 cookies 相关的 url.不设置的话就是从所有 url 获取 cookies .</p>
+<p>name String (可选) - 通过 name 过滤 cookies.</p>
+<p>domain String (可选) - 获取对应域名或子域名的 cookies .</p>
+<p>path String (可选) - 获取对应路径的 cookies .</p>
+<p>secure Boolean (可选) - 通过安全性过滤 cookies.</p>
+<p>session Boolean (可选) - 过滤掉 session 或 持久的 cookies.</p>
+<p>callback Function</p>
+<p>发送一个请求，希望获得所有匹配 details 的 cookies, 在完成的时候，将通过 callback(error, cookies) 调用 callback.</p>
+<p>cookies是一个 cookie 对象.</p>
+<p>cookie Object</p>
+<p>name String - cookie 名.</p>
+<p>value String - cookie值.</p>
+<p>domain String - cookie域名.</p>
+<p>hostOnly String - 是否 cookie 是一个 host-only cookie.</p>
+<p>path String - cookie路径.</p>
+<p>secure Boolean - 是否是安全 cookie.</p>
+<p>httpOnly Boolean - 是否只是 HTTP cookie.</p>
+<p>session Boolean - cookie 是否是一个 session cookie 或一个带截至日期的持久 cookie .</p>
+<p>expirationDate Double (可选)-cookie的截至日期，数值为UNIX纪元以来的秒数. 对session cookies 不提供.</p>
+<p><strong>9.17.3 ses.cookies.set(details, callback)</strong></p>
+<p>details Object</p>
+<p>url String - 与获取 cookies 相关的 url.</p>
+<p>name String - cookie 名. 忽略默认为空.</p>
+<p>value String - cookie 值. 忽略默认为空.</p>
+<p>domain String - cookie的域名. 忽略默认为空.</p>
+<p>path String - cookie 的路径. 忽略默认为空.</p>
+<p>secure Boolean - 是否已经进行了安全性标识. 默认为 false.</p>
+<p>session Boolean - 是否已经 HttpOnly 标识. 默认为 false.</p>
+<p>expirationDate Double - cookie的截至日期，数值为UNIX纪元以来的秒数. 如果忽略, cookie 变为 session cookie.</p>
+<p>callback Function 使用 details 设置 cookie, 完成时使用 callback(error) 掉哟个 callback .</p>
+<p><strong>9.17.4 ses.cookies.remove(url, name, callback)</strong></p>
+<p>url String - 与 cookies 相关的 url.</p>
+<p>name String - 需要删除的 cookie 名.</p>
+<p>callback Function</p>
+<p>删除匹配 url 和 name 的 cookie, 完成时使用 callback()调用callback.</p>
+<p><strong>9.17.5 ses.getCacheSize(callback)</strong></p>
+<p>callback Function</p>
+<p>size Integer - 单位 bytes 的缓存 size.</p>
+<p>返回 session 的当前缓存 size .</p>
+<p><strong>9.17.6 ses.clearCache(callback)</strong></p>
+<p>callback Function - 操作完成时调用</p>
+<p>清空 session 的 HTTP 缓存.</p>
+<h2 id="918-tray">9.18 Tray<a hidden class="anchor" aria-hidden="true" href="#918-tray">#</a></h2>
+<p>用一个 Tray 来表示一个图标,这个图标处于正在运行的系统的通知区 ，通常被添加到一个 context menu 上.</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const electron = require('electron'); const app = electron.app; const Menu = electron.Menu; const Tray = electron.Tray; var appIcon = null; app.on('ready', function(){   appIcon = new Tray('/path/to/my/icon');   var contextMenu = Menu.buildFromTemplate([     { label: 'Item1', type: 'radio' },     { label: 'Item2', type: 'radio' },     { label: 'Item3', type: 'radio', checked: true },     { label: 'Item4', type: 'radio' }   ]);   appIcon.setToolTip('This is my application.');   appIcon.setContextMenu(contextMenu); });</code></p>
+<p><strong>平台限制:</strong></p>
+<p>在 Linux， 如果支持应用指示器则使用它，否则使用 GtkStatusIcon 代替.</p>
+<p>在 Linux ，配置了只有有了应用指示器的支持, 你必须安装 libappindicator1 来让 tray icon 执行.</p>
+<p>应用指示器只有在它拥有 context menu 时才会显示.</p>
+<p>当在linux 上使用了应用指示器，将忽略点击事件.</p>
+<p>在 Linux，为了让单独的 MenuItem 起效，需要再次调用 setContextMenu .例如:</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>contextMenu.items[2].checked = false; appIcon.setContextMenu(contextMenu);</code></p>
+<p>如果想在所有平台保持完全相同的行为，不应该依赖点击事件，而是一直将一个 context menu 添加到 tray icon.</p>
+<p><strong>9.18.1 Tray.destroy()</strong></p>
+<p>立刻删除 tray icon.</p>
+<p><strong>9.18.2 Tray.setImage(image)</strong></p>
+<p>image NativeImage</p>
+<p>让 image 与 tray icon 关联起来.</p>
+<p><strong>9.18.3 Tray.setPressedImage(image) OS X</strong></p>
+<p>image NativeImage</p>
+<p>当在 OS X 上按压 tray icon 的时候， 让 image 与 tray icon 关联起来.</p>
+<p><strong>9.18.4 Tray.setToolTip(toolTip)</strong></p>
+<p>toolTip String</p>
+<p>为 tray icon 设置 hover text.</p>
+<p><strong>9.18.5 Tray.setTitle(title) OS X</strong></p>
+<p>title String</p>
+<p>在状态栏沿着 tray icon 设置标题.</p>
+<p><strong>9.18.6 Tray.setHighlightMode(highlight) OS X</strong></p>
+<p>highlight Boolean</p>
+<p>当 tray icon 被点击的时候，是否设置它的背景色变为高亮(blue).默认为 true.</p>
+<p><strong>9.18.7 Tray.setContextMenu(menu)</strong></p>
+<p>menu Menu</p>
+<p>为这个 icon 设置 context menu .</p>
+<h2 id="919-global-shortcut">9.19 global-shortcut<a hidden class="anchor" aria-hidden="true" href="#919-global-shortcut">#</a></h2>
+<p>global-shortcut 模块可以便捷的为您设置(注册/注销)各种自定义操作的快捷键.</p>
+<p>使用此模块注册的快捷键是系统全局的(QQ截图那种), 不要在应用模块(app module)响应 ready 消息前使用此模块(注册快捷键).</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var app = require('app'); var globalShortcut = require('electron').globalShortcut; app.on('ready', function() {   // Register a 'ctrl+x' shortcut listener.   var ret = globalShortcut.register('ctrl+x', function() {     console.log('ctrl+x is pressed');   })   if (!ret) {     console.log('registration failed');   }   // Check whether a shortcut is registered.   console.log(globalShortcut.isRegistered('ctrl+x')); }); app.on('will-quit', function() {   // Unregister a shortcut.   globalShortcut.unregister('ctrl+x');   // Unregister all shortcuts.   globalShortcut.unregisterAll(); });</code></p>
+<p><strong>9.19.1 globalShortcut.register(accelerator, callback)</strong></p>
+<p>accelerator Accelerator</p>
+<p>callback Function</p>
+<p>注册 accelerator 快捷键. 当用户按下注册的快捷键时将会调用 callback 函数.</p>
+<p><strong>9.19.2 globalShortcut.isRegistered(accelerator)</strong></p>
+<p>accelerator Accelerator</p>
+<p>查询 accelerator 快捷键是否已经被注册过了,将会返回 true(已被注册) 或 false(未注册).</p>
+<p><strong>9.19.3 globalShortcut.unregister(accelerator)</strong></p>
+<p>accelerator Accelerator</p>
+<p>注销全局快捷键 accelerator.</p>
+<p><strong>9.19.4 globalShortcut.unregisterAll()</strong></p>
+<p>注销本应用注册的所有全局快捷键.</p>
+<h2 id="920-contenttracing">9.20 contentTracing<a hidden class="anchor" aria-hidden="true" href="#920-contenttracing">#</a></h2>
+<p>content-tracing 模块是用来收集由底层的Chromium content 模块 产生的搜索数据. 这个模块不具备web接口，所有需要我们在chrome浏览器中添加 chrome://tracing/ 来加载生成文件从而查看结果.</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const contentTracing = require('electron').contentTracing; const options = {   categoryFilter: '*',   traceOptions: 'record-until-full,enable-sampling' } contentTracing.startRecording(options, function() {   console.log('Tracing started');   setTimeout(function() {     contentTracing.stopRecording('', function(path) {       console.log('Tracing data recorded to ' + path);     });   }, 5000); });</code></p>
+<p><strong>9.20.1 contentTracing.getCategories(callback)</strong></p>
+<p>callback Function</p>
+<p>获得一组分类组. 分类组可以更改为新的代码路径。</p>
+<p>一旦所有的子进程都接受到了getCategories方法请求, 分类组将调用 callback.</p>
+<p><strong>9.20.2 contentTracing.startRecording(options, callback)</strong></p>
+<p>options Object</p>
+<p>categoryFilter String</p>
+<p>traceOptions String</p>
+<p>callback Function</p>
+<p>开始向所有进程进行记录.(recording)</p>
+<p>一旦收到可以开始记录的请求，记录将会立马启动并且在子进程是异步记录听的. 当所有的子进程都收到 startRecording 请求的时候，callback 将会被调用.</p>
+<p>categoryFilter是一个过滤器，它用来控制那些分类组应该被用来查找.过滤器应当有一个可选的 - 前缀来排除匹配的分类组.不允许同一个列表既是包含又是排斥.</p>
+<p><strong>9.20.3 contentTracing.stopRecording(resultFilePath, callback)</strong></p>
+<p>resultFilePath String</p>
+<p>callback Function</p>
+<p>停止对所有子进程的记录.</p>
+<p>子进程通常缓存查找数据，并且仅仅将数据截取和发送给主进程.这有利于在通过 IPC 发送查找数据之前减小查找时的运行开销，这样做很有价值.因此，发送查找数据，我们应当异步通知所有子进程来截取任何待查找的数据.</p>
+<p>一旦所有子进程接收到了 stopRecording 请求，将调用 callback ，并且返回一个包含查找数据的文件.</p>
+<p>如果 resultFilePath 不为空，那么将把查找数据写入其中，否则写入一个临时文件.实际文件路径如果不为空，则将调用 callback .</p>
+<h2 id="921-powersaveblocker">9.21 powerSaveBlocker<a hidden class="anchor" aria-hidden="true" href="#921-powersaveblocker">#</a></h2>
+<p>powerSaveBlocker 模块是用来阻止应用系统进入睡眠模式的，因此这允许应用保持系统和屏幕继续工作.</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const powerSaveBlocker = require('electron').powerSaveBlocker; var id = powerSaveBlocker.start('prevent-display-sleep'); console.log(powerSaveBlocker.isStarted(id)); powerSaveBlocker.stop(id);</code></p>
+<p><strong>9.21.1 powerSaveBlocker.start(type)</strong></p>
+<p>type String - 强行保存阻塞类型.</p>
+<p>prevent-app-suspension - 阻止应用挂起. 保持系统活跃，但是允许屏幕不亮. 用例: 下载文件或者播放音频.</p>
+<p>prevent-display-sleep- 阻止应用进入休眠. 保持系统和屏幕活跃，屏幕一直亮. 用例: 播放音频.</p>
+<p>开始阻止系统进入睡眠模式.返回一个整数，这个整数标识了保持活跃的blocker.</p>
+<p>注意: prevent-display-sleep 有更高的优先级 prevent-app-suspension. 只有最高优先级生效. 换句话说, prevent-display-sleep 优先级永远高于 prevent-app-suspension.</p>
+<p>例如, A 请求调用了 prevent-app-suspension, B请求调用了 prevent-display-sleep. prevent-display-sleep 将一直工作，直到B停止调用. 在那之后, prevent-app-suspension 才起效.</p>
+<p><strong>9.21.2 powerSaveBlocker.stop(id)</strong></p>
+<p>id Integer - 通过 powerSaveBlocker.start 返回的保持活跃的 blocker id. 让指定blocker 停止活跃.</p>
+<p><strong>9.21.3 powerSaveBlocker.isStarted(id)</strong></p>
+<p>id Integer - 通过 powerSaveBlocker.start 返回的保持活跃的 blocker id. 返回 boolean， 是否对应的 powerSaveBlocker 已经启动.</p>
+<h2 id="922-powermonitor">9.22 powerMonitor<a hidden class="anchor" aria-hidden="true" href="#922-powermonitor">#</a></h2>
+<p>power-monitor模块是用来监听能源区改变的.只能在主进程中使用.在 app 模块的 ready 事件触发之后就不能使用这个模块了.</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>app.on('ready', function() {   require('electron').powerMonitor.on('suspend', function() {     console.log('The system is going to sleep');   }); });</code></p>
+<p><strong>power-monitor 模块可以触发下列事件:</strong></p>
+<p><strong>Event: &lsquo;suspend&rsquo;</strong></p>
+<p>在系统挂起的时候触发.</p>
+<p><strong>Event: &lsquo;resume&rsquo;</strong></p>
+<p>在系统恢复继续工作的时候触发. Emitted when system is resuming.</p>
+<p><strong>Event: &lsquo;on-ac&rsquo;</strong></p>
+<p>在系统使用交流电的时候触发. Emitted when the system changes to AC power.</p>
+<p><strong>Event: &lsquo;on-battery&rsquo;</strong></p>
+<p>在系统使用电池电源的时候触发. Emitted when system changes to battery power.</p>
+<h2 id="923-autoupdater">9.23 autoUpdater<a hidden class="anchor" aria-hidden="true" href="#923-autoupdater">#</a></h2>
+<p>这个模块提供了一个到 Squirrel 自动更新框架的接口。</p>
+<p><strong>9.23.1 autoUpdater.setFeedURL(url)</strong></p>
+<p>url String</p>
+<p>设置检查更新的 url，并且初始化自动更新。这个 url 一旦设置就无法更改。</p>
+<p><strong>9.23.2 autoUpdater.checkForUpdates()</strong></p>
+<p>向服务端查询现在是否有可用的更新。在调用这个方法之前，必须要先调用 setFeedURL。</p>
+<p><strong>9.23.3 autoUpdater.quitAndInstall()</strong></p>
+<p>在下载完成后，重启当前的应用并且安装更新。这个方法应该仅在 update-downloaded 事件触发后被调用。</p>
+<h1 id="10-框架选择">10. 框架选择<a hidden class="anchor" aria-hidden="true" href="#10-框架选择">#</a></h1>
+<p>通过vue3 + TS + electron16 + vite2 和 react + TS + electron16 + vite2，我们对两条路线有了较为具象的认识，所以接下来要做一个选择，到底选择哪个框架，以及后续的基础建设。</p>
+<h3 id="101-mvvm和mvc">10.1 MVVM和MVC<a hidden class="anchor" aria-hidden="true" href="#101-mvvm和mvc">#</a></h3>
+<p>Vue是MVVM，React是MVC。</p>
+<p>MVVM(Model-View-ViewModel)是在MVC(Model View Controller)的基础上，VM抽离Controller中展示的业务逻辑，而不是替代Controller，其它视图操作业务等还是应该放在Controller中实现。</p>
+<p>也就是说MVVM实现的是业务逻辑组件的重用，使开发更高效，结构更清晰，增加代码的复用性。</p>
+<p>可以理解为MVVM是MVC的升级版。</p>
+<p>虽然React不算一个完整的MVC框架，可以认为是MVC中的V(View)，但是Vue的MVVM还是更面向未来一些。</p>
+<h3 id="102-数据绑定">10.2 数据绑定<a hidden class="anchor" aria-hidden="true" href="#102-数据绑定">#</a></h3>
+<p>vue是双向绑定，react是单向绑定。</p>
+<p>单向绑定的优点是相应的可以带来单向数据流，这样做的好处是所有状态变化都可以被记录、跟踪，状态变化通过手动调用通知，源头易追溯，没有“暗箱操作”。同时组件数据只有唯一的入口和出口，使得程序更直观更容易理解，有利于项目的可维护性。</p>
+<p>但是Vue虽然是双向绑定，但是也是单向数据流，它的双向绑定只是一个语法糖，想看正经的双向绑定可以去看下Dva。</p>
+<p>单向绑定的缺点则是代码量会相应的上升，数据的流转过程变长，从而出现很多类似的重复代码。同时由于对应用状态独立管理的严格要求(单一的全局store)，在处理局部状态较多的场景时(如用户输入交互较多的“富表单型”应用)，会显得冗余。</p>
+<p>双向绑定可以在表单交互较多的场景下，会简化大量业务无关的代码。</p>
+<p>我认为Vue的设计方案好一些，全局性数据流使用单向，局部性数据流使用双向。</p>
+<h3 id="103-数据更新">10.3 数据更新<a hidden class="anchor" aria-hidden="true" href="#103-数据更新">#</a></h3>
+<p><strong>10.3.1 React 更新流程</strong></p>
+<p>React 推崇 Immutable(不可变)，通过重新render去发现和更新自身。</p>
+<p><strong>10.3.2 Vue 更新流程</strong></p>
+<p>Vue通过收集数据依赖去发现更新。</p>
+<p>Vue很吸引人的就是它的响应式更新，Vue首次渲染触发data的getter，从而触发依赖收集，为对应的数据创建watcher，当数据发生更改的时候，setter被触发，然后通知各个watcher在下个tick的时候更新数据。</p>
+<p>所以说，如果data中某些数据没有在模板template 中使用的话，更新这些数据的时候，是不会触发更新的。这样的设计非常好，没有在模版上用到的变量，当它的值发生变化时，不更新视图，相当于内置了React的shouldComponentUpdate。</p>
+<p><strong>10.3.3 更新比较</strong></p>
+<ul>
+<li><strong>获取数据更新的手段和更新的粒度不一样</strong></li>
+</ul>
+<p>Vue通过<strong>依赖收集</strong>，当数据更新时 ，Vue明确知道是哪些数据更新了，每个组件都有自己的渲渲染watcher，掌管当前组件的视图更新，所以可以精确地更新对应的组件，所以更新的粒度是<strong>组件级别</strong>的。</p>
+<p>React会递归地把所有的子组件重新render一下，不管是不是更新的数据，此时，都是新的。然后通过 diff 算法 来决定更新哪部分的视图。所以，React 的更新粒度是一个整体。</p>
+<ul>
+<li><strong>对更新数据是否需要渲染页面的处理不一样</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>只有依赖收集的数据发生更新，Vue 才会去重新渲染页面</li>
+<li>只要数据有更新(setState，useState 等手段触发更新)，都会去重新渲染页面 （可以使用shouldComponentUpdate/ PureComponent 改善)</li>
+</ul>
+</blockquote>
+<p>Vue的文档里有一描述说，Vue是细粒度数据响应机制，所以说数据更新这一块，我认为Vue的设计方案好一些。</p>
+<h3 id="104-性能对比">10.4 性能对比<a hidden class="anchor" aria-hidden="true" href="#104-性能对比">#</a></h3>
+<p><strong>借用尤大大的一段话：</strong></p>
+<blockquote>
+<p>模板在性能这块吊打 tsx，在 IDE 支持抹平了的前提下用 tsx 本质上是在为了开发者的偏好牺牲用户体验的性能（性能没遇到瓶颈就无所谓） 这边自己不维护框架的人吐槽吐槽我也能理解，毕竟作为使用者只需要考虑自己爽不爽。作为维护者，Vue 的已有的用户习惯、生态和历史包袱摆在那里，能激进的程度是有限的，Vue 3 的大部分设计都是戴着镣铐跳舞，需要做很多折衷。如果真要激进还不如开个新项目，或者没人用的玩票项目，想怎么设计都可以。 组件泛型的问题也有不少人提出了，这个目前确实不行，但不表示以后不会有。 最后实话实说，所有前端里面像这个问题下面的类型体操运动员们毕竟是少数，绝大部分有 intellisense + 类型校验就满足需求了。真的对类型特别特别较真的用 React 也没什么不好，无非就是性能差点。</p>
+</blockquote>
+<p><strong>为什么模板性能吊打TSX？</strong></p>
+<p>tsx和vue template其实都是一样的模版语言，tsx最终也会被编译成createElement，模板被编译成render函数，所以本质上两者都有compile-time和runtime，但tsx的特殊性在于它本身是在ts语义下的，过于灵活导致优化无从下手。但是vue的模板得益于自身本来就是DSL，有自己的文法和语义，所以vue在模板的compile-time做了巨多的优化，比如提升不变的vnode，以及blocktree配合patchflag靶向更新，这些优化在最终的runtime上会把性能拉开不少。</p>
+<blockquote>
+<p>DSL： 一种为<strong>特定领域</strong>设计的，具有<strong>受限表达性</strong>的<strong>编程语言。</strong></p>
+</blockquote>
+<p>所以说Vue的性能是优于React的。</p>
+<h3 id="105-react-hooks和vue-hooks">10.5. React Hooks和Vue Hooks<a hidden class="anchor" aria-hidden="true" href="#105-react-hooks和vue-hooks">#</a></h3>
+<p>其实 React Hook 的限制非常多，比如官方文档中就专门有一个**章节**介绍它的限制：</p>
+<ol>
+<li>不要在循环，条件或嵌套函数中调用 Hook</li>
+<li>确保总是在你的 React 函数的最顶层调用他们。</li>
+<li>遵守这条规则，你就能确保 Hook 在每一次渲染中都按照同样的顺序被调用。这让 React 能够在多次的 useState 和 useEffect 调用之间保持 hook 状态的正确。</li>
+</ol>
+<p>而 Vue 带来的不同在于：</p>
+<ol>
+<li>
+<p>与 React Hooks 相同级别的逻辑组合功能，但有一些重要的区别。 与 React Hook 不同，setup函数仅被调用一次，这在性能上比较占优。</p>
+</li>
+<li>
+<p>对调用顺序没什么要求，每次渲染中不会反复调用 Hook 函数，产生的的 GC 压力较小。</p>
+</li>
+<li>
+<p>不必考虑几乎总是需要 useCallback 的问题，以防止传递函数prop给子组件的引用变化，导致无必要的重新渲染。</p>
+</li>
+<li>
+<p>React Hook 有臭名昭著的闭包陷阱问题，如果用户忘记传递正确的依赖项数组，useEffect 和 useMemo 可能会捕获过时的变量，这不受此问题的影响。 Vue 的自动依赖关系跟踪确保观察者和计算值始终正确无误。</p>
+</li>
+<li>
+<p>不得不提一句，React Hook 里的「依赖」是需要你去手动声明的，而且官方提供了一个 eslint 插件，这个插件虽然大部分时候挺有用的，但是有时候也特别烦人，需要你手动加一行丑陋的注释去关闭它。</p>
+</li>
+</ol>
+<p>我们认可 React Hooks 的创造力，这也是 Vue-Composition-Api 的主要灵感来源。上面提到的问题确实存在于 React Hook 的设计中，我们注意到 Vue 的响应式模型恰好完美的解决了这些问题。</p>
+<p>-&ndash; 来自ssh</p>
+<p>Vue的组合式API刚出来的时候确实一看好像React Hooks，我也对它的.value进行了吐槽，</p>
+<p>但是总体来说还是更偏向于Vue Hooks。</p>
+<h3 id="106-写法">10.6 写法<a hidden class="anchor" aria-hidden="true" href="#106-写法">#</a></h3>
+<p>React的思路是all in js，通过js来生成html，所以设计了jsx，还有通过js来操作css，社区的styled-component、jss等，所以说React的写法感觉相对自由一些，逻辑正确老子想怎么写怎么写，对于我来说，我确实更偏向于React的写法。</p>
+<p>Vue则是把html，css，js组合到一起，就像 Web 开发多年的传统开发方式一样， vue-loader会解析文件，提取每个语言块用各自的处理方式，vue有单文件组件(SFC)，可以把html、css、js写到一个文件中，html提供了模板引擎来处理。Vue感觉是给你搭了一个框架，告诉你什么地方该写什么东西，你只要按照他的要求向里面填内容就可以了，没有React那么自由，但是上手难度简单了许多。而且因为SFC，一个组件的代码会看起来很长，维护起来很头痛。</p>
+<p>然后考虑了下业务环境，我们要做的是多人视频及共享白板，所以对数据更新有比较高的要求，而Vue的dom渲染和数据处理是强于react的，所以最后我们选择的是Vue。</p>
+<h1 id="11-组件库选择">11. 组件库选择<a hidden class="anchor" aria-hidden="true" href="#11-组件库选择">#</a></h1>
+<p>这边我思考了两个选择，一个是elemenmt-plus,另一个是ant-design-vue。</p>
+<p>element-plus是一套为开发者、设计师和产品经理准备的基于 Vue 3 的桌面端组件库，他的针对性很强，vue3和桌面端都比较满足我们的需求。</p>
+<p>antd-vue是antd对vue的适配，我之前用过，感觉还可以。</p>
+<p>最后选择了针对性比较强的element-plus。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm i element-plus --save</code></p>
+<p>然后全部引入就可以了。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { createApp } from 'vue'; import App from './App.vue'; import ElementPlus from 'element-plus' import 'element-plus/dist/index.css' createApp(App)   .use(ElementPlus)   .mount(&quot;#app&quot;);</code></p>
+<h1 id="12-eslint-和-prettier">12. ESLint 和 prettier<a hidden class="anchor" aria-hidden="true" href="#12-eslint-和-prettier">#</a></h1>
+<h3 id="121-eslint和tslint">12.1 ESLint和TSLint<a hidden class="anchor" aria-hidden="true" href="#121-eslint和tslint">#</a></h3>
+<p>ESLint是JavaScript代码检查工具，使用ESLint能让我们的代码遵循特定的样式格式。并且检查代码是否符合格式规范。</p>
+<p>可能有人听过TSLint，它是为TypeScript为生的。但在2019年，TSLint的团队决定不再继续维护，推荐使用ESLint来替代。主要不维护的原因就是TSLint和ESLint功能一致，有这大量重复的代码，所以不搞了。</p>
+<p>以后TypeScript的项目我们去使用ESLint就好了。</p>
+<h3 id="122-配置eslint">12.2 配置ESLint<a hidden class="anchor" aria-hidden="true" href="#122-配置eslint">#</a></h3>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install eslint -g</code></p>
+<p>全局安装ESLint后，插件中安装ESLint。</p>
+<p>csharp</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>eslint --init</code></p>
+<p>初始化后，在当前目录下生成一个名为.eslintrc.js 的配置文件，可以自己按个人喜好进行配置，<a href="https://link.juejin.cn/?target=https%3A%2F%2Feslint.bootcss.com%2Fdocs%2Frules%2F%25E3%2580%2582" title="https://link.juejin.cn/?target=https%3A%2F%2Feslint.bootcss.com%2Fdocs%2Frules%2F%25E3%2580%2582">eslint.bootcss.com/docs/rules/…</a></p>
+<p><strong>修改settings.json：</strong></p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a2d2a51e93a48e79b81ec7600d90c51~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt=""  />
+</p>
+<h3 id="123-prettier">12.3 prettier<a hidden class="anchor" aria-hidden="true" href="#123-prettier">#</a></h3>
+<p>ESLint 和 Prettier 的区别是什么呢？</p>
+<p>eslint（包括其他一些 lint 工具）的主要功能包含代码格式的校验，代码质量的校验。</p>
+<p>而 Prettier 只是代码格式的校验（并格式化代码），不会对代码质量进行校验。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install --save-dev --save-exact prettier</code></p>
+<p>在根目录下创建<code>.prettierrc.js</code>配置文件。</p>
+<p>在<code>.prettierrc.js</code>中写入以下内容：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>//此处的规则供参考，其中多半其实都是默认值，可以根据个人习惯改写 module.exports = {   printWidth: 80, //单行长度   tabWidth: 2, //缩进长度   useTabs: false, //使用空格代替tab缩进   semi: true, //句末使用分号   singleQuote: true, //使用单引号   quoteProps: 'as-needed', //仅在必需时为对象的key添加引号   jsxSingleQuote: true, // jsx中使用单引号   trailingComma: 'all', //多行时尽可能打印尾随逗号   bracketSpacing: true, //在对象前后添加空格-eg: { foo: bar }   jsxBracketSameLine: true, //多属性html标签的‘&gt;’折行放置   arrowParens: 'always', //单参数箭头函数参数周围使用圆括号-eg: (x) =&gt; x   requirePragma: false, //无需顶部注释即可格式化   insertPragma: false, //在已被preitter格式化的文件顶部加上标注   proseWrap: 'preserve', //不知道怎么翻译   htmlWhitespaceSensitivity: 'ignore', //对HTML全局空白不敏感   vueIndentScriptAndStyle: false, //不对vue中的script及style标签缩进   endOfLine: 'lf', //结束行形式   embeddedLanguageFormatting: 'auto', //对引用代码进行格式化 };</code></p>
+<h1 id="13-日志模块">13. 日志模块<a hidden class="anchor" aria-hidden="true" href="#13-日志模块">#</a></h1>
+<p>我们的实现逻辑是，线上环境打印出错误时隐藏，把错误放在文件中，启动错误日志上传窗口，由用户自行判断该日志是否上传。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>  `window.onerror = function (message, source, lineno, colno, error) {         exportRaw('报错信息：' + message + '文件位置：' + source, 'error');         return true;       };     const exportRaw = (data, name) =&gt; {       let urlObject = window.URL || window.webkitURL || window;       let export_blob = new Blob([data]);       let save_link = document.createElementNS(         'http://www.w3.org/1999/xhtml',         'a',       );       save_link.href = urlObject.createObjectURL(export_blob);       save_link.download = name;       save_link.click();     };`
+</code></pre>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1b2a5fcf121c42fb80391b1c2ace05d1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt=""  />
+</p>
+<h1 id="14-后续规划基础建设及性能优化">14. 后续规划(基础建设及性能优化)<a hidden class="anchor" aria-hidden="true" href="#14-后续规划基础建设及性能优化">#</a></h1>
+<p>项目还在启动阶段，我有很多规划目前比较难以得到实施，比如：</p>
+<ol>
+<li>配置ESLint + prettier + yorkie(husky),git hooks</li>
+<li>线上报警体统sentry.js</li>
+<li>埋点，权限管理等配置</li>
+<li>前后端交互方案(swagger/Yapi)</li>
+<li>自动发布(jenkins)</li>
+<li>内存走查和性能优化</li>
+</ol>
+<p>有缘的话会把基础建设步骤和性能参数分析，以及性能优化及具体数据发出</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E5%A4%87%E7%9A%84%E8%BD%AF%E6%8A%80%E8%83%BD/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>程序员必备的《软技能》</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E7%9F%AD%E4%BF%A1%E6%8E%A5%E5%8F%A3%E8%A2%AB%E6%81%B6%E6%84%8F%E8%B0%83%E7%94%A8%E6%94%BB%E5%87%BB/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>如何防止短信接口被恶意调用攻击？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 on x"
+            href="https://x.com/intent/tweet/?text=Vue3%2bTS%2bVite2%2bElectron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f&amp;title=Vue3%2bTS%2bVite2%2bElectron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86&amp;summary=Vue3%2bTS%2bVite2%2bElectron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f&title=Vue3%2bTS%2bVite2%2bElectron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Vue3%2bTS%2bVite2%2bElectron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 on telegram"
+            href="https://telegram.me/share/url?text=Vue3%2bTS%2bVite2%2bElectron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Vue3%2bTS%2bVite2%2bElectron16%e9%a1%b9%e7%9b%ae%e6%a2%b3%e7%90%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue3%2bts%2bvite2%2belectron16%25E9%25A1%25B9%25E7%259B%25AE%25E6%25A2%25B3%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

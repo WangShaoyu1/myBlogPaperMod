@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>基于腾讯地图定位组件实现周边公用厕所远近排序分布图 | PaperMod</title>
+<meta name="keywords" content="腾讯">
+<meta name="description" content="地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。本次使用版本：JavaScriptAPI2.0版本。基于腾讯…">
+<meta name="author" content="腾讯位置服务">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E5%AE%9A%E4%BD%8D%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E5%91%A8%E8%BE%B9%E5%85%AC%E7%94%A8%E5%8E%95%E6%89%80%E8%BF%9C%E8%BF%91%E6%8E%92%E5%BA%8F%E5%88%86%E5%B8%83%E5%9B%BE/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E5%AE%9A%E4%BD%8D%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E5%91%A8%E8%BE%B9%E5%85%AC%E7%94%A8%E5%8E%95%E6%89%80%E8%BF%9C%E8%BF%91%E6%8E%92%E5%BA%8F%E5%88%86%E5%B8%83%E5%9B%BE/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="基于腾讯地图定位组件实现周边公用厕所远近排序分布图" />
+<meta property="og:description" content="地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。本次使用版本：JavaScriptAPI2.0版本。基于腾讯…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E5%AE%9A%E4%BD%8D%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E5%91%A8%E8%BE%B9%E5%85%AC%E7%94%A8%E5%8E%95%E6%89%80%E8%BF%9C%E8%BF%91%E6%8E%92%E5%BA%8F%E5%88%86%E5%B8%83%E5%9B%BE/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-04-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-04-09T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="基于腾讯地图定位组件实现周边公用厕所远近排序分布图"/>
+<meta name="twitter:description" content="地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。本次使用版本：JavaScriptAPI2.0版本。基于腾讯…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "基于腾讯地图定位组件实现周边公用厕所远近排序分布图",
+      "item": "http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E5%AE%9A%E4%BD%8D%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E5%91%A8%E8%BE%B9%E5%85%AC%E7%94%A8%E5%8E%95%E6%89%80%E8%BF%9C%E8%BF%91%E6%8E%92%E5%BA%8F%E5%88%86%E5%B8%83%E5%9B%BE/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "基于腾讯地图定位组件实现周边公用厕所远近排序分布图",
+  "name": "基于腾讯地图定位组件实现周边公用厕所远近排序分布图",
+  "description": "地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。本次使用版本：JavaScriptAPI2.0版本。基于腾讯…",
+  "keywords": [
+    "腾讯"
+  ],
+  "articleBody": "前言 地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。\n本次使用版本： JavaScript API 2.0版本。\n项目需求 1、项目需求 基于腾讯位置服务，实现微信扫描二维码后，在微信浏览器内，展示某县城的公用厕所分布图，按照用户当前定位与各个厕所之间的距离远近排序，点击标注点跳转到腾讯地图进行导航。\n2、需求分解 基于上述需求，对使用到的腾讯位置服务接口予以分解如下：\nscss\n代码解读\n复制代码\n腾讯地图加载； 自动定位； 信息点(POINTS)标注maker； 计算标注点之间的距离； 导航跳转链接API接口； 街道与卫星地图切换控件； 缩放控件；\n开发实战 1、引入功能库和附件库 ini\n代码解读\n复制代码\n` ` 2、构建腾讯地图容器 xml\n代码解读\n复制代码\n3、调用前端定位组件 由于项目需要多次调用地图和定位，为此，在script脚本中map和geolocation都设置为全局函数。\nini\n代码解读\n复制代码\nvar map;//全局函数 var geolocation = new qq.maps.Geolocation(appkey, \"{$referer}\"); var options = {timeout: 8000}; function getLocation() { geolocation.getLocation(showPosition, showErr, options); }\ngetLocation(sucCallback, errCallback, [options: {timeout: number, failTipFlag: boolean}])方法\nbash\n代码解读\n复制代码\n获取当前所在地理位置，调用一次即重新定位一次，定位数据比较精确。 sucCallback为定位成功回调函数，必填； errCallback为定位失败回调函数，选填，如果不填，请设为null； options为定位选项，选填，可以通过timeout参数设置定位的超时时间，默认值为10s; failTipFlag: 是否在定位失败时给出提示引导用户打开授权或打开定位开关。（即将支持）\n1）定位成功回调函数 arduino\n代码解读\n复制代码\nfunction showPosition(position) { }\n获取位置坐标显示地图\narduino\n代码解读\n复制代码\n`map = new qq.maps.Map(document.getElementById(\"txmap\"), { // 地图的中心地理坐标。 center: new qq.maps.LatLng(position.lat, position.lng), zoom: 15 });` 定义当前位置maker样式图片\nini\n代码解读\n复制代码\n`var imgUrl = \"static/rooted/images/icon.png\"; var anchor = new qq.maps.Point(6, 6), size = new qq.maps.Size(45, 46), origin = new qq.maps.Point(0, 0), icon = new qq.maps.MarkerImage(imgUrl, size, origin, anchor); var marker2 = new qq.maps.Marker({ icon: icon, map: map, position: new qq.maps.LatLng(position.lat, position.lng) });` 读取信息点(POINTS)并在地图上标注\n1、标准JSON数据格式\n为方便展示，此处仅展示数据格式，实际应用做，使用ajax获取即可。\ncss\n代码解读\n复制代码\n[ { \"toilet_id\": \"9\", \"toilet_name\": \"智慧广场\", \"toilet_address\": \"西溪路 智慧中心南\", \"toilet_url\": \"upload/preview/2020-11/15784affe0de0d45c5f33625851527e9.jpg\", \"toilet_lon\": \"115.965248\", \"toilet_lat\": \"35.597050\" }, { \"toilet_id\": \"14\", \"toilet_name\": \"唐塔公厕\", \"toilet_address\": \"东门街北段唐塔广场\", \"toilet_url\": \"upload/preview/2020-11/8e5bda8c5b12f87ebad80c247d8f2b26.jpg\", \"toilet_lon\": \"115.946365\", \"toilet_lat\": \"35.602218\" }]\n2、地图标注并计算距离\nscss\n代码解读\n复制代码\n//地图标注; getTxMap(newData, latlngs); //两点间的距离; getDistance(newData, latlngs);\n经纬度标注封装函数\nini\n代码解读\n复制代码\n`function getTxMap(newData, latlngs) { for (var i = 0; i \u003c newData.length; i++) { (function (n) { var marker = new qq.maps.Marker({ position: latlngs[n], map: map }); qq.maps.event.addListener(marker, 'click', function () { var popHtml = '到这里: ' + newData[n].toilet_name + ''; infoWin.open(); infoWin.setContent(popHtml); infoWin.setPosition(latlngs[n]); }); })(i); } }` 计算两点间的距离函数封装\nini\n代码解读\n复制代码\n`function getDistance(newData, latlngs) { var newArr = []; var start = new qq.maps.LatLng(position.lat, position.lng); for (var i = 0; i \u003c latlngs.length; i++) { var end = latlngs[i]; var distance = Math.round(qq.maps.geometry.spherical.computeDistanceBetween(start, end) * 10) / 10; //拼接新的距离数组数据; newArr.push({ toilet_id: newData[i].toilet_id, toilet_name: newData[i].toilet_name, toilet_address: newData[i].toilet_address, toilet_url: newData[i].toilet_url, toilet_lon: newData[i].toilet_lon, toilet_lat: newData[i].toilet_lat, distance: distance }) } //升序排列; function compare(key) { return function (value1, value2) { var val1 = value1[key]; var val2 = value2[key]; return val1 - val2; } } newArr.sort(compare('distance')); console.log(newArr);` 2、定位失败回调函数 javascript\n代码解读\n复制代码\n`//定位失败，自动跳转页面; function showErr() { //alert(\"定位失败！\"); window.location.href = \"?m=Index\u0026a=error\" }` 坐标经纬度拾取 1、腾讯坐标拾取器 项目开发过程中，需要自己拾取坐标经纬度，以满足初始数据的测试和演示使用。一般会使用腾讯提供的坐标拾取器。链接地址：lbs.qq.com/tool/getpoi…\n代码解读\n复制代码\n支持地址 精确/模糊 查询； 支持POI点坐标显示； 坐标鼠标跟随显示；\n如果非要挑出点毛病的话，地图拾取框太小了，想随心所欲的拾取坐标，要缩放或拖拽很多次，心累。\n2、WebService API地址解析（地址转坐标） 在项目完成测试后，如果遇到成千上百的地址时，一个一个的拾取，好像不是一个合格的开发者的所为。此时，就需要使用到地址解析和逆解析的API接口，即：在数据导入到数据库的过程中，自动批量地将地址转化为经纬度坐标，满足前端的调用。\n本例中使用了腾讯位置服务的WebService API，后端语言使用PHP，简要的将该过程予以呈现。\n1、封装WebService API接口函数\n官方实例，如果在前端直接使用getJSON函数，会出现“同源策略”被阻止，为此需要后端爬取后，“曲线救国”。\nruby\n代码解读\n复制代码\n//GET请求示例，注意参数值要进行URL编码 https://apis.map.qq.com/ws/geocoder/v1/?address=北京市海淀区彩和坊路海淀西大街74号\u0026key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77\nphp\n代码解读\n复制代码\n/*地址转坐标封装函数，文件名称为points.php *$address，需要转化的地址，越详细经纬度精度越高； */ function getGeoCoding($address) { $url = \"https://apis.map.qq.com/ws/geocoder/v1/?address=\" . $address . \"\u0026key={$key}\"; $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); $output = curl_exec($ch); curl_close($ch); return $output; } //获取前端传入的地址参数; $address = $_GET[\"address\"]; //输出json数据格式，供前端调用; die(getGeoCoding($address));\n2、前端调用\njavascript\n代码解读\n复制代码\n`//自動獲取經緯度; var getAddress = function transAddress() { var address = $(\"#address\").val(); getPoints(address); } //前端页面输出; function getPoints(address) { $.getJSON(\"points.php\", {address: address}, function (res) { if (res.status == 0) { $(\"#lng\").val(res.result.location.lng); $(\"#lat\").val(res.result.location.lat); } else { $(\"#message\").html(res.message); } }); }` 3、效果演示\n在导入地址数据的时候，一定要是省市区街道门牌号，地址越详细精度越高，否则会解析不出来，谨记！\n注意事项 1、script标签加载API服务 xml\n代码解读\n复制代码\n在开发过程中，默认会这样引入到前端文件。测试环境和生成环境一致，或者更换环境也是一直，不会出现问题的。但是如果是http和https不一致的协议环境下，引入文件就会出现错误提示。\n建议的加载方式：src不使用协议名称，让其自动匹配。如：\nxml\n代码解读\n复制代码\n2、附加库的引入 学习一个新项目的最快捷方式是学会使用官方文档，因为这些文档是基础中的基础。但官方文档的有时太官方，有些细节无法清楚的展示出来。\n官方文档不能解决的问题时，会“面对CSDN编程”，每个开发者遇到的问题不同，开发经验不同，在CSDN上的记录更多的是为了避免自己下次“入坑”提醒，无法完整的将项目的细节描述清楚，也是初学者看到人家明明解决了，为什么自己不可以的。\n这里就牵涉到腾讯地图附加库的引入。\nini\n代码解读\n复制代码\n`` 本项目中就遇见需要计算自动定位的经纬度和各个厕所之间的距离，需要使用geometry几何运算库。在未理解官方文档的前提下，强行CSDN，走路很多弯路才发现：开发语法明明对了，但是却没有计算出距离，就是没引入对应的附加库。\n3、自动定位组件库 ini\n代码解读\n复制代码\n使用自动定位功能，必须引入自动定位的geolocation.min.js附加库，无须多言。\n4、经纬度位置 如果是首次开发地图就使用腾讯地图的话，出现这个错误的可能性比较低。如果有百度和高德地图开发的经验话，千万不要想当然。在这个问题上浪费了半个小时才发现，腾讯的经纬度和百度、高德的问题是互换的。\n腾讯经纬度\narduino\n代码解读\n复制代码\nnew qq.maps.LatLng(39.914850, 116.403765); //构建对象的是（纬度，经度）\n百度经纬度\narduino\n代码解读\n复制代码\nmap.centerAndZoom(new BMap.Point(116.4035,39.915),8); //构建对象的是（经度，纬度）\n高德经纬度\narduino\n代码解读\n复制代码\nposition: new AMap.LngLat(116.39, 39.9),//构建点对象的是（经度，纬度）\n在使用坐标拾取器时，一定要选择各个对应的工具，导航等牵涉到坐标的地方一定要注意。\n5、腾讯、百度和高德地图开发比较 对于不同的厂家地图的使用，一般都有“先入为主” 的刻板印象，也有甲方原因的客观要求。\n对比项\n腾讯地图\n百度地图\n高德地图\n功能\n标注、信息框、覆盖物、计算距离、轨迹、导航等常用功能\n同前\n同前\n坐标\n火星坐标\nBD-09坐标\n火星坐标\n坐标结构\n(39.914850, 116.403765)\n（116.4035,39.915）\n（116.39, 39.9）\n语法结构\n同高德\n百度自有语法\n同腾讯\n开发文档\n相对集中\n百度地图开发平台已升级到3.0版本，文档多，类库多\n相对集中\n延伸\n数据可视化API服务\n同前\n同前\n总结 本次使用版本： JavaScript API 2.0版本，目前我们提供的JavaScript API GL版本，功能更炫酷齐全，大家可以尝试接入使用。\n作者：漏刻有时\n链接：lockdatav.blog.csdn.net/article/det…\n来源：CSDN\n著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。\n",
+  "wordCount" : "589",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-04-09T00:00:00Z",
+  "dateModified": "2021-04-09T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "腾讯位置服务"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E5%AE%9A%E4%BD%8D%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E5%91%A8%E8%BE%B9%E5%85%AC%E7%94%A8%E5%8E%95%E6%89%80%E8%BF%9C%E8%BF%91%E6%8E%92%E5%BA%8F%E5%88%86%E5%B8%83%E5%9B%BE/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      基于腾讯地图定位组件实现周边公用厕所远近排序分布图
+    </h1>
+    <div class="post-description">
+      地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。本次使用版本：JavaScriptAPI2.0版本。基于腾讯…
+    </div>
+    <div class="post-meta"><span title='2021-04-09 00:00:00 +0000 UTC'>四月 9, 2021</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;腾讯位置服务&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae%e9%9c%80%e6%b1%82" aria-label="项目需求">项目需求</a><ul>
+                        
+                <li>
+                    <a href="#1%e9%a1%b9%e7%9b%ae%e9%9c%80%e6%b1%82" aria-label="1、项目需求">1、项目需求</a></li>
+                <li>
+                    <a href="#2%e9%9c%80%e6%b1%82%e5%88%86%e8%a7%a3" aria-label="2、需求分解">2、需求分解</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%bc%80%e5%8f%91%e5%ae%9e%e6%88%98" aria-label="开发实战">开发实战</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%bc%95%e5%85%a5%e5%8a%9f%e8%83%bd%e5%ba%93%e5%92%8c%e9%99%84%e4%bb%b6%e5%ba%93" aria-label="1、引入功能库和附件库">1、引入功能库和附件库</a></li>
+                <li>
+                    <a href="#2%e6%9e%84%e5%bb%ba%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%b9%e5%99%a8" aria-label="2、构建腾讯地图容器">2、构建腾讯地图容器</a></li>
+                <li>
+                    <a href="#3%e8%b0%83%e7%94%a8%e5%89%8d%e7%ab%af%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6" aria-label="3、调用前端定位组件">3、调用前端定位组件</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%ae%9a%e4%bd%8d%e6%88%90%e5%8a%9f%e5%9b%9e%e8%b0%83%e5%87%bd%e6%95%b0" aria-label="1）定位成功回调函数">1）定位成功回调函数</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2%e5%ae%9a%e4%bd%8d%e5%a4%b1%e8%b4%a5%e5%9b%9e%e8%b0%83%e5%87%bd%e6%95%b0" aria-label="2、定位失败回调函数">2、定位失败回调函数</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9d%90%e6%a0%87%e7%bb%8f%e7%ba%ac%e5%ba%a6%e6%8b%be%e5%8f%96" aria-label="坐标经纬度拾取">坐标经纬度拾取</a><ul>
+                        
+                <li>
+                    <a href="#1%e8%85%be%e8%ae%af%e5%9d%90%e6%a0%87%e6%8b%be%e5%8f%96%e5%99%a8" aria-label="1、腾讯坐标拾取器">1、腾讯坐标拾取器</a></li>
+                <li>
+                    <a href="#2webservice-api%e5%9c%b0%e5%9d%80%e8%a7%a3%e6%9e%90%e5%9c%b0%e5%9d%80%e8%bd%ac%e5%9d%90%e6%a0%87" aria-label="2、WebService API地址解析（地址转坐标）">2、WebService API地址解析（地址转坐标）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a><ul>
+                        
+                <li>
+                    <a href="#1script%e6%a0%87%e7%ad%be%e5%8a%a0%e8%bd%bdapi%e6%9c%8d%e5%8a%a1" aria-label="1、script标签加载API服务">1、script标签加载API服务</a></li>
+                <li>
+                    <a href="#2%e9%99%84%e5%8a%a0%e5%ba%93%e7%9a%84%e5%bc%95%e5%85%a5" aria-label="2、附加库的引入">2、附加库的引入</a></li>
+                <li>
+                    <a href="#3%e8%87%aa%e5%8a%a8%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ba%93" aria-label="3、自动定位组件库">3、自动定位组件库</a></li>
+                <li>
+                    <a href="#4%e7%bb%8f%e7%ba%ac%e5%ba%a6%e4%bd%8d%e7%bd%ae" aria-label="4、经纬度位置">4、经纬度位置</a></li>
+                <li>
+                    <a href="#5%e8%85%be%e8%ae%af%e7%99%be%e5%ba%a6%e5%92%8c%e9%ab%98%e5%be%b7%e5%9c%b0%e5%9b%be%e5%bc%80%e5%8f%91%e6%af%94%e8%be%83" aria-label="5、腾讯、百度和高德地图开发比较">5、腾讯、百度和高德地图开发比较</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<p>地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。</p>
+<p>本次使用版本： <a href="https://link.juejin.cn?target=https%3A%2F%2Flbs.qq.com%2FwebApi%2FjavascriptV2%2FjsGuide%2FjsOverview" title="https://lbs.qq.com/webApi/javascriptV2/jsGuide/jsOverview">JavaScript API 2.0版本</a>。</p>
+<h2 id="项目需求">项目需求<a hidden class="anchor" aria-hidden="true" href="#项目需求">#</a></h2>
+<h3 id="1项目需求">1、项目需求<a hidden class="anchor" aria-hidden="true" href="#1项目需求">#</a></h3>
+<p>基于腾讯位置服务，实现微信扫描二维码后，在微信浏览器内，展示某县城的公用厕所分布图，按照用户当前定位与各个厕所之间的距离远近排序，点击标注点跳转到腾讯地图进行导航。</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/90d35f4e653947969860677ce97cfb46~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h3 id="2需求分解">2、需求分解<a hidden class="anchor" aria-hidden="true" href="#2需求分解">#</a></h3>
+<p>基于上述需求，对使用到的腾讯位置服务接口予以分解如下：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>腾讯地图加载； 自动定位； 信息点(POINTS)标注maker； 计算标注点之间的距离； 导航跳转链接API接口； 街道与卫星地图切换控件； 缩放控件；</code></p>
+<h2 id="开发实战">开发实战<a hidden class="anchor" aria-hidden="true" href="#开发实战">#</a></h2>
+<h3 id="1引入功能库和附件库">1、引入功能库和附件库<a hidden class="anchor" aria-hidden="true" href="#1引入功能库和附件库">#</a></h3>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`&lt;script charset=&quot;utf-8&quot;             src=&quot;https://map.qq.com/api/js?v=2.exp&amp;libraries=drawing,geometry,autocomplete,convertor&amp;key={$appkey}&quot;&gt;&lt;/script&gt;     &lt;script type=&quot;text/javascript&quot;             src=&quot;https://3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js&quot;&gt;&lt;/script&gt;`
+</code></pre>
+<h3 id="2构建腾讯地图容器">2、构建腾讯地图容器<a hidden class="anchor" aria-hidden="true" href="#2构建腾讯地图容器">#</a></h3>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!--地图加载--&gt; &lt;div id=&quot;location&quot; onclick=&quot;getLocation();&quot;&gt;&lt;img src=&quot;{$url}{$STATIC}images/location.png&quot; alt=&quot;&quot;&gt;&lt;/div&gt; &lt;div id=&quot;txmap&quot;&gt;&lt;/div&gt;</code></p>
+<h3 id="3调用前端定位组件">3、调用前端定位组件<a hidden class="anchor" aria-hidden="true" href="#3调用前端定位组件">#</a></h3>
+<p>由于项目需要多次调用地图和定位，为此，在script脚本中map和geolocation都设置为全局函数。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var map;//全局函数   var geolocation = new qq.maps.Geolocation(appkey, &quot;{$referer}&quot;);   var options = {timeout: 8000};  function getLocation() {         geolocation.getLocation(showPosition, showErr, options);     }</code></p>
+<p>getLocation(sucCallback, errCallback, [options: {timeout: number, failTipFlag: boolean}])方法</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>获取当前所在地理位置，调用一次即重新定位一次，定位数据比较精确。 sucCallback为定位成功回调函数，必填； errCallback为定位失败回调函数，选填，如果不填，请设为null； options为定位选项，选填，可以通过timeout参数设置定位的超时时间，默认值为10s; failTipFlag: 是否在定位失败时给出提示引导用户打开授权或打开定位开关。（即将支持）</code></p>
+<h4 id="1定位成功回调函数">1）定位成功回调函数<a hidden class="anchor" aria-hidden="true" href="#1定位成功回调函数">#</a></h4>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function showPosition(position) { }</code></p>
+<p><strong>获取位置坐标显示地图</strong></p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>    `map = new qq.maps.Map(document.getElementById(&quot;txmap&quot;), {             // 地图的中心地理坐标。             center: new qq.maps.LatLng(position.lat, position.lng),             zoom: 15         });`
+</code></pre>
+<p><strong>定义当前位置maker样式图片</strong></p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>    `var imgUrl = &quot;static/rooted/images/icon.png&quot;;         var anchor = new qq.maps.Point(6, 6),                 size = new qq.maps.Size(45, 46),                 origin = new qq.maps.Point(0, 0),                 icon = new qq.maps.MarkerImage(imgUrl, size, origin, anchor);         var marker2 = new qq.maps.Marker({             icon: icon,             map: map,             position: new qq.maps.LatLng(position.lat, position.lng)         });`
+</code></pre>
+<p><strong>读取信息点(POINTS)并在地图上标注</strong></p>
+<p>1、标准JSON数据格式</p>
+<p>为方便展示，此处仅展示数据格式，实际应用做，使用ajax获取即可。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[    {        &quot;toilet_id&quot;: &quot;9&quot;,        &quot;toilet_name&quot;: &quot;智慧广场&quot;,        &quot;toilet_address&quot;: &quot;西溪路 智慧中心南&quot;,        &quot;toilet_url&quot;: &quot;upload/preview/2020-11/15784affe0de0d45c5f33625851527e9.jpg&quot;,        &quot;toilet_lon&quot;: &quot;115.965248&quot;,        &quot;toilet_lat&quot;: &quot;35.597050&quot;    },    {        &quot;toilet_id&quot;: &quot;14&quot;,        &quot;toilet_name&quot;: &quot;唐塔公厕&quot;,        &quot;toilet_address&quot;: &quot;东门街北段唐塔广场&quot;,        &quot;toilet_url&quot;: &quot;upload/preview/2020-11/8e5bda8c5b12f87ebad80c247d8f2b26.jpg&quot;,        &quot;toilet_lon&quot;: &quot;115.946365&quot;,        &quot;toilet_lat&quot;: &quot;35.602218&quot;    }]</code></p>
+<p>2、地图标注并计算距离</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>//地图标注;                 getTxMap(newData, latlngs);                 //两点间的距离;                 getDistance(newData, latlngs);</code></p>
+<p><strong>经纬度标注封装函数</strong></p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>    `function getTxMap(newData, latlngs) {             for (var i = 0; i &lt; newData.length; i++) {                 (function (n) {                     var marker = new qq.maps.Marker({                         position: latlngs[n],                         map: map                     });                     qq.maps.event.addListener(marker, 'click', function () {                         var popHtml = '&lt;div class=&quot;pop&quot;&gt;到这里: &lt;a href=&quot;https://apis.map.qq.com/uri/v1/routeplan?type=walk&amp;from=起步位置&amp;fromcoord=' + position.lat + ',' + position.lng + '&amp;to=' + newData[n].toilet_name + '&amp;tocoord=' + newData[n].toilet_lat + ',' + newData[n].toilet_lon + '&amp;policy=0&amp;referer={$referer}&quot;&gt;' + newData[n].toilet_name + '&lt;/a&gt;&lt;/div&gt;';                         infoWin.open();                         infoWin.setContent(popHtml);                         infoWin.setPosition(latlngs[n]);                     });                 })(i);             }         }`
+</code></pre>
+<p><strong>计算两点间的距离函数封装</strong></p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>    `function getDistance(newData, latlngs) {             var newArr = [];             var start = new qq.maps.LatLng(position.lat, position.lng);             for (var i = 0; i &lt; latlngs.length; i++) {                 var end = latlngs[i];                 var distance = Math.round(qq.maps.geometry.spherical.computeDistanceBetween(start, end) * 10) / 10;                 //拼接新的距离数组数据;                 newArr.push({                     toilet_id: newData[i].toilet_id,                     toilet_name: newData[i].toilet_name,                     toilet_address: newData[i].toilet_address,                     toilet_url: newData[i].toilet_url,                     toilet_lon: newData[i].toilet_lon,                     toilet_lat: newData[i].toilet_lat,                     distance: distance                 })             }             //升序排列;             function compare(key) {                 return function (value1, value2) {                     var val1 = value1[key];                     var val2 = value2[key];                     return val1 - val2;                 }             }             newArr.sort(compare('distance'));             console.log(newArr);`
+</code></pre>
+<h3 id="2定位失败回调函数">2、定位失败回调函数<a hidden class="anchor" aria-hidden="true" href="#2定位失败回调函数">#</a></h3>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`//定位失败，自动跳转页面;     function showErr() {         //alert(&quot;定位失败！&quot;);         window.location.href = &quot;?m=Index&amp;a=error&quot;     }`
+</code></pre>
+<h2 id="坐标经纬度拾取">坐标经纬度拾取<a hidden class="anchor" aria-hidden="true" href="#坐标经纬度拾取">#</a></h2>
+<h3 id="1腾讯坐标拾取器">1、腾讯坐标拾取器<a hidden class="anchor" aria-hidden="true" href="#1腾讯坐标拾取器">#</a></h3>
+<p>项目开发过程中，需要自己拾取坐标经纬度，以满足初始数据的测试和演示使用。一般会使用腾讯提供的坐标拾取器。链接地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Flbs.qq.com%2Ftool%2Fgetpoint%2Findex.html%25E3%2580%2582" title="https://lbs.qq.com/tool/getpoint/index.html%E3%80%82">lbs.qq.com/tool/getpoi…</a></p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>支持地址 精确/模糊 查询； 支持POI点坐标显示； 坐标鼠标跟随显示；</code></p>
+<p>如果非要挑出点毛病的话，地图拾取框太小了，想随心所欲的拾取坐标，要缩放或拖拽很多次，心累。</p>
+<h3 id="2webservice-api地址解析地址转坐标">2、WebService API地址解析（地址转坐标）<a hidden class="anchor" aria-hidden="true" href="#2webservice-api地址解析地址转坐标">#</a></h3>
+<p>在项目完成测试后，如果遇到成千上百的地址时，一个一个的拾取，好像不是一个合格的开发者的所为。此时，就需要使用到地址解析和逆解析的API接口，即：在数据导入到数据库的过程中，自动批量地将地址转化为经纬度坐标，满足前端的调用。</p>
+<p>本例中使用了腾讯位置服务的WebService API，后端语言使用PHP，简要的将该过程予以呈现。</p>
+<p>1、封装WebService API接口函数</p>
+<p>官方实例，如果在前端直接使用getJSON函数，会出现“同源策略”被阻止，为此需要后端爬取后，“曲线救国”。</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>//GET请求示例，注意参数值要进行URL编码 https://apis.map.qq.com/ws/geocoder/v1/?address=北京市海淀区彩和坊路海淀西大街74号&amp;key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77</code></p>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/*地址转坐标封装函数，文件名称为points.php *$address，需要转化的地址，越详细经纬度精度越高；  */ function getGeoCoding($address) {     $url = &quot;https://apis.map.qq.com/ws/geocoder/v1/?address=&quot; . $address . &quot;&amp;key={$key}&quot;;     $ch = curl_init();     curl_setopt($ch, CURLOPT_URL, $url);     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);     $output = curl_exec($ch);     curl_close($ch);     return $output; } //获取前端传入的地址参数; $address = $_GET[&quot;address&quot;]; //输出json数据格式，供前端调用; die(getGeoCoding($address));</code></p>
+<p>2、前端调用</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`//自動獲取經緯度;     var getAddress = function transAddress() {         var address = $(&quot;#address&quot;).val();         getPoints(address);     }     //前端页面输出;     function getPoints(address) {         $.getJSON(&quot;points.php&quot;, {address: address}, function (res) {             if (res.status == 0) {                 $(&quot;#lng&quot;).val(res.result.location.lng);                 $(&quot;#lat&quot;).val(res.result.location.lat);             } else {                 $(&quot;#message&quot;).html(res.message);             }         });     }`
+</code></pre>
+<p>3、效果演示</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a32ea0dd41bf430984508522f33187cc~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>在导入地址数据的时候，一定要是省市区街道门牌号，地址越详细精度越高，否则会解析不出来，谨记！</p>
+<h2 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h2>
+<h3 id="1script标签加载api服务">1、script标签加载API服务<a hidden class="anchor" aria-hidden="true" href="#1script标签加载api服务">#</a></h3>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script charset=&quot;utf-8&quot; src=&quot;https://map.qq.com/api/js?v=2.exp&amp;key=YOUR_KEY&quot;&gt;&lt;/script&gt;</code></p>
+<p>在开发过程中，默认会这样引入到前端文件。测试环境和生成环境一致，或者更换环境也是一直，不会出现问题的。但是如果是http和https不一致的协议环境下，引入文件就会出现错误提示。</p>
+<p>建议的加载方式：src不使用协议名称，让其自动匹配。如：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script charset=&quot;utf-8&quot; src=&quot;//map.qq.com/api/js?v=2.exp&amp;key=YOUR_KEY&quot;&gt;&lt;/script&gt;</code></p>
+<h3 id="2附加库的引入">2、附加库的引入<a hidden class="anchor" aria-hidden="true" href="#2附加库的引入">#</a></h3>
+<p>学习一个新项目的最快捷方式是学会使用官方文档，因为这些文档是基础中的基础。但官方文档的有时太官方，有些细节无法清楚的展示出来。</p>
+<p>官方文档不能解决的问题时，会“面对CSDN编程”，每个开发者遇到的问题不同，开发经验不同，在CSDN上的记录更多的是为了避免自己下次“入坑”提醒，无法完整的将项目的细节描述清楚，也是初学者看到人家明明解决了，为什么自己不可以的。</p>
+<p>这里就牵涉到腾讯地图附加库的引入。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`&lt;script charset=&quot;utf-8&quot;             src=&quot;://map.qq.com/api/js?v=2.exp&amp;libraries=drawing,geometry,autocomplete,convertor&amp;key={$appkey}&quot;&gt;&lt;/script&gt;`
+</code></pre>
+<p>本项目中就遇见需要计算自动定位的经纬度和各个厕所之间的距离，需要使用<code>geometry</code>几何运算库。在未理解官方文档的前提下，强行CSDN，走路很多弯路才发现：开发语法明明对了，但是却没有计算出距离，就是没引入对应的附加库。</p>
+<h3 id="3自动定位组件库">3、自动定位组件库<a hidden class="anchor" aria-hidden="true" href="#3自动定位组件库">#</a></h3>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script type=&quot;text/javascript&quot;             src=&quot;//3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>使用自动定位功能，必须引入自动定位的<code>geolocation.min.js</code>附加库，无须多言。</p>
+<h3 id="4经纬度位置">4、经纬度位置<a hidden class="anchor" aria-hidden="true" href="#4经纬度位置">#</a></h3>
+<p>如果是首次开发地图就使用腾讯地图的话，出现这个错误的可能性比较低。如果有百度和高德地图开发的经验话，千万不要想当然。在这个问题上浪费了半个小时才发现，腾讯的经纬度和百度、高德的问题是互换的。</p>
+<p>腾讯经纬度</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>new qq.maps.LatLng(39.914850, 116.403765); //构建对象的是（纬度，经度）</code></p>
+<p>百度经纬度</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>map.centerAndZoom(new BMap.Point(116.4035,39.915),8); //构建对象的是（经度，纬度）</code></p>
+<p>高德经纬度</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>position: new AMap.LngLat(116.39, 39.9),//构建点对象的是（经度，纬度）</code></p>
+<p>在使用坐标拾取器时，一定要选择各个对应的工具，导航等牵涉到坐标的地方一定要注意。</p>
+<h3 id="5腾讯百度和高德地图开发比较">5、腾讯、百度和高德地图开发比较<a hidden class="anchor" aria-hidden="true" href="#5腾讯百度和高德地图开发比较">#</a></h3>
+<p>对于不同的厂家地图的使用，一般都有“先入为主” 的刻板印象，也有甲方原因的客观要求。</p>
+<p>对比项</p>
+<p>腾讯地图</p>
+<p>百度地图</p>
+<p>高德地图</p>
+<p>功能</p>
+<p>标注、信息框、覆盖物、计算距离、轨迹、导航等常用功能</p>
+<p>同前</p>
+<p>同前</p>
+<p>坐标</p>
+<p>火星坐标</p>
+<p>BD-09坐标</p>
+<p>火星坐标</p>
+<p>坐标结构</p>
+<p>(39.914850, 116.403765)</p>
+<p>（116.4035,39.915）</p>
+<p>（116.39, 39.9）</p>
+<p>语法结构</p>
+<p>同高德</p>
+<p>百度自有语法</p>
+<p>同腾讯</p>
+<p>开发文档</p>
+<p>相对集中</p>
+<p>百度地图开发平台已升级到3.0版本，文档多，类库多</p>
+<p>相对集中</p>
+<p>延伸</p>
+<p>数据可视化API服务</p>
+<p>同前</p>
+<p>同前</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>本次使用版本： JavaScript API 2.0版本，目前我们提供的<a href="https://link.juejin.cn?target=https%3A%2F%2Flbs.qq.com%2FwebApi%2FjavascriptGL%2FglGuide%2FglOverview" title="https://lbs.qq.com/webApi/javascriptGL/glGuide/glOverview">JavaScript API GL</a>版本，功能更炫酷齐全，大家可以尝试接入使用。</p>
+<blockquote>
+<p>作者：漏刻有时</p>
+<p>链接：<a href="https://link.juejin.cn?target=https%3A%2F%2Flockdatav.blog.csdn.net%2Farticle%2Fdetails%2F113412823" title="https://lockdatav.blog.csdn.net/article/details/113412823">lockdatav.blog.csdn.net/article/det…</a></p>
+<p>来源：CSDN</p>
+<p>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E8%85%BE%E8%AE%AF/">腾讯</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>【进阶之路】深入了解volatile、内存屏障与happens-before规则</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%86%9C%E6%9D%91%E7%A8%8B%E5%BA%8F%E5%91%98%E7%8B%AC%E7%AB%8B%E5%BC%80%E5%8F%91%E8%80%85%E5%9C%A8%E6%9D%91%E9%87%8C%E5%90%84%E5%A4%84%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E6%97%A5%E5%B8%B8%E4%B8%8E%E4%B8%80%E8%B7%AF%E8%B5%B0%E6%9D%A5%E7%9A%84%E5%8E%86%E7%A8%8B/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>农村程序员&amp;独立开发者，在村里各处写代码的日常与一路走来的历程</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于腾讯地图定位组件实现周边公用厕所远近排序分布图 on x"
+            href="https://x.com/intent/tweet/?text=%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f&amp;hashtags=%e8%85%be%e8%ae%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于腾讯地图定位组件实现周边公用厕所远近排序分布图 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f&amp;title=%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be&amp;summary=%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于腾讯地图定位组件实现周边公用厕所远近排序分布图 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f&title=%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于腾讯地图定位组件实现周边公用厕所远近排序分布图 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于腾讯地图定位组件实现周边公用厕所远近排序分布图 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于腾讯地图定位组件实现周边公用厕所远近排序分布图 on telegram"
+            href="https://telegram.me/share/url?text=%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 基于腾讯地图定位组件实现周边公用厕所远近排序分布图 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%9f%ba%e4%ba%8e%e8%85%be%e8%ae%af%e5%9c%b0%e5%9b%be%e5%ae%9a%e4%bd%8d%e7%bb%84%e4%bb%b6%e5%ae%9e%e7%8e%b0%e5%91%a8%e8%be%b9%e5%85%ac%e7%94%a8%e5%8e%95%e6%89%80%e8%bf%9c%e8%bf%91%e6%8e%92%e5%ba%8f%e5%88%86%e5%b8%83%e5%9b%be&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%259F%25BA%25E4%25BA%258E%25E8%2585%25BE%25E8%25AE%25AF%25E5%259C%25B0%25E5%259B%25BE%25E5%25AE%259A%25E4%25BD%258D%25E7%25BB%2584%25E4%25BB%25B6%25E5%25AE%259E%25E7%258E%25B0%25E5%2591%25A8%25E8%25BE%25B9%25E5%2585%25AC%25E7%2594%25A8%25E5%258E%2595%25E6%2589%2580%25E8%25BF%259C%25E8%25BF%2591%25E6%258E%2592%25E5%25BA%258F%25E5%2588%2586%25E5%25B8%2583%25E5%259B%25BE%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

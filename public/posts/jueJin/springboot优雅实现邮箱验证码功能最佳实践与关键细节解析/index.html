@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 | PaperMod</title>
+<meta name="keywords" content="SpringBoot, FreeMarker, 后端">
+<meta name="description" content="在实现邮箱验证码功能时，表面上只是发送一封带有验证码的邮件，但实际上背后需要处理的细节远不止于此。本文将详细探讨如何利用SpringEmail、Freemarker和Redis来实现一个高效的邮箱验">
+<meta name="author" content="翼飞">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E5%AE%9E%E7%8E%B0%E9%82%AE%E7%AE%B1%E9%AA%8C%E8%AF%81%E7%A0%81%E5%8A%9F%E8%83%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B8%8E%E5%85%B3%E9%94%AE%E7%BB%86%E8%8A%82%E8%A7%A3%E6%9E%90/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E5%AE%9E%E7%8E%B0%E9%82%AE%E7%AE%B1%E9%AA%8C%E8%AF%81%E7%A0%81%E5%8A%9F%E8%83%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B8%8E%E5%85%B3%E9%94%AE%E7%BB%86%E8%8A%82%E8%A7%A3%E6%9E%90/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析" />
+<meta property="og:description" content="在实现邮箱验证码功能时，表面上只是发送一封带有验证码的邮件，但实际上背后需要处理的细节远不止于此。本文将详细探讨如何利用SpringEmail、Freemarker和Redis来实现一个高效的邮箱验" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E5%AE%9E%E7%8E%B0%E9%82%AE%E7%AE%B1%E9%AA%8C%E8%AF%81%E7%A0%81%E5%8A%9F%E8%83%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B8%8E%E5%85%B3%E9%94%AE%E7%BB%86%E8%8A%82%E8%A7%A3%E6%9E%90/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-09-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-01T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析"/>
+<meta name="twitter:description" content="在实现邮箱验证码功能时，表面上只是发送一封带有验证码的邮件，但实际上背后需要处理的细节远不止于此。本文将详细探讨如何利用SpringEmail、Freemarker和Redis来实现一个高效的邮箱验"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析",
+      "item": "http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E5%AE%9E%E7%8E%B0%E9%82%AE%E7%AE%B1%E9%AA%8C%E8%AF%81%E7%A0%81%E5%8A%9F%E8%83%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B8%8E%E5%85%B3%E9%94%AE%E7%BB%86%E8%8A%82%E8%A7%A3%E6%9E%90/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析",
+  "name": "SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析",
+  "description": "在实现邮箱验证码功能时，表面上只是发送一封带有验证码的邮件，但实际上背后需要处理的细节远不止于此。本文将详细探讨如何利用SpringEmail、Freemarker和Redis来实现一个高效的邮箱验",
+  "keywords": [
+    "SpringBoot", "FreeMarker", "后端"
+  ],
+  "articleBody": "一、简介 在实现邮箱验证码功能时，虽然表面上看只是发送一封带有验证码的邮件，但实际上背后涉及的细节远不止于此。本文将详细探讨如何利用Spring Email、Freemarker和Redis来构建一个高效的邮箱验证码系统。我们将深入分析验证码的时效管理，探讨为什么使用Redis的ZSet集合来存储验证码是更优的选择。同时，介绍如何通过异步操作来优化用户体验，确保邮件发送和验证码存储能够高效、可靠地完成,以及如何对接口进行限流。最后，我们将展示一个完整的实现示例，帮助你全面掌握这一关键功能的开发。\n二、验证码时效管理 有些平台在发送验证码时，会提示验证码在几分钟内有效，但当我因为网络问题多次收到几封邮件时，往往只有最后一封邮件的验证码是有效的，这波属实是搞不懂了。\n在讨论验证码时效管理时，传统的 Key-Value 存储方式确实容易引发一些问题。因为当一个邮箱多次请求验证码时，新生成的验证码会覆盖旧的验证码，从而导致前面收到的验证码变得无效。这违背了“验证码在几分钟内有效”的承诺，给用户带来了不好的体验。\n为了优化用户体验，我们可以考虑使用集合（Set 或 ZSet）来存储验证码信息，从而解决这个问题。以下为不同存储方式的介绍:\nKey-Value 存储方式 在最简单的 Key-Value 方式中，每个邮箱只与一个验证码对应。当新的验证码生成时，旧的验证码会被覆盖：\nKey\nValue\n过期时间\nemail@example.com code\n60s\n这种方式的问题在于，旧的验证码会被覆盖，用户只能使用最新的验证码，尽管之前收到的验证码可能也在有效期内。\n使用Set集合存储方式 我们可以使用 Set 集合存储多次请求生成的验证码：\nKey\nSet\n过期时间\nemail@example.com {code1, code2}\n60s\n这种方式虽然可以存储多个验证码，但它并不能记录每个验证码的生成时间。因此，过期管理变得复杂：所有验证码只能一起过期，无法单独控制每个验证码的有效期。\n使用ZSet进行存储 ZSet（有序集合）提供了一种更灵活的方式来管理验证码。我们可以将验证码和它的生成时间一起存储到 ZSet 中：\nKey\nZSet\n过期时间\nemail@example.com [{code1, timestamp1}, {code2, timestamp2}]\n60s\n通过 ZSet 的方式，我们不仅可以存储多个验证码，还可以根据时间戳对它们进行排序，并精准控制每个验证码的有效期。当用户请求验证时，我们可以判断哪个验证码在有效期内，从而避免无效验证码的困扰。\n方案选择 最终选择使用Redis中Zset进行存储，说说区别:\nSet：只存储数据的唯一性，无序排列。适用于不需要记录顺序的场景，但在验证码管理中，由于无法跟踪验证码生成时间，使用 Set 并不理想。 ZSet：不仅存储数据，还将每个数据与一个分数（如时间戳）关联，数据按分数排序。这样可以实现对验证码的有效期管理，确保每个验证码在独立的时间段内有效，用户体验更佳。 三、异步操作优化 异步操作的两个关键点 发送验证码作为异步操作：发送验证码通常涉及网络请求或外部服务调用，这类操作可能会有一定的延迟。如果同步执行，可能会阻塞主线程，影响用户体验。因此，将发送验证码的操作异步化，可以提高系统的响应速度和整体性能。 存储验证码到 Redis 作为后续操作：只有在验证码成功发送之后，才需要将验证码存储到 Redis 中。这样可以避免在发送验证码失败时，仍然保存无效的验证码数据。这种操作顺序的合理性，确保了数据的一致性和操作的准确性。 为什么使用 CompletableFuture 在没有引入消息队列（MQ）的情况下，CompletableFuture 提供了一个简洁而强大的异步编程模型。它允许我们定义一系列的异步操作，并且可以灵活地指定操作之间的依赖关系。以下是代码示例：\nless\n代码解读\n复制代码\nCompletableFuture.runAsync(() -\u003e { // 发送验证码 }).thenRunAsync(() -\u003e { // 当发送验证码错误的时候，不会执行存储验证码到redis // 存储验证码到redis });\n优点总结 非阻塞执行：使用 CompletableFuture 可以将耗时的操作异步执行，避免阻塞主线程，提高系统的吞吐量和响应性。 简化代码逻辑：异步链式调用让代码结构更加清晰，逻辑顺序更为直观，易于维护。 错误处理更加灵活：如果发送验证码的操作出现错误，存储验证码的操作将不会执行。CompletableFuture 可以轻松地管理依赖操作之间的关系，确保逻辑上的正确性和数据的一致性。 四、发送邮箱验证码限流 对于邮箱验证码如何限流，可以参考这两篇限流文章，可以对发送验证码进行60s内防重复提交，每小时、每天发送验证码针对ip限制发送次数\nRedis如何多规则限流和防重复提交？\nRedis如何多规则限流和Redis防重复提交 | 重构篇\n五、为什么使用 Freemarker 模版引擎生成邮件内容 在项目中使用 Freemarker 模版引擎生成邮件内容而不是直接使用常量，主要有以下几个原因：\n统一管理与维护：通过 Freemarker 模版引擎，可以将所有邮件内容的结构和样式集中在模板文件中进行管理。这样，当邮件的样式或内容需要调整时，只需修改模板文件即可，无需在代码中逐一修改常量。\n动态内容生成：Freemarker 模板引擎支持将动态数据插入到模板中，生成个性化的邮件内容。对于欢迎通知、日志预警、邮箱验证码等场景，可以轻松定制邮件内容，提高灵活性和可维护性。\n样式调整方便：模板引擎允许我们灵活地控制邮件的布局和样式。当需要统一调整邮件样式时，只需修改模板，不必在代码中逐一调整常量定义的内容。\n六、开始实战 正式编码会自定义线程池，以及一系列工具类，对于这些辅助操作，请移步到源码查看\n1. 引入依赖 xml\n代码解读\n复制代码\norg.springframework.boot spring-boot-starter-mail org.springframework.boot spring-boot-starter-freemarker 2. 在配置文件中配置您的邮箱信息 我使用的QQ邮箱，需要在设置中获取到这个授权码\nyaml\n代码解读\n复制代码\nspring: ## 邮箱配置 mail: ## 配置邮件服务器的地址 host: smtp.qq.com ## 配置邮件服务器的端口（465或587） port: 465 ## 配置邮箱账号 username: ${company.email} ## 配置邮箱授权码 password: XXX # 配置默认编码 default-encoding: UTF-8 properties: mail: smtp: socketFactory: ## SSL 连接配置 class: javax.net.ssl.SSLSocketFactory ## 是否开启 debug，这样方便开发者查看邮件发送日志 debug: false\n3. 编写 Freemarker 文件 后续采用html发送邮箱验证码，所以 ftl 文件采用html的形式编写\nhtml\n代码解读\n复制代码\n\u003c!DOCTYPE html\u003e 邮箱验证码 尊敬的用户， 您收到来自 ${companyName! '默认公司名'} 的邮件，用于验证您的邮箱地址。\n${verifyCode}\n请使用此验证码完成验证过程 ( 有效时间 ${validTime} 分钟 )。\n如果您没有请求此验证码，请忽略此邮件。\n感谢您的配合，\n${companyName! '默认公司名'}\n4. 发送邮箱验证码 \u0026 校验邮箱验证码 代码注释描述的很详细，这里我简单介绍一下\nFreemarker 模板引擎生成包含验证码的邮件内容 代码中使用了 Freemarker 模板引擎来生成包含验证码的邮件内容。通过构建 SendCodeFtlDto 对象，将公司名称、公司官网、验证码等信息传递给 Freemarker 模板 email_code.ftl，生成完整的 HTML 邮件内容。这种方式使得邮件内容的维护更加灵活，模板可以根据需求进行修改，而不需要调整代码。\n校验 Redis 验证码采用滚动验证 在校验邮箱验证码时，代码使用了滚动时间窗口的方式，从 Redis 中获取指定时间范围内（例如三分钟）的验证码，并进行验证。如果验证码有效，系统会立即删除该验证码，防止其被重复使用。这种滚动验证机制提高了验证码校验的灵活性和安全性，确保验证码只能在指定时间段内使用。\n使用 CompletableFuture 实现异步操作 为了提高性能和响应速度，代码采用了 CompletableFuture 实现异步操作。首先异步发送验证码邮件，接着在邮件发送成功后异步将验证码存储到 Redis 中。CompletableFuture 的使用使得两个操作可以非阻塞地执行，同时保证了操作的顺序性——只有在邮件发送成功后才会存储验证码，从而提高了系统的可靠性。\njava\n代码解读\n复制代码\n/** * 发送邮箱服务实现类 * * @author YiFei */ @Slf4j @Service @RequiredArgsConstructor public class EmailServiceImpl implements IEmailService { // 防止报错 @Resource private final JavaMailSender javaMailSender; private final CompanyConfiguration companyConfiguration; private final TaskExecutor ioIntensiveExecutor; private final RedisUtil redisUtil; private final Configuration configuration; /** * 使用邮箱发送验证码 * * @param email 需要送达的邮箱 */ @Override public void sendEmailCode(String email) { // TODO 数据库存储到 email_table 里面 // 1. 生成验证码 String code = RandomUtil.randomString(MailConstants.EMAIL_CODE_NUM); // 2. 构建 sendCodeFtlDto 对象 （用于生成ftl的信息） SendCodeFtlDto sendCodeFtlDto = SendCodeFtlDto.builder() .companyName(companyConfiguration.getName()) // 公司名 .companyWebsite(companyConfiguration.getWebsite()) // 公司官网 .validTime(MailConstants.EMAIL_CODE_TIME_OUT) // 有效时长 .verifyCode(code).build(); // 3. 通过 CompletableFuture 发送邮箱验证码 CompletableFuture.runAsync(() -\u003e { try (StringWriter stringWriter = new StringWriter()) { // 4. 构建 email_code.ftl 模板 Template template = configuration.getTemplate(FreemarkerConstants.EMAIL_SEND_CODE_FTL_PATH); template.process(sendCodeFtlDto, stringWriter); // 5. 发送 email_code.html 文档 sendEmailWithHtmlContent(email, SystemConstants.EMAIL_CODE_TEMPLATE_SUBJECT.formatted(companyConfiguration.getName()), stringWriter.toString() ); } catch (Exception e) { // TODO 数据库存储错误信息到 email_table 里面 log.error(\"记录错误日志，案例说应该持久化到数据库\", e); throw new RuntimeException(e); } }, ioIntensiveExecutor).thenRunAsync(() -\u003e { // 6. 将验证码存储到 redis ( 默认转大写 ) redisUtil.addCacheZSetValue(RedisKeyConstants.EMAIL_CODE_CACHE_PREFIX + email , code.toUpperCase(), Instant.now().toEpochMilli(), sendCodeFtlDto.getValidTime(), TimeUnit.MINUTES); }, ioIntensiveExecutor); } /** * 校验邮箱验证码 * * @param email 邮箱 * @param emailCode 验证码 * @return 是否校验成功 */ @Override public boolean checkEmailCode(String email, String emailCode) { // 1. 获取当前时间 Instant currentTime = Instant.now(); // 2. 减去对应分钟数 Instant adjustedTime = currentTime.minus(Duration.ofMinutes(MailConstants.EMAIL_CODE_TIME_OUT)); // 3. 获取缓存中在3分钟之类的值 String redisEmailCodeKey = RedisKeyConstants.EMAIL_CODE_CACHE_PREFIX + email; Set cacheZSetByScore = redisUtil.getCacheZSetByScore( redisEmailCodeKey, // redis 中存储key adjustedTime.toEpochMilli(), // 开始时间 (三分钟前) currentTime.toEpochMilli(), // 结束时间 (当前时间) 0, -1 ); // 4. 校验是否存在该值 ( 默认转大写 ) boolean result = cacheZSetByScore.contains(emailCode.toUpperCase()); if (result) { // 5. 验证成功 删除 redis 缓存数据防止二次使用 redisUtil.deleteObject(redisEmailCodeKey); } return result; } /** * 发送包含 HTML 内容的邮件 * * @param sendToEmail 收件人邮箱地址 * @param subject 邮件主题 * @param html HTML 格式的邮件内容 * @throws MessagingException 发送邮件过程中可能抛出的异常 */ private void sendEmailWithHtmlContent(String sendToEmail, String subject, String html) throws MessagingException { // 创建 MimeMessage 对象 MimeMessage mimeMessage = javaMailSender.createMimeMessage(); // 使用 MimeMessageHelper 对象设置邮件的发送者、接收者、主题和内容 MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true); mimeMessageHelper.setFrom(companyConfiguration.getName() + '\u003c' + companyConfiguration.getEmail() + \"\u003e\"); mimeMessageHelper.setTo(sendToEmail); mimeMessageHelper.setSubject(subject); mimeMessageHelper.setText(html, true); // 发送邮件 javaMailSender.send(mimeMessage); } }\n七、演示 直接使用服务器部署好的项目进行演示 ( 注:项目有很多有趣的功能，通过邮箱验证码注册后即可体验 )\n八、源码 源码地址 | 👀 在线演示 | 觉得不错可以给个start\n前端源码位置 : 登录页源码\n后端源码位置 : 邮箱服务源码\n注意事项 :\n平台一人一号，账号可以通过邮箱、第三方平台自动注册。用户名密码方式登录请联系管理员手动添加、手机号不可用。（敏感数据以做信息脱敏） 在线聊天功能（消息已做脏词过滤，群发、系统、AI消息不会被平台记录） 欢迎大家提出意见，欢迎畅聊与项目相关问题 ",
+  "wordCount" : "711",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-01T00:00:00Z",
+  "dateModified": "2024-09-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "翼飞"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E5%AE%9E%E7%8E%B0%E9%82%AE%E7%AE%B1%E9%AA%8C%E8%AF%81%E7%A0%81%E5%8A%9F%E8%83%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B8%8E%E5%85%B3%E9%94%AE%E7%BB%86%E8%8A%82%E8%A7%A3%E6%9E%90/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析
+    </h1>
+    <div class="post-description">
+      在实现邮箱验证码功能时，表面上只是发送一封带有验证码的邮件，但实际上背后需要处理的细节远不止于此。本文将详细探讨如何利用SpringEmail、Freemarker和Redis来实现一个高效的邮箱验
+    </div>
+    <div class="post-meta"><span title='2024-09-01 00:00:00 +0000 UTC'>九月 1, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;翼飞&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e7%ae%80%e4%bb%8b" aria-label="一、简介">一、简介</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e9%aa%8c%e8%af%81%e7%a0%81%e6%97%b6%e6%95%88%e7%ae%a1%e7%90%86" aria-label="二、验证码时效管理">二、验证码时效管理</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#key-value-%e5%ad%98%e5%82%a8%e6%96%b9%e5%bc%8f" aria-label="Key-Value 存储方式">Key-Value 存储方式</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8set%e9%9b%86%e5%90%88%e5%ad%98%e5%82%a8%e6%96%b9%e5%bc%8f" aria-label="使用Set集合存储方式">使用Set集合存储方式</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8zset%e8%bf%9b%e8%a1%8c%e5%ad%98%e5%82%a8" aria-label="使用ZSet进行存储">使用ZSet进行存储</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%88%e9%80%89%e6%8b%a9" aria-label="方案选择">方案选择</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89%e5%bc%82%e6%ad%a5%e6%93%8d%e4%bd%9c%e4%bc%98%e5%8c%96" aria-label="三、异步操作优化">三、异步操作优化</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%bc%82%e6%ad%a5%e6%93%8d%e4%bd%9c%e7%9a%84%e4%b8%a4%e4%b8%aa%e5%85%b3%e9%94%ae%e7%82%b9" aria-label="异步操作的两个关键点">异步操作的两个关键点</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%bf%e7%94%a8completablefuture" aria-label="为什么使用 CompletableFuture">为什么使用 CompletableFuture</a></li>
+                <li>
+                    <a href="#%e4%bc%98%e7%82%b9%e6%80%bb%e7%bb%93" aria-label="优点总结">优点总结</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9b%e5%8f%91%e9%80%81%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e9%99%90%e6%b5%81" aria-label="四、发送邮箱验证码限流">四、发送邮箱验证码限流</a></li>
+                <li>
+                    <a href="#%e4%ba%94%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%bf%e7%94%a8-freemarker-%e6%a8%a1%e7%89%88%e5%bc%95%e6%93%8e%e7%94%9f%e6%88%90%e9%82%ae%e4%bb%b6%e5%86%85%e5%ae%b9" aria-label="五、为什么使用 Freemarker 模版引擎生成邮件内容">五、为什么使用 Freemarker 模版引擎生成邮件内容</a></li>
+                <li>
+                    <a href="#%e5%85%ad%e5%bc%80%e5%a7%8b%e5%ae%9e%e6%88%98" aria-label="六、开始实战">六、开始实战</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%bc%95%e5%85%a5%e4%be%9d%e8%b5%96" aria-label="1. 引入依赖">1. 引入依赖</a></li>
+                <li>
+                    <a href="#2-%e5%9c%a8%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e4%b8%ad%e9%85%8d%e7%bd%ae%e6%82%a8%e7%9a%84%e9%82%ae%e7%ae%b1%e4%bf%a1%e6%81%af" aria-label="2. 在配置文件中配置您的邮箱信息">2. 在配置文件中配置您的邮箱信息</a></li>
+                <li>
+                    <a href="#3-%e7%bc%96%e5%86%99-freemarker-%e6%96%87%e4%bb%b6" aria-label="3. 编写 Freemarker 文件">3. 编写 Freemarker 文件</a></li>
+                <li>
+                    <a href="#4-%e5%8f%91%e9%80%81%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81--%e6%a0%a1%e9%aa%8c%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81" aria-label="4. 发送邮箱验证码 &amp; 校验邮箱验证码">4. 发送邮箱验证码 &amp; 校验邮箱验证码</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%83%e6%bc%94%e7%a4%ba" aria-label="七、演示">七、演示</a></li>
+                <li>
+                    <a href="#%e5%85%ab%e6%ba%90%e7%a0%81" aria-label="八、源码">八、源码</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="一简介">一、简介<a hidden class="anchor" aria-hidden="true" href="#一简介">#</a></h2>
+<p>在实现邮箱验证码功能时，虽然表面上看只是发送一封带有验证码的邮件，但实际上背后涉及的<strong>细节远不止于此</strong>。本文将详细探讨如何利用<strong>Spring Email</strong>、<strong>Freemarker</strong>和<strong>Redis</strong>来构建一个高效的邮箱验证码系统。我们将深入分析<strong>验证码的时效管理</strong>，探讨为什么使用Redis的ZSet集合来存储验证码是更优的选择。同时，介绍如何通过<strong>异步操作</strong>来优化用户体验，确保邮件发送和验证码存储能够高效、可靠地完成,以及如何对<strong>接口进行限流</strong>。最后，我们将展示一个完整的实现示例，帮助你全面掌握这一关键功能的开发。</p>
+<h2 id="二验证码时效管理">二、验证码时效管理<a hidden class="anchor" aria-hidden="true" href="#二验证码时效管理">#</a></h2>
+<p>有些平台在发送验证码时，会提示验证码在几分钟内有效，但当我因为网络问题多次收到几封邮件时，往往只有最后一封邮件的验证码是有效的，这波属实是搞不懂了。</p>
+<p>在讨论验证码时效管理时，传统的 Key-Value 存储方式确实容易引发一些问题。因为当一个邮箱多次请求验证码时，新生成的验证码会覆盖旧的验证码，从而导致前面收到的验证码变得无效。这违背了“验证码在几分钟内有效”的承诺，给用户带来了不好的体验。</p>
+<p>为了优化用户体验，我们可以考虑使用集合（Set 或 ZSet）来存储验证码信息，从而解决这个问题。以下为不同存储方式的介绍:</p>
+<h4 id="key-value-存储方式">Key-Value 存储方式<a hidden class="anchor" aria-hidden="true" href="#key-value-存储方式">#</a></h4>
+<p>在最简单的 Key-Value 方式中，每个邮箱只与一个验证码对应。当新的验证码生成时，旧的验证码会被覆盖：</p>
+<p>Key</p>
+<p>Value</p>
+<p>过期时间</p>
+<p> <a href="https://link.juejin.cn?target=mailto%3Aemail%40example.com" title="mailto:email@example.com">email@example.com</a> </p>
+<p>code</p>
+<p>60s</p>
+<p>这种方式的问题在于，旧的验证码会被覆盖，用户只能使用最新的验证码，尽管之前收到的验证码可能也在有效期内。</p>
+<h4 id="使用set集合存储方式">使用Set集合存储方式<a hidden class="anchor" aria-hidden="true" href="#使用set集合存储方式">#</a></h4>
+<p>我们可以使用 Set 集合存储多次请求生成的验证码：</p>
+<p>Key</p>
+<p>Set</p>
+<p>过期时间</p>
+<p> <a href="https://link.juejin.cn?target=mailto%3Aemail%40example.com" title="mailto:email@example.com">email@example.com</a> </p>
+<p>{code1, code2}</p>
+<p>60s</p>
+<p>这种方式虽然可以存储多个验证码，但它并不能记录每个验证码的生成时间。因此，过期管理变得复杂：所有验证码只能一起过期，无法单独控制每个验证码的有效期。</p>
+<h4 id="使用zset进行存储"><strong>使用ZSet进行存储</strong><a hidden class="anchor" aria-hidden="true" href="#使用zset进行存储">#</a></h4>
+<p>ZSet（有序集合）提供了一种更灵活的方式来管理验证码。我们可以将验证码和它的生成时间一起存储到 ZSet 中：</p>
+<p>Key</p>
+<p>ZSet</p>
+<p>过期时间</p>
+<p> <a href="https://link.juejin.cn?target=mailto%3Aemail%40example.com" title="mailto:email@example.com">email@example.com</a> </p>
+<p>[{code1, timestamp1}, {code2, timestamp2}]</p>
+<p>60s</p>
+<p>通过 ZSet 的方式，我们不仅可以存储多个验证码，还可以根据时间戳对它们进行排序，并精准控制每个验证码的有效期。当用户请求验证时，我们可以判断哪个验证码在有效期内，从而避免无效验证码的困扰。</p>
+<h4 id="方案选择">方案选择<a hidden class="anchor" aria-hidden="true" href="#方案选择">#</a></h4>
+<p>最终选择使用Redis中Zset进行存储，说说区别:</p>
+<ul>
+<li><strong>Set</strong>：只存储数据的唯一性，无序排列。适用于不需要记录顺序的场景，但在验证码管理中，由于无法跟踪验证码生成时间，使用 Set 并不理想。</li>
+<li><strong>ZSet</strong>：不仅存储数据，还将每个数据与一个分数（如时间戳）关联，数据按分数排序。这样可以实现对验证码的有效期管理，确保每个验证码在独立的时间段内有效，用户体验更佳。</li>
+</ul>
+<h2 id="三异步操作优化">三、异步操作优化<a hidden class="anchor" aria-hidden="true" href="#三异步操作优化">#</a></h2>
+<h4 id="异步操作的两个关键点">异步操作的两个关键点<a hidden class="anchor" aria-hidden="true" href="#异步操作的两个关键点">#</a></h4>
+<ol>
+<li><strong>发送验证码作为异步操作</strong>：发送验证码通常涉及网络请求或外部服务调用，这类操作可能会有一定的延迟。如果同步执行，可能会阻塞主线程，影响用户体验。因此，将发送验证码的操作异步化，可以提高系统的响应速度和整体性能。</li>
+<li><strong>存储验证码到 Redis 作为后续操作</strong>：只有在验证码成功发送之后，才需要将验证码存储到 Redis 中。这样可以避免在发送验证码失败时，仍然保存无效的验证码数据。这种操作顺序的合理性，确保了数据的一致性和操作的准确性。</li>
+</ol>
+<h4 id="为什么使用completablefuture">为什么使用 <code>CompletableFuture</code><a hidden class="anchor" aria-hidden="true" href="#为什么使用completablefuture">#</a></h4>
+<p>在没有引入消息队列（MQ）的情况下，<code>CompletableFuture</code> 提供了一个简洁而强大的异步编程模型。它允许我们定义一系列的异步操作，并且可以灵活地指定操作之间的依赖关系。以下是代码示例：</p>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>CompletableFuture.runAsync(() -&gt; {     // 发送验证码 }).thenRunAsync(() -&gt; { // 当发送验证码错误的时候，不会执行存储验证码到redis     // 存储验证码到redis  });</code></p>
+<h4 id="优点总结">优点总结<a hidden class="anchor" aria-hidden="true" href="#优点总结">#</a></h4>
+<ul>
+<li><strong>非阻塞执行</strong>：使用 <code>CompletableFuture</code> 可以将耗时的操作异步执行，避免阻塞主线程，提高系统的吞吐量和响应性。</li>
+<li><strong>简化代码逻辑</strong>：异步链式调用让代码结构更加清晰，逻辑顺序更为直观，易于维护。</li>
+<li><strong>错误处理更加灵活</strong>：如果发送验证码的操作出现错误，存储验证码的操作将不会执行。<code>CompletableFuture</code> 可以轻松地管理依赖操作之间的关系，确保逻辑上的正确性和数据的一致性。</li>
+</ul>
+<h2 id="四发送邮箱验证码限流">四、发送邮箱验证码限流<a hidden class="anchor" aria-hidden="true" href="#四发送邮箱验证码限流">#</a></h2>
+<p>对于邮箱验证码如何限流，可以参考这两篇限流文章，可以对<code>发送验证码进行60s内防重复提交，每小时、每天发送验证码针对ip限制发送次数</code></p>
+<p><a href="https://juejin.cn/post/7401053200948183055" title="https://juejin.cn/post/7401053200948183055">Redis如何多规则限流和防重复提交？</a></p>
+<p><a href="https://juejin.cn/post/7401053200948183055" title="https://juejin.cn/post/7401053200948183055">Redis如何多规则限流和Redis防重复提交 | 重构篇</a></p>
+<h2 id="五为什么使用-freemarker-模版引擎生成邮件内容">五、为什么使用 Freemarker 模版引擎生成邮件内容<a hidden class="anchor" aria-hidden="true" href="#五为什么使用-freemarker-模版引擎生成邮件内容">#</a></h2>
+<p>在项目中使用 Freemarker 模版引擎生成邮件内容而不是直接使用常量，主要有以下几个原因：</p>
+<ol>
+<li>
+<p><strong>统一管理与维护</strong>：通过 Freemarker 模版引擎，可以将所有邮件内容的结构和样式集中在模板文件中进行管理。这样，当邮件的样式或内容需要调整时，只需修改模板文件即可，无需在代码中逐一修改常量。</p>
+</li>
+<li>
+<p><strong>动态内容生成</strong>：Freemarker 模板引擎支持将动态数据插入到模板中，生成个性化的邮件内容。对于欢迎通知、日志预警、邮箱验证码等场景，可以轻松定制邮件内容，提高灵活性和可维护性。</p>
+</li>
+<li>
+<p><strong>样式调整方便</strong>：模板引擎允许我们灵活地控制邮件的布局和样式。当需要统一调整邮件样式时，只需修改模板，不必在代码中逐一调整常量定义的内容。</p>
+</li>
+</ol>
+<h2 id="六开始实战">六、开始实战<a hidden class="anchor" aria-hidden="true" href="#六开始实战">#</a></h2>
+<blockquote>
+<p>正式编码会自定义线程池，以及一系列工具类，对于这些辅助操作，请移步到源码查看</p>
+</blockquote>
+<h3 id="1-引入依赖">1. 引入依赖<a hidden class="anchor" aria-hidden="true" href="#1-引入依赖">#</a></h3>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;dependency&gt;     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;     &lt;artifactId&gt;spring-boot-starter-mail&lt;/artifactId&gt; &lt;/dependency&gt; &lt;dependency&gt;     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;     &lt;artifactId&gt;spring-boot-starter-freemarker&lt;/artifactId&gt; &lt;/dependency&gt;</code></p>
+<h3 id="2-在配置文件中配置您的邮箱信息">2. 在配置文件中配置您的邮箱信息<a hidden class="anchor" aria-hidden="true" href="#2-在配置文件中配置您的邮箱信息">#</a></h3>
+<p>我使用的QQ邮箱，需要在设置中获取到这个授权码</p>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/45ec4e18904b48f69b4a4ed5ced45b65~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg57-86aOe:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727846936&amp;x-signature=2ghx5ICCxlfD2uUHa%2Fn9fWFxLiU%3D" alt="image.png"  />
+</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>spring:   ## 邮箱配置   mail:     ## 配置邮件服务器的地址     host: smtp.qq.com     ## 配置邮件服务器的端口（465或587）     port: 465     ## 配置邮箱账号     username: ${company.email}     ## 配置邮箱授权码     password: XXX     # 配置默认编码     default-encoding: UTF-8     properties:       mail:         smtp:           socketFactory:             ## SSL 连接配置             class: javax.net.ssl.SSLSocketFactory         ## 是否开启 debug，这样方便开发者查看邮件发送日志         debug: false</code></p>
+<h3 id="3-编写-freemarker-文件">3. 编写 Freemarker 文件<a hidden class="anchor" aria-hidden="true" href="#3-编写-freemarker-文件">#</a></h3>
+<p>后续采用html发送邮箱验证码，所以 ftl 文件采用html的形式编写</p>
+<p>html</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!DOCTYPE html&gt; &lt;html lang=&quot;zh-CN&quot;&gt; &lt;head&gt;     &lt;meta charset=&quot;UTF-8&quot;&gt;     &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;     &lt;title&gt;邮箱验证码&lt;/title&gt;     &lt;style&gt;         body {             font-family: Arial, sans-serif;             background-color: #f7f7f7;             padding: 20px;         }         .container {             max-width: 600px;             margin: 0 auto;             background-color: #fff;             padding: 20px;             border-radius: 5px;             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);         }         h1 {             color: #333;             text-align: center;         }         p {             color: #666;             font-size: 16px;             line-height: 1.6;         }         .highlight {             color: #007bff;             font-weight: bold;         }         .code-container {             background-color: #f0f0f0;             padding: 10px;             text-align: center;             border-radius: 5px;             margin-top: 10px;         }         .code {             font-size: 24px;             font-weight: bold;             margin: 0;             padding: 5px; /* 添加内边距增加文字间距 */         }         .company-link {             color: #007bff;             text-decoration: none;         }         .footer {             background: linear-gradient(to right, #007bff, #00bfff);             height: 10px;             border-radius: 5px;             margin-top: 20px;         }     &lt;/style&gt; &lt;/head&gt; &lt;body&gt; &lt;div class=&quot;container&quot;&gt;     &lt;h1&gt;尊敬的用户，&lt;/h1&gt;     &lt;p&gt;您收到来自 &lt;a href=&quot;${companyWebsite! 'baidu.com'}&quot; class=&quot;company-link&quot;&gt;${companyName! '默认公司名'}&lt;/a&gt;         的邮件，用于验证您的邮箱地址。&lt;/p&gt;     &lt;div class=&quot;code-container&quot;&gt;         &lt;p class=&quot;code&quot;&gt;${verifyCode}&lt;/p&gt;     &lt;/div&gt;     &lt;p&gt;请使用此验证码完成验证过程 ( 有效时间 ${validTime} 分钟 )。&lt;/p&gt;     &lt;p&gt;如果您没有请求此验证码，请忽略此邮件。&lt;/p&gt;     &lt;p&gt;感谢您的配合，&lt;/p&gt;     &lt;p&gt;&lt;a href=&quot;${companyWebsite! 'baidu.com'}&quot; class=&quot;company-link&quot;&gt;${companyName! '默认公司名'}&lt;/a&gt;&lt;/p&gt;     &lt;div class=&quot;footer&quot;&gt;&lt;/div&gt; &lt;/div&gt; &lt;/body&gt; &lt;/html&gt;</code></p>
+<h3 id="4-发送邮箱验证码--校验邮箱验证码">4. 发送邮箱验证码 &amp; 校验邮箱验证码<a hidden class="anchor" aria-hidden="true" href="#4-发送邮箱验证码--校验邮箱验证码">#</a></h3>
+<p>代码注释描述的很详细，这里我简单介绍一下</p>
+<ul>
+<li><strong>Freemarker 模板引擎生成包含验证码的邮件内容</strong></li>
+</ul>
+<p>代码中使用了 Freemarker 模板引擎来生成包含验证码的邮件内容。通过构建 <code>SendCodeFtlDto</code> 对象，将公司名称、公司官网、验证码等信息传递给 Freemarker 模板 <code>email_code.ftl</code>，生成完整的 HTML 邮件内容。这种方式使得邮件内容的维护更加灵活，模板可以根据需求进行修改，而不需要调整代码。</p>
+<ul>
+<li><strong>校验 Redis 验证码采用滚动验证</strong></li>
+</ul>
+<p>在校验邮箱验证码时，代码使用了滚动时间窗口的方式，从 Redis 中获取指定时间范围内（例如三分钟）的验证码，并进行验证。如果验证码有效，系统会立即删除该验证码，防止其被重复使用。这种滚动验证机制提高了验证码校验的灵活性和安全性，确保验证码只能在指定时间段内使用。</p>
+<ul>
+<li><strong>使用 <code>CompletableFuture</code> 实现异步操作</strong></li>
+</ul>
+<p>为了提高性能和响应速度，代码采用了 <code>CompletableFuture</code> 实现异步操作。首先异步发送验证码邮件，接着在邮件发送成功后异步将验证码存储到 Redis 中。<code>CompletableFuture</code> 的使用使得两个操作可以非阻塞地执行，同时保证了操作的顺序性——只有在邮件发送成功后才会存储验证码，从而提高了系统的可靠性。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>/**  * 发送邮箱服务实现类  *  * @author YiFei  */ @Slf4j @Service @RequiredArgsConstructor public class EmailServiceImpl implements IEmailService {     // 防止报错     @Resource     private final JavaMailSender javaMailSender;     private final CompanyConfiguration companyConfiguration;     private final TaskExecutor ioIntensiveExecutor;     private final RedisUtil redisUtil;     private final Configuration configuration;     /**      * 使用邮箱发送验证码      *      * @param email 需要送达的邮箱      */     @Override     public void sendEmailCode(String email) {         // TODO 数据库存储到 email_table 里面         // 1. 生成验证码         String code = RandomUtil.randomString(MailConstants.EMAIL_CODE_NUM);         // 2. 构建  sendCodeFtlDto 对象 （用于生成ftl的信息）         SendCodeFtlDto sendCodeFtlDto = SendCodeFtlDto.builder()                 .companyName(companyConfiguration.getName())            // 公司名                 .companyWebsite(companyConfiguration.getWebsite())      // 公司官网                 .validTime(MailConstants.EMAIL_CODE_TIME_OUT)           // 有效时长                 .verifyCode(code).build();         // 3. 通过 CompletableFuture 发送邮箱验证码         CompletableFuture.runAsync(() -&gt; {             try (StringWriter stringWriter = new StringWriter()) {                 // 4. 构建 email_code.ftl 模板                 Template template = configuration.getTemplate(FreemarkerConstants.EMAIL_SEND_CODE_FTL_PATH);                 template.process(sendCodeFtlDto, stringWriter);                 // 5. 发送 email_code.html 文档                 sendEmailWithHtmlContent(email,                         SystemConstants.EMAIL_CODE_TEMPLATE_SUBJECT.formatted(companyConfiguration.getName()),                         stringWriter.toString()                 );             } catch (Exception e) {                 // TODO 数据库存储错误信息到 email_table 里面                 log.error(&quot;记录错误日志，案例说应该持久化到数据库&quot;, e);                 throw new RuntimeException(e);             }         }, ioIntensiveExecutor).thenRunAsync(() -&gt; {             // 6. 将验证码存储到 redis ( 默认转大写 )             redisUtil.addCacheZSetValue(RedisKeyConstants.EMAIL_CODE_CACHE_PREFIX + email                     , code.toUpperCase(), Instant.now().toEpochMilli(), sendCodeFtlDto.getValidTime(), TimeUnit.MINUTES);         }, ioIntensiveExecutor);     }     /**      * 校验邮箱验证码      *      * @param email     邮箱      * @param emailCode 验证码      * @return 是否校验成功      */     @Override     public boolean checkEmailCode(String email, String emailCode) {         // 1. 获取当前时间         Instant currentTime = Instant.now();         // 2. 减去对应分钟数         Instant adjustedTime = currentTime.minus(Duration.ofMinutes(MailConstants.EMAIL_CODE_TIME_OUT));         // 3. 获取缓存中在3分钟之类的值         String redisEmailCodeKey = RedisKeyConstants.EMAIL_CODE_CACHE_PREFIX + email;         Set&lt;String&gt; cacheZSetByScore = redisUtil.getCacheZSetByScore(                 redisEmailCodeKey,              // redis 中存储key                 adjustedTime.toEpochMilli(),    // 开始时间 (三分钟前)                 currentTime.toEpochMilli(),     // 结束时间 (当前时间)                 0, -1         );         // 4. 校验是否存在该值 ( 默认转大写 )         boolean result = cacheZSetByScore.contains(emailCode.toUpperCase());         if (result) {             // 5. 验证成功 删除 redis 缓存数据防止二次使用             redisUtil.deleteObject(redisEmailCodeKey);         }         return result;     }     /**      * 发送包含 HTML 内容的邮件      *      * @param sendToEmail 收件人邮箱地址      * @param subject     邮件主题      * @param html        HTML 格式的邮件内容      * @throws MessagingException 发送邮件过程中可能抛出的异常      */     private void sendEmailWithHtmlContent(String sendToEmail, String subject, String html) throws MessagingException {         // 创建 MimeMessage 对象         MimeMessage mimeMessage = javaMailSender.createMimeMessage();         // 使用 MimeMessageHelper 对象设置邮件的发送者、接收者、主题和内容         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);         mimeMessageHelper.setFrom(companyConfiguration.getName() + '&lt;' + companyConfiguration.getEmail() + &quot;&gt;&quot;);         mimeMessageHelper.setTo(sendToEmail);         mimeMessageHelper.setSubject(subject);         mimeMessageHelper.setText(html, true);         // 发送邮件         javaMailSender.send(mimeMessage);     } }</code></p>
+<h2 id="七演示">七、演示<a hidden class="anchor" aria-hidden="true" href="#七演示">#</a></h2>
+<p>直接使用服务器部署好的项目进行演示 ( <strong>注:项目有很多有趣的功能，通过邮箱验证码注册后即可体验</strong> )</p>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/7546a53ebfe947cfad57d3cd7106d54e~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg57-86aOe:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727846936&amp;x-signature=mjDOKUtdK9uorE6ERRSYy0CRtSA%3D" alt="image.png"  />
+</p>
+<h2 id="八源码">八、源码<a hidden class="anchor" aria-hidden="true" href="#八源码">#</a></h2>
+<blockquote>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgitee.com%2Ffateyifei%2Fyf" title="https://gitee.com/fateyifei/yf">源码地址</a> | <a href="https://link.juejin.cn?target=http%3A%2F%2F110.41.173.220%2Fyf-vue-admin%2Flogin" title="http://110.41.173.220/yf-vue-admin/login">👀 在线演示</a> | 觉得不错可以给个start</p>
+<p>前端源码位置 : <a href="https://link.juejin.cn?target=https%3A%2F%2Fgitee.com%2Ffateyifei%2Fyf%2Fblob%2Fmaster%2Fyf-vue-admin%2Fsrc%2Fviews%2Flogin%2Findex.vue" title="https://gitee.com/fateyifei/yf/blob/master/yf-vue-admin/src/views/login/index.vue">登录页源码</a></p>
+<p>后端源码位置 : <a href="https://link.juejin.cn?target=https%3A%2F%2Fgitee.com%2Ffateyifei%2Fyf%2Ftree%2Fmaster%2Fyf-boot-admin%2Fyf-integration%2Fyf-message%2Fyf-mail%2Fsrc%2Fmain%2Fjava%2Fcom%2Fyf" title="https://gitee.com/fateyifei/yf/tree/master/yf-boot-admin/yf-integration/yf-message/yf-mail/src/main/java/com/yf">邮箱服务源码</a></p>
+<p>注意事项 :</p>
+<ul>
+<li>
+<ol>
+<li>平台一人一号，账号可以通过邮箱、第三方平台自动注册。用户名密码方式登录请联系管理员手动添加、手机号不可用。（敏感数据以做信息脱敏）</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>在线聊天功能（消息已做脏词过滤，群发、系统、AI消息不会被平台记录）</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>欢迎大家提出意见，欢迎畅聊与项目相关问题</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/springboot/">SpringBoot</a></li>
+      <li><a href="http://localhost:1313/tags/freemarker/">FreeMarker</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%9F%A5%E8%AF%A2%E6%8F%90%E5%8D%87200%E5%80%8Dclickhouse%E4%BD%A0%E5%80%BC%E5%BE%97%E6%8B%A5%E6%9C%89/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>查询提升200倍，ClickHouse你值得拥有！</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/spring%E4%B8%AD%E7%B1%BB%E8%A7%A3%E6%9E%90%E7%A5%9E%E5%99%A8metadatareader%E7%86%9F%E6%82%89classmetadataannotationmetadata/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Spring中类解析神器：MetadataReader，熟悉ClassMetadata、AnnotationMetadata</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 on x"
+            href="https://x.com/intent/tweet/?text=SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f&amp;hashtags=SpringBoot%2cFreeMarker%2c%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f&amp;title=SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90&amp;summary=SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f&title=SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 on whatsapp"
+            href="https://api.whatsapp.com/send?text=SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 on telegram"
+            href="https://telegram.me/share/url?text=SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=SpringBoot%e4%bc%98%e9%9b%85%e5%ae%9e%e7%8e%b0%e9%82%ae%e7%ae%b1%e9%aa%8c%e8%af%81%e7%a0%81%e5%8a%9f%e8%83%bd%ef%bc%9a%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%85%b3%e9%94%ae%e7%bb%86%e8%8a%82%e8%a7%a3%e6%9e%90&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E5%25AE%259E%25E7%258E%25B0%25E9%2582%25AE%25E7%25AE%25B1%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581%25E5%258A%259F%25E8%2583%25BD%25E6%259C%2580%25E4%25BD%25B3%25E5%25AE%259E%25E8%25B7%25B5%25E4%25B8%258E%25E5%2585%25B3%25E9%2594%25AE%25E7%25BB%2586%25E8%258A%2582%25E8%25A7%25A3%25E6%259E%2590%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

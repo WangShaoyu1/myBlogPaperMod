@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>如何防止短信接口被恶意调用攻击？ | PaperMod</title>
+<meta name="keywords" content="安全">
+<meta name="description" content="短信验证码是通过发送验证码到手机的一种有效的验证码系统。某些验证码接入商提供手机短信验证码服务，各网站通过接口发送请求到接入商的服务器，服务器发送随机数字或字母到手机中，由接入商的服务器统一做验证码的验证。通俗点讲呢就是在一些网站或者app上给你输入的手机号发送一条带有数字…">
+<meta name="author" content="香芋味的猫丶">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E7%9F%AD%E4%BF%A1%E6%8E%A5%E5%8F%A3%E8%A2%AB%E6%81%B6%E6%84%8F%E8%B0%83%E7%94%A8%E6%94%BB%E5%87%BB/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E7%9F%AD%E4%BF%A1%E6%8E%A5%E5%8F%A3%E8%A2%AB%E6%81%B6%E6%84%8F%E8%B0%83%E7%94%A8%E6%94%BB%E5%87%BB/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="如何防止短信接口被恶意调用攻击？" />
+<meta property="og:description" content="短信验证码是通过发送验证码到手机的一种有效的验证码系统。某些验证码接入商提供手机短信验证码服务，各网站通过接口发送请求到接入商的服务器，服务器发送随机数字或字母到手机中，由接入商的服务器统一做验证码的验证。通俗点讲呢就是在一些网站或者app上给你输入的手机号发送一条带有数字…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E7%9F%AD%E4%BF%A1%E6%8E%A5%E5%8F%A3%E8%A2%AB%E6%81%B6%E6%84%8F%E8%B0%83%E7%94%A8%E6%94%BB%E5%87%BB/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-01-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-01-04T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="如何防止短信接口被恶意调用攻击？"/>
+<meta name="twitter:description" content="短信验证码是通过发送验证码到手机的一种有效的验证码系统。某些验证码接入商提供手机短信验证码服务，各网站通过接口发送请求到接入商的服务器，服务器发送随机数字或字母到手机中，由接入商的服务器统一做验证码的验证。通俗点讲呢就是在一些网站或者app上给你输入的手机号发送一条带有数字…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "如何防止短信接口被恶意调用攻击？",
+      "item": "http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E7%9F%AD%E4%BF%A1%E6%8E%A5%E5%8F%A3%E8%A2%AB%E6%81%B6%E6%84%8F%E8%B0%83%E7%94%A8%E6%94%BB%E5%87%BB/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "如何防止短信接口被恶意调用攻击？",
+  "name": "如何防止短信接口被恶意调用攻击？",
+  "description": "短信验证码是通过发送验证码到手机的一种有效的验证码系统。某些验证码接入商提供手机短信验证码服务，各网站通过接口发送请求到接入商的服务器，服务器发送随机数字或字母到手机中，由接入商的服务器统一做验证码的验证。通俗点讲呢就是在一些网站或者app上给你输入的手机号发送一条带有数字…",
+  "keywords": [
+    "安全"
+  ],
+  "articleBody": "前言 最近遇到一个关于防止短信验证码被刷的问题，相信很多朋友也遭遇过这个被刷短信的问题。因此，就“防止验证码短信被盗刷”作一个总结和分享。\n1、短信验证码是什么？ 1.短信验证码是什么：\n短信验证码是通过发送验证码到手机的一种有效的验证码系统。\n某些验证码接入商提供手机短信验证码服务，各网站通过接口发送请求到接入商的服务器，服务器发送随机数字或字母到手机中，由接入商的服务器统一做验证码的验证。\n通俗点讲呢就是在一些网站或者app上给你输入的手机号发送一条带有数字或字母验证码的短信。比如你在登陆某个app的时候就可以通过短信验证码来登陆。\n2.短信验证码的适用场景有哪些：\n1、注册验证\n注册验证是短信验证码最常见的应用场景。在注册的过程中，客户按照系统要求输入手机号码，系统会将动态验证码发送到给该手机号码，用户收到验证码后，将验证码数字按要求输入指定位置，完成注册验证。能够有效的防止恶意注册和重复注册。\n2、信息变更\n系统用户在修改密码、手机号等个人账户信息时，为了确保为账户户主本人操作，保障用户的信息和财产安全，系统会要求必须经过短信验证才能进行修改。比如银行系统，在进入个人账户页面查看个人信息时，都必须经过验证才能打开相关页面。\n3、找回密码\n为了账户安全，用户大多会给账户设置较为复杂的密码，也有一些系统会给密码的安全等级分级，以此督促用户设置更为复杂的密码来保障账户的安全。然而，越是复杂就越容易遗忘。虽然现在很多浏览器和手机系统都有记录密码自动登录的功能，但是这种记录都是存在时限的，一旦超过时限，仍然需要手动输入密码，对于这种情况，因为不常记忆，往往更容易遗忘。在加入手机验证码功能后，只需要向绑定的手机号码发送验证码短信，获取验证码就能成功修改密码，操作简单、快速。\n4、动态登录\n现在很多安全性要求比较高或盗号比较严重的网站，在登录时都会要求进行动态验证登录，即每次登录系统时，都需要从系统获取验证码短信，输入正确的验证码才能进入系统。前者如联通、移动、电信三大运营商的应用APP。后者如各类大型游戏网站，因大型游戏网站中的角色财富甚至角色本身都能通过某些操作换取现金，是许多通过盗号窃取财富的犯罪分子的首选。\n以上就是短信验证码在各大网站系统最常见的四种应用场景。除此以外，短信验证码在网络投票、问卷调查、抽奖互动等需要保障一人一票的特殊场景中，也起到了重要作用。 2、为什么要对短信验证码进行防护？ 短信验证码作为APP和网站最基础的需求，时常会被黑客恶意利用和进行短信轰炸。具体出现的状况，请看下面的截图（图片来自互联网） 如果短信验证码接口和页面不做任何限制，黑客很容易利用一些恶意的短信轰炸软件对接口进行攻击，不停的对同一个号码或者N个号码重复发送验证码短信。\n短信验证码被攻击，不仅会对用户造成骚扰，引起投诉，更会浪费你的短信余额，降低品牌形象。如果做好短信接口防护，一旦被攻击，将面临的是众多不必要的损失。\n3、有哪些常见的防护手段？ 在介绍防护手段前我们需要了解下常见的刷短信验证的行为。\n1.以攻击手机号为目的刷短信验证码\n这类攻击目标主要是攻击者借助web网站短信接口对目标手机号进行短信轰炸。攻击者会先收集互联网上多个未经防护的网站短信接口，设定要攻击的手机号码通过模拟用户，循环向后台发送短信验证码请求，达到攻击手机号的目的。对于这类攻击一般不会再同一网站平凡发送，通过一般防护手段即可达到防护目的。\n2.以恶意刷取目标网站短信费用为目的的攻击\n这类攻击主要目的是刷掉目标网站的短信费用，在第一种基础上攻击者会不停变换各种接口参数如手机号、IP（采用高匿代理）等去请求后台发送短信验证码，进行恶意刷短信，后台根本无力辨别用户真伪。攻击目标明确，难以防护，因其变换不同IP、手机号，一些简单措施基本失效，产品设计人员在前期产品设计时尤其需要注意这类攻击。\n下面是针对攻击者做出的一些常见的应对措施。\n1.增加前端验证码\n在获取短信验证码前增加图文验证码是较为常用的方法。攻击者一般是采用自动化攻击，增加图文验证码后，攻击者要对验证进行识别验证成功后才能进行模拟用户发送请求。\n常见的前端验证码有以下几种：\n(1) 输入类\n(2) 滑动类\n(3) 点击类\n2.对单个手机号请求限制\n对单个手机号进行单日接收次数的限制，可以防止单个手机号无限制刷短信，同时设置时间间隔可以有效，防止人工刷票。短信接收次数可以根据平台特点进行限制，一般日接受验证码次数为10次左右；同一号码发送时间间隔通常为60秒，前后端必须保持一致。\n3.对单个IP请求限制\n对单IP最大发送量进行限制，可以有效防止单一IP下多手机号被刷的问题。最大发送量限制是防止恶意攻击者同IP下不同手机号进行刷短信验证码行为。根据平台实际情况设计一个短信最大发送量的阀值，超过阀值将不予返回短信。\n4.对手机号码真实性限制\n检测输入手机号码的有效性，屏蔽无效和非法的手机号码。\n5.对传出参数进行加密限制\n通过对传向服务器各项参数进行加密，到了服务器再进行解密，同时用token作为唯一性识别验证，后台写一个算法将token注入到前端，然后前端可以通过相应的规则获取到token，在发送短信验证请求接口数据时带上token，在后端对token进行验证，验证通过才能正常将短信发送。\n4、这些防护手段有没有用呢，到底该如何选择？ 1.第一种方法最为常见，可以有效提升攻击者的攻击成本，但同时也需要考虑到用户体验。对于第一种攻击手段来讲，攻击者一般都会直接放弃这种网站，但是也难免碰到头铁的非要将你的网站拉入他的轰炸网站库中，毕竟打码平台相当便宜。如果碰到第二种攻击则相当于徒劳。\n2.第二种到第五种方法可以同时结合使用，也可以结合第一种方法使用。不过大多数情况是好多人只用了第一种方法就以为能高枕无忧了，却不知道早已被人破解。加上后几种方式可以在某些方面有效提高防护有效性。\n这个时候有人就说了，发个短信验证么还要搞这么多事情，烦死了。 有人问，博主除了这些还有没有更好的办法来解决这个问题呢？有没有不需要我写那么多代码就能防护好短信不被盗刷的？\n答案当然是有了。\n有人已经开发好了一款专门儿为防护短信验证码的短信防火墙，它能够实时有效的防护每一条短信。拦截大多数恶意攻击请求。\n那么有人就说了，这个短信防火墙跟上面这些有啥不一样的，莫不是就把上面这些整一块了吧？\n当然不是啦，这款短信防火墙是按照支付风控标准实施打造的一款安全防火墙。他还有以下几方面的特点。\n区分正常用户请求和模拟器自动攻击脚本请求。对模拟器脚本攻击实施拦截。 能够区分每台设备，对设备施加防护策略。在受到攻击时只对攻击者设备进行拦截，正常用户设备则不收影响。 能够区分新老用户，在受到攻击时也能够确保老用户的业务不受任何影响 说点儿实在的，就是你不管怎么着防吧，就是不需要你来考虑了，不需要想那么多，也不需要写那么多代码，开心就完了。\n下面是我自己测试的一个效果图： 想试用的可以私信联系我哟~\n5、结语 这篇文章到这里就结束了，感谢大佬们驻足观看，大佬们点个关注、点个赞呗~\n谢谢大佬~ 作者：香芋味的猫丶\n短信防火墙\n",
+  "wordCount" : "65",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-01-04T00:00:00Z",
+  "dateModified": "2021-01-04T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "香芋味的猫丶"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E7%9F%AD%E4%BF%A1%E6%8E%A5%E5%8F%A3%E8%A2%AB%E6%81%B6%E6%84%8F%E8%B0%83%E7%94%A8%E6%94%BB%E5%87%BB/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      如何防止短信接口被恶意调用攻击？
+    </h1>
+    <div class="post-description">
+      短信验证码是通过发送验证码到手机的一种有效的验证码系统。某些验证码接入商提供手机短信验证码服务，各网站通过接口发送请求到接入商的服务器，服务器发送随机数字或字母到手机中，由接入商的服务器统一做验证码的验证。通俗点讲呢就是在一些网站或者app上给你输入的手机号发送一条带有数字…
+    </div>
+    <div class="post-meta"><span title='2021-01-04 00:00:00 +0000 UTC'>一月 4, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;香芋味的猫丶&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a><ul>
+                        
+                <li>
+                    <a href="#1%e7%9f%ad%e4%bf%a1%e9%aa%8c%e8%af%81%e7%a0%81%e6%98%af%e4%bb%80%e4%b9%88" aria-label="1、短信验证码是什么？">1、短信验证码是什么？</a></li>
+                <li>
+                    <a href="#2%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%af%b9%e7%9f%ad%e4%bf%a1%e9%aa%8c%e8%af%81%e7%a0%81%e8%bf%9b%e8%a1%8c%e9%98%b2%e6%8a%a4" aria-label="2、为什么要对短信验证码进行防护？">2、为什么要对短信验证码进行防护？</a></li>
+                <li>
+                    <a href="#3%e6%9c%89%e5%93%aa%e4%ba%9b%e5%b8%b8%e8%a7%81%e7%9a%84%e9%98%b2%e6%8a%a4%e6%89%8b%e6%ae%b5" aria-label="3、有哪些常见的防护手段？">3、有哪些常见的防护手段？</a></li>
+                <li>
+                    <a href="#4%e8%bf%99%e4%ba%9b%e9%98%b2%e6%8a%a4%e6%89%8b%e6%ae%b5%e6%9c%89%e6%b2%a1%e6%9c%89%e7%94%a8%e5%91%a2%e5%88%b0%e5%ba%95%e8%af%a5%e5%a6%82%e4%bd%95%e9%80%89%e6%8b%a9" aria-label="4、这些防护手段有没有用呢，到底该如何选择？">4、这些防护手段有没有用呢，到底该如何选择？</a></li>
+                <li>
+                    <a href="#5%e7%bb%93%e8%af%ad" aria-label="5、结语">5、结语</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h3>
+<blockquote>
+<p>最近遇到一个关于防止短信验证码被刷的问题，相信很多朋友也遭遇过这个被刷短信的问题。因此，就“防止验证码短信被盗刷”作一个总结和分享。</p>
+</blockquote>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7154c7f657e54ff78fd8695753724ffc~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="1短信验证码是什么">1、短信验证码是什么？<a hidden class="anchor" aria-hidden="true" href="#1短信验证码是什么">#</a></h4>
+<p><strong>1.短信验证码是什么：</strong></p>
+<p>短信验证码是通过发送验证码到手机的一种有效的验证码系统。</p>
+<p>某些验证码接入商提供手机短信验证码服务，各网站通过接口发送请求到接入商的服务器，服务器发送随机数字或字母到手机中，由接入商的服务器统一做验证码的验证。</p>
+<p>通俗点讲呢就是在一些网站或者app上给你输入的手机号发送一条带有数字或字母验证码的短信。比如你在登陆某个app的时候就可以通过短信验证码来登陆。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/717ea31f1a9744b891ecef6d092faabe~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<p><strong>2.短信验证码的适用场景有哪些：</strong></p>
+<p>1、注册验证</p>
+<p>注册验证是短信验证码最常见的应用场景。在注册的过程中，客户按照系统要求输入手机号码，系统会将动态验证码发送到给该手机号码，用户收到验证码后，将验证码数字按要求输入指定位置，完成注册验证。能够有效的防止恶意注册和重复注册。</p>
+<p>2、信息变更</p>
+<p>系统用户在修改密码、手机号等个人账户信息时，为了确保为账户户主本人操作，保障用户的信息和财产安全，系统会要求必须经过短信验证才能进行修改。比如银行系统，在进入个人账户页面查看个人信息时，都必须经过验证才能打开相关页面。</p>
+<p>3、找回密码</p>
+<p>为了账户安全，用户大多会给账户设置较为复杂的密码，也有一些系统会给密码的安全等级分级，以此督促用户设置更为复杂的密码来保障账户的安全。然而，越是复杂就越容易遗忘。虽然现在很多浏览器和手机系统都有记录密码自动登录的功能，但是这种记录都是存在时限的，一旦超过时限，仍然需要手动输入密码，对于这种情况，因为不常记忆，往往更容易遗忘。在加入手机验证码功能后，只需要向绑定的手机号码发送验证码短信，获取验证码就能成功修改密码，操作简单、快速。</p>
+<p>4、动态登录</p>
+<p>现在很多安全性要求比较高或盗号比较严重的网站，在登录时都会要求进行动态验证登录，即每次登录系统时，都需要从系统获取验证码短信，输入正确的验证码才能进入系统。前者如联通、移动、电信三大运营商的应用APP。后者如各类大型游戏网站，因大型游戏网站中的角色财富甚至角色本身都能通过某些操作换取现金，是许多通过盗号窃取财富的犯罪分子的首选。</p>
+<p>以上就是短信验证码在各大网站系统最常见的四种应用场景。除此以外，短信验证码在网络投票、问卷调查、抽奖互动等需要保障一人一票的特殊场景中，也起到了重要作用。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/77063df1c3334717aff7ca2201f1cf6f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<h4 id="2为什么要对短信验证码进行防护">2、为什么要对短信验证码进行防护？<a hidden class="anchor" aria-hidden="true" href="#2为什么要对短信验证码进行防护">#</a></h4>
+<p>短信验证码作为APP和网站最基础的需求，时常会被黑客恶意利用和进行短信轰炸。具体出现的状况，请看下面的截图（图片来自互联网） <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2ffb8d088578452e81e979442db18c8b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<p>如果短信验证码接口和页面不做任何限制，黑客很容易利用一些恶意的短信轰炸软件对接口进行攻击，不停的对同一个号码或者N个号码重复发送验证码短信。</p>
+<p>短信验证码被攻击，不仅会对用户造成骚扰，引起投诉，更会浪费你的短信余额，降低品牌形象。如果做好短信接口防护，一旦被攻击，将面临的是众多不必要的损失。</p>
+<h4 id="3有哪些常见的防护手段">3、有哪些常见的防护手段？<a hidden class="anchor" aria-hidden="true" href="#3有哪些常见的防护手段">#</a></h4>
+<blockquote>
+<p>在介绍防护手段前我们需要了解下常见的刷短信验证的行为。</p>
+</blockquote>
+<p><strong>1.以攻击手机号为目的刷短信验证码</strong></p>
+<p>这类攻击目标主要是攻击者借助web网站短信接口对目标手机号进行短信轰炸。攻击者会先收集互联网上多个未经防护的网站短信接口，设定要攻击的手机号码通过模拟用户，循环向后台发送短信验证码请求，达到攻击手机号的目的。对于这类攻击一般不会再同一网站平凡发送，通过一般防护手段即可达到防护目的。</p>
+<p><strong>2.以恶意刷取目标网站短信费用为目的的攻击</strong></p>
+<p>这类攻击主要目的是刷掉目标网站的短信费用，在第一种基础上攻击者会不停变换各种接口参数如手机号、IP（采用高匿代理）等去请求后台发送短信验证码，进行恶意刷短信，后台根本无力辨别用户真伪。攻击目标明确，难以防护，因其变换不同IP、手机号，一些简单措施基本失效，产品设计人员在前期产品设计时尤其需要注意这类攻击。</p>
+<blockquote>
+<p>下面是针对攻击者做出的一些常见的应对措施。</p>
+</blockquote>
+<p><strong>1.增加前端验证码</strong></p>
+<p>在获取短信验证码前增加图文验证码是较为常用的方法。攻击者一般是采用自动化攻击，增加图文验证码后，攻击者要对验证进行识别验证成功后才能进行模拟用户发送请求。</p>
+<p>常见的前端验证码有以下几种：</p>
+<p>(1) 输入类</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9c65b4ef8e784e4ea9c23fc8f97356a4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/137a20e2ac934ca5b6a2b7c2cf01205c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<p>(2) 滑动类</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/daf32204301245f1bed3d0e2d9c41e7f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<p>(3) 点击类</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a5b8e13d568f450daf563044bb5818f4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<p><strong>2.对单个手机号请求限制</strong></p>
+<p>对单个手机号进行单日接收次数的限制，可以防止单个手机号无限制刷短信，同时设置时间间隔可以有效，防止人工刷票。短信接收次数可以根据平台特点进行限制，一般日接受验证码次数为10次左右；同一号码发送时间间隔通常为60秒，前后端必须保持一致。</p>
+<p><strong>3.对单个IP请求限制</strong></p>
+<p>对单IP最大发送量进行限制，可以有效防止单一IP下多手机号被刷的问题。最大发送量限制是防止恶意攻击者同IP下不同手机号进行刷短信验证码行为。根据平台实际情况设计一个短信最大发送量的阀值，超过阀值将不予返回短信。</p>
+<p><strong>4.对手机号码真实性限制</strong></p>
+<p>检测输入手机号码的有效性，屏蔽无效和非法的手机号码。</p>
+<p><strong>5.对传出参数进行加密限制</strong></p>
+<p>通过对传向服务器各项参数进行加密，到了服务器再进行解密，同时用token作为唯一性识别验证，后台写一个算法将token注入到前端，然后前端可以通过相应的规则获取到token，在发送短信验证请求接口数据时带上token，在后端对token进行验证，验证通过才能正常将短信发送。</p>
+<h4 id="4这些防护手段有没有用呢到底该如何选择">4、这些防护手段有没有用呢，到底该如何选择？<a hidden class="anchor" aria-hidden="true" href="#4这些防护手段有没有用呢到底该如何选择">#</a></h4>
+<p>1.第一种方法最为常见，可以有效提升攻击者的攻击成本，但同时也需要考虑到用户体验。对于第一种攻击手段来讲，攻击者一般都会直接放弃这种网站，但是也难免碰到头铁的非要将你的网站拉入他的轰炸网站库中，毕竟打码平台相当便宜。如果碰到第二种攻击则相当于徒劳。</p>
+<p>2.第二种到第五种方法可以同时结合使用，也可以结合第一种方法使用。不过大多数情况是好多人只用了第一种方法就以为能高枕无忧了，却不知道早已被人破解。加上后几种方式可以在某些方面有效提高防护有效性。</p>
+<p>这个时候有人就说了，发个短信验证么还要搞这么多事情，烦死了。 <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7a6abaf3241b40ddbfa9c585abdb2ac9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<p>有人问，博主除了这些还有没有更好的办法来解决这个问题呢？有没有不需要我写那么多代码就能防护好短信不被盗刷的？</p>
+<p>答案当然是有了。</p>
+<p>有人已经开发好了一款专门儿为防护短信验证码的短信防火墙，它能够实时有效的防护每一条短信。拦截大多数恶意攻击请求。</p>
+<p>那么有人就说了，这个短信防火墙跟上面这些有啥不一样的，莫不是就把上面这些整一块了吧？</p>
+<p>当然不是啦，这款短信防火墙是按照支付风控标准实施打造的一款安全防火墙。他还有以下几方面的特点。</p>
+<blockquote>
+<ol>
+<li>区分正常用户请求和模拟器自动攻击脚本请求。对模拟器脚本攻击实施拦截。</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="2">
+<li>能够区分每台设备，对设备施加防护策略。在受到攻击时只对攻击者设备进行拦截，正常用户设备则不收影响。</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="3">
+<li>能够区分新老用户，在受到攻击时也能够确保老用户的业务不受任何影响</li>
+</ol>
+</blockquote>
+<p>说点儿实在的，就是你不管怎么着防吧，就是不需要你来考虑了，不需要想那么多，也不需要写那么多代码，开心就完了。</p>
+<p>下面是我自己测试的一个效果图： <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d2f531d6e63d49d78c1402d22204392e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+ 想试用的可以私信联系我哟~</p>
+<h4 id="5结语">5、结语<a hidden class="anchor" aria-hidden="true" href="#5结语">#</a></h4>
+<p>这篇文章到这里就结束了，感谢大佬们驻足观看，大佬们点个关注、点个赞呗~</p>
+<p>谢谢大佬~ <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/77a589db45f84c9983dbbe8723f1b78c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="在这里插入图片描述"  />
+</p>
+<hr>
+<p>作者：香芋味的猫丶</p>
+<p><a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.newxtc.com%2F" title="http://www.newxtc.com/">短信防火墙</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%AE%89%E5%85%A8/">安全</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/vue3&#43;ts&#43;vite2&#43;electron16%E9%A1%B9%E7%9B%AE%E6%A2%B3%E7%90%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Vue3&#43;TS&#43;Vite2&#43;Electron16项目梳理</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E9%98%BF%E9%87%8C%E4%B8%80%E5%B9%B4%E7%9A%84landing%E5%8E%86%E7%A8%8B/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>阿里一年的Landing历程</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何防止短信接口被恶意调用攻击？ on x"
+            href="https://x.com/intent/tweet/?text=%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f&amp;hashtags=%e5%ae%89%e5%85%a8">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何防止短信接口被恶意调用攻击？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f&amp;title=%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f&amp;summary=%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何防止短信接口被恶意调用攻击？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f&title=%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何防止短信接口被恶意调用攻击？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何防止短信接口被恶意调用攻击？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何防止短信接口被恶意调用攻击？ on telegram"
+            href="https://telegram.me/share/url?text=%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何防止短信接口被恶意调用攻击？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%a6%82%e4%bd%95%e9%98%b2%e6%ad%a2%e7%9f%ad%e4%bf%a1%e6%8e%a5%e5%8f%a3%e8%a2%ab%e6%81%b6%e6%84%8f%e8%b0%83%e7%94%a8%e6%94%bb%e5%87%bb%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E9%2598%25B2%25E6%25AD%25A2%25E7%259F%25AD%25E4%25BF%25A1%25E6%258E%25A5%25E5%258F%25A3%25E8%25A2%25AB%25E6%2581%25B6%25E6%2584%258F%25E8%25B0%2583%25E7%2594%25A8%25E6%2594%25BB%25E5%2587%25BB%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

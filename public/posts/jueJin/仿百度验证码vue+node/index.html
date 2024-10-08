@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>仿百度验证码(vue&#43;node) | PaperMod</title>
+<meta name="keywords" content="前端">
+<meta name="description" content="为什么要使用验证码?不用会怎么样?假设你想要浪费xxx公司的短信验证码，你会怎么做?假设你就是这家公司的程序员，你该怎么保护公司呢?(内附上完整源码)">
+<meta name="author" content="前端泥瓦匠">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%BB%BF%E7%99%BE%E5%BA%A6%E9%AA%8C%E8%AF%81%E7%A0%81vue&#43;node/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%BB%BF%E7%99%BE%E5%BA%A6%E9%AA%8C%E8%AF%81%E7%A0%81vue&#43;node/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="仿百度验证码(vue&#43;node)" />
+<meta property="og:description" content="为什么要使用验证码?不用会怎么样?假设你想要浪费xxx公司的短信验证码，你会怎么做?假设你就是这家公司的程序员，你该怎么保护公司呢?(内附上完整源码)" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%BB%BF%E7%99%BE%E5%BA%A6%E9%AA%8C%E8%AF%81%E7%A0%81vue&#43;node/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-06-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-06-11T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="仿百度验证码(vue&#43;node)"/>
+<meta name="twitter:description" content="为什么要使用验证码?不用会怎么样?假设你想要浪费xxx公司的短信验证码，你会怎么做?假设你就是这家公司的程序员，你该怎么保护公司呢?(内附上完整源码)"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "仿百度验证码(vue+node)",
+      "item": "http://localhost:1313/posts/juejin/%E4%BB%BF%E7%99%BE%E5%BA%A6%E9%AA%8C%E8%AF%81%E7%A0%81vue+node/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "仿百度验证码(vue+node)",
+  "name": "仿百度验证码(vue\u002bnode)",
+  "description": "为什么要使用验证码?不用会怎么样?假设你想要浪费xxx公司的短信验证码，你会怎么做?假设你就是这家公司的程序员，你该怎么保护公司呢?(内附上完整源码)",
+  "keywords": [
+    "前端"
+  ],
+  "articleBody": "1 为什么我们要使用验证码? 如果你是一个只想看干货的程序员，又不想听我说废话，这里请直接滑动到最后，获取代码。\n描述一个业务场景:\n假设你想要浪费xxx公司的短信验证码，你会怎么做?\n假设你就是这家公司的程序员，你该怎么保护公司呢?\n1.2 设想性攻防战 第一回合 攻击方: (模拟接口调用)\n使用postman工具，将发送短信的接口疯狂的调用。\n防守方: (运营商保护)\n作为后端团队，马上开启会议模式，思考如何防止呢?好，接口供应商的接口保护开启。设置一天内容同一个手机号， 只能请求10次，每个小时只能请求1次。\n第二回合 攻击方: (手机号足够多呢)\n发现接口调用失败，开启了异常状态，同一手机号被限制了。好，使用手机词典模式，只要我手机号足够多，肯定就可以不停的调用你，写了一个脚本模拟调用。\n防守方: (IP地址保护)\n通过接口日志发现，居然有一个人，每秒都在调用接口，然后发送之后，并没有任何用户行为操作?通过ip监控发现，居然是来自一个IP的攻击，马上开启保护模式，限制同一IP。\n第三回合 攻击方:\n突然发现电脑接口调用失败了，但是手机热点的调用却成功了。那就开启虚拟IP，接着开始调用。\n防守方:\n叫上前端，我们讨论一下，开启验证码。\n2 验证码方案 作为防守方，我们要明白一个任务，我要收集用户的同时，可能更加希望对方是一个人，而不是机器。那么如何确定对方是一个人呢?\n3 文字验证码 随机的数字或者字母图片，这是最原始也是最简单的验证码 GIF格式的随机数字或者字母图片 随机数字+随机大写英文字母+随机干扰像素+随机位置BMP格式图片 随机英文字母+随机颜色+随机位置+随机长度的JPG格式图片，对字母进行大小写，位置，颜色，长度等进行随机显示 (以上为间断性的方案…)\n最后的结果大家，已经知道，不论是前端还是后端，都有相应的库。\n我们设计出了这样的方案。那么这样的方案好不好呢？ 通过了多年，人们对于模糊的文字识别技术升级后，这样的验证码技术，安全系数就耍耍的减低。\n4 问题验证码 将文字的验证码升级后，略带互动的形式，地理问题（如图），数学问题，常识问。然后你会发现，总有那么几个问题，真的是人也不一定答出来。\n5 图片验证码 放上一些图片，让你找出下列的书、花、红绿灯。这是一个经典的验证码，最出名的就是现在12306采用的防刷票措施了，对于用户的来说，总有几个脸盲患者，和看走眼的时候。在保护了接口的同时，也烦躁了用户。\n6 滑动验证码 将图片拖到底部 将图片和缺口复合 图片上开启2个缺口 对于用户的要求降低之后，用户的体验就大大升级。俗话说，用的人多了，就不是什么难点了。即使二代升级了2个缺口，利用puppeteer破解极验的滑动验证工具，也随之诞生。\n7 百度验证码 (附代码) 这套方案，我有在py的破解方案中找到，你可以理解为，生成无数个模型找到相似的算法，进行破解图片。那么我们这时候，假设一个图片会有360个角度，我们要去掉本来不需要旋转的度数，比如340个角度，去掉旋转不多的角度，180个角度，对于破解来说，就是260张图片。那么假设我的图片库内，有1000张图片，你需要破解，则需要180000张图片来存储，而我可以选择，定期更新这些图片。\n7.1 node 代码 图片肯定必须是后端生成的。=\u003e 生成一张图片 不希望图片存储到服务器上(毕竟是临时图片) =\u003e base64就是比较好的方案=\u003e sharp库 实际上最有意义的是90-270随机数(或许可以更多，没有具体测试)=\u003e 取随机数 这里我们服务选择了koa 这里的随机数是存储，如果你想使用在项目中，需要存储到缓存，这里推荐redis。\njavascript\n代码解读\n复制代码\nconst sharp = require('sharp') const Koa = require('koa'); const router = require('koa-router')() const img_name = './images/1.jpg' // 放一张图片、未来这里可以放随机一个图片 const max = 90; // 最大值 const min = 270; // 最小值 const app = new Koa(); let random = 0 // 仅仅做demo、未来存储redis这里则不需要 app.use(router.routes()) router.get('/', async (ctx) =\u003e { ctx.body = \"hello!\" }) // 发起图片请求 router.get('/getImg', async (ctx) =\u003e { // 生产一个随机数 random = Math.ceil(Math.random() * (max - min) + min); // 生成一张图片、这里可以详细的看sharp的文档，比如模糊这个功能就可以开启。 await sharp(img_name) .resize(400, 400) .rotate(random) .toBuffer() .then(bitmap =\u003e { // const base64str = Buffer.from(bitmap, 'binary').toString('base64'); // base64编码 ctx.body = { base64str: `data:image/png;base64,${base64str}` // id: 此处可以给予一个uuid方便查询 } }) }) // 图片的验证 router.get('/validation', async (ctx) =\u003e { const rotate = ctx.request.query.rotate; console.log(Math.abs(360 - rotate - random)); // 此处10可以修改的更大，或者更小，来调整难度 if (Math.abs(360 - rotate - random) \u003c= 10) { ctx.body = { flag: true } return; } ctx.body = { flag: false } }) app.listen(3000, () =\u003e { console.log('server is running at http://localhost:3000') });\n7.2 vue代码 基于vue-drag-verify开发 DragVerify.vue\nvue\n代码解读\n复制代码\n{{ successTip }} {{ failTip }} {{ successMessage }} {{ message }} app.vue\nvue\n代码解读\n复制代码\n8 github地址 github.com/MYQ1996/dra…\n",
+  "wordCount" : "1364",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-06-11T00:00:00Z",
+  "dateModified": "2021-06-11T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "前端泥瓦匠"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%BB%BF%E7%99%BE%E5%BA%A6%E9%AA%8C%E8%AF%81%E7%A0%81vue+node/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      仿百度验证码(vue&#43;node)
+    </h1>
+    <div class="post-description">
+      为什么要使用验证码?不用会怎么样?假设你想要浪费xxx公司的短信验证码，你会怎么做?假设你就是这家公司的程序员，你该怎么保护公司呢?(内附上完整源码)
+    </div>
+    <div class="post-meta"><span title='2021-06-11 00:00:00 +0000 UTC'>六月 11, 2021</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;前端泥瓦匠&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue&#43;node%29.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e4%b8%ba%e4%bb%80%e4%b9%88%e6%88%91%e4%bb%ac%e8%a6%81%e4%bd%bf%e7%94%a8%e9%aa%8c%e8%af%81%e7%a0%81" aria-label="1 为什么我们要使用验证码?">1 为什么我们要使用验证码?</a><ul>
+                        
+                <li>
+                    <a href="#12-%e8%ae%be%e6%83%b3%e6%80%a7%e6%94%bb%e9%98%b2%e6%88%98" aria-label="1.2 设想性攻防战">1.2 设想性攻防战</a><ul>
+                        
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%80%e5%9b%9e%e5%90%88" aria-label="第一回合">第一回合</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%ba%8c%e5%9b%9e%e5%90%88" aria-label="第二回合">第二回合</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%89%e5%9b%9e%e5%90%88" aria-label="第三回合">第三回合</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#2-%e9%aa%8c%e8%af%81%e7%a0%81%e6%96%b9%e6%a1%88" aria-label="2 验证码方案">2 验证码方案</a></li>
+                <li>
+                    <a href="#3-%e6%96%87%e5%ad%97%e9%aa%8c%e8%af%81%e7%a0%81" aria-label="3 文字验证码">3 文字验证码</a></li>
+                <li>
+                    <a href="#4-%e9%97%ae%e9%a2%98%e9%aa%8c%e8%af%81%e7%a0%81" aria-label="4 问题验证码">4 问题验证码</a></li>
+                <li>
+                    <a href="#5-%e5%9b%be%e7%89%87%e9%aa%8c%e8%af%81%e7%a0%81" aria-label="5 图片验证码">5 图片验证码</a></li>
+                <li>
+                    <a href="#6-%e6%bb%91%e5%8a%a8%e9%aa%8c%e8%af%81%e7%a0%81" aria-label="6 滑动验证码">6 滑动验证码</a></li>
+                <li>
+                    <a href="#7-%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81-%e9%99%84%e4%bb%a3%e7%a0%81" aria-label="7 百度验证码 (附代码)">7 百度验证码 (附代码)</a><ul>
+                        
+                <li>
+                    <a href="#71-node-%e4%bb%a3%e7%a0%81" aria-label="7.1 node 代码">7.1 node 代码</a></li>
+                <li>
+                    <a href="#72-vue%e4%bb%a3%e7%a0%81" aria-label="7.2 vue代码">7.2 vue代码</a></li></ul>
+                </li>
+                <li>
+                    <a href="#8-github%e5%9c%b0%e5%9d%80" aria-label="8 github地址">8 github地址</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="1-为什么我们要使用验证码">1 为什么我们要使用验证码?<a hidden class="anchor" aria-hidden="true" href="#1-为什么我们要使用验证码">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c5bef0482a374c0d8970184c649f103d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+ 如果你是一个只想看干货的程序员，又不想听我说废话，这里请直接滑动到最后，获取代码。</p>
+<blockquote>
+<p>描述一个业务场景:</p>
+<p>假设你想要浪费xxx公司的短信验证码，你会怎么做?</p>
+<p>假设你就是这家公司的程序员，你该怎么保护公司呢?</p>
+</blockquote>
+<h3 id="12-设想性攻防战">1.2 设想性攻防战<a hidden class="anchor" aria-hidden="true" href="#12-设想性攻防战">#</a></h3>
+<h4 id="第一回合">第一回合<a hidden class="anchor" aria-hidden="true" href="#第一回合">#</a></h4>
+<p>攻击方: (模拟接口调用)<br>
+使用postman工具，将发送短信的接口疯狂的调用。</p>
+<p>防守方: (运营商保护)<br>
+作为后端团队，马上开启会议模式，思考如何防止呢?好，接口供应商的接口保护开启。设置一天内容同一个手机号， 只能请求10次，每个小时只能请求1次。</p>
+<hr>
+<h4 id="第二回合">第二回合<a hidden class="anchor" aria-hidden="true" href="#第二回合">#</a></h4>
+<p>攻击方: (手机号足够多呢)<br>
+发现接口调用失败，开启了异常状态，同一手机号被限制了。好，使用手机词典模式，只要我手机号足够多，肯定就可以不停的调用你，写了一个脚本模拟调用。</p>
+<p>防守方: (IP地址保护)<br>
+通过接口日志发现，居然有一个人，每秒都在调用接口，然后发送之后，并没有任何用户行为操作?通过ip监控发现，居然是来自一个IP的攻击，马上开启保护模式，限制同一IP。</p>
+<hr>
+<h4 id="第三回合">第三回合<a hidden class="anchor" aria-hidden="true" href="#第三回合">#</a></h4>
+<p>攻击方:<br>
+突然发现电脑接口调用失败了，但是手机热点的调用却成功了。那就开启虚拟IP，接着开始调用。</p>
+<p>防守方:<br>
+叫上前端，我们讨论一下，开启验证码。</p>
+<hr>
+<h2 id="2-验证码方案">2 验证码方案<a hidden class="anchor" aria-hidden="true" href="#2-验证码方案">#</a></h2>
+<p>作为防守方，我们要明白一个任务，我要收集用户的同时，可能更加希望对方是一个人，而不是机器。那么如何确定对方是一个人呢?</p>
+<h2 id="3-文字验证码">3 文字验证码<a hidden class="anchor" aria-hidden="true" href="#3-文字验证码">#</a></h2>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0fd2979160b942d9aff1a82f4e5defda~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<ol>
+<li>随机的数字或者字母图片，这是最原始也是最简单的验证码</li>
+<li>GIF格式的随机数字或者字母图片</li>
+<li>随机数字+随机大写英文字母+随机干扰像素+随机位置BMP格式图片</li>
+<li>随机英文字母+随机颜色+随机位置+随机长度的JPG格式图片，对字母进行大小写，位置，颜色，长度等进行随机显示</li>
+</ol>
+<p>(以上为间断性的方案&hellip;)</p>
+<p>最后的结果大家，已经知道，不论是前端还是后端，都有相应的库。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6439901e4ab74f35bbb0298db27cc964~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>我们设计出了这样的方案。那么这样的方案好不好呢？ 通过了多年，人们对于模糊的文字识别技术升级后，这样的验证码技术，安全系数就耍耍的减低。</p>
+<h2 id="4-问题验证码">4 问题验证码<a hidden class="anchor" aria-hidden="true" href="#4-问题验证码">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2622428807d14e0d90f51d2b740c7d14~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+ 将文字的验证码升级后，略带互动的形式，地理问题（如图），数学问题，常识问。然后你会发现，总有那么几个问题，真的是人也不一定答出来。</p>
+<h2 id="5-图片验证码">5 图片验证码<a hidden class="anchor" aria-hidden="true" href="#5-图片验证码">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/15c2f4f8547543d8965f0afae0ae1dea~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+ 放上一些图片，让你找出下列的书、花、红绿灯。这是一个经典的验证码，最出名的就是现在12306采用的防刷票措施了，对于用户的来说，总有几个脸盲患者，和看走眼的时候。在保护了接口的同时，也烦躁了用户。</p>
+<h2 id="6-滑动验证码">6 滑动验证码<a hidden class="anchor" aria-hidden="true" href="#6-滑动验证码">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f8d986b74e1440cf9afcac1cb03a6a0c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<ol>
+<li>将图片拖到底部</li>
+<li>将图片和缺口复合</li>
+<li>图片上开启2个缺口</li>
+</ol>
+<p>对于用户的要求降低之后，用户的体验就大大升级。俗话说，用的人多了，就不是什么难点了。即使二代升级了2个缺口，利用puppeteer破解极验的滑动验证工具，也随之诞生。</p>
+<h2 id="7-百度验证码-附代码">7 百度验证码 (附代码)<a hidden class="anchor" aria-hidden="true" href="#7-百度验证码-附代码">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/856f6ad6000e4311925e0ce1d238a9f7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>这套方案，我有在py的破解方案中找到，你可以理解为，生成无数个模型找到相似的算法，进行破解图片。那么我们这时候，假设一个图片会有360个角度，我们要去掉本来不需要旋转的度数，比如340个角度，去掉旋转不多的角度，180个角度，对于破解来说，就是260张图片。那么假设我的图片库内，有1000张图片，你需要破解，则需要180000张图片来存储，而我可以选择，定期更新这些图片。</p>
+<h3 id="71-node-代码">7.1 node 代码<a hidden class="anchor" aria-hidden="true" href="#71-node-代码">#</a></h3>
+<ol>
+<li>图片肯定必须是后端生成的。=&gt; 生成一张图片</li>
+<li>不希望图片存储到服务器上(毕竟是临时图片) =&gt; base64就是比较好的方案=&gt; sharp库</li>
+<li>实际上最有意义的是90-270随机数(或许可以更多，没有具体测试)=&gt; 取随机数</li>
+<li>这里我们服务选择了koa</li>
+</ol>
+<blockquote>
+<p>这里的随机数是存储，如果你想使用在项目中，需要存储到缓存，这里推荐redis。</p>
+</blockquote>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const sharp = require('sharp') const Koa = require('koa'); const router = require('koa-router')() const img_name = './images/1.jpg' // 放一张图片、未来这里可以放随机一个图片 const max = 90; // 最大值 const min = 270; // 最小值 const app = new Koa(); let random = 0 // 仅仅做demo、未来存储redis这里则不需要 app.use(router.routes()) router.get('/', async (ctx) =&gt; {     ctx.body = &quot;hello!&quot; }) // 发起图片请求 router.get('/getImg', async (ctx) =&gt; {     // 生产一个随机数   	random = Math.ceil(Math.random() * (max - min) + min);   	// 生成一张图片、这里可以详细的看sharp的文档，比如模糊这个功能就可以开启。     await sharp(img_name)         .resize(400, 400)         .rotate(random)         .toBuffer()         .then(bitmap =&gt; {       			//              const base64str = Buffer.from(bitmap, 'binary').toString('base64'); // base64编码             ctx.body = {                 base64str: `data:image/png;base64,${base64str}`                 // id: 此处可以给予一个uuid方便查询             }         }) }) // 图片的验证 router.get('/validation', async (ctx) =&gt; {     const rotate = ctx.request.query.rotate;     console.log(Math.abs(360 - rotate - random));   	// 此处10可以修改的更大，或者更小，来调整难度     if (Math.abs(360 - rotate - random) &lt;= 10) {         ctx.body = {             flag: true         }         return;     }     ctx.body = {         flag: false     } }) app.listen(3000, () =&gt; {     console.log('server is running at http://localhost:3000') });</code></p>
+<h3 id="72-vue代码">7.2 vue代码<a hidden class="anchor" aria-hidden="true" href="#72-vue代码">#</a></h3>
+<blockquote>
+<p>基于vue-drag-verify开发 DragVerify.vue</p>
+</blockquote>
+<p>vue</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div class=&quot;drag-verify-container&quot;&gt;     &lt;div :style=&quot;dragVerifyImgStyle&quot;&gt;       &lt;img         ref=&quot;checkImg&quot;         :src=&quot;imgsrc&quot;         class=&quot;check-img&quot;         :class=&quot;{ goOrigin: isOk }&quot;         @load=&quot;checkimgLoaded&quot;         :style=&quot;imgStyle&quot;         alt=&quot;&quot;       /&gt;       &lt;div class=&quot;tips success&quot; v-if=&quot;showTips &amp;&amp; isPassing&quot;&gt;{{ successTip }}&lt;/div&gt;       &lt;div class=&quot;tips danger&quot; v-if=&quot;showTips &amp;&amp; !isPassing &amp;&amp; showErrorTip&quot;&gt;{{ failTip }}&lt;/div&gt;     &lt;/div&gt;     &lt;div       ref=&quot;dragVerify&quot;       class=&quot;drag_verify&quot;       :style=&quot;dragVerifyStyle&quot;       @mousemove=&quot;dragMoving&quot;       @mouseup=&quot;dragFinish&quot;       @mouseleave=&quot;dragFinish&quot;       @touchmove=&quot;dragMoving&quot;       @touchend=&quot;dragFinish&quot;     &gt;       &lt;div         class=&quot;dv_progress_bar&quot;         :class=&quot;{ goFirst2: isOk }&quot;         ref=&quot;progressBar&quot;         :style=&quot;progressBarStyle&quot;       &gt;         {{ successMessage }}       &lt;/div&gt;       &lt;div class=&quot;dv_text&quot; :style=&quot;textStyle&quot; ref=&quot;message&quot;&gt;         {{ message }}       &lt;/div&gt;       &lt;div         class=&quot;dv_handler dv_handler_bg&quot;         :class=&quot;{ goFirst: isOk }&quot;         @mousedown=&quot;dragStart&quot;         @touchstart=&quot;dragStart&quot;         ref=&quot;handler&quot;         :style=&quot;handlerStyle&quot;       &gt;         &lt;i :class=&quot;handlerIcon&quot;&gt;&lt;/i&gt;       &lt;/div&gt;     &lt;/div&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script&gt; export default {   name: 'DragVerifyImg',   props: {     isPassing: {       type: Boolean,       default: false     },     width: {       type: Number,       default: 250     },     height: {       type: Number,       default: 40     },     text: {       type: String,       default: 'swiping to the right side'     },     successText: {       type: String,       default: 'success'     },     background: {       type: String,       default: '#eee'     },     progressBarBg: {       type: String,       default: '#76c61d'     },     completedBg: {       type: String,       default: '#76c61d'     },     circle: {       type: Boolean,       default: false     },     radius: {       type: String,       default: '4px'     },     handlerIcon: {       type: String     },     successIcon: {       type: String     },     handlerBg: {       type: String,       default: '#fff'     },     textSize: {       type: String,       default: '14px'     },     textColor: {       type: String,       default: '#333'     },     imgsrc: {       type: String     },     showTips: {       type: Boolean,       default: true     },     successTip: {       type: String,       default: '验证通过'     },     failTip: {       type: String,       default: '验证失败'     },     minDegree: {       type: Number,       default: 90     },     maxDegree: {       type: Number,       default: 270     }   },   mounted: function () {     const dragEl = this.$refs.dragVerify;     dragEl.style.setProperty('--textColor', this.textColor);     dragEl.style.setProperty('--width', Math.floor(this.width / 2) + 'px');     dragEl.style.setProperty('--pwidth', -Math.floor(this.width / 2) + 'px');   },   computed: {     handlerStyle: function () {       return {         width: this.height + 'px',         height: this.height + 'px',         background: this.handlerBg       };     },     message: function () {       return this.isPassing ? '' : this.text;     },     successMessage: function () {       return this.isPassing ? this.successText : '';     },     dragVerifyStyle: function () {       return {         width: this.width + 'px',         height: this.height + 'px',         lineHeight: this.height + 'px',         background: this.background,         borderRadius: this.circle ? this.height / 2 + 'px' : this.radius       };     },     dragVerifyImgStyle: function () {       return {         'width': this.width + 'px',         'height': this.width + 'px',         'position': 'relative',         'overflow': 'hidden',         'border-radius': '50%'       };     },     progressBarStyle: function () {       return {         background: this.progressBarBg,         height: this.height + 'px',         borderRadius: this.circle           ? this.height / 2 + 'px 0 0 ' + this.height / 2 + 'px'           : this.radius       };     },     textStyle: function () {       return {         height: this.height + 'px',         width: this.width + 'px',         fontSize: this.textSize       };     },     factor: function () {       //避免指定旋转角度时一直拖动到最右侧才验证通过       if (this.minDegree == this.maxDegree) {         return Math.floor(1 + Math.random() * 6) / 10 + 1;       }       return 1;     }   },   data() {     return {       isMoving: false,       x: 0,       isOk: false,       showBar: false,       showErrorTip: false,       ranRotate: 0,       cRotate: 0,       imgStyle: {}     };   },   methods: {     checkimgLoaded: function () {       this.ranRotate = 120;     },     dragStart: function (e) {       if (!this.isPassing) {         this.isMoving = true;         this.x = e.pageX || e.touches[0].pageX;       }       this.showBar = true;       this.showErrorTip = false;       this.$emit('handlerMove');     },     dragMoving: function (e) {       if (this.isMoving &amp;&amp; !this.isPassing) {         var _x = (e.pageX || e.touches[0].pageX) - this.x;         var handler = this.$refs.handler;         handler.style.left = _x + 'px';         this.$refs.progressBar.style.width = _x + this.height / 2 + 'px';         var cRotate = Math.ceil((_x / (this.width - this.height)) * this.maxDegree * this.factor);         this.cRotate = cRotate;         var rotate = cRotate;         this.imgStyle = {           transform: `rotateZ(${rotate}deg)`         };       }     },     dragFinish: function () {       if (this.isMoving &amp;&amp; !this.isPassing) {         this.$emit('postRotate', this.cRotate);         this.isMoving = false;       }     },     setFinish(val) {       if (val) {         this.passVerify();         return;       }       this.isOk = true;       this.imgStyle = {         transform: `rotateZ(${this.ranRotate}deg)`       };       const that = this;       setTimeout(function () {         const handler = that.$refs.handler;         const progressBar = that.$refs.progressBar;         handler.style.left = '0';         progressBar.style.width = '0';         that.isOk = false;       }, 500);       this.showErrorTip = true;       this.$emit('update:isPassing', false);       this.$emit('passfail');     },     passVerify: function () {       this.$emit('update:isPassing', true);       this.isMoving = false;       var handler = this.$refs.handler;       handler.children[0].className = this.successIcon;       this.$refs.progressBar.style.background = this.completedBg;       this.$refs.message.style['-webkit-text-fill-color'] = 'unset';       this.$refs.message.style.animation = 'slidetounlock2 3s infinite';       this.$refs.progressBar.style.color = '#fff';       this.$refs.progressBar.style.fontSize = this.textSize;       this.$emit('passcallback');     },     reset: function () {       this.reImg();       this.checkimgLoaded();     },     reImg: function () {       this.$emit('update:isPassing', false);       const oriData = this.$options.data();       for (const key in oriData) {         if (Object.prototype.hasOwnProperty.call(oriData, key)) {           this[key] = oriData[key];         }       }       var handler = this.$refs.handler;       var message = this.$refs.message;       handler.style.left = '0';       this.$refs.progressBar.style.width = '0';       handler.children[0].className = this.handlerIcon;       message.style['-webkit-text-fill-color'] = 'transparent';       message.style.animation = 'slidetounlock 3s infinite';       message.style.color = this.background;     },     refreshimg: function () {       this.$emit('refresh');     }   },   watch: {     imgsrc: {       immediate: false,       handler: function () {         this.reImg();       }     }   } }; &lt;/script&gt; &lt;style scoped&gt; .drag_verify {   position: relative;   background-color: #e8e8e8;   text-align: center;   overflow: hidden; } .drag_verify .dv_handler {   position: absolute;   top: 0px;   left: 0px;   cursor: move; } .drag_verify .dv_handler i {   color: #666;   padding-left: 0;   font-size: 16px; } .drag_verify .dv_handler .el-icon-circle-check {   color: #6c6;   margin-top: 9px; } .drag_verify .dv_progress_bar {   position: absolute;   height: 34px;   width: 0px; } .drag_verify .dv_text {   position: absolute;   top: 0px;   color: transparent;   -moz-user-select: none;   -webkit-user-select: none;   user-select: none;   -o-user-select: none;   -ms-user-select: none;   background: -webkit-gradient(     linear,     left top,     right top,     color-stop(0, var(--textColor)),     color-stop(0.4, var(--textColor)),     color-stop(0.5, #fff),     color-stop(0.6, var(--textColor)),     color-stop(1, var(--textColor))   );   -webkit-background-clip: text;   -webkit-text-fill-color: transparent;   -webkit-text-size-adjust: none;   animation: slidetounlock 3s infinite; } .drag_verify .dv_text * {   -webkit-text-fill-color: var(--textColor); } .goFirst {   left: 0px !important;   transition: left 0.5s; } .goOrigin {   transition: transform 0.5s; } .goKeep {   transition: left 0.2s; } .goFirst2 {   width: 0px !important;   transition: width 0.5s; } .drag-verify-container {   position: relative;   line-height: 0;   border-radius: 50%; } .move-bar {   position: absolute;   z-index: 100; } .clip-bar {   position: absolute;   background: rgba(255, 255, 255, 0.8); } .refresh {   position: absolute;   right: 5px;   top: 5px;   cursor: pointer;   font-size: 20px;   z-index: 200; } .tips {   position: absolute;   bottom: 25px;   height: 20px;   line-height: 20px;   text-align: center;   width: 100%;   font-size: 12px;   z-index: 200; } .tips.success {   background: rgba(255, 255, 255, 0.6);   color: green; } .tips.danger {   background: rgba(0, 0, 0, 0.6);   color: yellow; } .check-img {   width: 140%;   margin-left: -20%;   margin-top: -20%;   border-radius: 50%;   /* width: 100%; */ } &lt;/style&gt; &lt;style&gt; @-webkit-keyframes slidetounlock {   0% {     background-position: var(--pwidth) 0;   }   100% {     background-position: var(--width) 0;   } } @-webkit-keyframes slidetounlock2 {   0% {     background-position: var(--pwidth) 0;   }   100% {     background-position: var(--pwidth) 0;   } } &lt;/style&gt;</code></p>
+<blockquote>
+<p>app.vue</p>
+</blockquote>
+<p>vue</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;   &lt;div id=&quot;app&quot;&gt;     &lt;drag-verify-img       ref=&quot;verify&quot;       :imgsrc=&quot;imgsrc&quot;       :isPassing.sync=&quot;isPassing&quot;       text=&quot;请按住滑块拖动&quot;       successText=&quot;验证通过&quot;       handlerIcon=&quot;el-icon-d-arrow-right&quot;       successIcon=&quot;el-icon-circle-check&quot;       @postRotate=&quot;postRotate&quot;       @passcallback=&quot;passcallback&quot;       @passfail=&quot;passfail&quot;     &gt;     &lt;/drag-verify-img&gt;   &lt;/div&gt; &lt;/template&gt; &lt;script&gt; import DragVerifyImg from './components/DragVerify.vue'; import axios from 'axios'; export default {   name: 'App',   components: {     DragVerifyImg   },   data: function () {     return {       imgsrc: '',       isPassing: false     };   },   created() {     this.getImg();   },   methods: {     async getImg() {       try {         const res = await axios.get('/api/getImg');         this.imgsrc = res.data.base64str;       } catch (error) {         console.log(error);       }     },     async postRotate(val) {       const res = await axios.get(`/api/validation?rotate=${val}`);       this.$refs.verify.setFinish(res.data.flag);     },     passcallback() {       console.log('成功');     },     passfail() {       this.$refs.verify.reset(); // 默认重置       console.log('失败');     }   } }; &lt;/script&gt; &lt;style lang=&quot;scss&quot;&gt; #app {   font-family: Avenir, Helvetica, Arial, sans-serif;   -webkit-font-smoothing: antialiased;   -moz-osx-font-smoothing: grayscale;   text-align: center;   color: #2c3e50;   margin-top: 60px; } &lt;/style&gt;</code></p>
+<h2 id="8-github地址">8 github地址<a hidden class="anchor" aria-hidden="true" href="#8-github地址">#</a></h2>
+<blockquote>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FMYQ1996%2Fdrag-verify-demo.git" title="https://github.com/MYQ1996/drag-verify-demo.git">github.com/MYQ1996/dra…</a></p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%85%A8%E6%A0%88%E5%9F%BA%E7%A1%80websocket%E6%9E%84%E5%BB%BA%E5%9C%A8%E7%BA%BF%E8%81%8A%E5%A4%A9%E5%AE%A4/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>全栈基础WebSocket构建在线聊天室</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/vue3%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE%E8%AE%BE%E8%AE%A1%E5%9B%9Bwatch%E5%AE%9E%E7%8E%B0/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Vue3响应式数据设计（四）watch实现</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仿百度验证码(vue&#43;node) on x"
+            href="https://x.com/intent/tweet/?text=%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue%2bnode%29&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f&amp;hashtags=%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仿百度验证码(vue&#43;node) on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f&amp;title=%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue%2bnode%29&amp;summary=%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue%2bnode%29&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仿百度验证码(vue&#43;node) on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f&title=%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue%2bnode%29">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仿百度验证码(vue&#43;node) on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仿百度验证码(vue&#43;node) on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue%2bnode%29%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仿百度验证码(vue&#43;node) on telegram"
+            href="https://telegram.me/share/url?text=%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue%2bnode%29&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 仿百度验证码(vue&#43;node) on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%bb%bf%e7%99%be%e5%ba%a6%e9%aa%8c%e8%af%81%e7%a0%81%28vue%2bnode%29&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%25BF%25E7%2599%25BE%25E5%25BA%25A6%25E9%25AA%258C%25E8%25AF%2581%25E7%25A0%2581vue%2bnode%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 | PaperMod</title>
+<meta name="keywords" content="MySQL">
+<meta name="description" content="本文详细讲解了MySQL到ClickHouse数据同步原理及实践，共有基础概念、使用方法、工作原理、同步策略、源码分析五大部分">
+<meta name="author" content="GaussDB数据库">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/mysql%E5%88%B0clickhouse%E7%9A%84%E9%AB%98%E9%80%9F%E5%85%AC%E8%B7%AF-materializemysql%E5%BC%95%E6%93%8E/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/mysql%E5%88%B0clickhouse%E7%9A%84%E9%AB%98%E9%80%9F%E5%85%AC%E8%B7%AF-materializemysql%E5%BC%95%E6%93%8E/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="MySQL到ClickHouse的高速公路-MaterializeMySQL引擎" />
+<meta property="og:description" content="本文详细讲解了MySQL到ClickHouse数据同步原理及实践，共有基础概念、使用方法、工作原理、同步策略、源码分析五大部分" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/mysql%E5%88%B0clickhouse%E7%9A%84%E9%AB%98%E9%80%9F%E5%85%AC%E8%B7%AF-materializemysql%E5%BC%95%E6%93%8E/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-08-25T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="MySQL到ClickHouse的高速公路-MaterializeMySQL引擎"/>
+<meta name="twitter:description" content="本文详细讲解了MySQL到ClickHouse数据同步原理及实践，共有基础概念、使用方法、工作原理、同步策略、源码分析五大部分"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "MySQL到ClickHouse的高速公路-MaterializeMySQL引擎",
+      "item": "http://localhost:1313/posts/juejin/mysql%E5%88%B0clickhouse%E7%9A%84%E9%AB%98%E9%80%9F%E5%85%AC%E8%B7%AF-materializemysql%E5%BC%95%E6%93%8E/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MySQL到ClickHouse的高速公路-MaterializeMySQL引擎",
+  "name": "MySQL到ClickHouse的高速公路-MaterializeMySQL引擎",
+  "description": "本文详细讲解了MySQL到ClickHouse数据同步原理及实践，共有基础概念、使用方法、工作原理、同步策略、源码分析五大部分",
+  "keywords": [
+    "MySQL"
+  ],
+  "articleBody": "引言 熟悉MySQL的朋友应该都知道，MySQL集群主从间数据同步机制十分完善。令人惊喜的是，ClickHouse作为近年来炙手可热的大数据分析引擎也可以挂载为MySQL的从库，作为MySQL的 “协处理器” 面向OLAP场景提供高效数据分析能力。早先的方案比较直截了当，通过第三方插件将所有MySQL上执行的操作进行转化，然后在ClickHouse端逐一回放达到数据同步。终于在2020年下半年，Yandex 公司在 ClickHouse 社区发布了MaterializeMySQL引擎，支持从MySQL全量及增量实时数据同步。MaterializeMySQL引擎目前支持 MySQL 5.6/5.7/8.0 版本，兼容 Delete/Update 语句，及大部分常用的 DDL 操作。\n基础概念 MySQL \u0026 ClickHouse MySQL一般特指完整的MySQL RDBMS，是开源的关系型数据库管理系统，目前属于Oracle公司。MySQL凭借不断完善的功能以及活跃的开源社区，吸引了越来越多的企业和个人用户。\nClickHouse是由Yandex公司开源的面向OLAP场景的分布式列式数据库。ClickHouse具有实时查询，完整的DBMS及高效数据压缩，支持批量更新及高可用。此外，ClickHouse还较好地兼容SQL语法并拥有开箱即用等诸多优点。\nRow Store \u0026 Column Store MySQL存储采用的是Row Store，表中数据按照 Row 为逻辑存储单元在存储介质中连续存储。这种存储方式适合随机的增删改查操作，对于按行查询较为友好。但如果选择查询的目标只涉及一行中少数几个属性，Row 存储方式也不得不将所有行全部遍历再筛选出目标属性，当表属性较多时查询效率通常较低。尽管索引以及缓存等优化方案在 OLTP 场景中能够提升一定的效率，但在面对海量数据背景的 OLAP 场景就显得有些力不从心了。\nClickHouse 则采用的是 Column Store，表中数据按照Column为逻辑存储单元在存储介质中连续存储。这种存储方式适合采用 SIMD (Single Instruction Multiple Data) 并发处理数据，尤其在表属性较多时查询效率明显提升。列存方式中物理相邻的数据类型通常相同，因此天然适合数据压缩从而达到极致的数据压缩比。\n使用方法 部署Master-MySQL\n开启BinLog功能：ROW模式\n开启GTID模式：解决位点同步时MySQL主从切换问题（BinLog reset导致位点失效）\nmy.cnf关键配置 gtid_mode=ON enforce_gtid_consistency=1 binlog_format=ROW\n部署Slave-ClickHouse\n获取 ClickHouse/Master 代码编译安装\n推荐使用GCC-10.2.0，CMake 3.15，ninja1.9.0及以上\n创建Master-MySQL中database及table\ncreat databases master_db; use master_db; CREATE TABLE IF NOT EXISTS runoob_tbl( runoob_id INT UNSIGNED AUTO_INCREMENT, runoob_ VARCHAR(100) NOT NULL, runoob_author VARCHAR(40) NOT NULL, submission_date DATE, PRIMARY KEY ( runoob_id ) )ENGINE=InnoDB DEFAULT CHARSET=utf8;\n插入几条数据 INSERT INTO runoob_tbl (runoob_, runoob_author, submission_date) VALUES (“MySQL-learning”, “Bob”, NOW()); INSERT INTO runoob_tbl (runoob_, runoob_author, submission_date) VALUES (“MySQL-learning”, “Tim”, NOW());\n创建 Slave-ClickHouse 中 MaterializeMySQL database\n开启materialize同步功能 SET allow_experimental_database_materialize_mysql=1;\n创建slave库，参数分别是(“mysqld服务地址”, “待同步库名”, “授权账户”, “密码”) CREATE DATABASE slave_db ENGINE = MaterializeMySQL(‘192.168.6.39:3306’, ‘master_db’, ‘root’, ‘3306123456’);\n此时可以看到ClickHouse中已经有从MySQL中同步的数据了：\nvbnet\n代码解读\n复制代码\nDESKTOP:) select * from runoob_tbl; SELECT * FROM runoob_tbl Query id: 6e2b5f3b-0910-4d29-9192-1b985484d7e3 ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┐ │ 1 │ MySQL-learning │ Bob │ 2021-01-06 │ └───────────┴────────────────┴───────────────┴─────────────────┘ ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┐ │ 2 │ MySQL-learning │ Tim │ 2021-01-06 │ └───────────┴────────────────┴───────────────┴─────────────────┘ 2 rows in set. Elapsed: 0.056 sec.\n工作原理 BinLog Event MySQL中BinLog Event主要包含以下几类：\nlua\n代码解读\n复制代码\n1. MYSQL_QUERY_EVENT　-- DDL 2. MYSQL_WRITE_ROWS_EVENT　-- insert 3. MYSQL_UPDATE_ROWS_EVENT -- update 4. MYSQL_DELETE_ROWS_EVENT -- delete\n事务提交后，MySQL 将执行过的 SQL 处理 BinLog Event，并持久化到 BinLog 文件\nClickHouse通过消费BinLog达到数据同步，过程中主要考虑３个方面问题：\n1、DDL兼容：由于ClickHouse和MySQL的数据类型定义有区别，DDL语句需要做相应转换\n2、Delete/Update 支持：引入_version字段，控制版本信息\n3、Query 过滤：引入_sign字段，标记数据有效性\nDDL操作 对比一下MySQL的DDL语句以及在ClickHouse端执行的DDL语句：\nsql\n代码解读\n复制代码\nmysql\u003e show create table runoob_tbl\\G; *************************** 1. row *************************** Table: runoob_tbl Create Table: CREATE TABLE `runoob_tbl` ( `runoob_id` int unsigned NOT NULL AUTO_INCREMENT, `runoob_` varchar(100) NOT NULL, `runoob_author` varchar(40) NOT NULL, `submission_date` date DEFAULT NULL, PRIMARY KEY (`runoob_id`) ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 1 row in set (0.00 sec) --------------------------------------------------------------- cat /metadata/slave_db/runoob_tbl.sql ATTACH TABLE _ UUID '14dbff59-930e-4aa8-9f20-ccfddaf78077' ( `runoob_id` UInt32, `runoob_` String, `runoob_author` String, `submission_date` Nullable(Date), `_sign` Int8 MATERIALIZED 1, `_version` UInt64 MATERIALIZED 1 ) ENGINE = ReplacingMergeTree(_version) PARTITION BY intDiv(runoob_id, 4294967) ORDER BY tuple(runoob_id) SETTINGS index_granularity = 8192\n可以看到：\n1、在DDL转化时默认增加了2个隐藏字段：_sign(-1删除, 1写入) 和 _version(数据版本)\n2、默认将表引擎设置为 ReplacingMergeTree，以 _version 作为 column version\n3、原DDL主键字段 runoob_id 作为ClickHouse排序键和分区键\n此外还有许多DDL处理，比如增加列、索引等，相应代码在Parsers/MySQL 目录下。\nDelete/Update操作 Update：\nsql\n代码解读\n复制代码\n# Mysql端： UPDATE runoob_tbl set runoob_author='Mike' where runoob_id=2; mysql\u003e select * from runoob_tbl; +-----------+----------------+---------------+-----------------+ | runoob_id | runoob_title | runoob_author | submission_date | +-----------+----------------+---------------+-----------------+ | 1 | MySQL-learning | Bob | 2021-01-06 | | 2 | MySQL-learning | Mike | 2021-01-06 | +-----------+----------------+---------------+-----------------+ 2 rows in set (0.00 sec) ---------------------------------------------------------------- # ClickHouse端： DESKTOP:) select *, _sign, _version from runoob_tbl order by runoob_id; SELECT *, _sign, _version FROM runoob_tbl ORDER BY runoob_id ASC Query id: c5f4db0a-eff6-4b49-a429-b55230c26301 ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │ 1 │ MySQL-learning │ Bob │ 2021-01-06 │ 1 │ 2 │ │ 2 │ MySQL-learning │ Mike │ 2021-01-06 │ 1 │ 4 │ │ 2 │ MySQL-learning │ Tim │ 2021-01-06 │ 1 │ 3 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ 3 rows in set. Elapsed: 0.003 sec.\n可以看到，ClickHouse数据也实时同步了更新操作。\nDelete:\nMysql端 mysql\u003e DELETE from runoob_tbl where runoob_id=2;\nmysql\u003e select * from runoob_tbl; +———–+—————-+—————+—————–+ | runoob_id | runoob_title | runoob_author | submission_date | +———–+—————-+—————+—————–+ | 1 | MySQL-learning | Bob | 2021-01-06 | +———–+—————-+—————+—————–+ 1 row in set (0.00 sec)\nClickHouse端 DESKTOP:) select *, _sign, _version from runoob_tbl order by runoob_id;\nSELECT *, _sign, _version FROM runoob_tbl ORDER BY runoob_id ASC\nQuery id: e9cb0574-fcd5-4336-afa3-05f0eb035d97\n┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │ 1 │ MySQL-learning │ Bob │ 2021-01-06 │ 1 │ 2 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │ 2 │ MySQL-learning │ Mike │ 2021-01-06 │ -1 │ 5 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │ 2 │ MySQL-learning │ Mike │ 2021-01-06 │ 1 │ 4 │ │ 2 │ MySQL-learning │ Tim │ 2021-01-06 │ 1 │ 3 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ 4 rows in set. Elapsed: 0.002 sec.\n可以看到，删除id为2的行只是额外插入了_sign == -1的一行记录，并没有真正删掉。\n日志回放 MySQL 主从间数据同步时Slave节点将 BinLog Event 转换成相应的SQL语句，Slave 模拟 Master 写入。类似地，传统第三方插件沿用了MySQL主从模式的BinLog消费方案，即将 Event 解析后转换成 ClickHouse 兼容的 SQL 语句，然后在 ClickHouse 上执行（回放），但整个执行链路较长，通常性能损耗较大。不同的是，MaterializeMySQL 引擎提供的内部数据解析以及回写方案隐去了三方插件的复杂链路。回放时将 BinLog Event 转换成底层 Block 结构，然后直接写入底层存储引擎，接近于物理复制。此方案可以类比于将 BinLog Event 直接回放到 InnoDB 的 Page 中。\n同步策略 日志回放 v20.9.1版本前是基于位点同步的，ClickHouse每消费完一批 BinLog Event，就会记录 Event 的位点信息到 .metadata 文件:\nshell\n代码解读\n复制代码\n[FavonianKong@Wsl[20:42:37]slave_db] $ cat ./.metadata Version: 2 Binlog File: mysql-bin.000003 Binlog Position:355005999 Data Version: 5\n这样当 ClickHouse 再次启动时，它会把 {‘mysql-bin.000003’, 355005999} 二元组通过协议告知 MySQL Server，MySQL 从这个位点开始发送数据：\nshell\n代码解读\n复制代码\ns1\u003e ClickHouse 发送 {‘mysql-bin.000003’, 355005999} 位点信息给 MySQL s2\u003e MySQL 找到本地 mysql-bin.000003 文件并定位到 355005999 偏移位置，读取下一个 Event 发送给 ClickHouse s3\u003e ClickHouse 接收 binlog event 并完成同步操作 s4\u003e ClickHouse 更新 .metadata位点\n存在问题：\n如果MySQL Server是一个集群，通过VIP对外服务，MaterializeMySQL创建 database 时 host 指向的是VIP，当集群主从发生切换后，{Binlog File, Binlog Position} 二元组不一定是准确的，因为BinLog可以做reset操作。\nshell\n代码解读\n复制代码\ns1\u003e ClickHouse 发送 {'mysql-bin.000003’, 355005999} 给集群新主 MySQL s2\u003e 新主 MySQL 发现本地没有 mysql-bin.000003 文件，因为它做过 reset master 操作，binlog 文件是 mysql-bin.000001 s3\u003e 产生错误复制\n为了解决这个问题，v20.9.1版本后上线了 GTID 同步模式，废弃了不安全的位点同步模式。\nGTID同步 GTID模式为每个 event 分配一个全局唯一ID和序号，直接告知 MySQL 这个 GTID 即可，于是.metadata变为:\nyaml\n代码解读\n复制代码\n[FavonianKong@Wsl[21:30:19]slave_db] Version: 2 Binlog File: mysql-bin.000003 Executed GTID: 0857c24e-4755-11eb-888c-00155dfbdec7:1-783 Binlog Position:355005999 Data Version: 5\n其中 0857c24e-4755-11eb-888c-00155dfbdec7 是生成 Event的主机UUID，1-783是已经同步的event区间\n于是流程变为:\nshell\n代码解读\n复制代码\ns1\u003e ClickHouse 发送 GTID:0857c24e-4755-11eb-888c-00155dfbdec7:1-783 给 MySQL s2\u003e MySQL 根据 GTID 找到本地位点，读取下一个 Event 发送给 ClickHouse s3\u003e ClickHouse 接收 BinLog Event 并完成同步操作 s4\u003e ClickHouse 更新 .metadata GTID信息\n源码分析 概述 在最新源码 (v20.13.1.1) 中，ClickHouse 官方对 DatabaseMaterializeMySQL 引擎的相关源码进行了重构，并适配了 GTID 同步模式。ClickHouse 整个项目的入口 main 函数在 /ClickHouse/programs/main.cpp 文件中，主程序会根据接收指令将任务分发到 ClickHouse/programs 目录下的子程序中处理。本次分析主要关注 Server 端 MaterializeMySQL 引擎的工作流程。\n源码目录 与 MaterializeMySQL 相关的主要源码路径：\nscss\n代码解读\n复制代码\nClickHouse/src/databases/MySQL //MaterializeMySQL存储引擎实现 ClickHouse/src/Storages/ //表引擎实现 ClickHouse/src/core/MySQL* //复制相关代码 ClickHouse/src/Interpreters/ //Interpreters实现，SQL的rewrite也在这里处理 ClickHouse/src/Parsers/MySQL //解析部分实现,DDL解析等相关处理在这里\n服务端主要流程 ClickHouse 使用 POCO 网络库处理网络请求，Client连接的处理逻辑在 ClickHouse/src/Server/*Handler.cpp 的 hander方法里。以TCP为例，除去握手，初始化上下文以及异常处理等相关代码，主要逻辑可以抽象成:\nscss\n代码解读\n复制代码\n// ClickHouse/src/Server/TCPHandler.cpp TCPHandler.runImpl() { ... while(true) { ... if (!receivePacket()) //line 184 continue /// Processing Query //line 260 state.io = executeQuery(state.query, *query_context, ...); ... }\n数据同步预处理 Client发送的SQL在executeQuery函数处理，主要逻辑简化如下：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Interpreters/executeQuery.cpp static std::tuple executeQueryImpl(...) { ... // line 354，解析器可配置 ast = parseQuery(...); ... // line 503, 根据语法树生成interpreter auto interpreter = InterpreterFactory::get(ast, context, ...); ... // line 525, 执行器interpreter执行后返回结果 res = interpreter-\u003eexecute(); ... }\n主要有三点：\n1、解析SQL语句并生成语法树 AST\n2、InterpreterFactory 工厂类根据 AST 生成执行器\n3、interpreter-\u003eexecute()\n跟进第三点，看看 InterpreterCreateQuery 的 excute() 做了什么：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Interpreters/InterpreterCreateQuery.cpp BlockIO InterpreterCreateQuery::execute() { ... // CREATE | ATTACH DATABASE if (!create.database.empty() \u0026\u0026 create.table.empty()) // line 1133, 当使用MaterializeMySQL时，会走到这里建库 return createDatabase(create); }\n这里注释很明显，主要执行 CREATE 或 ATTACH DATABASE，继续跟进 createDatabase() 函数：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Interpreters/InterpreterCreateQuery.cpp BlockIO InterpreterCreateQuery::createDatabase(ASTCreateQuery \u0026 create) { ... // line 208, 这里会根据 ASTCreateQuery 参数，从 DatabaseFactory 工厂获取数据库对象 // 具体可以参考 DatabasePtr DatabaseFactory::getImpl() 函数 DatabasePtr database = DatabaseFactory::get(create, metadata_path, ...); ... // line 253, 多态调用，在使用MaterializeMySQL时 // 上方get函数返回的是 DatabaseMaterializeMySQL database-\u003eloadStoredObjects(context, ...); }\n到这里，相当于将任务分发给DatabaseMaterializeMySQL处理，接着跟踪 loadStoredObjects 函数：\narduino\n代码解读\n复制代码\n//ClickHouse/src/Databases/MySQL/DatabaseMaterializeMySQL.cpp template void DatabaseMaterializeMySQL::loadStoredObjects(Context \u0026 context, ...) { Base::loadStoredObjects(context, has_force_restore_data_flag, force_attach); try { // line87, 这里启动了materialize的同步线程 materialize_thread.startSynchronization(); started_up = true; } catch (...) ... }\n跟进startSynchronization() 绑定的执行函数：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp void MaterializeMySQLSyncThread::synchronization() { ... // 全量同步在 repareSynchronized() 进行 if (std::optional metadata = prepareSynchronized()) { while (!isCancelled()) { UInt64 max_flush_time = settings-\u003emax_flush_data_time; BinlogEventPtr binlog_event = client.readOneBinlogEvent(...); { //增量同步侦听binlog_envent if (binlog_event) onEvent(buffers, binlog_event, *metadata); } } } ... }\n全量同步 MaterializeMySQLSyncThread::prepareSynchronized 负责DDL和全量同步，主要流程简化如下：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp std::optional MaterializeMySQLSyncThread::prepareSynchronized() { while (!isCancelled()) { ... try { //构造函数内会获取MySQL的状态、MySQL端的建表语句， MaterializeMetadata metadata(connection, ...); // line345, DDL相关转换 metadata.transaction(position, [\u0026]() { cleanOutdatedTables(database_name, global_context); dumpDataForTables(connection, metadata, global_context, ...); }); return metadata; } ... } }\nClickHouse作为MySQL从节点，在MaterializeMetadata构造函数中对MySQL端进行了一系列预处理：\n1、将打开的表关闭，同时对表加上读锁并启动事务\n2、TablesCreateQuery通过SHOW CREATE TABLE 语句获取MySQL端的建表语句\n3、获取到建表语句后释放表锁\n继续往下走，执行到 metadata.transaction() 函数，该调用传入了匿名函数作为参数，一直跟进该函数会发现最终会执行匿名函数，也就是cleanOutdatedTables以及dumpDataForTables函数，主要看一下 dumpDataForTables 函数：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp static inline void dumpDataForTables(...) { ... //line293, 这里执行建表语句 tryToExecuteQuery(..., query_context, database_name, comment); }\n继续跟踪 tryToExecuteQuery 函数，会调用到 executeQueryImpl() 函数，上文提到过这个函数，但这次我们的上下文信息变了，生成的执行器发生变化，此时会进行 DDL 转化以及 dump table 等操作：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Interpreters/executeQuery.cpp static std::tuple executeQueryImpl(...) { ... // line 354，解析器可配置 ast = parseQuery(...); ... // line 503，这里跟之前上下文信息不同，生成interpreter也不同 auto interpreter = InterpreterFactory::get(ast,context, ...); ... // line 525, 执行器interpreter执行后返回结果 res = interpreter-\u003eexecute(); ... }\n此时 InterpreterFactory 返回 InterpreterExternalDDLQuery，跟进去看 execute 函数做了什么：\nphp\n代码解读\n复制代码\n// ClickHouse/src/Interpreters/InterpreterExternalDDLQuery.cpp BlockIO InterpreterExternalDDLQuery::execute() { ... if (external_ddl_query.from-\u003ename == \"MySQL\") { #ifdef USE_MYSQL ... // line61, 当全量复制执行DDL时，会执行到这里 else if (...-\u003eas()) return MySQLInterpreter::InterpreterMySQLCreateQuery( external_ddl_query.external_ddl, cogetIdentifierName(arguments[0]), getIdentifierName(arguments[1])).execute(); #endif } ... return BlockIO(); }\n继续跟进去看看 getIdentifierName(arguments[1])).execute() 做了什么事情：\narduino\n代码解读\n复制代码\n// ClickHouse/src/Interpreters/MySQL/InterpretersMySQLDDLQuery.h class InterpreterMySQLDDLQuery : public IInterpreter { public: ... BlockIO execute() override { ... // line68, 把从MySQL获取到的DDL语句进行转化 ASTs rewritten_queries = InterpreterImpl::getRewrittenQueries( query, context, mapped_to_database, mysql_database); // line70, 这里执行转化后的DDL语句 for (const auto \u0026 rewritten_query : rewritten_queries) executeQuery(..., queryToString(rewritten_query), ...); return BlockIO{}; } ... }\n进一步看 InterpreterImpl::getRewrittenQueries 是怎么转化 DDL 的：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Interpreters/MySQL/InterpretersMySQLDDLQuery.cpp ASTs InterpreterCreateImpl::getRewrittenQueries(...) { ... // 检查是否存在primary_key, 没有直接报错 if (primary_keys.empty()) throw Exception(\"cannot be materialized, no primary keys.\", ...); ... // 添加 _sign 和 _version 列. auto sign_column_name = getUniqueColumnName(columns_name_and_type, \"_sign\"); auto version_column_name = getUniqueColumnName(columns_name_and_type, \"_version\"); // 这里悄悄把建表引擎修改成了ReplacingMergeTree storage-\u003eset(storage-\u003eengine, makeASTFunction(\"ReplacingMergeTree\", ...)); ... return ASTs{rewritten_query}; }\n完成DDL转换之后就会去执行新的DDL语句，完成建表操作，再回到 dumpDataForTables：\nscss\n代码解读\n复制代码\n// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp static inline void dumpDataForTables(...) { ... //line293, 这里执行建表语句 tryToExecuteQuery(..., query_context, database_name, comment); ... // line29, 这里开始 dump 数据并存放到MySQLBlockInputStream MySQLBlockInputStream input(connection, ...); }\n增量同步 还记得startSynchronization() 绑定的执行函数吗？全量同步分析都是在 prepareSynchronized()进行的，那增量更新呢？\nscss\n代码解读\n复制代码\n// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp void MaterializeMySQLSyncThread::synchronization() { ... // 全量同步在 repareSynchronized() 进行 if (std::optional metadata = prepareSynchronized()) { while (!isCancelled()) { UInt64 max_flush_time = settings-\u003emax_flush_data_time; BinlogEventPtr binlog_event = client.readOneBinlogEvent(...); { //增量同步侦听binlog_envent if (binlog_event) onEvent(buffers, binlog_event, *metadata); } } } ... }\n可以看到，while 语句里有一个 binlog_event 的侦听函数，用来侦听 MySQL 端 BinLog 日志变化，一旦 MySQL 端执行相关操作，其 BinLog 日志会更新并触发 binlog_event，增量更新主要在这里进行。\nrust\n代码解读\n复制代码\n// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp void MaterializeMySQLSyncThread::onEvent(Buffers \u0026 buffers, const BinlogEventPtr \u0026 receive_event, MaterializeMetadata \u0026 metadata) { // 增量同步通过监听binlog event实现，目前支持四种event：MYSQL_WRITE_ROWS_EVENT、 // MYSQL_UPDATE_ROWS_EVENT、MYSQL_DELETE_ROWS_EVENT 和 MYSQL_QUERY_EVENT // 具体的流程可以查找对应的 onHandle 函数, 不在此详细分析 if (receive_event-\u003etype() == MYSQL_WRITE_ROWS_EVENT){...} else if (receive_event-\u003etype() == MYSQL_UPDATE_ROWS_EVENT){...} else if (receive_event-\u003etype() == MYSQL_DELETE_ROWS_EVENT){...} else if (receive_event-\u003etype() == MYSQL_QUERY_EVENT){...} else {/* MYSQL_UNHANDLED_EVENT*/} }\n小结 MaterializeMySQL 引擎是 ClickHouse 官方2020年主推的特性，由于该特性在生产环境中属于刚需且目前刚上线不久，整个模块处于高速迭代的状态，因此有许多待完善的功能。例如复制过程状态查看以及数据的一致性校验等。感兴趣的话可参考Github上的2021-Roadmap，里面会更新一些社区最近得计划。以上内容如有理解错误还请指正。\n引用 ClickHouse社区源码\n",
+  "wordCount" : "1459",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-08-25T00:00:00Z",
+  "dateModified": "2021-08-25T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "GaussDB数据库"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/mysql%E5%88%B0clickhouse%E7%9A%84%E9%AB%98%E9%80%9F%E5%85%AC%E8%B7%AF-materializemysql%E5%BC%95%E6%93%8E/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      MySQL到ClickHouse的高速公路-MaterializeMySQL引擎
+    </h1>
+    <div class="post-description">
+      本文详细讲解了MySQL到ClickHouse数据同步原理及实践，共有基础概念、使用方法、工作原理、同步策略、源码分析五大部分
+    </div>
+    <div class="post-meta"><span title='2021-08-25 00:00:00 +0000 UTC'>八月 25, 2021</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;GaussDB数据库&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul><ul><ul>
+                <li>
+                    <a href="#%e5%bc%95%e8%a8%80" aria-label="引言">引言</a></li>
+                <li>
+                    <a href="#%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5" aria-label="基础概念">基础概念</a><ul>
+                        
+                <li>
+                    <a href="#mysql--clickhouse" aria-label="MySQL &amp; ClickHouse">MySQL &amp; ClickHouse</a></li>
+                <li>
+                    <a href="#row-store--column-store" aria-label="Row Store &amp; Column Store">Row Store &amp; Column Store</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95" aria-label="使用方法">使用方法</a></li></ul>
+                    </ul>
+                    
+                <li>
+                    <a href="#mycnf%e5%85%b3%e9%94%ae%e9%85%8d%e7%bd%ae" aria-label="my.cnf关键配置">my.cnf关键配置</a></li>
+                <li>
+                    <a href="#%e6%8f%92%e5%85%a5%e5%87%a0%e6%9d%a1%e6%95%b0%e6%8d%ae" aria-label="插入几条数据">插入几条数据</a></li>
+                <li>
+                    <a href="#%e5%bc%80%e5%90%afmaterialize%e5%90%8c%e6%ad%a5%e5%8a%9f%e8%83%bd" aria-label="开启materialize同步功能">开启materialize同步功能</a></li>
+                <li>
+                    <a href="#%e5%88%9b%e5%bb%baslave%e5%ba%93%e5%8f%82%e6%95%b0%e5%88%86%e5%88%ab%e6%98%afmysqld%e6%9c%8d%e5%8a%a1%e5%9c%b0%e5%9d%80-%e5%be%85%e5%90%8c%e6%ad%a5%e5%ba%93%e5%90%8d-%e6%8e%88%e6%9d%83%e8%b4%a6%e6%88%b7-%e5%af%86%e7%a0%81" aria-label="创建slave库，参数分别是(&ldquo;mysqld服务地址&rdquo;, &ldquo;待同步库名&rdquo;, &ldquo;授权账户&rdquo;, &ldquo;密码&rdquo;)">创建slave库，参数分别是(&ldquo;mysqld服务地址&rdquo;, &ldquo;待同步库名&rdquo;, &ldquo;授权账户&rdquo;, &ldquo;密码&rdquo;)</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86" aria-label="工作原理">工作原理</a><ul>
+                        
+                <li>
+                    <a href="#binlog-event" aria-label="BinLog Event">BinLog Event</a></li>
+                <li>
+                    <a href="#ddl%e6%93%8d%e4%bd%9c" aria-label="DDL操作">DDL操作</a></li></ul>
+                </li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#mysql%e7%ab%af" aria-label="Mysql端">Mysql端</a></li>
+                <li>
+                    <a href="#clickhouse%e7%ab%af" aria-label="ClickHouse端">ClickHouse端</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%90%8c%e6%ad%a5%e7%ad%96%e7%95%a5" aria-label="同步策略">同步策略</a></li>
+                <li>
+                    <a href="#%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90" aria-label="源码分析">源码分析</a></li>
+                <li>
+                    <a href="#%e5%b0%8f%e7%bb%93" aria-label="小结">小结</a></li>
+                <li>
+                    <a href="#%e5%bc%95%e7%94%a8" aria-label="引用">引用</a>
+                </li>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="引言">引言<a hidden class="anchor" aria-hidden="true" href="#引言">#</a></h3>
+<p>熟悉MySQL的朋友应该都知道，MySQL集群主从间数据同步机制十分完善。令人惊喜的是，ClickHouse作为近年来炙手可热的大数据分析引擎也可以挂载为MySQL的从库，作为MySQL的 “协处理器” 面向OLAP场景提供高效数据分析能力。早先的方案比较直截了当，通过第三方插件将所有MySQL上执行的操作进行转化，然后在ClickHouse端逐一回放达到数据同步。终于在2020年下半年，Yandex 公司在 ClickHouse 社区发布了MaterializeMySQL引擎，支持从MySQL全量及增量实时数据同步。MaterializeMySQL引擎目前支持 MySQL 5.6/5.7/8.0 版本，兼容 Delete/Update 语句，及大部分常用的 DDL 操作。</p>
+<h3 id="基础概念">基础概念<a hidden class="anchor" aria-hidden="true" href="#基础概念">#</a></h3>
+<ul>
+<li>
+<h4 id="mysql--clickhouse">MySQL &amp; ClickHouse<a hidden class="anchor" aria-hidden="true" href="#mysql--clickhouse">#</a></h4>
+</li>
+</ul>
+<p>MySQL一般特指完整的MySQL RDBMS，是开源的关系型数据库管理系统，目前属于Oracle公司。MySQL凭借不断完善的功能以及活跃的开源社区，吸引了越来越多的企业和个人用户。</p>
+<p>ClickHouse是由Yandex公司开源的面向OLAP场景的分布式列式数据库。ClickHouse具有实时查询，完整的DBMS及高效数据压缩，支持批量更新及高可用。此外，ClickHouse还较好地兼容SQL语法并拥有开箱即用等诸多优点。</p>
+<ul>
+<li>
+<h4 id="row-store--column-store">Row Store &amp; Column Store<a hidden class="anchor" aria-hidden="true" href="#row-store--column-store">#</a></h4>
+</li>
+</ul>
+<p>MySQL存储采用的是Row Store，表中数据按照 Row 为逻辑存储单元在存储介质中连续存储。这种存储方式适合随机的增删改查操作，对于按行查询较为友好。但如果选择查询的目标只涉及一行中少数几个属性，Row 存储方式也不得不将所有行全部遍历再筛选出目标属性，当表属性较多时查询效率通常较低。尽管索引以及缓存等优化方案在 OLTP 场景中能够提升一定的效率，但在面对海量数据背景的 OLAP 场景就显得有些力不从心了。</p>
+<p>ClickHouse 则采用的是 Column Store，表中数据按照Column为逻辑存储单元在存储介质中连续存储。这种存储方式适合采用 SIMD (Single Instruction Multiple Data) 并发处理数据，尤其在表属性较多时查询效率明显提升。列存方式中物理相邻的数据类型通常相同，因此天然适合数据压缩从而达到极致的数据压缩比。<br>
+<img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3245f321d4f24b07a2422abd3f554466~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<h3 id="使用方法">使用方法<a hidden class="anchor" aria-hidden="true" href="#使用方法">#</a></h3>
+<ul>
+<li>
+<p><strong>部署Master-MySQL</strong><br>
+开启BinLog功能：ROW模式<br>
+开启GTID模式：解决位点同步时MySQL主从切换问题（BinLog reset导致位点失效）</p>
+<h1 id="mycnf关键配置">my.cnf关键配置<a hidden class="anchor" aria-hidden="true" href="#mycnf关键配置">#</a></h1>
+<p>gtid_mode=ON enforce_gtid_consistency=1 binlog_format=ROW</p>
+</li>
+<li>
+<p><strong>部署Slave-ClickHouse</strong><br>
+获取 ClickHouse/Master 代码编译安装<br>
+推荐使用GCC-10.2.0，CMake 3.15，ninja1.9.0及以上</p>
+</li>
+<li>
+<p><strong>创建Master-MySQL中database及table</strong></p>
+<p>creat databases master_db; use master_db; CREATE TABLE IF NOT EXISTS <code>runoob_tbl</code>( <code>runoob_id</code> INT UNSIGNED AUTO_INCREMENT, <code>runoob_</code> VARCHAR(100) NOT NULL, <code>runoob_author</code> VARCHAR(40) NOT NULL, <code>submission_date</code> DATE, PRIMARY KEY ( <code>runoob_id</code> ) )ENGINE=InnoDB DEFAULT CHARSET=utf8;</p>
+<h1 id="插入几条数据">插入几条数据<a hidden class="anchor" aria-hidden="true" href="#插入几条数据">#</a></h1>
+<p>INSERT INTO runoob_tbl (runoob_, runoob_author, submission_date) VALUES (&ldquo;MySQL-learning&rdquo;, &ldquo;Bob&rdquo;, NOW()); INSERT INTO runoob_tbl (runoob_, runoob_author, submission_date) VALUES (&ldquo;MySQL-learning&rdquo;, &ldquo;Tim&rdquo;, NOW());</p>
+</li>
+<li>
+<p><strong>创建 Slave-ClickHouse 中 MaterializeMySQL database</strong></p>
+<h1 id="开启materialize同步功能">开启materialize同步功能<a hidden class="anchor" aria-hidden="true" href="#开启materialize同步功能">#</a></h1>
+<p>SET allow_experimental_database_materialize_mysql=1;</p>
+<h1 id="创建slave库参数分别是mysqld服务地址-待同步库名-授权账户-密码">创建slave库，参数分别是(&ldquo;mysqld服务地址&rdquo;, &ldquo;待同步库名&rdquo;, &ldquo;授权账户&rdquo;, &ldquo;密码&rdquo;)<a hidden class="anchor" aria-hidden="true" href="#创建slave库参数分别是mysqld服务地址-待同步库名-授权账户-密码">#</a></h1>
+<p>CREATE DATABASE slave_db ENGINE = MaterializeMySQL(&lsquo;192.168.6.39:3306&rsquo;, &lsquo;master_db&rsquo;, &lsquo;root&rsquo;, &lsquo;3306123456&rsquo;);</p>
+</li>
+</ul>
+<p>此时可以看到ClickHouse中已经有从MySQL中同步的数据了：</p>
+<p>vbnet</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>DESKTOP:) select * from  runoob_tbl; SELECT * FROM runoob_tbl Query id: 6e2b5f3b-0910-4d29-9192-1b985484d7e3 ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┐ │         1 │ MySQL-learning │ Bob           │      2021-01-06 │ └───────────┴────────────────┴───────────────┴─────────────────┘ ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┐ │         2 │ MySQL-learning │ Tim           │      2021-01-06 │ └───────────┴────────────────┴───────────────┴─────────────────┘ 2 rows in set. Elapsed: 0.056 sec.</code></p>
+<h3 id="工作原理">工作原理<a hidden class="anchor" aria-hidden="true" href="#工作原理">#</a></h3>
+<ul>
+<li>
+<h4 id="binlog-event">BinLog Event<a hidden class="anchor" aria-hidden="true" href="#binlog-event">#</a></h4>
+</li>
+</ul>
+<p>MySQL中BinLog Event主要包含以下几类：</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>1. MYSQL_QUERY_EVENT　　　　-- DDL 2. MYSQL_WRITE_ROWS_EVENT　-- insert 3. MYSQL_UPDATE_ROWS_EVENT -- update 4. MYSQL_DELETE_ROWS_EVENT -- delete</code></p>
+<p>事务提交后，MySQL 将执行过的 SQL 处理 BinLog Event，并持久化到 BinLog 文件</p>
+<p>ClickHouse通过消费BinLog达到数据同步，过程中主要考虑３个方面问题：</p>
+<p>1、DDL兼容：由于ClickHouse和MySQL的数据类型定义有区别，DDL语句需要做相应转换</p>
+<p>2、Delete/Update 支持：引入_version字段，控制版本信息</p>
+<p>3、Query 过滤：引入_sign字段，标记数据有效性</p>
+<ul>
+<li>
+<h4 id="ddl操作">DDL操作<a hidden class="anchor" aria-hidden="true" href="#ddl操作">#</a></h4>
+</li>
+</ul>
+<p>对比一下MySQL的DDL语句以及在ClickHouse端执行的DDL语句：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mysql&gt; show create table runoob_tbl\G; *************************** 1. row *************************** Table: runoob_tbl Create Table: CREATE TABLE `runoob_tbl` (   `runoob_id` int unsigned NOT NULL AUTO_INCREMENT,   `runoob_` varchar(100) NOT NULL,   `runoob_author` varchar(40) NOT NULL,   `submission_date` date DEFAULT NULL,   PRIMARY KEY (`runoob_id`) ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 1 row in set (0.00 sec) --------------------------------------------------------------- cat /metadata/slave_db/runoob_tbl.sql ATTACH TABLE _ UUID '14dbff59-930e-4aa8-9f20-ccfddaf78077' (     `runoob_id` UInt32,     `runoob_` String,     `runoob_author` String,     `submission_date` Nullable(Date),     `_sign` Int8 MATERIALIZED 1,     `_version` UInt64 MATERIALIZED 1 ) ENGINE = ReplacingMergeTree(_version) PARTITION BY intDiv(runoob_id, 4294967) ORDER BY tuple(runoob_id) SETTINGS index_granularity = 8192</code></p>
+<p>可以看到：</p>
+<p>1、在DDL转化时默认增加了2个隐藏字段：_sign(-1删除, 1写入) 和 _version(数据版本)<br>
+2、默认将表引擎设置为 ReplacingMergeTree，以 _version 作为 column version<br>
+3、原DDL主键字段 runoob_id 作为ClickHouse排序键和分区键</p>
+<p>此外还有许多DDL处理，比如增加列、索引等，相应代码在Parsers/MySQL 目录下。</p>
+<ul>
+<li><strong>Delete/Update操作</strong></li>
+</ul>
+<p>Update：</p>
+<p>sql</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># Mysql端： UPDATE runoob_tbl set runoob_author='Mike' where runoob_id=2; mysql&gt; select * from runoob_tbl; +-----------+----------------+---------------+-----------------+ | runoob_id | runoob_title   | runoob_author | submission_date | +-----------+----------------+---------------+-----------------+ |         1 | MySQL-learning | Bob           | 2021-01-06      | |         2 | MySQL-learning | Mike          | 2021-01-06      | +-----------+----------------+---------------+-----------------+ 2 rows in set (0.00 sec) ---------------------------------------------------------------- # ClickHouse端： DESKTOP:) select *, _sign, _version from runoob_tbl order by runoob_id; SELECT     *,     _sign,     _version FROM runoob_tbl ORDER BY runoob_id ASC Query id: c5f4db0a-eff6-4b49-a429-b55230c26301 ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │         1 │ MySQL-learning │ Bob           │      2021-01-06 │     1 │        2 │ │         2 │ MySQL-learning │ Mike          │      2021-01-06 │     1 │        4 │ │         2 │ MySQL-learning │ Tim           │      2021-01-06 │     1 │        3 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ 3 rows in set. Elapsed: 0.003 sec.</code></p>
+<p>可以看到，ClickHouse数据也实时同步了更新操作。</p>
+<ul>
+<li>
+<p><strong>Delete:</strong></p>
+<h1 id="mysql端">Mysql端<a hidden class="anchor" aria-hidden="true" href="#mysql端">#</a></h1>
+<p>mysql&gt; DELETE from runoob_tbl where runoob_id=2;</p>
+<p>mysql&gt; select * from runoob_tbl; +&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+ | runoob_id | runoob_title | runoob_author | submission_date | +&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+ | 1 | MySQL-learning | Bob | 2021-01-06 | +&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+ 1 row in set (0.00 sec)</p>
+<hr>
+<h1 id="clickhouse端">ClickHouse端<a hidden class="anchor" aria-hidden="true" href="#clickhouse端">#</a></h1>
+<p>DESKTOP:) select *, _sign, _version from runoob_tbl order by runoob_id;</p>
+<p>SELECT *, _sign, _version FROM runoob_tbl ORDER BY runoob_id ASC</p>
+<p>Query id: e9cb0574-fcd5-4336-afa3-05f0eb035d97</p>
+<p>┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │ 1 │ MySQL-learning │ Bob │ 2021-01-06 │ 1 │ 2 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │ 2 │ MySQL-learning │ Mike │ 2021-01-06 │ -1 │ 5 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ ┌─runoob_id─┬─runoob_title───┬─runoob_author─┬─submission_date─┬─_sign─┬─_version─┐ │ 2 │ MySQL-learning │ Mike │ 2021-01-06 │ 1 │ 4 │ │ 2 │ MySQL-learning │ Tim │ 2021-01-06 │ 1 │ 3 │ └───────────┴────────────────┴───────────────┴─────────────────┴───────┴──────────┘ 4 rows in set. Elapsed: 0.002 sec.</p>
+</li>
+</ul>
+<p>可以看到，删除id为2的行只是额外插入了_sign == -1的一行记录，并没有真正删掉。</p>
+<ul>
+<li><strong>日志回放</strong></li>
+</ul>
+<p>MySQL 主从间数据同步时Slave节点将 BinLog Event 转换成相应的SQL语句，Slave 模拟 Master 写入。类似地，传统第三方插件沿用了MySQL主从模式的BinLog消费方案，即将 Event 解析后转换成 ClickHouse 兼容的 SQL 语句，然后在 ClickHouse 上执行（回放），但整个执行链路较长，通常性能损耗较大。不同的是，MaterializeMySQL 引擎提供的内部数据解析以及回写方案隐去了三方插件的复杂链路。回放时将 BinLog Event 转换成底层 Block 结构，然后直接写入底层存储引擎，接近于物理复制。此方案可以类比于将 BinLog Event 直接回放到 InnoDB 的 Page 中。</p>
+<h3 id="同步策略">同步策略<a hidden class="anchor" aria-hidden="true" href="#同步策略">#</a></h3>
+<ul>
+<li><strong>日志回放</strong></li>
+</ul>
+<p>v20.9.1版本前是基于位点同步的，ClickHouse每消费完一批 BinLog Event，就会记录 Event 的位点信息到 .metadata 文件:</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[FavonianKong@Wsl[20:42:37]slave_db] $ cat ./.metadata Version:        2 Binlog File:    mysql-bin.000003 Binlog Position:355005999 Data Version:   5</code></p>
+<p>这样当 ClickHouse 再次启动时，它会把 {‘mysql-bin.000003’, 355005999} 二元组通过协议告知 MySQL Server，MySQL 从这个位点开始发送数据：</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>s1&gt; ClickHouse 发送 {‘mysql-bin.000003’, 355005999} 位点信息给 MySQL s2&gt; MySQL 找到本地 mysql-bin.000003 文件并定位到 355005999 偏移位置，读取下一个 Event 发送给 ClickHouse s3&gt; ClickHouse 接收 binlog event 并完成同步操作 s4&gt; ClickHouse 更新 .metadata位点</code></p>
+<p>存在问题：</p>
+<p>如果MySQL Server是一个集群，通过VIP对外服务，MaterializeMySQL创建 database 时 host 指向的是VIP，当集群主从发生切换后，{Binlog File, Binlog Position} 二元组不一定是准确的，因为BinLog可以做reset操作。</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>s1&gt; ClickHouse 发送 {'mysql-bin.000003’, 355005999} 给集群新主 MySQL s2&gt; 新主 MySQL 发现本地没有 mysql-bin.000003 文件，因为它做过 reset master 操作，binlog 文件是 mysql-bin.000001 s3&gt; 产生错误复制</code></p>
+<p>为了解决这个问题，v20.9.1版本后上线了 GTID 同步模式，废弃了不安全的位点同步模式。</p>
+<ul>
+<li><strong>GTID同步</strong></li>
+</ul>
+<p>GTID模式为每个 event 分配一个全局唯一ID和序号，直接告知 MySQL 这个 GTID 即可，于是.metadata变为:</p>
+<p>yaml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>[FavonianKong@Wsl[21:30:19]slave_db] Version:        2 Binlog File:    mysql-bin.000003 Executed GTID:  0857c24e-4755-11eb-888c-00155dfbdec7:1-783 Binlog Position:355005999 Data Version:   5</code></p>
+<p>其中 0857c24e-4755-11eb-888c-00155dfbdec7 是生成 Event的主机UUID，1-783是已经同步的event区间</p>
+<p>于是流程变为:</p>
+<p>shell</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>s1&gt; ClickHouse 发送 GTID:0857c24e-4755-11eb-888c-00155dfbdec7:1-783 给 MySQL s2&gt; MySQL 根据 GTID 找到本地位点，读取下一个 Event 发送给 ClickHouse s3&gt; ClickHouse 接收 BinLog Event 并完成同步操作 s4&gt; ClickHouse 更新 .metadata GTID信息</code></p>
+<h3 id="源码分析">源码分析<a hidden class="anchor" aria-hidden="true" href="#源码分析">#</a></h3>
+<ul>
+<li><strong>概述</strong></li>
+</ul>
+<p>在最新源码 (v20.13.1.1) 中，ClickHouse 官方对 DatabaseMaterializeMySQL 引擎的相关源码进行了重构，并适配了 GTID 同步模式。ClickHouse 整个项目的入口 main 函数在 /ClickHouse/programs/main.cpp 文件中，主程序会根据接收指令将任务分发到 ClickHouse/programs 目录下的子程序中处理。本次分析主要关注 Server 端 MaterializeMySQL 引擎的工作流程。</p>
+<ul>
+<li><strong>源码目录</strong></li>
+</ul>
+<p>与 MaterializeMySQL 相关的主要源码路径：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>ClickHouse/src/databases/MySQL   //MaterializeMySQL存储引擎实现 ClickHouse/src/Storages/         //表引擎实现 ClickHouse/src/core/MySQL*       //复制相关代码 ClickHouse/src/Interpreters/     //Interpreters实现，SQL的rewrite也在这里处理 ClickHouse/src/Parsers/MySQL     //解析部分实现,DDL解析等相关处理在这里</code></p>
+<ul>
+<li><strong>服务端主要流程</strong></li>
+</ul>
+<p>ClickHouse 使用 POCO 网络库处理网络请求，Client连接的处理逻辑在 ClickHouse/src/Server/*Handler.cpp 的 hander方法里。以TCP为例，除去握手，初始化上下文以及异常处理等相关代码，主要逻辑可以抽象成:</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Server/TCPHandler.cpp TCPHandler.runImpl() {     ...     while(true) {         ...         if (!receivePacket())  //line 184                 continue         /// Processing Query   //line 260         state.io = executeQuery(state.query, *query_context, ...);     ... }</code></p>
+<ul>
+<li><strong>数据同步预处理</strong></li>
+</ul>
+<p>Client发送的SQL在executeQuery函数处理，主要逻辑简化如下：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Interpreters/executeQuery.cpp static std::tuple executeQueryImpl(...) {     ...     // line 354，解析器可配置     ast = parseQuery(...);      ...     // line 503, 根据语法树生成interpreter     auto interpreter = InterpreterFactory::get(ast, context, ...);     ...     // line 525, 执行器interpreter执行后返回结果     res = interpreter-&gt;execute();     ... }</code></p>
+<p>主要有三点：</p>
+<p>1、解析SQL语句并生成语法树 AST<br>
+2、InterpreterFactory 工厂类根据 AST 生成执行器<br>
+3、interpreter-&gt;execute()</p>
+<p>跟进第三点，看看 InterpreterCreateQuery 的 excute() 做了什么：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Interpreters/InterpreterCreateQuery.cpp BlockIO InterpreterCreateQuery::execute() {     ...     // CREATE | ATTACH DATABASE     if (!create.database.empty() &amp;&amp; create.table.empty())         // line 1133, 当使用MaterializeMySQL时，会走到这里建库         return createDatabase(create);   }</code></p>
+<p>这里注释很明显，主要执行 CREATE 或 ATTACH DATABASE，继续跟进 createDatabase() 函数：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Interpreters/InterpreterCreateQuery.cpp BlockIO InterpreterCreateQuery::createDatabase(ASTCreateQuery &amp; create) {     ...     // line 208, 这里会根据 ASTCreateQuery 参数，从 DatabaseFactory 工厂获取数据库对象     // 具体可以参考 DatabasePtr DatabaseFactory::getImpl() 函数     DatabasePtr database = DatabaseFactory::get(create, metadata_path, ...);      ...     // line 253, 多态调用，在使用MaterializeMySQL时     // 上方get函数返回的是 DatabaseMaterializeMySQL     database-&gt;loadStoredObjects(context, ...); }</code></p>
+<p>到这里，相当于将任务分发给DatabaseMaterializeMySQL处理，接着跟踪 loadStoredObjects 函数：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>//ClickHouse/src/Databases/MySQL/DatabaseMaterializeMySQL.cpp template void DatabaseMaterializeMySQL::loadStoredObjects(Context &amp; context, ...) {     Base::loadStoredObjects(context, has_force_restore_data_flag, force_attach);     try     {         // line87, 这里启动了materialize的同步线程         materialize_thread.startSynchronization();          started_up = true;     }     catch (...)   ... }</code></p>
+<p>跟进startSynchronization() 绑定的执行函数：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp void MaterializeMySQLSyncThread::synchronization() {     ...     // 全量同步在 repareSynchronized() 进行     if (std::optional metadata = prepareSynchronized())     {         while (!isCancelled())         {             UInt64 max_flush_time = settings-&gt;max_flush_data_time;             BinlogEventPtr binlog_event = client.readOneBinlogEvent(...);             {                 //增量同步侦听binlog_envent                 if (binlog_event)                     onEvent(buffers, binlog_event, *metadata);             }         }     }   ... }</code></p>
+<ul>
+<li><strong>全量同步</strong></li>
+</ul>
+<p>MaterializeMySQLSyncThread::prepareSynchronized 负责DDL和全量同步，主要流程简化如下：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp std::optional MaterializeMySQLSyncThread::prepareSynchronized() {     while (!isCancelled())     {         ...         try         {             //构造函数内会获取MySQL的状态、MySQL端的建表语句，             MaterializeMetadata metadata(connection, ...);             // line345, DDL相关转换             metadata.transaction(position, [&amp;]()              {              cleanOutdatedTables(database_name, global_context);                 dumpDataForTables(connection, metadata, global_context, ...);             });                          return metadata;         }         ...    } }</code></p>
+<p>ClickHouse作为MySQL从节点，在MaterializeMetadata构造函数中对MySQL端进行了一系列预处理：</p>
+<p>1、将打开的表关闭，同时对表加上读锁并启动事务<br>
+2、TablesCreateQuery通过SHOW CREATE TABLE 语句获取MySQL端的建表语句<br>
+3、获取到建表语句后释放表锁</p>
+<p>继续往下走，执行到 metadata.transaction() 函数，该调用传入了匿名函数作为参数，一直跟进该函数会发现最终会执行匿名函数，也就是cleanOutdatedTables以及dumpDataForTables函数，主要看一下 dumpDataForTables 函数：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp static inline void dumpDataForTables(...) {     ...     //line293, 这里执行建表语句     tryToExecuteQuery(..., query_context, database_name, comment);  }</code></p>
+<p>继续跟踪 tryToExecuteQuery 函数，会调用到 executeQueryImpl() 函数，上文提到过这个函数，但这次我们的上下文信息变了，生成的执行器发生变化，此时会进行 DDL 转化以及 dump table 等操作：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Interpreters/executeQuery.cpp static std::tuple executeQueryImpl(...) {     ...      // line 354，解析器可配置     ast = parseQuery(...);      ...     // line 503，这里跟之前上下文信息不同，生成interpreter也不同     auto interpreter = InterpreterFactory::get(ast,context, ...);     ...     // line 525, 执行器interpreter执行后返回结果     res = interpreter-&gt;execute();      ... }</code></p>
+<p>此时 InterpreterFactory 返回 InterpreterExternalDDLQuery，跟进去看 execute 函数做了什么：</p>
+<p>php</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Interpreters/InterpreterExternalDDLQuery.cpp BlockIO InterpreterExternalDDLQuery::execute() {     ...     if (external_ddl_query.from-&gt;name == &quot;MySQL&quot;)     { #ifdef USE_MYSQL         ...         // line61, 当全量复制执行DDL时，会执行到这里         else if (...-&gt;as())             return MySQLInterpreter::InterpreterMySQLCreateQuery(             external_ddl_query.external_ddl, cogetIdentifierName(arguments[0]),             getIdentifierName(arguments[1])).execute(); #endif     }  ...   return BlockIO(); }</code></p>
+<p>继续跟进去看看 getIdentifierName(arguments[1])).execute() 做了什么事情：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Interpreters/MySQL/InterpretersMySQLDDLQuery.h class InterpreterMySQLDDLQuery : public IInterpreter {     public:     ...     BlockIO execute() override     {         ...         // line68, 把从MySQL获取到的DDL语句进行转化         ASTs rewritten_queries = InterpreterImpl::getRewrittenQueries(                    query, context, mapped_to_database, mysql_database);                  // line70, 这里执行转化后的DDL语句         for (const auto &amp; rewritten_query : rewritten_queries)             executeQuery(..., queryToString(rewritten_query), ...);         return BlockIO{};     }     ... }</code></p>
+<p>进一步看 InterpreterImpl::getRewrittenQueries 是怎么转化 DDL 的：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Interpreters/MySQL/InterpretersMySQLDDLQuery.cpp ASTs InterpreterCreateImpl::getRewrittenQueries(...) {     ...     // 检查是否存在primary_key, 没有直接报错     if (primary_keys.empty())         throw Exception(&quot;cannot be materialized, no primary keys.&quot;, ...);     ...     // 添加 _sign 和 _version 列.     auto sign_column_name = getUniqueColumnName(columns_name_and_type, &quot;_sign&quot;);     auto version_column_name = getUniqueColumnName(columns_name_and_type, &quot;_version&quot;);     // 这里悄悄把建表引擎修改成了ReplacingMergeTree     storage-&gt;set(storage-&gt;engine, makeASTFunction(&quot;ReplacingMergeTree&quot;, ...));     ...     return ASTs{rewritten_query}; }</code></p>
+<p>完成DDL转换之后就会去执行新的DDL语句，完成建表操作，再回到 dumpDataForTables：</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp static inline void dumpDataForTables(...) {     ...     //line293, 这里执行建表语句     tryToExecuteQuery(..., query_context, database_name, comment);     ...     // line29, 这里开始 dump 数据并存放到MySQLBlockInputStream    MySQLBlockInputStream input(connection, ...); }</code></p>
+<ul>
+<li><strong>增量同步</strong></li>
+</ul>
+<p>还记得startSynchronization() 绑定的执行函数吗？全量同步分析都是在 prepareSynchronized()进行的，那增量更新呢？</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp void MaterializeMySQLSyncThread::synchronization() {     ...     // 全量同步在 repareSynchronized() 进行     if (std::optional metadata = prepareSynchronized())     {         while (!isCancelled())         {             UInt64 max_flush_time = settings-&gt;max_flush_data_time;             BinlogEventPtr binlog_event = client.readOneBinlogEvent(...);             {                 //增量同步侦听binlog_envent                 if (binlog_event)                     onEvent(buffers, binlog_event, *metadata);             }         }     }     ... }</code></p>
+<p>可以看到，while 语句里有一个 binlog_event 的侦听函数，用来侦听 MySQL 端 BinLog 日志变化，一旦 MySQL 端执行相关操作，其 BinLog 日志会更新并触发 binlog_event，增量更新主要在这里进行。</p>
+<p>rust</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// ClickHouse/src/Databases/MySQL/MaterializeMySQLSyncThread.cpp void MaterializeMySQLSyncThread::onEvent(Buffers &amp; buffers, const BinlogEventPtr &amp; receive_event, MaterializeMetadata &amp; metadata) {      // 增量同步通过监听binlog event实现，目前支持四种event：MYSQL_WRITE_ROWS_EVENT、     // MYSQL_UPDATE_ROWS_EVENT、MYSQL_DELETE_ROWS_EVENT 和 MYSQL_QUERY_EVENT     // 具体的流程可以查找对应的 onHandle 函数, 不在此详细分析     if (receive_event-&gt;type() == MYSQL_WRITE_ROWS_EVENT){...}     else if (receive_event-&gt;type() == MYSQL_UPDATE_ROWS_EVENT){...}     else if (receive_event-&gt;type() == MYSQL_DELETE_ROWS_EVENT){...}     else if (receive_event-&gt;type() == MYSQL_QUERY_EVENT){...}     else {/* MYSQL_UNHANDLED_EVENT*/} }</code></p>
+<h3 id="小结">小结<a hidden class="anchor" aria-hidden="true" href="#小结">#</a></h3>
+<p>MaterializeMySQL 引擎是 ClickHouse 官方2020年主推的特性，由于该特性在生产环境中属于刚需且目前刚上线不久，整个模块处于高速迭代的状态，因此有许多待完善的功能。例如复制过程状态查看以及数据的一致性校验等。感兴趣的话可参考Github上的2021-Roadmap，里面会更新一些社区最近得计划。以上内容如有理解错误还请指正。</p>
+<h3 id="引用">引用<a hidden class="anchor" aria-hidden="true" href="#引用">#</a></h3>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.modb.pro%2Fdb%2FClickHouse%25E7%25A4%25BE%25E5%258C%25BA%25E6%25BA%2590%25E7%25A0%2581" title="https://www.modb.pro/db/ClickHouse%E7%A4%BE%E5%8C%BA%E6%BA%90%E7%A0%81">ClickHouse社区源码</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/mysql/">MySQL</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/nest%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E6%A2%A6%E5%BC%80%E5%A7%8B%E7%9A%84%E5%9C%B0%E6%96%B9/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Nest最佳实践：梦开始的地方</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/sveltestore%E4%B8%8Evuex%E8%BD%BB%E9%87%8F%E7%BA%A7%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%AF%B9%E6%AF%94/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>SvelteStore与Vuex：轻量级状态管理对比</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 on x"
+            href="https://x.com/intent/tweet/?text=MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f&amp;hashtags=MySQL">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f&amp;title=MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e&amp;summary=MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f&title=MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 on whatsapp"
+            href="https://api.whatsapp.com/send?text=MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 on telegram"
+            href="https://telegram.me/share/url?text=MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share MySQL到ClickHouse的高速公路-MaterializeMySQL引擎 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=MySQL%e5%88%b0ClickHouse%e7%9a%84%e9%ab%98%e9%80%9f%e5%85%ac%e8%b7%af-MaterializeMySQL%e5%bc%95%e6%93%8e&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmysql%25E5%2588%25B0clickhouse%25E7%259A%2584%25E9%25AB%2598%25E9%2580%259F%25E5%2585%25AC%25E8%25B7%25AF-materializemysql%25E5%25BC%2595%25E6%2593%258E%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

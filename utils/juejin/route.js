@@ -6,7 +6,8 @@ import {
     mergeContentMarkdown,
     removeDomTags,
     getRandomDelay,
-    replaceDoubleWithSingleQuotes
+    replaceDoubleWithSingleQuotes,
+    removeSpecialChars
 } from "../util.js"
 
 const turnDownService = new TurnDownService();  // 创建 Turndown 实例
@@ -25,12 +26,12 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
         await page.waitForSelector('html', {timeout: 60000});
         // 并发获取页面元素的内容
         const [title, author, publishTime, readTime, metaTags, description, articleHtml] = await Promise.all([
-            page.locator(".article-title").textContent().then(removeSpaces),
+            page.locator(".article-title").textContent().then(removeSpaces).then(removeSpecialChars),
             page.locator(".author-name .name").textContent().then(removeSpaces),
             page.locator(".meta-box .time").textContent().then(removeSpaces),
             page.locator(".meta-box .read-time").textContent().then(removeSpaces),
             page.getAttribute("meta[name='keywords']", "content").then(removeSpaces),
-            page.getAttribute("meta[name='description']", "content").then(removeSpaces).then(replaceDoubleWithSingleQuotes),
+            page.getAttribute("meta[name='description']", "content").then(removeSpaces).then(replaceDoubleWithSingleQuotes).then(removeSpecialChars),
             page.locator("#article-root").innerHTML()
         ]);
 

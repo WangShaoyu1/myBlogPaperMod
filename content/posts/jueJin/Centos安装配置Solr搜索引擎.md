@@ -2,7 +2,7 @@
 author: "正直的金鱼"
 title: "Centos安装配置Solr搜索引擎"
 date: 2024-07-29
-description: "Centos安装配置Solr搜索引擎创建好后从Solr中查询数据并提供快速、准确、可靠搜索的RESTfulWeb服务就很容易了。(\*^_^*)"
+description: "Centos安装配置Solr搜索引擎创建好后从Solr中查询数据并提供快速、准确、可靠搜索的RESTfulWeb服务就很容易了。(*^_^*)"
 tags: ["后端"]
 ShowReadingTime: "阅读1分钟"
 weight: 780

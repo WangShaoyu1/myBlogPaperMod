@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>正则表达式这篇就够用了！【纯干货、查缺补漏】 | PaperMod</title>
+<meta name="keywords" content="前端, JavaScript">
+<meta name="description" content="前言“醉过才知酒浓🍷，爱过才知情重。❤️”对于正则既爱又恨，爱是通过几句简单的code就能实现强大的功能，恨是难以真正的掌控它。每次需要用到复杂点的正则表达式我们都要通过搜索引擎查询，而">
+<meta name="author" content="tager">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E7%94%A8%E4%BA%86%E7%BA%AF%E5%B9%B2%E8%B4%A7%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E7%94%A8%E4%BA%86%E7%BA%AF%E5%B9%B2%E8%B4%A7%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="正则表达式这篇就够用了！【纯干货、查缺补漏】" />
+<meta property="og:description" content="前言“醉过才知酒浓🍷，爱过才知情重。❤️”对于正则既爱又恨，爱是通过几句简单的code就能实现强大的功能，恨是难以真正的掌控它。每次需要用到复杂点的正则表达式我们都要通过搜索引擎查询，而" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E7%94%A8%E4%BA%86%E7%BA%AF%E5%B9%B2%E8%B4%A7%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-11-22T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="正则表达式这篇就够用了！【纯干货、查缺补漏】"/>
+<meta name="twitter:description" content="前言“醉过才知酒浓🍷，爱过才知情重。❤️”对于正则既爱又恨，爱是通过几句简单的code就能实现强大的功能，恨是难以真正的掌控它。每次需要用到复杂点的正则表达式我们都要通过搜索引擎查询，而"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "正则表达式这篇就够用了！【纯干货、查缺补漏】",
+      "item": "http://localhost:1313/posts/juejin/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E7%94%A8%E4%BA%86%E7%BA%AF%E5%B9%B2%E8%B4%A7%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "正则表达式这篇就够用了！【纯干货、查缺补漏】",
+  "name": "正则表达式这篇就够用了！【纯干货、查缺补漏】",
+  "description": "前言“醉过才知酒浓🍷，爱过才知情重。❤️”对于正则既爱又恨，爱是通过几句简单的code就能实现强大的功能，恨是难以真正的掌控它。每次需要用到复杂点的正则表达式我们都要通过搜索引擎查询，而",
+  "keywords": [
+    "前端", "JavaScript"
+  ],
+  "articleBody": "前言 “ 醉过才知酒浓 🍷 ，爱过才知情重。❤️ ”\n对于正则既爱又“恨”，爱是通过几句简单的code就能实现强大的功能，“恨”是难以真正的掌控它。\n每次需要用到复杂点的正则表达式我们都要通过搜索引擎查询，而且每次查出来的结果还有出入，比较费时费力，因而对此做了一番整理。如果以后需要用到正则直接来这里就能找到，是不是会很爽。\n🍔 阅读本文，你可以收获到以下知识 🍔：\n了解如何校验自己写的正则 是否正确（减少或避免潜在bug）！ 能快速搜索到自己所需的正则！ 能掌握几个让你少装插件的正则 能全面了解正则实例方法、高级模式、基础用法（查缺补漏） 对应的模块提供了对用的链接，能快速了解到更详细的用法 文章略长，建议先收藏 ⭐️（Ctrl + D 或 command + D）⭐️ 先来些干货，再讲基础 🍞 检验你的正则是否正确！ 先给大家介绍在线正则表达式图形化工具，利用此工具，你的正则能匹配到哪些字符 就能一目了然。\n下面是手机号/^1[34578]\\d{9}$/正则的展示点击尝试\n🍞 搜索你所需要的正则！ 这个搜索工具既支持网页搜索，也可在vscode上直接搜索。大部分日常使用的正则都可以在此搜索到。\n网页上搜索正则表达式 下面展示的是在vscode编辑器上的使用 详见github使用说明[能支持web / vscode / idea / Alfred Workflow多平台] 🍞 能让你少装插件的正则！ 1. 匹配html字符串中的指定标签 示例1：匹配所有 img 标签，并替换 src 属性（富文本编辑文章中常有的场景）\n使用函数替换 js\n代码解读\n复制代码\n// 需要匹配的字符串 let str='' // 匹配所有图片及src属性的正则表达式 let reg = /]*src=['\"]([^'\"]+)[^\u003e]*\u003e/gi // 替换后重新赋值 str = str.replace(reg, function(match, ...args){ console.log(`匹配到的img标签：${match}`, `匹配到该标签的src值：${args}`) return match }) // 输出： 匹配到的img标签： 匹配到该标签的src值：123,5,当前匹配到的完整字符 匹配到的img标签： 匹配到该标签的src值：456,27,当前匹配到的完整字符\n示例2：匹配字符串中的所有video标签、 然后获取到其src属性链接中的sn值、然后再给video标签增加poster属性，其值就是sn的值。\n（其实就是给video标签新增封面的属性，其值就是src属性上的sn值）\njs\n代码解读\n复制代码\nvar str='' var replacement = (match, $1, $2, $3)=\u003e`${$1}${$2} poster=\"${$2.match(/sn=([\\w-_]+)\u0026?/i)[1]}\" ${$3}\u003e` var result = str.replace(/(]*src=['\"])([^'\"]+sn=[^'\"]+['\"])([^\u003e]*)\u003e/gi, replacement) console.log(result) // 输出：''\n使用$符号替换($1-$99) JavaScript\n代码解读\n复制代码\n// 与 regexp 中的第 1 到第 99 个子表达式相匹配的文本 var name = \"Doe, John\"; name.replace(/(\\w+)\\s*, \\s*(\\w+)/, \"$2 $1\"); // 输出 'John Doe' var name = '\"a\", \"b\"'; name.replace(/\"([^\"]*)\"/g, \"'$1'\"); // 输出 \"'a', 'b'\" （给配置到的ab加上了单引号）\n要点：\n使用函数替换时\n1.如果没有任何匹配，则不会执行后面的function函数。\n2.如果匹配多次，函数会依次执行多次，return的结果替换当前所匹配的值。\n3.浏览器会自动编译字符串中的转义符’\\’，不需额外处理。\n4.args参数，会返回每一个子匹配项(即每一个括号的匹配)、然后是当前匹配文本的第一个字符位置索引、最后一项为文本本身\n使用’$1-$99’替换时非常强大，方便 更多细节请查看MDN\n2. 匹配URL字符串，获取每个独立的部分 能让你少装一个插件的正则！\n将对象转换成url参数，一句话搞定（不需要额外引入插件来处理啦） JavaScript\n代码解读\n复制代码\n// queryObject为所要转换的对象 Object.entries(queryObject).map(([key, value])=\u003ekey + '=' + value).join('\u0026')\n匹配url字符串中的每个部分（一句正则即可） JavaScript\n代码解读\n复制代码\nvar reg = /^(https?:)\\/\\/([0-9a-z.]+)(:[0-9]+)?([/0-9a-z.]+)?(\\?[0-9a-z\u0026=]+)?(#[0-9-a-z]+)?/i var stringUrl = 'https://juejin.cn/user/4353721776234743/posts?id=123#test' let [href, protocol, hostname, port, pathname, search, hash] = reg.exec(stringUrl) console.log({href, protocol, hostname, port, pathname, search, hash}) // ** 输出结果和location对应的值一致，感兴趣的小伙伴可以copy后在控制台尝试。 **\n输出结果和location对应的值一致，感兴趣的小伙伴可以copy后在控制台尝试。\n3. 简写if判断条件 说到这个用到的人应该就更少了。正确的使用它，可以让我们少写代码，请看：\nJavaScript\n代码解读\n复制代码\n// 改造前 if( userName === '迪丽热巴' || userName === '赵丽颖' || userName === '白百何' || userName === '关晓彤' || userName === '刘亦菲' ) { ...... } // 改造后一句话 if(/^迪丽热巴|赵丽颖|白百何|关晓彤|刘亦菲$/.test(userName)){ ...... }\n需要注意的是：if语句中使用一定要绝对命中，通常需要使用’^‘和’$‘符号来匹配，另外也可以使用数组的includes等方式来进行唯一匹配\n4. 识别浏览器内核及访问终端等 js\n代码解读\n复制代码\n`// userAgent的匹配涉及较多， // 此处仅简单示例展示 function parseUA(userAgent) { const u = userAgent || navigator.userAgent; return { isIOS: /iOS|iPad|iPhone/i.test(u), isAndroid: /Android/i.test(u), isMobile: /iOS|iPad|iPhone|Android|windows Phone/i.test(u), isQQ: /qq/i.test(u), // 容易误匹配 isWeixin: /micromessenger/i.test(u), isWeibo: /weibo/i.test(u), isMac: /mac/i.test(u), isWondows: /Windows NT/i.test(u) } }` 5. 去除token字符 js\n代码解读\n复制代码\n// 将token或id_token替换为'' url.replace(/[\\?|\u0026](id_)?token=[\\w|\\d|\\.|\\-|:]+/, '')\n其它： /^https?://[^\\u4e00-\\u9fa5\\s]+/.test(value) /^https?://[^\\u4e00-\\u9fa5\\s]+/.test(value)\n🍞 正则实例方法(简介、常用) test 老生常谈的方法，用来查看正则表达式与指定的字符串是否匹配。返回 true 或 false。\njs\n代码解读\n复制代码\nlet str = 'hello world!'; let result = /^hello/.test(str); console.log(result); // true\nmatch 执行后返回的数据类型：\n如果有匹配返回数组类型，否则返回null 在全局模式匹配：匹配到的每一项，依次显示在数组中。（无数组属性） 在非全局模式匹配：数组的第 0 个元素存放的是匹配文本，而其余的元素存放的是与正则表达式的子表达式匹配的文本。并且会返回数组属性，其index是匹配到的字符位置，input是字符串的引用。 js\n代码解读\n复制代码\n'abc'.match(/e/) // null 'abc'.match(/b/) // ['b', index: 1, input: 'abc', groups: undefined] 'a1b2'.match(/\\d/g) // ['1', '2']\nexec 主要应用场景：\n1.用于文本检索\n2.匹配多表达式时，以数据形式一次性返回（如之前提到的匹配URL字符串）\n3.返回更多更全面的匹配相关的信息\n匹配模式、结果：\n如果未找到匹配，则返回值为 null。 在非全局匹配模式下，此函数的作用和match函数是一样的（请参考match方法）。 在全局模式会相对比较复杂，如下： js\n代码解读\n复制代码\n// 全局匹配示例 var str = 'ab1ab2' var reg = /b\\d/g console.log(reg.exec(str)) // 输出：['b1', index: 1, input: 'ab1ab2ab3ab4', groups: undefined] console.log(reg.lastIndex) // 输出：3 console.log(reg.exec(str)) // 输出：['b2', index: 4, input: 'ab1ab2ab3', groups: undefined] console.log(reg.lastIndex) // 输出：6 console.log(reg.exec(str)) // 输出：null console.log(reg.lastIndex) // 输出：0\n注：在全局模式下，每次匹配后返回当前匹配文本的第一个字符的位置，通过reg.lastIndex会匹配文本的最后一个字符的下一个位置。因此开始和结束的索引值并不在一个对象上。\n在继续匹配时会使用lastIndex作为新的起点\n可以手动设置lastIndex的值设置全局匹配的起点，默认为0\n匹配结束后会返回null，再次匹配时会从第一个开始，一直循环匹配(一般通过null来判断是否终止匹配)\n在匹配子表单式时（可以参考前面提到的匹配URL字符串） js\n代码解读\n复制代码\n// 简单示例 var str='abc123' var reg=/c(\\d{3})/ console.log(reg.exec(str)) // 输出：['c123', '123', index: 2, input: 'abc123', groups: undefined] // 其中 'c123' 为完整匹配，'123'为括号内的字表达式\n如果有匹配，则数组的第一项为完整的匹配结果，后面依次为每个子表达式的匹配结果。\n如果没匹配则返回null\n如果有全局匹配，同上面的全局匹配示例，会已数组形式返回每一次匹配到的结果\nsearch 用户检索字符串的位置\n可传入需要检索的字符串 var str = ‘abcdefg’\nvar result = str.search(‘cd’)\nconsole.log(result) // 输出：2\n可传入正则表达式检索 var str = ‘abcdefg’\nvar result = str.search(/cd/)\nconsole.log(result) // 输出：2\nreplace/replaceAll 基础的了解可以参考前面讲到的《匹配html字符串中的指定标签》，这个主要分析一下和replaceAll的差异。\n表单式为：str.replaceAll(regexp/substr,replacement)\nreplaceAll如果用正则检索，必须使用g（全局修饰符），否则会提示错误(replaceAll called with a non-global RegExp argument) replaceAll如果用字符串检索，则会替换所有匹配到的字符串 如果其replacement为回调函数时，同样也会执行每一次的匹配。但回调中的参数需要注意，请看实例： js\n代码解读\n复制代码\n1. 无子表单式 var str = 'abcb' // 使用正则必须加全局修饰符 var result = str.replaceAll(/b/g, function(...args){ console.log(args) return args[0] }) // args的值会依次输出 // ['b', 1, 'abcb'] // ['b', 3, 'abcb'] 2. 有子表达式 var str = 'ab1cb2' // 使用正则必须加全局修饰符 var result = str.replaceAll(/b(\\d)/g, function(...args){ console.log(args) return args[0] }) // args的值会依次输出 // ['b1', '1', 1, 'ab1cb2'] // ['b2', '2', 4, 'ab1cb2']\n结论：\nreplacement为回调函数时，其参数会根据有无子表达式而不一样 无子表达式时，参数依次为(当前匹配结果、当前匹配文本的第一个字符的位置、完整字符) 无子表达式时，参数依次为(当前匹配结果、若干匹配的子项结果、当前匹配文本的第一个字符的位置、完整字符) split （用于把一个字符串分割成字符串数组。） 表单式为：stringObject.split(separator,howmany)\nseparator可为字符串或正则\nhowmany为数字，指定返回的数组的最大长度。\nbash\n代码解读\n复制代码\n\"hello\".split(\"\")\t//可返回 [\"h\", \"e\", \"l\", \"l\", \"o\"] \"hello\".split(\"\", 3)\t//可返回 [\"h\", \"e\", \"l\"]\n正则实例方法更多细节请查看 MDN\n🍞 高级模式 下面的演示中会使用到str.match(reg)来输出匹配到的字符串，以便更清晰的理解。\n注意: 反向[肯定|否定]预查，在ios设备、Safari和IE浏览器中不兼容，将提示语法错误SyntaxError: Invalid regular expression: invalid group specifier name; 正向预查没有该问题\n正向肯定预查(?=pattern) javascript\n代码解读\n复制代码\nvar reg = /Windows(?=95|98|NT|2000)/ 'Windows95'.match(reg) // 匹配到：['Windows'] 'Windows666'.match(reg) // 匹配到：null reg.test('Windows95') // true reg.test('Windows2000') // true reg.test('Windows3.1') // false\n只能正向匹配?=后面的字符\n正向否定预查 javascript\n代码解读\n复制代码\nvar reg = /Windows(?!95|98|NT|2000)/ 'Windows95'.match(reg) // 匹配到：null 'Windows666'.match(reg) // 匹配到：['Windows'] reg.test('Windows95') // false\n只能正向匹配非?!后面的字符\n反向肯定预查(看示例就明白了) js\n代码解读\n复制代码\nvar reg = /(?\u003c=95|98|NT|2000)Windows/ '95Windows'.match(reg) // 匹配到：['Windows'] '666Windows'.match(reg) // 匹配到：null reg.test('95Windows') // true reg.test('66Windows') // false // 项目示例（在路径拼接中，将连续的两个以上的'/'替换为单斜杠（但排除以'//'开头的）） var reg = /(?\u003c=[\\w-_]+)[\\/]{2,}/gi '//localhost:3000//list/'.replace(reg, '/') // 输出 '//localhost:3000/list/' 'content//news//detail//'.replace(reg, '/') // 输出 'content/news/detail/'\n反向否定预查(看示例就明白了) javascript\n代码解读\n复制代码\nvar reg = /(?\u003c!95|98|NT|2000)Windows/ '95Windows'.match(reg) // 匹配到：null '666Windows'.match(reg) // 匹配到：['Windows'] reg.test('95Windows') // false reg.test('66Windows') // ture\n贪婪模式 在匹配成功的前提下，尽可能多的去匹配\njs\n代码解读\n复制代码\n1. 尽可能多的匹配 var str = 'axxxa' var reg = /a(\\w+)/ reg.test(str) // (\\w)匹配到了'xxxa'，返回true 2. 不得不匹配 var str = 'axxxa' var reg = /a(\\w+)a/ reg.test(str) // (\\w)匹配到了'xxx'(让出了最后一个a)，返回true\n惰性模式（非贪婪模式） 也叫惰性模式，在匹配成功的前提下，尽可能少的去匹配\njs\n代码解读\n复制代码\n1. 尽可能少的匹配 var str = 'axxxa' var reg = /a(\\w+?)/ reg.test(str) // 匹配到了'ax'，返回true 2. 不得不匹配 var str = 'axxxa' var reg = /a(\\w+?)a/ reg.test(str) // 匹配到了'axxxa'，返回true\n说明：\n在量词后加’?’，则可以使匹配次数不定的表达式尽可能少的匹配 如果是可匹配可不匹配的表达式，则尽可能的 “不匹配” 如果少匹配就会导致整个表达式匹配失败的时候，非贪婪模式会最小限度的再匹配一些，以使整个表达式能匹配成功。 非捕获分组 语法：(?:pattern)\n说明：在JavaScript的正则表达式中，(?:pattern)是一个非捕获分组（non-capturing group）。其作用是将pattern作为一个整体进行分组，但是与捕获分组不同的是，它不会保存对应的子匹配结果。它是ECMAScript标准的一部分，其兼容性非常好。\njs\n代码解读\n复制代码\nconst regex = /(?:foo)bar/; const str = \"foobar\"; const result = str.match(regex); console.log(result); // 输出: [\"foobar\", index: 0, input: \"foobar\", groups: undefined]\n由于foo是在非捕获分组中，它不会作为一个单独的组返回在结果数组中。\n🍞 通用的正则表达式【参考】 中文匹配 let regex = [\\u4e00-\\u9fa5]\n11位手机号码匹配 let regex = /^1[34578]\\d{9}$/g;\n日期验证 (YYYY-MM-DD) let regex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;\n身份证匹配 let regex = /^[1-9]\\d{7}(?:0\\d|10|11|12)(?:0[1-9]|[1-2][\\d]|30|31)\\d{3}$/\n搜索查询更多正则表达式 这里有正则大全，可以搜索到你想要的正则表达式 点击查询更多\n🍞 基础使用 必须转义的元字符 ( [ { \\ ^ $ | ) ? * + . ] }\n常用符号 元字符\n描述\n.\n查找单个字符（除了换行和行结束符）\n\\w\n匹配字母、数字、下划线。等价于 [A-Za-z0-9_]\n\\W\n匹配一个非单字字符(和\\w相反)\n\\d\n匹配数字\n\\D\n匹配非数字字符\n\\s\n匹配空白字符\n\\S\n匹配非空白字符\n\\b\n匹配单词边界\n\\B\n匹配非单词边界\n\\0\n查找 NUL字符[\\x00-\\x7F]，如/\\0/.test('\\x00') // true\n\\n\n查找换行符\n\\f\n查找换页符\n\\r\n查找回车符\n\\t\n查找制表符\n\\v\n查找垂直制表符\n\\xxx\n查找以八进制数 xxxx 规定的字符\n\\xdd\n查找以十六进制数 dd 规定的字符\n\\uxxxx\n查找以十六进制 xxxx规定的 Unicode 字符\n\\uhhhh\n匹配一个四位十六进制数表示的 UTF-16 代码单元。\n量词 量词\n描述\n^\n匹配开头，在多行检测中，会匹配一行的开头\n$\n匹配结尾，在多行检测中，会匹配一行的结尾\n*\n匹配前面的子表达式零次或多次。\n匹配前面的子表达式一次或多次。\n？\n匹配前面的子表达式零次或一次。\n{n}\nn 是一个非负整数。匹配确定的 n 次。\n{n,}\nn 是一个非负整数。至少匹配n 次。\n{n,m}\nm 和 n 均为非负整数，最少匹配 n 次且最多匹配 m 次\n更多基础详情请参考MDN 🍞 其它问题 在开发过程中遇到正则表达式不友好，可能导致页面崩溃的问题，如：\njs\n代码解读\n复制代码\nconst url = 'https://abc.defghijklml.cn/landing.html?kkPageId=eoMpazq0RY+StP0V4l/+MA==\u0026id=xm3cps-sfxz01' const httpReg = /^([hH][tT]{2}[pP]:\\/\\/|[hH][tT]{2}[pP][sS]:\\/\\/)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~_\\/])+$/ if(httpReg.test(url)) { console.log('没进来') } else { console.log('还是没进来') }\n如上，导致崩溃的原因：\n正则表达式不明确。表达式中的“.”是明确表示的域名点，而不是任意字符 url的链接过长，和不明确的正则匹配时导致，导致CPU严重不足（cpu瞬间100%） 优化处理：\n修改正则表搜索（加转义符） url使用短链接 css\n代码解读\n复制代码\nconst httpReg = /^([hH][tT]{2}[pP]:\\/\\/|[hH][tT]{2}[pP][sS]:\\/\\/)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~_\\/])+$/ 改为 const httpReg = /^([hH][tT]{2}[pP]:\\/\\/|[hH][tT]{2}[pP][sS]:\\/\\/)(([A-Za-z0-9-~]+)\\.)+([A-Za-z0-9-~_\\/])+$/\n🍞 相关链接参考 在线正则表达式图形化工具[校验正则 推荐]\n搜索查询更多正则表达式[搜索正则 推荐]\n正则表达式手册[其UI一般🤗，但其说明及示例短小精湛，容易快速理解]\nMDN详情请参考\n正则表达式不要背\n作者： tager\n相关文章地址：https://juejin.cn/user/4353721776234743/posts\n著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。\n",
+  "wordCount" : "954",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-11-22T00:00:00Z",
+  "dateModified": "2021-11-22T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "tager"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E7%94%A8%E4%BA%86%E7%BA%AF%E5%B9%B2%E8%B4%A7%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      正则表达式这篇就够用了！【纯干货、查缺补漏】
+    </h1>
+    <div class="post-description">
+      前言“醉过才知酒浓🍷，爱过才知情重。❤️”对于正则既爱又恨，爱是通过几句简单的code就能实现强大的功能，恨是难以真正的掌控它。每次需要用到复杂点的正则表达式我们都要通过搜索引擎查询，而
+    </div>
+    <div class="post-meta"><span title='2021-11-22 00:00:00 +0000 UTC'>十一月 22, 2021</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;tager&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e5%85%88%e6%9d%a5%e4%ba%9b%e5%b9%b2%e8%b4%a7%e5%86%8d%e8%ae%b2%e5%9f%ba%e7%a1%80" aria-label="先来些干货，再讲基础">先来些干货，再讲基础</a></li>
+                <li>
+                    <a href="#-%e6%a3%80%e9%aa%8c%e4%bd%a0%e7%9a%84%e6%ad%a3%e5%88%99%e6%98%af%e5%90%a6%e6%ad%a3%e7%a1%ae" aria-label="🍞 检验你的正则是否正确！">🍞 检验你的正则是否正确！</a></li>
+                <li>
+                    <a href="#-%e6%90%9c%e7%b4%a2%e4%bd%a0%e6%89%80%e9%9c%80%e8%a6%81%e7%9a%84%e6%ad%a3%e5%88%99" aria-label="🍞 搜索你所需要的正则！">🍞 搜索你所需要的正则！</a></li>
+                <li>
+                    <a href="#-%e8%83%bd%e8%ae%a9%e4%bd%a0%e5%b0%91%e8%a3%85%e6%8f%92%e4%bb%b6%e7%9a%84%e6%ad%a3%e5%88%99" aria-label="🍞 能让你少装插件的正则！">🍞 能让你少装插件的正则！</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%8c%b9%e9%85%8dhtml%e5%ad%97%e7%ac%a6%e4%b8%b2%e4%b8%ad%e7%9a%84%e6%8c%87%e5%ae%9a%e6%a0%87%e7%ad%be" aria-label="1. 匹配html字符串中的指定标签">1. 匹配html字符串中的指定标签</a></li>
+                <li>
+                    <a href="#2-%e5%8c%b9%e9%85%8durl%e5%ad%97%e7%ac%a6%e4%b8%b2%e8%8e%b7%e5%8f%96%e6%af%8f%e4%b8%aa%e7%8b%ac%e7%ab%8b%e7%9a%84%e9%83%a8%e5%88%86" aria-label="2. 匹配URL字符串，获取每个独立的部分">2. 匹配URL字符串，获取每个独立的部分</a></li>
+                <li>
+                    <a href="#3-%e7%ae%80%e5%86%99if%e5%88%a4%e6%96%ad%e6%9d%a1%e4%bb%b6" aria-label="3. 简写if判断条件">3. 简写if判断条件</a></li>
+                <li>
+                    <a href="#4-%e8%af%86%e5%88%ab%e6%b5%8f%e8%a7%88%e5%99%a8%e5%86%85%e6%a0%b8%e5%8f%8a%e8%ae%bf%e9%97%ae%e7%bb%88%e7%ab%af%e7%ad%89" aria-label="4. 识别浏览器内核及访问终端等">4. 识别浏览器内核及访问终端等</a></li>
+                <li>
+                    <a href="#5-%e5%8e%bb%e9%99%a4token%e5%ad%97%e7%ac%a6" aria-label="5. 去除token字符">5. 去除token字符</a></li></ul>
+                </li>
+                <li>
+                    <a href="#-%e6%ad%a3%e5%88%99%e5%ae%9e%e4%be%8b%e6%96%b9%e6%b3%95%e7%ae%80%e4%bb%8b%e5%b8%b8%e7%94%a8" aria-label="🍞 正则实例方法(简介、常用)">🍞 正则实例方法(简介、常用)</a><ul>
+                        
+                <li>
+                    <a href="#test" aria-label="test">test</a></li>
+                <li>
+                    <a href="#match" aria-label="match">match</a></li>
+                <li>
+                    <a href="#exec" aria-label="exec">exec</a></li>
+                <li>
+                    <a href="#search" aria-label="search">search</a></li>
+                <li>
+                    <a href="#replacereplaceall" aria-label="replace/replaceAll">replace/replaceAll</a></li>
+                <li>
+                    <a href="#split" aria-label="split">split</a></li></ul>
+                </li>
+                <li>
+                    <a href="#-%e9%ab%98%e7%ba%a7%e6%a8%a1%e5%bc%8f" aria-label="🍞 高级模式">🍞 高级模式</a><ul>
+                        
+                <li>
+                    <a href="#%e6%ad%a3%e5%90%91%e8%82%af%e5%ae%9a%e9%a2%84%e6%9f%a5pattern" aria-label="正向肯定预查(?=pattern)">正向肯定预查(?=pattern)</a></li>
+                <li>
+                    <a href="#%e6%ad%a3%e5%90%91%e5%90%a6%e5%ae%9a%e9%a2%84%e6%9f%a5" aria-label="正向否定预查">正向否定预查</a></li>
+                <li>
+                    <a href="#%e5%8f%8d%e5%90%91%e8%82%af%e5%ae%9a%e9%a2%84%e6%9f%a5%e7%9c%8b%e7%a4%ba%e4%be%8b%e5%b0%b1%e6%98%8e%e7%99%bd%e4%ba%86" aria-label="反向肯定预查(看示例就明白了)">反向肯定预查(看示例就明白了)</a></li>
+                <li>
+                    <a href="#%e5%8f%8d%e5%90%91%e5%90%a6%e5%ae%9a%e9%a2%84%e6%9f%a5%e7%9c%8b%e7%a4%ba%e4%be%8b%e5%b0%b1%e6%98%8e%e7%99%bd%e4%ba%86" aria-label="反向否定预查(看示例就明白了)">反向否定预查(看示例就明白了)</a></li>
+                <li>
+                    <a href="#%e8%b4%aa%e5%a9%aa%e6%a8%a1%e5%bc%8f" aria-label="贪婪模式">贪婪模式</a></li>
+                <li>
+                    <a href="#%e6%83%b0%e6%80%a7%e6%a8%a1%e5%bc%8f%e9%9d%9e%e8%b4%aa%e5%a9%aa%e6%a8%a1%e5%bc%8f" aria-label="惰性模式（非贪婪模式）">惰性模式（非贪婪模式）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%9d%9e%e6%8d%95%e8%8e%b7%e5%88%86%e7%bb%84" aria-label="非捕获分组">非捕获分组</a></li>
+                <li>
+                    <a href="#-%e9%80%9a%e7%94%a8%e7%9a%84%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e5%8f%82%e8%80%83" aria-label="🍞 通用的正则表达式【参考】">🍞 通用的正则表达式【参考】</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%ad%e6%96%87%e5%8c%b9%e9%85%8d" aria-label="中文匹配">中文匹配</a></li>
+                <li>
+                    <a href="#11%e4%bd%8d%e6%89%8b%e6%9c%ba%e5%8f%b7%e7%a0%81%e5%8c%b9%e9%85%8d" aria-label="11位手机号码匹配">11位手机号码匹配</a></li>
+                <li>
+                    <a href="#%e6%97%a5%e6%9c%9f%e9%aa%8c%e8%af%81-yyyy-mm-dd" aria-label="日期验证 (YYYY-MM-DD)">日期验证 (YYYY-MM-DD)</a></li>
+                <li>
+                    <a href="#%e8%ba%ab%e4%bb%bd%e8%af%81%e5%8c%b9%e9%85%8d" aria-label="身份证匹配">身份证匹配</a></li>
+                <li>
+                    <a href="#%e6%90%9c%e7%b4%a2%e6%9f%a5%e8%af%a2%e6%9b%b4%e5%a4%9a%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8fhttpslinkjuejincntargethttps3a2f2fany86githubio2fany-rule2f-httpsany86githubioany-rule" aria-label="搜索查询更多正则表达式">搜索查询更多正则表达式</a></li></ul>
+                </li>
+                <li>
+                    <a href="#-%e5%9f%ba%e7%a1%80%e4%bd%bf%e7%94%a8" aria-label="🍞 基础使用">🍞 基础使用</a><ul>
+                        
+                <li>
+                    <a href="#%e5%bf%85%e9%a1%bb%e8%bd%ac%e4%b9%89%e7%9a%84%e5%85%83%e5%ad%97%e7%ac%a6" aria-label="必须转义的元字符">必须转义的元字符</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e7%94%a8%e7%ac%a6%e5%8f%b7" aria-label="常用符号">常用符号</a></li>
+                <li>
+                    <a href="#%e9%87%8f%e8%af%8d" aria-label="量词">量词</a></li>
+                <li>
+                    <a href="#%e6%9b%b4%e5%a4%9a%e5%9f%ba%e7%a1%80%e8%af%a6%e6%83%85%e8%af%b7%e5%8f%82%e8%80%83mdnhttpslinkjuejincntargethttps3a2f2fdevelopermozillaorg2fzh-cn2fdocs2fweb2fjavascript2fguide2fregular_expressions-httpsdevelopermozillaorgzh-cndocswebjavascriptguideregular_expressions" aria-label="更多基础详情请参考MDN">更多基础详情请参考MDN</a></li></ul>
+                </li>
+                <li>
+                    <a href="#-%e5%85%b6%e5%ae%83%e9%97%ae%e9%a2%98" aria-label="🍞 其它问题">🍞 其它问题</a></li>
+                <li>
+                    <a href="#-%e7%9b%b8%e5%85%b3%e9%93%be%e6%8e%a5%e5%8f%82%e8%80%83" aria-label="🍞 相关链接参考">🍞 相关链接参考</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h3>
+<p><strong>“ 醉过才知酒浓 🍷 ，爱过才知情重。❤️ ”</strong></p>
+<p>对于正则既爱又“恨”，爱是通过几句简单的code就能实现强大的功能，“恨”是难以真正的掌控它。</p>
+<p>每次需要用到复杂点的正则表达式我们都要通过搜索引擎查询，而且每次查出来的结果还有出入，比较费时费力，因而对此做了一番整理。如果以后需要用到正则直接来这里就能找到，是不是会很爽。</p>
+<p>🍔 阅读本文，你可以收获到以下知识 🍔：</p>
+<ul>
+<li>了解如何<code>校验</code>自己写的正则 是否正确（减少或避免潜在bug）！</li>
+<li>能快速<code>搜索</code>到自己所需的正则！</li>
+<li>能掌握几个让你<code>少装插件的正则</code></li>
+<li>能全面了解正则<code>实例方法</code>、<code>高级模式</code>、<code>基础用法</code>（<code>查缺补漏</code>）</li>
+<li>对应的模块提供了对用的链接，能快速了解到更详细的用法 文章略长，建议先收藏 ⭐️（Ctrl + D 或 command + D）⭐️</li>
+</ul>
+<hr>
+<h3 id="先来些干货再讲基础">先来些干货，再讲基础<a hidden class="anchor" aria-hidden="true" href="#先来些干货再讲基础">#</a></h3>
+<h3 id="-检验你的正则是否正确">🍞 检验你的正则是否正确！<a hidden class="anchor" aria-hidden="true" href="#-检验你的正则是否正确">#</a></h3>
+<p>先给大家介绍在线正则表达式图形化工具，<code>利用此工具，你的正则能匹配到哪些字符 就能一目了然</code>。<br>
+下面是手机号<code>/^1[34578]\d{9}$/</code>正则的展示<a href="https://link.juejin.cn?target=https%3A%2F%2Fregexper.com%2F" title="https://regexper.com/">点击尝试</a></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eef377caa59144759991b6550b6d4a7d~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.gif#?w=640&amp;h=480&amp;s=326918&amp;e=gif&amp;f=7&amp;b=5a5348" alt="valid3.gif"  />
+</p>
+<hr>
+<h3 id="-搜索你所需要的正则">🍞 搜索你所需要的正则！<a hidden class="anchor" aria-hidden="true" href="#-搜索你所需要的正则">#</a></h3>
+<p>这个搜索工具既支持网页搜索，也可在vscode上直接搜索。大部分日常使用的正则都可以在此搜索到。</p>
+<ul>
+<li><a href="https://link.juejin.cn?target=https%3A%2F%2Fany86.github.io%2Fany-rule%2F" title="https://any86.github.io/any-rule/">网页上搜索正则表达式</a></li>
+<li>下面展示的是在vscode编辑器上的使用 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fany86%2Fany-rule" title="https://github.com/any86/any-rule">详见github使用说明</a>[能支持web / vscode / idea / Alfred Workflow多平台]</li>
+</ul>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2af50b4297134a65876f1876d583f8f8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.gif#?w=722&amp;h=408&amp;s=299355&amp;e=gif&amp;f=86&amp;b=25262e" alt="valid_1.gif"  />
+</p>
+<hr>
+<h3 id="-能让你少装插件的正则">🍞 能让你少装插件的正则！<a hidden class="anchor" aria-hidden="true" href="#-能让你少装插件的正则">#</a></h3>
+<h4 id="1-匹配html字符串中的指定标签">1. 匹配html字符串中的指定标签<a hidden class="anchor" aria-hidden="true" href="#1-匹配html字符串中的指定标签">#</a></h4>
+<p><strong>示例1：<code>匹配所有 img 标签，并替换 src 属性（富文本编辑文章中常有的场景）</code></strong></p>
+<ul>
+<li>使用函数替换</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 需要匹配的字符串 let str='&lt;div&gt;&lt;img src=\'123\' /&gt;&lt;div&gt;&lt;img src=&quot;456&quot;/&gt;&lt;/div&gt;&lt;/div&gt;' // 匹配所有图片及src属性的正则表达式 let reg = /&lt;img [^&gt;]*src=['&quot;]([^'&quot;]+)[^&gt;]*&gt;/gi // 替换后重新赋值 str = str.replace(reg, function(match, ...args){ console.log(`匹配到的img标签：${match}`, `匹配到该标签的src值：${args}`) return match }) // 输出： 匹配到的img标签：&lt;img src='123' /&gt; 匹配到该标签的src值：123,5,当前匹配到的完整字符 匹配到的img标签：&lt;img src=&quot;456&quot;/&gt; 匹配到该标签的src值：456,27,当前匹配到的完整字符</code></p>
+<p><strong>示例2：<code>匹配字符串中的所有video标签、</code> 然后<code>获取到其src属性链接中的sn值、</code>然后<code>再给video标签增加poster属性，其值就是sn的值。</code></strong><br>
+（其实就是给video标签新增封面的属性，其值就是src属性上的sn值）</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var str='&lt;div&gt;&lt;video src=&quot;http:xxx.com?sn=a-b-c-d&quot; /&gt;&lt;/div&gt;' var replacement = (match, $1, $2, $3)=&gt;`${$1}${$2} poster=&quot;${$2.match(/sn=([\w-_]+)&amp;?/i)[1]}&quot; ${$3}&gt;` var result = str.replace(/(&lt;video [^&gt;]*src=['&quot;])([^'&quot;]+sn=[^'&quot;]+['&quot;])([^&gt;]*)&gt;/gi, replacement) console.log(result)  // 输出：'&lt;div&gt;&lt;video src=&quot;http:xxx.com?sn=a-b-c-d&quot; poster=&quot;a-b-c-d&quot;  /&gt;&lt;/div&gt;'</code></p>
+<ul>
+<li>使用$符号替换($1-$99)</li>
+</ul>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 与 regexp 中的第 1 到第 99 个子表达式相匹配的文本 var name = &quot;Doe, John&quot;; name.replace(/(\w+)\s*, \s*(\w+)/, &quot;$2 $1&quot;); // 输出 'John Doe' var name = '&quot;a&quot;, &quot;b&quot;'; name.replace(/&quot;([^&quot;]*)&quot;/g, &quot;'$1'&quot;); // 输出 &quot;'a', 'b'&quot;  （给配置到的ab加上了单引号）</code></p>
+<blockquote>
+<p>要点：<br>
+使用函数替换时<br>
+1.如果没有任何匹配，则不会执行后面的<code>function</code>函数。<br>
+2.如果匹配多次，函数会依次执行多次，<code>return</code>的结果替换当前所匹配的值。<br>
+3.浏览器会自动编译字符串中的转义符&rsquo;\&rsquo;，不需额外处理。<br>
+4.<code>args</code>参数，会返回每一个子匹配项(即每一个括号的匹配)、然后是当前匹配文本的第一个字符位置索引、最后一项为文本本身</p>
+<p>使用&rsquo;$1-$99&rsquo;替换时<code>非常强大</code>，方便 <a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FReference%2FGlobal_Objects%2FString%2Freplace" title="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace">更多细节请查看MDN</a></p>
+</blockquote>
+<h4 id="2-匹配url字符串获取每个独立的部分">2. 匹配URL字符串，获取每个独立的部分<a hidden class="anchor" aria-hidden="true" href="#2-匹配url字符串获取每个独立的部分">#</a></h4>
+<p><strong>能让你少装一个插件的正则！</strong></p>
+<ul>
+<li>将对象转换成<code>url</code>参数，一句话搞定（<code>不需要额外引入插件来处理啦</code>）</li>
+</ul>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// queryObject为所要转换的对象 Object.entries(queryObject).map(([key, value])=&gt;key + '=' + value).join('&amp;')</code></p>
+<ul>
+<li>匹配url字符串中的每个部分（<code>一句正则即可</code>）</li>
+</ul>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var reg = /^(https?:)\/\/([0-9a-z.]+)(:[0-9]+)?([/0-9a-z.]+)?(\?[0-9a-z&amp;=]+)?(#[0-9-a-z]+)?/i var stringUrl = 'https://juejin.cn/user/4353721776234743/posts?id=123#test' let [href, protocol, hostname, port, pathname, search, hash] = reg.exec(stringUrl) console.log({href, protocol, hostname, port, pathname, search, hash}) // ** 输出结果和location对应的值一致，感兴趣的小伙伴可以copy后在控制台尝试。 **</code></p>
+<p>输出结果和<code>location</code>对应的值一致，感兴趣的小伙伴可以<code>copy</code>后在控制台尝试。</p>
+<h4 id="3-简写if判断条件">3. 简写if判断条件<a hidden class="anchor" aria-hidden="true" href="#3-简写if判断条件">#</a></h4>
+<p>说到这个用到的人应该就更少了。正确的使用它，可以让我们少写代码，请看：</p>
+<p>JavaScript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 改造前 if( userName === '迪丽热巴' || userName === '赵丽颖' || userName === '白百何' || userName === '关晓彤' || userName === '刘亦菲' ) { ...... } // 改造后一句话 if(/^迪丽热巴|赵丽颖|白百何|关晓彤|刘亦菲$/.test(userName)){ ...... }</code></p>
+<blockquote>
+<p>需要注意的是：if语句中使用一定要绝对命中，通常需要使用&rsquo;^&lsquo;和&rsquo;$&lsquo;符号来匹配，另外也可以使用数组的includes等方式来进行唯一匹配</p>
+</blockquote>
+<h4 id="4-识别浏览器内核及访问终端等">4. 识别浏览器内核及访问终端等<a hidden class="anchor" aria-hidden="true" href="#4-识别浏览器内核及访问终端等">#</a></h4>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<pre><code>`// userAgent的匹配涉及较多，     // 此处仅简单示例展示     function parseUA(userAgent) {       const u = userAgent || navigator.userAgent;       return {         isIOS: /iOS|iPad|iPhone/i.test(u),         isAndroid: /Android/i.test(u),          isMobile: /iOS|iPad|iPhone|Android|windows Phone/i.test(u),          isQQ: /qq/i.test(u), // 容易误匹配         isWeixin: /micromessenger/i.test(u),          isWeibo: /weibo/i.test(u),         isMac: /mac/i.test(u),         isWondows: /Windows NT/i.test(u)       }     }`
+</code></pre>
+<h4 id="5-去除token字符">5. 去除token字符<a hidden class="anchor" aria-hidden="true" href="#5-去除token字符">#</a></h4>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 将token或id_token替换为'' url.replace(/[\?|&amp;](id_)?token=[\w|\d|\.|\-|:]+/, '')</code></p>
+<p>其它： /^https?://[^\u4e00-\u9fa5\s]+/.test(value) /^https?://[^\u4e00-\u9fa5\s]+/.test(value)</p>
+<hr>
+<h3 id="-正则实例方法简介常用">🍞 正则实例方法(简介、常用)<a hidden class="anchor" aria-hidden="true" href="#-正则实例方法简介常用">#</a></h3>
+<h4 id="test">test<a hidden class="anchor" aria-hidden="true" href="#test">#</a></h4>
+<p>老生常谈的方法，用来查看正则表达式与指定的字符串是否匹配。返回 <code>true</code> 或 <code>false</code>。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>let str = 'hello world!'; let result = /^hello/.test(str); console.log(result); // true</code></p>
+<h4 id="match">match<a hidden class="anchor" aria-hidden="true" href="#match">#</a></h4>
+<p>执行后返回的数据类型：</p>
+<ul>
+<li>如果有匹配返回数组类型，否则返回null</li>
+<li>在全局模式匹配：匹配到的每一项，依次显示在数组中。（无数组属性）</li>
+<li>在非全局模式匹配：数组的第 0 个元素存放的是匹配文本，而其余的元素存放的是与正则表达式的子表达式匹配的文本。并且会返回数组属性，其index是匹配到的字符位置，input是字符串的引用。</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>'abc'.match(/e/) // null 'abc'.match(/b/) // ['b', index: 1, input: 'abc', groups: undefined] 'a1b2'.match(/\d/g) // ['1', '2']</code></p>
+<h4 id="exec">exec<a hidden class="anchor" aria-hidden="true" href="#exec">#</a></h4>
+<p>主要应用场景：<br>
+1.用于文本检索<br>
+2.匹配多表达式时，以数据形式一次性返回（如之前提到的匹配URL字符串）<br>
+3.返回更多更全面的匹配相关的信息</p>
+<p>匹配模式、结果：</p>
+<ul>
+<li>如果未找到匹配，则返回值为 null。</li>
+<li>在<strong>非全局匹配</strong>模式下，此函数的作用和match函数是一样的（请参考match方法）。</li>
+<li>在<strong>全局模式</strong>会相对比较复杂，如下：</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 全局匹配示例 var str = 'ab1ab2' var reg = /b\d/g console.log(reg.exec(str)) // 输出：['b1', index: 1, input: 'ab1ab2ab3ab4', groups: undefined] console.log(reg.lastIndex) // 输出：3 console.log(reg.exec(str)) // 输出：['b2', index: 4, input: 'ab1ab2ab3', groups: undefined] console.log(reg.lastIndex) // 输出：6 console.log(reg.exec(str)) // 输出：null console.log(reg.lastIndex) // 输出：0</code></p>
+<blockquote>
+<p>注：在全局模式下，每次匹配后返回<code>当前匹配文本的第一个字符的位置</code>，通过<code>reg.lastIndex</code>会匹配文本的最后一个字符的下一个位置。因此开始和结束的索引值并不在一个对象上。<br>
+在继续匹配时会使用<code>lastIndex</code>作为新的起点<br>
+可以手动设置lastIndex的值设置全局匹配的起点，默认为0<br>
+匹配结束后会返回null，再次匹配时会从第一个开始，一直循环匹配(一般通过null来判断是否终止匹配)</p>
+</blockquote>
+<ul>
+<li>在匹配子表单式时（可以参考前面提到的匹配URL字符串）</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 简单示例 var str='abc123' var reg=/c(\d{3})/ console.log(reg.exec(str)) // 输出：['c123', '123', index: 2, input: 'abc123', groups: undefined] // 其中 'c123' 为完整匹配，'123'为括号内的字表达式</code></p>
+<blockquote>
+<p>如果有匹配，则数组的第一项为完整的匹配结果，后面依次为每个子表达式的匹配结果。<br>
+如果没匹配则返回<code>null</code><br>
+如果有全局匹配，同上面的全局匹配示例，会已数组形式返回每一次匹配到的结果</p>
+</blockquote>
+<h4 id="search">search<a hidden class="anchor" aria-hidden="true" href="#search">#</a></h4>
+<p>用户检索字符串的位置</p>
+<blockquote>
+<ol>
+<li>可传入需要检索的字符串</li>
+</ol>
+<blockquote>
+<p>var str = &lsquo;abcdefg&rsquo;<br>
+var result = str.search(&lsquo;cd&rsquo;)<br>
+console.log(result) // 输出：2</p>
+</blockquote>
+<ol start="2">
+<li>可传入正则表达式检索</li>
+</ol>
+<blockquote>
+<p>var str = &lsquo;abcdefg&rsquo;<br>
+var result = str.search(/cd/)<br>
+console.log(result) // 输出：2</p>
+</blockquote>
+</blockquote>
+<h4 id="replacereplaceall">replace/replaceAll<a hidden class="anchor" aria-hidden="true" href="#replacereplaceall">#</a></h4>
+<p>基础的了解可以参考前面讲到的《匹配html字符串中的指定标签》，这个主要分析一下和replaceAll的差异。<br>
+表单式为：<code>str.replaceAll(regexp/substr,replacement)</code></p>
+<ol>
+<li><strong>replaceAll如果用正则检索，必须使用g（全局修饰符）</strong>，否则会提示错误(<code>replaceAll called with a non-global RegExp argument</code>)</li>
+<li>replaceAll如果用字符串检索，则会替换所有匹配到的字符串</li>
+<li>如果其<code>replacement</code>为回调函数时，同样也会执行每一次的匹配。但回调中的参数需要注意，请看实例：</li>
+</ol>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>1. 无子表单式 var str = 'abcb' // 使用正则必须加全局修饰符 var result = str.replaceAll(/b/g, function(...args){     console.log(args)     return args[0] }) // args的值会依次输出 // ['b', 1, 'abcb'] // ['b', 3, 'abcb'] 2. 有子表达式 var str = 'ab1cb2' // 使用正则必须加全局修饰符 var result = str.replaceAll(/b(\d)/g, function(...args){     console.log(args)     return args[0] }) // args的值会依次输出 // ['b1', '1', 1, 'ab1cb2'] // ['b2', '2', 4, 'ab1cb2']</code></p>
+<p><strong><code>结论：</code></strong></p>
+<ul>
+<li>replacement为回调函数时，其参数会根据有无子表达式而不一样</li>
+<li>无子表达式时，参数依次为(当前匹配结果、当前匹配文本的第一个字符的位置、完整字符)</li>
+<li>无子表达式时，参数依次为(当前匹配结果、若干匹配的子项结果、当前匹配文本的第一个字符的位置、完整字符)</li>
+</ul>
+<h4 id="split">split<a hidden class="anchor" aria-hidden="true" href="#split">#</a></h4>
+<p>（用于把一个字符串分割成字符串数组。） 表单式为：stringObject.split(separator,howmany)<br>
+separator可为字符串或正则<br>
+howmany为数字，指定返回的数组的最大长度。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&quot;hello&quot;.split(&quot;&quot;)	//可返回 [&quot;h&quot;, &quot;e&quot;, &quot;l&quot;, &quot;l&quot;, &quot;o&quot;] &quot;hello&quot;.split(&quot;&quot;, 3)	//可返回 [&quot;h&quot;, &quot;e&quot;, &quot;l&quot;]</code></p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FReference%2FGlobal_Objects%2FRegExp" title="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/RegExp">正则实例方法更多细节请查看 MDN</a></p>
+<hr>
+<h3 id="-高级模式">🍞 高级模式<a hidden class="anchor" aria-hidden="true" href="#-高级模式">#</a></h3>
+<p>下面的演示中会使用到<code>str.match(reg)</code>来输出匹配到的字符串，以便更清晰的理解。</p>
+<blockquote>
+<p>注意: 反向[肯定|否定]预查，在ios设备、Safari和IE浏览器中不兼容，将提示语法错误<code>SyntaxError: Invalid regular expression: invalid group specifier name</code>; 正向预查没有该问题</p>
+</blockquote>
+<h4 id="正向肯定预查pattern">正向肯定预查(?=pattern)<a hidden class="anchor" aria-hidden="true" href="#正向肯定预查pattern">#</a></h4>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var reg = /Windows(?=95|98|NT|2000)/ 'Windows95'.match(reg) // 匹配到：['Windows'] 'Windows666'.match(reg) // 匹配到：null reg.test('Windows95') // true reg.test('Windows2000') // true reg.test('Windows3.1') // false</code></p>
+<p>只能正向匹配?=后面的字符</p>
+<h4 id="正向否定预查">正向否定预查<a hidden class="anchor" aria-hidden="true" href="#正向否定预查">#</a></h4>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var reg = /Windows(?!95|98|NT|2000)/ 'Windows95'.match(reg) // 匹配到：null 'Windows666'.match(reg) // 匹配到：['Windows'] reg.test('Windows95') // false</code></p>
+<p>只能正向匹配非?!后面的字符</p>
+<h4 id="反向肯定预查看示例就明白了">反向肯定预查(看示例就明白了)<a hidden class="anchor" aria-hidden="true" href="#反向肯定预查看示例就明白了">#</a></h4>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var reg = /(?&lt;=95|98|NT|2000)Windows/ '95Windows'.match(reg) // 匹配到：['Windows'] '666Windows'.match(reg) // 匹配到：null reg.test('95Windows') // true reg.test('66Windows') // false // 项目示例（在路径拼接中，将连续的两个以上的'/'替换为单斜杠（但排除以'//'开头的）） var reg = /(?&lt;=[\w-_]+)[\/]{2,}/gi '//localhost:3000//list/'.replace(reg, '/') // 输出 '//localhost:3000/list/' 'content//news//detail//'.replace(reg, '/') // 输出 'content/news/detail/'</code></p>
+<h4 id="反向否定预查看示例就明白了">反向否定预查(看示例就明白了)<a hidden class="anchor" aria-hidden="true" href="#反向否定预查看示例就明白了">#</a></h4>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var reg = /(?&lt;!95|98|NT|2000)Windows/ '95Windows'.match(reg) // 匹配到：null '666Windows'.match(reg) // 匹配到：['Windows'] reg.test('95Windows') // false reg.test('66Windows') // ture</code></p>
+<h4 id="贪婪模式">贪婪模式<a hidden class="anchor" aria-hidden="true" href="#贪婪模式">#</a></h4>
+<blockquote>
+<p>在匹配成功的前提下，尽可能多的去匹配</p>
+</blockquote>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>1. 尽可能多的匹配 var str = 'axxxa' var reg = /a(\w+)/ reg.test(str) // (\w)匹配到了'xxxa'，返回true 2. 不得不匹配 var str = 'axxxa' var reg = /a(\w+)a/ reg.test(str) // (\w)匹配到了'xxx'(让出了最后一个a)，返回true</code></p>
+<h4 id="惰性模式非贪婪模式">惰性模式（非贪婪模式）<a hidden class="anchor" aria-hidden="true" href="#惰性模式非贪婪模式">#</a></h4>
+<blockquote>
+<p>也叫惰性模式，在匹配成功的前提下，尽可能少的去匹配</p>
+</blockquote>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>1. 尽可能少的匹配 var str = 'axxxa' var reg = /a(\w+?)/ reg.test(str) // 匹配到了'ax'，返回true 2. 不得不匹配 var str = 'axxxa' var reg = /a(\w+?)a/ reg.test(str) // 匹配到了'axxxa'，返回true</code></p>
+<p>说明：</p>
+<ol>
+<li>在量词后加&rsquo;?&rsquo;，则可以使匹配次数不定的表达式尽可能少的匹配</li>
+<li>如果是可匹配可不匹配的表达式，则尽可能的 &ldquo;不匹配&rdquo;</li>
+<li>如果少匹配就会导致整个表达式匹配失败的时候，非贪婪模式会最小限度的再匹配一些，以使整个表达式能匹配成功。</li>
+</ol>
+<h3 id="非捕获分组">非捕获分组<a hidden class="anchor" aria-hidden="true" href="#非捕获分组">#</a></h3>
+<p>语法：<code>(?:pattern)</code><br>
+说明：在JavaScript的正则表达式中，<code>(?:pattern)</code>是一个非捕获分组（non-capturing group）。其作用是将<code>pattern</code>作为一个整体进行分组，但是与捕获分组不同的是，它不会保存对应的子匹配结果。它是ECMAScript标准的一部分，其兼容性非常好。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const regex = /(?:foo)bar/;  const str = &quot;foobar&quot;;  const result = str.match(regex);  console.log(result);  // 输出: [&quot;foobar&quot;, index: 0, input: &quot;foobar&quot;, groups: undefined]</code></p>
+<p>由于<code>foo</code>是在非捕获分组中，它不会作为一个单独的组返回在结果数组中。</p>
+<h3 id="-通用的正则表达式参考">🍞 通用的正则表达式【参考】<a hidden class="anchor" aria-hidden="true" href="#-通用的正则表达式参考">#</a></h3>
+<blockquote>
+<h4 id="中文匹配">中文匹配<a hidden class="anchor" aria-hidden="true" href="#中文匹配">#</a></h4>
+<p>let regex = [\u4e00-\u9fa5]</p>
+<h4 id="11位手机号码匹配">11位手机号码匹配<a hidden class="anchor" aria-hidden="true" href="#11位手机号码匹配">#</a></h4>
+<p>let regex = /^1[34578]\d{9}$/g;</p>
+<h4 id="日期验证-yyyy-mm-dd">日期验证 (YYYY-MM-DD)<a hidden class="anchor" aria-hidden="true" href="#日期验证-yyyy-mm-dd">#</a></h4>
+<p>let regex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;</p>
+<h4 id="身份证匹配">身份证匹配<a hidden class="anchor" aria-hidden="true" href="#身份证匹配">#</a></h4>
+<p>let regex = /^[1-9]\d{7}(?:0\d|10|11|12)(?:0[1-9]|[1-2][\d]|30|31)\d{3}$/</p>
+<h4 id="搜索查询更多正则表达式httpslinkjuejincntargethttps3a2f2fany86githubio2fany-rule2f-httpsany86githubioany-rule"><a href="https://link.juejin.cn?target=https%3A%2F%2Fany86.github.io%2Fany-rule%2F" title="https://any86.github.io/any-rule/">搜索查询更多正则表达式</a><a hidden class="anchor" aria-hidden="true" href="#搜索查询更多正则表达式httpslinkjuejincntargethttps3a2f2fany86githubio2fany-rule2f-httpsany86githubioany-rule">#</a></h4>
+</blockquote>
+<p>这里有正则大全，可以搜索到你想要的正则表达式 <a href="https://link.juejin.cn?target=https%3A%2F%2Fany86.github.io%2Fany-rule%2F" title="https://any86.github.io/any-rule/">点击查询更多</a></p>
+<h3 id="-基础使用">🍞 基础使用<a hidden class="anchor" aria-hidden="true" href="#-基础使用">#</a></h3>
+<h4 id="必须转义的元字符"><strong>必须转义的元字符</strong><a hidden class="anchor" aria-hidden="true" href="#必须转义的元字符">#</a></h4>
+<p><code>( [ { \ ^ $ | ) ? * + . ] }</code></p>
+<h4 id="常用符号"><strong>常用符号</strong><a hidden class="anchor" aria-hidden="true" href="#常用符号">#</a></h4>
+<p>元字符</p>
+<p>描述</p>
+<p>.</p>
+<p>查找单个字符（除了换行和行结束符）</p>
+<p>\w</p>
+<p>匹配字母、数字、下划线。等价于 [A-Za-z0-9_]</p>
+<p>\W</p>
+<p>匹配一个非单字字符(和\w相反)</p>
+<p>\d</p>
+<p>匹配数字</p>
+<p>\D</p>
+<p>匹配非数字字符</p>
+<p>\s</p>
+<p>匹配空白字符</p>
+<p>\S</p>
+<p>匹配非空白字符</p>
+<p>\b</p>
+<p>匹配单词边界</p>
+<p>\B</p>
+<p>匹配非单词边界</p>
+<p>\0</p>
+<p>查找 NUL字符<code>[\x00-\x7F]</code>，如<code>/\0/.test('\x00') // true</code></p>
+<p>\n</p>
+<p>查找换行符</p>
+<p>\f</p>
+<p>查找换页符</p>
+<p>\r</p>
+<p>查找回车符</p>
+<p>\t</p>
+<p>查找制表符</p>
+<p>\v</p>
+<p>查找垂直制表符</p>
+<p>\xxx</p>
+<p>查找以八进制数 xxxx 规定的字符</p>
+<p>\xdd</p>
+<p>查找以十六进制数 dd 规定的字符</p>
+<p>\uxxxx</p>
+<p>查找以十六进制 xxxx规定的 Unicode 字符</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FGuide%2FRegular_Expressions%23special-unicode-escape" title="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions#special-unicode-escape"><code>\uhhhh</code></a></p>
+<p>匹配一个四位十六进制数表示的 UTF-16 代码单元。</p>
+<h4 id="量词"><strong>量词</strong><a hidden class="anchor" aria-hidden="true" href="#量词">#</a></h4>
+<p>量词</p>
+<p>描述</p>
+<p>^</p>
+<p>匹配开头，在多行检测中，会匹配一行的开头</p>
+<p>$</p>
+<p>匹配结尾，在多行检测中，会匹配一行的结尾</p>
+<p>*</p>
+<p>匹配前面的子表达式零次或多次。</p>
+<ul>
+<li></li>
+</ul>
+<p>匹配前面的子表达式一次或多次。</p>
+<p>？</p>
+<p>匹配前面的子表达式零次或一次。</p>
+<p>{n}</p>
+<p>n 是一个非负整数。匹配确定的 n 次。</p>
+<p>{n,}</p>
+<p>n 是一个非负整数。至少匹配n 次。</p>
+<p>{n,m}</p>
+<p>m 和 n 均为非负整数，最少匹配 n 次且最多匹配 m 次</p>
+<h4 id="更多基础详情请参考mdnhttpslinkjuejincntargethttps3a2f2fdevelopermozillaorg2fzh-cn2fdocs2fweb2fjavascript2fguide2fregular_expressions-httpsdevelopermozillaorgzh-cndocswebjavascriptguideregular_expressions"><a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FGuide%2FRegular_Expressions" title="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions">更多基础详情请参考MDN</a><a hidden class="anchor" aria-hidden="true" href="#更多基础详情请参考mdnhttpslinkjuejincntargethttps3a2f2fdevelopermozillaorg2fzh-cn2fdocs2fweb2fjavascript2fguide2fregular_expressions-httpsdevelopermozillaorgzh-cndocswebjavascriptguideregular_expressions">#</a></h4>
+<h3 id="-其它问题">🍞 其它问题<a hidden class="anchor" aria-hidden="true" href="#-其它问题">#</a></h3>
+<p>在开发过程中遇到正则表达式不友好，可能<strong>导致页面崩溃的问题</strong>，如：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const url = 'https://abc.defghijklml.cn/landing.html?kkPageId=eoMpazq0RY+StP0V4l/+MA==&amp;id=xm3cps-sfxz01' const httpReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~_\/])+$/ if(httpReg.test(url)) {     console.log('没进来') } else {     console.log('还是没进来') }</code></p>
+<p>如上，导致崩溃的原因：</p>
+<ol>
+<li>正则表达式不明确。表达式中的“.”是明确表示的域名点，而不是任意字符</li>
+<li>url的链接过长，和不明确的正则匹配时导致，导致CPU严重不足（cpu瞬间100%）</li>
+</ol>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/3fd27c0b8b6d4196a5221dc52e35d766~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdGFnZXI=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727856420&amp;x-signature=1uTj1jFvUXScAhJsSdVifv7NyK8%3D" alt="image.png"  />
+<br>
+优化处理：</p>
+<ol>
+<li>修改正则表搜索（加转义符）</li>
+<li>url使用短链接</li>
+</ol>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const httpReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~_\/])+$/ 改为 const httpReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~_\/])+$/</code></p>
+<h3 id="-相关链接参考">🍞 相关链接参考<a hidden class="anchor" aria-hidden="true" href="#-相关链接参考">#</a></h3>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fregexper.com%2F" title="https://regexper.com/">在线正则表达式图形化工具</a>[校验正则 推荐]<br>
+<a href="https://link.juejin.cn?target=https%3A%2F%2Fany86.github.io%2Fany-rule%2F" title="https://any86.github.io/any-rule/">搜索查询更多正则表达式</a>[搜索正则 推荐]<br>
+<a href="https://link.juejin.cn?target=https%3A%2F%2Ftool.oschina.net%2Fuploads%2Fapidocs%2Fjquery%2Fregexp.html" title="https://tool.oschina.net/uploads/apidocs/jquery/regexp.html">正则表达式手册</a>[其UI一般🤗，但其说明及示例短小精湛，容易快速理解]<br>
+<a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FGuide%2FRegular_Expressions" title="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions">MDN详情请参考</a><br>
+<a href="https://juejin.cn/post/6844903845227659271" title="https://juejin.cn/post/6844903845227659271">正则表达式不要背</a></p>
+<blockquote>
+<p>作者： <code>tager</code><br>
+相关文章地址：<a href="https://juejin.cn/user/4353721776234743/posts" title="https://juejin.cn/user/4353721776234743/posts"><code>https://juejin.cn/user/4353721776234743/posts</code></a><br>
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E8%8A%B115%E5%88%86%E9%92%9F%E6%8A%8Aexpress.js%E6%90%9E%E6%98%8E%E7%99%BD%E5%85%A8%E6%A0%88%E6%B2%A1%E6%9C%89%E9%82%A3%E4%B9%88%E9%9A%BE/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>花15分钟把Express.js搞明白，全栈没有那么难</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%97%A0%E6%95%8C%E7%9A%84arthas/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>无敌的Arthas！</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 正则表达式这篇就够用了！【纯干货、查缺补漏】 on x"
+            href="https://x.com/intent/tweet/?text=%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cJavaScript">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 正则表达式这篇就够用了！【纯干货、查缺补漏】 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f&amp;title=%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91&amp;summary=%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 正则表达式这篇就够用了！【纯干货、查缺补漏】 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f&title=%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 正则表达式这篇就够用了！【纯干货、查缺补漏】 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 正则表达式这篇就够用了！【纯干货、查缺补漏】 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 正则表达式这篇就够用了！【纯干货、查缺补漏】 on telegram"
+            href="https://telegram.me/share/url?text=%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 正则表达式这篇就够用了！【纯干货、查缺补漏】 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e7%94%a8%e4%ba%86%ef%bc%81%e3%80%90%e7%ba%af%e5%b9%b2%e8%b4%a7%e3%80%81%e6%9f%a5%e7%bc%ba%e8%a1%a5%e6%bc%8f%e3%80%91&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%25AD%25A3%25E5%2588%2599%25E8%25A1%25A8%25E8%25BE%25BE%25E5%25BC%258F%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E7%2594%25A8%25E4%25BA%2586%25E7%25BA%25AF%25E5%25B9%25B2%25E8%25B4%25A7%25E6%259F%25A5%25E7%25BC%25BA%25E8%25A1%25A5%25E6%25BC%258F%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

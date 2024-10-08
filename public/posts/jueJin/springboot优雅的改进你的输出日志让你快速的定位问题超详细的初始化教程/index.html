@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 | PaperMod</title>
+<meta name="keywords" content="后端, 面试, Java">
+<meta name="description" content="springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可">
+<meta name="author" content="小u">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E7%9A%84%E6%94%B9%E8%BF%9B%E4%BD%A0%E7%9A%84%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E8%AE%A9%E4%BD%A0%E5%BF%AB%E9%80%9F%E7%9A%84%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E8%B6%85%E8%AF%A6%E7%BB%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%99%E7%A8%8B/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E7%9A%84%E6%94%B9%E8%BF%9B%E4%BD%A0%E7%9A%84%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E8%AE%A9%E4%BD%A0%E5%BF%AB%E9%80%9F%E7%9A%84%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E8%B6%85%E8%AF%A6%E7%BB%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%99%E7%A8%8B/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程" />
+<meta property="og:description" content="springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E7%9A%84%E6%94%B9%E8%BF%9B%E4%BD%A0%E7%9A%84%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E8%AE%A9%E4%BD%A0%E5%BF%AB%E9%80%9F%E7%9A%84%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E8%B6%85%E8%AF%A6%E7%BB%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%99%E7%A8%8B/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-04-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-04-13T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程"/>
+<meta name="twitter:description" content="springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程",
+      "item": "http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E7%9A%84%E6%94%B9%E8%BF%9B%E4%BD%A0%E7%9A%84%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E8%AE%A9%E4%BD%A0%E5%BF%AB%E9%80%9F%E7%9A%84%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E8%B6%85%E8%AF%A6%E7%BB%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%99%E7%A8%8B/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程",
+  "name": "springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程",
+  "description": "springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可",
+  "keywords": [
+    "后端", "面试", "Java"
+  ],
+  "articleBody": "springboot优雅的改进你的输出日志，让你快速的定位问题 超详细的初始化教程 一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可以选择做的初始化技巧。这些都是比较通用的，可以直接进行复制使用，所以我这里不做过多的讲解。\n项目状态监听 这个是用来监听你的项目是否正确的运行。\ntypescript\n代码解读\n复制代码\npackage com.xiaou.listener; ​ import lombok.extern.slf4j.Slf4j; import org.springframework.boot.ansi.AnsiColor; import org.springframework.boot.ansi.AnsiOutput; import org.springframework.boot.context.event.ApplicationReadyEvent; import org.springframework.context.ApplicationListener; import org.springframework.stereotype.Component; ​ /** * 项目启动成功日志打印监听器 */ @Component @Slf4j public class StartedListener implements ApplicationListener { ​ /** * 项目启动成功将会在日志中输出对应的启动信息 * * @param applicationReadyEvent */ @Override public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) { String serverPort = applicationReadyEvent.getApplicationContext().getEnvironment().getProperty(\"server.port\"); String serverUrl = String.format(\"http://%s:%s\", \"127.0.0.1\", serverPort); log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, \"your project server started at: \", serverUrl)); log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, \"your project server's doc started at:\", serverUrl + \"/doc.html\")); log.info(AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, \"your project server has started successfully!\")); } }\n这个实现的功能如下：\n请求方法监听 ini\n代码解读\n复制代码\npackage com.xiaou.log; ​ import com.alibaba.fastjson.JSON; import com.google.common.collect.Maps; import org.apache.commons.lang3.StringUtils; import org.apache.commons.lang3.time.StopWatch; import org.springframework.web.bind.annotation.RequestMethod; import org.springframework.web.util.ContentCachingRequestWrapper; import org.springframework.web.util.ContentCachingResponseWrapper; ​ import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; import java.util.Enumeration; import java.util.Map; import java.util.Objects; ​ /** * HttpLogEntity构造器 */ public class HttpLogEntityBuilder { ​ /** * 构建HTTP日志对象 * * @param requestWrapper * @param responseWrapper * @param stopWatch * @return */ public static HttpLogEntity build(ContentCachingRequestWrapper requestWrapper, ContentCachingResponseWrapper responseWrapper, StopWatch stopWatch) { HttpLogEntity httpLogEntity = new HttpLogEntity(); httpLogEntity.setRequestUri(requestWrapper.getRequestURI()) .setMethod(requestWrapper.getMethod()) .setRemoteAddr(requestWrapper.getRemoteAddr()) .setIp(getIpAddress(requestWrapper)) .setRequestHeaders(getRequestHeaderMap(requestWrapper)); if (requestWrapper.getMethod().equals(RequestMethod.GET.name())) { httpLogEntity.setRequestParams(JSON.toJSONString(requestWrapper.getParameterMap())); } else { httpLogEntity.setRequestParams(new String(requestWrapper.getContentAsByteArray())); } String responseContentType = responseWrapper.getContentType(); if (StringUtils.equals(\"application/json;charset=UTF-8\", responseContentType)) { httpLogEntity.setResponseData(new String(responseWrapper.getContentAsByteArray())); } else { httpLogEntity.setResponseData(\"Stream Body...\"); } httpLogEntity.setStatus(responseWrapper.getStatusCode()) .setResponseHeaders(getResponseHeaderMap(responseWrapper)) .setResolveTime(stopWatch.toString()); return httpLogEntity; } ​ /** * 获取IP地址 * * @param request * @return */ public static String getIpAddress(HttpServletRequest request) { if (request == null) { return \"unknown\"; } String ip = request.getHeader(\"x-forwarded-for\"); if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) { ip = request.getHeader(\"Proxy-Client-IP\"); } if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) { ip = request.getHeader(\"X-Forwarded-For\"); } if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) { ip = request.getHeader(\"WL-Proxy-Client-IP\"); } if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) { ip = request.getHeader(\"X-Real-IP\"); } ​ if (ip == null || ip.length() == 0 || \"unknown\".equalsIgnoreCase(ip)) { ip = request.getRemoteAddr(); } ​ return \"0:0:0:0:0:0:0:1\".equals(ip) ? \"127.0.0.1\" : ip; } ​ /** * 获取请求头MAP * * @param request * @return */ public static Map getRequestHeaderMap(HttpServletRequest request) { Map result = Maps.newHashMap(); if (Objects.nonNull(request)) { Enumeration headerNames = request.getHeaderNames(); if (Objects.nonNull(request)) { while (headerNames.hasMoreElements()) { String headerName = headerNames.nextElement(); String headerValue = request.getHeader(headerName); result.put(headerName, headerValue); } } } return result; } ​ /** * 获取响应头MAP * * @param response * @return */ public static Map getResponseHeaderMap(HttpServletResponse response) { Map result = Maps.newHashMap(); if (Objects.nonNull(response)) { String contentType = response.getContentType(); result.put(\"contentType\", contentType); } return result; } ​ }\nini\n代码解读\n复制代码\npackage com.xiaou.log; ​ import lombok.extern.slf4j.Slf4j; import org.apache.commons.lang3.time.StopWatch; import org.springframework.core.annotation.Order; import org.springframework.web.filter.OncePerRequestFilter; import org.springframework.web.util.ContentCachingRequestWrapper; import org.springframework.web.util.ContentCachingResponseWrapper; ​ import javax.servlet.FilterChain; import javax.servlet.ServletException; import javax.servlet.annotation.WebFilter; import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; import java.io.IOException; ​ /** * 打印HTTP调用日志过滤器，使用者可以按需将其注入到过滤器容器中使用 * 这里只提供基础的过滤实现 */ @WebFilter(filterName = \"httpLogFilter\") @Slf4j @Order(Integer.MAX_VALUE) public class HttpLogFilter extends OncePerRequestFilter { ​ @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException { StopWatch stopWatch = StopWatch.createStarted(); ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request); ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response); filterChain.doFilter(requestWrapper, responseWrapper); HttpLogEntity httpLogEntity = HttpLogEntityBuilder.build(requestWrapper, responseWrapper, stopWatch); httpLogEntity.print(); responseWrapper.copyBodyToResponse(); } ​ }\nless\n代码解读\n复制代码\npackage com.xiaou.log; ​ import lombok.Getter; import lombok.NoArgsConstructor; import lombok.Setter; import lombok.experimental.Accessors; import lombok.extern.slf4j.Slf4j; import org.apache.commons.lang3.time.DateFormatUtils; ​ import java.util.Date; import java.util.Map; ​ /** * http调用日志实体 */ @NoArgsConstructor @Getter @Setter @Accessors(chain = true) @Slf4j public class HttpLogEntity { ​ /** * 请求资源 */ private String requestUri; ​ /** * 被调方法 */ private String method; ​ /** * 调用者地址 */ private String remoteAddr; ​ /** * 调用的IP地址 */ private String ip; ​ /** * 请求头 */ private Map requestHeaders; ​ /** * 请求参数 */ private String requestParams; ​ /** * 响应状态 */ private Integer status; ​ /** * 响应头 */ private Map responseHeaders; ​ /** * 响应数据 */ private String responseData; ​ /** * 接口耗时 */ private String resolveTime; ​ /** * 打印日志 */ public void print() { log.info(\"====================HTTP CALL START====================\"); log.info(\"callTime: {}\", DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(new Date())); log.info(\"requestUri: {}\", getRequestUri()); log.info(\"method: {}\", getMethod()); log.info(\"remoteAddr: {}\", getRemoteAddr()); log.info(\"ip: {}\", getIp()); log.info(\"requestHeaders: {}\", getRequestHeaders()); log.info(\"requestParams: {}\", getRequestParams()); log.info(\"status: {}\", getStatus()); log.info(\"responseHeaders: {}\", getResponseHeaders()); log.info(\"responseData: {}\", getResponseData()); log.info(\"resolveTime: {}\", getResolveTime()); log.info(\"====================HTTP CALL FINISH====================\"); } ​ @Override public String toString() { StringBuilder stringBuilder = new StringBuilder(); stringBuilder.append(\"====================HTTP CALL START====================\"); stringBuilder.append(\"callTime: \"); stringBuilder.append(DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(new Date())); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"requestUri: \"); stringBuilder.append(getRequestUri()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"method: \"); stringBuilder.append(getMethod()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"remoteAddr: \"); stringBuilder.append(getRemoteAddr()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"ip: \"); stringBuilder.append(getIp()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"requestHeaders: \"); stringBuilder.append(getRequestHeaders()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"requestParams: \"); stringBuilder.append(getRequestParams()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"status: \"); stringBuilder.append(getStatus()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"responseHeaders: \"); stringBuilder.append(getResponseHeaders()); stringBuilder.append(System.lineSeparator()); ​ ​ stringBuilder.append(\"responseData: \"); stringBuilder.append(getResponseData()); stringBuilder.append(System.lineSeparator()); ​ ​ stringBuilder.append(\"resolveTime: \"); stringBuilder.append(getResolveTime()); stringBuilder.append(System.lineSeparator()); ​ stringBuilder.append(\"====================HTTP CALL FINISH====================\"); return stringBuilder.toString(); } ​ }\n实现功能：\n需要注意的是，要像让这个拦截器生效，需要在springboot启动类添加@ServletComponentScan\n跨域 java\n代码解读\n复制代码\npackage com.xiaou.cors; ​ import lombok.AllArgsConstructor; import lombok.Getter; import org.springframework.core.annotation.Order; ​ import javax.servlet.*; import javax.servlet.annotation.WebFilter; import javax.servlet.http.HttpServletResponse; import java.io.IOException; ​ /** * 支持跨域全局过滤器 */ @WebFilter(filterName = \"corsFilter\") @Order(1) public class CorsFilter implements Filter { ​ @Override public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException { HttpServletResponse response = (HttpServletResponse) servletResponse; addCorsResponseHeader(response); filterChain.doFilter(servletRequest, servletResponse); } ​ /** * 添加跨域的响应头 * * @param response */ private void addCorsResponseHeader(HttpServletResponse response) { response.setHeader(CorsConfigEnum.CORS_ORIGIN.getKey(), CorsConfigEnum.CORS_ORIGIN.getValue()); response.setHeader(CorsConfigEnum.CORS_CREDENTIALS.getKey(), CorsConfigEnum.CORS_CREDENTIALS.getValue()); response.setHeader(CorsConfigEnum.CORS_METHODS.getKey(), CorsConfigEnum.CORS_METHODS.getValue()); response.setHeader(CorsConfigEnum.CORS_MAX_AGE.getKey(), CorsConfigEnum.CORS_MAX_AGE.getValue()); response.setHeader(CorsConfigEnum.CORS_HEADERS.getKey(), CorsConfigEnum.CORS_HEADERS.getValue()); } ​ /** * 跨域设置枚举类 */ @AllArgsConstructor @Getter public enum CorsConfigEnum { /** * 允许所有远程访问 */ CORS_ORIGIN(\"Access-Control-Allow-Origin\", \"*\"), /** * 允许认证 */ CORS_CREDENTIALS(\"Access-Control-Allow-Credentials\", \"true\"), /** * 允许远程调用的请求类型 */ CORS_METHODS(\"Access-Control-Allow-Methods\", \"POST, GET, PATCH, DELETE, PUT\"), /** * 指定本次预检请求的有效期，单位是秒 */ CORS_MAX_AGE(\"Access-Control-Max-Age\", \"3600\"), /** * 允许所有请求头 */ CORS_HEADERS(\"Access-Control-Allow-Headers\", \"*\"); ​ private String key; private String value; ​ } ​ }\n这个就不多说了。\nbanner 最后再来一个这个可能知道的人很多，也算是一点乐趣吧，就是在resouce目录里面添加上banner.txt这个文件。之后文件里面的内容，就是会在springboot启动前所打印。\n这个华而不实，自己练手项目可以玩一玩\n例如我经常用的一个七彩大佛\n附上代码：\nruby\n代码解读\n复制代码\n${AnsiColor.BRIGHT_GREEN}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ${AnsiColor.BRIGHT_YELLOW}$$ _.ooOoo._ $$ ${AnsiColor.BRIGHT_RED}$$ o888888888o $$ ${AnsiColor.BRIGHT_CYAN}$$ 88\" . \"88 $$ ${AnsiColor.BRIGHT_MAGENTA}$$ (| ^_^ |) $$ ${AnsiColor.BRIGHT_GREEN}$$ O\\ = /O $$ ${AnsiColor.BRIGHT_RED}$$ ____/`-----'____ $$ ${AnsiColor.BRIGHT_CYAN}$$ .' \\| |$$ `. $$ ${AnsiColor.BRIGHT_MAGENTA}$$ / \\||| : |||$$ \\ $$ ${AnsiColor.BRIGHT_GREEN}$$ / _||||| -:- |||||- \\ $$ ${AnsiColor.BRIGHT_YELLOW}$$ | | \\\\ - $$/ | | $$ ${AnsiColor.BRIGHT_GREEN}$$ | _| ''-----/'' | | $$ ${AnsiColor.BRIGHT_YELLOW}$$ \\ .-___ `-` ____/-. / $$ ${AnsiColor.BRIGHT_CYAN}$$ ___`. .' /--.--\\ `. . ___ $$ ${AnsiColor.BRIGHT_RED}$$ .\"\" '\u003c `._____\u003c|\u003e_/____.' \u003e'\"\". $$ ${AnsiColor.BRIGHT_GREEN}$$ | | : `- `.;`.\\ _ /``;.`/ - ` : | | $$ ${AnsiColor.BRIGHT_YELLOW}$$ \\ \\ `-. _ ___\\ /___ _/ .-` / / $$ ${AnsiColor.BRIGHT_CYAN}$$ ========`-.____`-._________/____.-`____.-'======== $$ ${AnsiColor.BRIGHT_MAGENTA}$$ `=---=' $$ ${AnsiColor.BRIGHT_YELLOW}$$ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ $$ ${AnsiColor.BRIGHT_GREEN}$$ 佛祖保佑 永无BUG 永不修改 $$ ${AnsiColor.BRIGHT_YELLOW}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ${AnsiColor.BRIGHT_YELLOW}\n",
+  "wordCount" : "1019",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-04-13T00:00:00Z",
+  "dateModified": "2024-04-13T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "小u"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E7%9A%84%E6%94%B9%E8%BF%9B%E4%BD%A0%E7%9A%84%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E8%AE%A9%E4%BD%A0%E5%BF%AB%E9%80%9F%E7%9A%84%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E8%B6%85%E8%AF%A6%E7%BB%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%99%E7%A8%8B/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程
+    </h1>
+    <div class="post-description">
+      springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可
+    </div>
+    <div class="post-meta"><span title='2024-04-13 00:00:00 +0000 UTC'>四月 13, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;小u&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98-%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b" aria-label="springboot优雅的改进你的输出日志，让你快速的定位问题 超详细的初始化教程">springboot优雅的改进你的输出日志，让你快速的定位问题 超详细的初始化教程</a></li>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae%e7%8a%b6%e6%80%81%e7%9b%91%e5%90%ac" aria-label="项目状态监听">项目状态监听</a></li>
+                <li>
+                    <a href="#%e8%af%b7%e6%b1%82%e6%96%b9%e6%b3%95%e7%9b%91%e5%90%ac" aria-label="请求方法监听">请求方法监听</a></li>
+                <li>
+                    <a href="#%e8%b7%a8%e5%9f%9f" aria-label="跨域">跨域</a></li>
+                <li>
+                    <a href="#banner" aria-label="banner">banner</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="springboot优雅的改进你的输出日志让你快速的定位问题-超详细的初始化教程">springboot优雅的改进你的输出日志，让你快速的定位问题 超详细的初始化教程<a hidden class="anchor" aria-hidden="true" href="#springboot优雅的改进你的输出日志让你快速的定位问题-超详细的初始化教程">#</a></h2>
+<p>一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可以选择做的初始化技巧。这些都是比较通用的，可以直接进行复制使用，所以我这里不做过多的讲解。</p>
+<h2 id="项目状态监听">项目状态监听<a hidden class="anchor" aria-hidden="true" href="#项目状态监听">#</a></h2>
+<p>这个是用来监听你的项目是否正确的运行。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>package com.xiaou.listener; ​ import lombok.extern.slf4j.Slf4j; import org.springframework.boot.ansi.AnsiColor; import org.springframework.boot.ansi.AnsiOutput; import org.springframework.boot.context.event.ApplicationReadyEvent; import org.springframework.context.ApplicationListener; import org.springframework.stereotype.Component; ​ /**  * 项目启动成功日志打印监听器  */ @Component @Slf4j public class StartedListener implements ApplicationListener&lt;ApplicationReadyEvent&gt; { ​     /**      * 项目启动成功将会在日志中输出对应的启动信息      *      * @param applicationReadyEvent      */     @Override     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {         String serverPort = applicationReadyEvent.getApplicationContext().getEnvironment().getProperty(&quot;server.port&quot;);         String serverUrl = String.format(&quot;http://%s:%s&quot;, &quot;127.0.0.1&quot;, serverPort);         log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, &quot;your project server started at: &quot;, serverUrl));         log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, &quot;your project server's doc started at:&quot;, serverUrl + &quot;/doc.html&quot;));         log.info(AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, &quot;your project server has started successfully!&quot;));     } }</code></p>
+<p>这个实现的功能如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/108557b9192d4d02893484d260ffa547~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2331&amp;h=319&amp;s=98880&amp;e=png&amp;b=1e1f22" alt="image-20240413192231879"  />
+</p>
+<h2 id="请求方法监听">请求方法监听<a hidden class="anchor" aria-hidden="true" href="#请求方法监听">#</a></h2>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>package com.xiaou.log; ​ import com.alibaba.fastjson.JSON; import com.google.common.collect.Maps; import org.apache.commons.lang3.StringUtils; import org.apache.commons.lang3.time.StopWatch; import org.springframework.web.bind.annotation.RequestMethod; import org.springframework.web.util.ContentCachingRequestWrapper; import org.springframework.web.util.ContentCachingResponseWrapper; ​ import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; import java.util.Enumeration; import java.util.Map; import java.util.Objects; ​ /**  * HttpLogEntity构造器  */ public class HttpLogEntityBuilder { ​     /**      * 构建HTTP日志对象      *      * @param requestWrapper      * @param responseWrapper      * @param stopWatch      * @return      */     public static HttpLogEntity build(ContentCachingRequestWrapper requestWrapper, ContentCachingResponseWrapper responseWrapper, StopWatch stopWatch) {         HttpLogEntity httpLogEntity = new HttpLogEntity();         httpLogEntity.setRequestUri(requestWrapper.getRequestURI())                 .setMethod(requestWrapper.getMethod())                 .setRemoteAddr(requestWrapper.getRemoteAddr())                 .setIp(getIpAddress(requestWrapper))                 .setRequestHeaders(getRequestHeaderMap(requestWrapper));         if (requestWrapper.getMethod().equals(RequestMethod.GET.name())) {             httpLogEntity.setRequestParams(JSON.toJSONString(requestWrapper.getParameterMap()));         } else {             httpLogEntity.setRequestParams(new String(requestWrapper.getContentAsByteArray()));         }         String responseContentType = responseWrapper.getContentType();         if (StringUtils.equals(&quot;application/json;charset=UTF-8&quot;, responseContentType)) {             httpLogEntity.setResponseData(new String(responseWrapper.getContentAsByteArray()));         } else {             httpLogEntity.setResponseData(&quot;Stream Body...&quot;);         }         httpLogEntity.setStatus(responseWrapper.getStatusCode())                 .setResponseHeaders(getResponseHeaderMap(responseWrapper))                 .setResolveTime(stopWatch.toString());         return httpLogEntity;     } ​     /**      * 获取IP地址      *      * @param request      * @return      */     public static String getIpAddress(HttpServletRequest request) {         if (request == null) {             return &quot;unknown&quot;;         }         String ip = request.getHeader(&quot;x-forwarded-for&quot;);         if (ip == null || ip.length() == 0 || &quot;unknown&quot;.equalsIgnoreCase(ip)) {             ip = request.getHeader(&quot;Proxy-Client-IP&quot;);         }         if (ip == null || ip.length() == 0 || &quot;unknown&quot;.equalsIgnoreCase(ip)) {             ip = request.getHeader(&quot;X-Forwarded-For&quot;);         }         if (ip == null || ip.length() == 0 || &quot;unknown&quot;.equalsIgnoreCase(ip)) {             ip = request.getHeader(&quot;WL-Proxy-Client-IP&quot;);         }         if (ip == null || ip.length() == 0 || &quot;unknown&quot;.equalsIgnoreCase(ip)) {             ip = request.getHeader(&quot;X-Real-IP&quot;);         } ​         if (ip == null || ip.length() == 0 || &quot;unknown&quot;.equalsIgnoreCase(ip)) {             ip = request.getRemoteAddr();         } ​         return &quot;0:0:0:0:0:0:0:1&quot;.equals(ip) ? &quot;127.0.0.1&quot; : ip;     } ​     /**      * 获取请求头MAP      *      * @param request      * @return      */     public static Map&lt;String, String&gt; getRequestHeaderMap(HttpServletRequest request) {         Map&lt;String, String&gt; result = Maps.newHashMap();         if (Objects.nonNull(request)) {             Enumeration&lt;String&gt; headerNames = request.getHeaderNames();             if (Objects.nonNull(request)) {                 while (headerNames.hasMoreElements()) {                     String headerName = headerNames.nextElement();                     String headerValue = request.getHeader(headerName);                     result.put(headerName, headerValue);                 }             }         }         return result;     } ​     /**      * 获取响应头MAP      *      * @param response      * @return      */     public static Map&lt;String, String&gt; getResponseHeaderMap(HttpServletResponse response) {         Map&lt;String, String&gt; result = Maps.newHashMap();         if (Objects.nonNull(response)) {             String contentType = response.getContentType();             result.put(&quot;contentType&quot;, contentType);         }         return result;     } ​ }</code></p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>package com.xiaou.log; ​ import lombok.extern.slf4j.Slf4j; import org.apache.commons.lang3.time.StopWatch; import org.springframework.core.annotation.Order; import org.springframework.web.filter.OncePerRequestFilter; import org.springframework.web.util.ContentCachingRequestWrapper; import org.springframework.web.util.ContentCachingResponseWrapper; ​ import javax.servlet.FilterChain; import javax.servlet.ServletException; import javax.servlet.annotation.WebFilter; import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; import java.io.IOException; ​ /**  * 打印HTTP调用日志过滤器，使用者可以按需将其注入到过滤器容器中使用  * 这里只提供基础的过滤实现  */ @WebFilter(filterName = &quot;httpLogFilter&quot;) @Slf4j @Order(Integer.MAX_VALUE) public class HttpLogFilter extends OncePerRequestFilter { ​     @Override     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {         StopWatch stopWatch = StopWatch.createStarted();         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);         filterChain.doFilter(requestWrapper, responseWrapper);         HttpLogEntity httpLogEntity = HttpLogEntityBuilder.build(requestWrapper, responseWrapper, stopWatch);         httpLogEntity.print();         responseWrapper.copyBodyToResponse();     } ​ }</code></p>
+<p>less</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>package com.xiaou.log; ​ import lombok.Getter; import lombok.NoArgsConstructor; import lombok.Setter; import lombok.experimental.Accessors; import lombok.extern.slf4j.Slf4j; import org.apache.commons.lang3.time.DateFormatUtils; ​ import java.util.Date; import java.util.Map; ​ /**  * http调用日志实体  */ @NoArgsConstructor @Getter @Setter @Accessors(chain = true) @Slf4j public class HttpLogEntity { ​     /**      * 请求资源      */     private String requestUri; ​     /**      * 被调方法      */     private String method; ​     /**      * 调用者地址      */     private String remoteAddr; ​     /**      * 调用的IP地址      */     private String ip; ​     /**      * 请求头      */     private Map&lt;String, String&gt; requestHeaders; ​     /**      * 请求参数      */     private String requestParams; ​     /**      * 响应状态      */     private Integer status; ​     /**      * 响应头      */     private Map&lt;String, String&gt; responseHeaders; ​     /**      * 响应数据      */     private String responseData; ​     /**      * 接口耗时      */     private String resolveTime; ​     /**      * 打印日志      */     public void print() {         log.info(&quot;====================HTTP CALL START====================&quot;);         log.info(&quot;callTime: {}&quot;, DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(new Date()));         log.info(&quot;requestUri: {}&quot;, getRequestUri());         log.info(&quot;method: {}&quot;, getMethod());         log.info(&quot;remoteAddr: {}&quot;, getRemoteAddr());         log.info(&quot;ip: {}&quot;, getIp());         log.info(&quot;requestHeaders: {}&quot;, getRequestHeaders());         log.info(&quot;requestParams: {}&quot;, getRequestParams());         log.info(&quot;status: {}&quot;, getStatus());         log.info(&quot;responseHeaders: {}&quot;, getResponseHeaders());         log.info(&quot;responseData: {}&quot;, getResponseData());         log.info(&quot;resolveTime: {}&quot;, getResolveTime());         log.info(&quot;====================HTTP CALL FINISH====================&quot;);     } ​     @Override     public String toString() {         StringBuilder stringBuilder = new StringBuilder();         stringBuilder.append(&quot;====================HTTP CALL START====================&quot;);         stringBuilder.append(&quot;callTime: &quot;);         stringBuilder.append(DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(new Date()));         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;requestUri: &quot;);         stringBuilder.append(getRequestUri());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;method: &quot;);         stringBuilder.append(getMethod());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;remoteAddr: &quot;);         stringBuilder.append(getRemoteAddr());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;ip: &quot;);         stringBuilder.append(getIp());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;requestHeaders: &quot;);         stringBuilder.append(getRequestHeaders());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;requestParams: &quot;);         stringBuilder.append(getRequestParams());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;status: &quot;);         stringBuilder.append(getStatus());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;responseHeaders: &quot;);         stringBuilder.append(getResponseHeaders());         stringBuilder.append(System.lineSeparator()); ​ ​         stringBuilder.append(&quot;responseData: &quot;);         stringBuilder.append(getResponseData());         stringBuilder.append(System.lineSeparator()); ​ ​         stringBuilder.append(&quot;resolveTime: &quot;);         stringBuilder.append(getResolveTime());         stringBuilder.append(System.lineSeparator()); ​         stringBuilder.append(&quot;====================HTTP CALL FINISH====================&quot;);         return stringBuilder.toString();     } ​ }</code></p>
+<p>实现功能：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fbf1349f33894806b45022b0faa3b3e2~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2170&amp;h=801&amp;s=94348&amp;e=png&amp;b=1e1f22" alt="image-20240413193015032"  />
+</p>
+<p>需要注意的是，要像让这个拦截器生效，需要在springboot启动类添加@ServletComponentScan</p>
+<h2 id="跨域">跨域<a hidden class="anchor" aria-hidden="true" href="#跨域">#</a></h2>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>package com.xiaou.cors; ​ import lombok.AllArgsConstructor; import lombok.Getter; import org.springframework.core.annotation.Order; ​ import javax.servlet.*; import javax.servlet.annotation.WebFilter; import javax.servlet.http.HttpServletResponse; import java.io.IOException; ​ /**  * 支持跨域全局过滤器  */ @WebFilter(filterName = &quot;corsFilter&quot;) @Order(1) public class CorsFilter implements Filter { ​     @Override     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {         HttpServletResponse response = (HttpServletResponse) servletResponse;         addCorsResponseHeader(response);         filterChain.doFilter(servletRequest, servletResponse);     } ​     /**      * 添加跨域的响应头      *      * @param response      */     private void addCorsResponseHeader(HttpServletResponse response) {         response.setHeader(CorsConfigEnum.CORS_ORIGIN.getKey(), CorsConfigEnum.CORS_ORIGIN.getValue());         response.setHeader(CorsConfigEnum.CORS_CREDENTIALS.getKey(), CorsConfigEnum.CORS_CREDENTIALS.getValue());         response.setHeader(CorsConfigEnum.CORS_METHODS.getKey(), CorsConfigEnum.CORS_METHODS.getValue());         response.setHeader(CorsConfigEnum.CORS_MAX_AGE.getKey(), CorsConfigEnum.CORS_MAX_AGE.getValue());         response.setHeader(CorsConfigEnum.CORS_HEADERS.getKey(), CorsConfigEnum.CORS_HEADERS.getValue());     } ​     /**      * 跨域设置枚举类      */     @AllArgsConstructor     @Getter     public enum CorsConfigEnum {         /**          * 允许所有远程访问          */         CORS_ORIGIN(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;),         /**          * 允许认证          */         CORS_CREDENTIALS(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;),         /**          * 允许远程调用的请求类型          */         CORS_METHODS(&quot;Access-Control-Allow-Methods&quot;, &quot;POST, GET, PATCH, DELETE, PUT&quot;),         /**          * 指定本次预检请求的有效期，单位是秒          */         CORS_MAX_AGE(&quot;Access-Control-Max-Age&quot;, &quot;3600&quot;),         /**          * 允许所有请求头          */         CORS_HEADERS(&quot;Access-Control-Allow-Headers&quot;, &quot;*&quot;); ​         private String key;         private String value; ​     } ​ }</code></p>
+<p>这个就不多说了。</p>
+<h2 id="banner">banner<a hidden class="anchor" aria-hidden="true" href="#banner">#</a></h2>
+<p>最后再来一个这个可能知道的人很多，也算是一点乐趣吧，就是在resouce目录里面添加上banner.txt这个文件。之后文件里面的内容，就是会在springboot启动前所打印。</p>
+<blockquote>
+<p>这个华而不实，自己练手项目可以玩一玩</p>
+</blockquote>
+<p>例如我经常用的一个七彩大佛</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/898ff44b2a73479a9a59d8c34fe6757f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1475&amp;h=1071&amp;s=66243&amp;e=png&amp;b=1e1f22" alt="image-20240413193335822"  />
+</p>
+<p>附上代码：</p>
+<p>ruby</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>${AnsiColor.BRIGHT_GREEN}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ${AnsiColor.BRIGHT_YELLOW}$$                                _.ooOoo._                               $$ ${AnsiColor.BRIGHT_RED}$$                               o888888888o                              $$ ${AnsiColor.BRIGHT_CYAN}$$                               88&quot;  .  &quot;88                              $$ ${AnsiColor.BRIGHT_MAGENTA}$$                               (|  ^_^  |)                              $$ ${AnsiColor.BRIGHT_GREEN}$$                               O\   =   /O                              $$ ${AnsiColor.BRIGHT_RED}$$                            ____/`-----'____                           $$ ${AnsiColor.BRIGHT_CYAN}$$                          .'  \|       |$$  `.                         $$ ${AnsiColor.BRIGHT_MAGENTA}$$                         /  \|||   :   |||$$  \                        $$ ${AnsiColor.BRIGHT_GREEN}$$                        /  _|||||  -:-  |||||-  \                       $$ ${AnsiColor.BRIGHT_YELLOW}$$                        |   | \\   -   $$/ |   |                       $$ ${AnsiColor.BRIGHT_GREEN}$$                        | _|  ''-----/''  |   |                       $$ ${AnsiColor.BRIGHT_YELLOW}$$                        \  .-___  `-`  ____/-. /                       $$ ${AnsiColor.BRIGHT_CYAN}$$                      ___`. .'   /--.--\   `. . ___                     $$ ${AnsiColor.BRIGHT_RED}$$                    .&quot;&quot; '&lt;  `._____&lt;|&gt;_/____.'  &gt;'&quot;&quot;.                  $$ ${AnsiColor.BRIGHT_GREEN}$$                  | | :  `- `.;`.\ _ /``;.`/ - ` : | |                 $$ ${AnsiColor.BRIGHT_YELLOW}$$                  \  \ `-.   _ ___\ /___ _/   .-` /  /                 $$ ${AnsiColor.BRIGHT_CYAN}$$            ========`-.____`-._________/____.-`____.-'========         $$ ${AnsiColor.BRIGHT_MAGENTA}$$                                  `=---='                               $$ ${AnsiColor.BRIGHT_YELLOW}$$            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        $$ ${AnsiColor.BRIGHT_GREEN}$$                     佛祖保佑          永无BUG         永不修改            $$ ${AnsiColor.BRIGHT_YELLOW}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ${AnsiColor.BRIGHT_YELLOW}</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/ai%E8%B5%8B%E8%83%BD%E5%BF%AB%E9%80%9F%E5%88%B6%E4%BD%9C%E9%BE%99%E5%B9%B4%E7%BA%A2%E5%8C%85%E5%B0%81%E9%9D%A2%E6%95%99%E7%A8%8B%E9%99%84%E8%B5%A05000%E4%B8%AA%E5%B0%81%E9%9D%A2%E9%9A%8F%E6%84%8F%E9%A2%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>AI赋能，快速制作龙年红包封面教程，附赠5000个封面随意领</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93%E5%B7%A5%E4%BD%9C%E4%BB%A5%E6%9D%A5%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%81%E5%B9%B4/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>总结工作以来的第一个十年</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 on x"
+            href="https://x.com/intent/tweet/?text=springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2c%e9%9d%a2%e8%af%95%2cJava">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f&amp;title=springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b&amp;summary=springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f&title=springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 on whatsapp"
+            href="https://api.whatsapp.com/send?text=springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 on telegram"
+            href="https://telegram.me/share/url?text=springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=springboot%e4%bc%98%e9%9b%85%e7%9a%84%e6%94%b9%e8%bf%9b%e4%bd%a0%e7%9a%84%e8%be%93%e5%87%ba%e6%97%a5%e5%bf%97%ef%bc%8c%e8%ae%a9%e4%bd%a0%e5%bf%ab%e9%80%9f%e7%9a%84%e5%ae%9a%e4%bd%8d%e9%97%ae%e9%a2%98%e8%b6%85%e8%af%a6%e7%bb%86%e7%9a%84%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%99%e7%a8%8b&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fspringboot%25E4%25BC%2598%25E9%259B%2585%25E7%259A%2584%25E6%2594%25B9%25E8%25BF%259B%25E4%25BD%25A0%25E7%259A%2584%25E8%25BE%2593%25E5%2587%25BA%25E6%2597%25A5%25E5%25BF%2597%25E8%25AE%25A9%25E4%25BD%25A0%25E5%25BF%25AB%25E9%2580%259F%25E7%259A%2584%25E5%25AE%259A%25E4%25BD%258D%25E9%2597%25AE%25E9%25A2%2598%25E8%25B6%2585%25E8%25AF%25A6%25E7%25BB%2586%25E7%259A%2584%25E5%2588%259D%25E5%25A7%258B%25E5%258C%2596%25E6%2595%2599%25E7%25A8%258B%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

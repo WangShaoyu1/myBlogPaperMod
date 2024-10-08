@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Maven入门，读完这篇就够了 | PaperMod</title>
+<meta name="keywords" content="Java, maven">
+<meta name="description" content="夜空中最亮的星，2018请照亮我前行~Maven是我们日常开发都会用到的，新年第一天，把看过的Maven基础概念做了整理，作为入门和查阅使用。Maven作为一个构建工具，不仅能帮我们自动化构建，还能够抽象构建过程，提供构建任务实现;它跨平台，对外提供了一致的操作接口，这一切…">
+<meta name="author" content="嘟嘟MD">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/maven%E5%85%A5%E9%97%A8%E8%AF%BB%E5%AE%8C%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/maven%E5%85%A5%E9%97%A8%E8%AF%BB%E5%AE%8C%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Maven入门，读完这篇就够了" />
+<meta property="og:description" content="夜空中最亮的星，2018请照亮我前行~Maven是我们日常开发都会用到的，新年第一天，把看过的Maven基础概念做了整理，作为入门和查阅使用。Maven作为一个构建工具，不仅能帮我们自动化构建，还能够抽象构建过程，提供构建任务实现;它跨平台，对外提供了一致的操作接口，这一切…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/maven%E5%85%A5%E9%97%A8%E8%AF%BB%E5%AE%8C%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-01-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-01-02T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Maven入门，读完这篇就够了"/>
+<meta name="twitter:description" content="夜空中最亮的星，2018请照亮我前行~Maven是我们日常开发都会用到的，新年第一天，把看过的Maven基础概念做了整理，作为入门和查阅使用。Maven作为一个构建工具，不仅能帮我们自动化构建，还能够抽象构建过程，提供构建任务实现;它跨平台，对外提供了一致的操作接口，这一切…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Maven入门，读完这篇就够了",
+      "item": "http://localhost:1313/posts/juejin/maven%E5%85%A5%E9%97%A8%E8%AF%BB%E5%AE%8C%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Maven入门，读完这篇就够了",
+  "name": "Maven入门，读完这篇就够了",
+  "description": "夜空中最亮的星，2018请照亮我前行~Maven是我们日常开发都会用到的，新年第一天，把看过的Maven基础概念做了整理，作为入门和查阅使用。Maven作为一个构建工具，不仅能帮我们自动化构建，还能够抽象构建过程，提供构建任务实现;它跨平台，对外提供了一致的操作接口，这一切…",
+  "keywords": [
+    "Java", "maven"
+  ],
+  "articleBody": " 原本地址：Maven入门，读完这篇就够了\n博客地址：tengj.top/\n前言 夜空中最亮的星，2018请照亮我前行~ Maven是我们日常开发都会用到的，新年第一天，把看过的Maven基础概念做了整理，作为入门和查阅使用。\n正文 Maven概念 Maven作为一个构建工具，不仅能帮我们自动化构建，还能够抽象构建过程，提供构建任务实现;它跨平台，对外提供了一致的操作接口，这一切足以使它成为优秀的、流行的构建工具。\nMaven不仅是构建工具，还是一个依赖管理工具和项目管理工具，它提供了中央仓库，能帮我自动下载构件。\nmaven的安装 一：因为本人是window系统，所以这里只介绍window下如何安装，在安装Maven之前，先确认已经安装了JDK. 二：接着去Maven官网下载界面下载想要的版本解压到你想要的目录就行 三：最后设置一下环境变量，将Maven安装配置到操作系统环境中，主要就是配置M2_HOME 和PATH两项，如图 都搞定后，验证一下，打开doc输入 mvn -v如何得到下面信息就说明配置成功了 maven目录 bin目录： 该目录包含了mvn运行的脚本，这些脚本用来配置java命令，准备好classpath和相关的Java系统属性，然后执行Java命令。 boot目录: 该目录只包含一个文件，该文件为plexus-classworlds-2.5.2.jar。plexus-classworlds是一个类加载器框架，相对于默认的java类加载器，它提供了更加丰富的语法以方便配置，Maven使用该框架加载自己的类库。 conf目录: 该目录包含了一个非常重要的文件settings.xml。直接修改该文件，就能在机器上全局地定制Maven的行为，一般情况下，我们更偏向于复制该文件至~/.m2/目录下（~表示用户目录），然后修改该文件，在用户范围定制Maven的行为。 lib目录: 该目录包含了所有Maven运行时需要的Java类库，Maven本身是分模块开发的，因此用户能看到诸如maven-core-3.0.jar、maven-model-3.0.jar之类的文件，此外这里还包含一些Maven用到的第三方依赖如commons-cli-1.2.jar、commons-lang-2.6.jar等等。 Maven常用命令说明 mvn clean：表示运行清理操作（会默认把target文件夹中的数据清理）。 mvn clean compile：表示先运行清理之后运行编译，会将代码编译到target文件夹中。 mvn clean test：运行清理和测试。 mvn clean package：运行清理和打包。 mvn clean install：运行清理和安装，会将打好的包安装到本地仓库中，以便其他的项目可以调用。 mvn clean deploy：运行清理和发布（发布到私服上面）。 上面的命令大部分都是连写的，大家也可以拆分分别执行，这是活的，看个人喜好以及使用需求，Eclipse Run as对maven项目会提供常用的命令。\n设置http代理 编辑seeting.xml文件 有时候你所在的公司基于安全因素考虑，要求你使用通过安全认证的代理访问因特网。这种情况下，就需要为Maven配置HTTP代理，才能让它正常访问外部仓库，以下载所需要的资源。首先确认自己无法直接访问公共的maven中央仓库，直接运行命令ping repo1.maven.org可以检查网络。如果真的需要代理，先检查一下代理服务器是否畅通。比如现在有一个IP地址为218.14.227.197，端口为3128的代理服务，我们可以运行telnet 218.14.227.197 3128来检测该地址的该端口是否畅通。如果得到出错信息，需要先获取正确的代理服务信息，如果telnet连接正确，则输入ctrl+]，然后q，回车，退出即可。\n检查完毕之后，编辑~/.m2/settings.xml文件(如果没有该文件，则复制$M2_HOME/conf/settings.xml)。添加代理配置如下：\nxml\n代码解读\n复制代码\n... my-proxy true http 218.14.227.197 3128 ... 这段配置十分简单，proxies下可以有多个proxy元素，如果声明了多个proxy元素，则默认情况下第一个被激活的proxy会生效。这里声明了一个id为my-proxy的代理，active的值为true表示激活该代理，protocol表示使用的代理协议，这里是http。当然，最重要的是指定正确的主机名(host元素)和端口(port元素)。上述xml配置中注释掉了username,password,nonProxyHosts几个元素。当代理服务需要认证时，就需要配置username和password。nonProxyHost元素用来指定哪些主机不需要代理，可以使用\"|“符号来分隔多个主机名。此外，该配置也支持通配符，如:*.google.com表示所有以google.com结尾的域名访问都不要通过代理。\nMaven插件安装，基于IDEA 博主现在使用IDEA来开发的，所以这里介绍一下IDEA中如何配置引入我们上面下载好的Maven Maven使用 xml\n代码解读\n复制代码\n\u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e 4.0.0 com.tengj springBootDemo1 0.0.1-SNAPSHOT springBootDemo1 代码的第一行是XML头，指定了该xml文档的版本和编码方式。 project是所有pom.xml的根元素，它还声明了一些POM相关的命名空间及xsd元素。 根元素下的第一个子元素modelVersion指定了当前的POM模型的版本，对于Maven3来说，它只能是4.0.0 代码中最重要是包含了groupId,artifactId和version了。这三个元素定义了一个项目基本的坐标，在Maven的世界，任何的jar、pom或者jar都是以基于这些基本的坐标进行区分的。\ngroupId定义了项目属于哪个组，随意命名，比如谷歌公司的myapp项目，就取名为 com.google.myapp\nartifactId定义了当前Maven项目在组中唯一的ID,比如定义hello-world。\nversion指定了项目当前的版本0.0.1-SNAPSHOT,SNAPSHOT意为快照，说明该项目还处于开发中，是不稳定的。\nname元素生命了一个对于用户更为友好的项目名称，虽然这不是必须的，但还是推荐为每个POM声明name,以方便信息交流\n依赖的配置 xml\n代码解读\n复制代码\n... 实际项目 模块 版本 依赖类型 依赖范围 依赖是否可选 \u003c!—主要用于排除传递性依赖--\u003e … … ... 根元素project下的dependencies可以包含一个或者多个dependency元素，以声明一个或者多个项目依赖。每个依赖可以包含的元素有：\ngrounpId、artifactId和version:以来的基本坐标，对于任何一个依赖来说，基本坐标是最重要的，Maven根据坐标才能找到需要的依赖。 type:依赖的类型，对于项目坐标定义的packaging。大部分情况下，该元素不必声明，其默认值为jar scope:依赖的范围 optional:标记依赖是否可选 exclusions:用来排除传递性依赖 依赖范围 依赖范围就是用来控制依赖和三种classpath(编译classpath，测试classpath、运行classpath)的关系，Maven有如下几种依赖范围：\n**compile:**编译依赖范围。如果没有指定，就会默认使用该依赖范围。使用此依赖范围的Maven依赖，对于编译、测试、运行三种classpath都有效。典型的例子是spring-code,在编译、测试和运行的时候都需要使用该依赖。 test: 测试依赖范围。使用次依赖范围的Maven依赖，只对于测试classpath有效，在编译主代码或者运行项目的使用时将无法使用此依赖。典型的例子是Jnuit,它只有在编译测试代码及运行测试的时候才需要。 **provided:**已提供依赖范围。使用此依赖范围的Maven依赖，对于编译和测试classpath有效，但在运行时候无效。典型的例子是servlet-api,编译和测试项目的时候需要该依赖，但在运行项目的时候，由于容器以及提供，就不需要Maven重复地引入一遍。 **runtime:**运行时依赖范围。使用此依赖范围的Maven依赖，对于测试和运行classpath有效，但在编译主代码时无效。典型的例子是JDBC驱动实现，项目主代码的编译只需要JDK提供的JDBC接口，只有在执行测试或者运行项目的时候才需要实现上述接口的具体JDBC驱动。 **system:**系统依赖范围。该依赖与三种classpath的关系，和provided依赖范围完全一致，但是，使用system范围的依赖时必须通过systemPath元素显示地指定依赖文件的路径。由于此类依赖不是通过Maven仓库解析的，而且往往与本机系统绑定，可能构成构建的不可移植，因此应该谨慎使用。systemPath元素可以引用环境变量，如： xml\n代码解读\n复制代码\njavax.sql jdbc-stdext 2.0 system ${java.home}/lib/rt.jar **import:**导入依赖范围。该依赖范围不会对三种classpath产生实际的影响。 上述除import以外的各种依赖范围与三种classpath的关系如下: 传递性依赖 比如一个account-email项目为例，account-email有一个compile范围的spring-code依赖，spring-code有一个compile范围的commons-logging依赖，那么commons-logging就会成为account-email的compile的范围依赖，commons-logging是account-email的一个传递性依赖 有了传递性依赖机制，在使用Spring Framework的时候就不用去考虑它依赖了什么，也不用担心引入多余的依赖。Maven会解析各个直接依赖的POM，将那些必要的间接依赖，以传递性依赖的形式引入到当前的项目中。\n依赖范围 假设A依赖于B,B依赖于C，我们说A对于B是第一直接依赖，B对于C是第二直接依赖，A对于C是传递性依赖。第一直接依赖和第二直接依赖的范围决定了传递性依赖的范围，如下图所示，最左边一行表示第一直接依赖范围，最上面一行表示第二直接依赖范围，中间的交叉单元格则表示传递依赖范围。\n从上图中，我们可以发现这样的规律：\n当第二直接依赖的范围是compile的时候，传递性依赖的范围与第一直接依赖的范围一致； 当第二直接依赖的范围是test的时候，依赖不会得以传递； 当第二直接依赖的范围是provided的时候，只传递第一直接依赖范围也为provided的依赖，切传递依赖的范围同样为provided; 当第二直接依赖的范围是runtime的时候，传递性依赖的范围与第一直接依赖的范围一致，但compile列外，此时传递性依赖范围为runtime. ## 依赖调解 有时候，当传递性依赖造成为题的时候，就需要清楚地知道该传递性依赖是从哪条依赖路径引入的。这就是依赖调解的作用，依赖调解有两大原则： 1. 路径最近者优先 比如项目有A有这样的依赖关系：A-\u003eB-\u003eC-\u003eX(1.0)、A-\u003eD-\u003eX(2.0),X是A的传递性依赖，但是两条依赖路径上有两个版本的X，所以根据第一原则，A-\u003eD-\u003eX(2.0)路径短，所以X(2.0)会被解析使用 2. 第一声明者优先 如果路径都一样长的话，第一原则就不行了，比如 A-\u003eB-\u003eY(1.0)、A-\u003eC-\u003eY(2.0),Y(1.0)和Y(2.0)的路径一样，所以这时候根据第二原则，先声明的被解析。\n## 可选依赖\n如图，项目中A依赖B，B依赖于X和Y，如果所有这三个的范围都是compile的话，那么X和Y就是A的compile范围的传递性依赖，但是如果我想X,Y不作为A的传递性依赖，不给他用的话。就需要下面提到的配置可选依赖。\nxml\n代码解读\n复制代码\n4.0.0 com.juvenxu.mvnbook project-b 1.0.0 mysql mysql-connector-java 5.1.10 true postgresql postgresql 8.4-701.jdbc3 true 配置也简单，在依赖里面添加\narduino\n代码解读\n复制代码\ntrue\n就表示可选依赖了，这样A如果想用X,Y就要直接显示的添加依赖了。\n排除依赖 有时候你引入的依赖中包含你不想要的依赖包，你想引入自己想要的，这时候就要用到排除依赖了，比如下图中spring-boot-starter-web自带了logback这个日志包，我想引入log4j2的，所以我先排除掉logback的依赖包，再引入想要的包就行了\n排除依赖代码结构：\nxml\n代码解读\n复制代码\norg.springframework.boot spring-boot-starter-logging 这里注意：声明exclustion的时候只需要groupId和artifactId，而不需要version元素，这是因为只需要groupId和artifactId就能唯一定位依赖图中的某个依赖。\n归类依赖 有时候我们引入的很多依赖包，他们都来自同一个项目的不同模块，所以他们的版本号都一样，这时候我们可以用属性来统一管理版本号\nxml\n代码解读\n复制代码\n4.0.0 com.juven.mvnbook.account accout-email 1.0.0-SNAPSHOT 1.5.6 org.springframework spring-core ${springframework.version} org.springframework spring-beans ${springframework.version} 如图所示，先通过\nxml\n代码解读\n复制代码\n这里定义你先要的版本 来定义，然后在下面依赖使用${}来引入你的属性。\n仓库 这节将介绍仓库的由来、布局、分类、配置、内部工作机制、镜像等概念\n仓库的由来 在Maven世界中，任何一个依赖、插件或者项目构建的输出，都可以称为构件。得益于坐标机制，任何Maven项目使用任何一个构件的方式都是完全相同的。在此基础上，Maven可以在某个位置统一存储所有Maven项目共享的构件，这个统一的位置就是仓库。\n实际的Maven项目将不再各自存储其依赖文件，它们只需要声明这些依赖的坐标，在需要的时候（例如，编译项目的时候需要将依赖加入到classpath中），Maven会自动根据坐标找到仓库中的构件，并使用它们。\n为了实现重用，项目构建完毕后可生成的构件也可以安装或者部署到仓库中，供其他项目使用。\n仓库的布局 任何一个构件都有其唯一的坐标，根据这个坐标可以定义其在仓库中的唯一存储路径，这便是Maven的仓库布局方式。 该路经与坐标对应关系为groupId/artifactId/version/artifactId-version.packaging。 举个例子，比如下面这个分页插件依赖如下：\nxml\n代码解读\n复制代码\ncom.github.pagehelper pagehelper-spring-boot-starter 1.1.0 那他对应的仓库的路径就是这样：\nMaven仓库是基于简单文件系统存储的，我们也理解其存储方式、因此，当遇到一些与仓库相关的问题时，可以很方便的查找相关文件，方便定位问题。\n仓库的分类 本地仓库 一般来说，在Maven项目目录下，没有诸如lib/这样用来存放依赖文件的目录。当Maven在执行编译或测试时，如果需要使用依赖文件，它总是基于坐标使用本地仓库的依赖文件。\n默认情况下，不管在Window还是Linux下，每个用户在自己用户目录下都有一个路径名为.m2/repository/的仓库目录。 如果你想自定义本地仓库目录地址。你可以编辑文件~/.m2/settings.xml，设置localRepository元素的值为想要的仓库地址，例如:\nxml\n代码解读\n复制代码\nD:\\java\\repository\\ 这样，该用户的本地仓库地址就被设置成了 D:\\java\\repository\\。 需要注意的是，默认情况下，~/.m2/settings.xml文件不存在，用户需要从Maven安装目录复制$M2_HOME/conf/settings.xml文件再进行编辑。\n远程仓库-中央仓库 由于最原始的本地仓库是空的，Maven必须知道至少一个可用的远程仓库，才能在执行Maven命令的时候下载到需要的构件。中央仓库就是这样一个默认的远程仓库，Maven的安装文件自带了中央仓库的配置。\n中央仓库包含了这个世界上绝大多数流行的开源Java构件，以及源码、作者信息、SCM,信息、许可证信息等，每个月这里都会接受全世界Java程序员大概1亿次的访问，它对全世界Java开发者的贡献由此可见一斑。\n远程仓库-私服 私服是一种特殊的远程仓库，它是架设在局域网内的仓库服务，私服代理广域网上的远程仓库，供局域网内的Maven用户使用。当Maven需要下载构件的时候，它从私服请求，如果私服上不存在该构件，则从外部的远程仓库下载，缓存在私服上之后，再为Maven的下载请求提供服务。因此，一些无法从外部仓库下载到的构件也能从本地上传到私服上供大家使用。 私服的好处：\n节省自己的外网速度 加速Maven构建 部署第三方构建 提高稳定性，增强控制 降低中央仓库的负荷 远程仓库的配置 在平时的开发中，我们往往不会使用默认的中央仓库，默认的中央仓库访问的速度比较慢，访问的人或许很多，有时候也无法满足我们项目的需求，可能项目需要的某些构件中央仓库中是没有的，而在其他远程仓库中有，如JBoss Maven仓库。这时，可以在pom.xml中配置该仓库，代码如下：\nxml\n代码解读\n复制代码\njboss JBoss Repository http://repository.jboss.com/maven2/ true daily false warn default **repository:**在repositories元素下，可以使用repository子元素声明一个或者多个远程仓库。 **id：**仓库声明的唯一id，尤其需要注意的是，Maven自带的中央仓库使用的id为central，如果其他仓库声明也使用该id，就会覆盖中央仓库的配置。 **name：**仓库的名称，让我们直观方便的知道仓库是哪个，暂时没发现其他太大的含义。 **url：**指向了仓库的地址，一般来说，该地址都基于http协议，Maven用户都可以在浏览器中打开仓库地址浏览构件。 releases和snapshots：用来控制Maven对于发布版构件和快照版构件的下载权限。需要注意的是enabled子元素，该例中releases的enabled值为true，表示开启JBoss仓库的发布版本下载支持，而snapshots的enabled值为false，表示关闭JBoss仓库的快照版本的下载支持。根据该配置，Maven只会从JBoss仓库下载发布版的构件，而不会下载快照版的构件。 **layout：**元素值default表示仓库的布局是Maven2及Maven3的默认布局，而不是Maven1的布局。基本不会用到Maven1的布局。 其他：对于releases和snapshots来说，除了enabled，它们还包含另外两个子元素updatePolicy和checksumPolicy。\n1：元素updatePolicy用来配置Maven从远处仓库检查更新的频率，默认值是daily，表示Maven每天检查一次。其他可用的值包括：never-从不检查更新；always-每次构建都检查更新；interval：X-每隔X分钟检查一次更新（X为任意整数）。\n2：元素checksumPolicy用来配置Maven检查校验和文件的策略。当构建被部署到Maven仓库中时，会同时部署对应的检验和文件。在下载构件的时候，Maven会验证校验和文件，如果校验和验证失败，当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其他可用的值包括：fail-Maven遇到校验和错误就让构建失败；ignore-使Maven完全忽略校验和错误。 远程仓库的认证 大部分的远程仓库不需要认证，但是如果是自己内部使用，为了安全起见，还是要配置认证信息的。 配置认证信息和配置远程仓库不同，远程仓库可以直接在pom.xml中配置，但是认证信息必须配置在settings.xml文件中。这是因为pom往往是被提交到代码仓库中供所有成员访问的，而settings.xml一般只存在于本机。因此，在settings.xml中配置认证信息更为安全。\nxml\n代码解读\n复制代码\n2 ... 3 4 5 6 releases 7 admin 8 admin123 9 10 11 ... 12 这里除了配置账号密码之外，值关键的就是id了，这个id要跟你在pom.xml里面配置的远程仓库repository的id一致，正是这个id将认证信息与仓库配置联系在了一起。\n部署构件至远程仓库 我们自己搭建远程仓库的目的就是为了可以方便部署我们自己项目的构件以及一些无法从外部仓库直接获取的构件。这样才能在开发时，供其他对团队成员使用。 Maven除了能对项目进行编译、测试、打包之外，还能将项目生成的构件部署到远程仓库中。首先，需要编辑项目的pom.xml文件。配置distributionManagement元素，代码如下：\nxml\n代码解读\n复制代码\nreleases public http://59.50.95.66:8081/nexus/content/repositories/releases snapshots Snapshots http://59.50.95.66:8081/nexus/content/repositories/snapshots 看代码，从命名上就看的出来区别，repository表示表示发布版本（稳定版本）构件的仓库，snapshotRepository表示快照版本（开发测试版本）的仓库。这两个元素都需要配置id、name和url，id为远程仓库的唯一标识，name是为了方便人阅读，关键的url表示该仓库的地址。\n配置好了就运行命令mvn clean deploy，Maven就会将项目构建输出的构件部署到配置对应的远程仓库，如果项目当前的版本是快照版本，则部署到快照版本的仓库地址，否则就部署到发布版本的仓库地址。 当前项目是快照还是发布版本是通过 true 这个来区分的。忘记的同学在看看上面的## 远程仓库的配置。\n镜像 如果仓库X可以提供仓库Y存储的所有内容，那么就可以认为X是Y的一个镜像。用过Maven的都知道，国外的中央仓库用起来太慢了，所以选择一个国内的镜像就很有必要，我推荐国内的阿里云镜像。 阿里云镜像：配置很简单，修改conf文件夹下的settings.xml文件，添加如下镜像配置：\nxml\n代码解读\n复制代码\nalimaven aliyun maven http://maven.aliyun.com/nexus/content/groups/public/ central 上例子中，的值为central,表示该配置为中央库的镜像，任何对于中央仓库的请求都会转至该镜像，用户也可以用同样的方法配置其他仓库的镜像\n这里介绍下配置的各种选项\n*:匹配所有远程仓库。 external:*:匹配所有远程仓库，使用localhost的除外，使用file://协议的除外。也就是说，匹配所有不在本机上的远程仓库。 repo1,repo2:匹配仓库repo1h和repo2，使用逗号分隔多个远程仓库。 *,!repo1:匹配所有远程仓库，repo1除外，使用感叹号将仓库从匹配中排除。 需要注意的是，由于镜像仓库完全屏蔽了被镜像仓库，当镜像仓库不稳定或者停止服务的时候，Maven仍将无法访问被镜像仓库，因而将无法下载构件。\n仓库服务搜索 这里介绍2个提供仓库服务搜索的地址：\nSonatype Nexus：repository.sonatype.org/ MVNrepository：mvnrepository.com/ 总结 暂时先这样，后面继续补充更新本篇，关于私服搭建的会另外开一片介绍。 本篇基于《Maven实战》整理提炼。需要电子书小伙伴可关注博主微信公众号：嘟爷java超神学堂（java2Learn）回复关键字 maven获取电子书。\n",
+  "wordCount" : "425",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2018-01-02T00:00:00Z",
+  "dateModified": "2018-01-02T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "嘟嘟MD"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/maven%E5%85%A5%E9%97%A8%E8%AF%BB%E5%AE%8C%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Maven入门，读完这篇就够了
+    </h1>
+    <div class="post-description">
+      夜空中最亮的星，2018请照亮我前行~Maven是我们日常开发都会用到的，新年第一天，把看过的Maven基础概念做了整理，作为入门和查阅使用。Maven作为一个构建工具，不仅能帮我们自动化构建，还能够抽象构建过程，提供构建任务实现;它跨平台，对外提供了一致的操作接口，这一切…
+    </div>
+    <div class="post-meta"><span title='2018-01-02 00:00:00 +0000 UTC'>一月 2, 2018</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;嘟嘟MD&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e6%ad%a3%e6%96%87" aria-label="正文">正文</a><ul>
+                        
+                <li>
+                    <a href="#maven%e6%a6%82%e5%bf%b5" aria-label="Maven概念">Maven概念</a></li>
+                <li>
+                    <a href="#maven%e7%9a%84%e5%ae%89%e8%a3%85" aria-label="maven的安装">maven的安装</a></li>
+                <li>
+                    <a href="#maven%e7%9b%ae%e5%bd%95" aria-label="maven目录">maven目录</a></li>
+                <li>
+                    <a href="#maven%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4%e8%af%b4%e6%98%8e" aria-label="Maven常用命令说明">Maven常用命令说明</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%aehttp%e4%bb%a3%e7%90%86" aria-label="设置http代理">设置http代理</a></li>
+                <li>
+                    <a href="#maven%e6%8f%92%e4%bb%b6%e5%ae%89%e8%a3%85%e5%9f%ba%e4%ba%8eidea" aria-label="Maven插件安装，基于IDEA">Maven插件安装，基于IDEA</a></li>
+                <li>
+                    <a href="#maven%e4%bd%bf%e7%94%a8" aria-label="Maven使用">Maven使用</a></li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e7%9a%84%e9%85%8d%e7%bd%ae" aria-label="依赖的配置">依赖的配置</a></li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e8%8c%83%e5%9b%b4" aria-label="依赖范围">依赖范围</a></li>
+                <li>
+                    <a href="#%e4%bc%a0%e9%80%92%e6%80%a7%e4%be%9d%e8%b5%96" aria-label="传递性依赖">传递性依赖</a></li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e8%8c%83%e5%9b%b4-1" aria-label="依赖范围">依赖范围</a></li>
+                <li>
+                    <a href="#%e6%8e%92%e9%99%a4%e4%be%9d%e8%b5%96" aria-label="排除依赖">排除依赖</a></li>
+                <li>
+                    <a href="#%e5%bd%92%e7%b1%bb%e4%be%9d%e8%b5%96" aria-label="归类依赖">归类依赖</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bb%93%e5%ba%93" aria-label="仓库">仓库</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%93%e5%ba%93%e7%9a%84%e7%94%b1%e6%9d%a5" aria-label="仓库的由来">仓库的由来</a></li>
+                <li>
+                    <a href="#%e4%bb%93%e5%ba%93%e7%9a%84%e5%b8%83%e5%b1%80" aria-label="仓库的布局">仓库的布局</a></li>
+                <li>
+                    <a href="#%e4%bb%93%e5%ba%93%e7%9a%84%e5%88%86%e7%b1%bb" aria-label="仓库的分类">仓库的分类</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e4%bb%93%e5%ba%93" aria-label="本地仓库">本地仓库</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b%e4%bb%93%e5%ba%93-%e4%b8%ad%e5%a4%ae%e4%bb%93%e5%ba%93" aria-label="远程仓库-中央仓库">远程仓库-中央仓库</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b%e4%bb%93%e5%ba%93-%e7%a7%81%e6%9c%8d" aria-label="远程仓库-私服">远程仓库-私服</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b%e4%bb%93%e5%ba%93%e7%9a%84%e9%85%8d%e7%bd%ae" aria-label="远程仓库的配置">远程仓库的配置</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b%e4%bb%93%e5%ba%93%e7%9a%84%e8%ae%a4%e8%af%81" aria-label="远程仓库的认证">远程仓库的认证</a></li>
+                <li>
+                    <a href="#%e9%83%a8%e7%bd%b2%e6%9e%84%e4%bb%b6%e8%87%b3%e8%bf%9c%e7%a8%8b%e4%bb%93%e5%ba%93" aria-label="部署构件至远程仓库">部署构件至远程仓库</a></li>
+                <li>
+                    <a href="#%e9%95%9c%e5%83%8f" aria-label="镜像">镜像</a></li>
+                <li>
+                    <a href="#%e4%bb%93%e5%ba%93%e6%9c%8d%e5%8a%a1%e6%90%9c%e7%b4%a2" aria-label="仓库服务搜索">仓库服务搜索</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>原本地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Ftengj.top%2F2018%2F01%2F01%2Fmaven%2F" title="http://tengj.top/2018/01/01/maven/">Maven入门，读完这篇就够了</a><br>
+博客地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Ftengj.top%2F" title="http://tengj.top/">tengj.top/</a></p>
+</blockquote>
+<h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>夜空中最亮的星，2018请照亮我前行~ Maven是我们日常开发都会用到的，新年第一天，把看过的Maven基础概念做了整理，作为入门和查阅使用。</p>
+<h1 id="正文">正文<a hidden class="anchor" aria-hidden="true" href="#正文">#</a></h1>
+<h2 id="maven概念">Maven概念<a hidden class="anchor" aria-hidden="true" href="#maven概念">#</a></h2>
+<p>Maven作为一个构建工具，不仅能帮我们自动化构建，还能够抽象构建过程，提供构建任务实现;它跨平台，对外提供了一致的操作接口，这一切足以使它成为优秀的、流行的构建工具。</p>
+<p>Maven不仅是构建工具，还是一个依赖管理工具和项目管理工具，它提供了中央仓库，能帮我自动下载构件。</p>
+<h2 id="maven的安装">maven的安装<a hidden class="anchor" aria-hidden="true" href="#maven的安装">#</a></h2>
+<p>一：因为本人是window系统，所以这里只介绍window下如何安装，在安装Maven之前，先确认已经安装了JDK. <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fca26bcd84~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>二：接着去<a href="https://link.juejin.cn?target=http%3A%2F%2Fmaven.apache.org%2Fdownload.cgi" title="http://maven.apache.org/download.cgi">Maven官网</a>下载界面下载想要的版本解压到你想要的目录就行 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fca6e67627~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fca695c1a9~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>三：最后设置一下环境变量，将Maven安装配置到操作系统环境中，主要就是配置<strong>M2_HOME <strong>和</strong>PATH</strong>两项，如图 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fca6d81655~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>都搞定后，验证一下，打开doc输入 mvn -v如何得到下面信息就说明配置成功了 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fca9ef3782~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h2 id="maven目录">maven目录<a hidden class="anchor" aria-hidden="true" href="#maven目录">#</a></h2>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fce5e78f24~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<ul>
+<li><strong>bin目录</strong>： 该目录包含了mvn运行的脚本，这些脚本用来配置java命令，准备好classpath和相关的Java系统属性，然后执行Java命令。</li>
+<li><strong>boot目录</strong>:  该目录只包含一个文件，该文件为plexus-classworlds-2.5.2.jar。plexus-classworlds是一个类加载器框架，相对于默认的java类加载器，它提供了更加丰富的语法以方便配置，Maven使用该框架加载自己的类库。</li>
+<li><strong>conf目录</strong>: 该目录包含了一个非常重要的文件settings.xml。直接修改该文件，就能在机器上全局地定制Maven的行为，一般情况下，我们更偏向于复制该文件至~/.m2/目录下（~表示用户目录），然后修改该文件，在用户范围定制Maven的行为。</li>
+<li><strong>lib目录</strong>: 该目录包含了所有Maven运行时需要的Java类库，Maven本身是分模块开发的，因此用户能看到诸如maven-core-3.0.jar、maven-model-3.0.jar之类的文件，此外这里还包含一些Maven用到的第三方依赖如commons-cli-1.2.jar、commons-lang-2.6.jar等等。</li>
+</ul>
+<h2 id="maven常用命令说明">Maven常用命令说明<a hidden class="anchor" aria-hidden="true" href="#maven常用命令说明">#</a></h2>
+<ul>
+<li><strong>mvn clean</strong>：表示运行清理操作（会默认把target文件夹中的数据清理）。</li>
+<li><strong>mvn clean compile</strong>：表示先运行清理之后运行编译，会将代码编译到target文件夹中。</li>
+<li><strong>mvn clean test</strong>：运行清理和测试。</li>
+<li><strong>mvn clean package</strong>：运行清理和打包。</li>
+<li><strong>mvn clean install</strong>：运行清理和安装，会将打好的包安装到本地仓库中，以便其他的项目可以调用。</li>
+<li><strong>mvn clean deploy</strong>：运行清理和发布（发布到私服上面）。</li>
+</ul>
+<p>上面的命令大部分都是连写的，大家也可以拆分分别执行，这是活的，看个人喜好以及使用需求，Eclipse Run as对maven项目会提供常用的命令。</p>
+<h2 id="设置http代理">设置http代理<a hidden class="anchor" aria-hidden="true" href="#设置http代理">#</a></h2>
+<p>编辑seeting.xml文件 有时候你所在的公司基于安全因素考虑，要求你使用通过安全认证的代理访问因特网。这种情况下，就需要为Maven配置HTTP代理，才能让它正常访问外部仓库，以下载所需要的资源。首先确认自己无法直接访问公共的maven中央仓库，直接运行命令ping repo1.maven.org可以检查网络。如果真的需要代理，先检查一下代理服务器是否畅通。比如现在有一个IP地址为218.14.227.197，端口为3128的代理服务，我们可以运行telnet 218.14.227.197 3128来检测该地址的该端口是否畅通。如果得到出错信息，需要先获取正确的代理服务信息，如果telnet连接正确，则输入ctrl+]，然后q，回车，退出即可。</p>
+<p>检查完毕之后，编辑~/.m2/settings.xml文件(如果没有该文件，则复制$M2_HOME/conf/settings.xml)。添加代理配置如下：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;settings&gt;     ...     &lt;proxies&gt;       &lt;proxy&gt;         &lt;id&gt;my-proxy&lt;/id&gt;         &lt;active&gt;true&lt;/active&gt;         &lt;protocol&gt;http&lt;/protocol&gt;         &lt;host&gt;218.14.227.197&lt;/host&gt;         &lt;port&gt;3128&lt;/port&gt;         &lt;!--           &lt;username&gt;***&lt;/username&gt;           &lt;password&gt;***&lt;/password&gt;           &lt;nonProxyHosts&gt;             repository.mycom.com|*.google.com           &lt;/nonProxyHosts&gt;         --&gt;       &lt;/proxy&gt;     &lt;/proxies&gt;     ...   &lt;/settings&gt;</code> </p>
+<p>这段配置十分简单，proxies下可以有多个proxy元素，如果声明了多个proxy元素，则默认情况下第一个被激活的proxy会生效。这里声明了一个id为my-proxy的代理，active的值为true表示激活该代理，protocol表示使用的代理协议，这里是http。当然，最重要的是指定正确的主机名(host元素)和端口(port元素)。上述xml配置中注释掉了username,password,nonProxyHosts几个元素。当代理服务需要认证时，就需要配置username和password。nonProxyHost元素用来指定哪些主机不需要代理，可以使用&quot;|&ldquo;符号来分隔多个主机名。此外，该配置也支持通配符，如:*.google.com表示所有以google.com结尾的域名访问都不要通过代理。</p>
+<h2 id="maven插件安装基于idea">Maven插件安装，基于IDEA<a hidden class="anchor" aria-hidden="true" href="#maven插件安装基于idea">#</a></h2>
+<p>博主现在使用IDEA来开发的，所以这里介绍一下IDEA中如何配置引入我们上面下载好的Maven <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fceda7382f~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h2 id="maven使用">Maven使用<a hidden class="anchor" aria-hidden="true" href="#maven使用">#</a></h2>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;     xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;     &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;     &lt;groupId&gt;com.tengj&lt;/groupId&gt;     &lt;artifactId&gt;springBootDemo1&lt;/artifactId&gt;     &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;     &lt;name&gt;springBootDemo1&lt;/name&gt; &lt;/project&gt;</code></p>
+<p>代码的第一行是XML头，指定了该xml文档的版本和编码方式。 project是所有pom.xml的根元素，它还声明了一些POM相关的命名空间及xsd元素。 根元素下的第一个子元素modelVersion指定了当前的POM模型的版本，对于Maven3来说，它只能是4.0.0 代码中最重要是包含了groupId,artifactId和version了。这三个元素定义了一个项目基本的坐标，在Maven的世界，任何的jar、pom或者jar都是以基于这些基本的坐标进行区分的。</p>
+<p>groupId定义了项目属于哪个组，随意命名，比如谷歌公司的myapp项目，就取名为 com.google.myapp</p>
+<p>artifactId定义了当前Maven项目在组中唯一的ID,比如定义hello-world。</p>
+<p>version指定了项目当前的版本0.0.1-SNAPSHOT,SNAPSHOT意为快照，说明该项目还处于开发中，是不稳定的。</p>
+<p>name元素生命了一个对于用户更为友好的项目名称，虽然这不是必须的，但还是推荐为每个POM声明name,以方便信息交流</p>
+<h2 id="依赖的配置">依赖的配置<a hidden class="anchor" aria-hidden="true" href="#依赖的配置">#</a></h2>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;project&gt; ... &lt;dependencies&gt;     &lt;dependency&gt;         &lt;groupId&gt;实际项目&lt;/groupId&gt; 　　　　 &lt;artifactId&gt;模块&lt;/artifactId&gt; 　　　　 &lt;version&gt;版本&lt;/version&gt; 　　　　 &lt;type&gt;依赖类型&lt;/type&gt; 　　　　 &lt;scope&gt;依赖范围&lt;/scope&gt; 　　　　 &lt;optional&gt;依赖是否可选&lt;/optional&gt; 　　　　 &lt;!—主要用于排除传递性依赖--&gt; 　　　　 &lt;exclusions&gt; 　　　　     &lt;exclusion&gt; 　　　　　　　    &lt;groupId&gt;…&lt;/groupId&gt; 　　　　　　　　　 &lt;artifactId&gt;…&lt;/artifactId&gt; 　　　　　　　&lt;/exclusion&gt; 　　　　 &lt;/exclusions&gt; 　　&lt;/dependency&gt; &lt;dependencies&gt; ... &lt;/project&gt;</code></p>
+<p>根元素project下的dependencies可以包含一个或者多个dependency元素，以声明一个或者多个项目依赖。每个依赖可以包含的元素有：</p>
+<ul>
+<li><strong>grounpId、artifactId和version</strong>:以来的基本坐标，对于任何一个依赖来说，基本坐标是最重要的，Maven根据坐标才能找到需要的依赖。</li>
+<li><strong>type</strong>:依赖的类型，对于项目坐标定义的packaging。大部分情况下，该元素不必声明，其默认值为jar</li>
+<li><strong>scope</strong>:依赖的范围</li>
+<li><strong>optional</strong>:标记依赖是否可选</li>
+<li><strong>exclusions</strong>:用来排除传递性依赖</li>
+</ul>
+<h2 id="依赖范围">依赖范围<a hidden class="anchor" aria-hidden="true" href="#依赖范围">#</a></h2>
+<p>依赖范围就是用来控制依赖和三种classpath(编译classpath，测试classpath、运行classpath)的关系，Maven有如下几种依赖范围：</p>
+<ul>
+<li>**compile:**编译依赖范围。如果没有指定，就会默认使用该依赖范围。使用此依赖范围的Maven依赖，对于编译、测试、运行三种classpath都有效。典型的例子是spring-code,在编译、测试和运行的时候都需要使用该依赖。</li>
+<li><strong>test:</strong> 测试依赖范围。使用次依赖范围的Maven依赖，只对于测试classpath有效，在编译主代码或者运行项目的使用时将无法使用此依赖。典型的例子是Jnuit,它只有在编译测试代码及运行测试的时候才需要。</li>
+<li>**provided:**已提供依赖范围。使用此依赖范围的Maven依赖，对于编译和测试classpath有效，但在运行时候无效。典型的例子是servlet-api,编译和测试项目的时候需要该依赖，但在运行项目的时候，由于容器以及提供，就不需要Maven重复地引入一遍。</li>
+<li>**runtime:**运行时依赖范围。使用此依赖范围的Maven依赖，对于测试和运行classpath有效，但在编译主代码时无效。典型的例子是JDBC驱动实现，项目主代码的编译只需要JDK提供的JDBC接口，只有在执行测试或者运行项目的时候才需要实现上述接口的具体JDBC驱动。</li>
+<li>**system:**系统依赖范围。该依赖与三种classpath的关系，和provided依赖范围完全一致，但是，使用system范围的依赖时必须通过systemPath元素显示地指定依赖文件的路径。由于此类依赖不是通过Maven仓库解析的，而且往往与本机系统绑定，可能构成构建的不可移植，因此应该谨慎使用。systemPath元素可以引用环境变量，如：</li>
+</ul>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;dependency&gt;     &lt;groupId&gt;javax.sql&lt;/groupId&gt;     &lt;artifactId&gt;jdbc-stdext&lt;/artifactId&gt;     &lt;Version&gt;2.0&lt;/Version&gt;     &lt;scope&gt;system&lt;/scope&gt;     &lt;systemPath&gt;${java.home}/lib/rt.jar&lt;/systemPath&gt; &lt;/dependency&gt;</code></p>
+<ul>
+<li>**import:**导入依赖范围。该依赖范围不会对三种classpath产生实际的影响。 上述除import以外的各种依赖范围与三种classpath的关系如下:</li>
+</ul>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fceaaf09e1~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h2 id="传递性依赖">传递性依赖<a hidden class="anchor" aria-hidden="true" href="#传递性依赖">#</a></h2>
+<p>比如一个account-email项目为例，account-email有一个compile范围的spring-code依赖，spring-code有一个compile范围的commons-logging依赖，那么commons-logging就会成为account-email的compile的范围依赖，commons-logging是account-email的一个传递性依赖 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fcea58b801~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>有了传递性依赖机制，在使用Spring Framework的时候就不用去考虑它依赖了什么，也不用担心引入多余的依赖。Maven会解析各个直接依赖的POM，将那些必要的间接依赖，以传递性依赖的形式引入到当前的项目中。</p>
+<h2 id="依赖范围-1">依赖范围<a hidden class="anchor" aria-hidden="true" href="#依赖范围-1">#</a></h2>
+<p>假设A依赖于B,B依赖于C，我们说A对于B是第一直接依赖，B对于C是第二直接依赖，A对于C是传递性依赖。第一直接依赖和第二直接依赖的范围决定了传递性依赖的范围，如下图所示，最左边一行表示第一直接依赖范围，最上面一行表示第二直接依赖范围，中间的交叉单元格则表示传递依赖范围。</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fceba81e2b~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>从上图中，我们可以发现这样的规律：</p>
+<ul>
+<li>当第二直接依赖的范围是compile的时候，传递性依赖的范围与第一直接依赖的范围一致；</li>
+<li>当第二直接依赖的范围是test的时候，依赖不会得以传递；</li>
+<li>当第二直接依赖的范围是provided的时候，只传递第一直接依赖范围也为provided的依赖，切传递依赖的范围同样为provided;</li>
+<li>当第二直接依赖的范围是runtime的时候，传递性依赖的范围与第一直接依赖的范围一致，但compile列外，此时传递性依赖范围为runtime.</li>
+</ul>
+<p>## 依赖调解 有时候，当传递性依赖造成为题的时候，就需要清楚地知道该传递性依赖是从哪条依赖路径引入的。这就是依赖调解的作用，依赖调解有两大原则： 1. 路径最近者优先 比如项目有A有这样的依赖关系：A-&gt;B-&gt;C-&gt;X(1.0)、A-&gt;D-&gt;X(2.0),X是A的传递性依赖，但是两条依赖路径上有两个版本的X，所以根据第一原则，A-&gt;D-&gt;X(2.0)路径短，所以X(2.0)会被解析使用 2. 第一声明者优先 如果路径都一样长的话，第一原则就不行了，比如 A-&gt;B-&gt;Y(1.0)、A-&gt;C-&gt;Y(2.0),Y(1.0)和Y(2.0)的路径一样，所以这时候根据第二原则，先声明的被解析。</p>
+<p>## 可选依赖</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fcf227ae4b~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>如图，项目中A依赖B，B依赖于X和Y，如果所有这三个的范围都是compile的话，那么X和Y就是A的compile范围的传递性依赖，但是如果我想X,Y不作为A的传递性依赖，不给他用的话。就需要下面提到的配置可选依赖。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;project&gt;       &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;       &lt;groupId&gt;com.juvenxu.mvnbook&lt;/groupId&gt;       &lt;artifactId&gt;project-b&lt;/artifactId&gt;       &lt;version&gt;1.0.0&lt;/version&gt;       &lt;dependencies&gt;           &lt;dependency&gt;               &lt;groupId&gt;mysql&lt;/groupId&gt;               &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;               &lt;version&gt;5.1.10&lt;/version&gt;               &lt;optional&gt;true&lt;/optional&gt;           &lt;/dependency&gt;           &lt;dependency&gt;               &lt;groupId&gt;postgresql&lt;/groupId&gt;               &lt;artifactId&gt;postgresql&lt;/groupId&gt;               &lt;version&gt;8.4-701.jdbc3&lt;/version&gt;               &lt;optional&gt;true&lt;/optional&gt;           &lt;/dependency&gt;       &lt;/dependencies&gt;   &lt;/project&gt;</code>  </p>
+<p>配置也简单，在依赖里面添加</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;optional&gt;true&lt;/optional&gt;</code></p>
+<p>就表示可选依赖了，这样A如果想用X,Y就要直接显示的添加依赖了。</p>
+<h2 id="排除依赖">排除依赖<a hidden class="anchor" aria-hidden="true" href="#排除依赖">#</a></h2>
+<p>有时候你引入的依赖中包含你不想要的依赖包，你想引入自己想要的，这时候就要用到排除依赖了，比如下图中spring-boot-starter-web自带了logback这个日志包，我想引入log4j2的，所以我先排除掉logback的依赖包，再引入想要的包就行了</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fd18cdd481~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>排除依赖代码结构：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;exclusions&gt;     &lt;exclusion&gt;         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;         &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;     &lt;/exclusion&gt; &lt;/exclusions&gt;</code></p>
+<p>这里注意：声明exclustion的时候只需要groupId和artifactId，而不需要version元素，这是因为只需要groupId和artifactId就能唯一定位依赖图中的某个依赖。</p>
+<h2 id="归类依赖">归类依赖<a hidden class="anchor" aria-hidden="true" href="#归类依赖">#</a></h2>
+<p>有时候我们引入的很多依赖包，他们都来自同一个项目的不同模块，所以他们的版本号都一样，这时候我们可以用属性来统一管理版本号</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;project&gt;       &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;       &lt;groupId&gt;com.juven.mvnbook.account&lt;/groupId&gt;       &lt;artifactId&gt;accout-email&lt;/artifactId&gt;       &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;       &lt;properties&gt;           &lt;springframework.version&gt;1.5.6&lt;/springframework.version&gt;       &lt;/properties&gt;       &lt;dependencies&gt;           &lt;dependency&gt;               &lt;groupId&gt;org.springframework&lt;/groupId&gt;               &lt;artifactId&gt;spring-core&lt;/artifactId&gt;               &lt;version&gt;${springframework.version}&lt;/version&gt;           &lt;/dependency&gt;            &lt;dependency&gt;               &lt;groupId&gt;org.springframework&lt;/groupId&gt;               &lt;artifactId&gt;spring-beans&lt;/artifactId&gt;               &lt;version&gt;${springframework.version}&lt;/version&gt;           &lt;/dependency&gt;              &lt;/dependencies&gt;   &lt;/project&gt;</code>  </p>
+<p>如图所示，先通过</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;/properties&gt;     这里定义你先要的版本 &lt;/properties&gt;</code></p>
+<p>来定义，然后在下面依赖使用${}来引入你的属性。</p>
+<h1 id="仓库">仓库<a hidden class="anchor" aria-hidden="true" href="#仓库">#</a></h1>
+<p>这节将介绍仓库的由来、布局、分类、配置、内部工作机制、镜像等概念</p>
+<h2 id="仓库的由来">仓库的由来<a hidden class="anchor" aria-hidden="true" href="#仓库的由来">#</a></h2>
+<p>在Maven世界中，任何一个依赖、插件或者项目构建的输出，都可以称为构件。得益于坐标机制，任何Maven项目使用任何一个构件的方式都是完全相同的。在此基础上，Maven可以在某个位置统一存储所有Maven项目共享的构件，这个统一的位置就是仓库。</p>
+<p>实际的Maven项目将不再各自存储其依赖文件，它们只需要声明这些依赖的坐标，在需要的时候（例如，编译项目的时候需要将依赖加入到classpath中），Maven会自动根据坐标找到仓库中的构件，并使用它们。</p>
+<p>为了实现重用，项目构建完毕后可生成的构件也可以安装或者部署到仓库中，供其他项目使用。</p>
+<h2 id="仓库的布局">仓库的布局<a hidden class="anchor" aria-hidden="true" href="#仓库的布局">#</a></h2>
+<p>任何一个构件都有其唯一的坐标，根据这个坐标可以定义其在仓库中的唯一存储路径，这便是Maven的仓库布局方式。 该路经与坐标对应关系为groupId/artifactId/version/artifactId-version.packaging。 举个例子，比如下面这个分页插件依赖如下：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;dependency&gt;       &lt;groupId&gt;com.github.pagehelper&lt;/groupId&gt;       &lt;artifactId&gt;pagehelper-spring-boot-starter&lt;/artifactId&gt;       &lt;version&gt;1.1.0&lt;/version&gt; &lt;/dependency&gt;</code></p>
+<p>那他对应的仓库的路径就是这样：</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fd18d69937~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<p>Maven仓库是基于简单文件系统存储的，我们也理解其存储方式、因此，当遇到一些与仓库相关的问题时，可以很方便的查找相关文件，方便定位问题。</p>
+<h2 id="仓库的分类">仓库的分类<a hidden class="anchor" aria-hidden="true" href="#仓库的分类">#</a></h2>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/2/160b27fd1730a299~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt="image.png"  />
+</p>
+<h3 id="本地仓库">本地仓库<a hidden class="anchor" aria-hidden="true" href="#本地仓库">#</a></h3>
+<p>一般来说，在Maven项目目录下，没有诸如lib/这样用来存放依赖文件的目录。当Maven在执行编译或测试时，如果需要使用依赖文件，它总是基于坐标使用本地仓库的依赖文件。</p>
+<p>默认情况下，不管在Window还是Linux下，每个用户在自己用户目录下都有一个路径名为.m2/repository/的仓库目录。 如果你想自定义本地仓库目录地址。你可以编辑文件~/.m2/settings.xml，设置localRepository元素的值为想要的仓库地址，例如:</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;settings&gt; &lt;localRepository&gt;D:\java\repository\&lt;/localRepository&gt; &lt;/settings&gt;</code></p>
+<p>这样，该用户的本地仓库地址就被设置成了 D:\java\repository\。 需要注意的是，默认情况下，~/.m2/settings.xml文件不存在，用户需要从Maven安装目录复制$M2_HOME/conf/settings.xml文件再进行编辑。</p>
+<h3 id="远程仓库-中央仓库">远程仓库-中央仓库<a hidden class="anchor" aria-hidden="true" href="#远程仓库-中央仓库">#</a></h3>
+<p>由于最原始的本地仓库是空的，Maven必须知道至少一个可用的远程仓库，才能在执行Maven命令的时候下载到需要的构件。中央仓库就是这样一个默认的远程仓库，Maven的安装文件自带了中央仓库的配置。</p>
+<p>中央仓库包含了这个世界上绝大多数流行的开源Java构件，以及源码、作者信息、SCM,信息、许可证信息等，每个月这里都会接受全世界Java程序员大概1亿次的访问，它对全世界Java开发者的贡献由此可见一斑。</p>
+<h3 id="远程仓库-私服">远程仓库-私服<a hidden class="anchor" aria-hidden="true" href="#远程仓库-私服">#</a></h3>
+<p>私服是一种特殊的远程仓库，它是架设在局域网内的仓库服务，私服代理广域网上的远程仓库，供局域网内的Maven用户使用。当Maven需要下载构件的时候，它从私服请求，如果私服上不存在该构件，则从外部的远程仓库下载，缓存在私服上之后，再为Maven的下载请求提供服务。因此，一些无法从外部仓库下载到的构件也能从本地上传到私服上供大家使用。 私服的好处：</p>
+<ul>
+<li>节省自己的外网速度</li>
+<li>加速Maven构建</li>
+<li>部署第三方构建</li>
+<li>提高稳定性，增强控制</li>
+<li>降低中央仓库的负荷</li>
+</ul>
+<h2 id="远程仓库的配置">远程仓库的配置<a hidden class="anchor" aria-hidden="true" href="#远程仓库的配置">#</a></h2>
+<p>在平时的开发中，我们往往不会使用默认的中央仓库，默认的中央仓库访问的速度比较慢，访问的人或许很多，有时候也无法满足我们项目的需求，可能项目需要的某些构件中央仓库中是没有的，而在其他远程仓库中有，如JBoss Maven仓库。这时，可以在pom.xml中配置该仓库，代码如下：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!-- 配置远程仓库 --&gt;     &lt;repositories&gt;         &lt;repository&gt;             &lt;id&gt;jboss&lt;/id&gt;             &lt;name&gt;JBoss Repository&lt;/name&gt;             &lt;url&gt;http://repository.jboss.com/maven2/&lt;/url&gt;             &lt;releases&gt;                 &lt;enabled&gt;true&lt;/enabled&gt;                 &lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;             &lt;/releases&gt;             &lt;snapshots&gt;                 &lt;enabled&gt;false&lt;/enabled&gt;                 &lt;checksumPolicy&gt;warn&lt;/checksumPolicy&gt;             &lt;/snapshots&gt;             &lt;layout&gt;default&lt;/layout&gt;         &lt;/repository&gt;     &lt;/repositories&gt;</code></p>
+<ul>
+<li>**repository:**在repositories元素下，可以使用repository子元素声明一个或者多个远程仓库。</li>
+<li>**id：**仓库声明的唯一id，尤其需要注意的是，Maven自带的中央仓库使用的id为central，如果其他仓库声明也使用该id，就会覆盖中央仓库的配置。</li>
+<li>**name：**仓库的名称，让我们直观方便的知道仓库是哪个，暂时没发现其他太大的含义。</li>
+<li>**url：**指向了仓库的地址，一般来说，该地址都基于http协议，Maven用户都可以在浏览器中打开仓库地址浏览构件。</li>
+<li><strong>releases和snapshots：<strong>用来控制Maven对于发布版构件和快照版构件的下载权限。需要注意的是</strong>enabled</strong>子元素，该例中releases的enabled值为true，表示开启JBoss仓库的发布版本下载支持，而snapshots的enabled值为false，表示关闭JBoss仓库的快照版本的下载支持。根据该配置，Maven只会从JBoss仓库下载发布版的构件，而不会下载快照版的构件。</li>
+<li>**layout：**元素值default表示仓库的布局是Maven2及Maven3的默认布局，而不是Maven1的布局。基本不会用到Maven1的布局。</li>
+<li><strong>其他：<strong>对于releases和snapshots来说，除了enabled，它们还包含另外两个子元素updatePolicy和checksumPolicy。<br>
+1：元素</strong>updatePolicy</strong>用来配置Maven从远处仓库检查更新的频率，默认值是daily，表示Maven每天检查一次。其他可用的值包括：never-从不检查更新；always-每次构建都检查更新；interval：X-每隔X分钟检查一次更新（X为任意整数）。<br>
+2：元素<strong>checksumPolicy</strong>用来配置Maven检查校验和文件的策略。当构建被部署到Maven仓库中时，会同时部署对应的检验和文件。在下载构件的时候，Maven会验证校验和文件，如果校验和验证失败，当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其他可用的值包括：fail-Maven遇到校验和错误就让构建失败；ignore-使Maven完全忽略校验和错误。</li>
+</ul>
+<h2 id="远程仓库的认证">远程仓库的认证<a hidden class="anchor" aria-hidden="true" href="#远程仓库的认证">#</a></h2>
+<p>大部分的远程仓库不需要认证，但是如果是自己内部使用，为了安全起见，还是要配置认证信息的。 配置认证信息和配置远程仓库不同，远程仓库可以直接在pom.xml中配置，但是认证信息必须配置在settings.xml文件中。这是因为pom往往是被提交到代码仓库中供所有成员访问的，而settings.xml一般只存在于本机。因此，在settings.xml中配置认证信息更为安全。</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;settings&gt;  2     ...  3     &lt;!--配置远程仓库认证信息--&gt;  4     &lt;servers&gt;  5         &lt;server&gt;  6             &lt;id&gt;releases&lt;/id&gt;  7             &lt;username&gt;admin&lt;/username&gt;  8             &lt;password&gt;admin123&lt;/password&gt;  9         &lt;/server&gt; 10     &lt;/servers&gt; 11     ... 12 &lt;/settings&gt;</code></p>
+<p>这里除了配置账号密码之外，值关键的就是id了，这个id要跟你在pom.xml里面配置的远程仓库repository的id一致，正是这个id将认证信息与仓库配置联系在了一起。</p>
+<h2 id="部署构件至远程仓库">部署构件至远程仓库<a hidden class="anchor" aria-hidden="true" href="#部署构件至远程仓库">#</a></h2>
+<p>我们自己搭建远程仓库的目的就是为了可以方便部署我们自己项目的构件以及一些无法从外部仓库直接获取的构件。这样才能在开发时，供其他对团队成员使用。 Maven除了能对项目进行编译、测试、打包之外，还能将项目生成的构件部署到远程仓库中。首先，需要编辑项目的pom.xml文件。配置distributionManagement元素，代码如下：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;distributionManagement&gt;         &lt;repository&gt;             &lt;id&gt;releases&lt;/id&gt;             &lt;name&gt;public&lt;/name&gt;             &lt;url&gt;http://59.50.95.66:8081/nexus/content/repositories/releases&lt;/url&gt;         &lt;/repository&gt;         &lt;snapshotRepository&gt;             &lt;id&gt;snapshots&lt;/id&gt;             &lt;name&gt;Snapshots&lt;/name&gt;             &lt;url&gt;http://59.50.95.66:8081/nexus/content/repositories/snapshots&lt;/url&gt;         &lt;/snapshotRepository&gt; &lt;/distributionManagement&gt;</code></p>
+<p>看代码，从命名上就看的出来区别，repository表示表示发布版本（稳定版本）构件的仓库，snapshotRepository表示快照版本（开发测试版本）的仓库。这两个元素都需要配置id、name和url，id为远程仓库的唯一标识，name是为了方便人阅读，关键的url表示该仓库的地址。</p>
+<p>配置好了就运行命令mvn clean deploy，Maven就会将项目构建输出的构件部署到配置对应的远程仓库，如果项目当前的版本是快照版本，则部署到快照版本的仓库地址，否则就部署到发布版本的仓库地址。 当前项目是快照还是发布版本是通过 true 这个来区分的。忘记的同学在看看上面的## 远程仓库的配置。</p>
+<h2 id="镜像">镜像<a hidden class="anchor" aria-hidden="true" href="#镜像">#</a></h2>
+<p>如果仓库X可以提供仓库Y存储的所有内容，那么就可以认为X是Y的一个镜像。用过Maven的都知道，国外的中央仓库用起来太慢了，所以选择一个国内的镜像就很有必要，我推荐国内的阿里云镜像。 阿里云镜像：配置很简单，修改conf文件夹下的settings.xml文件，添加如下镜像配置：</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;mirrors&gt;     &lt;mirror&gt;       &lt;id&gt;alimaven&lt;/id&gt;       &lt;name&gt;aliyun maven&lt;/name&gt;       &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;       &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;             &lt;/mirror&gt;   &lt;/mirrors&gt;</code></p>
+<p>上例子中，的值为central,表示该配置为中央库的镜像，任何对于中央仓库的请求都会转至该镜像，用户也可以用同样的方法配置其他仓库的镜像</p>
+<p>这里介绍下<code>&lt;mirrorOf&gt;</code>配置的各种选项</p>
+<ul>
+<li><code>&lt;mirrorOf&gt;*&lt;mirrorOf&gt;</code>:匹配所有远程仓库。</li>
+<li><code>&lt;mirrorOf&gt;external:*&lt;mirrorOf&gt;</code>:匹配所有远程仓库，使用localhost的除外，使用file://协议的除外。也就是说，匹配所有不在本机上的远程仓库。</li>
+<li><code>&lt;mirrorOf&gt;repo1,repo2&lt;mirrorOf&gt;</code>:匹配仓库repo1h和repo2，使用逗号分隔多个远程仓库。</li>
+<li><code>&lt;mirrorOf&gt;*,!repo1&lt;mirrorOf&gt;</code>:匹配所有远程仓库，repo1除外，使用感叹号将仓库从匹配中排除。</li>
+</ul>
+<p>需要注意的是，由于镜像仓库完全屏蔽了被镜像仓库，当镜像仓库不稳定或者停止服务的时候，Maven仍将无法访问被镜像仓库，因而将无法下载构件。</p>
+<h2 id="仓库服务搜索">仓库服务搜索<a hidden class="anchor" aria-hidden="true" href="#仓库服务搜索">#</a></h2>
+<p>这里介绍2个提供仓库服务搜索的地址：</p>
+<ul>
+<li>Sonatype Nexus：<a href="https://link.juejin.cn?target=https%3A%2F%2Frepository.sonatype.org%2F" title="https://repository.sonatype.org/">repository.sonatype.org/</a></li>
+<li>MVNrepository：<a href="https://link.juejin.cn?target=http%3A%2F%2Fmvnrepository.com%2F" title="http://mvnrepository.com/">mvnrepository.com/</a></li>
+</ul>
+<h1 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h1>
+<p>暂时先这样，后面继续补充更新本篇，关于私服搭建的会另外开一片介绍。 本篇基于《Maven实战》整理提炼。需要电子书小伙伴可关注博主微信公众号：嘟爷java超神学堂（java2Learn）回复关键字 <code>maven</code>获取电子书。</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/1/160b10166d0701c8~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+      <li><a href="http://localhost:1313/tags/maven/">Maven</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E9%A2%86%E6%94%AF%E4%BB%98%E5%AE%9D%E7%BA%A2%E5%8C%850%E6%92%B8%E5%8F%AF%E5%8F%A3%E5%8F%AF%E4%B9%90%E4%BA%8C%E7%BB%B4%E7%A0%81/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>教你如何领支付宝红包0撸可口可乐二维码</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E8%8A%B1%E4%BA%86%E4%B8%80%E5%A4%A9%E6%97%B6%E9%97%B4%E6%90%9C%E5%88%AE%E7%9A%84%E4%B8%AA%E4%BA%BA%E8%A7%89%E5%BE%97%E4%B8%8D%E9%94%99%E7%9A%8416%E5%A5%97vue3%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E6%A8%A1%E7%89%88/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>花了一天时间,搜刮的个人觉得不错的16套vue3后台管理模版</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Maven入门，读完这篇就够了 on x"
+            href="https://x.com/intent/tweet/?text=Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f&amp;hashtags=Java%2cmaven">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Maven入门，读完这篇就够了 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f&amp;title=Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86&amp;summary=Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Maven入门，读完这篇就够了 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f&title=Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Maven入门，读完这篇就够了 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Maven入门，读完这篇就够了 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Maven入门，读完这篇就够了 on telegram"
+            href="https://telegram.me/share/url?text=Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Maven入门，读完这篇就够了 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Maven%e5%85%a5%e9%97%a8%ef%bc%8c%e8%af%bb%e5%ae%8c%e8%bf%99%e7%af%87%e5%b0%b1%e5%a4%9f%e4%ba%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fmaven%25E5%2585%25A5%25E9%2597%25A8%25E8%25AF%25BB%25E5%25AE%258C%25E8%25BF%2599%25E7%25AF%2587%25E5%25B0%25B1%25E5%25A4%259F%25E4%25BA%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
