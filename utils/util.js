@@ -2,8 +2,9 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import https from 'https';
+import axios from 'axios';
 import {fileURLToPath} from 'url';
+import {createWriteStream} from 'fs';
 
 // 获取当前模块文件的目录
 const __filename = fileURLToPath(import.meta.url);
@@ -198,86 +199,118 @@ export function extractNumber(input) {
     return Math.round(number); // 返回取整后的数字
 }
 
-// 下载图片
-export async function downloadImage(url, filepath, retries = 3) {
-    const fileStream = await fs.open(filepath, 'w');
-    const file = fileStream.createWriteStream();
+// 处理markdown中的图片问题、代码格式问题
+export async function processMarkdown(inputPath, outputDir, hugoSpecialPath) {
+    const defaultImagePath = 'https://t11.baidu.com/it/u=1683902884,1968350863&fm=58';
 
-    return new Promise((resolve, reject) => {
-        https.get(url, (response) => {
-            if (response.statusCode !== 200) {
-                if (retries > 0) {
-                    console.log(`Retrying ${url} (${retries} retries left)`);
-                    return resolve(downloadImage(url, filepath, retries - 1)); // 重试
-                } else {
-                    return reject(new Error(`Failed to download: ${url}`));
+    // 辅助函数：处理文件名
+    const sanitizeFileName = (url) => {
+        // 提取文件名，移除无效字符
+        const fileName = path.basename(url.split(/[?#]/)[0]);
+        return fileName.replace(/[<>:"\/\\|?*]/g, ''); // 移除无效字符
+    };
+
+    // 辅助函数：创建目录
+    const ensureDirectoryExistence = async (filePath) => {
+        const dirName = path.dirname(filePath);
+        try {
+            await fs.access(dirName);
+        } catch (error) {
+            // 如果目录不存在，则创建
+            await fs.mkdir(dirName, {recursive: true});
+        }
+    };
+
+    // 下载图片的函数，带重试机制
+    const downloadImage = async (url, filePath, retries = 3) => {
+        let attempts = 0;
+
+        while (attempts < retries) {
+            try {
+                const response = await axios({
+                    url,
+                    method: 'GET',
+                    responseType: 'stream',
+                });
+
+                // 确保目录存在
+                await ensureDirectoryExistence(filePath);
+
+                // 写入文件
+                const writer = response.data.pipe(createWriteStream(filePath));
+                return new Promise((resolve, reject) => {
+                    writer.on('finish', () => resolve(true));
+                    writer.on('error', reject);
+                });
+            } catch (error) {
+                attempts++;
+                console.log(`下载失败，第 ${attempts} 次重试...原因是:${error.message}`);
+
+                if (attempts >= retries) {
+                    console.log(`下载失败，已重试 ${retries} 次。`);
+                    return false;
                 }
             }
+        }
+    }
+    // 替换图片地址的核心函数
+    const replaceImagePaths = async (content, outputDir) => {
+        const imageRegex = /!\[.*?\]\((https?:\/\/.*?)\)/g;
+        const matches = [];
+        let match;
 
-            response.pipe(file);
-            file.on('finish', () => {
-                file.close(() => resolve(filepath)); // 下载完成后关闭文件流
-            });
-        }).on('error', async (err) => {
-            await fs.unlink(filepath); // 出现错误时删除文件
-            if (retries > 0) {
-                console.log(`Retrying ${url} (${retries} retries left)`);
-                return resolve(downloadImage(url, filepath, retries - 1)); // 重试
-            } else {
-                return reject(err);
-            }
-        });
-    });
-};
-
-// 替换 Markdown 中的图片链接为本地路径
-export async function replaceMarkdownImages(markdownContent, downloadFolder, defaultImagePath) {
-    const imageRegex = /!\[.*?\]\((https?:\/\/[^\)]+)\)/g; // 匹配 Markdown 图片语法中的 URL
-    let match;
-
-    // 遍历所有匹配的图片链接
-    while ((match = imageRegex.exec(markdownContent)) !== null) {
-        const url = match[1]; // 获取图片的 URL
-        const imageName = path.basename(url).split('?')[0]; // 提取图片名
-        let localImagePath = path.join(downloadFolder, imageName);
-
-        try {
-            // 尝试下载图片
-            await downloadImage(url, localImagePath);
-            console.log(`Downloaded: ${url} -> ${localImagePath}`);
-        } catch (error) {
-            // 下载失败，使用默认图片
-            console.error(`Failed to download ${url}, using default image.`);
-            localImagePath = defaultImagePath;
+        // 收集所有匹配的URL
+        while ((match = imageRegex.exec(content)) !== null) {
+            matches.push(match[1]);
         }
 
-        // 替换 Markdown 中的图片链接为本地路径
-        markdownContent = markdownContent.replace(url, localImagePath);
-    }
+        // 循环处理每个匹配的URL
+        for (const imageUrl of matches) {
+            const imageFileName = sanitizeFileName(imageUrl).substring(0, 20) + '.png'; // 限制文件名长度
+            // const localImagePath = path.join(outputDir, imageFileName);
+            const localImagePath = `${hugoSpecialPath}${imageFileName}`;
 
-    return markdownContent;
-};
+            // 下载图片，使用默认图片作为备选
+            const success = await downloadImage(imageUrl, localImagePath);
+            const finalImagePath = success ? localImagePath : defaultImagePath;
 
-// 处理 Markdown 文件
-export async function processMarkdownFile(markdownFilePath, downloadFolder, defaultImagePath) {
-    try {
-        // 读取 Markdown 文件内容
-        let markdownContent = await fs.readFile(markdownFilePath, 'utf-8');
-
-        // 确保图片下载文件夹存在
-        try {
-            await fs.access(downloadFolder);
-        } catch {
-            await fs.mkdir(downloadFolder);
+            // 替换所有匹配到的URL
+            content = content.replace(imageUrl, finalImagePath);
         }
 
-        // 替换 Markdown 中的图片链接
-        const updatedMarkdown = await replaceMarkdownImages(markdownContent, downloadFolder, defaultImagePath);
+        return content;  // 返回处理好的内容
+    };
 
-        // 将更新后的内容保存回 Markdown 文件
-        await fs.writeFile(markdownFilePath, updatedMarkdown);
-        console.log('Markdown file updated with local images.');
-    } catch (error) {
-        console.error('Error processing Markdown file:', error);
+    // 处理单个 markdown 文件
+    const processMarkdownFile = async (filePath, outputDir) => {
+        const content = await fs.readFile(filePath, 'utf-8');
+        const updatedContent = await replaceImagePaths(content, outputDir);
+        await fs.writeFile(filePath, updatedContent, 'utf-8');
+        console.log(`处理完成: ${filePath}`);
+    };
+
+    // 处理文件夹中的所有 markdown 文件
+    const processMarkdownFolder = async (folderPath, outputDir) => {
+        const files = await fs.readdir(folderPath);
+        const markdownFiles = files.filter(file => file.endsWith('.md'));
+        for (const file of markdownFiles) {
+            const filePath = path.join(folderPath, file);
+            await processMarkdownFile(filePath, outputDir);
+        }
+    };
+
+    // 判断是处理单个文件还是文件夹
+    const stat = await fs.lstat(inputPath);
+    if (stat.isDirectory()) {
+        await processMarkdownFolder(inputPath, outputDir);
+    } else if (stat.isFile() && inputPath.endsWith('.md')) {
+        await processMarkdownFile(inputPath, outputDir);
+    } else {
+        console.error('无效的路径，请提供 markdown 文件或文件夹路径。');
     }
 };
+
+const inputPath = path.resolve(__dirname, '../', 'content/posts/jueJin');
+const outputDir = path.resolve(__dirname, '../', 'static/images/jueJin');
+const hugoSpecialPath = "/images/jueJin/"
+await processMarkdown(inputPath, outputDir, hugoSpecialPath);

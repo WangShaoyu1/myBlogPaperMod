@@ -144,6 +144,42 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">对接问题详细记录
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 1 21、唤醒 32、识别率 43、cpu负载过高 54、多轮对话 65、其他 1、唤醒 解决方案：
+1）通用模型下，采用配多唤醒词（近义词、少唤醒字），比如小旺小旺，小万小
+2）定制模型，唤醒率在95%以上，且能解决语速快识别不了的问题，误唤醒率会比通用模型低20倍左右
+3）本地播放响应音频，可以通过工具合成音频
+4）断网的情况下要能有响应，要么全部指令不识别，要么加离线指令（需要专门的算法）和响应音频
+5）识别热词，目前只有20多条，后续可以900多个食谱都上传为热词
+存在问题：
+1）误唤醒率会很高，通用模型正常是10次/24h，如果采用近义词、少唤醒字去提升唤醒率，误唤醒率会在30次/24h左右，需要做取舍
+2）本地播放响应音频，跟虚拟人的唇形、动作对应不上
+3）定制模型的解决方向是：跟通用模型相比，降低误唤醒率，唤醒率跟原来保持一致；误唤醒率保持一致，提高唤醒率。需要做取舍
+2、识别率 解决方案：
+1）采用单向降噪算法
+存在问题：
+在非单向以外的区域，行驶不了语音功能，可唤醒，但是不可识别
+3、cpu负载过高 解决方案：
+1）优化烹饪算法以及万得厨炉端一些高cpu应用
+2）降低像素、帧率
+3）升级cpu，至少是6核以上
+4）动画lottie改成加载png图片，然后用tinypng把图片压缩2/3的大小，可以节省cpu
+存在问题：
+1）降低像素、帧率，优化的效果不明显，大概在30%左右
+2）硬件升级的沟通问题
+4、多轮对话 解决方案：
+1）快捷命令词，类似于把命令当做唤醒词执行
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 对接问题详细记录" href="http://localhost:1313/posts/wiki/%E5%AF%B9%E6%8E%A5%E9%97%AE%E9%A2%98%E8%AF%A6%E7%BB%86%E8%AE%B0%E5%BD%95/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Fay数字人项目学习
     </h2>
   </header>
@@ -237,28 +273,6 @@ FTT后台
   </div>
   <footer class="entry-footer">3 分钟&nbsp;·&nbsp;王宇</footer>
   <a class="entry-link" aria-label="post link to 虚拟人升级方案" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%8D%87%E7%BA%A7%E6%96%B9%E6%A1%88/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">讯飞开放平台服务调用情况了解与新增服务方案评估
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1. 背景 1.1. 基本概念 讯飞开放平台是基于科大讯飞的人工智能技术能力与大数据运营能力建设的人工智能技术与生态服务平台，成立于2010年，以“云&#43;端”的方式提供智能语音能力、计算机视觉能力、自然语言理解能力、人机交互能力等相关的技术和垂直场景解决方案。官网：https://www.xfyun.cn/。文档中心：https://www.xfyun.cn/doc/platform/xfyunreadme.html
-AIUI是科大讯飞在2015年推出的一套以语音技术为核心的人机交互解决方案。官网：https://aiui.xfyun.cn/。文档中心：https://aiui-doc.xf-yun.com/project-1/doc-1/
-iFLYOS是科大讯飞在2018年推出的一套基于云端的智能物联网操作系统。官网：https://www.iflyos.cn/。文档中心：https://doc.iflyos.cn/aiui/whitepaper/#%E4%BA%A7%E5%93%81%E5%AE%9A%E4%B9%89
-1.2. 关系 1.2.1. 共同点 三个平台使用的是同一套账号体系，可以用同一个账号密码登录。
-在讯飞开放平台与AIUI平台上，都有应用的概念，且同一账号下创建的应用是互通的。
-在AIUI平台和iFLYOS平台上，都有技能的概念，且同一账号下创建的技能是互通的。
-1.2.2. 差异点 【备注：由于目前我们并没有使用到iFLYOS平台，因此不对iFLYOS平台进行分析和方案评估】
-（1）概念上：
-讯飞开放平台主要提供的是某一种语音交互技术的单独服务（比如单独的语音识别、语音合成、语音扩展、自然语言理解、大模型等等），或者某一垂直应用场景的整体解决方案；而AIUI提供的是基于语音交互技术的全链路的解决方案，聚合了语音唤醒、语音识别、语义理解、内容（信源）平台、语音合成等多个模块。
-由于AIUI是将单独的多个语音交互技术服务整合打包起来，因此讯飞开放平台与AIUI可以说是包含的关系，即在讯飞开放平台上既可以购买单独的某一种语音交互技术服务，也可以购买完整的AIUI服务。
-...</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 讯飞开放平台服务调用情况了解与新增服务方案评估" href="http://localhost:1313/posts/wiki/%E8%AE%AF%E9%A3%9E%E5%BC%80%E6%94%BE%E5%B9%B3%E5%8F%B0%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%96%B0%E5%A2%9E%E6%9C%8D%E5%8A%A1%E6%96%B9%E6%A1%88%E8%AF%84%E4%BC%B0/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

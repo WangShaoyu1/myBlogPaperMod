@@ -144,6 +144,29 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">FAQ类短文本实践内容总结
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前段时间，以“春节活动内容”作为基础文本数据，实现了从文本处理、知识库构建、检索方案确定及大模型知识问答整个 rag 系统全链路的流程。因“春节活动内容”是经过人工处理的答案类短文本（最长723个字），故其处理方式与 FAQ 类短文本的处理方式相差无几，本文对相关实践内容做一个总结。
+1. 文本处理 FAQ 类短文本直接按照一问一答的粒度拆分，考虑到向量化模型的长度限制，要求拆分后的文本最长不能超过750个词，最短不能少于1个词（过短的内容去除）。
+因提供的文本数据只有答案无对应的问题，故未使用元数据，直接读取txt\docx文档并利用换行符进行切分，得到拆分后的文本列表。
+2. 知识库构建 向量化模型采用开源预训练的模型，本地 CPU 部署，未使用任何加速技术。
+3. 检索方案确定 测试发现，纯向量检索召回（阈值范围0-2）效果不太好，阈值为1的情况下测试结果如下：
+由此可见，当前场景下，bge-base-zh-v1.5 模型表现更好，故选用该模型构建向量库并用于向量检索。
+通过引入关键词召回，并调整相关权重和阈值（向量召回权重0.8，阈值1.4；关键词召回权重0.2，阈值6），再次使用春节活动测试用例测试后，模型效果有较大提升：
+由此可见，检索方案的确定并非一蹴而就的，需要基于具体的场景数据来测评。首先要初选向量化模型，敲定检索方式后，还需要多次测试来确定具体的权重和阈值。
+4. 大模型知识问答 本案例采用的是多次测试调整后的提示词和讯飞星火认知大模型完成知识问答，从测试结果来看，回答错误的用例中，有部分检索到了对应的知识，但大模型回答错误，可能与检索知识的顺序和无关内容的影响有关，由此可见检索效果对结果影响较大，但大模型本身的能力也很重要。所以后续大模型的选择、提示词的确认都需要基于具体的场景数据来测评抉择。
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to FAQ类短文本实践内容总结" href="http://localhost:1313/posts/wiki/faq%E7%B1%BB%E7%9F%AD%E6%96%87%E6%9C%AC%E5%AE%9E%E8%B7%B5%E5%86%85%E5%AE%B9%E6%80%BB%E7%BB%93/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">向量模型微调方案设计与实践总结
     </h2>
   </header>
@@ -247,50 +270,6 @@ FullParametersTraining：全参数微调，不进行任何修改，所有参数�
   </div>
   <footer class="entry-footer">10 分钟&nbsp;·&nbsp;王宇</footer>
   <a class="entry-link" aria-label="post link to “指令引导”方案工具测试" href="http://localhost:1313/posts/wiki/%E6%8C%87%E4%BB%A4%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%95/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">FTT炉端应用配置内容维护
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>环境：生产环境 我的应用 (yingzi.com)
-最后更新日期：2023-10-27
-1、应用信息 应用名称
-虚拟人名称
-虚拟人类型
-虚拟人模板名称
-配置指令库
-配置FAQ库
-更新日期
-应用名称
-虚拟人名称
-虚拟人类型
-虚拟人模板名称
-配置指令库
-配置FAQ库
-更新日期
-万得厨
-2.0万得安
-非PTA
-万得安
-256（阈值0.85）
-269（阈值0.8）
-2023-08-02
-万得厨
-万得安-新炉端
-非PTA
-万得美
-276（阈值0.85）
-269（阈值0.8）
-2023-10-27
-万得厨
-2.0万得美
-...</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to FTT炉端应用配置内容维护" href="http://localhost:1313/posts/wiki/ftt%E7%82%89%E7%AB%AF%E5%BA%94%E7%94%A8%E9%85%8D%E7%BD%AE%E5%86%85%E5%AE%B9%E7%BB%B4%E6%8A%A4/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

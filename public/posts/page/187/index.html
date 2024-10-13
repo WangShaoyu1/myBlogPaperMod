@@ -144,6 +144,33 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">sdk的api转发
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>部署后sdk会域名拼上上面的字符串做请求接口，会有问题，接口都挂在https://vdh-api.test.yingzi.com 或 https://vdh-api.yingzi.com
+基于开放闭合原则，不直接修改sdk源码
+之前的办法，劫持项目里的fetch
+main.ts
+?
+window.fetch = (...args) =&gt; {
+if (``typeof args[0] === &#34;string&#34; &amp;&amp; args[0].includes(``&#34;/haigate/api/v1/&#34;``)) {
+args[0] = args[0].replace(`/haigate`, `${domain}/haigate`);
+}
+return Promise.resolve(oldfetch(...args));
+};
+后改成，修改nginx配置
+default.conf
+?
+location /haigate/api/v1/ {
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to sdk的api转发" href="http://localhost:1313/posts/wiki/sdk%E7%9A%84api%E8%BD%AC%E5%8F%91/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">A&#43;对接问题和需求汇总
     </h2>
   </header>
@@ -231,20 +258,6 @@ Configure buttons visibility
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
   <a class="entry-link" aria-label="post link to electron做一个mp4转m3u8的应用" href="http://localhost:1313/posts/wiki/electron%E5%81%9A%E4%B8%80%E4%B8%AAmp4%E8%BD%ACm3u8%E7%9A%84%E5%BA%94%E7%94%A8/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">ORM
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Filter table dataCreate a pivot tableCreate a chart from data series
-Configure buttons visibility
-</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to ORM" href="http://localhost:1313/posts/wiki/orm/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
