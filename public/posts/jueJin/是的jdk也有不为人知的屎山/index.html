@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>是的，JDK也有不为人知的“屎山”！ | PaperMod</title>
+<meta name="keywords" content="后端, 架构, Java">
+<meta name="description" content="在前几天我写了一篇文章分享了为何避免使用CollectorstoMap()，感兴趣的可以去瞧一眼：Stream很好，Map很酷，但答应我别用toMap()。评论区也有小伙伴提到自己也踩过同样的坑">
+<meta name="author" content="烽火戏诸诸诸侯">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%98%AF%E7%9A%84jdk%E4%B9%9F%E6%9C%89%E4%B8%8D%E4%B8%BA%E4%BA%BA%E7%9F%A5%E7%9A%84%E5%B1%8E%E5%B1%B1/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%98%AF%E7%9A%84jdk%E4%B9%9F%E6%9C%89%E4%B8%8D%E4%B8%BA%E4%BA%BA%E7%9F%A5%E7%9A%84%E5%B1%8E%E5%B1%B1/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="是的，JDK也有不为人知的“屎山”！" />
+<meta property="og:description" content="在前几天我写了一篇文章分享了为何避免使用CollectorstoMap()，感兴趣的可以去瞧一眼：Stream很好，Map很酷，但答应我别用toMap()。评论区也有小伙伴提到自己也踩过同样的坑" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%98%AF%E7%9A%84jdk%E4%B9%9F%E6%9C%89%E4%B8%8D%E4%B8%BA%E4%BA%BA%E7%9F%A5%E7%9A%84%E5%B1%8E%E5%B1%B1/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-06-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-06-26T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="是的，JDK也有不为人知的“屎山”！"/>
+<meta name="twitter:description" content="在前几天我写了一篇文章分享了为何避免使用CollectorstoMap()，感兴趣的可以去瞧一眼：Stream很好，Map很酷，但答应我别用toMap()。评论区也有小伙伴提到自己也踩过同样的坑"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "是的，JDK也有不为人知的“屎山”！",
+      "item": "http://localhost:1313/posts/juejin/%E6%98%AF%E7%9A%84jdk%E4%B9%9F%E6%9C%89%E4%B8%8D%E4%B8%BA%E4%BA%BA%E7%9F%A5%E7%9A%84%E5%B1%8E%E5%B1%B1/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "是的，JDK也有不为人知的“屎山”！",
+  "name": "是的，JDK也有不为人知的“屎山”！",
+  "description": "在前几天我写了一篇文章分享了为何避免使用CollectorstoMap()，感兴趣的可以去瞧一眼：Stream很好，Map很酷，但答应我别用toMap()。评论区也有小伙伴提到自己也踩过同样的坑",
+  "keywords": [
+    "后端", "架构", "Java"
+  ],
+  "articleBody": "在前几天我写了一篇文章分享了为何避免使用 Collectors.toMap()，感兴趣的可以去瞧一眼：Stream很好，Map很酷，但答应我别用toMap()。\n评论区也有小伙伴提到自己也踩过同样的坑，在那篇文章里介绍了 toMap() 有哪些的易踩的坑，今天就让我们好好的扒一扒 Map 的底裤，看看这背后不为人知的故事。\n要讲 Map，可以说 HashMap 是日常开发使用频次最高的，我愿称其为古希腊掌管性能的神。\n举个简单的例子，如何判断两个集合是否存在交集？最简单也最粗暴的方式，两层 for 遍历暴力检索，别跟我提什么时间空间复杂度，给我梭哈就完事。\njava\n代码解读\n复制代码\npublic void demo() { List duplicateList = new ArrayList\u003c\u003e(); List list1 = List.of(1, 2, 3, 4); List list2 = List.of(3, 4, 5, 6); for (Integer l1 : list1) { for (Integer l2 : list2) { if (Objects.equals(l1, l2)) { duplicateList.add(l1); } } } System.out.println(duplicateList); }\n敲下回车提交代码之后，当还沉浸在等待领导夸你做事又稳又快的时候，却发现领导黑着脸向你一步步走来。\n刚准备开始摸鱼的你吓得马上回滚了提交，在一番资料查询之后你发现了原来可以通过 Map 实现 O(n) 级的检索效率，你意气风发的敲下一段新的代码：\njava\n代码解读\n复制代码\npublic void demo() { List duplicateList = new ArrayList\u003c\u003e(); List list1 = List.of(1, 2, 3, 4); List list2 = List.of(3, 4, 5, 6); Map map = new HashMap\u003c\u003e(); list2.forEach(it -\u003e map.put(it, it)); for (Integer l : list1) { if (Objects.nonNull(map.get(l))) { duplicateList.add(l); } } System.out.println(duplicateList); }\n重新提交代码起身上厕所，你昂首挺胸的特地从领导面前路过，领导回了你一个肯定的眼神。\n让我们回到 HashMap 的身上，作为八股十级选手而言的你，什么数据结构红黑树可谓信手拈来，但我们今天不谈八股，只聊聊背后的一些设计理念。\n众所周知，在 HashMap 中有且仅允许存在一个 key 为 null 的元素，当 key 已存在默认的策略是进行覆盖，比如下面的示例最终 map 的值即 {null=2}。\njava\n代码解读\n复制代码\nMap map = new HashMap\u003c\u003e(); map.put(null, 1); map.put(null, 2); System.out.println(map);\n同时 HashMap 对于 value 的值并没有额外限制，只要你愿意，你甚至可以放几百万 value 为空的元素像下面这个例子：\njava\n代码解读\n复制代码\nMap map = new HashMap\u003c\u003e(); map.put(1, null); map.put(2, null); map.put(3, null); map.put(4, null); map.put(5, null); System.out.println(map);\n这也就引出了今天的重点！\n在 stream 中使用 Collectors.toMap() 时，如果你不注意还是按照惯性思维那么它就会让你感受一下什么叫做暴击。就像上一篇文章提到的其异常触发机制，但却并不知道为什么要这么设计？\n作为网络冲浪小能手，我反手就是在 stackoverflow 发了提问，咱虽然笨但主打一个好学。\n值得一提的是，评论区有个老哥回复的相当戳我，他的回复如下:\n用我三脚猫的英语水平翻译一下，大概意思如下：\n因为人家 toMap() 并没有说返回的是 HashMap，所以你凭什么想要人家遵循跟 HashMap 一样的规则呢？\n我滴个乖乖，他讲的似乎好有道理的样子。\n我一开始也差点信了，但其实你认真看 toMap() 的内部实现，你会发现其返回的不偏不倚正好就是 HashMap。\n如果你还不信，以上篇文章的代码为例，执行后获取其类型可以看到输出就是 HashMap。\n这时候我的 CPU 又烧了，这还是我认识的 HashMap，怎么开始跟 stream 混之后就开始六亲不认了，是谁说的代码永远不会变心的？\n一切彷佛又回到了起点，为什么在新的 stream 中不遵循大家已经熟悉规范，而是要改变习惯对此做出限制？\nstackoverflow 上另外的一个老哥给出的他的意见：\n让我这个四级 751 分老手再给大家做个免费翻译官简化一下观点：\n在 Collectors.toMap() 的文档中已经标注其并不保证返回 Map 的具体类型，以及是否可变、序列化性以及是否线程安全，而 JDK 拥有众多的版本，可能在你的环境已经平稳运行了数年，但换个环境之后在不同的 JDK 下可能程序就发生了崩溃。因此，这些额外的保障实际上还帮了你的忙。\n回头去看 toMap() 方法上的文档说明，确实也像这位老哥提到的那样。\n而在 HashMap 中允许 Key 与 Value 为空带来的一个问题在此时也浮现了出来，当存入一个 value 为空的元素时，再后续执行 get() 再次读取时，存在一个问题那就是二义性。\n很显然执行 get() 返回的结果将为空，那这个空究竟是 Map 中不存在这个元素？还是我存入的元素其 value 为空？这一点我想只有老天爷知道，而这种二义性所带来的问题在设计层面显然是一个失误。\n那么到这里，我们就可以得到一个暴论：HashMap 允许 key 和 value 为空就是 JDK 留下的“屎山”！\n为了验证这一结论，我们可以看看在新的 ConcurrentHashMap 中 JDK 是怎么做的？查看源码可以看到，在 put() 方法的一开始就执行了 key 与 value 的空值校验，也验证了上面的猜想。\n这还原不够支撑我们的结论，让我们继续深挖这背后还有什么猫腻。\n首先让我看看是谁写的 ConcurrentHashMap，在 openjdk 的 GitHub 仓库类文档注释可以看到主要的开发者是 Doug Lea。\n那 Doug Lea 又是何方大佬，通过维基百科的可以看到其早期是 Java 并发社区的主席，他参与了一众的 JDK 并发设计工作，可谓吾辈偶像。\n在网络搜罗相关的资讯找到对应的话题，虽然图中的链接已经不存在了，但还是能从引用的内容看出其核心的原因正是为了规避的结果的模糊性，与前文我们讨论的二义性不尽相同。\n那为什么 JDK 不同步更新 HashMap 的设计理念，在新版 HashMap 中引入 key 与 value 的非空校验？\n我想剩下的理由只有一个：HashMap 的使用范围实在太广，就算是 JDK 自己也很难在不变更原有结构的基础上进行改动，而在 JDK 1.2 便被提出并广泛应用，对于一个发展了数十年的语言而言，兼容性是十分重要的一大考量。\n因此，我们可以看到，在后续推出的 Map 中，往往对 key 与 Value 都作了进一步的限制，而对于 HashMap 而言，可能 JDK 官方也是有心无力吧。\n到这里基本也就盖棺定论了，但本着严谨的态度大胆假设小心求证，让我们再来看看大家伙的意见，万一不小心就被人网暴了。\n在 stackoverflow 上另外几篇有关 Map 回答下可以看到，许多人都认为 HashMap 支持空值是一个存在缺陷的设计。\n感兴趣的小伙伴可以去原帖查看，这里我就不再展开介绍了，原帖链接：Why does Map.of not allow null keys and values?。\n看到这里，下次别人或者老板再说你写的代码是屎山的时候，请昂首挺胸自信的告诉他 JDk 都会犯错，我写的这点又算得了什么？\n",
+  "wordCount" : "329",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-06-26T00:00:00Z",
+  "dateModified": "2024-06-26T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "烽火戏诸诸诸侯"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%98%AF%E7%9A%84jdk%E4%B9%9F%E6%9C%89%E4%B8%8D%E4%B8%BA%E4%BA%BA%E7%9F%A5%E7%9A%84%E5%B1%8E%E5%B1%B1/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      是的，JDK也有不为人知的“屎山”！
+    </h1>
+    <div class="post-description">
+      在前几天我写了一篇文章分享了为何避免使用CollectorstoMap()，感兴趣的可以去瞧一眼：Stream很好，Map很酷，但答应我别用toMap()。评论区也有小伙伴提到自己也踩过同样的坑
+    </div>
+    <div class="post-meta"><span title='2024-06-26 00:00:00 +0000 UTC'>六月 26, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;烽火戏诸诸诸侯&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> 
+
+  <div class="post-content"><p>在前几天我写了一篇文章分享了为何避免使用 <code>Collectors.toMap()</code>，感兴趣的可以去瞧一眼：<a href="https://juejin.cn/post/7383643463534018579" title="https://juejin.cn/post/7383643463534018579">Stream很好，Map很酷，但答应我别用toMap()</a>。</p>
+<p>评论区也有小伙伴提到自己也踩过同样的坑，在那篇文章里介绍了 <code>toMap()</code> 有哪些的易踩的坑，今天就让我们好好的扒一扒 <code>Map</code> 的底裤，看看这背后不为人知的故事。</p>
+<p>要讲 <code>Map</code>，可以说 <code>HashMap</code> 是日常开发使用频次最高的，我愿称其为古希腊掌管性能的神。</p>
+<p>举个简单的例子，如何判断两个集合是否存在交集？最简单也最粗暴的方式，两层 <code>for</code> 遍历暴力检索，别跟我提什么时间空间复杂度，给我梭哈就完事。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void demo() {       List&lt;Integer&gt; duplicateList = new ArrayList&lt;&gt;();       List&lt;Integer&gt; list1 = List.of(1, 2, 3, 4);       List&lt;Integer&gt; list2 = List.of(3, 4, 5, 6);       for (Integer l1 : list1) {           for (Integer l2 : list2) {               if (Objects.equals(l1, l2)) {                   duplicateList.add(l1);               }           }       }       System.out.println(duplicateList);   }</code></p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/89a48fc61c9c4f8ab537163f44d04c67~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=220&amp;h=177&amp;s=82494&amp;e=png&amp;b=ccc8cd" alt="image.png"  />
+</p>
+<p>敲下回车提交代码之后，当还沉浸在等待领导夸你做事又稳又快的时候，却发现领导黑着脸向你一步步走来。</p>
+<p>刚准备开始摸鱼的你吓得马上回滚了提交，在一番资料查询之后你发现了原来可以通过 <code>Map</code> 实现 <code>O(n)</code> 级的检索效率，你意气风发的敲下一段新的代码：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void demo() {       List&lt;Integer&gt; duplicateList = new ArrayList&lt;&gt;();       List&lt;Integer&gt; list1 = List.of(1, 2, 3, 4);       List&lt;Integer&gt; list2 = List.of(3, 4, 5, 6);       Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();       list2.forEach(it -&gt; map.put(it, it));       for (Integer l : list1) {           if (Objects.nonNull(map.get(l))) {               duplicateList.add(l);           }       }       System.out.println(duplicateList);   }</code></p>
+<p>重新提交代码起身上厕所，你昂首挺胸的特地从领导面前路过，领导回了你一个肯定的眼神。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/63599817199c4e48ac6d1e4d57191993~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=194&amp;h=196&amp;s=35123&amp;e=png&amp;b=efefef" alt="image.png"  />
+</p>
+<p>让我们回到 <code>HashMap</code> 的身上，作为八股十级选手而言的你，什么数据结构红黑树可谓信手拈来，但我们今天不谈八股，只聊聊背后的一些设计理念。</p>
+<p>众所周知，在 <code>HashMap</code> 中有且仅允许存在一个 <code>key</code> 为 <code>null</code> 的元素，当 key 已存在默认的策略是进行覆盖，比如下面的示例最终 <code>map</code> 的值即 <code>{null=2}</code>。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();   map.put(null, 1);   map.put(null, 2);   System.out.println(map);</code></p>
+<p>同时 <code>HashMap</code> 对于 <code>value</code> 的值并没有额外限制，只要你愿意，你甚至可以放几百万 <code>value</code> 为空的元素像下面这个例子：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();   map.put(1, null); map.put(2, null); map.put(3, null); map.put(4, null); map.put(5, null); System.out.println(map);</code></p>
+<p><strong>这也就引出了今天的重点！</strong></p>
+<p>在 <code>stream</code> 中使用 <code>Collectors.toMap()</code> 时，如果你不注意还是按照惯性思维那么它就会让你感受一下什么叫做暴击。就像上一篇文章提到的其异常触发机制，但却并不知道为什么要这么设计？</p>
+<p>作为网络冲浪小能手，我反手就是在 <code>stackoverflow</code> 发了提问，咱虽然笨但主打一个好学。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b553f4bf40234e25aa1f3adb64381f6c~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1095&amp;h=462&amp;s=60481&amp;e=png&amp;b=fef9f8" alt="image.png"  />
+</p>
+<p>值得一提的是，评论区有个老哥回复的相当戳我，他的回复如下:</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/78729e67e5bd4692b66df2ea8d6d815f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=621&amp;h=50&amp;s=7249&amp;e=png&amp;b=fffefe" alt="image.png"  />
+</p>
+<p>用我三脚猫的英语水平翻译一下，大概意思如下：</p>
+<blockquote>
+<p>因为人家 <code>toMap()</code> 并没有说返回的是 <code>HashMap</code>，所以你凭什么想要人家遵循跟 <code>HashMap</code> 一样的规则呢？</p>
+</blockquote>
+<p>我滴个乖乖，他讲的似乎好有道理的样子。</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/88cea067d66a42fb88650380cf8962ce~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=186&amp;h=174&amp;s=72186&amp;e=png&amp;b=8a7670" alt="image.png"  />
+</p>
+<p>我一开始也差点信了，但其实你认真看 <code>toMap()</code> 的内部实现，你会发现其返回的不偏不倚正好就是 <code>HashMap</code>。</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5a4b8bef54c149a2b71f36abb793605b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=848&amp;h=203&amp;s=29398&amp;e=png&amp;b=2c2c2c" alt="image.png"  />
+</p>
+<p>如果你还不信，以上篇文章的代码为例，执行后获取其类型可以看到输出就是 <code>HashMap</code>。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e56ba2dba19406e84bd33e74d954a50~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=852&amp;h=748&amp;s=71408&amp;e=png&amp;b=2c2c2c" alt="image.png"  />
+</p>
+<p>这时候我的 <code>CPU</code> 又烧了，这还是我认识的 <code>HashMap</code>，怎么开始跟 <code>stream</code> 混之后就开始六亲不认了，是谁说的代码永远不会变心的？</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a36fccb7632d4693958cb0546225c6fb~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=198&amp;h=175&amp;s=83165&amp;e=png&amp;b=d2bdac" alt="image.png"  />
+</p>
+<p>一切彷佛又回到了起点，为什么在新的 <code>stream</code> 中不遵循大家已经熟悉规范，而是要改变习惯对此做出限制？</p>
+<p><code>stackoverflow</code> 上另外的一个老哥给出的他的意见：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/76be480ec9f24cd58d4fe69886938ab8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=755&amp;h=529&amp;s=61024&amp;e=png&amp;b=fffefe" alt="image.png"  />
+</p>
+<p>让我这个四级 <code>751</code> 分老手再给大家做个免费翻译官简化一下观点：</p>
+<blockquote>
+<p>在 <code>Collectors.toMap()</code> 的文档中已经标注其并不保证返回 Map 的具体类型，以及是否可变、序列化性以及是否线程安全，而 <code>JDK</code> 拥有众多的版本，可能在你的环境已经平稳运行了数年，但换个环境之后在不同的 <code>JDK</code> 下可能程序就发生了崩溃。因此，这些额外的保障实际上还帮了你的忙。</p>
+</blockquote>
+<p>回头去看 <code>toMap()</code> 方法上的文档说明，确实也像这位老哥提到的那样。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9bb9136658f74eb293db7a6d5fdc8873~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=744&amp;h=456&amp;s=51342&amp;e=png&amp;b=2b2b2b" alt="image.png"  />
+</p>
+<p>而在 <code>HashMap</code> 中允许 <code>Key</code> 与 <code>Value</code> 为空带来的一个问题在此时也浮现了出来，当存入一个 <code>value</code> 为空的元素时，再后续执行 <code>get()</code> 再次读取时，存在一个问题那就是二义性。</p>
+<p>很显然执行 <code>get()</code> 返回的结果将为空，那这个空究竟是 Map 中不存在这个元素？还是我存入的元素其 <code>value</code> 为空？这一点我想只有老天爷知道，而这种二义性所带来的问题在设计层面显然是一个失误。</p>
+<p>那么到这里，我们就可以得到一个暴论：<strong>HashMap 允许 key 和 value 为空就是 JDK 留下的“屎山”！</strong></p>
+<p>为了验证这一结论，我们可以看看在新的 <code>ConcurrentHashMap</code> 中 <code>JDK</code> 是怎么做的？查看源码可以看到，在 <code>put()</code> 方法的一开始就执行了 <code>key</code> 与 <code>value</code> 的空值校验，也验证了上面的猜想。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c5d2360ed5e9422381d747e332c353c6~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=864&amp;h=577&amp;s=64080&amp;e=png&amp;b=2b2b2b" alt="image.png"  />
+</p>
+<p>这还原不够支撑我们的结论，让我们继续深挖这背后还有什么猫腻。</p>
+<p>首先让我看看是谁写的 <code>ConcurrentHashMap</code>，在 <code>openjdk</code> 的 <code>GitHub</code> 仓库类文档注释可以看到主要的开发者是 <code>Doug Lea</code>。</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/60ffa7d89e644263b720224d1413d12b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1018&amp;h=868&amp;s=109846&amp;e=png&amp;b=fffefe" alt="image.png"  />
+</p>
+<p>那 <code>Doug Lea</code> 又是何方大佬，通过维基百科的可以看到其早期是 <code>Java</code> 并发社区的主席，他参与了一众的 <code>JDK</code> 并发设计工作，可谓吾辈偶像。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/941cca0ff5df470cbfb7786557762e57~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1018&amp;h=381&amp;s=51760&amp;e=png&amp;b=fefefe" alt="image.png"  />
+</p>
+<p>在网络搜罗相关的资讯找到对应的话题，虽然图中的链接已经不存在了，但还是能从引用的内容看出其核心的原因正是为了规避的结果的模糊性，与前文我们讨论的二义性不尽相同。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/35cb591f92ed4973a25990033fd9a930~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=721&amp;h=321&amp;s=33624&amp;e=png&amp;b=fffefe" alt="image.png"  />
+</p>
+<p>那为什么 <code>JDK</code> 不同步更新 <code>HashMap</code> 的设计理念，在新版 <code>HashMap</code> 中引入 <code>key</code> 与 <code>value</code> 的非空校验？</p>
+<p>我想剩下的理由只有一个：<code>HashMap</code> 的使用范围实在太广，就算是 JDK 自己也很难在不变更原有结构的基础上进行改动，而在 <code>JDK 1.2</code> 便被提出并广泛应用，对于一个发展了数十年的语言而言，兼容性是十分重要的一大考量。</p>
+<p>因此，我们可以看到，在后续推出的 <code>Map</code> 中，往往对 <code>key</code> 与 <code>Value</code> 都作了进一步的限制，而对于 <code>HashMap</code> 而言，可能 <code>JDK</code> 官方也是有心无力吧。</p>
+<p>到这里基本也就盖棺定论了，但本着严谨的态度大胆假设小心求证，让我们再来看看大家伙的意见，万一不小心就被人网暴了。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8dd2d509d383466892db47056710a959~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=195&amp;h=172&amp;s=78461&amp;e=png&amp;b=d5c5aa" alt="image.png"  />
+</p>
+<p>在 <code>stackoverflow</code> 上另外几篇有关 <code>Map</code> 回答下可以看到，许多人都认为 <code>HashMap</code> 支持空值是一个存在缺陷的设计。</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2c522abdbda54ac082036f462ee09996~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=770&amp;h=267&amp;s=26491&amp;e=png&amp;b=fefefe" alt="image.png"  />
+</p>
+<p>感兴趣的小伙伴可以去原帖查看，这里我就不再展开介绍了，原帖链接：<a href="https://link.juejin.cn?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F45210398%2Fwhy-does-map-of-not-allow-null-keys-and-values" title="https://stackoverflow.com/questions/45210398/why-does-map-of-not-allow-null-keys-and-values">Why does Map.of not allow null keys and values?</a>。</p>
+<p>看到这里，下次别人或者老板再说你写的代码是屎山的时候，请昂首挺胸自信的告诉他 <code>JDk</code> 都会犯错，我写的这点又算得了什么？</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d24f2fd5dfe84dc0965e001aae76289b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=199&amp;h=187&amp;s=50005&amp;e=png&amp;b=f3ebe5" alt="image.png"  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%9E%B6%E6%9E%84/">架构</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E6%B2%A1%E6%9C%89%E6%8A%8Akafka%E6%A6%82%E5%BF%B5%E8%AE%B2%E7%9A%84%E9%80%8F%E5%BD%BB%E6%88%91%E5%B0%B1%E5%8E%BB%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>没有把Kafka概念讲的透彻，我就去手把手教你</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/sw%E6%A8%A1%E7%89%88/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>sw模版</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 是的，JDK也有不为人知的“屎山”！ on x"
+            href="https://x.com/intent/tweet/?text=%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2c%e6%9e%b6%e6%9e%84%2cJava">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 是的，JDK也有不为人知的“屎山”！ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f&amp;title=%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81&amp;summary=%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 是的，JDK也有不为人知的“屎山”！ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f&title=%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 是的，JDK也有不为人知的“屎山”！ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 是的，JDK也有不为人知的“屎山”！ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 是的，JDK也有不为人知的“屎山”！ on telegram"
+            href="https://telegram.me/share/url?text=%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 是的，JDK也有不为人知的“屎山”！ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%98%af%e7%9a%84%ef%bc%8cJDK%e4%b9%9f%e6%9c%89%e4%b8%8d%e4%b8%ba%e4%ba%ba%e7%9f%a5%e7%9a%84%e2%80%9c%e5%b1%8e%e5%b1%b1%e2%80%9d%ef%bc%81&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2598%25AF%25E7%259A%2584jdk%25E4%25B9%259F%25E6%259C%2589%25E4%25B8%258D%25E4%25B8%25BA%25E4%25BA%25BA%25E7%259F%25A5%25E7%259A%2584%25E5%25B1%258E%25E5%25B1%25B1%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

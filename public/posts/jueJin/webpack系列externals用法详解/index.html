@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>『Webpack系列』——externals用法详解 | PaperMod</title>
+<meta name="keywords" content="Webpack, Vue.js">
+<meta name="description" content="如果小伙伴有做过首屏加载时间优化，应该会遇到chunk-vendorsjs这个文件，巨大无比，加载时间超长，是首屏加载时间过长的罪魁祸首之一。下面通过一个实际的项目来演示，先通过插件webpack-bundle-analyzer来可视化地查看chunk-vendorsjs…">
+<meta name="author" content="前端大骆">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97externals%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97externals%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="『Webpack系列』——externals用法详解" />
+<meta property="og:description" content="如果小伙伴有做过首屏加载时间优化，应该会遇到chunk-vendorsjs这个文件，巨大无比，加载时间超长，是首屏加载时间过长的罪魁祸首之一。下面通过一个实际的项目来演示，先通过插件webpack-bundle-analyzer来可视化地查看chunk-vendorsjs…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97externals%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-06-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-06-13T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="『Webpack系列』——externals用法详解"/>
+<meta name="twitter:description" content="如果小伙伴有做过首屏加载时间优化，应该会遇到chunk-vendorsjs这个文件，巨大无比，加载时间超长，是首屏加载时间过长的罪魁祸首之一。下面通过一个实际的项目来演示，先通过插件webpack-bundle-analyzer来可视化地查看chunk-vendorsjs…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "『Webpack系列』——externals用法详解",
+      "item": "http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97externals%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "『Webpack系列』——externals用法详解",
+  "name": "『Webpack系列』——externals用法详解",
+  "description": "如果小伙伴有做过首屏加载时间优化，应该会遇到chunk-vendorsjs这个文件，巨大无比，加载时间超长，是首屏加载时间过长的罪魁祸首之一。下面通过一个实际的项目来演示，先通过插件webpack-bundle-analyzer来可视化地查看chunk-vendorsjs…",
+  "keywords": [
+    "Webpack", "Vue.js"
+  ],
+  "articleBody": " 本文用项目例子是用Vue Cli3搭建的Vue项目\n如果小伙伴有做过首屏加载时间优化，应该会遇到chunk-vendors.js这个文件，巨大无比，加载时间超长，是首屏加载时间过长的罪魁祸首之一。\n下面通过一个实际的项目来演示，先通过插件webpack-bundle-analyzer来可视化地查看chunk-vendors.js这个文件里面地内容。\ncss\n代码解读\n复制代码\nnpm install webpack-bundle-analyzer --save-dev\n在vue.config.js中引入这插件\nini\n代码解读\n复制代码\nconst BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin; module.exports={ configureWebpack:config =\u003e{ return { plugins:[ new BundleAnalyzerPlugin() ] } } }\n在上面的分析图中我们可以看到，最大的两个js文件，里面都是一些第三方依赖包，那么只要把这些依赖包提取出来，就可以解决chunk-vendors.js过大的问题。下面就教你使用externals来提取这些依赖包，其实应该说用externals来防止这些依赖包被打包。\nexternals的值是个对象，\nini\n代码解读\n复制代码\nmodule.exports={ configureWebpack:congig =\u003e{ externals:{ key: value } } }\n其中key是第三方依赖库的名称，同package.json文件中的dependencies对象的key一样。下图红框所示 其中value值可以是字符串、数组、对象。\n说起externals，网上已经很多教程了，但是讲解都不是很详细，特别是对value值的讲解。如果value值不正确导致的报错，也不知道怎么去排查和修复。\n按我的理解value值应该是第三方依赖编译打包后生成的js文件，然后js文件执行后赋值给window的全局变量名称。\n那怎么找这个全局变量名称呢，教你一个方法。\n上面所说的js文件就是要用CDN引入的js文件。那么可以通过浏览器打开CDN链接。由于代码是压缩过，找个在线js格式化把代码处理一下，就可以阅读代码了。\n例如要提取element-ui这个依赖包。其CDN链接是unpkg.com/element-ui@…，格式化后代码如下，是个自执行函数。\njavascript\n代码解读\n复制代码\nfunction(e, t) { \"object\" == typeof exports \u0026\u0026 \"object\" == typeof module ? //判断环境是否支持commonjs模块规范 module.exports = t(require(\"vue\")) : \"function\" == typeof define \u0026\u0026 define.amd ? //判断环境是否支持AMD模块规范 define(\"ELEMENT\", [\"vue\"], t) : \"object\" == typeof exports ? //判断环境是否支持CMD模块规范 exports.ELEMENT = t(require(\"vue\")) : e.ELEMENT = t(e.Vue) } (\"undefined\" != typeof self ? self: this,function(e){ //省略... });\n从代码可以看出element-ui是用UMD模块规范输出的，所以\n兼容commonjs模块规范（在node环境中使用）。 兼容AMD模块规范（用require.js引入使用）。 兼容CMD模块规范（用sea.js引入使用）。 代码中对各个环境做了判断，因为是用CDN在public/index.html引入，也就是浏览器环境，不符合上面各种环境，最后执行e.ELEMENT = t(e.Vue)，其中e为window对象，那么赋值给window的全局变量名称是ELEMENT。\n在vue.config.js中配置如下\ncss\n代码解读\n复制代码\nmodule.exports={ configureWebpack:{ externals: { 'element-ui': 'ELEMENT', } } }\n在public/index.html中引入\nxml\n代码解读\n复制代码\n但是会发现报错了。 回过来看e.ELEMENT = t(e.Vue),是不是发现还需要Vue。那么把Vue依赖包也提取出来。\nVue编译打包生成js文件的CDN链接是cdn.bootcdn.net/ajax/libs/v…， 格式化后代码如下，是个自执行函数。\njavascript\n代码解读\n复制代码\nfunction(t, e) { \"object\" == typeof exports \u0026\u0026 \"undefined\" != typeof module ? module.exports = e() : \"function\" == typeof define \u0026\u0026 define.amd ? define(e) : (t = t || self).Vue = e() } (this,function(){ //省略... })\n在浏览器中最后执行(t = t || self).Vue = e()，其中t为this，this是window对象。那么赋值给window的全局变量名称是Vue。 在vue.config.js中配置如下\ncss\n代码解读\n复制代码\nmodule.exports={ configureWebpack:{ externals: { 'element-ui': 'ELEMENT', 'vue': 'Vue', } } }\n在public/index.html中引入\nxml\n代码解读\n复制代码\n重新npm run dev后刷新页面，发现还是报错。 回到public/index.html，vue在element-ui后面引入，难怪会报错，vue一定要在element-ui之前引入，修改一下\nxml\n代码解读\n复制代码\n刷新页面，没有报错了。\n这样讲解是不是很清晰了，知道value值是从哪里来的。遇到错误知道排查和修复。\n接下来继续把vue-router依赖和xlsx依赖提取了\nvue-router编译打包生成js文件的CDN链接是cdn.bootcdn.net/ajax/libs/v…， 格式化后代码如下。\nini\n代码解读\n复制代码\nvar t, e; t = this, e = function(){ //省略... }, \"object\" == typeof exports \u0026\u0026 \"undefined\" != typeof module ? module.exports = e() : \"function\" == typeof define \u0026\u0026 define.amd ? define(e) : (t = t || self).VueRouter = e();\n在浏览器中最后执行((t = t || self).VueRouter = e()，其中t为this，this是window对象。那么赋值给window的全局变量名称是VueRouter。 在vue.config.js中配置如下\ncss\n代码解读\n复制代码\nmodule.exports={ configureWebpack:{ externals: { 'element-ui': 'ELEMENT', 'vue': 'Vue', 'vue-router': 'VueRouter', } } }\n在public/index.html中引入\nxml\n代码解读\n复制代码\n重新npm run dev后刷新页面，正常无报错，继续提取xlsx依赖包。\nxlsx编译打包生成js文件的CDN链接是cdn.bootcdn.net/ajax/libs/x…， 格式化后代码如下。\njavascript\n代码解读\n复制代码\nvar XLSX = {}; function make_xlsx_lib(e){ //省略... } if (typeof exports !== \"undefined\") make_xlsx_lib(exports); else if (typeof module !== \"undefined\" \u0026\u0026 module.exports) make_xlsx_lib(module.exports); else if (typeof define === \"function\" \u0026\u0026 define.amd) define(function() { if (!XLSX.version) make_xlsx_lib(XLSX); return XLSX }); else make_xlsx_lib(XLSX); var XLS = XLSX,\n发现这下子不好判断，赋值给window的全局变量名称是那个了。先猜测是XLSX， 在public/index.html中引入\nxml\n代码解读\n复制代码\n把public/index.html这个文件丢到浏览器打开，然后在控制台输入window.XLSX，看看有没有值。\n有值不为undefined，说明赋值给window的全局变量名称是XLSX。那么在vue.config.js中配置如下\ncss\n代码解读\n复制代码\nmodule.exports={ configureWebpack:{ externals: { 'element-ui': 'ELEMENT', 'vue': 'Vue', 'vue-router': 'VueRouter', 'xlsx': 'XLSX' } } }\n重新npm run dev后刷新页面，正常无报错。\n用externals提取第三方依赖包后，代码原先引入依赖的地方，要不要去改动呢？比如main.js中\njavascript\n代码解读\n复制代码\nimport ElementUI from 'element-ui'; Vue.use(ElementUI);\n是可以不要去改动的，除非你把放在app.js后面引入。 在public/index.html中这么写\nxml\n代码解读\n复制代码\n编译打包后，发现dist/index.html 已经放在app.js后面引入。\n刷新浏览器，就发现报错\n只要你把main.js中去掉这段代码就行。\njavascript\n代码解读\n复制代码\nimport ElementUI from 'element-ui'; Vue.use(ElementUI);\n刷新浏览器，无报错。\n网上很多教程都讲到要把这段代码去掉，不然会报错，其实错误原因根本不在这里。\n前面提到element-ui的CDN链接放在app.js后面引入，但是main.js里面代码都会编译打包到app.js中，执行app.js会遇到\njavascript\n代码解读\n复制代码\nimport ElementUI from 'element-ui'; Vue.use(ElementUI);\n由于你element-ui的CDN链接是放在app.js后面加载执行的，这时ElementUI是不存在的，当然会报错的。\n所以只要保证element-ui的CDN链接放在app.js之前加载的。就不会报错。换句话来说只要在main.js需要引入的依赖，其CDN链接都要放在app.js之前加载，这样就不要去改代原来引入依赖的代码。\n因为app.js是入口文件，有人会问，放在app.js之前加载，不会阻塞app.js的加载和执行。\n其实并有没有影响，因为app.js已经用link标签做了预加载。js文件的加载是并发，谁先加载完先执行谁。\n用externals提取完第三依赖包后，执行npm run build，分析图如下\n和之前对比，两个大文件的一个已经消失，剩下一个只有81.42KB，和之前的1003.44KB相比是不是小了很多。再看里面的内容，之前的elemen-ui、jquery.js、vue.runtime.esm.js、xlsx.js这些依赖包都消失。优化成效明显。\n用externals提取第三方依赖包时，需切记中庸之道。虽然我们的最终目的是减少http请求资源大小，但是过犹不及，提取的过细将会增加http请求数量。\n",
+  "wordCount" : "473",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2020-06-13T00:00:00Z",
+  "dateModified": "2020-06-13T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "前端大骆"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97externals%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      『Webpack系列』——externals用法详解
+    </h1>
+    <div class="post-description">
+      如果小伙伴有做过首屏加载时间优化，应该会遇到chunk-vendorsjs这个文件，巨大无比，加载时间超长，是首屏加载时间过长的罪魁祸首之一。下面通过一个实际的项目来演示，先通过插件webpack-bundle-analyzer来可视化地查看chunk-vendorsjs…
+    </div>
+    <div class="post-meta"><span title='2020-06-13 00:00:00 +0000 UTC'>六月 13, 2020</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;前端大骆&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> 
+
+  <div class="post-content"><blockquote>
+<p>本文用项目例子是用Vue Cli3搭建的Vue项目</p>
+</blockquote>
+<p>如果小伙伴有做过首屏加载时间优化，应该会遇到chunk-vendors.js这个文件，巨大无比，加载时间超长，是首屏加载时间过长的罪魁祸首之一。</p>
+<p>下面通过一个实际的项目来演示，先通过插件webpack-bundle-analyzer来可视化地查看chunk-vendors.js这个文件里面地内容。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>npm install webpack-bundle-analyzer --save-dev</code></p>
+<p>在vue.config.js中引入这插件</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin; module.exports={     configureWebpack:config =&gt;{         return {             plugins:[                 new BundleAnalyzerPlugin()             ]         }     } }</code></p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/12/172a86c98cb08f36~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>在上面的分析图中我们可以看到，最大的两个js文件，里面都是一些第三方依赖包，那么只要把这些依赖包提取出来，就可以解决chunk-vendors.js过大的问题。下面就教你使用<code>externals</code>来提取这些依赖包，其实应该说用<code>externals</code>来防止这些依赖包被打包。</p>
+<p><code>externals</code>的值是个对象，</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>module.exports={     configureWebpack:congig =&gt;{         externals:{             key: value         }     } }</code></p>
+<p>其中key是第三方依赖库的名称，同package.json文件中的<code>dependencies</code>对象的key一样。下图红框所示 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/12/172a8a603c795857~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+ 其中value值可以是字符串、数组、对象。</p>
+<p>说起externals，网上已经很多教程了，但是讲解都不是很详细，特别是对value值的讲解。如果value值不正确导致的报错，也不知道怎么去排查和修复。</p>
+<p>按我的理解value值应该是<strong>第三方依赖编译打包后生成的js文件，然后js文件执行后赋值给window的全局变量名称</strong>。</p>
+<p>那怎么找这个全局变量名称呢，教你一个方法。</p>
+<p>上面所说的js文件就是要用CDN引入的js文件。那么可以通过浏览器打开CDN链接。由于代码是压缩过，找个<a href="https://link.juejin.cn?target=https%3A%2F%2Ftool.oschina.net%2Fcodeformat%2Fjs%2F" title="https://tool.oschina.net/codeformat/js/">在线js格式化</a>把代码处理一下，就可以阅读代码了。</p>
+<p>例如要提取element-ui这个依赖包。其CDN链接是<a href="https://link.juejin.cn?target=https%3A%2F%2Funpkg.com%2Felement-ui%402.10.1%2Flib%2Findex.js" title="https://unpkg.com/element-ui@2.10.1/lib/index.js">unpkg.com/element-ui@…</a>，格式化后代码如下，是个自执行函数。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function(e, t) {     &quot;object&quot; == typeof exports &amp;&amp; &quot;object&quot; == typeof module ? //判断环境是否支持commonjs模块规范     module.exports = t(require(&quot;vue&quot;)) :     &quot;function&quot; == typeof define &amp;&amp; define.amd ? //判断环境是否支持AMD模块规范     define(&quot;ELEMENT&quot;, [&quot;vue&quot;], t) :     &quot;object&quot; == typeof exports ? //判断环境是否支持CMD模块规范     exports.ELEMENT = t(require(&quot;vue&quot;)) :      e.ELEMENT = t(e.Vue) } (&quot;undefined&quot; != typeof self ? self: this,function(e){     //省略... });</code></p>
+<p>从代码可以看出element-ui是用UMD模块规范输出的，所以</p>
+<ul>
+<li>兼容commonjs模块规范（在node环境中使用）。</li>
+<li>兼容AMD模块规范（用require.js引入使用）。</li>
+<li>兼容CMD模块规范（用sea.js引入使用）。</li>
+</ul>
+<p>代码中对各个环境做了判断，因为是用CDN在public/index.html引入，也就是浏览器环境，不符合上面各种环境，最后执行<code>e.ELEMENT = t(e.Vue)</code>，其中e为window对象，那么赋值给window的全局变量名称是<code>ELEMENT</code>。</p>
+<p>在vue.config.js中配置如下</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>module.exports={     configureWebpack:{         externals: {             'element-ui': 'ELEMENT',         }     } }</code></p>
+<p>在public/index.html中引入</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;     &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;     &lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt; &lt;/body&gt;</code></p>
+<p>但是会发现报错了。 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/9/1729996e8619c867~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>回过来看<code>e.ELEMENT = t(e.Vue)</code>,是不是发现还需要Vue。那么把Vue依赖包也提取出来。</p>
+<p>Vue编译打包生成js文件的CDN链接是<a href="https://link.juejin.cn?target=https%3A%2F%2Fcdn.bootcdn.net%2Fajax%2Flibs%2Fvue%2F2.6.11%2Fvue.runtime.min.js" title="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.runtime.min.js">cdn.bootcdn.net/ajax/libs/v…</a>， 格式化后代码如下，是个自执行函数。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function(t, e) {     &quot;object&quot; == typeof exports &amp;&amp; &quot;undefined&quot; != typeof module ?      module.exports = e() :      &quot;function&quot; == typeof define &amp;&amp; define.amd ?      define(e) :      (t = t || self).Vue = e() } (this,function(){     //省略... })</code></p>
+<p>在浏览器中最后执行<code>(t = t || self).Vue = e()</code>，其中t为this，this是window对象。那么赋值给window的全局变量名称是<code>Vue</code>。 在vue.config.js中配置如下</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>module.exports={     configureWebpack:{         externals: {             'element-ui': 'ELEMENT',             'vue': 'Vue',         }     } }</code></p>
+<p>在public/index.html中引入</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;     &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;     &lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.runtime.min.js&quot;&gt;&lt;/script&gt; &lt;/body&gt;</code></p>
+<p>重新<code>npm run dev</code>后刷新页面，发现还是报错。 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/9/1729996e8619c867~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>回到public/index.html，vue在element-ui后面引入，难怪会报错，vue一定要在element-ui之前引入，修改一下</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;     &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.runtime.min.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt; &lt;/body&gt;</code></p>
+<p>刷新页面，没有报错了。</p>
+<p>这样讲解是不是很清晰了，知道value值是从哪里来的。遇到错误知道排查和修复。</p>
+<p>接下来继续把vue-router依赖和xlsx依赖提取了</p>
+<p>vue-router编译打包生成js文件的CDN链接是<a href="https://link.juejin.cn?target=https%3A%2F%2Fcdn.bootcdn.net%2Fajax%2Flibs%2Fvue-router%2F3.2.0%2Fvue-router.min.js" title="https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js">cdn.bootcdn.net/ajax/libs/v…</a>， 格式化后代码如下。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var t, e;  t = this,  e = function(){     //省略...  },   &quot;object&quot; == typeof exports &amp;&amp; &quot;undefined&quot; != typeof module ?    module.exports = e() :    &quot;function&quot; == typeof define &amp;&amp; define.amd ?    define(e) :    (t = t || self).VueRouter = e();</code></p>
+<p>在浏览器中最后执行<code>((t = t || self).VueRouter = e()</code>，其中t为this，this是window对象。那么赋值给window的全局变量名称是<code>VueRouter</code>。 在vue.config.js中配置如下</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>module.exports={     configureWebpack:{         externals: {             'element-ui': 'ELEMENT',             'vue': 'Vue',             'vue-router': 'VueRouter',         }     } }</code></p>
+<p>在public/index.html中引入</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;     &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.runtime.min.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt; &lt;/body&gt;</code></p>
+<p>重新<code>npm run dev</code>后刷新页面，正常无报错，继续提取xlsx依赖包。</p>
+<p>xlsx编译打包生成js文件的CDN链接是<a href="https://link.juejin.cn?target=https%3A%2F%2Fcdn.bootcdn.net%2Fajax%2Flibs%2Fxlsx%2F0.16.1%2Fxlsx.min.js" title="https://cdn.bootcdn.net/ajax/libs/xlsx/0.16.1/xlsx.min.js">cdn.bootcdn.net/ajax/libs/x…</a>， 格式化后代码如下。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var XLSX = {}; function make_xlsx_lib(e){     //省略... } if (typeof exports !== &quot;undefined&quot;) make_xlsx_lib(exports); else if (typeof module !== &quot;undefined&quot; &amp;&amp; module.exports) make_xlsx_lib(module.exports); else if (typeof define === &quot;function&quot; &amp;&amp; define.amd) define(function() {     if (!XLSX.version) make_xlsx_lib(XLSX);     return XLSX }); else make_xlsx_lib(XLSX); var XLS = XLSX,</code></p>
+<p>发现这下子不好判断，赋值给window的全局变量名称是那个了。先猜测是<code>XLSX</code>， 在public/index.html中引入</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;     &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.runtime.min.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/xlsx/0.16.1/xlsx.min.js&quot;&gt;&lt;/script&gt; &lt;/body&gt;</code></p>
+<p>把public/index.html这个文件丢到浏览器打开，然后在控制台输入<code>window.XLSX</code>，看看有没有值。</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/12/172a93223c52f72f~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>有值不为<code>undefined</code>，说明赋值给window的全局变量名称是<code>XLSX</code>。那么在vue.config.js中配置如下</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>module.exports={     configureWebpack:{         externals: {             'element-ui': 'ELEMENT',             'vue': 'Vue',             'vue-router': 'VueRouter',             'xlsx': 'XLSX'         }     } }</code></p>
+<p>重新<code>npm run dev</code>后刷新页面，正常无报错。</p>
+<p>用externals提取第三方依赖包后，代码原先引入依赖的地方，要不要去改动呢？比如main.js中</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import ElementUI from 'element-ui'; Vue.use(ElementUI);</code></p>
+<p>是可以不要去改动的，除非你把<code>&lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt;</code>放在app.js后面引入。 在public/index.html中这么写</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;     &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.runtime.min.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js&quot;&gt;&lt;/script&gt;     &lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/xlsx/0.16.1/xlsx.min.js&quot;&gt;&lt;/script&gt; &lt;/body&gt; &lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>编译打包后，发现dist/index.html <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/13/172aaefde0fe83f5~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p><code>&lt;script src=&quot;https://unpkg.com/element-ui@2.10.1/lib/index.js&quot;&gt;&lt;/script&gt;</code>已经放在app.js后面引入。</p>
+<p>刷新浏览器，就发现报错</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/9/1729996e8619c867~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>只要你把main.js中去掉这段代码就行。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import ElementUI from 'element-ui'; Vue.use(ElementUI);</code></p>
+<p>刷新浏览器，无报错。</p>
+<p>网上很多教程都讲到要把这段代码去掉，不然会报错，其实错误原因根本不在这里。</p>
+<p>前面提到element-ui的CDN链接放在app.js后面引入，但是main.js里面代码都会编译打包到app.js中，执行app.js会遇到</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import ElementUI from 'element-ui'; Vue.use(ElementUI);</code></p>
+<p>由于你element-ui的CDN链接是放在app.js后面加载执行的，这时ElementUI是不存在的，当然会报错的。</p>
+<p>所以只要保证element-ui的CDN链接放在app.js之前加载的。就不会报错。换句话来说只要在main.js需要引入的依赖，其CDN链接都要放在app.js之前加载，这样就不要去改代原来引入依赖的代码。</p>
+<p>因为app.js是入口文件，有人会问，放在app.js之前加载，不会阻塞app.js的加载和执行。</p>
+<p>其实并有没有影响，因为app.js已经用link标签做了预加载。js文件的加载是并发，谁先加载完先执行谁。</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/13/172aafc2ce12a68d~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>用externals提取完第三依赖包后，执行<code>npm run build</code>，分析图如下</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/13/172ab03299f4bca8~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>和之前对比，两个大文件的一个已经消失，剩下一个只有81.42KB，和之前的1003.44KB相比是不是小了很多。再看里面的内容，之前的elemen-ui、jquery.js、vue.runtime.esm.js、xlsx.js这些依赖包都消失。优化成效明显。</p>
+<blockquote>
+<p>用externals提取第三方依赖包时，需切记中庸之道。虽然我们的最终目的是减少http请求资源大小，但是过犹不及，提取的过细将会增加http请求数量。</p>
+</blockquote>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/23/172e1c51b21ae306~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/webpack/">Webpack</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E7%9A%84%E6%94%B9%E8%BF%9B%E4%BD%A0%E7%9A%84%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E8%AE%A9%E4%BD%A0%E5%BF%AB%E9%80%9F%E7%9A%84%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E8%B6%85%E8%AF%A6%E7%BB%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%99%E7%A8%8B/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/1%E8%AF%AD%E9%9F%B3%E6%A8%A1%E5%9D%97%E6%95%88%E6%9E%9C%E8%B0%83%E4%BC%98/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>1、语音模块效果调优</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——externals用法详解 on x"
+            href="https://x.com/intent/tweet/?text=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f&amp;hashtags=Webpack%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——externals用法详解 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f&amp;title=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3&amp;summary=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——externals用法详解 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f&title=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——externals用法详解 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——externals用法详解 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——externals用法详解 on telegram"
+            href="https://telegram.me/share/url?text=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——externals用法详解 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94externals%e7%94%a8%e6%b3%95%e8%af%a6%e8%a7%a3&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597externals%25E7%2594%25A8%25E6%25B3%2595%25E8%25AF%25A6%25E8%25A7%25A3%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Jmeter连接Websocket（python）进行并发验证 | PaperMod</title>
+<meta name="keywords" content="python语言学习">
+<meta name="description" content="python语言学习">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Jmeter连接Websocket（python）进行并发验证" />
+<meta property="og:description" content="python语言学习" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Jmeter连接Websocket（python）进行并发验证"/>
+<meta name="twitter:description" content="python语言学习"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Jmeter连接Websocket（python）进行并发验证",
+      "item": "http://localhost:1313/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Jmeter连接Websocket（python）进行并发验证",
+  "name": "Jmeter连接Websocket（python）进行并发验证",
+  "description": "python语言学习",
+  "keywords": [
+    "python语言学习"
+  ],
+  "articleBody": " 11. 背景 22. 思考 33. 工具 44. 前期准备 55. 操作步骤 5.15.1. 通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包，并下载对应包安装 5.25.2. 创建websocket请求 5.35.3. 为了获取加密后的signature，需要自行分析源文件代码（xfDocapi.py），然后梳理出文件加密逻辑运用到jemter上。 5.45.4. 通过调试得到以下代码，得到jmeter中请求参数appId，timestamp，signature 5.55.5. 调试运行代码，接口已经能顺利调通 5.65.6. 验证对应的并发数3，观察接口是否存在报错，提示并发量不足 5.75.7. 根据了解业务得知，当前1个账号提供3个免费的并发数量，如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去，较少出现并发数不足的情况。 5.85.8. 优化代码，随机获取账号信息去请求接口，提高并发数量，降低提示并发数不足的情况。优化后的python代码如下 5.95.9. 通过新代码尝试验证并发8个，虽然有一定的概率会遇到并发数不足，但是相对只能并发3个已经有了很大的提升。 5.105.10. 最终jmeter脚本 66. 结论 1. 背景 开发同事在接入科大讯飞文档大模型时，测试经常遇到接口报并发数量不足的错误，沟通了解到当前使用的账号只有免费的3个并发量，但开发偶尔遇到单个请求的时候也会报并发数量不足，于是接到验证第三方接口并发量的需求。\n2. 思考 做性能测试当前使用比较多的工具就是Jmeter了，但是这是websocket协议请求，该工具默认不支持该协议请求连接，于是网上简单查阅资料得知可以通过导入第三方jar包就可以支持该协议的传输。同时开发之前写的开发都是通过python脚本写的，自己刚刚好又学习了一段时间的python语言于是便有了很高的兴趣，需要在jmeter上允许python脚本来加密参数请求调接口，另外查阅资料得知jemter上运动pyth脚本也需要安装jar包才能运行，并且只支持运行python2。\n3. 工具 jmeter工具执行脚本、pycharm工具调试python脚本\n4. 前期准备 阅读python原文件代码，理解代码加密逻辑，自行上网查阅相关资料完成websocket请求和python代码的调试，阅读理解代码的过程，我调试代码的过程都复习巩固了自己之前学习的知识，并应用在实践当中。第三方接口文档说明https://chatdoc.xfyun.cn/docs#/\n5. 操作步骤 5.1. 通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包，并下载对应包安装 对应jar包：JMeterWebSocketSamplers-1.2.8.jar，jmeter-plugins-manager-1.10.jar，需把这两个jar放到jmeter安装路径下的ext文件夹下（我本地D:\\Program Files\\apache-jmeter-5.2.1\\lib\\ext）\n另外运行python脚本jar包：jython-standalone-2.7.2.jar，同理把jar放到jmeter安装路径下的ext文件夹下\n重启jmeter工具，进入主页–选项\n安装对应的两个包，安装后重启，就能在sample下找到websocket的请求协议了。\n5.2. 创建websocket请求 我们请求的websocket是多段返回文本的，所以需要创建不创建请求只接收的\n5.3. 为了获取加密后的signature，需要自行分析源文件代码（xfDocapi.py），然后梳理出文件加密逻辑运用到jemter上。 5.4. 通过调试得到以下代码，得到jmeter中请求参数appId，timestamp，signature ?\nimport time import hashlib import hmac import base64 appId = \"a327ed87\" timestamp = str(``int``(time.time())) apisecret = \"ZjQ1MDNjYTgzODU5NmI4N2RjYTVkYmFk\"\nfileid = \"b61e9887f63a4c488b4c37c48bffc46e\"\ndef get_signature():\ndata = (appId + timestamp).encode(``'utf-8'``) # 使用 .encode(``'utf-8'``) 来直接编码字符串为字节 checkSum = hashlib.md5(data).hexdigest() # 使用 .hexdigest() 来直接获取十六进制摘要 signature = hmac.``new``(apisecret.encode(``'utf-8'``), checkSum.encode(``'utf-8'``), digestmod=hashlib.sha1).digest() signature = base64.b64encode(signature).decode(``'utf-8'``) # 使用 .decode(``'utf-8'``) 来直接解码字节为字符串 return signature signature = get_signature() vars.put(``\"appId\"``, appId) vars.put(``\"timestamp\"``, timestamp)\nvars.put(``\"fileid\"``, fileid) vars.put(``\"signature\"``, signature)\n在jmeter中调用对应的参数\n5.5. 调试运行代码，接口已经能顺利调通 5.6. 验证对应的并发数3，观察接口是否存在报错，提示并发量不足 以上接口返回均通过，没有报错，同时提示接口数量不足，这是单次并发验证，正常需要循环跑多次，这里因为有免费次数限制没有跑更多的次数。\n另外当选择并发数4个，观察接口是否存在报错，如下\n通过以上返回，明显看出当并发4个的时候，必定会存在一个接口请求失败，报了并发量不足的情况。与第三个提供的3个免费的并发量一致。\n5.7. 根据了解业务得知，当前1个账号提供3个免费的并发数量，如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去，较少出现并发数不足的情况。 ?\n冬颖：``3``路，``1000``次\nAPPID:bd7464e0\nAPISECRET:MDY2YmY3N2I3NDcwOTcwY2E2YTBmMTZj\nFILEID:aa31b936c4f6473b8bcae9041a49ab3e\n黄婷：``3``路，``1000``次\nAPPID:3d387e5f\nAPISECRET:ZWRjMzdjYjBjOWU2OGQ2NWVlMzc3ZTli\nFILEID:5da5effaf79c4e8990125614da2b35be\n郑小涵：``3``路，``1000``次\nAPPID:033c34df\nAPISECRET:YjgwMjMwMjRlOTYwZWU2ZDQwNTNjMDI0\nFILEID:1b51f467015e4db6a4818e2305ebef1a\n唐玮：``3``路，``1000``次\nAPPID:f6c06130\nAPISECRET:YjE2NDk3NTkzZTQ2YjBlODViNWJiOTlk\nFILEID:a168550934294eaa9b8828e0fafce848\n影子：``3``路，``3000``次(预计于近期提额)\nAPPID:a327ed87\nAPISECRET:ZjQ1MDNjYTgzODU5NmI4N2RjYTVkYmFk\nFILEID:b61e9887f63a4c488b4c37c48bffc46e\n5.8. 优化代码，随机获取账号信息去请求接口，提高并发数量，降低提示并发数不足的情况。优化后的python代码如下 ?\nimport time\nimport hashlib\nimport hmac\nimport base64\nimport random\ntimestamp = str(``int``(time.time()))\n# 字典列表\ndict_list = [{``'appId'``: 'a327ed87'``, 'apisecret'``: 'ZjQ1MDNjYTgzODU5NmI4N2RjYTVkYmFk'``,``'fileid'``:``'b61e9887f63a4c488b4c37c48bffc46e'``},\n{``'appId'``: 'f6c06130'``, 'apisecret'``: 'YjE2NDk3NTkzZTQ2YjBlODViNWJiOTlk'``,``'fileid'``:``'a168550934294eaa9b8828e0fafce848'``},\n{``'appId'``: '033c34df'``, 'apisecret'``: 'YjgwMjMwMjRlOTYwZWU2ZDQwNTNjMDI0'``,``'fileid'``:``'1b51f467015e4db6a4818e2305ebef1a'``},\n{``'appId'``: '3d387e5f'``, 'apisecret'``: 'ZWRjMzdjYjBjOWU2OGQ2NWVlMzc3ZTli'``,``'fileid'``:``'5da5effaf79c4e8990125614da2b35be'``},\n{``'appId'``: 'bd7464e0'``, 'apisecret'``: 'MDY2YmY3N2I3NDcwOTcwY2E2YTBmMTZj'``,``'fileid'``:``'aa31b936c4f6473b8bcae9041a49ab3e'``}]\n# 使用random.choice从列表中随机选择一个字典\nrandom_dict = random.choice(dict_list)\nappId = random_dict[``'appId'``]\napisecret = random_dict[``'apisecret'``]\nfileid = random_dict[``'fileid'``]\ndef get_signature():\ndata = (appId + timestamp).encode(``'utf-8'``) # 使用 .encode(``'utf-8'``) 来直接编码字符串为字节\ncheckSum = hashlib.md5(data).hexdigest() # 使用 .hexdigest() 来直接获取十六进制摘要\nsignature = hmac.``new``(apisecret.encode(``'utf-8'``), checkSum.encode(``'utf-8'``), digestmod=hashlib.sha1).digest()\nsignature = base64.b64encode(signature).decode(``'utf-8'``) # 使用 .decode(``'utf-8'``) 来直接解码字节为字符串\nreturn signature\nsignature = get_signature()\nvars.put(``\"appId\"``, appId)\nvars.put(``\"timestamp\"``, timestamp)\nvars.put(``\"fileid\"``, fileid)\nvars.put(``\"signature\"``, signature)\n5.9. 通过新代码尝试验证并发8个，虽然有一定的概率会遇到并发数不足，但是相对只能并发3个已经有了很大的提升。 通过以上返回数据得知，并发8个没有遇到请求失败的情况，大大的提升了并发数。\n5.10. 最终jmeter脚本 WebSocket大模型文档问答.jmx\n6. 结论 通过验证得出，账号提供的免费3个并发数与实际验证的结论一致，另外可以通过多账号来提升并发数。\nFilter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "275",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Jmeter连接Websocket（python）进行并发验证
+    </h1>
+    <div class="post-description">
+      python语言学习
+    </div>
+    <div class="post-meta">2 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e8%83%8c%e6%99%af" aria-label="1. 背景">1. 背景</a></li>
+                <li>
+                    <a href="#2-%e6%80%9d%e8%80%83" aria-label="2. 思考">2. 思考</a></li>
+                <li>
+                    <a href="#3-%e5%b7%a5%e5%85%b7" aria-label="3. 工具">3. 工具</a></li>
+                <li>
+                    <a href="#4-%e5%89%8d%e6%9c%9f%e5%87%86%e5%a4%87" aria-label="4. 前期准备">4. 前期准备</a></li>
+                <li>
+                    <a href="#5-%e6%93%8d%e4%bd%9c%e6%ad%a5%e9%aa%a4" aria-label="5. 操作步骤">5. 操作步骤</a><ul>
+                        
+                <li>
+                    <a href="#51-%e9%80%9a%e8%bf%87%e7%bd%91%e4%b8%8a%e6%9f%a5%e9%98%85%e7%9b%b8%e5%85%b3%e8%b5%84%e6%96%99%e5%9c%a8jmeter%e4%b8%ad%e8%af%b7%e6%b1%82websocket%e9%9c%80%e8%a6%81%e5%ae%89%e8%a3%85%e4%b8%a4%e4%b8%aajar%e5%8c%85%e5%b9%b6%e4%b8%8b%e8%bd%bd%e5%af%b9%e5%ba%94%e5%8c%85%e5%ae%89%e8%a3%85" aria-label="5.1. 通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包，并下载对应包安装">5.1. 通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包，并下载对应包安装</a></li>
+                <li>
+                    <a href="#52-%e5%88%9b%e5%bb%bawebsocket%e8%af%b7%e6%b1%82" aria-label="5.2. 创建websocket请求">5.2. 创建websocket请求</a></li>
+                <li>
+                    <a href="#53-%e4%b8%ba%e4%ba%86%e8%8e%b7%e5%8f%96%e5%8a%a0%e5%af%86%e5%90%8e%e7%9a%84signature%e9%9c%80%e8%a6%81%e8%87%aa%e8%a1%8c%e5%88%86%e6%9e%90%e6%ba%90%e6%96%87%e4%bb%b6%e4%bb%a3%e7%a0%81xfdocapipydownloadattachments114677070xfdocapipyversion1modificationdate1703813765027apiv2%e7%84%b6%e5%90%8e%e6%a2%b3%e7%90%86%e5%87%ba%e6%96%87%e4%bb%b6%e5%8a%a0%e5%af%86%e9%80%bb%e8%be%91%e8%bf%90%e7%94%a8%e5%88%b0jemter%e4%b8%8a" aria-label="5.3. 为了获取加密后的signature，需要自行分析源文件代码（xfDocapi.py），然后梳理出文件加密逻辑运用到jemter上。">5.3. 为了获取加密后的signature，需要自行分析源文件代码（xfDocapi.py），然后梳理出文件加密逻辑运用到jemter上。</a></li>
+                <li>
+                    <a href="#54-%e9%80%9a%e8%bf%87%e8%b0%83%e8%af%95%e5%be%97%e5%88%b0%e4%bb%a5%e4%b8%8b%e4%bb%a3%e7%a0%81%e5%be%97%e5%88%b0jmeter%e4%b8%ad%e8%af%b7%e6%b1%82%e5%8f%82%e6%95%b0appidtimestampsignature" aria-label="5.4. 通过调试得到以下代码，得到jmeter中请求参数appId，timestamp，signature">5.4. 通过调试得到以下代码，得到jmeter中请求参数appId，timestamp，signature</a></li>
+                <li>
+                    <a href="#55-%e8%b0%83%e8%af%95%e8%bf%90%e8%a1%8c%e4%bb%a3%e7%a0%81%e6%8e%a5%e5%8f%a3%e5%b7%b2%e7%bb%8f%e8%83%bd%e9%a1%ba%e5%88%a9%e8%b0%83%e9%80%9a" aria-label="5.5. 调试运行代码，接口已经能顺利调通">5.5. 调试运行代码，接口已经能顺利调通</a></li>
+                <li>
+                    <a href="#56-%e9%aa%8c%e8%af%81%e5%af%b9%e5%ba%94%e7%9a%84%e5%b9%b6%e5%8f%91%e6%95%b03%e8%a7%82%e5%af%9f%e6%8e%a5%e5%8f%a3%e6%98%af%e5%90%a6%e5%ad%98%e5%9c%a8%e6%8a%a5%e9%94%99%e6%8f%90%e7%a4%ba%e5%b9%b6%e5%8f%91%e9%87%8f%e4%b8%8d%e8%b6%b3" aria-label="5.6. 验证对应的并发数3，观察接口是否存在报错，提示并发量不足">5.6. 验证对应的并发数3，观察接口是否存在报错，提示并发量不足</a></li>
+                <li>
+                    <a href="#57-%e6%a0%b9%e6%8d%ae%e4%ba%86%e8%a7%a3%e4%b8%9a%e5%8a%a1%e5%be%97%e7%9f%a5%e5%bd%93%e5%89%8d1%e4%b8%aa%e8%b4%a6%e5%8f%b7%e6%8f%90%e4%be%9b3%e4%b8%aa%e5%85%8d%e8%b4%b9%e7%9a%84%e5%b9%b6%e5%8f%91%e6%95%b0%e9%87%8f%e5%a6%82%e6%9e%9c%e6%88%91%e4%bb%ac%e6%9c%89%e5%a4%9a%e4%b8%aa%e8%b4%a6%e5%8f%b7%e9%9a%8f%e6%9c%ba%e5%8f%96%e4%b8%80%e4%b8%aa%e8%b4%a6%e5%8f%b7%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e8%af%b7%e6%b1%82%e9%82%a3%e6%88%91%e4%bb%ac%e7%9a%84%e5%b9%b6%e5%8f%91%e6%95%b0%e9%87%8f%e8%82%af%e5%ae%9a%e8%83%bd%e4%b8%8a%e5%8e%bb%e8%be%83%e5%b0%91%e5%87%ba%e7%8e%b0%e5%b9%b6%e5%8f%91%e6%95%b0%e4%b8%8d%e8%b6%b3%e7%9a%84%e6%83%85%e5%86%b5" aria-label="5.7. 根据了解业务得知，当前1个账号提供3个免费的并发数量，如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去，较少出现并发数不足的情况。">5.7. 根据了解业务得知，当前1个账号提供3个免费的并发数量，如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去，较少出现并发数不足的情况。</a></li>
+                <li>
+                    <a href="#58-%e4%bc%98%e5%8c%96%e4%bb%a3%e7%a0%81%e9%9a%8f%e6%9c%ba%e8%8e%b7%e5%8f%96%e8%b4%a6%e5%8f%b7%e4%bf%a1%e6%81%af%e5%8e%bb%e8%af%b7%e6%b1%82%e6%8e%a5%e5%8f%a3%e6%8f%90%e9%ab%98%e5%b9%b6%e5%8f%91%e6%95%b0%e9%87%8f%e9%99%8d%e4%bd%8e%e6%8f%90%e7%a4%ba%e5%b9%b6%e5%8f%91%e6%95%b0%e4%b8%8d%e8%b6%b3%e7%9a%84%e6%83%85%e5%86%b5%e4%bc%98%e5%8c%96%e5%90%8e%e7%9a%84python%e4%bb%a3%e7%a0%81%e5%a6%82%e4%b8%8b" aria-label="5.8. 优化代码，随机获取账号信息去请求接口，提高并发数量，降低提示并发数不足的情况。优化后的python代码如下">5.8. 优化代码，随机获取账号信息去请求接口，提高并发数量，降低提示并发数不足的情况。优化后的python代码如下</a></li>
+                <li>
+                    <a href="#59-%e9%80%9a%e8%bf%87%e6%96%b0%e4%bb%a3%e7%a0%81%e5%b0%9d%e8%af%95%e9%aa%8c%e8%af%81%e5%b9%b6%e5%8f%918%e4%b8%aa%e8%99%bd%e7%84%b6%e6%9c%89%e4%b8%80%e5%ae%9a%e7%9a%84%e6%a6%82%e7%8e%87%e4%bc%9a%e9%81%87%e5%88%b0%e5%b9%b6%e5%8f%91%e6%95%b0%e4%b8%8d%e8%b6%b3%e4%bd%86%e6%98%af%e7%9b%b8%e5%af%b9%e5%8f%aa%e8%83%bd%e5%b9%b6%e5%8f%913%e4%b8%aa%e5%b7%b2%e7%bb%8f%e6%9c%89%e4%ba%86%e5%be%88%e5%a4%a7%e7%9a%84%e6%8f%90%e5%8d%87" aria-label="5.9. 通过新代码尝试验证并发8个，虽然有一定的概率会遇到并发数不足，但是相对只能并发3个已经有了很大的提升。">5.9. 通过新代码尝试验证并发8个，虽然有一定的概率会遇到并发数不足，但是相对只能并发3个已经有了很大的提升。</a></li>
+                <li>
+                    <a href="#510-%e6%9c%80%e7%bb%88jmeter%e8%84%9a%e6%9c%ac" aria-label="5.10. 最终jmeter脚本">5.10. 最终jmeter脚本</a></li></ul>
+                </li>
+                <li>
+                    <a href="#6-%e7%bb%93%e8%ae%ba" aria-label="6. 结论">6. 结论</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><ul>
+<li>1<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-背景">1. 背景</a></li>
+<li>2<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-思考">2. 思考</a></li>
+<li>3<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-工具">3. 工具</a></li>
+<li>4<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-前期准备">4. 前期准备</a></li>
+<li>5<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-操作步骤">5. 操作步骤</a>
+<ul>
+<li>5.1<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包，并下载对应包安装">5.1. 通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包，并下载对应包安装</a></li>
+<li>5.2<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-创建websocket请求">5.2. 创建websocket请求</a></li>
+<li>5.3<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-为了获取加密后的signature，需要自行分析源文件代码（），然后梳理出文件加密逻辑运用到jemter上。">5.3. 为了获取加密后的signature，需要自行分析源文件代码（xfDocapi.py），然后梳理出文件加密逻辑运用到jemter上。</a></li>
+<li>5.4<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-通过调试得到以下代码，得到jmeter中请求参数appId，timestamp，signature">5.4. 通过调试得到以下代码，得到jmeter中请求参数appId，timestamp，signature</a></li>
+<li>5.5<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-调试运行代码，接口已经能顺利调通">5.5. 调试运行代码，接口已经能顺利调通</a></li>
+<li>5.6<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-验证对应的并发数3，观察接口是否存在报错，提示并发量不足">5.6. 验证对应的并发数3，观察接口是否存在报错，提示并发量不足</a></li>
+<li>5.7<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-根据了解业务得知，当前1个账号提供3个免费的并发数量，如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去，较少出现并发数不足的情况。">5.7. 根据了解业务得知，当前1个账号提供3个免费的并发数量，如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去，较少出现并发数不足的情况。</a></li>
+<li>5.8<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-优化代码，随机获取账号信息去请求接口，提高并发数量，降低提示并发数不足的情况。优化后的python代码如下">5.8. 优化代码，随机获取账号信息去请求接口，提高并发数量，降低提示并发数不足的情况。优化后的python代码如下</a></li>
+<li>5.9<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-通过新代码尝试验证并发8个，虽然有一定的概率会遇到并发数不足，但是相对只能并发3个已经有了很大的提升。">5.9. 通过新代码尝试验证并发8个，虽然有一定的概率会遇到并发数不足，但是相对只能并发3个已经有了很大的提升。</a></li>
+<li>5.10<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-最终jmeter脚本">5.10. 最终jmeter脚本</a></li>
+</ul>
+</li>
+<li>6<a href="/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/#Jmeter连接Websocket（python）进行并发验证-结论">6. 结论</a></li>
+</ul>
+<h1 id="1-背景">1. 背景<a hidden class="anchor" aria-hidden="true" href="#1-背景">#</a></h1>
+<p>开发同事在接入科大讯飞文档大模型时，测试经常遇到接口报并发数量不足的错误，沟通了解到当前使用的账号只有免费的3个并发量，但开发偶尔遇到单个请求的时候也会报并发数量不足，于是接到验证第三方接口并发量的需求。</p>
+<h1 id="2-思考">2. 思考<a hidden class="anchor" aria-hidden="true" href="#2-思考">#</a></h1>
+<p>做性能测试当前使用比较多的工具就是Jmeter了，但是这是websocket协议请求，该工具默认不支持该协议请求连接，于是网上简单查阅资料得知可以通过导入第三方jar包就可以支持该协议的传输。同时开发之前写的开发都是通过python脚本写的，自己刚刚好又学习了一段时间的python语言于是便有了很高的兴趣，需要在jmeter上允许python脚本来加密参数请求调接口，另外查阅资料得知jemter上运动pyth脚本也需要安装jar包才能运行，并且只支持运行python2。</p>
+<h1 id="3-工具">3. 工具<a hidden class="anchor" aria-hidden="true" href="#3-工具">#</a></h1>
+<p>jmeter工具执行脚本、pycharm工具调试python脚本</p>
+<h1 id="4-前期准备">4. 前期准备<a hidden class="anchor" aria-hidden="true" href="#4-前期准备">#</a></h1>
+<p>阅读python原文件代码，理解代码加密逻辑，自行上网查阅相关资料完成websocket请求和python代码的调试，阅读理解代码的过程，我调试代码的过程都复习巩固了自己之前学习的知识，并应用在实践当中。第三方接口文档说明<a href="https://chatdoc.xfyun.cn/docs#/">https://chatdoc.xfyun.cn/docs#/</a><br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-40-31.png?version=1&amp;modificationDate=1703814031570&amp;api=v2" alt=""  />
+</p>
+<h1 id="5-操作步骤">5. 操作步骤<a hidden class="anchor" aria-hidden="true" href="#5-操作步骤">#</a></h1>
+<h2 id="51-通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包并下载对应包安装">5.1. 通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包，并下载对应包安装<a hidden class="anchor" aria-hidden="true" href="#51-通过网上查阅相关资料在jmeter中请求websocket需要安装两个jar包并下载对应包安装">#</a></h2>
+<p>对应jar包：<a href="/download/attachments/114677070/JMeterWebSocketSamplers-1.2.8.jar?version=1&modificationDate=1703814288816&api=v2">JMeterWebSocketSamplers-1.2.8.jar</a>，<a href="/download/attachments/114677070/jmeter-plugins-manager-1.10.jar?version=1&modificationDate=1703814425392&api=v2">jmeter-plugins-manager-1.10.jar</a>，需把这两个jar放到jmeter安装路径下的ext文件夹下（我本地D:\Program Files\apache-jmeter-5.2.1\lib\ext）<br>
+另外运行python脚本jar包：<a href="/download/attachments/114677070/jython-standalone-2.7.2.jar?version=1&modificationDate=1703815169058&api=v2">jython-standalone-2.7.2.jar</a>，同理把jar放到jmeter安装路径下的ext文件夹下<br>
+重启jmeter工具，进入主页–选项<br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-49-37.png?version=1&amp;modificationDate=1703814578005&amp;api=v2" alt=""  />
+<br>
+安装对应的两个包，安装后重启，就能在sample下找到websocket的请求协议了。<br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-50-32.png?version=1&amp;modificationDate=1703814632800&amp;api=v2" alt=""  />
+</p>
+<h2 id="52-创建websocket请求">5.2. 创建websocket请求<a hidden class="anchor" aria-hidden="true" href="#52-创建websocket请求">#</a></h2>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-52-39.png?version=1&amp;modificationDate=1703814759328&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-55-31.png?version=1&amp;modificationDate=1703814931233&amp;api=v2" alt=""  />
+</p>
+<p>我们请求的websocket是多段返回文本的，所以需要创建不创建请求只接收的</p>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-55-10.png?version=1&amp;modificationDate=1703814910094&amp;api=v2" alt=""  />
+</p>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-55-20.png?version=1&amp;modificationDate=1703814920679&amp;api=v2" alt=""  />
+</p>
+<h2 id="53-为了获取加密后的signature需要自行分析源文件代码xfdocapipydownloadattachments114677070xfdocapipyversion1modificationdate1703813765027apiv2然后梳理出文件加密逻辑运用到jemter上">5.3. 为了获取加密后的signature，需要自行分析源文件代码（<a href="/download/attachments/114677070/xfDocapi.py?version=1&modificationDate=1703813765027&api=v2">xfDocapi.py</a>），然后梳理出文件加密逻辑运用到jemter上。<a hidden class="anchor" aria-hidden="true" href="#53-为了获取加密后的signature需要自行分析源文件代码xfdocapipydownloadattachments114677070xfdocapipyversion1modificationdate1703813765027apiv2然后梳理出文件加密逻辑运用到jemter上">#</a></h2>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_9-37-46.png?version=1&amp;modificationDate=1703813866456&amp;api=v2" alt=""  />
+</p>
+<h2 id="54-通过调试得到以下代码得到jmeter中请求参数appidtimestampsignature">5.4. 通过调试得到以下代码，得到jmeter中请求参数appId，timestamp，signature<a hidden class="anchor" aria-hidden="true" href="#54-通过调试得到以下代码得到jmeter中请求参数appidtimestampsignature">#</a></h2>
+<p><a href="/">?</a></p>
+<p><code>import</code> <code>time</code> </p>
+<p><code>import</code> <code>hashlib</code> </p>
+<p><code>import</code> <code>hmac</code> </p>
+<p><code>import</code> <code>base64</code> </p>
+<p><code>appId =</code> <code>&quot;a327ed87&quot;</code>   </p>
+<p><code>timestamp = str(``int``(time.time()))</code> </p>
+<p><code>apisecret =</code> <code>&quot;ZjQ1MDNjYTgzODU5NmI4N2RjYTVkYmFk&quot;</code></p>
+<p><code>fileid =</code> <code>&quot;b61e9887f63a4c488b4c37c48bffc46e&quot;</code></p>
+<p><code>def get_signature():</code></p>
+<p>    <code>data = (appId + timestamp).encode(``'utf-8'``)  # 使用 .encode(``'utf-8'``) 来直接编码字符串为字节</code> </p>
+<p>    <code>checkSum = hashlib.md5(data).hexdigest()  # 使用 .hexdigest() 来直接获取十六进制摘要</code> </p>
+<p>    <code>signature = hmac.``new``(apisecret.encode(``'utf-8'``), checkSum.encode(``'utf-8'``), digestmod=hashlib.sha1).digest()</code> </p>
+<p>    <code>signature = base64.b64encode(signature).decode(``'utf-8'``)  # 使用 .decode(``'utf-8'``) 来直接解码字节为字符串</code> </p>
+<p>    <code>return</code> <code>signature</code> </p>
+<p><code>signature = get_signature()</code> </p>
+<p><code>vars.put(``&quot;appId&quot;``, appId)</code> </p>
+<p><code>vars.put(``&quot;timestamp&quot;``, timestamp)</code></p>
+<p><code>vars.put(``&quot;fileid&quot;``, fileid)</code> </p>
+<p><code>vars.put(``&quot;signature&quot;``, signature)</code></p>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-16-45.png?version=1&amp;modificationDate=1703816206026&amp;api=v2" alt=""  />
+</p>
+<p>在jmeter中调用对应的参数<br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-39-48.png?version=1&amp;modificationDate=1703817588940&amp;api=v2" alt=""  />
+</p>
+<h2 id="55-调试运行代码接口已经能顺利调通">5.5. 调试运行代码，接口已经能顺利调通<a hidden class="anchor" aria-hidden="true" href="#55-调试运行代码接口已经能顺利调通">#</a></h2>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-16-17.png?version=1&amp;modificationDate=1703816177471&amp;api=v2" alt=""  />
+</p>
+<h2 id="56-验证对应的并发数3观察接口是否存在报错提示并发量不足">5.6. 验证对应的并发数3，观察接口是否存在报错，提示并发量不足<a hidden class="anchor" aria-hidden="true" href="#56-验证对应的并发数3观察接口是否存在报错提示并发量不足">#</a></h2>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-18-23.png?version=1&amp;modificationDate=1703816303702&amp;api=v2" alt=""  />
+<br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-19-5.png?version=1&amp;modificationDate=1703816345257&amp;api=v2" alt=""  />
+<br>
+以上接口返回均通过，没有报错，同时提示接口数量不足，这是单次并发验证，正常需要循环跑多次，这里因为有免费次数限制没有跑更多的次数。<br>
+另外当选择并发数4个，观察接口是否存在报错，如下<br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-21-42.png?version=1&amp;modificationDate=1703816502140&amp;api=v2" alt=""  />
+<br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-22-15.png?version=1&amp;modificationDate=1703816535511&amp;api=v2" alt=""  />
+<br>
+通过以上返回，明显看出当并发4个的时候，必定会存在一个接口请求失败，报了并发量不足的情况。与第三个提供的3个免费的并发量一致。</p>
+<h2 id="57-根据了解业务得知当前1个账号提供3个免费的并发数量如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去较少出现并发数不足的情况">5.7. 根据了解业务得知，当前1个账号提供3个免费的并发数量，如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去，较少出现并发数不足的情况。<a hidden class="anchor" aria-hidden="true" href="#57-根据了解业务得知当前1个账号提供3个免费的并发数量如果我们有多个账号随机取一个账号进行并发请求那我们的并发数量肯定能上去较少出现并发数不足的情况">#</a></h2>
+<p><a href="/">?</a></p>
+<p><code>冬颖：``3``路，``1000``次</code></p>
+<p><code>APPID:bd7464e0</code></p>
+<p><code>APISECRET:MDY2YmY3N2I3NDcwOTcwY2E2YTBmMTZj</code></p>
+<p><code>FILEID:aa31b936c4f6473b8bcae9041a49ab3e</code></p>
+<p><code>黄婷：``3``路，``1000``次</code></p>
+<p><code>APPID:3d387e5f</code></p>
+<p><code>APISECRET:ZWRjMzdjYjBjOWU2OGQ2NWVlMzc3ZTli</code></p>
+<p><code>FILEID:5da5effaf79c4e8990125614da2b35be</code></p>
+<p><code>郑小涵：``3``路，``1000``次</code></p>
+<p><code>APPID:033c34df</code></p>
+<p><code>APISECRET:YjgwMjMwMjRlOTYwZWU2ZDQwNTNjMDI0</code></p>
+<p><code>FILEID:1b51f467015e4db6a4818e2305ebef1a</code></p>
+<p><code>唐玮：``3``路，``1000``次</code></p>
+<p><code>APPID:f6c06130</code></p>
+<p><code>APISECRET:YjE2NDk3NTkzZTQ2YjBlODViNWJiOTlk</code></p>
+<p><code>FILEID:a168550934294eaa9b8828e0fafce848</code></p>
+<p><code>影子：``3``路，``3000``次(预计于近期提额)</code></p>
+<p><code>APPID:a327ed87</code></p>
+<p><code>APISECRET:ZjQ1MDNjYTgzODU5NmI4N2RjYTVkYmFk</code></p>
+<p><code>FILEID:b61e9887f63a4c488b4c37c48bffc46e</code></p>
+<h2 id="58-优化代码随机获取账号信息去请求接口提高并发数量降低提示并发数不足的情况优化后的python代码如下">5.8. 优化代码，随机获取账号信息去请求接口，提高并发数量，降低提示并发数不足的情况。优化后的python代码如下<a hidden class="anchor" aria-hidden="true" href="#58-优化代码随机获取账号信息去请求接口提高并发数量降低提示并发数不足的情况优化后的python代码如下">#</a></h2>
+<p><a href="/">?</a></p>
+<p><code>import</code> <code>time</code></p>
+<p><code>import</code> <code>hashlib</code></p>
+<p><code>import</code> <code>hmac</code></p>
+<p><code>import</code> <code>base64</code></p>
+<p><code>import</code> <code>random</code></p>
+<p><code>timestamp = str(``int``(time.time()))</code></p>
+<p><code># 字典列表</code></p>
+<p><code>dict_list = [{``'appId'``:</code> <code>'a327ed87'``,</code> <code>'apisecret'``:</code> <code>'ZjQ1MDNjYTgzODU5NmI4N2RjYTVkYmFk'``,``'fileid'``:``'b61e9887f63a4c488b4c37c48bffc46e'``},</code></p>
+<p>             <code>{``'appId'``:</code> <code>'f6c06130'``,</code> <code>'apisecret'``:</code> <code>'YjE2NDk3NTkzZTQ2YjBlODViNWJiOTlk'``,``'fileid'``:``'a168550934294eaa9b8828e0fafce848'``},</code></p>
+<p>             <code>{``'appId'``:</code> <code>'033c34df'``,</code> <code>'apisecret'``:</code> <code>'YjgwMjMwMjRlOTYwZWU2ZDQwNTNjMDI0'``,``'fileid'``:``'1b51f467015e4db6a4818e2305ebef1a'``},</code></p>
+<p>             <code>{``'appId'``:</code> <code>'3d387e5f'``,</code> <code>'apisecret'``:</code> <code>'ZWRjMzdjYjBjOWU2OGQ2NWVlMzc3ZTli'``,``'fileid'``:``'5da5effaf79c4e8990125614da2b35be'``},</code></p>
+<p>             <code>{``'appId'``:</code> <code>'bd7464e0'``,</code> <code>'apisecret'``:</code> <code>'MDY2YmY3N2I3NDcwOTcwY2E2YTBmMTZj'``,``'fileid'``:``'aa31b936c4f6473b8bcae9041a49ab3e'``}]</code></p>
+<p><code># 使用random.choice从列表中随机选择一个字典</code></p>
+<p><code>random_dict = random.choice(dict_list)</code></p>
+<p><code>appId = random_dict[``'appId'``]</code></p>
+<p><code>apisecret = random_dict[``'apisecret'``]</code></p>
+<p><code>fileid = random_dict[``'fileid'``]</code></p>
+<p><code>def get_signature():</code></p>
+<p>    <code>data = (appId + timestamp).encode(``'utf-8'``)  # 使用 .encode(``'utf-8'``) 来直接编码字符串为字节</code></p>
+<p>    <code>checkSum = hashlib.md5(data).hexdigest()  # 使用 .hexdigest() 来直接获取十六进制摘要</code></p>
+<p>    <code>signature = hmac.``new``(apisecret.encode(``'utf-8'``), checkSum.encode(``'utf-8'``), digestmod=hashlib.sha1).digest()</code></p>
+<p>    <code>signature = base64.b64encode(signature).decode(``'utf-8'``)  # 使用 .decode(``'utf-8'``) 来直接解码字节为字符串</code></p>
+<p>    <code>return</code> <code>signature</code></p>
+<p><code>signature = get_signature()</code></p>
+<p><code>vars.put(``&quot;appId&quot;``, appId)</code></p>
+<p><code>vars.put(``&quot;timestamp&quot;``, timestamp)</code></p>
+<p><code>vars.put(``&quot;fileid&quot;``, fileid)</code></p>
+<p><code>vars.put(``&quot;signature&quot;``, signature)</code></p>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-31-56.png?version=1&amp;modificationDate=1703817116381&amp;api=v2" alt=""  />
+</p>
+<h2 id="59-通过新代码尝试验证并发8个虽然有一定的概率会遇到并发数不足但是相对只能并发3个已经有了很大的提升">5.9. 通过新代码尝试验证并发8个，虽然有一定的概率会遇到并发数不足，但是相对只能并发3个已经有了很大的提升。<a hidden class="anchor" aria-hidden="true" href="#59-通过新代码尝试验证并发8个虽然有一定的概率会遇到并发数不足但是相对只能并发3个已经有了很大的提升">#</a></h2>
+<p><img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-35-38.png?version=1&amp;modificationDate=1703817338664&amp;api=v2" alt=""  />
+<br>
+<img loading="lazy" src="/download/attachments/114677070/image2023-12-29_10-35-28.png?version=1&amp;modificationDate=1703817329382&amp;api=v2" alt=""  />
+<br>
+通过以上返回数据得知，并发8个没有遇到请求失败的情况，大大的提升了并发数。</p>
+<h2 id="510-最终jmeter脚本">5.10. 最终jmeter脚本<a hidden class="anchor" aria-hidden="true" href="#510-最终jmeter脚本">#</a></h2>
+<p><a href="/download/attachments/114677070/WebSocket%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%96%87%E6%A1%A3%E9%97%AE%E7%AD%94.jmx?version=1&modificationDate=1703821353942&api=v2">WebSocket大模型文档问答.jmx</a></p>
+<h1 id="6-结论">6. 结论<a hidden class="anchor" aria-hidden="true" href="#6-结论">#</a></h1>
+<p>通过验证得出，账号提供的免费3个并发数与实际验证的结论一致，另外可以通过多账号来提升并发数。</p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/python%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0/">Python语言学习</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/20230420ftt%E7%B3%BB%E7%BB%9F%E9%97%AE%E7%AD%94%E4%B8%8E%E6%8C%87%E4%BB%A4%E8%AF%86%E5%88%AB%E8%83%BD%E5%8A%9B%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>20230420FTT系统问答与指令识别能力测试报告</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/2023.02.24~%E7%AC%AC8%E5%91%A8%E5%BD%B1%E5%AD%90%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%A1%B9%E7%9B%AE%E6%B1%87%E6%8A%A5/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>2023.02.24~第8周影子虚拟人项目汇报</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Jmeter连接Websocket（python）进行并发验证 on x"
+            href="https://x.com/intent/tweet/?text=Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f&amp;hashtags=python%e8%af%ad%e8%a8%80%e5%ad%a6%e4%b9%a0">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Jmeter连接Websocket（python）进行并发验证 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f&amp;title=Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81&amp;summary=Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Jmeter连接Websocket（python）进行并发验证 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f&title=Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Jmeter连接Websocket（python）进行并发验证 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Jmeter连接Websocket（python）进行并发验证 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Jmeter连接Websocket（python）进行并发验证 on telegram"
+            href="https://telegram.me/share/url?text=Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Jmeter连接Websocket（python）进行并发验证 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Jmeter%e8%bf%9e%e6%8e%a5Websocket%ef%bc%88python%ef%bc%89%e8%bf%9b%e8%a1%8c%e5%b9%b6%e5%8f%91%e9%aa%8c%e8%af%81&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fjmeter%25E8%25BF%259E%25E6%258E%25A5websocketpython%25E8%25BF%259B%25E8%25A1%258C%25E5%25B9%25B6%25E5%258F%2591%25E9%25AA%258C%25E8%25AF%2581%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

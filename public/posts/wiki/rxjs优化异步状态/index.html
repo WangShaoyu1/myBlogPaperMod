@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>rxjs优化异步状态 | PaperMod</title>
+<meta name="keywords" content="rxjs">
+<meta name="description" content="rxjs">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/rxjs%E4%BC%98%E5%8C%96%E5%BC%82%E6%AD%A5%E7%8A%B6%E6%80%81/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/rxjs%E4%BC%98%E5%8C%96%E5%BC%82%E6%AD%A5%E7%8A%B6%E6%80%81/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="rxjs优化异步状态" />
+<meta property="og:description" content="rxjs" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/rxjs%E4%BC%98%E5%8C%96%E5%BC%82%E6%AD%A5%E7%8A%B6%E6%80%81/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="rxjs优化异步状态"/>
+<meta name="twitter:description" content="rxjs"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "rxjs优化异步状态",
+      "item": "http://localhost:1313/posts/wiki/rxjs%E4%BC%98%E5%8C%96%E5%BC%82%E6%AD%A5%E7%8A%B6%E6%80%81/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "rxjs优化异步状态",
+  "name": "rxjs优化异步状态",
+  "description": "rxjs",
+  "keywords": [
+    "rxjs"
+  ],
+  "articleBody": "1. 虚拟人拖动放手3秒后复位 难点：复位时间刚好到了，如果正在拖动也不能复位\n优化前\n?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\nlet moving = false``,\nmovingTimer = null``;\nconst reset = () =\u003e {\nif (moving) {\nclearTimeout(movingTimer);\n}\nmovingTimer = setTimeout(() =\u003e {\nif (moving) {\n// 还不能复位\nreset();\nmoving = false``;\nreturn``;\n}\n// a?.stage?.reset();\nresetSize();\nmovingTimer = null``;\n}, 3000);\n};\nconst touchmove = () =\u003e {\nmoving = true``;\n};\nconst touchEnd = (e) =\u003e {\nconsole.log(``\"touchEnd\"``);\nmoving = true``;\nreset();\n};\n优化后\n?\nconst touchend$ = fromEvent(haihumanRef.value, \"touchend\"``).pipe(\ndebounceTime(3000),\n)\nconst touchmove$ = fromEvent(haihumanRef.value, \"touchmove\"``).pipe(\nswitchMap(() =\u003e touchend$) // 旧写法：switchMapTo(touchend$)\n).subscribe(resetSize)\n更简短但没那么好的优化\n?\nconst touchmove$ = fromEvent(haihumanRef.value, \"touchmove\"``)\n.pipe(debounceTime(``3000``))\n.subscribe(resetSize);\n只用了touchmove的防抖，但因为没用到touchend如果不松手也会触发订阅事件\n1.1. 兼容pc端 由于pc没touch事件，只能用mouse事件模拟，顺便做个兼容，利用merge合并两个数据流\n?\nconst touchend$ = fromEvent(haihumanRef.value, \"touchend\"``).pipe(\ndebounceTime(3000)\n);\nconst mobileMove$ = fromEvent(haihumanRef.value, \"touchmove\"``).pipe(\nswitchMap(() =\u003e touchend$)\n);\nconst mouseDown$ = fromEvent(haihumanRef.value, \"mousedown\"``);\nconst mouseUp$ = fromEvent(haihumanRef.value, \"mouseup\"``);\nconst mouseMove$ = fromEvent(haihumanRef.value, \"mousemove\"``);\nconst pcMove$ = mouseDown$.pipe(\nswitchMap(() =\u003e mouseMove$.pipe(takeUntil(mouseUp$))),\ndebounceTime(3000)\n);\nmerge(pcMove$, mobileMove$).pipe(tap(resetSize)).subscribe();\n2. 区分单击，双击事件 优化前\n?\nlet clickNum = 1,\nclickTimer = null``,\nlastClickTime = 0;\n// 兼容单击和双击\nconst dblClickHai = () =\u003e {\nlet nowTime = Date.now();\nif (nowTime - lastClickTime \u003c 300) {\nconsole.log(``\"双击\"``);\nmove(moveList1);\nclickNum++;\nlastClickTime = 0;\nclickTimer \u0026\u0026 clearTimeout(clickTimer);\n} else {\nlastClickTime = nowTime;\nclickTimer = setTimeout(() =\u003e {\nconsole.log(``\"单击\"``);\nmove(moveList0);\nif (clickNum \u003e 1) {\nclickNum = 1;\nreturn``;\n}\n}, 300);\n}\n};\n优化后\n?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\nimport { asyncScheduler } from \"rxjs/internal/scheduler/async\"``;\nconst click$ = fromEvent(haihumanRef.value, \"click\"``);\nconst throttle$ = click$.pipe(\nthrottleTime(250, asyncScheduler, {\nleading: false``, // 是否在延迟开始前调用函数\ntrailing: true``, // 是否在延迟开始后调用函数\n})\n);\nclick$\n.pipe(\nbuffer(throttle$),\nmap((arr) =\u003e arr.length)\n)\n.subscribe((len) =\u003e {\nif (len \u003c 2) {\n// 单击\nmove(moveList0);\n} else {\n// 双击\nmove(moveList1);\n}\n});\n3. 一定时间内没识别内容 优化\n?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nconst timerSource$ = timer(10 * 1000).pipe(\nfilter(() =\u003e !text.value \u0026\u0026 ![``\"CLOSING\"``, \"CLOSED\"``].includes(status.value))\n);\n// ws open后开始计时\nconst subscription = timerSource$.subscribe(() =\u003e {\nsubscription.unsubscribe();\nsayLast();\n});\n4. 屏保里关闭按钮的碰撞运动 ?\nlet startCurrent = { x: 0, y: 0 };\nlet main;\nlet maxX = window.innerWidth;\nlet maxY = window.innerHeight;\nlet subscription;\nlet subscriptionTimer;\n// 有direction参数就生成四条边的随机位置，否则生成屏幕里随机位置\nconst getBorderPos = (direction) =\u003e {\nconst choices = [``\"l\"``, \"r\"``, \"t\"``, \"b\"``]; // 左右上下\nconst s = choices.filter((_) =\u003e _ !== direction);\nconst _direction = s[Math.floor(Math.random() * s.length)];\nif (_direction === \"l\"``) {\nreturn {\nx: 0,\ny: ~~(Math.random() * maxY),\n};\n}\nif (_direction === \"r\"``) {\nreturn {\nx: maxX,\ny: ~~(Math.random() * maxY),\n};\n}\nif (_direction === \"t\"``) {\nreturn {\nx: ~~(Math.random() * maxX),\ny: 0,\n};\n}\nif (_direction === \"b\"``) {\nreturn {\nx: ~~(Math.random() * maxX),\ny: maxY,\n};\n}\nreturn {\nx: ~~(Math.random() * maxX),\ny: ~~(Math.random() * maxY),\n};\n};\nconst getRandomPos = (origin) =\u003e {\nconst leftOrRight = Math.random() \u003c 0.5 ? \"l\" : \"r\"``;\nconst topOrBottom = Math.random() \u003c 0.5 ? \"t\" : \"b\"``;\nif (origin.x === 0) {\nreturn getBorderPos(``\"l\"``);\n}\nif (origin.y === 0) {\nreturn getBorderPos(``\"t\"``);\n}\nif (origin.x === maxX) {\nreturn getBorderPos(``\"r\"``);\n}\nreturn getBorderPos(``\"b\"``);\n};\nfunction tween(start, end, duration) {\nconst diff = {\nx: end.x - start.x,\ny: end.y - start.y,\n};\nreturn animationFrames().pipe(\nmap(({ elapsed }) =\u003e {\nreturn elapsed / duration;\n}),\ntakeWhile((v) =\u003e v \u003c 1),\nendWith(1),\nmap((v) =\u003e ({\nx: v * diff.x + start.x,\ny: v * diff.y + start.y,\n}))\n);\n}\nconst run = (startPos = { x: 0, y: 0 }) =\u003e {\nconst endPos = getRandomPos(startPos);\nconsole.log(``\"startPos\"``, startPos);\nconsole.log(``\"endPos\"``, endPos);\nsubscription = tween(\nstartPos,\nendPos,\n5000 + Math.random() * 10000\n).subscribe({\nnext: ({ x, y }) =\u003e {\nmain.style.transform = `translate3d(${x}px, ${y}px, 0)`;\n},\ncomplete: () =\u003e {\nrun(endPos);\n},\n});\n};\nconst emits = defineEmits(``\"onClose\"``);\nconst onClose = (isClick) =\u003e {\nemits(``\"onClose\"``, isClick);\n};\nonUnmounted(() =\u003e {\nsubscription?.unsubscribe();\nsubscriptionTimer?.unsubscribe();\n});\nonMounted(() =\u003e {\nmain = document.querySelector(``\".screensaver-close\"``);\nmaxX = window.innerWidth - main.offsetWidth;\nmaxY = window.innerHeight - main.offsetHeight;\nrun(getBorderPos());\nsubscriptionTimer = timer(3 * 60 * 1000)\n.pipe(\ntap(() =\u003e {\nonClose();\n})\n)\n.subscribe();\n});\n5. 屏保退出逻辑 进入屏保，假如没交互过（这里就以有没调用过click、touchmove为依据），就xxx秒后自动关闭。假如中途有交互过，就重新计时xxx秒\n?\nconst afterActionTime = 40 * 1000; // 交互后计时时间\nconst click$ = fromEvent(swiperRef.value, \"click\"``);\nconst touchmove$ = fromEvent(swiperRef.value, \"touchmove\"``);\nconst action$ = merge(click$, touchmove$);\nconst closeTime$ = timer(2 * 60 * 1000).pipe(map(() =\u003e \"close\"``));\n// 倒数关闭，如果中途有动过，再延迟40s\nsubscriptionTimer = race(closeTime$, action$)\n// .pipe(take(1))\n.subscribe((val) =\u003e {\nsubscriptionTimer.unsubscribe();\n// 自动关闭\nif (val === \"close\"``) {\nonClose();\n} else {\n// 有过交互，每一下都重置时间40s\nsubscriptionTimer = merge(\ntimer(afterActionTime).pipe(takeUntil(action$)),\naction$.pipe(debounceTime(afterActionTime))\n).subscribe(() =\u003e onClose());\n}\n});\n6. 快捷提问每n秒更换 通过修改index来更换一批批要显示的问题，想开始这个轮训逻辑的时候记得对grid$.subscribe()\n?\nconst grid$ = interval(10 * 1000).pipe(\ntap(() =\u003e {\nconst newIndex = index.value + num;\nconst diff = newIndex - len.value;\nindex.value = diff \u003e= 0 ? diff : newIndex;\n})\n);\n7. 多个外部事件重置回调函数 每次触发merge$流里的事件，都重置倒计时\nsubscribe函数支持马上执行参数，可以马上出发计时\n?\nconst timerSource$ = timer(15 * 1000);\nconst speechResult$ = fromEvent(document, \"speechResult\"``);\nconst wakeUp$ = fromEvent(document, \"wakeUp\"``);\nconst talk$ = fromEvent(document, \"talk\"``);\nconst click$ = fromEvent(document, \"click\"``);\nconst touchmove$ = fromEvent(document, \"touchmove\"``);\nconst merge$ = merge(speechResult$, wakeUp$, talk$, click$, touchmove$);\nconst subscribe = (immediate = false``) =\u003e {\nconst immediateTrigger$ = immediate ? of(``null``) : of();\nsubscription = merge(immediateTrigger$, merge$)\n.pipe(switchMap(() =\u003e timerSource$))\n.subscribe(() =\u003e {\nconsole.log(``\"超时暂停拾音\"``);\nstop();\nemits(``\"onEnd\"``);\n});\n};\nFilter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "899",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/rxjs%E4%BC%98%E5%8C%96%E5%BC%82%E6%AD%A5%E7%8A%B6%E6%80%81/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      rxjs优化异步状态
+    </h1>
+    <div class="post-description">
+      rxjs
+    </div>
+    <div class="post-meta">5 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8b%96%e5%8a%a8%e6%94%be%e6%89%8b3%e7%a7%92%e5%90%8e%e5%a4%8d%e4%bd%8d" aria-label="1. 虚拟人拖动放手3秒后复位">1. 虚拟人拖动放手3秒后复位</a><ul>
+                        
+                <li>
+                    <a href="#11-%e5%85%bc%e5%ae%b9pc%e7%ab%af" aria-label="1.1. 兼容pc端">1.1. 兼容pc端</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-%e5%8c%ba%e5%88%86%e5%8d%95%e5%87%bb%e5%8f%8c%e5%87%bb%e4%ba%8b%e4%bb%b6" aria-label="2. 区分单击，双击事件">2. 区分单击，双击事件</a></li>
+                <li>
+                    <a href="#3-%e4%b8%80%e5%ae%9a%e6%97%b6%e9%97%b4%e5%86%85%e6%b2%a1%e8%af%86%e5%88%ab%e5%86%85%e5%ae%b9" aria-label="3. 一定时间内没识别内容">3. 一定时间内没识别内容</a></li>
+                <li>
+                    <a href="#4-%e5%b1%8f%e4%bf%9d%e9%87%8c%e5%85%b3%e9%97%ad%e6%8c%89%e9%92%ae%e7%9a%84%e7%a2%b0%e6%92%9e%e8%bf%90%e5%8a%a8" aria-label="4. 屏保里关闭按钮的碰撞运动">4. 屏保里关闭按钮的碰撞运动</a></li>
+                <li>
+                    <a href="#5-%e5%b1%8f%e4%bf%9d%e9%80%80%e5%87%ba%e9%80%bb%e8%be%91" aria-label="5. 屏保退出逻辑">5. 屏保退出逻辑</a></li>
+                <li>
+                    <a href="#6-%e5%bf%ab%e6%8d%b7%e6%8f%90%e9%97%ae%e6%af%8fn%e7%a7%92%e6%9b%b4%e6%8d%a2" aria-label="6. 快捷提问每n秒更换">6. 快捷提问每n秒更换</a></li>
+                <li>
+                    <a href="#7-%e5%a4%9a%e4%b8%aa%e5%a4%96%e9%83%a8%e4%ba%8b%e4%bb%b6%e9%87%8d%e7%bd%ae%e5%9b%9e%e8%b0%83%e5%87%bd%e6%95%b0" aria-label="7. 多个外部事件重置回调函数">7. 多个外部事件重置回调函数</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="1-虚拟人拖动放手3秒后复位">1. 虚拟人拖动放手3秒后复位<a hidden class="anchor" aria-hidden="true" href="#1-虚拟人拖动放手3秒后复位">#</a></h1>
+<p>难点：复位时间刚好到了，如果正在拖动也不能复位</p>
+<p><strong>优化前</strong></p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p><code>let moving =</code> <code>false``,</code></p>
+<p>  <code>movingTimer =</code> <code>null``;</code></p>
+<p><code>const reset = () =&gt; {</code></p>
+<p>  <code>if</code> <code>(moving) {</code></p>
+<p>    <code>clearTimeout(movingTimer);</code></p>
+<p>  <code>}</code></p>
+<p>  <code>movingTimer = setTimeout(() =&gt; {</code></p>
+<p>    <code>if</code> <code>(moving) {</code></p>
+<p>      <code>// 还不能复位</code></p>
+<p>      <code>reset();</code></p>
+<p>      <code>moving =</code> <code>false``;</code></p>
+<p>      <code>return``;</code></p>
+<p>    <code>}</code></p>
+<p>    <code>// a?.stage?.reset();</code></p>
+<p>    <code>resetSize();</code></p>
+<p>    <code>movingTimer =</code> <code>null``;</code></p>
+<p>  <code>}, 3000);</code></p>
+<p><code>};</code></p>
+<p><code>const touchmove = () =&gt; {</code></p>
+<p>  <code>moving =</code> <code>true``;</code></p>
+<p><code>};</code></p>
+<p><code>const touchEnd = (e) =&gt; {</code></p>
+<p>  <code>console.log(``&quot;touchEnd&quot;``);</code></p>
+<p>  <code>moving =</code> <code>true``;</code></p>
+<p>  <code>reset();</code></p>
+<p><code>};</code></p>
+<p><strong>优化后</strong></p>
+<p><a href="/">?</a></p>
+<p><code>const touchend$ = fromEvent(haihumanRef.value,</code> <code>&quot;touchend&quot;``).pipe(</code></p>
+<p>  <code>debounceTime(3000),</code></p>
+<p><code>)</code></p>
+<p><code>const touchmove$ = fromEvent(haihumanRef.value,</code> <code>&quot;touchmove&quot;``).pipe(</code></p>
+<p>  <code>switchMap(() =&gt; touchend$)</code> <code>// 旧写法：switchMapTo(touchend$)</code></p>
+<p><code>).subscribe(resetSize)</code></p>
+<p><strong>更简短但没那么好的优化</strong></p>
+<p><a href="/">?</a></p>
+<p><code>const</code> <code>touchmove$ = fromEvent(haihumanRef.value,</code> <code>&quot;touchmove&quot;``)</code></p>
+<p>  <code>.pipe(debounceTime(``3000``))</code></p>
+<p>  <code>.subscribe(resetSize);</code></p>
+<p>只用了touchmove的防抖，但因为没用到touchend如果不松手也会触发订阅事件</p>
+<h2 id="11-兼容pc端">1.1. 兼容pc端<a hidden class="anchor" aria-hidden="true" href="#11-兼容pc端">#</a></h2>
+<p>由于pc没touch事件，只能用mouse事件模拟，顺便做个兼容，利用merge合并两个数据流</p>
+<p><a href="/">?</a></p>
+<p><code>const touchend$ = fromEvent(haihumanRef.value,</code> <code>&quot;touchend&quot;``).pipe(</code></p>
+<p>  <code>debounceTime(3000)</code></p>
+<p><code>);</code></p>
+<p><code>const mobileMove$ = fromEvent(haihumanRef.value,</code> <code>&quot;touchmove&quot;``).pipe(</code></p>
+<p>  <code>switchMap(() =&gt; touchend$)</code></p>
+<p><code>);</code></p>
+<p><code>const mouseDown$ = fromEvent(haihumanRef.value,</code> <code>&quot;mousedown&quot;``);</code></p>
+<p><code>const mouseUp$ = fromEvent(haihumanRef.value,</code> <code>&quot;mouseup&quot;``);</code></p>
+<p><code>const mouseMove$ = fromEvent(haihumanRef.value,</code> <code>&quot;mousemove&quot;``);</code></p>
+<p><code>const pcMove$ = mouseDown$.pipe(</code></p>
+<p>  <code>switchMap(() =&gt; mouseMove$.pipe(takeUntil(mouseUp$))),</code></p>
+<p>  <code>debounceTime(3000)</code></p>
+<p><code>);</code></p>
+<p><code>merge(pcMove$, mobileMove$).pipe(tap(resetSize)).subscribe();</code></p>
+<h1 id="2-区分单击双击事件">2. 区分单击，双击事件<a hidden class="anchor" aria-hidden="true" href="#2-区分单击双击事件">#</a></h1>
+<p><strong>优化前</strong></p>
+<p><a href="/">?</a></p>
+<p><code>let clickNum = 1,</code></p>
+<p>  <code>clickTimer =</code> <code>null``,</code></p>
+<p>  <code>lastClickTime = 0;</code></p>
+<p><code>// 兼容单击和双击</code></p>
+<p><code>const dblClickHai = () =&gt; {</code></p>
+<p>  <code>let nowTime = Date.now();</code></p>
+<p>  <code>if</code> <code>(nowTime - lastClickTime &lt; 300) {</code></p>
+<p>    <code>console.log(``&quot;双击&quot;``);</code></p>
+<p>    <code>move(moveList1);</code></p>
+<p>    <code>clickNum++;</code></p>
+<p>    <code>lastClickTime = 0;</code></p>
+<p>    <code>clickTimer &amp;&amp; clearTimeout(clickTimer);</code></p>
+<p>  <code>}</code> <code>else</code> <code>{</code></p>
+<p>    <code>lastClickTime = nowTime;</code></p>
+<p>    <code>clickTimer = setTimeout(() =&gt; {</code></p>
+<p>      <code>console.log(``&quot;单击&quot;``);</code></p>
+<p>      <code>move(moveList0);</code></p>
+<p>      <code>if</code> <code>(clickNum &gt; 1) {</code></p>
+<p>        <code>clickNum = 1;</code></p>
+<p>        <code>return``;</code></p>
+<p>      <code>}</code></p>
+<p>    <code>}, 300);</code></p>
+<p>  <code>}</code></p>
+<p><code>};</code></p>
+<p><strong>优化后</strong></p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p><code>import { asyncScheduler } from</code> <code>&quot;rxjs/internal/scheduler/async&quot;``;</code></p>
+<p><code>const click$ = fromEvent(haihumanRef.value,</code> <code>&quot;click&quot;``);</code></p>
+<p> <code>const throttle$ = click$.pipe(</code></p>
+<p>   <code>throttleTime(250, asyncScheduler, {</code></p>
+<p>     <code>leading:</code> <code>false``,</code> <code>// 是否在延迟开始前调用函数</code></p>
+<p>     <code>trailing:</code> <code>true``,</code> <code>// 是否在延迟开始后调用函数</code></p>
+<p>   <code>})</code></p>
+<p> <code>);</code></p>
+<p> <code>click$</code></p>
+<p>   <code>.pipe(</code></p>
+<p>     <code>buffer(throttle$),</code></p>
+<p>     <code>map((arr) =&gt; arr.length)</code></p>
+<p>   <code>)</code></p>
+<p>   <code>.subscribe((len) =&gt; {</code></p>
+<p>     <code>if</code> <code>(len &lt; 2) {</code></p>
+<p>       <code>// 单击</code></p>
+<p>       <code>move(moveList0);</code></p>
+<p>     <code>}</code> <code>else</code> <code>{</code></p>
+<p>       <code>// 双击</code></p>
+<p>       <code>move(moveList1);</code></p>
+<p>     <code>}</code></p>
+<p>   <code>});</code></p>
+<h1 id="3-一定时间内没识别内容">3. 一定时间内没识别内容<a hidden class="anchor" aria-hidden="true" href="#3-一定时间内没识别内容">#</a></h1>
+<p><strong>优化</strong></p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p><code>const timerSource$ = timer(10 * 1000).pipe(</code></p>
+<p>  <code>filter(() =&gt; !text.value &amp;&amp; ![``&quot;CLOSING&quot;``,</code> <code>&quot;CLOSED&quot;``].includes(status.value))</code></p>
+<p><code>);</code></p>
+<p> <code>// ws open后开始计时</code></p>
+<p>    <code>const subscription = timerSource$.subscribe(() =&gt; {</code></p>
+<p>      <code>subscription.unsubscribe();</code></p>
+<p>      <code>sayLast();</code></p>
+<p>    <code>});</code></p>
+<h1 id="4-屏保里关闭按钮的碰撞运动">4. 屏保里关闭按钮的碰撞运动<a hidden class="anchor" aria-hidden="true" href="#4-屏保里关闭按钮的碰撞运动">#</a></h1>
+<p><a href="/">?</a></p>
+<p><code>let startCurrent = { x: 0, y: 0 };</code></p>
+<p><code>let main;</code></p>
+<p><code>let maxX = window.innerWidth;</code></p>
+<p><code>let maxY = window.innerHeight;</code></p>
+<p><code>let subscription;</code></p>
+<p><code>let subscriptionTimer;</code></p>
+<p><code>// 有direction参数就生成四条边的随机位置，否则生成屏幕里随机位置</code></p>
+<p><code>const getBorderPos = (direction) =&gt; {</code></p>
+<p>  <code>const choices = [``&quot;l&quot;``,</code> <code>&quot;r&quot;``,</code> <code>&quot;t&quot;``,</code> <code>&quot;b&quot;``];</code> <code>// 左右上下</code></p>
+<p>  <code>const s = choices.filter((_) =&gt; _ !== direction);</code></p>
+<p>  <code>const _direction = s[Math.floor(Math.random() * s.length)];</code></p>
+<p>  <code>if</code> <code>(_direction ===</code> <code>&quot;l&quot;``) {</code></p>
+<p>    <code>return</code> <code>{</code></p>
+<p>      <code>x: 0,</code></p>
+<p>      <code>y: ~~(Math.random() * maxY),</code></p>
+<p>    <code>};</code></p>
+<p>  <code>}</code></p>
+<p>  <code>if</code> <code>(_direction ===</code> <code>&quot;r&quot;``) {</code></p>
+<p>    <code>return</code> <code>{</code></p>
+<p>      <code>x: maxX,</code></p>
+<p>      <code>y: ~~(Math.random() * maxY),</code></p>
+<p>    <code>};</code></p>
+<p>  <code>}</code></p>
+<p>  <code>if</code> <code>(_direction ===</code> <code>&quot;t&quot;``) {</code></p>
+<p>    <code>return</code> <code>{</code></p>
+<p>      <code>x: ~~(Math.random() * maxX),</code></p>
+<p>      <code>y: 0,</code></p>
+<p>    <code>};</code></p>
+<p>  <code>}</code></p>
+<p>  <code>if</code> <code>(_direction ===</code> <code>&quot;b&quot;``) {</code></p>
+<p>    <code>return</code> <code>{</code></p>
+<p>      <code>x: ~~(Math.random() * maxX),</code></p>
+<p>      <code>y: maxY,</code></p>
+<p>    <code>};</code></p>
+<p>  <code>}</code></p>
+<p>  <code>return</code> <code>{</code></p>
+<p>    <code>x: ~~(Math.random() * maxX),</code></p>
+<p>    <code>y: ~~(Math.random() * maxY),</code></p>
+<p>  <code>};</code></p>
+<p><code>};</code></p>
+<p><code>const getRandomPos = (origin) =&gt; {</code></p>
+<p>  <code>const leftOrRight = Math.random() &lt; 0.5 ?</code> <code>&quot;l&quot;</code> <code>:</code> <code>&quot;r&quot;``;</code></p>
+<p>  <code>const topOrBottom = Math.random() &lt; 0.5 ?</code> <code>&quot;t&quot;</code> <code>:</code> <code>&quot;b&quot;``;</code></p>
+<p>  <code>if</code> <code>(origin.x === 0) {</code></p>
+<p>    <code>return</code> <code>getBorderPos(``&quot;l&quot;``);</code></p>
+<p>  <code>}</code></p>
+<p>  <code>if</code> <code>(origin.y === 0) {</code></p>
+<p>    <code>return</code> <code>getBorderPos(``&quot;t&quot;``);</code></p>
+<p>  <code>}</code></p>
+<p>  <code>if</code> <code>(origin.x === maxX) {</code></p>
+<p>    <code>return</code> <code>getBorderPos(``&quot;r&quot;``);</code></p>
+<p>  <code>}</code></p>
+<p>  <code>return</code> <code>getBorderPos(``&quot;b&quot;``);</code></p>
+<p><code>};</code></p>
+<p><code>function</code> <code>tween(start, end, duration) {</code></p>
+<p>  <code>const diff = {</code></p>
+<p>    <code>x: end.x - start.x,</code></p>
+<p>    <code>y: end.y - start.y,</code></p>
+<p>  <code>};</code></p>
+<p>  <code>return</code> <code>animationFrames().pipe(</code></p>
+<p>    <code>map(({ elapsed }) =&gt; {</code></p>
+<p>      <code>return</code> <code>elapsed / duration;</code></p>
+<p>    <code>}),</code></p>
+<p>    <code>takeWhile((v) =&gt; v &lt; 1),</code></p>
+<p>    <code>endWith(1),</code></p>
+<p>    <code>map((v) =&gt; ({</code></p>
+<p>      <code>x: v * diff.x + start.x,</code></p>
+<p>      <code>y: v * diff.y + start.y,</code></p>
+<p>    <code>}))</code></p>
+<p>  <code>);</code></p>
+<p><code>}</code></p>
+<p><code>const run = (startPos = { x: 0, y: 0 }) =&gt; {</code></p>
+<p>  <code>const endPos = getRandomPos(startPos);</code></p>
+<p>  <code>console.log(``&quot;startPos&quot;``, startPos);</code></p>
+<p>  <code>console.log(``&quot;endPos&quot;``, endPos);</code></p>
+<p>  <code>subscription = tween(</code></p>
+<p>    <code>startPos,</code></p>
+<p>    <code>endPos,</code></p>
+<p>    <code>5000 + Math.random() * 10000</code></p>
+<p>  <code>).subscribe({</code></p>
+<p>    <code>next: ({ x, y }) =&gt; {</code></p>
+<p>      <code>main.style.transform = `translate3d(${x}px, ${y}px, 0)`;</code></p>
+<p>    <code>},</code></p>
+<p>    <code>complete: () =&gt; {</code></p>
+<p>      <code>run(endPos);</code></p>
+<p>    <code>},</code></p>
+<p>  <code>});</code></p>
+<p><code>};</code></p>
+<p><code>const emits = defineEmits(``&quot;onClose&quot;``);</code></p>
+<p><code>const onClose = (isClick) =&gt; {</code></p>
+<p>  <code>emits(``&quot;onClose&quot;``, isClick);</code></p>
+<p><code>};</code></p>
+<p><code>onUnmounted(() =&gt; {</code></p>
+<p>  <code>subscription?.unsubscribe();</code></p>
+<p>  <code>subscriptionTimer?.unsubscribe();</code></p>
+<p><code>});</code></p>
+<p><code>onMounted(() =&gt; {</code></p>
+<p>  <code>main = document.querySelector(``&quot;.screensaver-close&quot;``);</code></p>
+<p>  <code>maxX = window.innerWidth - main.offsetWidth;</code></p>
+<p>  <code>maxY = window.innerHeight - main.offsetHeight;</code></p>
+<p>  <code>run(getBorderPos());</code></p>
+<p>  <code>subscriptionTimer = timer(3 * 60 * 1000)</code></p>
+<p>    <code>.pipe(</code></p>
+<p>      <code>tap(() =&gt; {</code></p>
+<p>        <code>onClose();</code></p>
+<p>      <code>})</code></p>
+<p>    <code>)</code></p>
+<p>    <code>.subscribe();</code></p>
+<p><code>});</code></p>
+<h1 id="5-屏保退出逻辑">5. 屏保退出逻辑<a hidden class="anchor" aria-hidden="true" href="#5-屏保退出逻辑">#</a></h1>
+<p>进入屏保，假如没交互过（这里就以有没调用过click、touchmove为依据），就xxx秒后自动关闭。假如中途有交互过，就重新计时xxx秒</p>
+<p><a href="/">?</a></p>
+<p><code>const afterActionTime = 40 * 1000;</code> <code>// 交互后计时时间</code></p>
+<p><code>const click$ = fromEvent(swiperRef.value,</code> <code>&quot;click&quot;``);</code></p>
+<p><code>const touchmove$ = fromEvent(swiperRef.value,</code> <code>&quot;touchmove&quot;``);</code></p>
+<p><code>const action$ = merge(click$, touchmove$);</code></p>
+<p><code>const closeTime$ = timer(2 * 60 * 1000).pipe(map(() =&gt;</code> <code>&quot;close&quot;``));</code></p>
+<p><code>// 倒数关闭，如果中途有动过，再延迟40s</code></p>
+<p><code>subscriptionTimer = race(closeTime$, action$)</code></p>
+<p>  <code>// .pipe(take(1))</code></p>
+<p>  <code>.subscribe((val) =&gt; {</code></p>
+<p>    <code>subscriptionTimer.unsubscribe();</code></p>
+<p>    <code>// 自动关闭</code></p>
+<p>    <code>if</code> <code>(val ===</code> <code>&quot;close&quot;``) {</code></p>
+<p>      <code>onClose();</code></p>
+<p>    <code>}</code> <code>else</code> <code>{</code></p>
+<p>      <code>// 有过交互，每一下都重置时间40s</code></p>
+<p>      <code>subscriptionTimer = merge(</code></p>
+<p>        <code>timer(afterActionTime).pipe(takeUntil(action$)),</code></p>
+<p>        <code>action$.pipe(debounceTime(afterActionTime))</code></p>
+<p>      <code>).subscribe(() =&gt; onClose());</code></p>
+<p>    <code>}</code></p>
+<p>  <code>});</code></p>
+<h1 id="6-快捷提问每n秒更换">6. 快捷提问每n秒更换<a hidden class="anchor" aria-hidden="true" href="#6-快捷提问每n秒更换">#</a></h1>
+<p>通过修改index来更换一批批要显示的问题，想开始这个轮训逻辑的时候记得对grid$.subscribe()</p>
+<p><a href="/">?</a></p>
+<p><code>const grid$ = interval(10 * 1000).pipe(</code></p>
+<p>  <code>tap(() =&gt; {</code></p>
+<p>    <code>const newIndex = index.value + num;</code></p>
+<p>    <code>const diff = newIndex - len.value;</code></p>
+<p>    <code>index.value = diff &gt;= 0 ? diff : newIndex;</code></p>
+<p>  <code>})</code></p>
+<p><code>);</code></p>
+<h1 id="7-多个外部事件重置回调函数">7. 多个外部事件重置回调函数<a hidden class="anchor" aria-hidden="true" href="#7-多个外部事件重置回调函数">#</a></h1>
+<p>每次触发merge$流里的事件，都重置倒计时</p>
+<p>subscribe函数支持马上执行参数，可以马上出发计时</p>
+<p><a href="/">?</a></p>
+<p><code>const timerSource$ = timer(15 * 1000);</code></p>
+<p><code>const speechResult$ = fromEvent(document,</code> <code>&quot;speechResult&quot;``);</code></p>
+<p><code>const wakeUp$ = fromEvent(document,</code> <code>&quot;wakeUp&quot;``);</code></p>
+<p><code>const talk$ = fromEvent(document,</code> <code>&quot;talk&quot;``);</code></p>
+<p><code>const click$ = fromEvent(document,</code> <code>&quot;click&quot;``);</code></p>
+<p><code>const touchmove$ = fromEvent(document,</code> <code>&quot;touchmove&quot;``);</code></p>
+<p><code>const merge$ = merge(speechResult$, wakeUp$, talk$, click$, touchmove$);</code></p>
+<p><code>const subscribe = (immediate =</code> <code>false``) =&gt; {</code></p>
+<p>  <code>const immediateTrigger$ = immediate ? of(``null``) : of();</code></p>
+<p>  <code>subscription = merge(immediateTrigger$, merge$)</code></p>
+<p>    <code>.pipe(switchMap(() =&gt; timerSource$))</code></p>
+<p>    <code>.subscribe(() =&gt; {</code></p>
+<p>      <code>console.log(``&quot;超时暂停拾音&quot;``);</code></p>
+<p>      <code>stop();</code></p>
+<p>      <code>emits(``&quot;onEnd&quot;``);</code></p>
+<p>    <code>});</code></p>
+<p><code>};</code></p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/rxjs/">Rxjs</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/rxjs/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>rxjs</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/sw%E6%A8%A1%E7%89%88/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>sw模版</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share rxjs优化异步状态 on x"
+            href="https://x.com/intent/tweet/?text=rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f&amp;hashtags=rxjs">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share rxjs优化异步状态 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f&amp;title=rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81&amp;summary=rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share rxjs优化异步状态 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f&title=rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share rxjs优化异步状态 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share rxjs优化异步状态 on whatsapp"
+            href="https://api.whatsapp.com/send?text=rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share rxjs优化异步状态 on telegram"
+            href="https://telegram.me/share/url?text=rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share rxjs优化异步状态 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=rxjs%e4%bc%98%e5%8c%96%e5%bc%82%e6%ad%a5%e7%8a%b6%e6%80%81&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2frxjs%25E4%25BC%2598%25E5%258C%2596%25E5%25BC%2582%25E6%25AD%25A5%25E7%258A%25B6%25E6%2580%2581%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

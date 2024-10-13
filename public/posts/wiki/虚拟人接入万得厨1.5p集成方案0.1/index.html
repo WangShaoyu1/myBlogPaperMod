@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>虚拟人接入万得厨1.5p集成方案0.1 | PaperMod</title>
+<meta name="keywords" content="4、集成架构">
+<meta name="description" content="4、集成架构">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%8E%A5%E5%85%A5%E4%B8%87%E5%BE%97%E5%8E%A81.5p%E9%9B%86%E6%88%90%E6%96%B9%E6%A1%880.1/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%8E%A5%E5%85%A5%E4%B8%87%E5%BE%97%E5%8E%A81.5p%E9%9B%86%E6%88%90%E6%96%B9%E6%A1%880.1/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="虚拟人接入万得厨1.5p集成方案0.1" />
+<meta property="og:description" content="4、集成架构" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%8E%A5%E5%85%A5%E4%B8%87%E5%BE%97%E5%8E%A81.5p%E9%9B%86%E6%88%90%E6%96%B9%E6%A1%880.1/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="虚拟人接入万得厨1.5p集成方案0.1"/>
+<meta name="twitter:description" content="4、集成架构"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "虚拟人接入万得厨1.5p集成方案0.1",
+      "item": "http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%8E%A5%E5%85%A5%E4%B8%87%E5%BE%97%E5%8E%A81.5p%E9%9B%86%E6%88%90%E6%96%B9%E6%A1%880.1/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "虚拟人接入万得厨1.5p集成方案0.1",
+  "name": "虚拟人接入万得厨1.5p集成方案0.1",
+  "description": "4、集成架构",
+  "keywords": [
+    "4、集成架构"
+  ],
+  "articleBody": "1. 背景 公司基于发展战略，推出万得厨1.5p，深圳万得厨团队总结万得厨1.5的经验，提出屏端结构模块化解决方案，虚拟人团队基于万得厨团队的结构模块化架构，接入新的模块化架构。\n万得厨app模块化架构文档如：\nRFC-2023.2.20-万得厨屏端 APP 代码结构模块化方案\n2. 设计原则 2.1. 模块拆分原则 拆分原则：分层解耦、单一职责、高内聚低耦合、易于维护与扩展、\n业务模块：承载具体业务需求，业务模块之间尽可能解耦。 通用模块（有的叫功能模块）：包含其他模块经常使用的代码，减少冗余，理论上通用模块不依赖任何业务侧的数据结构。 核心模块（有的叫基础模块）：偏 native 层的模块，理论上具有平台无关性。 2.2. 命名规范 命名规范（保证语义与表达的同时，尽量做到简洁，可以使用 core、common、business 等文件夹包括各个层级，使用项目代号 w 做为前缀、或者 wrapper 之类的后缀） 2.3. 优势 虚拟人可以快速移植到其他app。\n开发减少构建时间。在开发阶段按需编译组件，一次调试中可能有一两个组件参与集成，这样编译时间就会大大降低，提高开发效率。\n代码解耦，代码责任制，组件之间的交互如果还是直接引用的话，那么组件之间根本没有做到解耦。组件间通信解耦组织直接调用，降低沟通成本。\n3. 分层架构 APP\n万得厨\n服务\n虚拟人\n加热服务\n语音服务\n。。。。。。\naidl\naidl\nlauncher\n外部集成\nNLP\nASR\nsdk\nsdk\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-b738631b-9ff3-410b-b373-228b89d923ee’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%31%2E%35%70%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%9B%86%E6%88%90%E6%9E%B6%E6%9E%84/105250864?revision=8’; readerOpts.imageUrl = ’’ + ‘/download/attachments/105250864/1.5p虚拟人集成架构.png’ + ‘?version=8\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=105250864\u0026owningPageId=105250864\u0026diagramName=%31%2E%35%70%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%9B%86%E6%88%90%E6%9E%B6%E6%9E%84\u0026revision=8’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘921’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%31%2E%35%70%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%9B%86%E6%88%90%E6%9E%B6%E6%9E%84’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘虚拟人接入万得厨1.5p集成方案0.1’; readerOpts.attVer = ‘8’; readerOpts.attId = ‘105251324’; readerOpts.lastModifierName = ‘未知用户 (renpeng)’; readerOpts.lastModified = ‘2023-06-27 17:00:14.869’; readerOpts.creatorName = ‘未知用户 (renpeng)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n绿色代表虚拟人负责的部分。\n黄色代表万得厨负责的部分\n虚拟人拆分成app层和服务层，app主要用来和用户交互，调用或者通过观察者模式监听服务层。\napp层实现用户ui操作，虚拟人的展示。先以module的形式，后面结合万得厨进度一起拆成以app形式。\n虚拟人模块主要包含NLP和TTS以及动画的封装。\n服务层主要实现语音服务。语音服务实现asr和tts功能。\n4. 代码结构 Edit Edit Show Show Remove Remove //\u003c![CDATA[ jQuery(\"#09652\").mousedown(function(e) { var parameters = {width: 700, height: 180, id: “remove-dialog”, closeOnOutsideClick: false}; var dialog = new AJS.Dialog(parameters); var originalPopupHide = dialog.popup.hide; dialog.popup.hide = function() { anyDialogVisible = false; originalPopupHide.apply(this, arguments); AJS.trigger(“hide.dialog”, {dialog: dialog}); }; dialog.addHeader(“Map remove confirmation”); dialog.addPanel(“Confirmation”, “Your map will be deleted from the page and from attachments. Do you really want to remove your map?\n”, “remove-dialog-body”); dialog.addButton(“Yes”, function (dialog) { var url = “/plugins/namymap/removenamymap.action?mindmapName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84\u0026lastPage=%2Fpages%2Fviewpage.action%3FpageId%3D105250864\u0026pageId=105250864”; window.location.href = url.replace(/\u0026/g, “\u0026”); }); dialog.addCancel(“No”, function (dialog) { dialog.hide(); }); dialog.show(); }); //]]\u003e\n5. 通信机制 5.1. 语音模块voiceservic通信 1.语音模块voiceservice是一个单独的应用程序服务。其他应用需要用到语音模块只需绑定并启动该服务。语音模块启动后会初始化讯飞sdk并启动录音，识别用户的声音，当用户唤醒或识别的时候，会把相关结果回调到调用方 应用。回调方法有\n//识别最终结果 void onResult(in String text); //流式识别结果 void onFlow(in String text); //唤醒返回，分数和唤醒词 void onWakeup(in int score,in String keyWord); //音量大小 void onVad(in int volume); 2.语音模块voiceservice与其他模块是完全解藕的，不止虚拟人可以用语言模块，其他的应用想要用也是可以的。因为是一个独立的进程，所以涉及到多进程通信，用到了AIDL多进程通信技术。\n3.另外封装了voiceClientProxy库，调用方只需调用其方法就可以很方便绑定和启动语音服务，省去了调用方再去写连接绑定的代码\n5.2. 虚拟人模块通信 1.虚拟人与语音模块，加热模块通信是通过AidL多进程通信方式\n2.虚拟人与其他业务组件模块（例如菜谱，系统设置等）是通过ARouter组件化通信方式\n6. 时序图 以开始烹饪为例\n语音服务虚拟人module执行指令例如开始烹饪\n显示虚拟人\n烹饪结束\n加热服务\n用户\n拾音asr语音转文字\n结果返回\n万得厨module\n跳转页面\n跳转页面虚拟人云服务nlp\n显示虚拟人\n烹饪结束\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-3a7fe223-b043-4417-9952-dd48f2f01611’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%31%2E%35%70%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE/105250864?revision=7’; readerOpts.imageUrl = ’’ + ‘/download/attachments/105250864/1.5p交互时序图.png’ + ‘?version=7\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=105250864\u0026owningPageId=105250864\u0026diagramName=%31%2E%35%70%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE\u0026revision=7’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘831’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%31%2E%35%70%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘虚拟人接入万得厨1.5p集成方案0.1’; readerOpts.attVer = ‘7’; readerOpts.attId = ‘105252329’; readerOpts.lastModifierName = ‘未知用户 (renpeng)’; readerOpts.lastModified = ‘2023-06-27 16:51:57.809’; readerOpts.creatorName = ‘未知用户 (renpeng)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n1用户语音唤醒，说开始烹饪，语音服务唤醒，调用科大讯飞sdk的唤醒，唤醒成功后识别语言，接受asr的回调，拿到识别后的文字。\n2把文字传给app层的虚拟人module，虚拟人module拿到文字调用虚拟人云服务的nlp，根据nlp的返回的指令或者faq、闲聊执行响应的逻辑，如果是faq、闲聊就直接tts播报。\n3执行指令，调用加热服务，跳转到加热界面\n4、烹饪结束，跳转页面，显示桌面虚拟人。\n7. 状态 待执行\n执行\nnlp返回意图\n判断执行条件，可以执行\n不执行\n判断条件，\n不可以执行，执行负向反馈\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-ad3ada84-0e87-4477-804f-05380d3b48b8’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E6%8C%87%E4%BB%A4%E7%8A%B6%E6%80%81%E5%9B%BE/105250864?revision=2’; readerOpts.imageUrl = ’’ + ‘/download/attachments/105250864/指令状态图.png’ + ‘?version=2\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=105250864\u0026owningPageId=105250864\u0026diagramName=%E6%8C%87%E4%BB%A4%E7%8A%B6%E6%80%81%E5%9B%BE\u0026revision=2’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘681’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E6%8C%87%E4%BB%A4%E7%8A%B6%E6%80%81%E5%9B%BE’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘虚拟人接入万得厨1.5p集成方案0.1’; readerOpts.attVer = ‘2’; readerOpts.attId = ‘105256887’; readerOpts.lastModifierName = ‘未知用户 (renpeng)’; readerOpts.lastModified = ‘2023-06-27 16:59:47.961’; readerOpts.creatorName = ‘未知用户 (renpeng)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\nFilter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "869",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%8E%A5%E5%85%A5%E4%B8%87%E5%BE%97%E5%8E%A81.5p%E9%9B%86%E6%88%90%E6%96%B9%E6%A1%880.1/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      虚拟人接入万得厨1.5p集成方案0.1
+    </h1>
+    <div class="post-description">
+      4、集成架构
+    </div>
+    <div class="post-meta">5 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e8%83%8c%e6%99%af" aria-label="1. 背景">1. 背景</a></li>
+                <li>
+                    <a href="#2-%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99" aria-label="2. 设计原则">2. 设计原则</a><ul>
+                        
+                <li>
+                    <a href="#21-%e6%a8%a1%e5%9d%97%e6%8b%86%e5%88%86%e5%8e%9f%e5%88%99" aria-label="2.1.   模块拆分原则">2.1.   模块拆分原则</a></li>
+                <li>
+                    <a href="#22-%e5%91%bd%e5%90%8d%e8%a7%84%e8%8c%83" aria-label="2.2. 命名规范">2.2. 命名规范</a></li>
+                <li>
+                    <a href="#23-%e4%bc%98%e5%8a%bf" aria-label="2.3. 优势">2.3. 优势</a></li></ul>
+                </li>
+                <li>
+                    <a href="#3-%e5%88%86%e5%b1%82%e6%9e%b6%e6%9e%84" aria-label="3. 分层架构">3. 分层架构</a></li>
+                <li>
+                    <a href="#4-%e4%bb%a3%e7%a0%81%e7%bb%93%e6%9e%84" aria-label="4. 代码结构">4. 代码结构</a></li>
+                <li>
+                    <a href="#5-%e9%80%9a%e4%bf%a1%e6%9c%ba%e5%88%b6" aria-label="5. 通信机制">5. 通信机制</a><ul>
+                        
+                <li>
+                    <a href="#51-%e8%af%ad%e9%9f%b3%e6%a8%a1%e5%9d%97voiceservic%e9%80%9a%e4%bf%a1" aria-label="5.1.   语音模块voiceservic通信">5.1.   语音模块voiceservic通信</a></li>
+                <li>
+                    <a href="#52-%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%a8%a1%e5%9d%97%e9%80%9a%e4%bf%a1" aria-label="5.2.   虚拟人模块通信">5.2.   虚拟人模块通信</a></li></ul>
+                </li>
+                <li>
+                    <a href="#6-%e6%97%b6%e5%ba%8f%e5%9b%be" aria-label="6. 时序图">6. 时序图</a></li>
+                <li>
+                    <a href="#7-%e7%8a%b6%e6%80%81" aria-label="7. 状态">7. 状态</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="1-背景">1. 背景<a hidden class="anchor" aria-hidden="true" href="#1-背景">#</a></h1>
+<p>公司基于发展战略，推出万得厨1.5p，深圳万得厨团队总结万得厨1.5的经验，提出屏端结构模块化解决方案，虚拟人团队基于万得厨团队的结构模块化架构，接入新的模块化架构。</p>
+<p>万得厨app模块化架构文档如：</p>
+<p><a href="/pages/viewpage.action?pageId=95561164">RFC-2023.2.20-万得厨屏端 APP 代码结构模块化方案</a></p>
+<h1 id="2-设计原则">2. 设计原则<a hidden class="anchor" aria-hidden="true" href="#2-设计原则">#</a></h1>
+<h2 id="21-模块拆分原则">2.1.   模块拆分原则<a hidden class="anchor" aria-hidden="true" href="#21-模块拆分原则">#</a></h2>
+<p>拆分原则：分层解耦、单一职责、高内聚低耦合、易于维护与扩展、</p>
+<ol>
+<li>业务模块：承载具体业务需求，业务模块之间尽可能解耦。</li>
+<li>通用模块（有的叫功能模块）：包含其他模块经常使用的代码，减少冗余，理论上通用模块不依赖任何业务侧的数据结构。</li>
+<li>核心模块（有的叫基础模块）：偏 native 层的模块，理论上具有平台无关性。</li>
+</ol>
+<h2 id="22-命名规范">2.2. 命名规范<a hidden class="anchor" aria-hidden="true" href="#22-命名规范">#</a></h2>
+<ol>
+<li>命名规范（保证语义与表达的同时，尽量做到简洁，可以使用 core、common、business 等文件夹包括各个层级，使用项目代号 w 做为前缀、或者 wrapper 之类的后缀）</li>
+</ol>
+<h2 id="23-优势">2.3. 优势<a hidden class="anchor" aria-hidden="true" href="#23-优势">#</a></h2>
+<ul>
+<li>
+<p>虚拟人可以快速移植到其他app。</p>
+</li>
+<li>
+<p>开发减少构建时间。在开发阶段按需编译组件，一次调试中可能有一两个组件参与集成，这样编译时间就会大大降低，提高开发效率。</p>
+</li>
+<li>
+<p>代码解耦，代码责任制，组件之间的交互如果还是直接引用的话，那么组件之间根本没有做到解耦。组件间通信解耦组织直接调用，降低沟通成本。</p>
+</li>
+</ul>
+<h1 id="3-分层架构">3. 分层架构<a hidden class="anchor" aria-hidden="true" href="#3-分层架构">#</a></h1>
+<p>APP</p>
+<p>万得厨</p>
+<p>服务</p>
+<p>虚拟人</p>
+<p>加热服务</p>
+<p>语音服务</p>
+<p>。。。。。。</p>
+<p>aidl</p>
+<p>aidl</p>
+<p>launcher</p>
+<p>外部集成</p>
+<p>NLP</p>
+<p>ASR</p>
+<p>sdk</p>
+<p>sdk</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-b738631b-9ff3-410b-b373-228b89d923ee&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%31%2E%35%70%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%9B%86%E6%88%90%E6%9E%B6%E6%9E%84/105250864?revision=8&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/105250864/1.5p虚拟人集成架构.png&rsquo; + &lsquo;?version=8&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=105250864&amp;owningPageId=105250864&amp;diagramName=%31%2E%35%70%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%9B%86%E6%88%90%E6%9E%B6%E6%9E%84&amp;revision=8&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;921&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%31%2E%35%70%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%9B%86%E6%88%90%E6%9E%B6%E6%9E%84&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;虚拟人接入万得厨1.5p集成方案0.1&rsquo;; readerOpts.attVer = &lsquo;8&rsquo;; readerOpts.attId = &lsquo;105251324&rsquo;; readerOpts.lastModifierName = &lsquo;未知用户 (renpeng)&rsquo;; readerOpts.lastModified = &lsquo;2023-06-27 17:00:14.869&rsquo;; readerOpts.creatorName = &lsquo;未知用户 (renpeng)&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<p>绿色代表虚拟人负责的部分。</p>
+<p>黄色代表万得厨负责的部分</p>
+<p>虚拟人拆分成app层和服务层，app主要用来和用户交互，调用或者通过观察者模式监听服务层。</p>
+<p>app层实现用户ui操作，虚拟人的展示。先以module的形式，后面结合万得厨进度一起拆成以app形式。</p>
+<p>虚拟人模块主要包含NLP和TTS以及动画的封装。</p>
+<p>服务层主要实现语音服务。语音服务实现asr和tts功能。</p>
+<h1 id="4-代码结构">4. 代码结构<a hidden class="anchor" aria-hidden="true" href="#4-代码结构">#</a></h1>
+<p><a href="/plugins/namymap/shownamymapeditor.action?mindmapName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84&lastPage=%2Fpages%2Fviewpage.action%3FpageId%3D105250864&pageId=105250864&isViewMode=false">Edit Edit</a> <a href="/plugins/namymap/shownamymapeditor.action?mindmapName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84&lastPage=%2Fpages%2Fviewpage.action%3FpageId%3D105250864&pageId=105250864&isViewMode=true">Show Show</a> Remove Remove //&lt;![CDATA[ jQuery(&quot;#09652&quot;).mousedown(function(e) { var parameters = {width: 700, height: 180, id: &ldquo;remove-dialog&rdquo;, closeOnOutsideClick: false}; var dialog = new AJS.Dialog(parameters); var originalPopupHide = dialog.popup.hide; dialog.popup.hide = function() { anyDialogVisible = false; originalPopupHide.apply(this, arguments); AJS.trigger(&ldquo;hide.dialog&rdquo;, {dialog: dialog}); }; dialog.addHeader(&ldquo;Map remove confirmation&rdquo;); dialog.addPanel(&ldquo;Confirmation&rdquo;, &ldquo;<p>Your map will be deleted from the page and from attachments. Do you really want to remove your map?</p>&rdquo;, &ldquo;remove-dialog-body&rdquo;); dialog.addButton(&ldquo;Yes&rdquo;, function (dialog) { var url = &ldquo;/plugins/namymap/removenamymap.action?mindmapName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84&amp;lastPage=%2Fpages%2Fviewpage.action%3FpageId%3D105250864&amp;pageId=105250864&rdquo;; window.location.href = url.replace(/&amp;/g, &ldquo;&amp;&rdquo;); }); dialog.addCancel(&ldquo;No&rdquo;, function (dialog) { dialog.hide(); }); dialog.show(); }); //]]&gt;</p>
+<p><a href="/plugins/namymap/shownamymapeditor.action?mindmapName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84&lastPage=%2Fpages%2Fviewpage.action%3FpageId%3D105250864&pageId=105250864&isViewMode=true"><img loading="lazy" src="/download/attachments/105250864/%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84.png?version=1&amp;amp;modificationDate=1687836221183&amp;amp;api=v2" alt=""  />
+</a></p>
+<h1 id="5-通信机制">5. 通信机制<a hidden class="anchor" aria-hidden="true" href="#5-通信机制">#</a></h1>
+<h2 id="51-语音模块voiceservic通信">5.1.   语音模块voiceservic通信<a hidden class="anchor" aria-hidden="true" href="#51-语音模块voiceservic通信">#</a></h2>
+<p>        1.语音模块voiceservice是一个单独的应用程序服务。其他应用需要用到语音模块只需绑定并启动该服务。语音模块启动后会初始化讯飞sdk并启动录音，识别用户的声音，当用户唤醒或识别的时候，会把相关结果回调到调用方   应用。回调方法有</p>
+<pre><code> //识别最终结果  
+ void onResult(in String  text);  
+ //流式识别结果  
+ void onFlow(in String  text);  
+ //唤醒返回，分数和唤醒词  
+ void onWakeup(in int  score,in String keyWord);  
+ //音量大小  
+ void onVad(in int  volume);  
+</code></pre>
+<p>      2.语音模块voiceservice与其他模块是完全解藕的，不止虚拟人可以用语言模块，其他的应用想要用也是可以的。因为是一个独立的进程，所以涉及到多进程通信，用到了AIDL多进程通信技术。</p>
+<p>      3.另外封装了voiceClientProxy库，调用方只需调用其方法就可以很方便绑定和启动语音服务，省去了调用方再去写连接绑定的代码</p>
+<h2 id="52-虚拟人模块通信">5.2.   虚拟人模块通信<a hidden class="anchor" aria-hidden="true" href="#52-虚拟人模块通信">#</a></h2>
+<p>       1.虚拟人与语音模块，加热模块通信是通过AidL多进程通信方式</p>
+<p>       2.虚拟人与其他业务组件模块（例如菜谱，系统设置等）是通过ARouter组件化通信方式</p>
+<h1 id="6-时序图">6. 时序图<a hidden class="anchor" aria-hidden="true" href="#6-时序图">#</a></h1>
+<p>以开始烹饪为例</p>
+<p>语音服务虚拟人module执行指令例如开始烹饪</p>
+<p>显示虚拟人</p>
+<p>烹饪结束</p>
+<p>加热服务</p>
+<p>用户</p>
+<p>拾音asr语音转文字</p>
+<p>结果返回</p>
+<p>万得厨module</p>
+<p>跳转页面</p>
+<p>跳转页面虚拟人云服务nlp</p>
+<p>显示虚拟人</p>
+<p>烹饪结束</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-3a7fe223-b043-4417-9952-dd48f2f01611&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%31%2E%35%70%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE/105250864?revision=7&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/105250864/1.5p交互时序图.png&rsquo; + &lsquo;?version=7&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=105250864&amp;owningPageId=105250864&amp;diagramName=%31%2E%35%70%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE&amp;revision=7&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;831&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%31%2E%35%70%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;虚拟人接入万得厨1.5p集成方案0.1&rsquo;; readerOpts.attVer = &lsquo;7&rsquo;; readerOpts.attId = &lsquo;105252329&rsquo;; readerOpts.lastModifierName = &lsquo;未知用户 (renpeng)&rsquo;; readerOpts.lastModified = &lsquo;2023-06-27 16:51:57.809&rsquo;; readerOpts.creatorName = &lsquo;未知用户 (renpeng)&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<p>1用户语音唤醒，说开始烹饪，语音服务唤醒，调用科大讯飞sdk的唤醒，唤醒成功后识别语言，接受asr的回调，拿到识别后的文字。</p>
+<p>2把文字传给app层的虚拟人module，虚拟人module拿到文字调用虚拟人云服务的nlp，根据nlp的返回的指令或者faq、闲聊执行响应的逻辑，如果是faq、闲聊就直接tts播报。</p>
+<p>3执行指令，调用加热服务，跳转到加热界面</p>
+<p>4、烹饪结束，跳转页面，显示桌面虚拟人。</p>
+<h1 id="7-状态">7. 状态<a hidden class="anchor" aria-hidden="true" href="#7-状态">#</a></h1>
+<p>待执行</p>
+<p>执行</p>
+<p>nlp返回意图</p>
+<p>判断执行条件，可以执行</p>
+<p>不执行</p>
+<p>判断条件，<br>
+不可以执行，执行负向反馈</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-ad3ada84-0e87-4477-804f-05380d3b48b8&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E6%8C%87%E4%BB%A4%E7%8A%B6%E6%80%81%E5%9B%BE/105250864?revision=2&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/105250864/指令状态图.png&rsquo; + &lsquo;?version=2&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=105250864&amp;owningPageId=105250864&amp;diagramName=%E6%8C%87%E4%BB%A4%E7%8A%B6%E6%80%81%E5%9B%BE&amp;revision=2&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;681&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E6%8C%87%E4%BB%A4%E7%8A%B6%E6%80%81%E5%9B%BE&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;虚拟人接入万得厨1.5p集成方案0.1&rsquo;; readerOpts.attVer = &lsquo;2&rsquo;; readerOpts.attId = &lsquo;105256887&rsquo;; readerOpts.lastModifierName = &lsquo;未知用户 (renpeng)&rsquo;; readerOpts.lastModified = &lsquo;2023-06-27 16:59:47.961&rsquo;; readerOpts.creatorName = &lsquo;未知用户 (renpeng)&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/4%E9%9B%86%E6%88%90%E6%9E%B6%E6%9E%84/">4、集成架构</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E7%82%89%E7%AB%AF%E8%99%9A%E6%8B%9F%E4%BA%BA6%E6%9C%88%E4%BB%BD%E7%89%88%E6%9C%AC%E9%9C%80%E6%B1%82%E8%A7%84%E5%88%92/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>炉端虚拟人6月份版本需求规划</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%8E%A5%E5%85%A5%E4%B8%87%E5%BE%97%E5%8E%A81.5p%E9%9B%86%E6%88%90%E6%96%B9%E6%A1%881.0/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>虚拟人接入万得厨1.5p集成方案1.0</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 虚拟人接入万得厨1.5p集成方案0.1 on x"
+            href="https://x.com/intent/tweet/?text=%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f&amp;hashtags=4%e3%80%81%e9%9b%86%e6%88%90%e6%9e%b6%e6%9e%84">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 虚拟人接入万得厨1.5p集成方案0.1 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f&amp;title=%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1&amp;summary=%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 虚拟人接入万得厨1.5p集成方案0.1 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f&title=%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 虚拟人接入万得厨1.5p集成方案0.1 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 虚拟人接入万得厨1.5p集成方案0.1 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 虚拟人接入万得厨1.5p集成方案0.1 on telegram"
+            href="https://telegram.me/share/url?text=%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 虚拟人接入万得厨1.5p集成方案0.1 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%8e%a5%e5%85%a5%e4%b8%87%e5%be%97%e5%8e%a81.5p%e9%9b%86%e6%88%90%e6%96%b9%e6%a1%880.1&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E6%258E%25A5%25E5%2585%25A5%25E4%25B8%2587%25E5%25BE%2597%25E5%258E%25A81.5p%25E9%259B%2586%25E6%2588%2590%25E6%2596%25B9%25E6%25A1%25880.1%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

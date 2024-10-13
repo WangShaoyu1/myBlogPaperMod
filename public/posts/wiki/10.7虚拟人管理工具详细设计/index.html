@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>10.7虚拟人管理工具详细设计 | PaperMod</title>
+<meta name="keywords" content="10、虚拟人模板管理">
+<meta name="description" content="10、虚拟人模板管理">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="10.7虚拟人管理工具详细设计" />
+<meta property="og:description" content="10、虚拟人模板管理" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="10.7虚拟人管理工具详细设计"/>
+<meta name="twitter:description" content="10、虚拟人模板管理"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "10.7虚拟人管理工具详细设计",
+      "item": "http://localhost:1313/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "10.7虚拟人管理工具详细设计",
+  "name": "10.7虚拟人管理工具详细设计",
+  "description": "10、虚拟人模板管理",
+  "keywords": [
+    "10、虚拟人模板管理"
+  ],
+  "articleBody": " 1 1、需求背景 22、概述 33、名词解释 44、角色分析 55、系统架构 66、业务流程 77、字典 （appid= 2565） 88、功能设计 8.18.1 登录 8.28.2 权限控制 99、数据模型 1010、接口设计 1111、后端服务和算法服务Kafka消息协议 1、需求背景 （1）目前使用合作方提供的FTT虚拟人管理后台进行虚拟人应用与资源管理，该后台不支持二开，系统对接需提出定制化需求；\n（2）将合作方提供的FTT虚拟人SDK接入各终端应用为用户提供服务时，相关虚拟人资源与服务的获取直接写在应用端中、从FTT管理后台拉取，未实现可配置；\n（3）虚拟人可交互内容需在FTT虚拟人管理后台进行配置，不支持在应用层进行选择与分发；且同一虚拟人模板的闲聊服务需统一配置同一服务；\n（4）交互屏虚拟人应用中，还未实现页面内容可配置，不便于通过使用统一的产品模板、配置不同页面内容，进行多项目交付；\n为解决以上问题，已将自定义对话服务接入FTT虚拟人NLP配置中的闲聊模块，通过虚拟人服务管理工具：\n（1）实现不同终端应用的虚拟人资源、对话服务可配置，支持后期对部分服务进行收费；\n（2）支持用户进行虚拟人形象服务与对话服务的自定义；\n（3）支持通过知识插件，为自定义对话服务配置数据源；\n（4）实现对多个交互屏界面的可配置化管理。\n2、概述 虚拟人服务管理工具主要结合SDK能力，对终端应用服务进行配置管理\n（1）服务模板配置主要进行应用管理、虚拟人模板配置管理、自定义对话配置管理、屏端服务配置管理；\n（2）对话资源池进行自定义对话接口可调用的对话资源管理；\n（3）知识插件进行知识库管理、插件管理；\n（4）创作虚拟人，为创作者提供知识插件上传后的发布与上架管理；\n（5）屏端服务管理，为屏端用户提供界面信息需求登记与屏端服务管理。\n3、名词解释 名词\n说明\n名词\n说明\nFTT虚拟人管理后台\n由虚拟人服务合作方提供的服务管理后台，可进行FTT虚拟人SDK中的应用创建与管理、虚拟人形象模板与NLP管理等\nFTT虚拟人SDK\n由虚拟人服务合作方提供的SDK，有Android、iOS、Linux、H5、Win、OS等不同端\n声学SDK\n由声学服务供应商提供的SDK，主要由科大讯飞提供，包含AIUI SDK、讯飞开放平台聚合SDK、独立功能SDK（如唤醒、在线识别、在线合成）等不同类型，包含Android、iOS、Linux、Win等不同端，提供语音唤醒、ASR在线语音识别等声学服务；\n备注：闲聊NLP与语音合成TTS主要由FTT虚拟人管理后台通过WebSocketAPI接入的方式向讯飞云获取，通过FTT虚拟人SDK提供服务，不通过声学SDK\n虚拟人服务管理工具\n影子虚拟人研发部设计开发的软件服务\n虚拟人资源文件\n主要包含虚拟人形象模型文件（glb格式）、服饰装扮模型文件（glb格式）、动作动画文件（bytes格式）、富文本A+资源等\nNLP配置\nFTT虚拟人管理后台中支持虚拟人进行自然语言对话的功能模块，包含指令、FAQ、表格问答、闲聊四种类型\n自定义对话服务\n由虚拟人研发部提供，接入FTT虚拟人闲聊模块中的接口服务\n知识插件\n由虚拟人研发部研发，对上传的知识文档进行检索返回的插件服务，结合通用大模型提供RAG检索增强生成\n提示词\n与大模型交互使用的Prompt\n通用大模型\n业内第三方提供的大模型服务，包含openAI、百度文心一言、阿里同义千问、讯飞星火模型等\nPTA\nphoto to Avatar照片生成虚拟人，FTT虚拟人SDK提供的根据用户上传人脸照片生成写实型虚拟人形象的功能\n4、角色分析 角色\n拥有权限\n角色\n拥有权限\n超级管理员\n（1）用户账号管理，权限管理；\n（2）创建应用，分配应用管理员；\n（3）管理所有应用；\n（4）拥有全部功能权限；\n应用管理员\n（1）管理应用服务，根据应用与虚拟人信息，配置所有者与用户可选的虚拟人模板、自定义对话服务模板；\n（2）屏端应用管理员可配置交互屏用户可管理的的屏端服务内容；\n（3）创建与管理知识插件；\n5、系统架构 1.1\nWeb前端\n1.2\n虚拟人管理后台网关\nyingzi-gateway-vms\n虚拟人管理后端服务\nyingzi-appservice-vms\n2.1\nApp虚拟人SDK\n2.2\nFTT服务\n2.3 查询对话插件\n2.4\n虚拟人聊天对话服务\nyingzi-appservice-bfv\n大模型\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-c85ce239-90f1-46df-bdde-07d8f1d33736’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE/123653450?revision=1’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123653450/未命名绘图.png’ + ‘?version=1\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123653450\u0026owningPageId=123653450\u0026diagramName=%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE\u0026revision=1’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘600’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘10.7 虚拟人管理工具详细设计’; readerOpts.attVer = ‘1’; readerOpts.attId = ‘123654441’; readerOpts.lastModifierName = ‘陈健’; readerOpts.lastModified = ‘2024-05-12 22:43:17.796’; readerOpts.creatorName = ‘陈健’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n6、业务流程 在FTT\n配置应用和虚拟人\n在VMS\n配置应用和虚拟人\n配置知识库\n配置知识插件\n收集行业数据\n自定义虚拟人的对话服务\n前端集成VMS配置的虚拟人code\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-963ec7a6-b869-428b-87ba-5a0386e3c723’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/123653450?revision=1’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123653450/虚拟人配置服务业务流程.png’ + ‘?version=1\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123653450\u0026owningPageId=123653450\u0026diagramName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B\u0026revision=1’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘600’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘10.7 虚拟人管理工具详细设计’; readerOpts.attVer = ‘1’; readerOpts.attId = ‘123654444’; readerOpts.lastModifierName = ‘陈健’; readerOpts.lastModified = ‘2024-05-12 22:44:53.708’; readerOpts.creatorName = ‘陈健’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n超级管理员\n终端用户\nFTT后台\n创建虚拟人母版\n创建sdk应用\n创建应用虚拟人\n虚拟人管理工具\n创建终端应用\n分配应用管理员\n配置服务模板信息\n接入方APP\n获取配置信息\n注册虚拟人\n管理虚拟人形象\n管理对话服务\nFTT管理员\n应用管理员\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-823f8634-ad2e-4c9d-a2bb-3e9474ff6c56’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/123653450?revision=2’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123653450/虚拟人管理工具业务流程.png’ + ‘?version=2\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123653450\u0026owningPageId=123653450\u0026diagramName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B\u0026revision=2’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘600’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘10.7 虚拟人管理工具详细设计’; readerOpts.attVer = ‘2’; readerOpts.attId = ‘123655653’; readerOpts.lastModifierName = ‘陈健’; readerOpts.lastModified = ‘2024-05-15 14:27:26.233’; readerOpts.creatorName = ‘陈健’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n新增应用\n设置应用管理员\n配置虚拟人模板\n配置自定义对话\n虚拟人管理工具\n获取应用信息\n获取虚拟人形象资源\n获取自定义对话配置\n虚拟人sdk\n新增知识库\n新增插件\n维护对话资源池\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-e69364b3-8458-47ec-89bb-9f3b14f1fe35’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/123653450?revision=1’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123653450/业务流程.png’ + ‘?version=1\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123653450\u0026owningPageId=123653450\u0026diagramName=%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B\u0026revision=1’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘600’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘10.7 虚拟人管理工具详细设计’; readerOpts.attVer = ‘1’; readerOpts.attId = ‘123655729’; readerOpts.lastModifierName = ‘陈健’; readerOpts.lastModified = ‘2024-05-15 14:37:38.672’; readerOpts.creatorName = ‘陈健’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n7、字典 （appid= 2565） 中文名称\n英文名称\n值\n字典key\n中文名称\n英文名称\n值\n字典key\n设备型号\ndeviceType\n1-万得厨DW220；2-万得厨DW222； 3-移动端； 4-无人厨房； 5-交互屏\nDEVICE_TYPE\n系统平台\nsysPlatform\n1-Android； 2-iOS； 3-Linux； 4-Web； 5-Windows； 6-macOS\nSYS_PLATFORM\n资源类型\nresourceType\n1-应用；2-知识库；3-知识插件\nRESOURCE_TYPE\n虚拟人实例类型\ninstType\n1-官方； 2-卡通； 3-pta\nINST_TYPE\n付费类型\npayType\n1-免费 2-付费\nPAY_TYPE\n启用状态\nenableStatus\n0-停用 1-启用\nENABLE_STATUS\n对话服务状态\nchatServiceStatus\n0-默认，1-启用，2-停用，3-编辑中\nCHAT_SERVICE_STATUS\n知识类型\nknowledgeType\n1-长文本文档 2-结构化文档 3-问答对文档\nKNOWLEDGE_TYPE\n语言类型\nlanguageType\n1-中文 2-中英混合\nLANGUAGE_TYPE\n分段方式\nsegmentType\n1-自动分段 2-自定义分段\nSEGMENT_TYPE\n文件状态\nfileStatus\n1-导入中，2-导入成功，3-导入失败\nFILE_STATUS\n插件状态\npluginStatus\n1-编辑中 2-启用 3-停用\nPLUGIN_STATUS\n8、功能设计 8.1 登录 登录功能接入人力中心的手机号验证码登录\n8.2 权限控制 数据权限 + api鉴权\n数据权限：后端根据用户所属角色返回对应能看到的数据\nApi权限：后端新增切面拦截，对需要Api鉴权的接口进行权限校验\n本期暂时不开发权限点，查询类接口只做数据权限控制，更新类接口配置最低能访问的角色（子管理员、主管理员、超级管理员），非超级管理员要区分资源\n8.3 服务模板配置\n8.3.1 应用的新增、修改、删除\n8.3.2 设置应用管理员\n8.3.3 虚拟人模板配置\n8.4 自定义对话配置\n8.4.1 新增对话服务\n8.4.2 配置对话服务\n8.5 对话资源池\n8.5 知识插件\n8.5.1 插件管理\n8.5.1.1 新增插件\n8.5.1.2 设置插件管理员\n8.5.1.3 插件配置\n8.5.1.4 插件测试\n8.5.2 知识库管理\n后端\nkafka\n超级管理员\n1、创建知识库\n2、上传文件\n算法\n4、发送消息到kafka\n3、保存文件到minio\n消息格式：{\n“fileId”: “”,\n“fileUrl”: \"\"\n}\n5、消费kafka\n6、将文件导入到索引库中\n7、发送文件导入成功/\n失败的消息kafka\n7、消费kafka\n8、更新文件状态\n消息格式：{\n“fileId”: “”,\n“status”: \"\"\n}\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-78b6136f-ce3a-4a66-b473-0ec37ff95238’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E7%9F%A5%E8%AF%86%E5%BA%93%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B/123653450?revision=2’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123653450/知识库创建流程.png’ + ‘?version=2\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123653450\u0026owningPageId=123653450\u0026diagramName=%E7%9F%A5%E8%AF%86%E5%BA%93%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B\u0026revision=2’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘600’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E7%9F%A5%E8%AF%86%E5%BA%93%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘10.7 虚拟人管理工具详细设计’; readerOpts.attVer = ‘2’; readerOpts.attId = ‘123657235’; readerOpts.lastModifierName = ‘陈健’; readerOpts.lastModified = ‘2024-05-21 09:12:09.286’; readerOpts.creatorName = ‘陈健’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n8.5.2.1 新增知识库\n8.5.2.2 设置知识库管理员\n8.5.5.3 编辑知识库\n8.5.5.4 知识库配置\n9、数据模型 //\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-338c6057-e320-4c0d-96d5-f358d21f6ccd’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B/123653450?revision=2’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123653450/虚拟人管理工具数据模型.png’ + ‘?version=2\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123653450\u0026owningPageId=123653450\u0026diagramName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B\u0026revision=2’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘600’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘10.7 虚拟人管理工具详细设计’; readerOpts.attVer = ‘2’; readerOpts.attId = ‘123656838’; readerOpts.lastModifierName = ‘陈健’; readerOpts.lastModified = ‘2024-05-21 18:03:28.914’; readerOpts.creatorName = ‘陈健’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n10、接口设计 https://api-vms.dev.yingzi.com/api/vms/swagger-ui.html#/\n1、手机验证码登录，不存在的账号会被注册\n登录/注册并登录\nhttps://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/loginByMobileValidCode\n发送验证码\nhttps://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/sendSmsValidCode_2\n2、手机验证码登录，不存在的账号登录不了\n登录：\nhttps://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/loginByMobileValidCode_3\n发送验证码：\nhttps://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/sendSmsValidCode_1\n11、后端服务和算法服务Kafka消息协议 业务类型\n消息发送方\n消息监听方\ntopic\n消息格式\n备注\n业务类型\n消息发送方\n消息监听方\ntopic\n消息格式\n备注\n文件新增\n后端服务\n算法服务\ntopic_vms_file_add\n?\n[\n{\n\"fileId\"``: \"\"``,\n\"fileName\"``: \"\"``,\n\"fileUrl\"``: \"\"``,\n\"fileExtType\"``:``\"docx/doc/txt/xlsx\"``,\n\"knowledgeType\"``:``\"\"``, //知识类型 1-长文本文档 2-结构化文档 3-问答对文档 int2\n\"knowledgeId\"``:``\"\"``,\n\"knowledgeName\"``:``\"\"``,\n\"languageType\"``: //语言类型 1-中文 2-中英混合\n}\n...\n]\n文件删除\n后端服务\n算法服务\ntopic_vms_file_delete\n?\n{\n\"fileId\"``: \"\"``,\n\"knowledgeId\"``:``\"\"``,\n\"knowledgeName\"``:``\"\"``,\n\"languageType\"``: //语言类型 1-中文 2-中英混合\n}\n文件状态开启/停用\n后端服务\n算法服务\ntopic_vms_file_enableStatus_change\n?\n{\n\"fileId\"``: \"\"``,\n\"enableStatus\"``:``\"\"``,``//开启状态，0-停用 1-启用\n\"knowledgeId\"``:``\"\"``,\n\"knowledgeName\"``:``\"\"``,\n\"languageType\"``: //语言类型 1-中文 2-中英混合\n}\n文件索引成功/失败\n算法服务\n后端服务\ntopic_vms_file_status_change\n?\n{\n\"fileId\"``: \"\"``,\n\"fileStatus\"``:``\"\"``,``//索引导入状态，2-成功 3-失败\n\"failReason\"``:``\"\"\n}\nFilter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "1693",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      10.7虚拟人管理工具详细设计
+    </h1>
+    <div class="post-description">
+      10、虚拟人模板管理
+    </div>
+    <div class="post-meta">8 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1%e9%9c%80%e6%b1%82%e8%83%8c%e6%99%af" aria-label="1、需求背景">1、需求背景</a></li>
+                <li>
+                    <a href="#2%e6%a6%82%e8%bf%b0" aria-label="2、概述">2、概述</a></li>
+                <li>
+                    <a href="#3%e5%90%8d%e8%af%8d%e8%a7%a3%e9%87%8a" aria-label="3、名词解释">3、名词解释</a></li>
+                <li>
+                    <a href="#4%e8%a7%92%e8%89%b2%e5%88%86%e6%9e%90" aria-label="4、角色分析">4、角色分析</a></li>
+                <li>
+                    <a href="#5%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84" aria-label="5、系统架构">5、系统架构</a></li>
+                <li>
+                    <a href="#6%e4%b8%9a%e5%8a%a1%e6%b5%81%e7%a8%8b" aria-label="6、业务流程">6、业务流程</a></li>
+                <li>
+                    <a href="#7%e5%ad%97%e5%85%b8-appid-2565" aria-label="7、字典  （appid= 2565）">7、字典  （appid= 2565）</a></li>
+                <li>
+                    <a href="#8%e5%8a%9f%e8%83%bd%e8%ae%be%e8%ae%a1" aria-label="8、功能设计">8、功能设计</a><ul>
+                        
+                <li>
+                    <a href="#81-%e7%99%bb%e5%bd%95" aria-label="8.1 登录">8.1 登录</a></li>
+                <li>
+                    <a href="#82-%e6%9d%83%e9%99%90%e6%8e%a7%e5%88%b6" aria-label="8.2 权限控制">8.2 权限控制</a></li></ul>
+                </li>
+                <li>
+                    <a href="#9%e6%95%b0%e6%8d%ae%e6%a8%a1%e5%9e%8b" aria-label="9、数据模型">9、数据模型</a></li>
+                <li>
+                    <a href="#10%e6%8e%a5%e5%8f%a3%e8%ae%be%e8%ae%a1" aria-label="10、接口设计">10、接口设计</a></li>
+                <li>
+                    <a href="#11%e5%90%8e%e7%ab%af%e6%9c%8d%e5%8a%a1%e5%92%8c%e7%ae%97%e6%b3%95%e6%9c%8d%e5%8a%a1kafka%e6%b6%88%e6%81%af%e5%8d%8f%e8%ae%ae" aria-label="11、后端服务和算法服务Kafka消息协议">11、后端服务和算法服务Kafka消息协议</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><ul>
+<li>1 <a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-1、需求背景">1、需求背景</a></li>
+<li>2<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-2、概述">2、概述</a></li>
+<li>3<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-3、名词解释">3、名词解释</a></li>
+<li>4<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-4、角色分析">4、角色分析</a></li>
+<li>5<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-5、系统架构">5、系统架构</a></li>
+<li>6<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-6、业务流程">6、业务流程</a></li>
+<li>7<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-7、字典（appid=2565）">7、字典  （appid= 2565）</a></li>
+<li>8<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-8、功能设计">8、功能设计</a>
+<ul>
+<li>8.1<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-8.1登录">8.1 登录</a></li>
+<li>8.2<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-8.2权限控制">8.2 权限控制</a></li>
+</ul>
+</li>
+<li>9<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-9、数据模型">9、数据模型</a></li>
+<li>10<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-10、接口设计">10、接口设计</a></li>
+<li>11<a href="/posts/wiki/10.7%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1/#id-10.7虚拟人管理工具详细设计-11、后端服务和算法服务Kafka消息协议">11、后端服务和算法服务Kafka消息协议</a></li>
+</ul>
+<h1 id="1需求背景">1、需求背景<a hidden class="anchor" aria-hidden="true" href="#1需求背景">#</a></h1>
+<p>（1）目前使用合作方提供的FTT虚拟人管理后台进行虚拟人应用与资源管理，该后台不支持二开，系统对接需提出定制化需求；<br>
+（2）将合作方提供的FTT虚拟人SDK接入各终端应用为用户提供服务时，相关虚拟人资源与服务的获取直接写在应用端中、从FTT管理后台拉取，未实现可配置；<br>
+（3）虚拟人可交互内容需在FTT虚拟人管理后台进行配置，不支持在应用层进行选择与分发；且同一虚拟人模板的闲聊服务需统一配置同一服务；</p>
+<p>（4）交互屏虚拟人应用中，还未实现页面内容可配置，不便于通过使用统一的产品模板、配置不同页面内容，进行多项目交付；</p>
+<p>为解决以上问题，已将自定义对话服务接入FTT虚拟人NLP配置中的闲聊模块，通过虚拟人服务管理工具：</p>
+<p>（1）实现不同终端应用的虚拟人资源、对话服务可配置，支持后期对部分服务进行收费；</p>
+<p>（2）支持用户进行虚拟人形象服务与对话服务的自定义；</p>
+<p>（3）支持通过知识插件，为自定义对话服务配置数据源；</p>
+<p>（4）实现对多个交互屏界面的可配置化管理。</p>
+<h1 id="2概述">2、概述<a hidden class="anchor" aria-hidden="true" href="#2概述">#</a></h1>
+<p>虚拟人服务管理工具主要结合SDK能力，对终端应用服务进行配置管理<br>
+（1）服务模板配置主要进行应用管理、虚拟人模板配置管理、自定义对话配置管理、屏端服务配置管理；</p>
+<p>（2）对话资源池进行自定义对话接口可调用的对话资源管理；</p>
+<p>（3）知识插件进行知识库管理、插件管理；</p>
+<p>（4）创作虚拟人，为创作者提供知识插件上传后的发布与上架管理；</p>
+<p>（5）屏端服务管理，为屏端用户提供界面信息需求登记与屏端服务管理。</p>
+<h1 id="3名词解释">3、名词解释<a hidden class="anchor" aria-hidden="true" href="#3名词解释">#</a></h1>
+<p>名词</p>
+<p>说明</p>
+<p>名词</p>
+<p>说明</p>
+<p>FTT虚拟人管理后台</p>
+<p>由虚拟人服务合作方提供的服务管理后台，可进行FTT虚拟人SDK中的应用创建与管理、虚拟人形象模板与NLP管理等</p>
+<p>FTT虚拟人SDK</p>
+<p>由虚拟人服务合作方提供的SDK，有Android、iOS、Linux、H5、Win、OS等不同端</p>
+<p>声学SDK</p>
+<p>由声学服务供应商提供的SDK，主要由科大讯飞提供，包含AIUI SDK、讯飞开放平台聚合SDK、独立功能SDK（如唤醒、在线识别、在线合成）等不同类型，包含Android、iOS、Linux、Win等不同端，提供语音唤醒、ASR在线语音识别等声学服务；</p>
+<p>备注：闲聊NLP与语音合成TTS主要由FTT虚拟人管理后台通过WebSocketAPI接入的方式向讯飞云获取，通过FTT虚拟人SDK提供服务，不通过声学SDK</p>
+<p>虚拟人服务管理工具</p>
+<p>影子虚拟人研发部设计开发的软件服务</p>
+<p>虚拟人资源文件</p>
+<p>主要包含虚拟人形象模型文件（glb格式）、服饰装扮模型文件（glb格式）、动作动画文件（bytes格式）、富文本A+资源等</p>
+<p>NLP配置</p>
+<p>FTT虚拟人管理后台中支持虚拟人进行自然语言对话的功能模块，包含指令、FAQ、表格问答、闲聊四种类型</p>
+<p>自定义对话服务</p>
+<p>由虚拟人研发部提供，接入FTT虚拟人闲聊模块中的接口服务</p>
+<p>知识插件</p>
+<p>由虚拟人研发部研发，对上传的知识文档进行检索返回的插件服务，结合通用大模型提供RAG检索增强生成</p>
+<p>提示词</p>
+<p>与大模型交互使用的Prompt</p>
+<p>通用大模型</p>
+<p>业内第三方提供的大模型服务，包含openAI、百度文心一言、阿里同义千问、讯飞星火模型等</p>
+<p>PTA</p>
+<p>photo to Avatar照片生成虚拟人，FTT虚拟人SDK提供的根据用户上传人脸照片生成写实型虚拟人形象的功能</p>
+<h1 id="4角色分析">4、角色分析<a hidden class="anchor" aria-hidden="true" href="#4角色分析">#</a></h1>
+<p>角色</p>
+<p>拥有权限</p>
+<p>角色</p>
+<p>拥有权限</p>
+<p>超级管理员</p>
+<p>（1）用户账号管理，权限管理；</p>
+<p>（2）创建应用，分配应用管理员；</p>
+<p>（3）管理所有应用；</p>
+<p>（4）拥有全部功能权限；</p>
+<p>应用管理员</p>
+<p>（1）管理应用服务，根据应用与虚拟人信息，配置所有者与用户可选的虚拟人模板、自定义对话服务模板；</p>
+<p>（2）屏端应用管理员可配置交互屏用户可管理的的屏端服务内容；</p>
+<p>（3）创建与管理知识插件；</p>
+<h1 id="5系统架构">5、系统架构<a hidden class="anchor" aria-hidden="true" href="#5系统架构">#</a></h1>
+<p>1.1</p>
+<p>Web前端</p>
+<p>1.2</p>
+<p>虚拟人管理后台网关<br>
+yingzi-gateway-vms</p>
+<p>虚拟人管理后端服务<br>
+yingzi-appservice-vms</p>
+<p>2.1</p>
+<p>App虚拟人SDK</p>
+<p>2.2</p>
+<p>FTT服务</p>
+<p>2.3 查询对话插件</p>
+<p>2.4</p>
+<p>虚拟人聊天对话服务<br>
+yingzi-appservice-bfv</p>
+<p>大模型</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-c85ce239-90f1-46df-bdde-07d8f1d33736&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE/123653450?revision=1&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123653450/未命名绘图.png&rsquo; + &lsquo;?version=1&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123653450&amp;owningPageId=123653450&amp;diagramName=%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE&amp;revision=1&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;600&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;10.7 虚拟人管理工具详细设计&rsquo;; readerOpts.attVer = &lsquo;1&rsquo;; readerOpts.attId = &lsquo;123654441&rsquo;; readerOpts.lastModifierName = &lsquo;陈健&rsquo;; readerOpts.lastModified = &lsquo;2024-05-12 22:43:17.796&rsquo;; readerOpts.creatorName = &lsquo;陈健&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<h1 id="6业务流程">6、业务流程<a hidden class="anchor" aria-hidden="true" href="#6业务流程">#</a></h1>
+<p>在FTT<br>
+配置应用和虚拟人</p>
+<p>在VMS<br>
+配置应用和虚拟人</p>
+<p>配置知识库</p>
+<p>配置知识插件</p>
+<p>收集行业数据</p>
+<p>自定义虚拟人的对话服务</p>
+<p>前端集成VMS配置的虚拟人code</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-963ec7a6-b869-428b-87ba-5a0386e3c723&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/123653450?revision=1&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123653450/虚拟人配置服务业务流程.png&rsquo; + &lsquo;?version=1&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123653450&amp;owningPageId=123653450&amp;diagramName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B&amp;revision=1&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;600&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;10.7 虚拟人管理工具详细设计&rsquo;; readerOpts.attVer = &lsquo;1&rsquo;; readerOpts.attId = &lsquo;123654444&rsquo;; readerOpts.lastModifierName = &lsquo;陈健&rsquo;; readerOpts.lastModified = &lsquo;2024-05-12 22:44:53.708&rsquo;; readerOpts.creatorName = &lsquo;陈健&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<p>超级管理员</p>
+<p>终端用户</p>
+<p>FTT后台</p>
+<p>创建虚拟人母版</p>
+<p>创建sdk应用</p>
+<p>创建应用虚拟人</p>
+<p>虚拟人管理工具</p>
+<p>创建终端应用</p>
+<p>分配应用管理员</p>
+<p>配置服务模板信息</p>
+<p>接入方APP</p>
+<p>获取配置信息</p>
+<p>注册虚拟人</p>
+<p>管理虚拟人形象</p>
+<p>管理对话服务</p>
+<p>FTT管理员</p>
+<p>应用管理员</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-823f8634-ad2e-4c9d-a2bb-3e9474ff6c56&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/123653450?revision=2&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123653450/虚拟人管理工具业务流程.png&rsquo; + &lsquo;?version=2&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123653450&amp;owningPageId=123653450&amp;diagramName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B&amp;revision=2&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;600&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;10.7 虚拟人管理工具详细设计&rsquo;; readerOpts.attVer = &lsquo;2&rsquo;; readerOpts.attId = &lsquo;123655653&rsquo;; readerOpts.lastModifierName = &lsquo;陈健&rsquo;; readerOpts.lastModified = &lsquo;2024-05-15 14:27:26.233&rsquo;; readerOpts.creatorName = &lsquo;陈健&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<p>新增应用</p>
+<p>设置应用管理员</p>
+<p>配置虚拟人模板</p>
+<p>配置自定义对话</p>
+<p>虚拟人管理工具</p>
+<p>获取应用信息</p>
+<p>获取虚拟人形象资源</p>
+<p>获取自定义对话配置</p>
+<p>虚拟人sdk</p>
+<p>新增知识库</p>
+<p>新增插件</p>
+<p>维护对话资源池</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-e69364b3-8458-47ec-89bb-9f3b14f1fe35&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/123653450?revision=1&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123653450/业务流程.png&rsquo; + &lsquo;?version=1&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123653450&amp;owningPageId=123653450&amp;diagramName=%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B&amp;revision=1&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;600&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;10.7 虚拟人管理工具详细设计&rsquo;; readerOpts.attVer = &lsquo;1&rsquo;; readerOpts.attId = &lsquo;123655729&rsquo;; readerOpts.lastModifierName = &lsquo;陈健&rsquo;; readerOpts.lastModified = &lsquo;2024-05-15 14:37:38.672&rsquo;; readerOpts.creatorName = &lsquo;陈健&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<h1 id="7字典-appid-2565">7、字典  （appid= 2565）<a hidden class="anchor" aria-hidden="true" href="#7字典-appid-2565">#</a></h1>
+<p>中文名称</p>
+<p>英文名称</p>
+<p>值</p>
+<p>字典key</p>
+<p>中文名称</p>
+<p>英文名称</p>
+<p>值</p>
+<p>字典key</p>
+<p>设备型号</p>
+<p>deviceType</p>
+<p>1-万得厨DW220；2-万得厨DW222； 3-移动端； 4-无人厨房； 5-交互屏</p>
+<p>DEVICE_TYPE</p>
+<p>系统平台</p>
+<p>sysPlatform</p>
+<p>1-Android； 2-iOS； 3-Linux； 4-Web； 5-Windows； 6-macOS</p>
+<p>SYS_PLATFORM</p>
+<p>资源类型</p>
+<p>resourceType</p>
+<p>1-应用；2-知识库；3-知识插件</p>
+<p>RESOURCE_TYPE</p>
+<p>虚拟人实例类型</p>
+<p>instType</p>
+<p>1-官方； 2-卡通； 3-pta</p>
+<p>INST_TYPE</p>
+<p>付费类型</p>
+<p>payType</p>
+<p>1-免费 2-付费</p>
+<p>PAY_TYPE</p>
+<p>启用状态</p>
+<p>enableStatus</p>
+<p>0-停用 1-启用</p>
+<p>ENABLE_STATUS</p>
+<p>对话服务状态</p>
+<p>chatServiceStatus</p>
+<p>0-默认，1-启用，2-停用，3-编辑中</p>
+<p>CHAT_SERVICE_STATUS</p>
+<p>知识类型</p>
+<p>knowledgeType</p>
+<p>1-长文本文档 2-结构化文档 3-问答对文档</p>
+<p>KNOWLEDGE_TYPE</p>
+<p>语言类型</p>
+<p>languageType</p>
+<p>1-中文 2-中英混合</p>
+<p>LANGUAGE_TYPE</p>
+<p>分段方式</p>
+<p>segmentType</p>
+<p>1-自动分段 2-自定义分段</p>
+<p>SEGMENT_TYPE</p>
+<p>文件状态</p>
+<p>fileStatus</p>
+<p>1-导入中，2-导入成功，3-导入失败</p>
+<p>FILE_STATUS</p>
+<p>插件状态</p>
+<p>pluginStatus</p>
+<p>1-编辑中 2-启用 3-停用</p>
+<p>PLUGIN_STATUS</p>
+<h1 id="8功能设计">8、功能设计<a hidden class="anchor" aria-hidden="true" href="#8功能设计">#</a></h1>
+<h2 id="81-登录">8.1 登录<a hidden class="anchor" aria-hidden="true" href="#81-登录">#</a></h2>
+<p>登录功能接入人力中心的手机号验证码登录</p>
+<h2 id="82-权限控制">8.2 权限控制<a hidden class="anchor" aria-hidden="true" href="#82-权限控制">#</a></h2>
+<p>数据权限 + api鉴权</p>
+<p>数据权限：后端根据用户所属角色返回对应能看到的数据</p>
+<p>Api权限：后端新增切面拦截，对需要Api鉴权的接口进行权限校验</p>
+<p>本期暂时不开发权限点，查询类接口只做数据权限控制，更新类接口配置最低能访问的角色（子管理员、主管理员、超级管理员），非超级管理员要区分资源</p>
+<p>8.3 服务模板配置</p>
+<p>8.3.1 应用的新增、修改、删除</p>
+<p>8.3.2 设置应用管理员</p>
+<p>8.3.3 虚拟人模板配置</p>
+<p>8.4 自定义对话配置</p>
+<p>8.4.1 新增对话服务</p>
+<p>8.4.2 配置对话服务</p>
+<p>8.5 对话资源池</p>
+<p>8.5 知识插件</p>
+<p>8.5.1 插件管理</p>
+<p>8.5.1.1 新增插件</p>
+<p>8.5.1.2 设置插件管理员</p>
+<p>8.5.1.3 插件配置</p>
+<p>8.5.1.4 插件测试</p>
+<p>8.5.2 知识库管理</p>
+<p>后端</p>
+<p>kafka</p>
+<p>超级管理员</p>
+<p>1、创建知识库</p>
+<p>2、上传文件</p>
+<p>算法</p>
+<p>4、发送消息到kafka</p>
+<p>3、保存文件到minio</p>
+<p>消息格式：{</p>
+<p>&ldquo;fileId&rdquo;: &ldquo;&rdquo;,</p>
+<p>&ldquo;fileUrl&rdquo;: &quot;&quot;</p>
+<p>}</p>
+<p>5、消费kafka</p>
+<p>6、将文件导入到索引库中</p>
+<p>7、发送文件导入成功/<br>
+失败的消息kafka</p>
+<p>7、消费kafka</p>
+<p>8、更新文件状态</p>
+<p>消息格式：{</p>
+<p>&ldquo;fileId&rdquo;: &ldquo;&rdquo;,</p>
+<p>&ldquo;status&rdquo;: &quot;&quot;</p>
+<p>}</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-78b6136f-ce3a-4a66-b473-0ec37ff95238&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E7%9F%A5%E8%AF%86%E5%BA%93%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B/123653450?revision=2&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123653450/知识库创建流程.png&rsquo; + &lsquo;?version=2&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123653450&amp;owningPageId=123653450&amp;diagramName=%E7%9F%A5%E8%AF%86%E5%BA%93%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B&amp;revision=2&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;600&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E7%9F%A5%E8%AF%86%E5%BA%93%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;10.7 虚拟人管理工具详细设计&rsquo;; readerOpts.attVer = &lsquo;2&rsquo;; readerOpts.attId = &lsquo;123657235&rsquo;; readerOpts.lastModifierName = &lsquo;陈健&rsquo;; readerOpts.lastModified = &lsquo;2024-05-21 09:12:09.286&rsquo;; readerOpts.creatorName = &lsquo;陈健&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<p>8.5.2.1 新增知识库</p>
+<p>8.5.2.2 设置知识库管理员</p>
+<p>8.5.5.3 编辑知识库</p>
+<p>8.5.5.4 知识库配置</p>
+<h1 id="9数据模型">9、数据模型<a hidden class="anchor" aria-hidden="true" href="#9数据模型">#</a></h1>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-338c6057-e320-4c0d-96d5-f358d21f6ccd&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B/123653450?revision=2&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123653450/虚拟人管理工具数据模型.png&rsquo; + &lsquo;?version=2&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123653450&amp;owningPageId=123653450&amp;diagramName=%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B&amp;revision=2&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;600&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;10.7 虚拟人管理工具详细设计&rsquo;; readerOpts.attVer = &lsquo;2&rsquo;; readerOpts.attId = &lsquo;123656838&rsquo;; readerOpts.lastModifierName = &lsquo;陈健&rsquo;; readerOpts.lastModified = &lsquo;2024-05-21 18:03:28.914&rsquo;; readerOpts.creatorName = &lsquo;陈健&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<h1 id="10接口设计">10、接口设计<a hidden class="anchor" aria-hidden="true" href="#10接口设计">#</a></h1>
+<p><a href="https://api-vms.dev.yingzi.com/api/vms/swagger-ui.html#/">https://api-vms.dev.yingzi.com/api/vms/swagger-ui.html#/</a></p>
+<p>1、手机验证码登录，不存在的账号会被注册</p>
+<p>登录/注册并登录</p>
+<p><a href="https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/loginByMobileValidCode">https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/loginByMobileValidCode</a></p>
+<p>发送验证码</p>
+<p><a href="https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/sendSmsValidCode_2">https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/sendSmsValidCode_2</a></p>
+<p>2、手机验证码登录，不存在的账号登录不了</p>
+<p>登录：</p>
+<p><a href="https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/loginByMobileValidCode_3">https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/loginByMobileValidCode_3</a></p>
+<p>发送验证码：</p>
+<p><a href="https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/sendSmsValidCode_1">https://login.dev.yingzi.com//api/sso/swagger-ui.html#/%E7%99%BB%E5%BD%95%E9%89%B4%E6%9D%83/sendSmsValidCode_1</a></p>
+<h1 id="11后端服务和算法服务kafka消息协议">11、后端服务和算法服务Kafka消息协议<a hidden class="anchor" aria-hidden="true" href="#11后端服务和算法服务kafka消息协议">#</a></h1>
+<p>业务类型</p>
+<p>消息发送方</p>
+<p>消息监听方</p>
+<p>topic</p>
+<p>消息格式</p>
+<p>备注</p>
+<p>业务类型</p>
+<p>消息发送方</p>
+<p>消息监听方</p>
+<p>topic</p>
+<p>消息格式</p>
+<p>备注</p>
+<p>文件新增</p>
+<p>后端服务</p>
+<p>算法服务</p>
+<p>topic_vms_file_add</p>
+<p><a href="/">?</a></p>
+<p><code>[</code></p>
+<p>    <code>{</code></p>
+<p>        <code>&quot;fileId&quot;``:</code> <code>&quot;&quot;``,</code></p>
+<p>        <code>&quot;fileName&quot;``:</code> <code>&quot;&quot;``,</code></p>
+<p>        <code>&quot;fileUrl&quot;``:</code> <code>&quot;&quot;``,</code></p>
+<p>        <code>&quot;fileExtType&quot;``:``&quot;docx/doc/txt/xlsx&quot;``,</code></p>
+<p>        <code>&quot;knowledgeType&quot;``:``&quot;&quot;``,</code> <code>//知识类型 1-长文本文档 2-结构化文档 3-问答对文档 int2</code></p>
+<p>        <code>&quot;knowledgeId&quot;``:``&quot;&quot;``,</code></p>
+<p>        <code>&quot;knowledgeName&quot;``:``&quot;&quot;``,</code></p>
+<p>        <code>&quot;languageType&quot;``:</code> <code>//语言类型 1-中文 2-中英混合</code></p>
+<p>    <code>}</code></p>
+<p>    <code>...</code></p>
+<p><code>]</code></p>
+<p>文件删除</p>
+<p>后端服务</p>
+<p>算法服务</p>
+<p>topic_vms_file_delete</p>
+<p><a href="/">?</a></p>
+<p><code>{</code></p>
+<p>     <code>&quot;fileId&quot;``:</code> <code>&quot;&quot;``,</code></p>
+<p>     <code>&quot;knowledgeId&quot;``:``&quot;&quot;``,</code></p>
+<p>     <code>&quot;knowledgeName&quot;``:``&quot;&quot;``,</code></p>
+<p>     <code>&quot;languageType&quot;``:</code> <code>//语言类型 1-中文 2-中英混合</code></p>
+<p><code>}</code></p>
+<p>文件状态开启/停用</p>
+<p>后端服务</p>
+<p>算法服务</p>
+<p>topic_vms_file_enableStatus_change</p>
+<p><a href="/">?</a></p>
+<p><code>{</code></p>
+<p>    <code>&quot;fileId&quot;``:</code> <code>&quot;&quot;``,</code></p>
+<p>    <code>&quot;enableStatus&quot;``:``&quot;&quot;``,``//开启状态，0-停用 1-启用</code></p>
+<p>    <code>&quot;knowledgeId&quot;``:``&quot;&quot;``,</code></p>
+<p>    <code>&quot;knowledgeName&quot;``:``&quot;&quot;``,</code></p>
+<p>    <code>&quot;languageType&quot;``:</code> <code>//语言类型 1-中文 2-中英混合</code></p>
+<p><code>}</code></p>
+<p>文件索引成功/失败</p>
+<p>算法服务</p>
+<p>后端服务</p>
+<p>topic_vms_file_status_change</p>
+<p><a href="/">?</a></p>
+<p><code>{</code></p>
+<p>    <code>&quot;fileId&quot;``:</code> <code>&quot;&quot;``,</code></p>
+<p>    <code>&quot;fileStatus&quot;``:``&quot;&quot;``,``//索引导入状态，2-成功 3-失败</code></p>
+<p>    <code>&quot;failReason&quot;``:``&quot;&quot;</code></p>
+<p><code>}</code></p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/10%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%A8%A1%E6%9D%BF%E7%AE%A1%E7%90%86/">10、虚拟人模板管理</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/05.23~%E5%BD%B1%E5%AD%90%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%88%9B%E4%BD%9C%E5%B9%B3%E5%8F%B0%E5%8E%9F%E6%9C%8D%E5%8A%A1%E5%95%86%E5%B9%B3%E5%8F%B0%E4%BA%A7%E5%93%81%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%9C%80%E6%B1%82%E6%B8%85%E5%8D%95%E6%A2%B3%E7%90%86/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>05.23~影子虚拟人创作平台（原服务商平台）产品架构与需求清单梳理</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/1029%E7%89%88%E6%9C%AC%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%B8%9A%E5%8A%A1%E5%AF%B9%E5%8F%8C%E5%B1%8F%E4%B8%87%E5%BE%97%E5%8E%A8%E8%83%BD%E5%8A%9B%E9%9C%80%E6%B1%82%E6%B8%85%E5%8D%95/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>1029版本虚拟人业务对双屏万得厨能力需求清单</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10.7虚拟人管理工具详细设计 on x"
+            href="https://x.com/intent/tweet/?text=10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f&amp;hashtags=10%e3%80%81%e8%99%9a%e6%8b%9f%e4%ba%ba%e6%a8%a1%e6%9d%bf%e7%ae%a1%e7%90%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10.7虚拟人管理工具详细设计 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f&amp;title=10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1&amp;summary=10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10.7虚拟人管理工具详细设计 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f&title=10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10.7虚拟人管理工具详细设计 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10.7虚拟人管理工具详细设计 on whatsapp"
+            href="https://api.whatsapp.com/send?text=10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10.7虚拟人管理工具详细设计 on telegram"
+            href="https://telegram.me/share/url?text=10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 10.7虚拟人管理工具详细设计 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=10.7%e8%99%9a%e6%8b%9f%e4%ba%ba%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f10.7%25E8%2599%259A%25E6%258B%259F%25E4%25BA%25BA%25E7%25AE%25A1%25E7%2590%2586%25E5%25B7%25A5%25E5%2585%25B7%25E8%25AF%25A6%25E7%25BB%2586%25E8%25AE%25BE%25E8%25AE%25A1%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

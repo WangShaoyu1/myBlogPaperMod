@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>如何丝滑的实现首页看板拖拉拽功能？ | PaperMod</title>
+<meta name="keywords" content="前端, Vue.js">
+<meta name="description" content="需求简介最近接了一个需求，需要实现不同登录人员可以自定义首页模块卡片。简单来说，就是实现首页看板模块的增添与拖拉拽，效果如下：技术选型原生js是支持拖拉拽的，只需要将拖拽的元素的draggab">
+<meta name="author" content="石小石Orz">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E4%B8%9D%E6%BB%91%E7%9A%84%E5%AE%9E%E7%8E%B0%E9%A6%96%E9%A1%B5%E7%9C%8B%E6%9D%BF%E6%8B%96%E6%8B%89%E6%8B%BD%E5%8A%9F%E8%83%BD/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E4%B8%9D%E6%BB%91%E7%9A%84%E5%AE%9E%E7%8E%B0%E9%A6%96%E9%A1%B5%E7%9C%8B%E6%9D%BF%E6%8B%96%E6%8B%89%E6%8B%BD%E5%8A%9F%E8%83%BD/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="如何丝滑的实现首页看板拖拉拽功能？" />
+<meta property="og:description" content="需求简介最近接了一个需求，需要实现不同登录人员可以自定义首页模块卡片。简单来说，就是实现首页看板模块的增添与拖拉拽，效果如下：技术选型原生js是支持拖拉拽的，只需要将拖拽的元素的draggab" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E4%B8%9D%E6%BB%91%E7%9A%84%E5%AE%9E%E7%8E%B0%E9%A6%96%E9%A1%B5%E7%9C%8B%E6%9D%BF%E6%8B%96%E6%8B%89%E6%8B%BD%E5%8A%9F%E8%83%BD/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-03-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-15T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="如何丝滑的实现首页看板拖拉拽功能？"/>
+<meta name="twitter:description" content="需求简介最近接了一个需求，需要实现不同登录人员可以自定义首页模块卡片。简单来说，就是实现首页看板模块的增添与拖拉拽，效果如下：技术选型原生js是支持拖拉拽的，只需要将拖拽的元素的draggab"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "如何丝滑的实现首页看板拖拉拽功能？",
+      "item": "http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E4%B8%9D%E6%BB%91%E7%9A%84%E5%AE%9E%E7%8E%B0%E9%A6%96%E9%A1%B5%E7%9C%8B%E6%9D%BF%E6%8B%96%E6%8B%89%E6%8B%BD%E5%8A%9F%E8%83%BD/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "如何丝滑的实现首页看板拖拉拽功能？",
+  "name": "如何丝滑的实现首页看板拖拉拽功能？",
+  "description": "需求简介最近接了一个需求，需要实现不同登录人员可以自定义首页模块卡片。简单来说，就是实现首页看板模块的增添与拖拉拽，效果如下：技术选型原生js是支持拖拉拽的，只需要将拖拽的元素的draggab",
+  "keywords": [
+    "前端", "Vue.js"
+  ],
+  "articleBody": "本文已经授权【稀土掘金技术社区】官方公众号独家原创发布。\n需求简介 最近接了一个需求，需要实现不同登录人员可以自定义首页模块卡片。简单来说，就是实现首页看板模块的增添与拖拉拽，效果如下：\n技术选型 原生js是支持拖拉拽的，只需要将拖拽的元素的 draggable 属性设置成 “true\"即可，然后就是调用相应的函数即可。\n拖拽操作 - Web API 接口参考 | MDN\n但是，原生js功能不够完善，使用起来需要改造的地方很多，因此，选用成熟的第三方插件比较好。\n我们的主项目采用的是vue3，,经过一系列对比，最终选择了 vue-draggable-next这个插件。\nvue-draggable-next\nvue-draggable-next的周下载量月3万左右，可以看出是一个比较靠谱的插件。\n它的使用方式npmj上也介绍的很详细：\nvue-draggable-next\n如果英文的使用Api看起来比较难受，网上还有中文的使用文档：\nvue.draggable.next 中文文档 - itxst.com\n这个插件也有vue2版本和纯js版本，其他框架也是也是可以完美使用的。\n实现思路 需求与技术简析 根据我们的需求，我们应该实现的是分组拖拽，假设我们有三列，那我们要实现的就是这A、B、C三列数据相互拖拽。\n我们看看中文官网给的示例：\nvue.draggable.next group 例子\r看起来很容易，我们只需要写多个draggable标签，每个draggable标签写入相同的组名即可。\n实现方案 框架实现 回到代码中，要想实现一个三列可拖拉拽的模块列表，我们首先需要引入组件\njs\n代码解读\n复制代码\n然后定义一个数组储存数据：\njs\n代码解读\n复制代码\n最后，在代码中我们使用v-for循环渲染即可\njs\n代码解读\n复制代码\n注意上面的html结构，我们循环渲染了三列VueDraggableNext标签，每个VueDraggableNext标签内部又通过v-for=\"(item, index) in moduleColumn.moduleDetail渲染了这个拖拽列内部的所有模块。我们通过group=“column” 让每个VueDraggableNext组件的组名相同，实现了三个拖拽标签之间的模块互相拖拉拽。\n拖拽点设置 正常情况小，我们肯定是希望在某个组件的固定位置才能拖动组件，因此我们需要使用到拖拽组件的handle属性。\nvue.draggable.next属性说明：\nhandle\n:handle=\".mover” 只有当鼠标在class为mover类的元素上才能触发拖到事件\n根据属性说明，我们的代码实现起来也非常容易了。\njs\n代码解读\n复制代码\n拖拽区域 数据的增删改 实际开发中，我么一定会根据接口或者操作动态的更改列表，代码层也就是更改moduleList的值。非常幸运的是，如果你按照上面的方式写代码，当你拖拉拽完毕后，上面的moduleList值会自动更改，我们不用做任何处理！！！这么看，数据的增删改根本不是问题。\n如何动态渲染组件 实际开发中，我们可能会遇到一个问题，就是如何动态的去渲染组件，如果你熟悉vue，使用动态组件component就可以实现。\n首先，我们需要定义一个模块列表\njs\n代码解读\n复制代码\nimport MeetingPending from '../components/meetingPending.vue' import AbnormalEvents from '../components/abnormalEvents/index.vue' import MySchedule from '../components/mySchedule.vue' import TransactionApproval from '../components/transactionApproval.vue' import RunningBroadcast from '../components/runningBroadcast.vue' import CodeSite from '../components/codeSite/index.vue' import MismatchSpace from '../components/mismatchSpace/index.vue' import AirDevice from '../components/airDevice/index.vue' // !全量模块选择列表 export const allModuleList = [ { moduleCode: 'meeting_pending', label: '会议待办', component: MeetingPending }, { moduleCode: 'my_schedule', label: '我的日程', component: MySchedule }, { moduleCode: 'audit_matters', label: '事项审批', component: TransactionApproval }, { moduleCode: 'abnormal_events', label: '异常事件', component: AbnormalEvents }, { moduleCode: 'deviation', label: '控制失调空间', component: MismatchSpace }, { moduleCode: 'run_broadcast', label: '运行播报', component: RunningBroadcast }, { moduleCode: 'cold_station', label: '冷站', component: CodeSite }, { moduleCode: 'air_conditioning_terminal', label: '空调末端', component: AirDevice } ]\n然后根据moduleCode做匹配，动态渲染即可\njs\n代码解读\n复制代码\n拖拽区域 更多定制化需求 如果上面的功能不满足你的需求，我们可以使用这个组件的其他属性，完成更多意想不到的效果\n如果下面的属性说明未能完全看明，可以看左边的对应的菜单查看详细说明和例子。\n属性名称\n说明\ngroup\n如果一个页面有多个拖拽区域，通过设置group名称可以实现多个区域之间相互拖拽 或者 { name: “…”, pull: [true, false, ‘clone’, array , function], put: [true, false, array , function] }\nsort\n是否开启排序,如果设置为false,它所在组无法排序\ndelay\n鼠标按下多少秒之后可以拖拽元素\ntouchStartThreshold\n鼠标按下移动多少px才能拖动元素\ndisabled\n:disabled= “true”,是否启用拖拽组件\nanimation\n拖动时的动画效果，如设置animation=1000表示1秒过渡动画效果\nhandle\n:handle=\".mover\" 只有当鼠标在class为mover类的元素上才能触发拖到事件\nfilter\n:filter=\".unmover\" 设置了unmover样式的元素不允许拖动\ndraggable\n:draggable=\".item\" 样式类为item的元素才能被拖动\nghost-class\n:ghost-class=“ghostClass” 设置拖动元素的占位符类名,你的自定义样式可能需要加!important才能生效，并把forceFallback属性设置成true\nchosen-class\n:ghost-class=“hostClass” 被选中目标的样式，你的自定义样式可能需要加!important才能生效，并把forceFallback属性设置成true\ndrag-class\n:drag-class=“dragClass\"拖动元素的样式，你的自定义样式可能需要加!important才能生效，并把forceFallback属性设置成true\nforce-fallback\n默认false，忽略HTML5的拖拽行为，因为h5里有个属性也是可以拖动，你要自定义ghostClass chosenClass dragClass样式时，建议forceFallback设置为true\nfallback-class\n默认false，克隆选中元素的样式到跟随鼠标的样式\nfallback-on-body\n默认false，克隆的元素添加到文档的body中\nfallback-tolerance\n按下鼠标移动多少个像素才能拖动元素，:fallback-tolerance=“8”\nscroll\n默认true,有滚动区域是否允许拖拽\nscroll-fn\n滚动回调函数\nscroll-fensitivity\n距离滚动区域多远时，滚动滚动条\nscroll-speed\n滚动速度\n传送门：vue.draggable.next 中文文档 - itxst.com\n写在最后 关联文章：如何实现模块的锚点定位及闪烁提示：juejin.cn/post/734622… ",
+  "wordCount" : "431",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-03-15T00:00:00Z",
+  "dateModified": "2024-03-15T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "石小石Orz"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E4%B8%9D%E6%BB%91%E7%9A%84%E5%AE%9E%E7%8E%B0%E9%A6%96%E9%A1%B5%E7%9C%8B%E6%9D%BF%E6%8B%96%E6%8B%89%E6%8B%BD%E5%8A%9F%E8%83%BD/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      如何丝滑的实现首页看板拖拉拽功能？
+    </h1>
+    <div class="post-description">
+      需求简介最近接了一个需求，需要实现不同登录人员可以自定义首页模块卡片。简单来说，就是实现首页看板模块的增添与拖拉拽，效果如下：技术选型原生js是支持拖拉拽的，只需要将拖拽的元素的draggab
+    </div>
+    <div class="post-meta"><span title='2024-03-15 00:00:00 +0000 UTC'>三月 15, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;石小石Orz&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%9c%80%e6%b1%82%e7%ae%80%e4%bb%8b" aria-label="需求简介">需求简介</a></li>
+                <li>
+                    <a href="#%e6%8a%80%e6%9c%af%e9%80%89%e5%9e%8b" aria-label="技术选型">技术选型</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e7%8e%b0%e6%80%9d%e8%b7%af" aria-label="实现思路">实现思路</a><ul>
+                        
+                <li>
+                    <a href="#%e9%9c%80%e6%b1%82%e4%b8%8e%e6%8a%80%e6%9c%af%e7%ae%80%e6%9e%90" aria-label="需求与技术简析">需求与技术简析</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e7%8e%b0%e6%96%b9%e6%a1%88" aria-label="实现方案">实现方案</a></li>
+                <li>
+                    <a href="#%e6%a1%86%e6%9e%b6%e5%ae%9e%e7%8e%b0" aria-label="框架实现">框架实现</a></li>
+                <li>
+                    <a href="#%e6%8b%96%e6%8b%bd%e7%82%b9%e8%ae%be%e7%bd%ae" aria-label="拖拽点设置">拖拽点设置</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e7%9a%84%e5%a2%9e%e5%88%a0%e6%94%b9" aria-label="数据的增删改">数据的增删改</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e5%8a%a8%e6%80%81%e6%b8%b2%e6%9f%93%e7%bb%84%e4%bb%b6" aria-label="如何动态渲染组件">如何动态渲染组件</a></li>
+                <li>
+                    <a href="#%e6%9b%b4%e5%a4%9a%e5%ae%9a%e5%88%b6%e5%8c%96%e9%9c%80%e6%b1%82" aria-label="更多定制化需求">更多定制化需求</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%86%99%e5%9c%a8%e6%9c%80%e5%90%8e" aria-label="写在最后">写在最后</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本文已经授权【稀土掘金技术社区】官方公众号独家原创发布。</p>
+<h1 id="需求简介">需求简介<a hidden class="anchor" aria-hidden="true" href="#需求简介">#</a></h1>
+<p>最近接了一个需求，需要实现不同登录人员可以<strong>自定义首页模块卡片</strong>。简单来说，就是实现首页看板模块的<strong>增添</strong>与<strong>拖拉拽</strong>，效果如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e5d41ad660314f33af359a26108e6c7e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1530&amp;h=747&amp;s=1204245&amp;e=gif&amp;f=43&amp;b=fefefe" alt=""  />
+</p>
+<h1 id="技术选型">技术选型<a hidden class="anchor" aria-hidden="true" href="#技术选型">#</a></h1>
+<p>原生js是支持拖拉拽的，只需要将拖拽的元素的 <a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FHTML%2FGlobal_attributes%23draggable" title="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Global_attributes#draggable">draggable</a> 属性设置成 &ldquo;true&quot;即可，然后就是调用相应的函数即可。</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FAPI%2FHTML_Drag_and_Drop_API%2FDrag_operations" title="https://developer.mozilla.org/zh-CN/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations">拖拽操作 - Web API 接口参考 | MDN</a></p>
+<p>但是，原生js功能不够完善，使用起来需要改造的地方很多，因此，选用成熟的第三方插件比较好。</p>
+<p>我们的主项目采用的是vue3，,经过一系列对比，最终选择了 <strong>vue-draggable-next</strong>这个插件。</p>
+<p><strong>vue-draggable-next</strong></p>
+<p>vue-draggable-next的周下载量月3万左右，可以看出是一个比较靠谱的插件。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bf7ec82f60b147798c9e4b8b4187f72c~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1067&amp;h=548&amp;s=67227&amp;e=png&amp;b=fbfbfb" alt=""  />
+</p>
+<p>它的使用方式npmj上也介绍的很详细：</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fvue-draggable-next" title="https://www.npmjs.com/package/vue-draggable-next">vue-draggable-next</a></p>
+<p>如果英文的使用Api看起来比较难受，网上还有中文的使用文档：</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.itxst.com%2Fvue-draggable-next%2Ftutorial.html" title="https://www.itxst.com/vue-draggable-next/tutorial.html">vue.draggable.next 中文文档 - itxst.com</a></p>
+<p>这个插件也有vue2版本和纯js版本，其他框架也是也是可以完美使用的。</p>
+<h1 id="实现思路">实现思路<a hidden class="anchor" aria-hidden="true" href="#实现思路">#</a></h1>
+<h2 id="需求与技术简析">需求与技术简析<a hidden class="anchor" aria-hidden="true" href="#需求与技术简析">#</a></h2>
+<p>根据我们的需求，我们应该实现的是分组拖拽，假设我们有三列，那我们要实现的就是这A、B、C三列数据相互拖拽。</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/03d2bd94caca4966b28c55e8d1c15301~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=896&amp;h=604&amp;s=65114&amp;e=png&amp;b=ffeaea" alt=""  />
+</p>
+<p>我们看看中文官网给的示例：</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fdebug.itxst.com%2Fjs%2Fmnyeej26" title="https://debug.itxst.com/js/mnyeej26">vue.draggable.next group 例子</a><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4081945f08b74747ae32e45d0bc123e5~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1315&amp;h=606&amp;s=848363&amp;e=gif&amp;f=49&amp;b=f7f6f6" alt=""  />
+</p>
+<p>看起来很容易，我们只需要写多个draggable标签，每个draggable标签写入相同的组名即可。</p>
+<h2 id="实现方案">实现方案<a hidden class="anchor" aria-hidden="true" href="#实现方案">#</a></h2>
+<h2 id="框架实现">框架实现<a hidden class="anchor" aria-hidden="true" href="#框架实现">#</a></h2>
+<p>回到代码中，要想实现一个三列可拖拉拽的模块列表，我们首先需要引入组件</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script lang=&quot;ts&quot; setup&gt; import { VueDraggableNext } from 'vue-draggable-next' // .... &lt;/script&gt;</code></p>
+<p>然后定义一个数组储存数据：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;script lang=&quot;ts&quot; setup&gt;     import { VueDraggableNext } from 'vue-draggable-next'     const moduleList = ref([       {         &quot;columnIndex&quot;: 1,         &quot;moduleDetail&quot;: [           { &quot;moduleCode&quot;: &quot;deviation&quot;, &quot;moduleName&quot;: &quot;控制失调空间&quot;,},           { &quot;moduleCode&quot;: &quot;meeting_pending&quot;, &quot;moduleName&quot;: &quot;会议待办&quot;,},           { &quot;moduleCode&quot;: &quot;abnormal_events&quot;, &quot;moduleName&quot;: &quot;异常事件&quot;, },           { &quot;moduleCode&quot;: &quot;audit_matters&quot;, &quot;moduleName&quot;: &quot;事项审批&quot;,}         ],       },       {         &quot;columnIndex&quot;: 2,         &quot;moduleDetail&quot;: [           { &quot;moduleCode&quot;: &quot;air_conditioning_terminal&quot;, &quot;moduleName&quot;: &quot;空调末端&quot;, }         ],       },       {         &quot;columnIndex&quot;: 3,         &quot;moduleDetail&quot;: [           { &quot;moduleCode&quot;: &quot;run_broadcast&quot;, &quot;moduleName&quot;: &quot;运行播报&quot;,},           {&quot;moduleCode&quot;: &quot;my_schedule&quot;, &quot;moduleName&quot;: &quot;我的日程&quot;, },           { &quot;moduleCode&quot;: &quot;cold_station&quot;, &quot;moduleName&quot;: &quot;冷站&quot;,}         ],       }     ]) &lt;/script&gt;</code></p>
+<p>最后，在代码中我们使用v-for循环渲染即可</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;div v-for=&quot;moduleColumn in  moduleList &quot; :key=&quot;moduleColumn.columnIndex&quot; class=&quot;box&quot;&gt;   &lt;VueDraggableNext :list=&quot;moduleColumn.moduleDetail&quot; group=&quot;column&quot; &gt;     &lt;div v-for=&quot;(item, index) in  moduleColumn.moduleDetail &quot; :key=&quot;item.moduleCode&quot; class=&quot;drag-item&quot;&gt;       &lt;!-- 模块内容 --&gt;     &lt;/div&gt;   &lt;/VueDraggableNext&gt; &lt;/div&gt;</code></p>
+<p>注意上面的html结构，我们循环渲染了三列VueDraggableNext标签，每个VueDraggableNext标签内部又通过<strong>v-for=&quot;(item, index) in moduleColumn.moduleDetail</strong>渲染了这个拖拽列内部的所有模块。我们通过<strong>group=&ldquo;column&rdquo;</strong> 让每个VueDraggableNext组件的组名相同，实现了三个拖拽标签之间的模块互相拖拉拽。</p>
+<h2 id="拖拽点设置">拖拽点设置<a hidden class="anchor" aria-hidden="true" href="#拖拽点设置">#</a></h2>
+<p>正常情况小，我们肯定是希望在某个组件的固定位置才能拖动组件，因此我们需要使用到拖拽组件的<strong>handle</strong>属性。</p>
+<p>vue.draggable.next属性说明：</p>
+<p>handle</p>
+<p>:handle=&quot;.mover&rdquo; 只有当鼠标在class为mover类的元素上才能触发拖到事件</p>
+<p>根据属性说明，我们的代码实现起来也非常容易了。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;div v-for=&quot;moduleColumn in  moduleList &quot; :key=&quot;moduleColumn.columnIndex&quot; class=&quot;box&quot;&gt;       &lt;VueDraggableNext :list=&quot;moduleColumn.moduleDetail&quot; handle=&quot;.move&quot; group=&quot;column&quot;&gt;         &lt;div v-for=&quot;(item, index) in  moduleColumn.moduleDetail &quot; :key=&quot;item.moduleCode&quot; class=&quot;drag-item&quot;&gt;           &lt;div class=&quot;move&quot;&gt;             拖拽区域           &lt;/div&gt;           &lt;!-- 模块内容 --&gt;         &lt;/div&gt;       &lt;/VueDraggableNext&gt;   &lt;/div&gt;</code></p>
+<h2 id="数据的增删改">数据的增删改<a hidden class="anchor" aria-hidden="true" href="#数据的增删改">#</a></h2>
+<p>实际开发中，我么一定会根据接口或者操作动态的更改列表，代码层也就是更改moduleList的值。非常幸运的是，如果你按照上面的方式写代码，当你拖拉拽完毕后，上面的moduleList值会自动更改，我们不用做任何处理！！！这么看，数据的增删改根本不是问题。</p>
+<h2 id="如何动态渲染组件">如何动态渲染组件<a hidden class="anchor" aria-hidden="true" href="#如何动态渲染组件">#</a></h2>
+<p>实际开发中，我们可能会遇到一个问题，就是如何动态的去渲染组件，如果你熟悉vue，使用动态组件component就可以实现。</p>
+<p>首先，我们需要定义一个模块列表</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import MeetingPending from '../components/meetingPending.vue' import AbnormalEvents from '../components/abnormalEvents/index.vue' import MySchedule from '../components/mySchedule.vue' import TransactionApproval from '../components/transactionApproval.vue' import RunningBroadcast from '../components/runningBroadcast.vue' import CodeSite from '../components/codeSite/index.vue' import MismatchSpace from '../components/mismatchSpace/index.vue' import AirDevice from '../components/airDevice/index.vue' // !全量模块选择列表 export const allModuleList = [   { moduleCode: 'meeting_pending', label: '会议待办', component: MeetingPending },   { moduleCode: 'my_schedule', label: '我的日程', component: MySchedule },   { moduleCode: 'audit_matters', label: '事项审批', component: TransactionApproval },   { moduleCode: 'abnormal_events', label: '异常事件', component: AbnormalEvents },   { moduleCode: 'deviation', label: '控制失调空间', component: MismatchSpace },   { moduleCode: 'run_broadcast', label: '运行播报', component: RunningBroadcast },   { moduleCode: 'cold_station', label: '冷站', component: CodeSite },   { moduleCode: 'air_conditioning_terminal', label: '空调末端', component: AirDevice } ]</code></p>
+<p>然后根据moduleCode做匹配，动态渲染即可</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;div v-for=&quot;moduleColumn in  moduleList &quot; :key=&quot;moduleColumn.columnIndex&quot; class=&quot;box&quot;&gt;       &lt;VueDraggableNext :list=&quot;moduleColumn.moduleDetail&quot; handle=&quot;.move&quot; group=&quot;column&quot;&gt;         &lt;div v-for=&quot;(item, index) in  moduleColumn.moduleDetail &quot; :key=&quot;item.moduleCode&quot; class=&quot;drag-item&quot;&gt;           &lt;div class=&quot;move&quot;&gt;             拖拽区域           &lt;/div&gt;           &lt;component :is=&quot;getComponentsByCode(item.moduleCode)&quot; &gt;&lt;/component&gt;         &lt;/div&gt;       &lt;/VueDraggableNext&gt;   &lt;/div&gt;</code></p>
+<h2 id="更多定制化需求">更多定制化需求<a hidden class="anchor" aria-hidden="true" href="#更多定制化需求">#</a></h2>
+<p>如果上面的功能不满足你的需求，我们可以使用这个组件的其他属性，完成更多意想不到的效果</p>
+<p>如果下面的属性说明未能完全看明，可以看左边的对应的菜单查看详细说明和例子。</p>
+<p>属性名称</p>
+<p>说明</p>
+<p>group</p>
+<p>如果一个页面有多个拖拽区域，通过设置group名称可以实现多个区域之间相互拖拽 或者 { name: &ldquo;&hellip;&rdquo;, pull: [true, false, &lsquo;clone&rsquo;, array , function], put: [true, false, array , function] }</p>
+<p>sort</p>
+<p>是否开启排序,如果设置为false,它所在组无法排序</p>
+<p>delay</p>
+<p>鼠标按下多少秒之后可以拖拽元素</p>
+<p>touchStartThreshold</p>
+<p>鼠标按下移动多少px才能拖动元素</p>
+<p>disabled</p>
+<p>:disabled= &ldquo;true&rdquo;,是否启用拖拽组件</p>
+<p>animation</p>
+<p>拖动时的动画效果，如设置animation=1000表示1秒过渡动画效果</p>
+<p>handle</p>
+<p>:handle=&quot;.mover&quot; 只有当鼠标在class为mover类的元素上才能触发拖到事件</p>
+<p>filter</p>
+<p>:filter=&quot;.unmover&quot; 设置了unmover样式的元素不允许拖动</p>
+<p>draggable</p>
+<p>:draggable=&quot;.item&quot; 样式类为item的元素才能被拖动</p>
+<p>ghost-class</p>
+<p>:ghost-class=&ldquo;ghostClass&rdquo; 设置拖动元素的占位符类名,你的自定义样式可能需要加!important才能生效，并把forceFallback属性设置成true</p>
+<p>chosen-class</p>
+<p>:ghost-class=&ldquo;hostClass&rdquo; 被选中目标的样式，你的自定义样式可能需要加!important才能生效，并把forceFallback属性设置成true</p>
+<p>drag-class</p>
+<p>:drag-class=&ldquo;dragClass&quot;拖动元素的样式，你的自定义样式可能需要加!important才能生效，并把forceFallback属性设置成true</p>
+<p>force-fallback</p>
+<p>默认false，忽略HTML5的拖拽行为，因为h5里有个属性也是可以拖动，你要自定义ghostClass chosenClass dragClass样式时，建议forceFallback设置为true</p>
+<p>fallback-class</p>
+<p>默认false，克隆选中元素的样式到跟随鼠标的样式</p>
+<p>fallback-on-body</p>
+<p>默认false，克隆的元素添加到文档的body中</p>
+<p>fallback-tolerance</p>
+<p>按下鼠标移动多少个像素才能拖动元素，:fallback-tolerance=&ldquo;8&rdquo;</p>
+<p>scroll</p>
+<p>默认true,有滚动区域是否允许拖拽</p>
+<p>scroll-fn</p>
+<p>滚动回调函数</p>
+<p>scroll-fensitivity</p>
+<p>距离滚动区域多远时，滚动滚动条</p>
+<p>scroll-speed</p>
+<p>滚动速度</p>
+<p>传送门：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.itxst.com%2Fvue-draggable-next%2Ftutorial.html" title="https://www.itxst.com/vue-draggable-next/tutorial.html">vue.draggable.next 中文文档 - itxst.com</a></p>
+<h1 id="写在最后">写在最后<a hidden class="anchor" aria-hidden="true" href="#写在最后">#</a></h1>
+<p>关联文章：如何实现模块的锚点定位及闪烁提示：<a href="https://juejin.cn/post/7346221612578914344" title="https://juejin.cn/post/7346221612578914344">juejin.cn/post/734622…</a> <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/efa98fbac49641cabeb6334cfa4276a5~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1482&amp;h=721&amp;s=614002&amp;e=gif&amp;f=23&amp;b=fefefe" alt="240315 155754.gif"  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/ffmpeg%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%A7%86%E9%A2%91%E6%8E%A8%E6%B5%81/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>ffmpeg如何实现视频推流？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/azureiotedge%E7%BC%96%E8%AF%91%E5%92%8C%E9%83%A8%E7%BD%B2%E7%9B%B8%E5%85%B3%E5%88%9D%E4%BB%A3%E6%96%87%E6%A1%A3/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>AzureIoTEdge编译和部署相关，初代文档</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何丝滑的实现首页看板拖拉拽功能？ on x"
+            href="https://x.com/intent/tweet/?text=%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cVue.js">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何丝滑的实现首页看板拖拉拽功能？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f&amp;title=%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f&amp;summary=%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何丝滑的实现首页看板拖拉拽功能？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f&title=%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何丝滑的实现首页看板拖拉拽功能？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何丝滑的实现首页看板拖拉拽功能？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何丝滑的实现首页看板拖拉拽功能？ on telegram"
+            href="https://telegram.me/share/url?text=%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 如何丝滑的实现首页看板拖拉拽功能？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%a6%82%e4%bd%95%e4%b8%9d%e6%bb%91%e7%9a%84%e5%ae%9e%e7%8e%b0%e9%a6%96%e9%a1%b5%e7%9c%8b%e6%9d%bf%e6%8b%96%e6%8b%89%e6%8b%bd%e5%8a%9f%e8%83%bd%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25A6%2582%25E4%25BD%2595%25E4%25B8%259D%25E6%25BB%2591%25E7%259A%2584%25E5%25AE%259E%25E7%258E%25B0%25E9%25A6%2596%25E9%25A1%25B5%25E7%259C%258B%25E6%259D%25BF%25E6%258B%2596%25E6%258B%2589%25E6%258B%25BD%25E5%258A%259F%25E8%2583%25BD%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

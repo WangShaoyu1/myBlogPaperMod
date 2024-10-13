@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>AutoGPT进化了，再看一次 | PaperMod</title>
+<meta name="keywords" content="GPT相关">
+<meta name="description" content="GPT相关">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="AutoGPT进化了，再看一次" />
+<meta property="og:description" content="GPT相关" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="AutoGPT进化了，再看一次"/>
+<meta name="twitter:description" content="GPT相关"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "AutoGPT进化了，再看一次",
+      "item": "http://localhost:1313/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AutoGPT进化了，再看一次",
+  "name": "AutoGPT进化了，再看一次",
+  "description": "GPT相关",
+  "keywords": [
+    "GPT相关"
+  ],
+  "articleBody": " 11. 前言 22. 运行项目 2.12.1. 目录 2.22.2. 运行 2.32.3. 启动项目中遇到的问题 33. 分析项目 3.13.1. 调用关系分析 3.23.2. 核心部分 3.2.13.2.1. 大模型与提示词 3.2.1.13.2.1.1. prompt示例 3.2.1.23.2.1.2. 响应示例 3.2.23.2.2. 提示词分析 3.2.33.2.3. 响应内容分析 44. 运行思维启动AutoGPT 55. 拓展及经典代码分析 5.15.1. action/ability注册 5.25.2. 增加一个自定义action 5.35.3. agent.py最简化代码 5.45.4. 提示词组装方法 66. 过程中用到的经典库 77. 大模型使用指令测试 7.17.1. 提示词 1. 前言 在去年研究Hungging GPT项目的时候，顺手也下载了autogpt的初代版本代码，对比起来看，那时候的结论是：两者之间没有太大的区别，都是期望着一个大模型作为中控，理解需求后，划分为不同的任务，然后让不同的小模型或者算法去执行不同的任务，最后中控大模型结合提示词与小模型或者算法返回的结果，做最终的归纳总结，返回给用户。\n彼时开创了一种新的大模型应用方向，即初代的Agent，实践后，发现其方向性高于实用性。因为有不少环节，都是默认选项，比如：\n如何去选择一个小模型或者算法，依据是huggingface.co上面的对应分类的开源模型上面的用户点赞数（下载数），这其实有一些主观 对于每个能够被调用的小模型或者算法而言，其描述文件没有太多统一的规范，这也是整个生态的问题 对于每个小模型或者算法，如何和其他模型或者算法，没有统一的协议（请求入参格式、响应出参格式） 前段时间，开始关注AI Agent，重新关注了AutoGPT这个项目（官网地址为：https://news.agpt.co/）。star数从不到1K，增长为163K；从之前的小作坊，现在变成了一个小生态，其愿景为：“AutoGPT 的愿景是让每个人都能轻松使用和构建 AI。我们的使命是提供工具，让您专注于重要的事情”。有如下变化：\n明确AutoGPT项目长期发展目标 生态化，号召按照agent protocol来开发agent 项目包含Forge模块，提供了大量的agent模板 项目包含Benchmark模块，为评价agent提供了标准 项目中前后端代码分离 2. 运行项目 2.1. 目录 项目核心目录为：\n目录\n详情\n备注\n目录\n详情\n备注\nassets\n资源\nautogpt\nautogpt核心目录，支持GPT Groq Anthropic\n1、使用了很多的python项目，新的特性，安装包灯方法\n注意GPT api key的使用方法，很容易被封，推荐购买key\nbenchmark\n衡量agent能力的各项指标、标准\n需要遵守agent protocol\ndocs\n文档合集\nforge\nagent模板，提供教程，用户可以据此作为参考做自己的agent\n基于LLM的agent模板\nfrontend\n前端界面，使用flutter框架开发web，也可以开发window应用\n用到谷歌登录等第三方库\nrnd/autogpt_server\n探索性项目，下一代agent，agent代理服务器\n2.2. 运行 分别运行autogpt、frontend这两个文件夹：\n?\n1\n2\npython -m autogpt serve\nflutter run -d chrome\n运行界面为：\n2.3. 启动项目中遇到的问题 序号\n问题\n方案\n备注\n1\nfrontend文件夹中，flutter启动web服务器，报错连不上：“SocketException: Failed to create server socket”\n**方案1：**在启动文件上加上参数：--web-port=8080 –web-hostname=127.0.0.1，特别是hostname的设置，但这样会出现谷歌账号认证失败的情况（其默认的地址为localhost）；\n方案2一劳永逸\n**方案2：**在电脑配置“网络与Internet—高级网络设置”，“本地连接—更多适配器选项”，“网络”配置中，将“Internet 协议版本6（TCP/IPv6）”配置为不选中状态；\n2\n前端、后端之间存在跨域问题\n方案1：将后端的可允许的域（+端口）配置在允许的源中，并与前端的默认端口保持一致（配置在编辑器的启动配置Configurations中，Additional run args选项中，配置内容为：–web-port=端口），两者保持一致能解决跨域问题\n方案二：配置后端跨域配置CORSMiddleware中的allow_origins=[\"*\"]\n方案二一劳永逸\n3\nflutter for web前端界面中文显示乱码，数据库、接口、参数入参，内部各个环节都显示中文显示正常。什么原因\n定位为渲染问题，配置flutter字体，本地、云端都尝试过，都显示为中文乱码。但直接写在页面上的中文显示正常；\n定位为字符格式问题，检查请求入参（viewmodel、提交到server端）、出参（apifox测试接口，console控制台接口返回）、数据库对应中文字段，都没有问题；但是控制台打印的话，是乱码。\n定位为页面编码问题，统一调整IDE文件格式为utf-8，没有效果。\n最终经过尝试，定位为，接口响应头Content-Type没有加上charset=UTF-8，只有application/json。加上即解决问题\napifox接口在线调试、console控制台，响应response不加响应头charset=UTF-8，内部机制默认转化了，导致接口显示正常。但其实返回给页面前端的内容中中文并不是utf-8格式\n4\n运start命令时，出现Unlock Keyring，Authentication required\n执行命令：rm -f ~/.gnome2/keyrings/login.keyring\n如果记得密码也行，一般是Ubuntu 开机密码\n5\n通过poetry来管理依赖\n1、一些常用命令poetry install、poetry update，后面都可以带具体的包名\n6\n执行read_page页面，提示chrome not found\n1、在Linux环境下安装google-chrome-stable版本\n7\n添加装饰器时，报错TypeError: ‘module’ object is not callable\n1、引用模块的时候，直接执行模块了，而不是执行模块里的具体f\n3. 分析项目 3.1. 调用关系分析 前端（futter for web）、后端接口之间调用关系链，参考如下：\nautogpt\nautogpt\n__main__.py\ncli.py\nrun_auto_gpt_server\napp.main.py\nagent_protocol_server.py\nAgentProtocolServer\nnew AgentProtocolServer()\n.start\nstart\ncreate_task\nget_task\nlist_task\ncreate_step\nget_step\nexecute_step\ncreate_artifacts\nlist_artifacts\nget_artifacts\n_on_agent_write_file\nautogpt\n__main__.py\ncli.py\nrun_auto_gpt_server\nautogpt\n__main__.py\ncli.py\nrun_auto_gpt_server\nforge\nbase_router\nrequest method\nrequest path\nrequest process\nagent\ncreate_task\nlist_tasks\nget_task\nlist_steps\nexecute_step\nget_step\nlist_artifacts\ncreate_artifacts\nget_artifacts\neg：create_task\n(AgentDB).create_task\nnew AgentProtocolServer()\n.start\nforge\nbase_router\nagent\ncreate_task\nlist_tasks\nget_task\nlist_steps\nexecute_step\nget_step\nlist_artifacts\ncreate_artifacts\nget_artifacts\nrequest method\nrequest path\nrequest process\neg：create_task\nforge\nbase_router\nagent\ncreate_task\nlist_tasks\nget_task\nlist_steps\nexecute_step\nget_step\nlist_artifacts\ncreate_artifacts\nget_artifacts\nrequest method\nrequest path\nrequest process\neg：create_task\nfrontend\nType a message\nNULL\n非NULL\ncurrentTaskId\ncreateTask\nviewmodel\nservice\nfetchAndCombineData\nfetchTasks\nfetchTasksSuites\nnewTaskId\nexecuteStep\nstepId\nstepResponse\ncreateTask\n**autogpt\nserver\n**\nPost /agent/tasks\nfroge api_router.py\nfroge agent.py\nforge db.py\ncreateStep\nPost /agent/tasks/{task_id}/steps\nfroge api_router.py\nautogpt agent_protocol_server.py\nautogpt db.py\nagent_protocol_server.py\nagent.propose_action\nChatPrompt:build_prompt\ncomplete_and_parse(prompt)\nagent.propose_action\nresult\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-785cc076-1c5a-4a50-83a4-85154db5e9e4’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE%71%73/123663221?revision=11’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123663221/未命名绘图qs.png’ + ‘?version=11\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123663221\u0026owningPageId=123663221\u0026diagramName=%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE%71%73\u0026revision=11’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘1200’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE%71%73’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘AutoGPT进化了，再看一次’; readerOpts.attVer = ‘11’; readerOpts.attId = ‘123663736’; readerOpts.lastModifierName = ‘王宇’; readerOpts.lastModified = ‘2024-06-10 22:38:57.893’; readerOpts.creatorName = ‘王宇’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n3.2. 核心部分 3.2.1. 大模型与提示词 3.2.1.1. prompt示例 prompt示例\n?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\nSYSTEM: You are AutoGPT, a seasoned digital assistant: capable, intelligent, considerate and assertive. You have extensive research and development skills, and you don't shy away from writing some code to solve a problem. You are pragmatic and make the most out of the tools available to you.\nYour decisions must always be made independently without seeking user assistance. Play to your strengths as an LLM and pursue simple strategies with no legal complications. The OS you are running on is: Ubuntu 22.04``.``3 LTS\n## Constraints\nYou operate within the following constraints:\n1``. Exclusively use the commands listed below.\n2``. You can only act proactively, and are unable to start background jobs or set up webhooks for yourself. Take this into account when planning your actions.\n3``. You are unable to interact with physical objects. If this is absolutely necessary to fulfill a task or objective or to complete a step``, you must ask the user to do it for you. If the user refuses this, and there is no other way to achieve your goals, you must terminate to avoid wasting time and energy.\n## Resources\nYou can leverage access to the following resources:\n1``. The ability to read and write files.\n2``. You are a Large Language Model, trained on millions of pages of text, including a lot of factual knowledge. Make use of this factual knowledge to avoid unnecessary gathering of information.\n3``. Internet access for searches and information gathering.\n4``. Ability to read websites.\n## Commands\nThese are the ONLY commands you can use``. Any action you perform must be possible through one of these commands:\n1``. open_file: Opens a file for editing or continued viewing; creates it if it does not exist yet. Note: If you only need to read or write a file once, use `write_to_file` instead.. Params: (file_path: string)\n2``. open_folder: Open a folder to keep track of its content. Params: (path: string)\n3``. execute_shell: Execute a Shell Command, non-interactive commands only. Params: (command_line: string)\n4``. execute_shell_popen: Execute a Shell Command, non-interactive commands only. Params: (command_line: string)\n5``. read_file: Read a file and return the contents. Params: (filename: string)\n6``. write_file: Write a file, creating it if necessary. If the file exists, it is overwritten.. Params: (filename: string, contents: string)\n7``. list_folder: Lists files in a folder recursively. Params: (folder: string)\n8``. finish: Use this to shut down once you have completed your task, or when there are insurmountable problems that make it impossible for you to finish your task.. Params: (reason: string)\n9``. ask_user: If you need more details or information regarding the given goals, you can ask the user for input.. Params: (question: string)\n10``. web_search: Searches the web. Params: (query: string, num_results?: number)\n11``. read_webpage: Read a webpage, and extract specific information from it. You must specify either topics_of_interest, a question, or get_raw_content.. Params: (url: string, topics_of_interest?: Array, question?: string, get_raw_content?: boolean``)\n## Best practices\n1``. Continuously review and analyze your actions to ensure you are performing to the best of your abilities.\n2``. Constructively self-criticize your big-picture behavior constantly.\n3``. Reflect on past decisions and strategies to refine your approach.\n4``. Every command has a cost, so be smart and efficient. Aim to complete tasks in the least number of steps.\n5``. Only make use of your information gathering abilities to find information that you don't yet have knowledge of.\n## Your Task\nThe user will specify a task for you to execute, in triple quotes, in the next message. Your job is to complete the task while following your directives as given above, and terminate when your task is done.\n## RESPONSE FORMAT\nYOU MUST ALWAYS RESPOND WITH A JSON OBJECT OF THE FOLLOWING TYPE:\ninterface AssistantResponse {\nthoughts: {\n// Relevant observations from your last action (if any)\nobservations: string;\n// Thoughts\ntext: string;\n// Reasoning behind the thoughts\nreasoning: string;\n// Constructive self-criticism\nself_criticism: string;\n// Short list that conveys the long-term plan\nplan: Array;\n// Summary of thoughts, to say to user\nspeak: string;\n};\nuse_tool: {\nname: string;\narguments: Record;\n};\n}\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\nUSER: \"\"\"告诉我英国的面积\"\"\"\nSYSTEM: ## Clock\nThe current time and date is Mon Jun 10 13``:``01``:``31 2024\nUSER: Determine exactly one command to use next based on the given goals and the progress you have made so far, and respond using the JSON schema specified previously:\n3.2.1.2. 响应示例 Step Response示例\n?\n1\n2\n3\n4\n5\n6\n7\nthoughts=AssistantThoughts(observations=``''``,\ntext=``'I will perform a web search to find the current world population.'``,\nreasoning=``'Searching the web is the most efficient way to obtain up-to-date information on the current world population.'``,\nself_criticism=``''``,\nplan=[``'Perform a web search to find th e current world population.'``],\nspeak=``'I will search the web to find the current world population.'``)\nuse_tool=AssistantFunctionCall(name=``'web_search'``, arguments={``'query'``: 'current world population'``})\n3.2.2. 提示词分析 提示词共分为7个部分：\nSystem。系统相关，角色、时间等\nConstraints。约束条件\nResources。可利用资源\nCommands。能使用的命令\nBest practices。最佳实践\nYour Task。任务概述 Response format。响应格式\n这7个部分在项目中，分散到不同的文件、模块中，通过各种工程逻辑，最终合并在一起，作为prompt输入到大模型中（GPT-4或者GPT-3.5-turbe或者其他）。\nSystem：设置AutoGPT的角色—“你是一个经验丰富的数字助理，能力强、聪明、考虑周到、坚定自信。你具有丰富的研究和开发技能，同时不介意通过写一些代买来解决问题。你是务实的并且能充分利用好可用的工具“\nConstraints：您需在以下限制内进行操作：\n只能使用 下面conmands列出的命令； 只能主动采取行动，无法开启后台任务或者设置网络钩子、回调，在计划你的行动的时候，充分考虑这一点； 你不能和物理物体交互，如果对于完成一个任务、目标、步骤来讲非常有必要，你必须要求用户来执行操作，如果用户拒绝，另外没有其他的方案来完成目标，你必须终止以免浪费时间精力； Reources：您可以利用对以下资源的访问：\n1、读写文件的能力。 你是一个大型语言模型，经过数百万页文本的训练，包括大量事实知识。 利用这些事实知识来避免不必要的信息收集。 用于搜索和信息收集的互联网接入。 具备阅读网站的能力。 Commands：\n这些是您可以使用的唯一命令。 您执行的任何操作都必须可以通过以下11个命令之一来实现：\nopen_file：打开文件进行编辑或继续查看；如果文件尚不存在，则创建它。注意：如果您只需要读取或写入文件一次，请改用`write_to_file`。参数：（file_path：字符串） open_folder：打开文件夹以跟踪其内容。参数：（path：字符串） execute_shell：执行 Shell 命令，仅限非交互式命令。参数：（command_line：字符串） execute_shell_popen：执行 Shell 命令，仅限非交互式命令。参数：（command_line：字符串） read_file：读取文件并返回内容。参数：（filename：字符串） write_file：写入文件，必要时创建它。如果文件存在，则将其覆盖。参数：（filename：字符串，contents：字符串） list_folder：以递归方式列出文件夹中的文件。参数：（文件夹：字符串） finish：完成任务后，或者遇到无法解决的问题导致无法完成任务时，使用此参数关闭。参数：（原因：字符串） ask_user：如果您需要有关给定目标的更多详细信息或信息，您可以要求用户输入。参数：（问题：字符串） web_search：搜索网络。参数：（查询：字符串，num_results？：数字） read_webpage：阅读网页，并从中提取特定信息。您必须指定topics_of_interest、问题、get_raw_content。参数：（url：字符串，topics_of_interest？：Array，问题？：字符串，get_raw_content？：布尔值） Best practices：\n不断审查和分析你的行为，以确保您发挥出最佳能力。 不断地建设性地自我批评你的大局行为。 反思过去的决策和策略以完善您的方法。 每个命令都有成本，所以要聪明、高效。 旨在以最少的步骤完成任务。 只利用你的信息收集能力来寻找你还不了解的信息。 Your Task：\n用户将在下一条消息中指定你要执行的任务，您的工作是按照上述指示完成任务，并在任务完成后终止。\nResponse format：\n您必须始终使用以下类型的 JSON 对象进行响应：\n?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\ninterface AssistantResponse {\nthoughts: {\n// Relevant observations from your last action (if any)\nobservations: string;\n// Thoughts\ntext: string;\n// Reasoning behind the thoughts\nreasoning: string;\n// Constructive self-criticism\nself_criticism: string;\n// Short list that conveys the long-term plan\nplan: Array;\n// Summary of thoughts, to say to user\nspeak: string;\n};\nuse_tool: {\nname: string;\narguments: Record;\n};\n}\n3.2.3. 响应内容分析 ?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n{\n\"name\"``: \"现在广州什么天气\"``,\n\"input\"``: \"现在广州什么天气\"``,\n\"additional_input\"``: {},\n\"created_at\"``: \"2024-06-11T04:48:32.654656\"``,\n\"modified_at\"``: \"2024-06-11T04:48:43.905814\"``,\n\"task_id\"``: \"6ba54e05-870e-402e-8235-880a759ecc7f\"``,\n\"step_id\"``: \"9d2944c2-29eb-4f6d-a8b6-aa5022a3cbb6\"``,\n\"status\"``: \"completed\"``,\n\"output\"``: \"Finding the current weather in Guangzhou.\\n\\nNext Command: web_search(query='current weather Guangzhou')\"``,\n\"additional_output\"``: {\n\"thoughts\"``: {\n\"observations\"``: \"The user requested the current weather in Guangzhou.\"``,\n\"text\"``: \"I will use a web search to gather the most current and accurate information regarding the weather in Guangzhou.\"``,\n\"reasoning\"``: \"Accessing a reliable source such as a local weather reporting service via a web search will provide up-to-date information.\"``,\n\"self_criticism\"``: \"An alternative method could have been using a specific API call if available and integrated, which might have provided more detailed and reliable data more efficiently.\"``,\n\"plan\"``: [\n\"Perform a web search to determine the current weather in Guangzhou.\"``,\n\"Display the results to the user.\"\n],\n\"speak\"``: \"Finding the current weather in Guangzhou.\"\n},\n\"use_tool\"``: {\n\"name\"``: \"web_search\"``,\n\"arguments\"``: {\n\"query\"``: \"current weather Guangzhou\"\n}\n},\n\"task_cumulative_cost\"``: 0.0161\n},\n\"artifacts\"``: [],\n\"is_last\"``: false\n}\n4. 运行思维启动AutoGPT 上述分析是用技术思维来分析AutoGPT整个项目，看其各个模块的调用关系，以及如何使用大模型的调度和分析的能力。那如何使用AutoGPT来打造个人的AutoGPT呢，针对大家而言应该更重要。这个官方有更简单的操作步骤，具体如下：\n步骤\n备注\nbuild your own AI Agents using the AutoGPT Forge\n步骤一\nclone项目AutoGPT，cd进入项目，允许命令：./run setup\n（用tag autogpt-v0.5.1）\n可能会遇到允许报错，比如setup文件找不到、./run文件找不到，bin/bash^M: bad interpreter: No such file or directory，或者其他错误。这个错误通常是因为 setup.sh 文件中包含了 Windows 风格的换行符（CRLF），而不是 Unix 风格的换行符（LF）。这种情况会导致 Bash 在解析脚本时出现问题。需要将文件中的所有 CRLF 转换为 LF。\n解决方案：系统安装dos2unix，然后执行：dos2unit /绝对地址/setup.sh，极了解决问题。然后允许./run setup\n步骤二\n创建个人agent\n运行命令：./run agent create YOUR_AGENT_NAME\n之后就创建了你的个人agent，文件路径在：agents/YOUR_AGENT_NAME\n不用主动添加conda虚拟环境，程序中会自动处理，否则报错\n步骤三\n运行个人agent\n运行命令：./run agent start YOUR_AGENT_NAME`\n出现界面：\nEnhancing Your Agent\nProfile\nMemory\nPlanning\nAction\n-——————————\nagent protocol：The Linguistics of AI Communication：agent protocol\nLLM-Based AI Agents：\nInteracting with your Agent throught UI\n使用 AutoGPT Forge UI 创建任务\n页面操作 :如果点击按钮\r，则可以循环执行步骤，直到任务完成，不过token消耗比较快，（$1分分钟就消耗完，哈哈）\n基准测试\n提交自己的agent到Leaderboard，也就是AutoGPT的AI生态里\n5. 拓展及经典代码分析 5.1. action/ability注册 展开源码\nexpand source?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\ndef register_abilities(``self``) -``\u003e None``:\n# 遍历当前目录及其子目录下的所有 Python 文件（递归方式）\nfor action_path in glob.glob(\nos.path.join(os.path.dirname(__file__), \"**/*.py\"``), recursive``=``True\n):\n# 排除文件名为 \"__init__.py\" 和 \"registry.py\" 的文件\nif not os.path.basename(action_path) in [\n\"__init__.py\"``,\n\"registry.py\"``,\n]:\n# 获取相对于当前文件目录的相对路径，并将路径中的斜杠替换为点号\naction = os.path.relpath(\naction_path, os.path.dirname(__file__)\n).replace(``\"/\"``, \".\"``)\ntry``:\n# 动态导入相应的模块\nmodule = importlib.import_module(\nf``\".{action[:-3]}\"``, package``=``\"forge.actions\"\n)\n# 遍历模块中的所有属性\nfor attr in dir``(module):\nfunc = getattr``(module, attr)\n# 检查属性是否具有 'action' 属性\nif hasattr``(func, \"action\"``):\nab = func.action\n# 设置 action 的类别\nab.category = (\naction.split(``\".\"``)[``0``].lower().replace(``\"_\"``, \" \"``)\nif len``(action.split(``\".\"``)) \u003e 1\nelse \"general\"\n)\n# 将 action 注册到 self.abilities 字典中\nself``.abilities[func.action.name] = func.action\nexcept Exception as e:\n# 如果出现异常，打印错误信息\nprint``(f``\"Error occurred while registering abilities: {str(e)}\"``)\n5.2. 增加一个自定义action 在action文件夹下，添加文件，有一点要求：\n通过@action前缀进行定义，描述好action函数入参、action 描述（重要） 举例，增加一个web请求的action：\n展开源码\nexpand source?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\nfrom __future__ import annotations\nimport json\nimport time\nfrom duckduckgo_search import DDGS\nfrom ..registry import action\nDUCKDUCKGO_MAX_ATTEMPTS = 1\n@action``(\nname``=``\"web_search\"``,\ndescription``=``\"Searches the web\"``,\nparameters``=``[\n{\n\"name\"``: \"query\"``,\n\"description\"``: \"The search query\"``,\n\"type\"``: \"string\"``,\n\"required\"``: True``,\n}\n],\noutput_type``=``\"list[str]\"``,\n)\nasync def web_search(agent, task_id: str``, query: str``) -``\u003e str``:\n\"\"\"Return the results of a Google search\nArgs:\nquery (str): The search query.\nnum_results (int): The number of results to return.\nReturns:\nstr: The results of the search.\n\"\"\"\nsearch_results = []\nattempts = 0\nnum_results = 8\nwhile attempts \u003c DUCKDUCKGO_MAX_ATTEMPTS:\nif not query:\nreturn json.dumps(search_results)\nsearch_results = DDGS().text(query, max_results``=``num_results)\nif search_results:\nbreak\ntime.sleep(``1``)\nattempts +``= 1\nresults = json.dumps(search_results, ensure_ascii``=``False``, indent``=``4``)\nprint``(f``\"result:{results}\"``)\nreturn results\n5.3. agent.py最简化代码 展开源码\nexpand source?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100\n101\n102\n103\n104\n105\n106\n107\n108\n109\n110\nimport json\nfrom forge.actions import ActionRegister\nfrom forge.sdk import (\nAgent,\nAgentDB,\nForgeLogger,\nStep,\nStepRequestBody,\nTask,\nTaskRequestBody,\nWorkspace,\n)\nLOG = ForgeLogger(__name__)\nfrom .sdk import PromptEngine, chat_completion_request\nclass ForgeAgent(Agent):\ndef __init__(``self``, database: AgentDB, workspace: Workspace):\n\"\"\"\nThe database is used to store tasks, steps and artifact metadata. The workspace is used to\nstore artifacts. The workspace is a directory on the file system.\nFeel free to create subclasses of the database and workspace to implement your own storage\n\"\"\"\nsuper``().__init__(database, workspace)\nself``.abilities = ActionRegister(``self``)\nasync def create_task(``self``, task_request: TaskRequestBody) -``\u003e Task:\ntask = await super``().create_task(task_request)\nLOG.info(\nf``\"📦 Task created: {task.task_id} input: {task.input[:40]}{'...' if len(task.input) \u003e 40 else ''}\"\n)\nreturn task\nasync def execute_step(``self``, task_id: str``, step_request: StepRequestBody) -``\u003e Step:\n# something additon\n# Firstly we get the task this step is for so we can access the task input\ntask = await self``.db.get_task(task_id)\n# Create a new step in the database\nstep = await self``.db.create_step(\ntask_id``=``task_id, input``=``step_request, is_last``=``True\n)\n# Log the message\nLOG.info(f``\"\\t✅ Final Step completed: {step.step_id} input: {step.input[:19]}\"``)\n# Initialize the PromptEngine with the \"gpt-3.5-turbo\" model\nprompt_engine = PromptEngine(``\"gpt-3.5-turbo\"``)\n# Load the system and task prompts\nsystem_prompt = prompt_engine.load_prompt(``\"system-format\"``)\n# Define the task parameters\ntask_kwargs = {\n\"task\"``: task.``input``,\n\"abilities\"``: self``.abilities.list_abilities_for_prompt(),\n}\n# Load the task prompt with the defined task parameters\ntask_prompt = prompt_engine.load_prompt(``\"task-step\"``, *``*``task_kwargs)\n# Initialize the messages list with the system prompt\nmessages = [\n{``\"role\"``: \"system\"``, \"content\"``: system_prompt},\n{``\"role\"``: \"user\"``, \"content\"``: task_prompt}\n]\ntry``:\n# Define the parameters for the chat completion request\nchat_completion_kwargs = {\n\"messages\"``: messages,\n\"model\"``: \"gpt-3.5-turbo\"``,\n}\n# Make the chat completion request and parse the response\nchat_response = await chat_completion_request(``*``*``chat_completion_kwargs)\nanswer = json.loads(chat_response[``\"choices\"``][``0``][``\"message\"``][``\"content\"``])\n# Log the answer for debugging purposes\n# LOG.info(pprint.pformat(answer))\nprint``(f``\"answer is:{answer}\"``)\nexcept json.JSONDecodeError as e:\n# Handle JSON decoding errors\nLOG.error(f``\"Unable to decode chat response: {chat_response}\"``)\nexcept Exception as e:\n# Handle other exceptions\nLOG.error(f``\"Unable to generate chat response: {e}\"``)\n# Extract the ability from the answer\nability = answer[``\"ability\"``]\nprint``(f``\"ability:{ability}\"``)\n# Run the ability and get the output\n# We don't actually use the output in this example\n# Some action don`t need action,here you can do many thing\nif ability[``\"name\"``] not in self``.abilities.list_abilities().keys():\nstep.output = answer[``\"thoughts\"``][``\"text\"``]\nelse``:\noutput = await self``.abilities.run_action(\ntask_id, ability[``\"name\"``], *``*``ability[``\"args\"``]\n)\n# Set the step output to the \"speak\" part of the answer\nstep.output = answer[``\"thoughts\"``][``\"speak\"``]\n# Return the completed step\nreturn step\n打造一个agent的步骤：\n创建一个任务，获取task_id， 根据上述的task_id，执行接下来的步骤 初始化提示工程，选择用什么模型 使用和创建action 加载系统提示词模板、自定义提示词模板 运行大模型 运行一个能力 返回用户反馈，文本、图片、或者其他与系统的交互操作 5.4. 提示词组装方法 展开源码\nexpand source?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n{% extends \"techniques/expert.j2\" %}\n{% block expert %}Planner{% endblock %}\n{% block prompt %}\nYour task is:\n{{ task }}\nAnswer in the provided format.\nYour decisions must always be made independently without seeking user assistance. Play to your strengths as an LLM and\npursue simple strategies with no legal complications.\n{% if constraints %}\n## Constraints\nYou operate within the following constraints:\n{% for constraint in constraints %}\n- {{ constraint }}\n{% endfor %}\n{% endif %}\n{% if resources %}\n## Resources\nYou can leverage access to the following resources:\n{% for resource in resources %}\n- {{ resource }}\n{% endfor %}\n{% endif %}\n{% if abilities %}\n## Abilities\nYou have access to the following abilities you can call:\n{% for ability in abilities %}\n- {{ ability }}\n{% endfor %}\n{% endif %}\n{% if best_practices %}\n## Best practices\n{% for best_practice in best_practices %}\n- {{ best_practice }}\n{% endfor %}\n{% endif %}\n{% if previous_actions %}\n## History of Abilities Used\n{% for action in previous_actions %}\n- {{ action }}\n{% endfor %}\n{% endif %}\n{% endblock %}\n这是一个jinja2模板文件，有双括号{{}}的地方就是变量，在初始化的时候需要填充进去；\n对应3.2.1.1中所叙的内容，具体如下：\n先定义角色，使用了一个叫做expert.js的模板。定义一个块block，名字为”expert“； 用户输入的内容填充在 {{task}}中； 如果存在约束constraints，则列出每一条约束条件 如果存在资源resources，则列出每一条资源 如果存在能力abilities，则列出每一条能力 如果存在最佳实践best_practices，则列出每一条最佳实践 如果存在上一步操作previous_actions，则列出每一条action 至于判断是否存在constraints、resources、abilities、best_practices、previous_actions，有一套。举个例子，在prompt上增加abilities，实现函数如下：\n?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n# Initialize the PromptEngine with the \"gpt-3.5-turbo\" model or other model\nprompt_engine = PromptEngine(model``=``\"gpt-3.5-turbo\"``, debug_enabled``=``True``)\n# Define the task parameters\ntask_kwargs = {\n\"task\"``: task.``input``,\n\"abilities\"``: self``.abilties.list_abilities_for_prompt(),\n}\n# Load the task prompt with the defined task parameters\ntask_prompt = prompt_engine.load_prompt(``\"task-step\"``, *``*``task_kwargs)\n画图表示为：\nPrompt\nJinja2模板引擎\ntask\nconstraints\nresources\nabilities\nbest_practices\nprevious_actions\nActionRegister\n按照所有符合action\n格式要求的.py文件\n1、注册action格式\n2、依据产品需求、领域、活动类型自定义action\n3、可以拓展：互联网查询、对接RAG、\n用户输入input\n依据不同的场景设置不同的约束条件\n可以使用的资源(?)\n怎么更好地完成任务\n上一个action\n可大量拓展action\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-5cc93905-d9fc-4a93-858a-381edf36b6fd’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%31%31%32/123663221?revision=4’; readerOpts.imageUrl = ’’ + ‘/download/attachments/123663221/112.png’ + ‘?version=4\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=123663221\u0026owningPageId=123663221\u0026diagramName=%31%31%32\u0026revision=4’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘1000’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%31%31%32’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘AutoGPT进化了，再看一次’; readerOpts.attVer = ‘4’; readerOpts.attId = ‘129173463’; readerOpts.lastModifierName = ‘王宇’; readerOpts.lastModified = ‘2024-06-23 12:12:27.398’; readerOpts.creatorName = ‘王宇’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n6. 过程中用到的经典库 库名称\n详细\n备注\n库名称\n详细\n备注\nlitellm\n使用 OpenAI 格式调用所有 LLM API [Bedrock、Huggingface、VertexAI、TogetherAI、Azure、OpenAI 等]\n在.env文件中使用\n7. 大模型使用指令测试 7.1. 提示词 提示词详情为：\n?\n1\nFilter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "3258",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      AutoGPT进化了，再看一次
+    </h1>
+    <div class="post-description">
+      GPT相关
+    </div>
+    <div class="post-meta">16 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e5%89%8d%e8%a8%80" aria-label="1. 前言             ">1. 前言             </a></li>
+                <li>
+                    <a href="#2-%e8%bf%90%e8%a1%8c%e9%a1%b9%e7%9b%ae" aria-label="2. 运行项目">2. 运行项目</a><ul>
+                        
+                <li>
+                    <a href="#21-%e7%9b%ae%e5%bd%95" aria-label="2.1. 目录">2.1. 目录</a></li>
+                <li>
+                    <a href="#22-%e8%bf%90%e8%a1%8c" aria-label="2.2. 运行">2.2. 运行</a></li>
+                <li>
+                    <a href="#23-%e5%90%af%e5%8a%a8%e9%a1%b9%e7%9b%ae%e4%b8%ad%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98" aria-label="2.3. 启动项目中遇到的问题">2.3. 启动项目中遇到的问题</a></li></ul>
+                </li>
+                <li>
+                    <a href="#3-%e5%88%86%e6%9e%90%e9%a1%b9%e7%9b%ae" aria-label="3. 分析项目">3. 分析项目</a><ul>
+                        
+                <li>
+                    <a href="#31-%e8%b0%83%e7%94%a8%e5%85%b3%e7%b3%bb%e5%88%86%e6%9e%90" aria-label="3.1.  调用关系分析">3.1.  调用关系分析</a></li>
+                <li>
+                    <a href="#32-%e6%a0%b8%e5%bf%83%e9%83%a8%e5%88%86" aria-label="3.2. 核心部分">3.2. 核心部分</a><ul>
+                        
+                <li>
+                    <a href="#321-%e5%a4%a7%e6%a8%a1%e5%9e%8b%e4%b8%8e%e6%8f%90%e7%a4%ba%e8%af%8d" aria-label="3.2.1. 大模型与提示词">3.2.1. 大模型与提示词</a><ul>
+                        
+                <li>
+                    <a href="#3211-prompt%e7%a4%ba%e4%be%8b" aria-label="3.2.1.1. prompt示例">3.2.1.1. prompt示例</a></li>
+                <li>
+                    <a href="#3212-%e5%93%8d%e5%ba%94%e7%a4%ba%e4%be%8b" aria-label="3.2.1.2. 响应示例">3.2.1.2. 响应示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#322-%e6%8f%90%e7%a4%ba%e8%af%8d%e5%88%86%e6%9e%90" aria-label="3.2.2. 提示词分析">3.2.2. 提示词分析</a></li>
+                <li>
+                    <a href="#323-%e5%93%8d%e5%ba%94%e5%86%85%e5%ae%b9%e5%88%86%e6%9e%90" aria-label="3.2.3. 响应内容分析">3.2.3. 响应内容分析</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#4-%e8%bf%90%e8%a1%8c%e6%80%9d%e7%bb%b4%e5%90%af%e5%8a%a8autogpt" aria-label="4. 运行思维启动AutoGPT">4. 运行思维启动AutoGPT</a></li>
+                <li>
+                    <a href="#5-%e6%8b%93%e5%b1%95%e5%8f%8a%e7%bb%8f%e5%85%b8%e4%bb%a3%e7%a0%81%e5%88%86%e6%9e%90" aria-label="5. 拓展及经典代码分析">5. 拓展及经典代码分析</a><ul>
+                        
+                <li>
+                    <a href="#51-actionability%e6%b3%a8%e5%86%8c" aria-label="5.1. action/ability注册">5.1. action/ability注册</a></li>
+                <li>
+                    <a href="#52-%e5%a2%9e%e5%8a%a0%e4%b8%80%e4%b8%aa%e8%87%aa%e5%ae%9a%e4%b9%89action" aria-label="5.2. 增加一个自定义action">5.2. 增加一个自定义action</a></li>
+                <li>
+                    <a href="#53-agentpy%e6%9c%80%e7%ae%80%e5%8c%96%e4%bb%a3%e7%a0%81" aria-label="5.3. agent.py最简化代码">5.3. agent.py最简化代码</a></li>
+                <li>
+                    <a href="#54-%e6%8f%90%e7%a4%ba%e8%af%8d%e7%bb%84%e8%a3%85%e6%96%b9%e6%b3%95" aria-label="5.4. 提示词组装方法">5.4. 提示词组装方法</a></li></ul>
+                </li>
+                <li>
+                    <a href="#6-%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%94%a8%e5%88%b0%e7%9a%84%e7%bb%8f%e5%85%b8%e5%ba%93" aria-label="6. 过程中用到的经典库">6. 过程中用到的经典库</a></li>
+                <li>
+                    <a href="#7-%e5%a4%a7%e6%a8%a1%e5%9e%8b%e4%bd%bf%e7%94%a8%e6%8c%87%e4%bb%a4%e6%b5%8b%e8%af%95" aria-label="7. 大模型使用指令测试">7. 大模型使用指令测试</a><ul>
+                        
+                <li>
+                    <a href="#71-%e6%8f%90%e7%a4%ba%e8%af%8d" aria-label="7.1. 提示词">7.1. 提示词</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><ul>
+<li>1<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-前言">1. 前言</a>             </li>
+<li>2<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-运行项目">2. 运行项目</a>
+<ul>
+<li>2.1<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-目录">2.1. 目录</a></li>
+<li>2.2<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-运行">2.2. 运行</a></li>
+<li>2.3<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-启动项目中遇到的问题">2.3. 启动项目中遇到的问题</a></li>
+</ul>
+</li>
+<li>3<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-分析项目">3. 分析项目</a>
+<ul>
+<li>3.1<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-调用关系分析">3.1.  调用关系分析</a></li>
+<li>3.2<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-核心部分">3.2. 核心部分</a>
+<ul>
+<li>3.2.1<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-大模型与提示词">3.2.1. 大模型与提示词</a>
+<ul>
+<li>3.2.1.1<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-prompt示例">3.2.1.1. prompt示例</a></li>
+<li>3.2.1.2<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-响应示例">3.2.1.2. 响应示例</a></li>
+</ul>
+</li>
+<li>3.2.2<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-提示词分析">3.2.2. 提示词分析</a></li>
+<li>3.2.3<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-响应内容分析">3.2.3. 响应内容分析</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>4<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-运行思维启动AutoGPT">4. 运行思维启动AutoGPT</a></li>
+<li>5<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-拓展及经典代码分析">5. 拓展及经典代码分析</a>
+<ul>
+<li>5.1<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-action/ability注册">5.1. action/ability注册</a></li>
+<li>5.2<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-增加一个自定义action">5.2. 增加一个自定义action</a></li>
+<li>5.3<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-agent.py最简化代码">5.3. agent.py最简化代码</a></li>
+<li>5.4<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-提示词组装方法">5.4. 提示词组装方法</a></li>
+</ul>
+</li>
+<li>6<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-过程中用到的经典库">6. 过程中用到的经典库</a></li>
+<li>7<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-大模型使用指令测试">7. 大模型使用指令测试</a>
+<ul>
+<li>7.1<a href="/posts/wiki/autogpt%E8%BF%9B%E5%8C%96%E4%BA%86%E5%86%8D%E7%9C%8B%E4%B8%80%E6%AC%A1/#AutoGPT进化了，再看一次-提示词">7.1. 提示词</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="1-前言">1. 前言             <a hidden class="anchor" aria-hidden="true" href="#1-前言">#</a></h1>
+<p>         在去年研究Hungging GPT项目的时候，顺手也下载了autogpt的初代版本代码，对比起来看，那时候的结论是：两者之间没有太大的区别，都是期望着一个大模型作为中控，理解需求后，划分为不同的任务，然后让不同的小模型或者算法去执行不同的任务，最后中控大模型结合提示词与小模型或者算法返回的结果，做最终的归纳总结，返回给用户。</p>
+<p>         彼时开创了一种新的大模型应用方向，即初代的Agent，实践后，发现其方向性高于实用性。因为有不少环节，都是默认选项，比如：</p>
+<ul>
+<li>如何去选择一个小模型或者算法，依据是huggingface.co上面的对应分类的开源模型上面的用户点赞数（下载数），这其实有一些主观</li>
+<li>对于每个能够被调用的小模型或者算法而言，其描述文件没有太多统一的规范，这也是整个生态的问题</li>
+<li>对于每个小模型或者算法，如何和其他模型或者算法，没有统一的协议（请求入参格式、响应出参格式）</li>
+</ul>
+<p>         前段时间，开始关注AI Agent，重新关注了AutoGPT这个项目（官网地址为：<a href="https://news.agpt.co/">https://news.agpt.co/</a>）。star数从不到1K，增长为163K；从之前的小作坊，现在变成了一个小生态，其愿景为：“AutoGPT 的愿景是让每个人都能轻松使用和构建 AI。我们的使命是提供工具，让您专注于重要的事情”。有如下变化：</p>
+<ol>
+<li>明确AutoGPT项目长期发展目标</li>
+<li>生态化，号召按照agent protocol来开发agent</li>
+<li>项目包含Forge模块，提供了大量的agent模板</li>
+<li>项目包含Benchmark模块，为评价agent提供了标准</li>
+<li>项目中前后端代码分离</li>
+</ol>
+<h1 id="2-运行项目">2. 运行项目<a hidden class="anchor" aria-hidden="true" href="#2-运行项目">#</a></h1>
+<h2 id="21-目录">2.1. 目录<a hidden class="anchor" aria-hidden="true" href="#21-目录">#</a></h2>
+<p>         项目核心目录为：</p>
+<p>目录</p>
+<p>详情</p>
+<p>备注</p>
+<p>目录</p>
+<p>详情</p>
+<p>备注</p>
+<p>assets</p>
+<p>资源</p>
+<p>autogpt</p>
+<p>autogpt核心目录，支持GPT Groq Anthropic</p>
+<p>1、使用了很多的python项目，新的特性，安装包灯方法</p>
+<p>注意GPT api key的使用方法，很容易被封，推荐购买key</p>
+<p>benchmark</p>
+<p>衡量agent能力的各项指标、标准</p>
+<p>需要遵守agent protocol</p>
+<p>docs</p>
+<p>文档合集</p>
+<p>forge</p>
+<p>agent模板，提供教程，用户可以据此作为参考做自己的agent</p>
+<p>基于LLM的agent模板</p>
+<p>frontend</p>
+<p>前端界面，使用flutter框架开发web，也可以开发window应用</p>
+<p>用到谷歌登录等第三方库</p>
+<p>rnd/autogpt_server</p>
+<p>探索性项目，下一代agent，agent代理服务器</p>
+<h2 id="22-运行">2.2. 运行<a hidden class="anchor" aria-hidden="true" href="#22-运行">#</a></h2>
+<p>         分别运行autogpt、frontend这两个文件夹：</p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p><code>python -m autogpt serve</code></p>
+<p><code>flutter run -d chrome</code></p>
+<p>       运行界面为：</p>
+<h2 id="23-启动项目中遇到的问题">2.3. 启动项目中遇到的问题<a hidden class="anchor" aria-hidden="true" href="#23-启动项目中遇到的问题">#</a></h2>
+<p>序号</p>
+<p>问题</p>
+<p>方案</p>
+<p>备注</p>
+<p>1</p>
+<p>frontend文件夹中，flutter启动web服务器，报错连不上：“SocketException: Failed to create server socket”</p>
+<p>**方案1：**在启动文件上加上参数：--web-port=8080 &ndash;web-hostname=127.0.0.1，特别是hostname的设置，但这样会出现谷歌账号认证失败的情况（其默认的地址为localhost）；</p>
+<p>方案2一劳永逸</p>
+<p>**方案2：**在电脑配置“网络与Internet&mdash;高级网络设置”，“本地连接—更多适配器选项”，“网络”配置中，将“Internet 协议版本6（TCP/IPv6）”配置为不选中状态；</p>
+<p>2</p>
+<p>前端、后端之间存在跨域问题</p>
+<p>方案1：将后端的可允许的域（+<strong>端口</strong>）配置在允许的源中，并与前端的默认<strong>端口</strong>保持一致（配置在编辑器的启动配置Configurations中，Additional run args选项中，配置内容为：&ndash;web-port=<strong>端口</strong>），两者保持一致能解决跨域问题</p>
+<p>方案二：配置后端跨域配置CORSMiddleware中的allow_origins=[&quot;*&quot;]</p>
+<p>方案二一劳永逸</p>
+<p>3</p>
+<p>flutter for web前端界面中文显示乱码，数据库、接口、参数入参，内部各个环节都显示中文显示正常。什么原因</p>
+<p>定位为渲染问题，配置flutter字体，本地、云端都尝试过，都显示为中文乱码。但直接写在页面上的中文显示正常；</p>
+<p>定位为字符格式问题，检查请求入参（viewmodel、提交到server端）、出参（apifox测试接口，console控制台接口返回）、数据库对应中文字段，都没有问题；但是控制台打印的话，是乱码。</p>
+<p>定位为页面编码问题，统一调整IDE文件格式为utf-8，没有效果。</p>
+<p>最终经过尝试，定位为，接口响应头Content-Type没有加上charset=UTF-8，只有application/json。加上即解决问题</p>
+<p>apifox接口在线调试、console控制台，响应response不加响应头charset=UTF-8，内部机制默认转化了，导致接口显示正常。但其实返回给页面前端的内容中中文并不是utf-8格式</p>
+<p>4</p>
+<p>运start命令时，出现Unlock Keyring，Authentication required</p>
+<p>执行命令：rm -f ~/.gnome2/keyrings/login.keyring</p>
+<p>如果记得密码也行，一般是Ubuntu 开机密码</p>
+<p>5</p>
+<p>通过poetry来管理依赖</p>
+<p>1、一些常用命令poetry install、poetry update，后面都可以带具体的包名</p>
+<p>6</p>
+<p>执行read_page页面，提示chrome not found</p>
+<p>1、在Linux环境下安装google-chrome-stable版本</p>
+<p>7</p>
+<p>添加装饰器时，报错TypeError: &lsquo;module&rsquo; object is not callable</p>
+<p>1、引用模块的时候，直接执行模块了，而不是执行模块里的具体f</p>
+<h1 id="3-分析项目">3. 分析项目<a hidden class="anchor" aria-hidden="true" href="#3-分析项目">#</a></h1>
+<h2 id="31-调用关系分析">3.1.  调用关系分析<a hidden class="anchor" aria-hidden="true" href="#31-调用关系分析">#</a></h2>
+<p>前端（futter for web）、后端接口之间调用关系链，参考如下：</p>
+<p><strong>autogpt</strong></p>
+<p>autogpt</p>
+<p>__main__.py</p>
+<p>cli.py</p>
+<p>run_auto_gpt_server</p>
+<p>app.main.py</p>
+<p>agent_protocol_server.py</p>
+<p>AgentProtocolServer</p>
+<p>new AgentProtocolServer()</p>
+<p>.start</p>
+<p>start</p>
+<p>create_task</p>
+<p>get_task</p>
+<p>list_task</p>
+<p>create_step</p>
+<p>get_step</p>
+<p>execute_step</p>
+<p>create_artifacts</p>
+<p>list_artifacts</p>
+<p>get_artifacts</p>
+<p>_on_agent_write_file</p>
+<p>autogpt</p>
+<p>__main__.py</p>
+<p>cli.py</p>
+<p>run_auto_gpt_server</p>
+<p>autogpt</p>
+<p>__main__.py</p>
+<p>cli.py</p>
+<p>run_auto_gpt_server</p>
+<p>forge</p>
+<p>base_router</p>
+<p>request method<br>
+request path</p>
+<p>request process</p>
+<p>agent</p>
+<p>create_task<br>
+list_tasks<br>
+get_task<br>
+list_steps<br>
+execute_step<br>
+get_step<br>
+list_artifacts<br>
+create_artifacts<br>
+get_artifacts</p>
+<p>eg：create_task</p>
+<p>(AgentDB).create_task</p>
+<p>new AgentProtocolServer()</p>
+<p>.start</p>
+<p>forge</p>
+<p>base_router</p>
+<p>agent</p>
+<p>create_task<br>
+list_tasks<br>
+get_task<br>
+list_steps<br>
+execute_step<br>
+get_step<br>
+list_artifacts<br>
+create_artifacts<br>
+get_artifacts</p>
+<p>request method<br>
+request path</p>
+<p>request process</p>
+<p>eg：create_task</p>
+<p><strong>forge</strong></p>
+<p>base_router</p>
+<p>agent</p>
+<p>create_task<br>
+list_tasks<br>
+get_task<br>
+list_steps<br>
+execute_step<br>
+get_step<br>
+list_artifacts<br>
+create_artifacts<br>
+get_artifacts</p>
+<p>request method<br>
+request path</p>
+<p>request process</p>
+<p>eg：create_task</p>
+<p><strong>frontend</strong></p>
+<p>Type a message</p>
+<p>NULL</p>
+<p>非NULL</p>
+<p>currentTaskId</p>
+<p>createTask</p>
+<p>viewmodel<br>
+service</p>
+<p>fetchAndCombineData</p>
+<p>fetchTasks</p>
+<p>fetchTasksSuites</p>
+<p>newTaskId</p>
+<p>executeStep</p>
+<p>stepId</p>
+<p>stepResponse</p>
+<p>createTask</p>
+<p>**autogpt<br>
+server<br>
+**</p>
+<p>Post  /agent/tasks<br>
+froge  api_router.py<br>
+froge agent.py<br>
+forge db.py</p>
+<p>createStep</p>
+<p>Post   /agent/tasks/{task_id}/steps<br>
+froge  api_router.py<br>
+autogpt agent_protocol_server.py<br>
+autogpt db.py</p>
+<p>agent_protocol_server.py<br>
+agent.propose_action</p>
+<p>ChatPrompt:build_prompt</p>
+<p>complete_and_parse(prompt)</p>
+<p>agent.propose_action</p>
+<p><strong>result</strong></p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-785cc076-1c5a-4a50-83a4-85154db5e9e4&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE%71%73/123663221?revision=11&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123663221/未命名绘图qs.png&rsquo; + &lsquo;?version=11&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123663221&amp;owningPageId=123663221&amp;diagramName=%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE%71%73&amp;revision=11&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;1200&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE%71%73&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;AutoGPT进化了，再看一次&rsquo;; readerOpts.attVer = &lsquo;11&rsquo;; readerOpts.attId = &lsquo;123663736&rsquo;; readerOpts.lastModifierName = &lsquo;王宇&rsquo;; readerOpts.lastModified = &lsquo;2024-06-10 22:38:57.893&rsquo;; readerOpts.creatorName = &lsquo;王宇&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<h2 id="32-核心部分">3.2. 核心部分<a hidden class="anchor" aria-hidden="true" href="#32-核心部分">#</a></h2>
+<h3 id="321-大模型与提示词">3.2.1. 大模型与提示词<a hidden class="anchor" aria-hidden="true" href="#321-大模型与提示词">#</a></h3>
+<h4 id="3211-prompt示例">3.2.1.1. prompt示例<a hidden class="anchor" aria-hidden="true" href="#3211-prompt示例">#</a></h4>
+<p><strong>prompt示例</strong></p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p>34</p>
+<p>35</p>
+<p>36</p>
+<p>37</p>
+<p>38</p>
+<p>39</p>
+<p>40</p>
+<p>41</p>
+<p>42</p>
+<p>43</p>
+<p>44</p>
+<p>45</p>
+<p>46</p>
+<p>47</p>
+<p>48</p>
+<p>49</p>
+<p>50</p>
+<p>51</p>
+<p>52</p>
+<p>53</p>
+<p>54</p>
+<p>55</p>
+<p>56</p>
+<p>57</p>
+<p>58</p>
+<p>59</p>
+<p>60</p>
+<p>61</p>
+<p>62</p>
+<p>63</p>
+<p>64</p>
+<p>65</p>
+<p>66</p>
+<p>67</p>
+<p>68</p>
+<p>69</p>
+<p>70</p>
+<p>71</p>
+<p>72</p>
+<p><code>SYSTEM: You are AutoGPT, a seasoned digital assistant: capable, intelligent, considerate and assertive. You have extensive research and development skills, and you don't shy away from writing some code to solve a problem. You are pragmatic and make the most out of the tools available to you.</code></p>
+<p><code>Your decisions must always be made independently without seeking user assistance. Play to your strengths</code> <code>as</code> <code>an LLM and pursue simple strategies with no legal complications.</code>      </p>
+<p><code>The OS you are running on is: Ubuntu</code> <code>22.04``.``3</code> <code>LTS</code></p>
+<p><code>## Constraints</code></p>
+<p><code>You operate within the following constraints:</code></p>
+<p><code>1``. Exclusively</code> <code>use</code> <code>the commands listed below.</code></p>
+<p><code>2``. You can only act proactively, and are unable to start background jobs or set up webhooks for yourself. Take this into account when planning your actions.</code></p>
+<p><code>3``. You are unable to interact with physical objects. If this is absolutely necessary to fulfill a task or objective or to complete a</code> <code>step``, you must ask the user to</code> <code>do</code> <code>it for you. If the user refuses this, and there is no other way to achieve your goals, you must terminate to avoid wasting time and energy.</code></p>
+<p><code>## Resources</code></p>
+<p><code>You can leverage access to the following resources:</code></p>
+<p><code>1``. The ability to read and</code> <code>write</code> <code>files.</code></p>
+<p><code>2``. You are a Large Language Model, trained on millions of pages of text, including a lot of factual knowledge. Make</code> <code>use</code> <code>of this factual knowledge to avoid unnecessary gathering of information.</code></p>
+<p><code>3``. Internet access for searches and information gathering.</code></p>
+<p><code>4``. Ability to read websites.</code></p>
+<p><code>## Commands</code></p>
+<p><code>These are the ONLY commands you can</code> <code>use``. Any action you perform must be possible through one of these commands:</code></p>
+<p><code>1``. open_file: Opens a file for editing or continued viewing; creates it</code> <code>if</code> <code>it does not exist yet. Note: If you only need to read or</code> <code>write</code> <code>a file once,</code> <code>use</code> <code>`write_to_file` instead.. Params: (file_path: string)</code></p>
+<p><code>2``. open_folder: Open a folder to keep track of its content. Params: (path: string)</code></p>
+<p><code>3``. execute_shell: Execute a Shell Command, non-interactive commands only. Params: (command_line: string)</code></p>
+<p><code>4``. execute_shell_popen: Execute a Shell Command, non-interactive commands only. Params: (command_line: string)</code></p>
+<p><code>5``. read_file: Read a file and</code> <code>return</code> <code>the contents. Params: (filename: string)</code></p>
+<p><code>6``. write_file: Write a file, creating it</code> <code>if</code> <code>necessary. If the file exists, it is overwritten.. Params: (filename: string, contents: string)</code></p>
+<p><code>7``. list_folder: Lists files</code> <code>in</code> <code>a folder recursively. Params: (folder: string)</code></p>
+<p><code>8``. finish: Use this to shut down once you have completed your task, or when there are insurmountable problems that make it impossible for you to finish your task.. Params: (reason: string)</code></p>
+<p><code>9``. ask_user: If you need more details or information regarding the given goals, you can ask the user for input.. Params: (question: string)</code></p>
+<p><code>10``. web_search: Searches the web. Params: (query: string, num_results?: number)</code></p>
+<p><code>11``. read_webpage: Read a webpage, and extract specific information from it. You must specify either topics_of_interest, a question, or get_raw_content.. Params: (url: string, topics_of_interest?: Array&lt;string&gt;, question?: string, get_raw_content?:</code> <code>boolean``)</code></p>
+<p><code>## Best practices</code></p>
+<p><code>1``. Continuously review and analyze your actions to ensure you are performing to the best of your abilities.</code></p>
+<p><code>2``. Constructively self-criticize your big-picture behavior constantly.</code></p>
+<p><code>3``. Reflect on past decisions and strategies to refine your approach.</code></p>
+<p><code>4``. Every command has a cost, so be smart and efficient. Aim to complete tasks</code> <code>in</code> <code>the least number of steps.</code></p>
+<p><code>5``. Only make</code> <code>use</code> <code>of your information gathering abilities to</code> <code>find</code> <code>information that you don't yet have knowledge of.</code></p>
+<p><code>## Your Task</code></p>
+<p><code>The user will specify a task for you to execute,</code> <code>in</code> <code>triple quotes,</code> <code>in</code> <code>the next message. Your job is to complete the task</code> <code>while</code> <code>following your directives</code> <code>as</code> <code>given above, and terminate when your task is done.</code></p>
+<p><code>## RESPONSE FORMAT</code></p>
+<p><code>YOU MUST ALWAYS RESPOND WITH A JSON OBJECT OF THE FOLLOWING TYPE:</code></p>
+<p><code>interface</code> <code>AssistantResponse {</code></p>
+<p><code>thoughts: {</code></p>
+<p><code>// Relevant observations from your last action (if any)</code></p>
+<p><code>observations: string;</code></p>
+<p><code>// Thoughts</code></p>
+<p><code>text: string;</code></p>
+<p><code>// Reasoning behind the thoughts</code></p>
+<p><code>reasoning: string;</code></p>
+<p><code>// Constructive self-criticism</code></p>
+<p><code>self_criticism: string;</code></p>
+<p><code>// Short list that conveys the long-term plan</code></p>
+<p><code>plan: Array&lt;string&gt;;</code></p>
+<p><code>// Summary of thoughts, to say to user</code></p>
+<p><code>speak: string;</code></p>
+<p><code>};</code></p>
+<p><code>use_tool: {</code></p>
+<p><code>name: string;</code></p>
+<p><code>arguments: Record&lt;string, any&gt;;</code></p>
+<p><code>};</code></p>
+<p><code>}</code></p>
+<p><code>------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</code></p>
+<p><code>USER:</code> <code>&quot;&quot;&quot;告诉我英国的面积&quot;&quot;&quot;</code></p>
+<p><code>SYSTEM: ## Clock</code></p>
+<p><code>The current time and date is Mon Jun</code> <code>10</code> <code>13``:``01``:``31</code> <code>2024</code></p>
+<p><code>USER: Determine exactly one command to</code> <code>use</code> <code>next based on the given goals and the progress you have made so far, and respond using the JSON schema specified previously:</code></p>
+<h4 id="3212-响应示例">3.2.1.2. 响应示例<a hidden class="anchor" aria-hidden="true" href="#3212-响应示例">#</a></h4>
+<p><strong>Step Response示例</strong></p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p><code>thoughts=AssistantThoughts(observations=``''``,</code></p>
+<p><code>text=``'I will perform a web search to find the current world population.'``,</code></p>
+<p><code>reasoning=``'Searching the web is the most efficient way to obtain up-to-date information on the current world population.'``,</code></p>
+<p><code>self_criticism=``''``,</code></p>
+<p><code>plan=[``'Perform a web search to find th e current world population.'``],</code></p>
+<p><code>speak=``'I will search the web to find the current world population.'``)</code></p>
+<p><code>use_tool=AssistantFunctionCall(name=``'web_search'``, arguments={``'query'``:</code> <code>'current world population'``})</code></p>
+<h3 id="322-提示词分析">3.2.2. 提示词分析<a hidden class="anchor" aria-hidden="true" href="#322-提示词分析">#</a></h3>
+<p>        提示词共分为7个部分：</p>
+<ol>
+<li>
+<p>System。系统相关，角色、时间等</p>
+</li>
+<li>
+<p>Constraints。约束条件</p>
+</li>
+<li>
+<p>Resources。可利用资源</p>
+</li>
+<li>
+<p>Commands。能使用的命令</p>
+</li>
+<li>
+<p>Best practices。最佳实践</p>
+</li>
+<li>
+<p>Your Task。任务概述 </p>
+</li>
+<li>
+<p>Response format。响应格式</p>
+</li>
+</ol>
+<p>这7个部分在项目中，分散到不同的文件、模块中，通过各种工程逻辑，最终合并在一起，作为prompt输入到大模型中（GPT-4或者GPT-3.5-turbe或者其他）。</p>
+<p>System：设置AutoGPT的角色—“你是一个经验丰富的数字助理，能力强、聪明、考虑周到、坚定自信。你具有丰富的研究和开发技能，同时不介意通过写一些代买来解决问题。你是务实的并且能充分利用好可用的工具“</p>
+<p>Constraints：您需在以下限制内进行操作：</p>
+<ul>
+<li>只能使用 下面conmands列出的命令；</li>
+<li>只能主动采取行动，无法开启后台任务或者设置网络钩子、回调，在计划你的行动的时候，充分考虑这一点；</li>
+<li>你不能和物理物体交互，如果对于完成一个任务、目标、步骤来讲非常有必要，你必须要求用户来执行操作，如果用户拒绝，另外没有其他的方案来完成目标，你必须终止以免浪费时间精力；</li>
+</ul>
+<p>Reources：您可以利用对以下资源的访问：</p>
+<ul>
+<li>1、读写文件的能力。</li>
+<li>你是一个大型语言模型，经过数百万页文本的训练，包括大量事实知识。 利用这些事实知识来避免不必要的信息收集。</li>
+<li> 用于搜索和信息收集的互联网接入。</li>
+<li> 具备阅读网站的能力。</li>
+</ul>
+<p>Commands：</p>
+<p>这些是您可以使用的唯一命令。 您执行的任何操作都必须可以通过以下11个命令之一来实现：</p>
+<ul>
+<li>open_file：打开文件进行编辑或继续查看；如果文件尚不存在，则创建它。注意：如果您只需要读取或写入文件一次，请改用`write_to_file`。参数：（file_path：字符串）</li>
+<li>open_folder：打开文件夹以跟踪其内容。参数：（path：字符串）</li>
+<li>execute_shell：执行 Shell 命令，仅限非交互式命令。参数：（command_line：字符串）</li>
+<li> execute_shell_popen：执行 Shell 命令，仅限非交互式命令。参数：（command_line：字符串）</li>
+<li> read_file：读取文件并返回内容。参数：（filename：字符串）</li>
+<li>write_file：写入文件，必要时创建它。如果文件存在，则将其覆盖。参数：（filename：字符串，contents：字符串）</li>
+<li>list_folder：以递归方式列出文件夹中的文件。参数：（文件夹：字符串）</li>
+<li> finish：完成任务后，或者遇到无法解决的问题导致无法完成任务时，使用此参数关闭。参数：（原因：字符串）</li>
+<li> ask_user：如果您需要有关给定目标的更多详细信息或信息，您可以要求用户输入。参数：（问题：字符串）</li>
+<li>web_search：搜索网络。参数：（查询：字符串，num_results？：数字）</li>
+<li>read_webpage：阅读网页，并从中提取特定信息。您必须指定topics_of_interest、问题、get_raw_content。参数：（url：字符串，topics_of_interest？：Array<string>，问题？：字符串，get_raw_content？：布尔值）</li>
+</ul>
+<p>Best practices：</p>
+<ul>
+<li>不断审查和分析你的行为，以确保您发挥出最佳能力。</li>
+<li>不断地建设性地自我批评你的大局行为。</li>
+<li>反思过去的决策和策略以完善您的方法。</li>
+<li>每个命令都有成本，所以要聪明、高效。 旨在以最少的步骤完成任务。</li>
+<li>只利用你的信息收集能力来寻找你还不了解的信息。</li>
+</ul>
+<p>Your Task：</p>
+<p>用户将在下一条消息中指定你要执行的任务，您的工作是按照上述指示完成任务，并在任务完成后终止。</p>
+<p>Response format：</p>
+<p>您必须始终使用以下类型的 JSON 对象进行响应：</p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p><code>interface</code> <code>AssistantResponse {</code></p>
+<p>   <code>thoughts: {</code></p>
+<p>      <code>// Relevant observations from your last action (if any)</code></p>
+<p>      <code>observations: string;</code></p>
+<p>      <code>// Thoughts</code></p>
+<p>      <code>text: string;</code></p>
+<p>      <code>// Reasoning behind the thoughts</code></p>
+<p>      <code>reasoning: string;</code></p>
+<p>      <code>// Constructive self-criticism</code></p>
+<p>      <code>self_criticism: string;</code></p>
+<p>      <code>// Short list that conveys the long-term plan</code></p>
+<p>      <code>plan: Array&lt;string&gt;;</code></p>
+<p>      <code>// Summary of thoughts, to say to user</code></p>
+<p>      <code>speak: string;</code></p>
+<p>      <code>};</code></p>
+<p>   <code>use_tool: {</code></p>
+<p>   <code>name: string;</code></p>
+<p>   <code>arguments: Record&lt;string, any&gt;;</code></p>
+<p>   <code>};</code></p>
+<p><code>}</code></p>
+<h3 id="323-响应内容分析">3.2.3. 响应内容分析<a hidden class="anchor" aria-hidden="true" href="#323-响应内容分析">#</a></h3>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p><code>{</code></p>
+<p>    <code>&quot;name&quot;``:</code> <code>&quot;现在广州什么天气&quot;``,</code></p>
+<p>    <code>&quot;input&quot;``:</code> <code>&quot;现在广州什么天气&quot;``,</code></p>
+<p>    <code>&quot;additional_input&quot;``: {},</code></p>
+<p>    <code>&quot;created_at&quot;``:</code> <code>&quot;2024-06-11T04:48:32.654656&quot;``,</code></p>
+<p>    <code>&quot;modified_at&quot;``:</code> <code>&quot;2024-06-11T04:48:43.905814&quot;``,</code></p>
+<p>    <code>&quot;task_id&quot;``:</code> <code>&quot;6ba54e05-870e-402e-8235-880a759ecc7f&quot;``,</code></p>
+<p>    <code>&quot;step_id&quot;``:</code> <code>&quot;9d2944c2-29eb-4f6d-a8b6-aa5022a3cbb6&quot;``,</code></p>
+<p>    <code>&quot;status&quot;``:</code> <code>&quot;completed&quot;``,</code></p>
+<p>    <code>&quot;output&quot;``:</code> <code>&quot;Finding the current weather in Guangzhou.\n\nNext Command: web_search(query='current weather Guangzhou')&quot;``,</code></p>
+<p>    <code>&quot;additional_output&quot;``: {</code></p>
+<p>        <code>&quot;thoughts&quot;``: {</code></p>
+<p>            <code>&quot;observations&quot;``:</code> <code>&quot;The user requested the current weather in Guangzhou.&quot;``,</code></p>
+<p>            <code>&quot;text&quot;``:</code> <code>&quot;I will use a web search to gather the most current and accurate information regarding the weather in Guangzhou.&quot;``,</code></p>
+<p>            <code>&quot;reasoning&quot;``:</code> <code>&quot;Accessing a reliable source such as a local weather reporting service via a web search will provide up-to-date information.&quot;``,</code></p>
+<p>            <code>&quot;self_criticism&quot;``:</code> <code>&quot;An alternative method could have been using a specific API call if available and integrated, which might have provided more detailed and reliable data more efficiently.&quot;``,</code></p>
+<p>            <code>&quot;plan&quot;``: [</code></p>
+<p>                <code>&quot;Perform a web search to determine the current weather in Guangzhou.&quot;``,</code></p>
+<p>                <code>&quot;Display the results to the user.&quot;</code></p>
+<p>            <code>],</code></p>
+<p>            <code>&quot;speak&quot;``:</code> <code>&quot;Finding the current weather in Guangzhou.&quot;</code></p>
+<p>        <code>},</code></p>
+<p>        <code>&quot;use_tool&quot;``: {</code></p>
+<p>            <code>&quot;name&quot;``:</code> <code>&quot;web_search&quot;``,</code></p>
+<p>            <code>&quot;arguments&quot;``: {</code></p>
+<p>                <code>&quot;query&quot;``:</code> <code>&quot;current weather Guangzhou&quot;</code></p>
+<p>            <code>}</code></p>
+<p>        <code>},</code></p>
+<p>        <code>&quot;task_cumulative_cost&quot;``:</code> <code>0.0161</code></p>
+<p>    <code>},</code></p>
+<p>    <code>&quot;artifacts&quot;``: [],</code></p>
+<p>    <code>&quot;is_last&quot;``: false</code></p>
+<p><code>}</code></p>
+<h1 id="4-运行思维启动autogpt">4. 运行思维启动AutoGPT<a hidden class="anchor" aria-hidden="true" href="#4-运行思维启动autogpt">#</a></h1>
+<p>        上述分析是用技术思维来分析AutoGPT整个项目，看其各个模块的调用关系，以及如何使用大模型的调度和分析的能力。那如何使用AutoGPT来打造个人的AutoGPT呢，针对大家而言应该更重要。这个官方有更简单的操作步骤，具体如下：</p>
+<p>步骤</p>
+<p>备注</p>
+<p>build your own AI Agents using the AutoGPT Forge</p>
+<p>步骤一</p>
+<p>clone项目<a href="https://github.com/Significant-Gravitas/AutoGPT">AutoGPT</a>，cd进入项目，允许命令：./run setup</p>
+<p>（用tag autogpt-v0.5.1）</p>
+<p>可能会遇到允许报错，比如setup文件找不到、./run文件找不到，bin/bash^M: bad interpreter: No such file or directory，或者其他错误。这个错误通常是因为 <code>setup.sh</code> 文件中包含了 Windows 风格的换行符（CRLF），而不是 Unix 风格的换行符（LF）。这种情况会导致 Bash 在解析脚本时出现问题。需要将文件中的所有 CRLF 转换为 LF。</p>
+<p>解决方案：系统安装dos2unix，然后执行：dos2unit   /绝对地址/setup.sh，极了解决问题。然后允许./run setup</p>
+<p>步骤二</p>
+<p>创建个人agent</p>
+<p>运行命令：./run agent create YOUR_AGENT_NAME</p>
+<p>之后就创建了你的个人agent，文件路径在：agents/YOUR_AGENT_NAME</p>
+<p>不用主动添加conda虚拟环境，程序中会自动处理，否则报错</p>
+<p>步骤三</p>
+<p>运行个人agent</p>
+<p>运行命令：./run agent start YOUR_AGENT_NAME`</p>
+<p>出现界面：</p>
+<p><img loading="lazy" src="/download/thumbnails/123663221/image2024-6-12_15-5-37.png?version=1&amp;modificationDate=1718175938239&amp;api=v2" alt=""  />
+</p>
+<p>Enhancing Your Agent</p>
+<p>Profile</p>
+<p>Memory</p>
+<p>Planning</p>
+<p>Action</p>
+<p>-&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</p>
+<p>agent protocol：The Linguistics of AI Communication：<a href="https://agentprotocol.ai/">agent protocol</a></p>
+<p>LLM-Based AI Agents：</p>
+<p><img loading="lazy" src="https://miro.medium.com/v2/resize:fit:1050/1*9fDToDTOEc3tzMSDIJ-Tng.png" alt=""  />
+</p>
+<p>Interacting with your Agent throught UI</p>
+<p>使用 AutoGPT Forge UI 创建任务</p>
+<p>页面操作 :如果点击按钮<img loading="lazy" src="/download/thumbnails/123663221/image2024-6-19_13-0-59.png?version=1&amp;modificationDate=1718773260118&amp;api=v2" alt=""  />
+，则可以循环执行步骤，直到任务完成，不过token消耗比较快，（$1分分钟就消耗完，哈哈）</p>
+<p><img loading="lazy" src="https://wiki.yingzi.com/download/thumbnails/123663221/image2024-6-12_15-5-37.png?version=1&amp;modificationDate=1718175938239&amp;api=v2" alt=""  />
+</p>
+<p>基准测试</p>
+<p>提交自己的agent到Leaderboard，也就是AutoGPT的AI生态里</p>
+<h1 id="5-拓展及经典代码分析">5. 拓展及经典代码分析<a hidden class="anchor" aria-hidden="true" href="#5-拓展及经典代码分析">#</a></h1>
+<h2 id="51-actionability注册">5.1. action/ability注册<a hidden class="anchor" aria-hidden="true" href="#51-actionability注册">#</a></h2>
+<p> 展开源码</p>
+<p><a href="/">expand source</a><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p>34</p>
+<p>35</p>
+<p>36</p>
+<p>37</p>
+<p>38</p>
+<p><code>def</code> <code>register_abilities(``self``)</code> <code>-``&gt;</code> <code>None``:</code></p>
+<p>    <code># 遍历当前目录及其子目录下的所有 Python 文件（递归方式）</code></p>
+<p>    <code>for</code> <code>action_path</code> <code>in</code> <code>glob.glob(</code></p>
+<p>        <code>os.path.join(os.path.dirname(__file__),</code> <code>&quot;**/*.py&quot;``), recursive``=``True</code></p>
+<p>    <code>):</code></p>
+<p>        <code># 排除文件名为 &quot;__init__.py&quot; 和 &quot;registry.py&quot; 的文件</code></p>
+<p>        <code>if</code> <code>not</code> <code>os.path.basename(action_path)</code> <code>in</code> <code>[</code></p>
+<p>            <code>&quot;__init__.py&quot;``,</code></p>
+<p>            <code>&quot;registry.py&quot;``,</code></p>
+<p>        <code>]:</code></p>
+<p>            <code># 获取相对于当前文件目录的相对路径，并将路径中的斜杠替换为点号</code></p>
+<p>            <code>action</code> <code>=</code> <code>os.path.relpath(</code></p>
+<p>                <code>action_path, os.path.dirname(__file__)</code></p>
+<p>            <code>).replace(``&quot;/&quot;``,</code> <code>&quot;.&quot;``)</code></p>
+<p>            <code>try``:</code></p>
+<p>                <code># 动态导入相应的模块</code></p>
+<p>                <code>module</code> <code>=</code> <code>importlib.import_module(</code></p>
+<p>                    <code>f``&quot;.{action[:-3]}&quot;``, package``=``&quot;forge.actions&quot;</code></p>
+<p>                <code>)</code></p>
+<p>                <code># 遍历模块中的所有属性</code></p>
+<p>                <code>for</code> <code>attr</code> <code>in</code> <code>dir``(module):</code></p>
+<p>                    <code>func</code> <code>=</code> <code>getattr``(module, attr)</code></p>
+<p>                    <code># 检查属性是否具有 'action' 属性</code></p>
+<p>                    <code>if</code> <code>hasattr``(func,</code> <code>&quot;action&quot;``):</code></p>
+<p>                        <code>ab</code> <code>=</code> <code>func.action</code></p>
+<p>                        <code># 设置 action 的类别</code></p>
+<p>                        <code>ab.category</code> <code>=</code> <code>(</code></p>
+<p>                            <code>action.split(``&quot;.&quot;``)[``0``].lower().replace(``&quot;_&quot;``,</code> <code>&quot; &quot;``)</code></p>
+<p>                            <code>if</code> <code>len``(action.split(``&quot;.&quot;``)) &gt;</code> <code>1</code></p>
+<p>                            <code>else</code> <code>&quot;general&quot;</code></p>
+<p>                        <code>)</code></p>
+<p>                        <code># 将 action 注册到 self.abilities 字典中</code></p>
+<p>                        <code>self``.abilities[func.action.name]</code> <code>=</code> <code>func.action</code></p>
+<p>            <code>except</code> <code>Exception as e:</code></p>
+<p>                <code># 如果出现异常，打印错误信息</code></p>
+<p>                <code>print``(f``&quot;Error occurred while registering abilities: {str(e)}&quot;``)</code></p>
+<h2 id="52-增加一个自定义action">5.2. 增加一个自定义action<a hidden class="anchor" aria-hidden="true" href="#52-增加一个自定义action">#</a></h2>
+<p>        在action文件夹下，添加文件，有一点要求：</p>
+<ol>
+<li>通过@action前缀进行定义，描述好action函数入参、action 描述（重要）</li>
+</ol>
+<p>举例，增加一个web请求的action：</p>
+<p> 展开源码</p>
+<p><a href="/">expand source</a><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p>34</p>
+<p>35</p>
+<p>36</p>
+<p>37</p>
+<p>38</p>
+<p>39</p>
+<p>40</p>
+<p>41</p>
+<p>42</p>
+<p>43</p>
+<p>44</p>
+<p>45</p>
+<p>46</p>
+<p>47</p>
+<p>48</p>
+<p>49</p>
+<p>50</p>
+<p>51</p>
+<p>52</p>
+<p>53</p>
+<p>54</p>
+<p><code>from</code> <code>__future__</code> <code>import</code> <code>annotations</code></p>
+<p><code>import</code> <code>json</code></p>
+<p><code>import</code> <code>time</code></p>
+<p><code>from</code> <code>duckduckgo_search</code> <code>import</code> <code>DDGS</code></p>
+<p><code>from</code> <code>..registry</code> <code>import</code> <code>action</code></p>
+<p><code>DUCKDUCKGO_MAX_ATTEMPTS</code> <code>=</code> <code>1</code></p>
+<p><code>@action``(</code></p>
+<p>    <code>name``=``&quot;web_search&quot;``,</code></p>
+<p>    <code>description``=``&quot;Searches the web&quot;``,</code></p>
+<p>    <code>parameters``=``[</code></p>
+<p>        <code>{</code></p>
+<p>            <code>&quot;name&quot;``:</code> <code>&quot;query&quot;``,</code></p>
+<p>            <code>&quot;description&quot;``:</code> <code>&quot;The search query&quot;``,</code></p>
+<p>            <code>&quot;type&quot;``:</code> <code>&quot;string&quot;``,</code></p>
+<p>            <code>&quot;required&quot;``:</code> <code>True``,</code></p>
+<p>        <code>}</code></p>
+<p>    <code>],</code></p>
+<p>    <code>output_type``=``&quot;list[str]&quot;``,</code></p>
+<p><code>)</code></p>
+<p><code>async</code> <code>def</code> <code>web_search(agent, task_id:</code> <code>str``, query:</code> <code>str``)</code> <code>-``&gt;</code> <code>str``:</code></p>
+<p>    <code>&quot;&quot;&quot;Return the results of a Google search</code></p>
+<p>    <code>Args:</code></p>
+<p>        <code>query (str): The search query.</code></p>
+<p>        <code>num_results (int): The number of results to return.</code></p>
+<p>    <code>Returns:</code></p>
+<p>        <code>str: The results of the search.</code></p>
+<p>    <code>&quot;&quot;&quot;</code></p>
+<p>    <code>search_results</code> <code>=</code> <code>[]</code></p>
+<p>    <code>attempts</code> <code>=</code> <code>0</code></p>
+<p>    <code>num_results</code> <code>=</code> <code>8</code></p>
+<p>    <code>while</code> <code>attempts &lt; DUCKDUCKGO_MAX_ATTEMPTS:</code></p>
+<p>        <code>if</code> <code>not</code> <code>query:</code></p>
+<p>            <code>return</code> <code>json.dumps(search_results)</code></p>
+<p>        <code>search_results</code> <code>=</code> <code>DDGS().text(query, max_results``=``num_results)</code></p>
+<p>        <code>if</code> <code>search_results:</code></p>
+<p>            <code>break</code></p>
+<p>        <code>time.sleep(``1``)</code></p>
+<p>        <code>attempts</code> <code>+``=</code> <code>1</code></p>
+<p>    <code>results</code> <code>=</code> <code>json.dumps(search_results, ensure_ascii``=``False``, indent``=``4``)</code></p>
+<p>    <code>print``(f``&quot;result:{results}&quot;``)</code></p>
+<p>    <code>return</code> <code>results</code></p>
+<h2 id="53-agentpy最简化代码">5.3. agent.py最简化代码<a hidden class="anchor" aria-hidden="true" href="#53-agentpy最简化代码">#</a></h2>
+<p> 展开源码</p>
+<p><a href="/">expand source</a><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p>34</p>
+<p>35</p>
+<p>36</p>
+<p>37</p>
+<p>38</p>
+<p>39</p>
+<p>40</p>
+<p>41</p>
+<p>42</p>
+<p>43</p>
+<p>44</p>
+<p>45</p>
+<p>46</p>
+<p>47</p>
+<p>48</p>
+<p>49</p>
+<p>50</p>
+<p>51</p>
+<p>52</p>
+<p>53</p>
+<p>54</p>
+<p>55</p>
+<p>56</p>
+<p>57</p>
+<p>58</p>
+<p>59</p>
+<p>60</p>
+<p>61</p>
+<p>62</p>
+<p>63</p>
+<p>64</p>
+<p>65</p>
+<p>66</p>
+<p>67</p>
+<p>68</p>
+<p>69</p>
+<p>70</p>
+<p>71</p>
+<p>72</p>
+<p>73</p>
+<p>74</p>
+<p>75</p>
+<p>76</p>
+<p>77</p>
+<p>78</p>
+<p>79</p>
+<p>80</p>
+<p>81</p>
+<p>82</p>
+<p>83</p>
+<p>84</p>
+<p>85</p>
+<p>86</p>
+<p>87</p>
+<p>88</p>
+<p>89</p>
+<p>90</p>
+<p>91</p>
+<p>92</p>
+<p>93</p>
+<p>94</p>
+<p>95</p>
+<p>96</p>
+<p>97</p>
+<p>98</p>
+<p>99</p>
+<p>100</p>
+<p>101</p>
+<p>102</p>
+<p>103</p>
+<p>104</p>
+<p>105</p>
+<p>106</p>
+<p>107</p>
+<p>108</p>
+<p>109</p>
+<p>110</p>
+<p><code>import</code> <code>json</code></p>
+<p><code>from</code> <code>forge.actions</code> <code>import</code> <code>ActionRegister</code></p>
+<p><code>from</code> <code>forge.sdk</code> <code>import</code> <code>(</code></p>
+<p>    <code>Agent,</code></p>
+<p>    <code>AgentDB,</code></p>
+<p>    <code>ForgeLogger,</code></p>
+<p>    <code>Step,</code></p>
+<p>    <code>StepRequestBody,</code></p>
+<p>    <code>Task,</code></p>
+<p>    <code>TaskRequestBody,</code></p>
+<p>    <code>Workspace,</code></p>
+<p><code>)</code></p>
+<p><code>LOG</code> <code>=</code> <code>ForgeLogger(__name__)</code></p>
+<p><code>from</code> <code>.sdk</code> <code>import</code> <code>PromptEngine, chat_completion_request</code></p>
+<p><code>class</code> <code>ForgeAgent(Agent):</code></p>
+<p>    <code>def</code> <code>__init__(``self``, database: AgentDB, workspace: Workspace):</code></p>
+<p>        <code>&quot;&quot;&quot;</code></p>
+<p>        <code>The database is used to store tasks, steps and artifact metadata. The workspace is used to</code></p>
+<p>        <code>store artifacts. The workspace is a directory on the file system.</code></p>
+<p>        <code>Feel free to create subclasses of the database and workspace to implement your own storage</code></p>
+<p>        <code>&quot;&quot;&quot;</code></p>
+<p>        <code>super``().__init__(database, workspace)</code></p>
+<p>        <code>self``.abilities</code> <code>=</code> <code>ActionRegister(``self``)</code></p>
+<p>    <code>async</code> <code>def</code> <code>create_task(``self``, task_request: TaskRequestBody)</code> <code>-``&gt; Task:</code></p>
+<p>        <code>task</code> <code>=</code> <code>await</code> <code>super``().create_task(task_request)</code></p>
+<p>        <code>LOG.info(</code></p>
+<p>            <code>f``&quot;📦 Task created: {task.task_id} input: {task.input[:40]}{'...' if len(task.input) &gt; 40 else ''}&quot;</code></p>
+<p>        <code>)</code></p>
+<p>        <code>return</code> <code>task</code></p>
+<p>    <code>async</code> <code>def</code> <code>execute_step(``self``, task_id:</code> <code>str``, step_request: StepRequestBody)</code> <code>-``&gt; Step:</code></p>
+<p>        <code># something additon</code></p>
+<p>        <code># Firstly we get the task this step is for so we can access the task input</code></p>
+<p>        <code>task</code> <code>=</code> <code>await</code> <code>self``.db.get_task(task_id)</code></p>
+<p>        <code>#  Create a new step in the database</code></p>
+<p>        <code>step</code> <code>=</code> <code>await</code> <code>self``.db.create_step(</code></p>
+<p>            <code>task_id``=``task_id,</code> <code>input``=``step_request, is_last``=``True</code></p>
+<p>        <code>)</code></p>
+<p>        <code># Log the message</code></p>
+<p>        <code>LOG.info(f``&quot;\t✅ Final Step completed: {step.step_id} input: {step.input[:19]}&quot;``)</code></p>
+<p>        <code># Initialize the PromptEngine with the &quot;gpt-3.5-turbo&quot; model</code></p>
+<p>        <code>prompt_engine</code> <code>=</code> <code>PromptEngine(``&quot;gpt-3.5-turbo&quot;``)</code></p>
+<p>        <code># Load the system and task prompts</code></p>
+<p>        <code>system_prompt</code> <code>=</code> <code>prompt_engine.load_prompt(``&quot;system-format&quot;``)</code></p>
+<p>        <code># Define the task parameters</code></p>
+<p>        <code>task_kwargs</code> <code>=</code> <code>{</code></p>
+<p>            <code>&quot;task&quot;``: task.``input``,</code></p>
+<p>            <code>&quot;abilities&quot;``:</code> <code>self``.abilities.list_abilities_for_prompt(),</code></p>
+<p>        <code>}</code></p>
+<p>        <code># Load the task prompt with the defined task parameters</code></p>
+<p>        <code>task_prompt</code> <code>=</code> <code>prompt_engine.load_prompt(``&quot;task-step&quot;``,</code> <code>*``*``task_kwargs)</code></p>
+<p>        <code># Initialize the messages list with the system prompt</code></p>
+<p>        <code>messages</code> <code>=</code> <code>[</code></p>
+<p>            <code>{``&quot;role&quot;``:</code> <code>&quot;system&quot;``,</code> <code>&quot;content&quot;``: system_prompt},</code></p>
+<p>            <code>{``&quot;role&quot;``:</code> <code>&quot;user&quot;``,</code> <code>&quot;content&quot;``: task_prompt}</code></p>
+<p>        <code>]</code></p>
+<p>        <code>try``:</code></p>
+<p>            <code># Define the parameters for the chat completion request</code></p>
+<p>            <code>chat_completion_kwargs</code> <code>=</code> <code>{</code></p>
+<p>                <code>&quot;messages&quot;``: messages,</code></p>
+<p>                <code>&quot;model&quot;``:</code> <code>&quot;gpt-3.5-turbo&quot;``,</code></p>
+<p>            <code>}</code></p>
+<p>            <code># Make the chat completion request and parse the response</code></p>
+<p>            <code>chat_response</code> <code>=</code> <code>await chat_completion_request(``*``*``chat_completion_kwargs)</code></p>
+<p>            <code>answer</code> <code>=</code> <code>json.loads(chat_response[``&quot;choices&quot;``][``0``][``&quot;message&quot;``][``&quot;content&quot;``])</code></p>
+<p>            <code># Log the answer for debugging purposes</code></p>
+<p>            <code># LOG.info(pprint.pformat(answer))</code></p>
+<p>            <code>print``(f``&quot;answer is:{answer}&quot;``)</code></p>
+<p>        <code>except</code> <code>json.JSONDecodeError as e:</code></p>
+<p>            <code># Handle JSON decoding errors</code></p>
+<p>            <code>LOG.error(f``&quot;Unable to decode chat response: {chat_response}&quot;``)</code></p>
+<p>        <code>except</code> <code>Exception as e:</code></p>
+<p>            <code># Handle other exceptions</code></p>
+<p>            <code>LOG.error(f``&quot;Unable to generate chat response: {e}&quot;``)</code></p>
+<p>        <code># Extract the ability from the answer</code></p>
+<p>        <code>ability</code> <code>=</code> <code>answer[``&quot;ability&quot;``]</code></p>
+<p>        <code>print``(f``&quot;ability:{ability}&quot;``)</code></p>
+<p>        <code># Run the ability and get the output</code></p>
+<p>        <code># We don't actually use the output in this example</code></p>
+<p>        <code># Some action don`t need action,here you can do many thing</code></p>
+<p>        <code>if</code> <code>ability[``&quot;name&quot;``]</code> <code>not</code> <code>in</code> <code>self``.abilities.list_abilities().keys():</code></p>
+<p>            <code>step.output</code> <code>=</code> <code>answer[``&quot;thoughts&quot;``][``&quot;text&quot;``]</code></p>
+<p>        <code>else``:</code></p>
+<p>            <code>output</code> <code>=</code> <code>await</code> <code>self``.abilities.run_action(</code></p>
+<p>                <code>task_id, ability[``&quot;name&quot;``],</code> <code>*``*``ability[``&quot;args&quot;``]</code></p>
+<p>            <code>)</code></p>
+<p>            <code># Set the step output to the &quot;speak&quot; part of the answer</code></p>
+<p>            <code>step.output</code> <code>=</code> <code>answer[``&quot;thoughts&quot;``][``&quot;speak&quot;``]</code></p>
+<p>        <code># Return the completed step</code></p>
+<p>        <code>return</code> <code>step</code></p>
+<p>打造一个agent的步骤：</p>
+<ol>
+<li>创建一个任务，获取task_id，</li>
+<li>根据上述的task_id，执行接下来的步骤</li>
+<li>初始化提示工程，选择用什么模型</li>
+<li>使用和创建action</li>
+<li>加载系统提示词模板、自定义提示词模板</li>
+<li>运行大模型</li>
+<li>运行一个能力</li>
+<li>返回用户反馈，文本、图片、或者其他与系统的交互操作</li>
+</ol>
+<h2 id="54-提示词组装方法">5.4. 提示词组装方法<a hidden class="anchor" aria-hidden="true" href="#54-提示词组装方法">#</a></h2>
+<p> 展开源码</p>
+<p><a href="/">expand source</a><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p>34</p>
+<p>35</p>
+<p>36</p>
+<p>37</p>
+<p>38</p>
+<p>39</p>
+<p>40</p>
+<p>41</p>
+<p>42</p>
+<p>43</p>
+<p>44</p>
+<p>45</p>
+<p>46</p>
+<p>47</p>
+<p>48</p>
+<p><code>{% extends &quot;techniques/expert.j2&quot; %}</code></p>
+<p><code>{% block expert %}Planner{% endblock %}</code></p>
+<p><code>{% block prompt %}</code></p>
+<p><code>Your task is:</code></p>
+<p><code>{{ task }}</code></p>
+<p><code>Answer in the provided format.</code></p>
+<p><code>Your decisions must always be made independently without seeking user assistance. Play to your strengths as an LLM and</code></p>
+<p><code>pursue simple strategies with no legal complications.</code></p>
+<p><code>{% if constraints %}</code></p>
+<p><code>## Constraints</code></p>
+<p><code>You operate within the following constraints:</code></p>
+<p><code>{% for constraint in constraints %}</code></p>
+<p><code>- {{ constraint }}</code></p>
+<p><code>{% endfor %}</code></p>
+<p><code>{% endif %}</code></p>
+<p><code>{% if resources %}</code></p>
+<p><code>## Resources</code></p>
+<p><code>You can leverage access to the following resources:</code></p>
+<p><code>{% for resource in resources %}</code></p>
+<p><code>- {{ resource }}</code></p>
+<p><code>{% endfor %}</code></p>
+<p><code>{% endif %}</code></p>
+<p><code>{% if abilities %}</code></p>
+<p><code>## Abilities</code></p>
+<p><code>You have access to the following abilities you can call:</code></p>
+<p><code>{% for ability in abilities %}</code></p>
+<p><code>- {{ ability }}</code></p>
+<p><code>{% endfor %}</code></p>
+<p><code>{% endif %}</code></p>
+<p><code>{% if best_practices %}</code></p>
+<p><code>## Best practices</code></p>
+<p><code>{% for best_practice in best_practices %}</code></p>
+<p><code>- {{ best_practice }}</code></p>
+<p><code>{% endfor %}</code></p>
+<p><code>{% endif %}</code></p>
+<p><code>{% if previous_actions %}</code></p>
+<p><code>## History of Abilities Used</code></p>
+<p><code>{% for action in previous_actions %}</code></p>
+<p><code>- {{ action }}</code></p>
+<p><code>{% endfor %}</code></p>
+<p><code>{% endif %}</code></p>
+<p><code>{% endblock %}</code></p>
+<p>这是一个jinja2模板文件，有双括号{{}}的地方就是变量，在初始化的时候需要填充进去；</p>
+<p>对应3.2.1.1中所叙的内容，具体如下：</p>
+<ul>
+<li>先定义角色，使用了一个叫做expert.js的模板。定义一个块block，名字为”expert“；</li>
+<li>用户输入的内容填充在 {{task}}中；</li>
+<li>如果存在约束constraints，则列出每一条约束条件</li>
+<li>如果存在资源resources，则列出每一条资源</li>
+<li>如果存在能力abilities，则列出每一条能力</li>
+<li>如果存在最佳实践best_practices，则列出每一条最佳实践</li>
+<li>如果存在上一步操作previous_actions，则列出每一条action</li>
+</ul>
+<p>至于判断是否存在constraints、resources、abilities、best_practices、previous_actions，有一套。举个例子，在prompt上增加abilities，实现函数如下：</p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p><code># Initialize the PromptEngine with the &quot;gpt-3.5-turbo&quot; model or other model</code></p>
+<p><code>prompt_engine</code> <code>=</code> <code>PromptEngine(model``=``&quot;gpt-3.5-turbo&quot;``, debug_enabled``=``True``)</code></p>
+<p><code># Define the task parameters</code></p>
+<p><code>task_kwargs</code> <code>=</code> <code>{</code></p>
+<p>    <code>&quot;task&quot;``: task.``input``,</code></p>
+<p>    <code>&quot;abilities&quot;``:</code> <code>self``.abilties.list_abilities_for_prompt(),</code></p>
+<p><code>}</code></p>
+<p><code># Load the task prompt with the defined task parameters</code></p>
+<p><code>task_prompt</code> <code>=</code> <code>prompt_engine.load_prompt(``&quot;task-step&quot;``,</code> <code>*``*``task_kwargs)</code></p>
+<p>画图表示为：</p>
+<p>Prompt</p>
+<p>Jinja2模板引擎</p>
+<p>task</p>
+<p>constraints</p>
+<p>resources</p>
+<p>abilities</p>
+<p>best_practices</p>
+<p>previous_actions</p>
+<p>ActionRegister</p>
+<p>按照所有符合action</p>
+<p>格式要求的.py文件</p>
+<p>1、注册action格式<br>
+2、依据产品需求、领域、活动类型自定义action<br>
+3、可以拓展：互联网查询、对接RAG、</p>
+<p>用户输入input</p>
+<p>依据不同的场景设置不同的约束条件</p>
+<p>可以使用的资源(<strong>?</strong>)</p>
+<p>怎么更好地完成任务</p>
+<p>上一个action</p>
+<p>可大量拓展action</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-5cc93905-d9fc-4a93-858a-381edf36b6fd&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%31%31%32/123663221?revision=4&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/123663221/112.png&rsquo; + &lsquo;?version=4&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=123663221&amp;owningPageId=123663221&amp;diagramName=%31%31%32&amp;revision=4&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;1000&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%31%31%32&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;AutoGPT进化了，再看一次&rsquo;; readerOpts.attVer = &lsquo;4&rsquo;; readerOpts.attId = &lsquo;129173463&rsquo;; readerOpts.lastModifierName = &lsquo;王宇&rsquo;; readerOpts.lastModified = &lsquo;2024-06-23 12:12:27.398&rsquo;; readerOpts.creatorName = &lsquo;王宇&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<h1 id="6-过程中用到的经典库">6. 过程中用到的经典库<a hidden class="anchor" aria-hidden="true" href="#6-过程中用到的经典库">#</a></h1>
+<p>库名称</p>
+<p>详细</p>
+<p>备注</p>
+<p>库名称</p>
+<p>详细</p>
+<p>备注</p>
+<p>litellm</p>
+<p>使用 OpenAI 格式调用所有 LLM API [Bedrock、Huggingface、VertexAI、TogetherAI、Azure、OpenAI 等]</p>
+<p>在.env文件中使用</p>
+<h1 id="7-大模型使用指令测试">7. 大模型使用指令测试<a hidden class="anchor" aria-hidden="true" href="#7-大模型使用指令测试">#</a></h1>
+<h2 id="71-提示词">7.1. 提示词<a hidden class="anchor" aria-hidden="true" href="#71-提示词">#</a></h2>
+<p>提示词详情为：</p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/gpt%E7%9B%B8%E5%85%B3/">GPT相关</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/aniportraitsynctalk%E4%B8%A4%E8%80%85%E5%AF%B9%E6%AF%94%E6%9C%89%E4%BD%95%E4%B8%8D%E5%90%8C/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>AniPortrait&amp;&amp;SyncTalk，两者对比有何不同？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/%E6%8E%A5%E5%85%A5%E7%A5%9E%E7%AD%96-%E4%B8%9A%E5%8A%A1%E6%96%B9%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>接入神策-业务方测试方法</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share AutoGPT进化了，再看一次 on x"
+            href="https://x.com/intent/tweet/?text=AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f&amp;hashtags=GPT%e7%9b%b8%e5%85%b3">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share AutoGPT进化了，再看一次 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f&amp;title=AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1&amp;summary=AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share AutoGPT进化了，再看一次 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f&title=AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share AutoGPT进化了，再看一次 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share AutoGPT进化了，再看一次 on whatsapp"
+            href="https://api.whatsapp.com/send?text=AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share AutoGPT进化了，再看一次 on telegram"
+            href="https://telegram.me/share/url?text=AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share AutoGPT进化了，再看一次 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=AutoGPT%e8%bf%9b%e5%8c%96%e4%ba%86%ef%bc%8c%e5%86%8d%e7%9c%8b%e4%b8%80%e6%ac%a1&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fautogpt%25E8%25BF%259B%25E5%258C%2596%25E4%25BA%2586%25E5%2586%258D%25E7%259C%258B%25E4%25B8%2580%25E6%25AC%25A1%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

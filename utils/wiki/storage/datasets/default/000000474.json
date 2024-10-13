@@ -1,0 +1,9 @@
+{
+	"title": "基于rxjs的状态管理",
+	"author": "王宇",
+	"publishTime": "一月18,2024",
+	"readTime": "12s",
+	"tags": "[\"rxjs\"]",
+	"description": "rxjs",
+	"article": "核心原理\n====\n\n利用**BehaviorSubject**多播\n\n  \n\n核心class\n\n[?](#)\n\n`import { BehaviorSubject } from` `'rxjs'`\n\n`import type { Subscription,Observer } from` `'rxjs'`\n\n`export class RxState {`\n\n    `state`\n\n    `private subject`\n\n    `private subscription?: Subscription`\n\n    `constructor(initialValue?: any) {`\n\n        `this``.state = initialValue`\n\n        `this``.subject =` `new` `BehaviorSubject(initialValue)`\n\n    `}`\n\n    `subscribe(observerOrNext?:Partial<Observer<any>> | ((value: any) => void) | undefined) {`\n\n        `this``.subscription =` `this``.subject.subscribe(observerOrNext)`\n\n    `}`\n\n    `setState(newValue: any) {`\n\n        `this``.subject.next(newValue)`\n\n    `}`\n\n    `getState() {`\n\n        `return` `this``.state`\n\n    `}`\n\n    `destroy() {`\n\n        `this``.subscription?.unsubscribe()`\n\n    `}`\n\n`}`\n\n`export const rxState =` `new` `RxState()`\n\n  \n\nvue的hook\n\n[?](#)\n\n`import { reactive, ref, onUnmounted } from` `\"vue\"``;`\n\n`import { rxState } from` `\".\"``;`\n\n`export const useRxState = (initialValue: any) => {`\n\n  `let state = ref(initialValue);`\n\n  `if` `(initialValue) {`\n\n    `rxState.setState(initialValue)`\n\n  `}`\n\n  `rxState.subscribe({`\n\n    `next: v => {`\n\n        `state.value = v`\n\n    `}`\n\n  `})`\n\n  `onUnmounted(() => rxState.destroy());` `// 不能直接rxstate.destroy`\n\n  `return` `state`\n\n`};`\n\n[Filter table data](#)[Create a pivot table](#)[Create a chart from data series](#)\n\n[Configure buttons visibility](/users/tfac-settings.action)"
+}

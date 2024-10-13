@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>NacosNamespace、Group和DataID三者关系 | PaperMod</title>
+<meta name="keywords" content="后端">
+<meta name="description" content="持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第14天，点击查看活动详情1名词解释11命名空间-Namespace实际上就是我们日常开发中的不同环境的隔离，比如生产环">
+<meta name="author" content="奔跑的毛球">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/nacosnamespacegroup%E5%92%8Cdataid%E4%B8%89%E8%80%85%E5%85%B3%E7%B3%BB/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/nacosnamespacegroup%E5%92%8Cdataid%E4%B8%89%E8%80%85%E5%85%B3%E7%B3%BB/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="NacosNamespace、Group和DataID三者关系" />
+<meta property="og:description" content="持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第14天，点击查看活动详情1名词解释11命名空间-Namespace实际上就是我们日常开发中的不同环境的隔离，比如生产环" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/nacosnamespacegroup%E5%92%8Cdataid%E4%B8%89%E8%80%85%E5%85%B3%E7%B3%BB/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-09T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="NacosNamespace、Group和DataID三者关系"/>
+<meta name="twitter:description" content="持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第14天，点击查看活动详情1名词解释11命名空间-Namespace实际上就是我们日常开发中的不同环境的隔离，比如生产环"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "NacosNamespace、Group和DataID三者关系",
+      "item": "http://localhost:1313/posts/juejin/nacosnamespacegroup%E5%92%8Cdataid%E4%B8%89%E8%80%85%E5%85%B3%E7%B3%BB/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "NacosNamespace、Group和DataID三者关系",
+  "name": "NacosNamespace、Group和DataID三者关系",
+  "description": "持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第14天，点击查看活动详情1名词解释11命名空间-Namespace实际上就是我们日常开发中的不同环境的隔离，比如生产环",
+  "keywords": [
+    "后端"
+  ],
+  "articleBody": "持续创作，加速成长！这是我参与「掘金日新计划 · 6 月更文挑战」的第14天，点击查看活动详情\n1 名词解释 1.1 命名空间-Namespace 用于进行租户粒度的配置隔离。不同的命名空间下，可以存在相同的 Group 或 Data ID 的配置。Namespace 的常用场景之一是不同环境的配置的区分隔离，例如开发测试环境和生产环境的资源（如配置、服务）隔离等。\n实际上就是我们日常开发中的不同环境的隔离，比如生产环境是一套配置，开发环境是一套配置，测试环境又是一套配置。\n1.2 配置分组-Group Nacos 中的一组配置集，是组织配置的维度之一。通过一个有意义的字符串（如 Buy 或 Trade ）对配置集进行分组，从而区分 Data ID 相同的配置集。当您在 Nacos 上创建一个配置时，如果未填写配置分组的名称，则配置分组的名称默认采用 DEFAULT_GROUP 。配置分组的常见场景：不同的应用或组件使用了相同的配置类型，如 database_url 配置和 MQ_topic 配置。\n1.3 配置集 ID-Data ID Nacos 中的某个配置集的 ID。配置集 ID 是组织划分配置的维度之一。Data ID 通常用于组织划分系统的配置集。一个系统或者应用可以包含多个配置集，每个配置集都可以被一个有意义的名称标识。Data ID 通常采用类 Java 包（如 com.taobao.tc.refund.log.level）的命名规则保证全局唯一性。此命名规则非强制。\n配置集：一组相关或者不相关的配置项的集合称为配置集。在系统中，一个配置文件通常就是一个配置集，包含了系统各个方面的配置。例如，一个配置集可能包含了数据源、线程池、日志级别等配置项。\n1.4 三者的关系 这三者的关系类似于Java里面的package名和类名，最外层的Namespace是可以用于区分部署环境的，Group和DataID逻辑上区分两个目标对象。\n1.5 默认值 Namespace=public， Group=DEFAULT_GROUP， 默认Cluster是DEFAULT 2 切换不同环境 2.1 DataID方案 2.1.1 指定spring.profile.active和配置文件的DataID来使不同环境下读取不同的配置，配置规则：默认空间+新建dev和test两个DataId： 2.1.1.1 新建dev配置Data ID 2.1.1.2 新建test配置Data ID 2.1.1.3 查看 2.1.2 通过spring.profile.active属性就能进行多环境下配置文件的读取 yml\n代码解读\n复制代码\nspring: profiles: # active: dev #表示开发环境 active: test #表示测试环境\n2.2 Group方案 根据之前的讲解我们都知道Group为分组默认是：DEFAULT_GROUP，所以现在我们就需要分出两组，一组是“Dev开发组”，一组是“test测试组”\n2.2.1 新建Group 代码解读\n复制代码\nDEV_GROUP\n代码解读\n复制代码\nTEST_GROUP\n配置列表，两个DataID一致，但是分组不同的配置文件\n2.2.2 完成以上配置以后，接下来就需要通过bootstrap+application来配合完成 具体方式：在config下增加一条Group的配置即可，可以配置为DEV_GROUP或TEST_GROUP\nbootstrap.yml\nyml\n代码解读\n复制代码\n# nacos配置 server: port: 3377 spring: application: name: nacos-config-client cloud: nacos: discovery: server-addr: localhost:8848 #Nacos服务注册中心地址 config: server-addr: localhost:8848 #Nacos作为配置中心地址 file-extension: yaml #指定yaml格式的配置 group: TEST_GROUP #增加分组\napplication.yml\nyml\n代码解读\n复制代码\nspring: profiles: # active: dev #表示开发环境 active: test #表示测试环境 # active: info\n2.3 Namespace空间方案 默认的命名空间方案为public，此方案不能删除，我们现在来新建两个命名空间方案\n2.3.1 新建dev/test的Namespace 2.3.1.1 服务管理-服务列表页面查看 此时我们就可以切换对应的命名空间，然后再通过Group和DataID来进行切换，如果想要切换命名空间，我们就需要通过命名空间ID来进行切换\n2.3.1.2 按照域名配置（Namespace+Group+DataId）编写 namespace命名空间ID来确认使用的命名空间\nyml\n代码解读\n复制代码\n# nacos配置 server: port: 3377 spring: application: name: nacos-config-client cloud: nacos: discovery: server-addr: localhost:8848 #Nacos服务注册中心地址 config: server-addr: localhost:8848 #Nacos作为配置中心地址 file-extension: yaml #指定yaml格式的配置 group: TEST_GROUP # 指定分组 namespace: 4ba4bf0e-210c-41ce-954c-23538de1dcbc #指定命名空间\nyml\n代码解读\n复制代码\nspring: profiles: active: dev #表示开发环境 # active: test #表示测试环境 # active: info\n",
+  "wordCount" : "206",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-06-09T00:00:00Z",
+  "dateModified": "2022-06-09T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "奔跑的毛球"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/nacosnamespacegroup%E5%92%8Cdataid%E4%B8%89%E8%80%85%E5%85%B3%E7%B3%BB/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      NacosNamespace、Group和DataID三者关系
+    </h1>
+    <div class="post-description">
+      持续创作，加速成长！这是我参与「掘金日新计划·6月更文挑战」的第14天，点击查看活动详情1名词解释11命名空间-Namespace实际上就是我们日常开发中的不同环境的隔离，比如生产环
+    </div>
+    <div class="post-meta"><span title='2022-06-09 00:00:00 +0000 UTC'>六月 9, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;奔跑的毛球&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e5%90%8d%e8%af%8d%e8%a7%a3%e9%87%8a" aria-label="1 名词解释">1 名词解释</a><ul>
+                        
+                <li>
+                    <a href="#11-%e5%91%bd%e5%90%8d%e7%a9%ba%e9%97%b4-namespace" aria-label="1.1 命名空间-Namespace">1.1 命名空间-Namespace</a></li>
+                <li>
+                    <a href="#12-%e9%85%8d%e7%bd%ae%e5%88%86%e7%bb%84-group" aria-label="1.2 配置分组-Group">1.2 配置分组-Group</a></li>
+                <li>
+                    <a href="#13-%e9%85%8d%e7%bd%ae%e9%9b%86-id-data-id" aria-label="1.3 配置集 ID-Data ID">1.3 配置集 ID-Data ID</a></li>
+                <li>
+                    <a href="#14-%e4%b8%89%e8%80%85%e7%9a%84%e5%85%b3%e7%b3%bb" aria-label="1.4 三者的关系">1.4 三者的关系</a></li>
+                <li>
+                    <a href="#15-%e9%bb%98%e8%ae%a4%e5%80%bc" aria-label="1.5 默认值">1.5 默认值</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-%e5%88%87%e6%8d%a2%e4%b8%8d%e5%90%8c%e7%8e%af%e5%a2%83" aria-label="2 切换不同环境">2 切换不同环境</a><ul>
+                        
+                <li>
+                    <a href="#21-dataid%e6%96%b9%e6%a1%88" aria-label="2.1 DataID方案">2.1 DataID方案</a><ul>
+                        
+                <li>
+                    <a href="#211-%e6%8c%87%e5%ae%9aspringprofileactive%e5%92%8c%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%9a%84dataid%e6%9d%a5%e4%bd%bf%e4%b8%8d%e5%90%8c%e7%8e%af%e5%a2%83%e4%b8%8b%e8%af%bb%e5%8f%96%e4%b8%8d%e5%90%8c%e7%9a%84%e9%85%8d%e7%bd%ae%e9%85%8d%e7%bd%ae%e8%a7%84%e5%88%99%e9%bb%98%e8%ae%a4%e7%a9%ba%e9%97%b4%e6%96%b0%e5%bb%badev%e5%92%8ctest%e4%b8%a4%e4%b8%aadataid" aria-label="2.1.1 指定spring.profile.active和配置文件的DataID来使不同环境下读取不同的配置，配置规则：默认空间&#43;新建dev和test两个DataId：">2.1.1 指定spring.profile.active和配置文件的DataID来使不同环境下读取不同的配置，配置规则：默认空间+新建dev和test两个DataId：</a><ul>
+                        
+                <li>
+                    <a href="#2111-%e6%96%b0%e5%bb%badev%e9%85%8d%e7%bd%aedata-id" aria-label="2.1.1.1 新建dev配置Data ID">2.1.1.1 新建dev配置Data ID</a></li>
+                <li>
+                    <a href="#2112-%e6%96%b0%e5%bb%batest%e9%85%8d%e7%bd%aedata-id" aria-label="2.1.1.2 新建test配置Data ID">2.1.1.2 新建test配置Data ID</a></li>
+                <li>
+                    <a href="#2113-%e6%9f%a5%e7%9c%8b" aria-label="2.1.1.3 查看">2.1.1.3 查看</a></li></ul>
+                </li>
+                <li>
+                    <a href="#212-%e9%80%9a%e8%bf%87springprofileactive%e5%b1%9e%e6%80%a7%e5%b0%b1%e8%83%bd%e8%bf%9b%e8%a1%8c%e5%a4%9a%e7%8e%af%e5%a2%83%e4%b8%8b%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%9a%84%e8%af%bb%e5%8f%96" aria-label="2.1.2 通过spring.profile.active属性就能进行多环境下配置文件的读取">2.1.2 通过spring.profile.active属性就能进行多环境下配置文件的读取</a></li></ul>
+                </li>
+                <li>
+                    <a href="#22-group%e6%96%b9%e6%a1%88" aria-label="2.2 Group方案">2.2 Group方案</a><ul>
+                        
+                <li>
+                    <a href="#221-%e6%96%b0%e5%bb%bagroup" aria-label="2.2.1 新建Group">2.2.1 新建Group</a></li>
+                <li>
+                    <a href="#222-%e5%ae%8c%e6%88%90%e4%bb%a5%e4%b8%8a%e9%85%8d%e7%bd%ae%e4%bb%a5%e5%90%8e%e6%8e%a5%e4%b8%8b%e6%9d%a5%e5%b0%b1%e9%9c%80%e8%a6%81%e9%80%9a%e8%bf%87bootstrapapplication%e6%9d%a5%e9%85%8d%e5%90%88%e5%ae%8c%e6%88%90" aria-label="2.2.2 完成以上配置以后，接下来就需要通过bootstrap&#43;application来配合完成">2.2.2 完成以上配置以后，接下来就需要通过bootstrap+application来配合完成</a></li></ul>
+                </li>
+                <li>
+                    <a href="#23-namespace%e7%a9%ba%e9%97%b4%e6%96%b9%e6%a1%88" aria-label="2.3 Namespace空间方案">2.3 Namespace空间方案</a><ul>
+                        
+                <li>
+                    <a href="#231-%e6%96%b0%e5%bb%badevtest%e7%9a%84namespace" aria-label="2.3.1 新建dev/test的Namespace">2.3.1 新建dev/test的Namespace</a><ul>
+                        
+                <li>
+                    <a href="#2311-%e6%9c%8d%e5%8a%a1%e7%ae%a1%e7%90%86-%e6%9c%8d%e5%8a%a1%e5%88%97%e8%a1%a8%e9%a1%b5%e9%9d%a2%e6%9f%a5%e7%9c%8b" aria-label="2.3.1.1 服务管理-服务列表页面查看">2.3.1.1 服务管理-服务列表页面查看</a></li>
+                <li>
+                    <a href="#2312-%e6%8c%89%e7%85%a7%e5%9f%9f%e5%90%8d%e9%85%8d%e7%bd%aenamespacegroupdataid%e7%bc%96%e5%86%99" aria-label="2.3.1.2 按照域名配置（Namespace&#43;Group&#43;DataId）编写">2.3.1.2 按照域名配置（Namespace+Group+DataId）编写</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>持续创作，加速成长！这是我参与「掘金日新计划 · 6 月更文挑战」的第14天，<a href="https://juejin.cn/post/7099702781094674468" title="https://juejin.cn/post/7099702781094674468">点击查看活动详情</a></p>
+<h1 id="1-名词解释">1 名词解释<a hidden class="anchor" aria-hidden="true" href="#1-名词解释">#</a></h1>
+<h2 id="11-命名空间-namespace">1.1 命名空间-Namespace<a hidden class="anchor" aria-hidden="true" href="#11-命名空间-namespace">#</a></h2>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a33151cf499146919b248f713f612890~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<blockquote>
+<p>用于进行租户粒度的配置隔离。不同的命名空间下，可以存在相同的 Group 或 Data ID 的配置。Namespace 的常用场景之一是不同环境的配置的区分隔离，例如开发测试环境和生产环境的资源（如配置、服务）隔离等。</p>
+</blockquote>
+<p>实际上就是我们日常开发中的不同环境的隔离，比如生产环境是一套配置，开发环境是一套配置，测试环境又是一套配置。</p>
+<h2 id="12-配置分组-group">1.2 配置分组-Group<a hidden class="anchor" aria-hidden="true" href="#12-配置分组-group">#</a></h2>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ef869fcb4e741bc835a7e1153dcc509~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<blockquote>
+<p>Nacos 中的一组配置集，是组织配置的维度之一。通过一个有意义的字符串（如 Buy 或 Trade ）对配置集进行分组，从而区分 Data ID 相同的配置集。当您在 Nacos 上创建一个配置时，如果未填写配置分组的名称，则配置分组的名称默认采用 DEFAULT_GROUP 。配置分组的常见场景：<strong>不同的应用或组件使用了相同的配置类型，如 database_url 配置和 MQ_topic 配置</strong>。</p>
+</blockquote>
+<h2 id="13-配置集-id-data-id">1.3 配置集 ID-Data ID<a hidden class="anchor" aria-hidden="true" href="#13-配置集-id-data-id">#</a></h2>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/81188190dba04eb59e57acc663e7ae9b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<blockquote>
+<p>Nacos 中的某个配置集的 ID。<strong>配置集 ID 是组织划分配置的维度之一</strong>。Data ID 通常用于组织划分系统的配置集。一个系统或者应用可以包含多个配置集，每个配置集都可以被一个有意义的名称标识。Data ID 通常采用类 Java 包（如 com.taobao.tc.refund.log.level）的命名规则保证全局唯一性。此命名规则非强制。</p>
+</blockquote>
+<p>配置集：一组相关或者不相关的配置项的集合称为配置集。在系统中，一个配置文件通常就是一个配置集，包含了系统各个方面的配置。例如，一个配置集可能包含了数据源、线程池、日志级别等配置项。</p>
+<h2 id="14-三者的关系">1.4 三者的关系<a hidden class="anchor" aria-hidden="true" href="#14-三者的关系">#</a></h2>
+<p>这三者的关系类似于Java里面的package名和类名，最外层的Namespace是可以用于区分部署环境的，Group和DataID逻辑上区分两个目标对象。</p>
+<h2 id="15-默认值">1.5 默认值<a hidden class="anchor" aria-hidden="true" href="#15-默认值">#</a></h2>
+<ul>
+<li>Namespace=public，</li>
+<li>Group=DEFAULT_GROUP，</li>
+<li>默认Cluster是DEFAULT</li>
+</ul>
+<h1 id="2-切换不同环境">2 切换不同环境<a hidden class="anchor" aria-hidden="true" href="#2-切换不同环境">#</a></h1>
+<h2 id="21-dataid方案">2.1 DataID方案<a hidden class="anchor" aria-hidden="true" href="#21-dataid方案">#</a></h2>
+<h3 id="211-指定springprofileactive和配置文件的dataid来使不同环境下读取不同的配置配置规则默认空间新建dev和test两个dataid">2.1.1 指定spring.profile.active和配置文件的DataID来使不同环境下读取不同的配置，配置规则：默认空间+新建dev和test两个DataId：<a hidden class="anchor" aria-hidden="true" href="#211-指定springprofileactive和配置文件的dataid来使不同环境下读取不同的配置配置规则默认空间新建dev和test两个dataid">#</a></h3>
+<h4 id="2111-新建dev配置data-id">2.1.1.1 新建dev配置Data ID<a hidden class="anchor" aria-hidden="true" href="#2111-新建dev配置data-id">#</a></h4>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d33a7218037445b5972bf95b88c2abfa~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<h4 id="2112-新建test配置data-id">2.1.1.2 新建test配置Data ID<a hidden class="anchor" aria-hidden="true" href="#2112-新建test配置data-id">#</a></h4>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e841f585f46b4940b1116690f09ff3c2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<h4 id="2113-查看">2.1.1.3 查看<a hidden class="anchor" aria-hidden="true" href="#2113-查看">#</a></h4>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c94129a323594a5cae4176fbe303cc6c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<h3 id="212-通过springprofileactive属性就能进行多环境下配置文件的读取">2.1.2 通过spring.profile.active属性就能进行多环境下配置文件的读取<a hidden class="anchor" aria-hidden="true" href="#212-通过springprofileactive属性就能进行多环境下配置文件的读取">#</a></h3>
+<p>yml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>spring:   profiles:     # active: dev #表示开发环境     active: test #表示测试环境</code></p>
+<h2 id="22-group方案">2.2 Group方案<a hidden class="anchor" aria-hidden="true" href="#22-group方案">#</a></h2>
+<p>根据之前的讲解我们都知道Group为分组默认是：DEFAULT_GROUP，所以现在我们就需要分出两组，一组是“Dev开发组”，一组是“test测试组”</p>
+<h3 id="221-新建group">2.2.1 新建Group<a hidden class="anchor" aria-hidden="true" href="#221-新建group">#</a></h3>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>DEV_GROUP</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f87d53b4b6940268f9c348a07dffdef~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>TEST_GROUP</code></p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2c323c4dca5e49cda47978e9eaa62585~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+ 配置列表，两个DataID一致，但是分组不同的配置文件</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64f0a6e0c0114b7f9c6af7270e276a74~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<h3 id="222-完成以上配置以后接下来就需要通过bootstrapapplication来配合完成">2.2.2 完成以上配置以后，接下来就需要通过bootstrap+application来配合完成<a hidden class="anchor" aria-hidden="true" href="#222-完成以上配置以后接下来就需要通过bootstrapapplication来配合完成">#</a></h3>
+<p>具体方式：在config下增加一条Group的配置即可，可以配置为DEV_GROUP或TEST_GROUP</p>
+<p><em><strong>bootstrap.yml</strong></em></p>
+<p>yml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># nacos配置 server:   port: 3377 spring:   application:     name: nacos-config-client   cloud:     nacos:       discovery:         server-addr: localhost:8848 #Nacos服务注册中心地址       config:         server-addr: localhost:8848 #Nacos作为配置中心地址         file-extension: yaml #指定yaml格式的配置         group: TEST_GROUP #增加分组</code></p>
+<p><em><strong>application.yml</strong></em></p>
+<p>yml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>spring:   profiles:     # active: dev #表示开发环境     active: test #表示测试环境     # active: info</code></p>
+<h2 id="23-namespace空间方案">2.3 Namespace空间方案<a hidden class="anchor" aria-hidden="true" href="#23-namespace空间方案">#</a></h2>
+<p>默认的命名空间方案为public，此方案不能删除，我们现在来新建两个命名空间方案</p>
+<h3 id="231-新建devtest的namespace">2.3.1 新建dev/test的Namespace<a hidden class="anchor" aria-hidden="true" href="#231-新建devtest的namespace">#</a></h3>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/406732ccf6024ad09f27be95d00ed8a1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+</p>
+<h4 id="2311-服务管理-服务列表页面查看">2.3.1.1 服务管理-服务列表页面查看<a hidden class="anchor" aria-hidden="true" href="#2311-服务管理-服务列表页面查看">#</a></h4>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/900227245b8c4a9c9b85e395d461a1fd~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image.png"  />
+ 此时我们就可以切换对应的命名空间，然后再通过Group和DataID来进行切换，如果想要切换命名空间，我们就需要通过命名空间ID来进行切换</p>
+<h4 id="2312-按照域名配置namespacegroupdataid编写">2.3.1.2 按照域名配置（Namespace+Group+DataId）编写<a hidden class="anchor" aria-hidden="true" href="#2312-按照域名配置namespacegroupdataid编写">#</a></h4>
+<p>namespace命名空间ID来确认使用的命名空间</p>
+<p>yml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># nacos配置 server:   port: 3377 spring:   application:     name: nacos-config-client   cloud:     nacos:       discovery:         server-addr: localhost:8848 #Nacos服务注册中心地址       config:         server-addr: localhost:8848 #Nacos作为配置中心地址         file-extension: yaml #指定yaml格式的配置         group: TEST_GROUP # 指定分组         namespace: 4ba4bf0e-210c-41ce-954c-23538de1dcbc #指定命名空间</code></p>
+<p>yml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>spring:   profiles:     active: dev #表示开发环境     # active: test #表示测试环境     # active: info</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E9%B8%BF%E8%92%99%E5%BC%80%E5%8F%91%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E6%9C%BA%E9%81%87%E4%B8%8E%E6%8C%91%E6%88%98/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>鸿蒙开发：前端开发者的机遇与挑战</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/2%E7%AC%AC5051%E5%91%A8%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>2、第50、51周读书笔记</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share NacosNamespace、Group和DataID三者关系 on x"
+            href="https://x.com/intent/tweet/?text=NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f&amp;hashtags=%e5%90%8e%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share NacosNamespace、Group和DataID三者关系 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f&amp;title=NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb&amp;summary=NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share NacosNamespace、Group和DataID三者关系 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f&title=NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share NacosNamespace、Group和DataID三者关系 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share NacosNamespace、Group和DataID三者关系 on whatsapp"
+            href="https://api.whatsapp.com/send?text=NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share NacosNamespace、Group和DataID三者关系 on telegram"
+            href="https://telegram.me/share/url?text=NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share NacosNamespace、Group和DataID三者关系 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=NacosNamespace%e3%80%81Group%e5%92%8cDataID%e4%b8%89%e8%80%85%e5%85%b3%e7%b3%bb&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fnacosnamespacegroup%25E5%2592%258Cdataid%25E4%25B8%2589%25E8%2580%2585%25E5%2585%25B3%25E7%25B3%25BB%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

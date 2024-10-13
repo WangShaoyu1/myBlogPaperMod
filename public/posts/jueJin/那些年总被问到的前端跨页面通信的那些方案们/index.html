@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>那些年，总被问到的前端跨页面通信的那些方案们 | PaperMod</title>
+<meta name="keywords" content="前端, JavaScript">
+<meta name="description" content="前端逃避不开跨页面通信这项工作，跨页面通信，就好比A页面要和B页面说话，可能只是说一句话，不需要回话，可能是要给一些东西，希望得到回复，并频繁进行沟通，接下来我们说说这些跨页面通信的方案们，希望对你有">
+<meta name="author" content="经海路大白狗">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%80%BB%E8%A2%AB%E9%97%AE%E5%88%B0%E7%9A%84%E5%89%8D%E7%AB%AF%E8%B7%A8%E9%A1%B5%E9%9D%A2%E9%80%9A%E4%BF%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E6%96%B9%E6%A1%88%E4%BB%AC/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%80%BB%E8%A2%AB%E9%97%AE%E5%88%B0%E7%9A%84%E5%89%8D%E7%AB%AF%E8%B7%A8%E9%A1%B5%E9%9D%A2%E9%80%9A%E4%BF%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E6%96%B9%E6%A1%88%E4%BB%AC/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="那些年，总被问到的前端跨页面通信的那些方案们" />
+<meta property="og:description" content="前端逃避不开跨页面通信这项工作，跨页面通信，就好比A页面要和B页面说话，可能只是说一句话，不需要回话，可能是要给一些东西，希望得到回复，并频繁进行沟通，接下来我们说说这些跨页面通信的方案们，希望对你有" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%80%BB%E8%A2%AB%E9%97%AE%E5%88%B0%E7%9A%84%E5%89%8D%E7%AB%AF%E8%B7%A8%E9%A1%B5%E9%9D%A2%E9%80%9A%E4%BF%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E6%96%B9%E6%A1%88%E4%BB%AC/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-07-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-07-08T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="那些年，总被问到的前端跨页面通信的那些方案们"/>
+<meta name="twitter:description" content="前端逃避不开跨页面通信这项工作，跨页面通信，就好比A页面要和B页面说话，可能只是说一句话，不需要回话，可能是要给一些东西，希望得到回复，并频繁进行沟通，接下来我们说说这些跨页面通信的方案们，希望对你有"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "那些年，总被问到的前端跨页面通信的那些方案们",
+      "item": "http://localhost:1313/posts/juejin/%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%80%BB%E8%A2%AB%E9%97%AE%E5%88%B0%E7%9A%84%E5%89%8D%E7%AB%AF%E8%B7%A8%E9%A1%B5%E9%9D%A2%E9%80%9A%E4%BF%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E6%96%B9%E6%A1%88%E4%BB%AC/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "那些年，总被问到的前端跨页面通信的那些方案们",
+  "name": "那些年，总被问到的前端跨页面通信的那些方案们",
+  "description": "前端逃避不开跨页面通信这项工作，跨页面通信，就好比A页面要和B页面说话，可能只是说一句话，不需要回话，可能是要给一些东西，希望得到回复，并频繁进行沟通，接下来我们说说这些跨页面通信的方案们，希望对你有",
+  "keywords": [
+    "前端", "JavaScript"
+  ],
+  "articleBody": "前端逃避不开跨页面通信这项工作，跨页面通信，就好比A页面要和B页面说话，可能只是说一句话，不需要回话，可能是要给一些东西，希望得到回复，并频繁进行沟通，接下来我们说说这些跨页面通信的方案们，希望对你有所帮助。\n1 页面传参 例如我们在浏览器的url中的问号后面带入参数，希望通过参数将一些信息带到其他页面中去，通常是类似于?a=xx\u0026b=xx这种。这种是属于一种get请求的方式，链接长度有限，而且破坏域名的美观性，如果链接上带有关键信息页不安全。\n至于目标页面获取参数值，可以参考前端工具npm包，js-tool-big-box中的现有方法：\nini\n代码解读\n复制代码\n// window.location.href = 'http://localhost:8080/#/404?type=text\u0026go2=232323\u0026q=my2521'; const param = storeBox.getUrlParam('q'); console.log('获取到q的参数为：：：', param);\n2 页面路由传参 这种和第一种方式类似，但会把参数拼接到前端路由上，这种方式会以hash或者history的形式传递参数，类似于/#/:id/:name 这种方式。获取方式在vue2项目中可以这样：\njavascript\n代码解读\n复制代码\n// 页面Url示例 https://a.xx.com/detail/DXF00137 // detail页获取 bookId created() { let bookId = this.$route.params.id }\n在react项目中就五花八门多了去了，你用不同的架构后，会发现各种各样。没办法，前端就是很乱套，很多团队没事干，加班加点希望做出东西来对外赋能，然后还得有自己的特点，怎么办呢？HTML，这个东西，我们读成“阿吃题迈而”吧，显得高端。\n3 后端接口做为中转站 这个很好理解，我们几乎每天都在用。比如A页面有个金额，我们计算出来，提交给后端，让后端存着，等到了B页面，又需要这个金额了，我们再获取一下这个金额，到了某一步，再提交一下。反正就是接口来回传输呗，安全。\n与之类似的还有websocket交互，例如A页面发送了一条申请信息，你可以在B页面通过这种实时通信方式，获取到审核结果消息，比如弹出一个小红点啥的，避免轮训请求浪费流量。\n4 图片预加载 这个图片预加载也跟跨页面通信有关系吗？ 你有没有想过一个问题，如果我在A页面加载过一个图片，然后我把这个图片的DOM元素删除了，那么B页面如果需要加载这张图片，是否还需要走\n发送图片请求 图片服务器响应请求 浏览器下载图片 浏览器解析图片 浏览器渲染图片 这个过程了呢？很显然，B页面会节约很大的线路。所以图片懒加载是属于这一类性能优化跨页面通信的范畴，这也属于我提前把东西准备好，准备随时交给B页面的一种方式。\n5 前端状态管理工具 类似于Vuex、Redux这种，可能说详细点，不属于跨越面通信的范畴，因为我们使用vue或者react这种工具，大多数时候，用于单页面的场景。但对于用户来说，他哪知道啥单页面不单页面的，发现我看你们那么多页面来回跳呢。\n而这个时候，我们通常会使用这些状态管理工具来保存或者共享一些数据，可以使页面不刷新，不发送请求，也可以获取到共享的状态数据。例如项目中多处会用到用户名，这种方式就恰到好处。\n6 Cookie、localStorage、SessionStorage 这三类工具，都有一个共通点，他们不跨域，但是可以跨页面共享数据。cookie兼容性好，但使用起来需要写公共方法，不如另外2个使用简单。不过这些方法在前端公用工具包js-tool-big-js里，也都封装了便捷的方法，使用示例可参照这篇学习文档：前端JS必用工具【js-tool-big-box】，获取浏览器参数、cookie、localStorage的存取 - 掘金 (juejin.cn)\n说到cookie跨域不跨域这个问题，它本身是不跨域的。但你可以在A页面的时候，在前后端交互中携带cookie，这样后端就可以获取到cookie信息。后端就可以指定往某个域下再写入cookie，这样B页面即便和A页面不在同一个域下，不也就得到这个cookie信息了嘛。这样是不是就得到了一个更多的跨域解决方案呢。\n7 PostMessage postMessage的宿主是window，可以在不同窗口下通信。比如我们常做的一些第三方登录，授权等场景需求，你肯定是需要将第三方的授权页面弹出来，放在自己的准备好的一个 window.open 弹框中，这样，等获取到第三方授权信息后，再通过window.postMessage()方法向本页面发送message信息，从而达到跨页面通信的效果。\n这里说一下SharedWorker，SharedWorker 是一个可由多个窗口或标签页共享的 Web Worker，它可以在不同页面之间进行跨页面通信。通过 SharedWorker，多个页面可以通过 postMessage 进行双向通信，并共享数据和执行操作。\n8 IndexedDB 说到indexedDB，我觉得这真是一项创举。他是浏览器提供的一个客户端数据库，既然是数据库，就说明他希望比localStorage更进一步，存入更多的东西。\n很多时候，其实我们用不到，因为普通浏览器的web项目，用户的缓存还免不了丢失呢，你还存，能存多少。但架不住前端页面有时候钻进了APP里，这样他就被保护起来了吧，你就可以安心的存了。\n但前端数据库，始终还是一个临时性的东西，最好还是让后端去存吧。\n9 共引JS文件 说了这么多复杂用法的东西，你是不是忘记了我们javascript第一课学到的东西呢。也是最基本的用法。不就是个跨页面通信嘛，我写一个公共变量，然后让所有页面都引入这个JS文件，我就不信，你再跨页面，你还获取不到这个公共变量吗？谁说通信就必须来回交互了，你跟女朋友打电话，女朋友嗓子疼，你说话，他不说话，他就听着，难道不行？咋地，这种打电话难道不叫通信？面试那么多，有几个HR在面完了，会给你反馈结果的。\n10 总结 本文一共说了9种方式的跨页面通信，而这9种里面有的又包含了小类方案，你可以自己总结一下，结合自己的项目案例说的更真实有经验一些，这在面试的时候就是自己的方案了。\n11 简历宝典 正所谓紫霞秘籍，入门初基，简历宝典，登峰造极。这里有一份不花钱就能学习的掘金专栏《简历宝典》，正在输出中，希望可以在你需要的时候，可以帮到你。点我：简历宝典 - 经海路大白狗的专栏 - 掘金 (juejin.cn)\n",
+  "wordCount" : "95",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-07-08T00:00:00Z",
+  "dateModified": "2024-07-08T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "经海路大白狗"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%80%BB%E8%A2%AB%E9%97%AE%E5%88%B0%E7%9A%84%E5%89%8D%E7%AB%AF%E8%B7%A8%E9%A1%B5%E9%9D%A2%E9%80%9A%E4%BF%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E6%96%B9%E6%A1%88%E4%BB%AC/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      那些年，总被问到的前端跨页面通信的那些方案们
+    </h1>
+    <div class="post-description">
+      前端逃避不开跨页面通信这项工作，跨页面通信，就好比A页面要和B页面说话，可能只是说一句话，不需要回话，可能是要给一些东西，希望得到回复，并频繁进行沟通，接下来我们说说这些跨页面通信的方案们，希望对你有
+    </div>
+    <div class="post-meta"><span title='2024-07-08 00:00:00 +0000 UTC'>七月 8, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;经海路大白狗&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e9%a1%b5%e9%9d%a2%e4%bc%a0%e5%8f%82" aria-label="1 页面传参">1 页面传参</a></li>
+                <li>
+                    <a href="#2-%e9%a1%b5%e9%9d%a2%e8%b7%af%e7%94%b1%e4%bc%a0%e5%8f%82" aria-label="2 页面路由传参">2 页面路由传参</a></li>
+                <li>
+                    <a href="#3-%e5%90%8e%e7%ab%af%e6%8e%a5%e5%8f%a3%e5%81%9a%e4%b8%ba%e4%b8%ad%e8%bd%ac%e7%ab%99" aria-label="3 后端接口做为中转站">3 后端接口做为中转站</a></li>
+                <li>
+                    <a href="#4-%e5%9b%be%e7%89%87%e9%a2%84%e5%8a%a0%e8%bd%bd" aria-label="4 图片预加载">4 图片预加载</a></li>
+                <li>
+                    <a href="#5-%e5%89%8d%e7%ab%af%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7" aria-label="5 前端状态管理工具">5 前端状态管理工具</a></li>
+                <li>
+                    <a href="#6-cookielocalstoragesessionstorage" aria-label="6 Cookie、localStorage、SessionStorage">6 Cookie、localStorage、SessionStorage</a></li>
+                <li>
+                    <a href="#7-postmessage" aria-label="7 PostMessage">7 PostMessage</a></li>
+                <li>
+                    <a href="#8-indexeddb" aria-label="8 IndexedDB">8 IndexedDB</a></li>
+                <li>
+                    <a href="#9-%e5%85%b1%e5%bc%95js%e6%96%87%e4%bb%b6" aria-label="9 共引JS文件">9 共引JS文件</a></li>
+                <li>
+                    <a href="#10-%e6%80%bb%e7%bb%93" aria-label="10 总结">10 总结</a></li>
+                <li>
+                    <a href="#11-%e7%ae%80%e5%8e%86%e5%ae%9d%e5%85%b8" aria-label="11 简历宝典">11 简历宝典</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>前端逃避不开跨页面通信这项工作，<strong>跨页面通信</strong>，就好比A页面要和B页面说话，可能只是说一句话，不需要回话，可能是要给一些东西，希望得到回复，并频繁进行沟通，接下来我们说说这些跨页面通信的方案们，希望对你有所帮助。</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3068515145eb4ca9a2c3a849fc023aea~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=911&amp;h=366&amp;s=54613&amp;e=png&amp;b=ffffff" alt="image.png"  />
+</p>
+<h3 id="1-页面传参">1 页面传参<a hidden class="anchor" aria-hidden="true" href="#1-页面传参">#</a></h3>
+<p>例如我们在浏览器的url中的问号后面带入参数，希望通过参数将一些信息带到其他页面中去，通常是类似于?a=xx&amp;b=xx这种。这种是属于一种get请求的方式，链接长度有限，而且破坏域名的美观性，如果链接上带有关键信息页不安全。</p>
+<p>至于目标页面获取参数值，可以参考前端工具npm包，js-tool-big-box中的现有方法：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// window.location.href = 'http://localhost:8080/#/404?type=text&amp;go2=232323&amp;q=my2521'; const param = storeBox.getUrlParam('q'); console.log('获取到q的参数为：：：', param);</code></p>
+<h3 id="2-页面路由传参">2 页面路由传参<a hidden class="anchor" aria-hidden="true" href="#2-页面路由传参">#</a></h3>
+<p>这种和第一种方式类似，但会把参数拼接到前端路由上，这种方式会以hash或者history的形式传递参数，类似于/#/:id/:name 这种方式。获取方式在vue2项目中可以这样：</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 页面Url示例 https://a.xx.com/detail/DXF00137   // detail页获取 bookId created() {   let bookId = this.$route.params.id }</code></p>
+<p>在react项目中就五花八门多了去了，你用不同的架构后，会发现各种各样。没办法，前端就是很乱套，很多团队没事干，加班加点希望做出东西来对外赋能，然后还得有自己的特点，怎么办呢？HTML，这个东西，我们读成“阿吃题迈而”吧，显得高端。</p>
+<h3 id="3-后端接口做为中转站">3 后端接口做为中转站<a hidden class="anchor" aria-hidden="true" href="#3-后端接口做为中转站">#</a></h3>
+<p>这个很好理解，我们几乎每天都在用。比如A页面有个金额，我们计算出来，提交给后端，让后端存着，等到了B页面，又需要这个金额了，我们再获取一下这个金额，到了某一步，再提交一下。反正就是接口来回传输呗，安全。</p>
+<p>与之类似的还有websocket交互，例如A页面发送了一条申请信息，你可以在B页面通过这种实时通信方式，获取到审核结果消息，比如弹出一个小红点啥的，避免轮训请求浪费流量。</p>
+<h3 id="4-图片预加载">4 图片预加载<a hidden class="anchor" aria-hidden="true" href="#4-图片预加载">#</a></h3>
+<p><strong>这个图片预加载也跟跨页面通信有关系吗？</strong> 你有没有想过一个问题，如果我在A页面加载过一个图片，然后我把这个图片的DOM元素删除了，那么B页面如果需要加载这张图片，是否还需要走</p>
+<blockquote>
+<ol>
+<li>发送图片请求</li>
+<li>图片服务器响应请求</li>
+<li>浏览器下载图片</li>
+<li>浏览器解析图片</li>
+<li>浏览器渲染图片</li>
+</ol>
+</blockquote>
+<p>这个过程了呢？很显然，B页面会节约很大的线路。所以图片懒加载是属于这一类性能优化跨页面通信的范畴，这也属于我提前把东西准备好，准备随时交给B页面的一种方式。</p>
+<h3 id="5-前端状态管理工具">5 前端状态管理工具<a hidden class="anchor" aria-hidden="true" href="#5-前端状态管理工具">#</a></h3>
+<p>类似于Vuex、Redux这种，可能说详细点，不属于跨越面通信的范畴，因为我们使用vue或者react这种工具，大多数时候，用于单页面的场景。但对于用户来说，他哪知道啥单页面不单页面的，发现我看你们那么多页面来回跳呢。</p>
+<p>而这个时候，我们通常会使用这些状态管理工具来保存或者共享一些数据，可以使页面不刷新，不发送请求，也可以获取到共享的状态数据。例如项目中多处会用到用户名，这种方式就恰到好处。</p>
+<h3 id="6-cookielocalstoragesessionstorage">6 Cookie、localStorage、SessionStorage<a hidden class="anchor" aria-hidden="true" href="#6-cookielocalstoragesessionstorage">#</a></h3>
+<p>这三类工具，都有一个共通点，他们<strong>不跨域</strong>，但是可以跨页面共享数据。cookie兼容性好，但使用起来需要写公共方法，不如另外2个使用简单。不过这些方法在前端公用工具包js-tool-big-js里，也都封装了便捷的方法，使用示例可参照这篇学习文档：<a href="https://juejin.cn/post/7365793739892211712" title="https://juejin.cn/post/7365793739892211712">前端JS必用工具【js-tool-big-box】，获取浏览器参数、cookie、localStorage的存取 - 掘金 (juejin.cn)</a></p>
+<blockquote>
+<p>说到cookie跨域不跨域这个问题，它本身是不跨域的。但你可以在A页面的时候，在前后端交互中携带cookie，这样后端就可以获取到cookie信息。后端就可以指定往某个域下再写入cookie，这样B页面即便和A页面不在同一个域下，不也就得到这个cookie信息了嘛。这样是不是就得到了一个更多的跨域解决方案呢。</p>
+</blockquote>
+<h3 id="7-postmessage">7 PostMessage<a hidden class="anchor" aria-hidden="true" href="#7-postmessage">#</a></h3>
+<p>postMessage的宿主是window，可以在不同窗口下通信。比如我们常做的一些第三方登录，授权等场景需求，你肯定是需要将第三方的授权页面弹出来，放在自己的准备好的一个 window.open 弹框中，这样，等获取到第三方授权信息后，再通过window.postMessage()方法向本页面发送message信息，从而达到跨页面通信的效果。</p>
+<p>这里说一下SharedWorker，SharedWorker 是一个可由多个窗口或标签页共享的 Web Worker，它可以在不同页面之间进行跨页面通信。通过 SharedWorker，多个页面可以通过 postMessage 进行双向通信，并共享数据和执行操作。</p>
+<h3 id="8-indexeddb">8 IndexedDB<a hidden class="anchor" aria-hidden="true" href="#8-indexeddb">#</a></h3>
+<p><strong>说到indexedDB，我觉得这真是一项创举</strong>。他是浏览器提供的一个客户端数据库，既然是数据库，就说明他希望比localStorage更进一步，存入更多的东西。</p>
+<p>很多时候，其实我们用不到，因为普通浏览器的web项目，用户的缓存还免不了丢失呢，你还存，能存多少。但架不住前端页面有时候钻进了APP里，这样他就被保护起来了吧，你就可以安心的存了。</p>
+<p>但前端数据库，始终还是一个临时性的东西，最好还是让后端去存吧。</p>
+<h3 id="9-共引js文件">9 共引JS文件<a hidden class="anchor" aria-hidden="true" href="#9-共引js文件">#</a></h3>
+<p>说了这么多复杂用法的东西，你是不是忘记了我们javascript第一课学到的东西呢。也是最基本的用法。不就是个跨页面通信嘛，我写一个公共变量，然后让所有页面都引入这个JS文件，我就不信，你再跨页面，你还获取不到这个公共变量吗？谁说通信就必须来回交互了，你跟女朋友打电话，女朋友嗓子疼，你说话，他不说话，他就听着，难道不行？咋地，这种打电话难道不叫通信？面试那么多，有几个HR在面完了，会给你反馈结果的。</p>
+<h3 id="10-总结">10 总结<a hidden class="anchor" aria-hidden="true" href="#10-总结">#</a></h3>
+<p>本文一共说了9种方式的跨页面通信，而这9种里面有的又包含了小类方案，你可以自己总结一下，结合自己的项目案例说的更真实有经验一些，这在面试的时候就是自己的方案了。</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2a3908dd93704a07a064cfe497c0749b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1118&amp;h=702&amp;s=92851&amp;e=png&amp;b=ffffff" alt="image.png"  />
+</p>
+<h3 id="11-简历宝典">11 简历宝典<a hidden class="anchor" aria-hidden="true" href="#11-简历宝典">#</a></h3>
+<p>正所谓紫霞秘籍，入门初基，简历宝典，登峰造极。这里有一份<strong>不花钱就能学习的掘金专栏《简历宝典》</strong>，正在输出中，希望可以在你需要的时候，可以帮到你。点我：<a href="https://juejin.cn/column/7386150274890514442" title="https://juejin.cn/column/7386150274890514442">简历宝典 - 经海路大白狗的专栏 - 掘金 (juejin.cn)</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E4%B8%87%E5%BE%97%E5%8E%A8%E7%9F%A5%E8%AF%86%E9%97%AE%E7%AD%94%E5%9C%BA%E6%99%AF%E5%88%86%E6%9E%90/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>万得厨知识问答场景分析</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/reactnative0.76newarchitecture%E5%B0%86%E6%88%90%E4%B8%BA%E9%BB%98%E8%AE%A4%E6%A8%A1%E5%BC%8F%E5%85%A8%E6%96%B0%E7%9A%84rn%E6%9D%A5%E4%BA%86/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>ReactNative0.76，NewArchitecture将成为默认模式，全新的RN来了</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 那些年，总被问到的前端跨页面通信的那些方案们 on x"
+            href="https://x.com/intent/tweet/?text=%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cJavaScript">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 那些年，总被问到的前端跨页面通信的那些方案们 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f&amp;title=%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac&amp;summary=%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 那些年，总被问到的前端跨页面通信的那些方案们 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f&title=%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 那些年，总被问到的前端跨页面通信的那些方案们 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 那些年，总被问到的前端跨页面通信的那些方案们 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 那些年，总被问到的前端跨页面通信的那些方案们 on telegram"
+            href="https://telegram.me/share/url?text=%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 那些年，总被问到的前端跨页面通信的那些方案们 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e9%82%a3%e4%ba%9b%e5%b9%b4%ef%bc%8c%e6%80%bb%e8%a2%ab%e9%97%ae%e5%88%b0%e7%9a%84%e5%89%8d%e7%ab%af%e8%b7%a8%e9%a1%b5%e9%9d%a2%e9%80%9a%e4%bf%a1%e7%9a%84%e9%82%a3%e4%ba%9b%e6%96%b9%e6%a1%88%e4%bb%ac&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2582%25A3%25E4%25BA%259B%25E5%25B9%25B4%25E6%2580%25BB%25E8%25A2%25AB%25E9%2597%25AE%25E5%2588%25B0%25E7%259A%2584%25E5%2589%258D%25E7%25AB%25AF%25E8%25B7%25A8%25E9%25A1%25B5%25E9%259D%25A2%25E9%2580%259A%25E4%25BF%25A1%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E6%2596%25B9%25E6%25A1%2588%25E4%25BB%25AC%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>一篇打通浏览器储存 | PaperMod</title>
+<meta name="keywords" content="前端, 浏览器, 面试">
+<meta name="description" content="本文详细了介绍开发过程中涉及较多的四种浏览器储存，这也是前端面试中的常考的点，本文还涵盖了几者的差异及使用情景">
+<meta name="author" content="midsummer18">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%B8%80%E7%AF%87%E6%89%93%E9%80%9A%E6%B5%8F%E8%A7%88%E5%99%A8%E5%82%A8%E5%AD%98/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%B8%80%E7%AF%87%E6%89%93%E9%80%9A%E6%B5%8F%E8%A7%88%E5%99%A8%E5%82%A8%E5%AD%98/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="一篇打通浏览器储存" />
+<meta property="og:description" content="本文详细了介绍开发过程中涉及较多的四种浏览器储存，这也是前端面试中的常考的点，本文还涵盖了几者的差异及使用情景" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%B8%80%E7%AF%87%E6%89%93%E9%80%9A%E6%B5%8F%E8%A7%88%E5%99%A8%E5%82%A8%E5%AD%98/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-05T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="一篇打通浏览器储存"/>
+<meta name="twitter:description" content="本文详细了介绍开发过程中涉及较多的四种浏览器储存，这也是前端面试中的常考的点，本文还涵盖了几者的差异及使用情景"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "一篇打通浏览器储存",
+      "item": "http://localhost:1313/posts/juejin/%E4%B8%80%E7%AF%87%E6%89%93%E9%80%9A%E6%B5%8F%E8%A7%88%E5%99%A8%E5%82%A8%E5%AD%98/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "一篇打通浏览器储存",
+  "name": "一篇打通浏览器储存",
+  "description": "本文详细了介绍开发过程中涉及较多的四种浏览器储存，这也是前端面试中的常考的点，本文还涵盖了几者的差异及使用情景",
+  "keywords": [
+    "前端", "浏览器", "面试"
+  ],
+  "articleBody": "一：方式 本地缓存的方法我们主要讲述以下五种:\ncookie sessionStorage localStorage Web SQL indexedDB 1.1.cookie Cookie ，类型为「小型文本文件」，指某些网站为了辨别用户身份而储存在用户本地终端上的数据，不受前端掌控，由后端控制。是为了解决 HTTP 无状态导致的问题，作为一段一般不超过 4KB 的小型文本数据，它由一个名称(Name)、一个值(Value)和其它几个用于控制 cookie 有效期、安全性、使用范围的可选属性组成。\n但是 Cookie 在每次请求中都会被发送，如果不使用 HTTPS 并对其加密，其保存的信息很容易被窃取，导致安全风险。\n举个例子，在一些使用 cookie 保持登录态的网站上，如果 cookie 被窃取他人很容易利用你的 cookie 来假扮成你登录网站关于 cookie 常用的属性如下:\nExpires 用于设置 cookie 的过期时间 js\n代码解读\n复制代码\nExpires=Wed，21 Oct 2015 07:28:00 GMT\nMax-Age 用于设置在 Cookie 失效之前需要经过的秒数(优先级比 Expires 高) js\n代码解读\n复制代码\nMax-Age=604800\nDomain 指定了 Cookie 可以送达的主机名 Path 指定了一个 URL 路径，这个路径必须出现在要请求的资源的路径中才可以发送 Cookie 首部 js\n代码解读\n复制代码\nPath=/docs #/docs/Web/下的资源会带Cookie 首部\n标记为 Secure 的 Cookie 只应通过被 HTTPS 协议加密过的请求发送给服务端\n通过上述，我们可以看到 cookie 又开始的作用并不是为了缓存而设计出来，只是借用了 cookie 的特性实现缓存\n关于 cookie 的使用如下:\njs\n代码解读\n复制代码\ndocument.cookie='名字=值';\n关于 cookie 的修改，首先要确定 domain 和 path 属性都是相同的才可以，其中有一个不同得时候都会创建出一个新的 cookie\njs\n代码解读\n复制代码\nSet-Cookie:name=aa;domain=aa.net;path=/#服务端设置 document.cookie =name=bb;domain=aa.net;path=/ #客户端设置\n最后 cookie 的删除，最常用的方法就是给 cookie 设置一个过期的事件，这样 cookie 过期后会被浏览器删除\n1.2.localStorage HTML5 新方法，IE8及以上浏览器都兼容 生命周期：持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的 是为每一个域名开辟的存储空间，存储的信息在同一域中是共享的 当本页操作(新增、修改、删除)了 localstorage 的时候，本页面不会触发 storage 事件,但是别的页面会触发 storage 事件。 大小:5M(跟浏览器厂商有关系) localStorage 本质上是对字符串的读取，如果存储内容多的话会消耗内存空间，会导致页面变大 受同源策略的限制 下面再看看关于 localStorage 的使用:\n设置\njs\n代码解读\n复制代码\nlocalStorage.setItem('username','midsummer'); //存对象 const user = { name: 'midsummer', age: 18 } localStorage.setItem('userInfo',JSON.stringify(user));\n获取\njs\n代码解读\n复制代码\nlocalStorage.getItem('username') //获取对象 console.log(JSON.parse(localStorage.getItem('userInfo')));\n获取键名\njs\n代码解读\n复制代码\nlocalstorage.key(0)//获取第一个键名\n删除\njs\n代码解读\n复制代码\nlocalStorage.removeItem('username')\n一次性清除所有存储\njs\n代码解读\n复制代码\nlocalStorage.clear()\nlocalStorage 也不是完美的，它有两个缺点:\n无法像Cookie一样样设置过期时间 只能存入字符串，无法直接存对象 js\n代码解读\n复制代码\nlocalStorage.setItem('key'{name:'value'}); console.log(localStorage.getItem('key'));//'[object, 0bject]\n1.3.sessionStorage sessionStorage 和 localstorage 使用方法基本一致，唯一不同的是生命周期，一旦页面(会话)关闭，sessionStorage 将会删除数据\n1.4.Web SQL 浏览器上的模拟数据库 （已弃用） 具体使用如下：\njs\n代码解读\n复制代码\n打开数据库 1.5.IndexedDB indexedDB 是一种低级API，用于客户端存储大量结构化数据(包括,文件/blobs)。该API使用索引来实现对该数据的高性能搜索, 虽然 web Storage 对于存储较少量的数据很有用，但对于存储更大量的结构化数据来说，这种方法不太有用。 IndexedDB 提供了一个解决方案\n优点:\n浏览器提供的本地数据库 储存量理论上没有上限 所有操作都是异步的，相比 LocalStorage 同步操作性能更高，尤其是数据量较大时 支持使用js编写逻辑来创建，打开，插入，查询，删除 IndexedDB 中的数据 键值对存储 永久存储 缺点:\n操作非常繁琐 本身有一定门槛 关于 indexedDB 的使用基本使用步骤如下:\n打开数据库并且开始一个事务 创建一个 object store 构建一个请求来执行一些数据库操作，像增加或提取数据等 通过监听正确类型的 DOM 事件以等待操作完成。 在操作结果上进行一些操作(可以在request对象中找到) 关于使用 indexdb 的使用会比较繁琐，大家可以通过使用 Godb.js 库进行缓存，最大化的降低操作难度\n使用示例：\njs\n代码解读\n复制代码\n连接数据库 新建数据库 插入一条数据 插入多条数据 查询数据 更新数据 二：区别 关于 cookie、sessionStorage、localStorage 三者的区别主要如下:\n存储大小:\ncookie 数据大小不能超过4k sessionStorage 和 localstorage 虽然也有存储大小的限制，但比cookie大得多，可以达到5M或更大 有效时间:\nlocalStorage 存储持久数据，浏览器关闭后数据不丢失除非主动删除数据 sessionStorage 数据在当前浏览器窗口关闭后自动删除 cookie 设置的 cookie 过期时间之前一直有效，即使窗口或浏览器关闭 数据与服务器之间的交互方式：\ncookie 的数据会自动的传递到服务器，服务器端也可以写 cookie 到客户端; sessionStorage 和 localStorage 不会自动把数据发给服务器，仅在本地保存 三：应用场景 在了解了上述的前端的缓存方式后，我们可以看看针对不同场景的使用选择:\n标记用户与跟踪用户行为的情况，推荐使用 cookie 适合长期保存在本地的数据(令牌)，推荐使用 localstorage 敏感账号一次性登录，推荐使用 sessionStorage 存储大量数据的情况、在线文档(富文本编辑器)保存编辑历史的情况，推荐使用 indexedDB ",
+  "wordCount" : "530",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-10-05T00:00:00Z",
+  "dateModified": "2024-10-05T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "midsummer18"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%B8%80%E7%AF%87%E6%89%93%E9%80%9A%E6%B5%8F%E8%A7%88%E5%99%A8%E5%82%A8%E5%AD%98/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      一篇打通浏览器储存
+    </h1>
+    <div class="post-description">
+      本文详细了介绍开发过程中涉及较多的四种浏览器储存，这也是前端面试中的常考的点，本文还涵盖了几者的差异及使用情景
+    </div>
+    <div class="post-meta"><span title='2024-10-05 00:00:00 +0000 UTC'>十月 5, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;midsummer18&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e6%96%b9%e5%bc%8f" aria-label="一：方式">一：方式</a><ul>
+                        
+                <li>
+                    <a href="#11cookie" aria-label="1.1.cookie">1.1.cookie</a></li>
+                <li>
+                    <a href="#12localstorage" aria-label="1.2.localStorage">1.2.localStorage</a></li>
+                <li>
+                    <a href="#13sessionstorage" aria-label="1.3.sessionStorage">1.3.sessionStorage</a></li>
+                <li>
+                    <a href="#14web-sql" aria-label="1.4.Web SQL">1.4.Web SQL</a></li>
+                <li>
+                    <a href="#15indexeddb" aria-label="1.5.IndexedDB">1.5.IndexedDB</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%8c%ba%e5%88%ab" aria-label="二：区别">二：区别</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af" aria-label="三：应用场景">三：应用场景</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="一方式">一：方式<a hidden class="anchor" aria-hidden="true" href="#一方式">#</a></h2>
+<p>本地缓存的方法我们主要讲述以下五种:</p>
+<ul>
+<li>cookie</li>
+<li>sessionStorage</li>
+<li>localStorage</li>
+<li>Web SQL</li>
+<li>indexedDB</li>
+</ul>
+<h3 id="11cookie">1.1.cookie<a hidden class="anchor" aria-hidden="true" href="#11cookie">#</a></h3>
+<p><code>Cookie</code> ，类型为「小型文本文件」，指某些网站为了辨别用户身份而储存在用户本地终端上的数据，不受前端掌控，由后端控制。是为了解决 <code>HTTP</code> 无状态导致的问题，作为一段一般不超过 4KB 的小型文本数据，它由一个名称(<code>Name</code>)、一个值(<code>Value</code>)和其它几个用于控制 <code>cookie</code> 有效期、安全性、使用范围的可选属性组成。</p>
+<p>但是 <code>Cookie</code> 在每次请求中都会被发送，如果不使用 <code>HTTPS</code> 并对其加密，其保存的信息很容易被窃取，导致安全风险。</p>
+<p>举个例子，在一些使用 <code>cookie</code> 保持登录态的网站上，如果 <code>cookie</code> 被窃取他人很容易利用你的 <code>cookie</code> 来假扮成你登录网站关于 <code>cookie</code> 常用的属性如下:</p>
+<ul>
+<li><code>Expires</code> 用于设置 <code>cookie</code> 的过期时间</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Expires=Wed，21 Oct 2015 07:28:00 GMT</code></p>
+<ul>
+<li><code>Max-Age</code> 用于设置在 <code>Cookie</code> 失效之前需要经过的秒数(优先级比 <code>Expires</code> 高)</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Max-Age=604800</code></p>
+<ul>
+<li><code>Domain</code> 指定了 <code>Cookie</code> 可以送达的主机名</li>
+<li><code>Path</code> 指定了一个 <code>URL</code> 路径，这个路径必须出现在要请求的资源的路径中才可以发送 <code>Cookie</code> 首部</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Path=/docs  #/docs/Web/下的资源会带Cookie 首部</code></p>
+<p>标记为 <code>Secure</code> 的 <code>Cookie</code> 只应通过被 <code>HTTPS</code> 协议加密过的请求发送给服务端</p>
+<p>通过上述，我们可以看到 <code>cookie</code> 又开始的作用并不是为了缓存而设计出来，只是借用了 <code>cookie</code> 的特性实现缓存</p>
+<p>关于 <code>cookie</code> 的使用如下:</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>document.cookie='名字=值';</code></p>
+<p>关于 <code>cookie</code> 的修改，首先要确定 <code>domain</code> 和 <code>path</code> 属性都是相同的才可以，其中有一个不同得时候都会创建出一个新的 cookie</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Set-Cookie:name=aa;domain=aa.net;path=/#服务端设置 document.cookie =name=bb;domain=aa.net;path=/ #客户端设置</code></p>
+<p>最后 <code>cookie</code> 的删除，最常用的方法就是给 <code>cookie</code> 设置一个过期的事件，这样 <code>cookie</code> 过期后会被浏览器删除</p>
+<h3 id="12localstorage">1.2.<code>localStorage</code><a hidden class="anchor" aria-hidden="true" href="#12localstorage">#</a></h3>
+<ul>
+<li>HTML5 新方法，IE8及以上浏览器都兼容</li>
+<li>生命周期：持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的</li>
+<li>是为每一个域名开辟的存储空间，存储的信息在同一域中是共享的</li>
+<li>当本页操作(新增、修改、删除)了 <code>localstorage</code> 的时候，本页面不会触发 <code>storage</code> 事件,但是别的页面会触发 <code>storage</code> 事件。</li>
+<li>大小:5M(跟浏览器厂商有关系)</li>
+<li><code>localStorage</code> 本质上是<strong>对字符串的读取</strong>，如果存储内容多的话会消耗内存空间，会导致页面变大</li>
+<li>受同源策略的限制</li>
+</ul>
+<p>下面再看看关于 <code>localStorage</code> 的使用:</p>
+<p><strong>设置</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>localStorage.setItem('username','midsummer'); //存对象 const user = {     name: 'midsummer',     age: 18 } localStorage.setItem('userInfo',JSON.stringify(user));</code></p>
+<p><strong>获取</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>localStorage.getItem('username') //获取对象 console.log(JSON.parse(localStorage.getItem('userInfo')));</code></p>
+<p><strong>获取键名</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>localstorage.key(0)//获取第一个键名</code></p>
+<p><strong>删除</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>localStorage.removeItem('username')</code></p>
+<p><strong>一次性清除所有存储</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>localStorage.clear()</code></p>
+<p><code>localStorage</code> 也不是完美的，它有两个缺点:</p>
+<ul>
+<li>无法像<code>Cookie</code>一样样设置过期时间</li>
+<li>只能存入字符串，无法直接存对象</li>
+</ul>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>localStorage.setItem('key'{name:'value'}); console.log(localStorage.getItem('key'));//'[object, 0bject]</code></p>
+<h3 id="13sessionstorage">1.3.<code>sessionStorage</code><a hidden class="anchor" aria-hidden="true" href="#13sessionstorage">#</a></h3>
+<p><code>sessionStorage</code> 和 <code>localstorage</code> 使用方法基本一致，唯一不同的是生命周期，一旦页面(会话)关闭，<code>sessionStorage</code> 将会删除数据</p>
+<h3 id="14web-sql">1.4.Web SQL<a hidden class="anchor" aria-hidden="true" href="#14web-sql">#</a></h3>
+<ul>
+<li>浏览器上的模拟数据库 （已弃用）</li>
+</ul>
+<p>具体使用如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;   &lt;button onclick=&quot;openDB()&quot;&gt;打开数据库&lt;/button&gt;   &lt;script&gt;     let db = null     function openDB() {       db = openDatabase('juejin_courses', '1.0', 'Juejin Course Database', 2 * 1024 * 1024)       db &amp;&amp; alert(`数据库 juejin_courses 打开了`)     }   &lt;/script&gt; &lt;/body&gt;</code></p>
+<h3 id="15indexeddb">1.5.IndexedDB<a hidden class="anchor" aria-hidden="true" href="#15indexeddb">#</a></h3>
+<p><code>indexedDB</code> 是一种低级API，用于客户端存储大量结构化数据(包括,文件/<code>blobs</code>)。该API使用索引来实现对该数据的高性能搜索, 虽然 <code>web Storage</code> 对于存储较少量的数据很有用，但对于存储更大量的结构化数据来说，这种方法不太有用。 <code>IndexedDB</code> 提供了一个解决方案</p>
+<p><strong>优点:</strong></p>
+<ul>
+<li>浏览器提供的本地数据库</li>
+<li>储存量理论上没有上限</li>
+<li>所有操作都是异步的，相比 <code>LocalStorage</code> 同步操作性能更高，尤其是数据量较大时</li>
+<li>支持使用js编写逻辑来创建，打开，插入，查询，删除 IndexedDB 中的数据</li>
+<li>键值对存储</li>
+<li>永久存储</li>
+</ul>
+<p><strong>缺点:</strong></p>
+<ul>
+<li>操作非常繁琐</li>
+<li>本身有一定门槛</li>
+</ul>
+<p>关于 <code>indexedDB</code> 的使用基本使用步骤如下:</p>
+<ol>
+<li>打开数据库并且开始一个事务</li>
+<li>创建一个 <code>object store</code></li>
+<li>构建一个请求来执行一些数据库操作，像增加或提取数据等</li>
+<li>通过监听正确类型的 DOM 事件以等待操作完成。</li>
+<li>在操作结果上进行一些操作(可以在<code>request</code>对象中找到)</li>
+</ol>
+<p>关于使用 <code>indexdb</code> 的使用会比较繁琐，大家可以通过使用 <code>Godb.js</code> 库进行缓存，最大化的降低操作难度</p>
+<p><strong>使用示例：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;body&gt;   &lt;button onclick=&quot;openDB()&quot;&gt;连接数据库&lt;/button&gt;   &lt;button onclick=&quot;createDB()&quot;&gt;新建数据库&lt;/button&gt;   &lt;button onclick=&quot;insertOneDB()&quot;&gt;插入一条数据&lt;/button&gt;   &lt;button onclick=&quot;insertMultiDB()&quot;&gt;插入多条数据&lt;/button&gt;   &lt;button onclick=&quot;queryDB()&quot;&gt;查询数据&lt;/button&gt;   &lt;button onclick=&quot;updateDB()&quot;&gt;更新数据&lt;/button&gt;   &lt;div id=&quot;table&quot;&gt;&lt;/div&gt;   &lt;script&gt;     const dbName = 'users'     const dbVersion = 1.0     let db = null     function openDB() {       const request = indexedDB.open(dbName, dbVersion)       request.onerror = function() {         console.log('无法打开数据库');       }              request.onupgradeneeded = function(event) {         db = event.target.result         // 创建一个表         const objectStore = db.createObjectStore('sex', {keyPath: 'id'})         objectStore.createIndex('title', 'title', {unique: true})       }       request.onsuccess = function(event) {         db = event.target.result         console.log(`数据库${db.name}已经开启`);       }     }        function insertOneDB() {       console.log(db);       const transaction = db.transaction(['sex'], 'readwrite')       .objectStore('sex')       .add({id: 1, title: '男生', author: '张三', createAt: Date.now()})              transaction.onerror = function() {         console.log('数据写入失败');       }       transaction.onsuccess = function() {         console.log('数据写入成功');       }     }        function insertMultiDB() {       const data = [         {id: 2, title: '男生1', author: '李四', createAt: Date.now()},         {id: 3, title: '男生2', author: '王二', createAt: Date.now()},         {id: 4, title: '女生', author: '柳如烟', createAt: Date.now()}       ]       const transaction = db.transaction(['sex'], 'readwrite')       const objectStore = transaction.objectStore('sex')       data.forEach((item) =&gt; {         const request = objectStore.add(item)         request.onsuccess = function() {           console.log('数据已添加');         }       })       transaction.oncomplete = function () {         console.log('所有数据写入完成');         db.close()       }     }        function queryDB() {       const transaction = db.transaction(['sex'], 'readonly')       const objectStore = transaction.objectStore('sex')       const index = objectStore.index('title')       const range = IDBKeyRange.only('女生')       const request = index.openCursor(range)       request.onsuccess = function(event) {         console.log(event.target.result.value);       }       // const req = objectStore.get(1)       // req.onerror = function() {       //   console.log('查找失败');       // }       // req.onsuccess = function() {       //   console.log(req.result);       // }       // 拿到某些数据     }   &lt;/script&gt; &lt;/body&gt;</code></p>
+<h2 id="二区别">二：区别<a hidden class="anchor" aria-hidden="true" href="#二区别">#</a></h2>
+<p>关于 <code>cookie</code>、<code>sessionStorage</code>、<code>localStorage</code> 三者的区别主要如下:</p>
+<p><strong>存储大小:</strong></p>
+<ul>
+<li><code>cookie</code> 数据大小不能超过4k</li>
+<li><code>sessionStorage</code> 和 <code>localstorage</code> 虽然也有存储大小的限制，但比<code>cookie</code>大得多，可以达到5M或更大</li>
+</ul>
+<p><strong>有效时间:</strong></p>
+<ul>
+<li><code>localStorage</code> 存储持久数据，浏览器关闭后数据不丢失除非主动删除数据</li>
+<li><code>sessionStorage</code> 数据在当前浏览器窗口关闭后自动删除</li>
+<li><code>cookie</code> 设置的 <code>cookie</code> 过期时间之前一直有效，即使窗口或浏览器关闭</li>
+</ul>
+<p><strong>数据与服务器之间的交互方式：</strong></p>
+<ul>
+<li><code>cookie</code> 的数据会自动的传递到服务器，服务器端也可以写 <code>cookie</code> 到客户端;</li>
+<li><code>sessionStorage</code> 和 <code>localStorage</code> 不会自动把数据发给服务器，仅在本地保存</li>
+</ul>
+<h2 id="三应用场景">三：应用场景<a hidden class="anchor" aria-hidden="true" href="#三应用场景">#</a></h2>
+<p>在了解了上述的前端的缓存方式后，我们可以看看针对不同场景的使用选择:</p>
+<ul>
+<li>标记用户与跟踪用户行为的情况，推荐使用 <code>cookie</code></li>
+<li>适合长期保存在本地的数据(令牌)，推荐使用 <code>localstorage</code></li>
+<li>敏感账号一次性登录，推荐使用 <code>sessionStorage</code></li>
+<li>存储大量数据的情况、在线文档(富文本编辑器)保存编辑历史的情况，推荐使用 <code>indexedDB</code></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/">浏览器</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E4%B8%87%E5%BE%97%E5%8E%A8app-%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%A8%B1%E4%B9%90%E4%BA%92%E5%8A%A8%E9%9C%80%E6%B1%82/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>万得厨app-虚拟人娱乐互动需求</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/2024.05.06%E5%B1%8F%E7%AB%AF%E7%95%9C%E7%89%A7%E5%B1%95%E5%8E%850510%E7%89%88%E6%9C%AC%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E8%AF%84%E5%AE%A1%E7%BA%AA%E8%A6%81/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>2024.05.06屏端畜牧展厅0510版本测试用例评审纪要</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 一篇打通浏览器储存 on x"
+            href="https://x.com/intent/tweet/?text=%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2c%e6%b5%8f%e8%a7%88%e5%99%a8%2c%e9%9d%a2%e8%af%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 一篇打通浏览器储存 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f&amp;title=%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98&amp;summary=%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 一篇打通浏览器储存 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f&title=%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 一篇打通浏览器储存 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 一篇打通浏览器储存 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 一篇打通浏览器储存 on telegram"
+            href="https://telegram.me/share/url?text=%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 一篇打通浏览器储存 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%b8%80%e7%af%87%e6%89%93%e9%80%9a%e6%b5%8f%e8%a7%88%e5%99%a8%e5%82%a8%e5%ad%98&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25B8%2580%25E7%25AF%2587%25E6%2589%2593%25E9%2580%259A%25E6%25B5%258F%25E8%25A7%2588%25E5%2599%25A8%25E5%2582%25A8%25E5%25AD%2598%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

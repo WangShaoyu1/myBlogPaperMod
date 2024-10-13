@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>HunggingGPT像素级学习分析报告（一） | PaperMod</title>
+<meta name="keywords" content="GPT相关">
+<meta name="description" content="GPT相关">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="HunggingGPT像素级学习分析报告（一）" />
+<meta property="og:description" content="GPT相关" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="HunggingGPT像素级学习分析报告（一）"/>
+<meta name="twitter:description" content="GPT相关"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "HunggingGPT像素级学习分析报告（一）",
+      "item": "http://localhost:1313/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "HunggingGPT像素级学习分析报告（一）",
+  "name": "HunggingGPT像素级学习分析报告（一）",
+  "description": "GPT相关",
+  "keywords": [
+    "GPT相关"
+  ],
+  "articleBody": " 1结论 2与业务相关的启发 3前言 3.1一、行业背景 3.2二、Hugging GPT发布及能力 4上机模拟 4.11. 推荐配置 4.22. 运行 4.2.1a. 运行项目 4.2.2b. 链路调用 4.2.3c. 举例分析 4.2.3.1ⅰ. 用户输入 4.2.3.2ⅱ. 任务规划 4.2.3.3ⅲ. 模型选择 4.2.4d. 模型执行 4.2.5e. 结果生成 5效果分析 5.1实验1 5.2实验2 5.3实验3 5.4实验4 5.5实验5 5.6实验结论 结论 1、总的来说，Hugging GPT和微软之前开源的“Visual ChatGPT”一样，此类项目的象征意义要远大于现实意义，逻辑满分，应用效果值得深思和拓展。Jarvis代表的是大多数技术同仁对于人工智能发展共同愿景;\n2、Hugging GPT可以理解为借助ChatGPT的逻辑推理能力，使用Hugging GPT提供的工程化的任务模板、各个步骤下的prompt design模板来生成 输入到ChatGPT用到的prompt；并从场景逻辑上将任务分类，从工程实现上细化了这些模型的调用方式，并最终聚合结果反馈给用户；\n3、最优模型选择上，只是利用模型在Hugging Face平台上的点赞likes数量（本人本地项目中改为下载量downloads，学术文档https://arxiv.org/pdf/2303.17580.pdf 上也是downloads，可理解为项目bug）有些简单，能不能考虑多其他的标签来优化一个模型的匹配度值得思考和优化；\n4、提示prompt对于ChatGPT输出准确的答案真的很重要，引导式，角色定位，描述细节等等做到细致才会用的好ChatGPT和其他的AIGC工具。\n与业务相关的启发 在这其中受到的启发有：\n1、产品实践一个人工智能算法相关的项目，硬件配置要符合项目要求，如果涉及到训练相关的，没有强大的显卡是做不了这个事情，此种需求最经济的方式是使用云服务商对应服务；\n2、对话管理模块，结合上下文这种，使用ChatGPT挺好用，这要求提示prompt做好引导，给出模板示例。所以针对业务场景设计一个prompt design系统很有价值；\n3、目前对于AI的多任务治理、任务自动处理，这种强通用能力目前能力还在发展中；\n4、单个食材识别，目前已有模型库做得很好，但要求图片清楚无误，同时对摆放位置要求较高；\n5、识别出来食材后，图片转文本之后，可利用ChatGPT生成菜谱，效果不错，但是需求生成食谱步骤图片，目前对应的效果不好；\n前言 一、行业背景 基于对大规模文本语料库的大规模预训练和来自人类反馈（RLHF）的强化学习，LLM可以在语言理解、生成、交互和推理方面产生卓越的能力。\n尽管取得了这些巨大的成功，但目前的LLM技术仍然不完善，在构建先进的人工智能系统的过程中面临着一些紧迫的挑战。我们从以下方面进行讨论：\n局限于文本生成的输入和输出形式， 当前的LLM缺乏处理视觉和语音等复杂信息的能力，无论它们在自然语言处理任务中取得了重大成就； 在现实场景中，一些复杂任务通常由多个子任务组成，因此需要多个模型的调度和协作，这也超出了语言模型的力； 对于一些具有挑战性的任务，LLM表明在零样本学习或者少样本学习中表现出良好的效果，但表现仍然比一些专家差不少(例如，微调模型） 为了解决复杂的AI任务，LLM需要和外部AI模型相辅而行，互相配合。因此，关键点就变成了怎么选择合适的中间件来作为桥梁链接LLM和各种各样的AI模型。每个AI模型都能通过总结其模型功能来表示为一种语言形式，因此，可以提出一个新的概念：“语言是LLM连接AI模型的通用接口”。也就是说，通过将这些模型描述合并到提示prompt中，LLM可被认为是管理AI模型的大脑，如计划、调度和合作等等。那怎么获取大量而又高质量的AI模型描述呢？一些开源机器学习社区提供大量适用模型，具有良好的模型描述，以解决特定的AI任务。基于以上，是不是可以通过一个基于语言的界面，连接LLM和开源机器学习社区，来解决复杂的AI任务？答案是可行。\n二、Hugging GPT发布及能力 LLM选择的是ChatGPT，开源的机器学习社区选择是hugging face（机器学习界的Github），两者之间的连接系统被命名为Hungging GPT，能处理用户多模态信息输入（多模态感知能力），并解决各种各样复杂的AI任务。Hungging GPT解决一个AI任务，可分解为如下4个步骤：\n任务规划：使用ChatGPT来分析用户的请求及理解用户意图并将其分解为可能可解决的结构化任务，并通过Hugging GPT理解任务之间的逻辑关系并决定执行顺序【并通过Hugging GPT设计好提示系统以便于ChatGPT生成任务计划】；HuggingGPT辅助ChatGPT完成任务计划 为了promote ChatGPT更有效执行任务planning，Hugging GPT应用基于规范的指令和基于演示的解析到提示设计系统中。\nHugging GPT设计了4个插槽供任务解析，分别是任务ID、任务type、任务dependencies、任务arguments，任务规范提供了一个统一的模版供ChatGPT通过插槽归档的方式来执行任务解析。任务type有lanuage、visual、video、audio，也可理解为NLP、CV、Video、Audio任务；具体看Hugging GPT中总结有：“token-classification”, “text2text-generation”, “summarization”, “translation”, “question-answering”, “conversational”, “text-generation”, “sentence-similarity”, “tabular-classification”, “object-detection”, “image-classification”, “image-to-image”, “image-to-text”, “text-to-image”, “text-to-video”, “visual-question-answering”, “document-question-answering”, “image-segmentation”, “depth-estimation”, “text-to-speech”, “automatic-speech-recognition”, “audio-to-audio”, “audio-classification”, “canny-control”, “hed-control”, “mlsd-control”, “normal-control”, “openpose-control”, “canny-text-to-image”, “depth-text-to-image”, “hed-text-to-image”, “mlsd-text-to-image”, “normal-text-to-image”, “openpose-text-to-image”, “seg-text-to-image”，共35种；\nHugging GPT引入上下文学习来实现更好的任务解析和任务计划，就是项目中/server/demo文件夹中的json文件，通过在提示中注入一些演示，能够让ChatGPT更好理解意图和标准，每一个演示是一组任务计划的输入和输出—来自用户的请求和要解析出来的预期任务序列。此外这些演示由从用户请求解析的任务之间的依赖关系组成，能够有效帮助Hugging GPT理解任务之间的逻辑关系，并决定任务的执行循顺序和资源依赖。\n模型选择：为了解决规划中的任务，ChatGPT基于Hugging Face平台上的模型描述选择专业模型； 基于上下文的任务模型分配，通过用户的输入和在提示中解析出来的任务，Hugging GPT能够为任务选择最合适的模型；为了应对提示中对于上下文长度的限制，Hugging GPT基于任务类型筛选，并只保留符合的模型，同时将筛选出来的模型在Hugging Face根据下载量进行排名。\n模型执行：启用和执行已选择的模型，并将执行结果返回给ChatGPT； 一旦任务确定了对应的模型，接下来就进入了任务执行阶段。为了稳定性和加速计算，Hugging GPT采用混合推理端点（本地+云端），并允许没有资源依赖的任务并行运行；\n对于推理耗时、网络限制、某些用到的模型不存在的情况下，为了爆出系统稳定有效，Hugging GPT将这些模型和一些常用模型放在本地。本地模型数量少一些但执行速度快，Hugging Face上的云端模型正相反–数量多但执行速度慢一些；因此，本地模型优先级高于云端模型，只有当无法执行本地模型时，Hugging GPT才会选择执行Hugging GPT上的云端模型；\n响应生成：最后，使用ChatGPT整合所有模型的预测，并为用户生成答案。 所以任务执行完毕之后，Hugging GPT会将之前三个阶段所有的信息整合为一个简要的总结，其中最重要的是已结构化格式表达的推理结果，ChatGPT将这些信息作为输入并生成人类惯用表达方式的语言\nHugging GPT目前已有的能力如下：围绕着ChatGPT，目前已集成了数百个建立在Hugging GPT平台的AI模型，涵盖文本分类、物体检测、语义分割、图像生成、问题问答、文本转语音、文本转视频等等，具有处理多模态信息和复杂AI任务的能力。\nHugging GPT的从以下3个方面来体现通用AI能力：\nHuuginging GPT使用ChatGPT作为接口来将用户请求转到专业模型，有效结合了ChatGPT的语言理解能力和其他专业AI模型的专业能力； Hugging GPT不局限于视觉感知任务，还能通过ChatGPT来组织各种模型之间的合作来处理任何模式或领域的任务； Hugging GPT 基于模型描述来分配和组织任务，通过仅提供模型描述，能够连续和方便地集成各种专家模型，而不用改变任何结构和提示设置。 上机模拟 1. 推荐配置 ?\n● Ubuntu 16.04 LTS\n● VRAM \u003e= 24GB\n● RAM \u003e 12GB (minimal), 16GB (standard), 80GB (full)\n● Disk \u003e 284GB\n○ 42GB for damo-vilab/text-to-video-ms-``1``.7b\n○ 126GB for ControlNet\n○ 66GB for stable-diffusion-v1-``5\n○ 50GB for others\n推荐配置这块实操说明：\nwindows系统和Ubuntu皆可以，不推荐macOS（大多数都不兼容NVIDIA）； 电脑需要配置NVIDIA显卡，最好是物理内存大于8G，其中加上电脑共享GPU内存，是可以满足如上配置的24G显卡要求。本人使用的 RTX 3080TI 16G，电脑共享GPU内存为32G。2023年Q1季度显卡芯片性能排行； 电脑物理内存最好是64G及以上，加上电脑动态虚拟内存，可满足如上配置中full模式下内存80G的要求； 项目中常用模型下载后共有270G左右，下载时间需要考虑。3M/s的话，也需要不间断一天左右时间； 2. 运行 a. 运行项目 配置好如上环境后，接下来按照操作流程：\n?\ngit clone https:``//github.com/microsoft/JARVIS.git\n?\n# setup env\ncd server\nconda create -n jarvis python=``3.8\nconda activate jarvis\nconda install pytorch torchvision torchaudio pytorch-cuda=``11.7 -c pytorch -c nvidia\npip install -r requirements.txt\n# download models. Make sure that `git-lfs` is installed.\ncd models\nbash download.sh # required when `inference_mode` is `local` or `hybrid`.\n# run server\ncd ..\n# required when `inference_mode` is `local` or `hybrid`,start port 8005\npython models_server.py --config configs/config.``default``.yaml\n# for text-davinci-``003``,start port 8004\npython awesome_chat.py --config configs/config.``default``.yaml --mode server\n?\ncd web\nnpm install\nnpm run dev\nb. 链路调用 调用链是：\n用户通过web前端界面输入请求内容——\u003e 8004接口响应—分析用户请求意图，模型选择——\u003e 然后调用8005接口–模型执行、生成结果; c. 举例分析 ⅰ. 用户输入 内容：tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff\nⅱ. 任务规划 第一步：生成promt\n第二步：调用接口：https://api.openai.com/v1/completions ；\n参数中：\nmodel:text-davinci-003 prompt: 如下–完整的prompt。具体来看，prompt中的提示词大量由项目中/server/demos/demo_parse_task.json，中组成，并配合 用户输入的内容。demo_parse_task.json中的内容为6对上下文，每一对都包含一个user和assistant的输入与输出 作为上下文【个人理解是告诉ChatGPT回答这个问题的“训练数据”】【将这些上下文单独放到chat.open.com中也是类似的效果，模型不同略不一样】，也就是说Hugging GPT提供模板作为prompt，输入到ChatGPT完成生成任务规划； 第三步：生成任务规划结果。\n结果由ChatGPT生成，返回任务类型列表list，每条数据包含有任务类型type、任务ID、任务参数args，详细结果如下–完整的任务规划列表数据 ?\n#``1 Task Planning Stage: The AI assistant can parse user input to several tasks: [{``\"task\"``: task, \"id\"``: task_id, \"dep\"``: dependency_task_id, \"args\"``: {``\"text\"``: text or -dep_id, \"image\"``: image_url or -dep_id, \"audio\"``: audio_url or -dep_id}}]. The special tag \"-dep_id\" refer to the one generated text/image/audio in the dependency task (Please consider whether the dependency task generates resources of this type.) and \"dep_id\" must be in \"dep\" list. The \"dep\" field denotes the ids of the previous prerequisite tasks which generate a new resource that the current task relies on. The \"args\" field must in [``\"text\"``, \"image\"``, \"audio\"``], nothing else``. The task MUST be selected from the following options: \"token-classification\"``, \"text2text-generation\"``, \"summarization\"``, \"translation\"``, \"question-answering\"``, \"conversational\"``, \"text-generation\"``, \"sentence-similarity\"``, \"tabular-classification\"``, \"object-detection\"``, \"image-classification\"``, \"image-to-image\"``, \"image-to-text\"``, \"text-to-image\"``, \"text-to-video\"``, \"visual-question-answering\"``, \"document-question-answering\"``, \"image-segmentation\"``, \"depth-estimation\"``, \"text-to-speech\"``, \"automatic-speech-recognition\"``, \"audio-to-audio\"``, \"audio-classification\"``, \"canny-control\"``, \"hed-control\"``, \"mlsd-control\"``, \"normal-control\"``, \"openpose-control\"``, \"canny-text-to-image\"``, \"depth-text-to-image\"``, \"hed-text-to-image\"``, \"mlsd-text-to-image\"``, \"normal-text-to-image\"``, \"openpose-text-to-image\"``, \"seg-text-to-image\"``. There may be multiple tasks of the same type. Think step by step about all the tasks needed to resolve the user``'s request. Parse out as few tasks as possible while ensuring that the user request can be resolved. Pay attention to the dependencies and order among tasks. If the user input can'``t be parsed, you need to reply empty JSON []. user\nGive you some pictures e1.jpg, e2.png, e3.jpg, help me count the number of sheep?\nassistant\n[{``\"task\"``: \"image-to-text\"``, \"id\"``: 0``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"e1.jpg\" }}, {``\"task\"``: \"object-detection\"``, \"id\"``: 1``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"e1.jpg\" }}, {``\"task\"``: \"visual-question-answering\"``, \"id\"``: 2``, \"dep\"``: [``1``], \"args\"``: {``\"image\"``: \"-1\"``, \"text\"``: \"How many sheep in the picture\"``}} }}, {``\"task\"``: \"image-to-text\"``, \"id\"``: 3``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"e2.png\" }}, {``\"task\"``: \"object-detection\"``, \"id\"``: 4``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"e2.png\" }}, {``\"task\"``: \"visual-question-answering\"``, \"id\"``: 5``, \"dep\"``: [``4``], \"args\"``: {``\"image\"``: \"-4\"``, \"text\"``: \"How many sheep in the picture\"``}} }}, {``\"task\"``: \"image-to-text\"``, \"id\"``: 6``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"e3.jpg\" }}, {``\"task\"``: \"object-detection\"``, \"id\"``: 7``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"e3.jpg\" }}, {``\"task\"``: \"visual-question-answering\"``, \"id\"``: 8``, \"dep\"``: [``7``], \"args\"``: {``\"image\"``: \"-7\"``, \"text\"``: \"How many sheep in the picture\"``}}]\nuser\nLook at /e.jpg, can you tell me how many objects in the picture? Give me a picture and video similar to this one.\nassistant\n[{``\"task\"``: \"image-to-text\"``, \"id\"``: 0``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"/e.jpg\" }}, {``\"task\"``: \"object-detection\"``, \"id\"``: 1``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"/e.jpg\" }}, {``\"task\"``: \"visual-question-answering\"``, \"id\"``: 2``, \"dep\"``: [``1``], \"args\"``: {``\"image\"``: \"-1\"``, \"text\"``: \"how many objects in the picture?\" }}, {``\"task\"``: \"text-to-image\"``, \"id\"``: 3``, \"dep\"``: [``0``], \"args\"``: {``\"text\"``: \"\" }}, {``\"task\"``: \"image-to-image\"``, \"id\"``: 4``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"/e.jpg\" }}, {``\"task\"``: \"text-to-video\"``, \"id\"``: 5``, \"dep\"``: [``0``], \"args\"``: {``\"text\"``: \"\" }}]\nuser\ngiven a document /images/e.jpeg, answer me what is the student amount? And describe the image with your voice\nassistant\n{``\"task\"``: \"document-question-answering\"``, \"id\"``: 0``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"/images/e.jpeg\"``, \"text\"``: \"what is the student amount?\" }}, {``\"task\"``: \"visual-question-answering\"``, \"id\"``: 1``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"/images/e.jpeg\"``, \"text\"``: \"what is the student amount?\" }}, {``\"task\"``: \"image-to-text\"``, \"id\"``: 2``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"/images/e.jpg\" }}, {``\"task\"``: \"text-to-speech\"``, \"id\"``: 3``, \"dep\"``: [``2``], \"args\"``: {``\"text\"``: \"-2\" }}]\nuser\nGiven an image /example.jpg, first generate a hed image, then based on the hed image generate a new image where a girl is reading a book\nassistant\n[{``\"task\"``: \"openpose-control\"``, \"id\"``: 0``, \"dep\"``: [-``1``], \"args\"``: {``\"image\"``: \"/example.jpg\" }}, {``\"task\"``: \"openpose-text-to-image\"``, \"id\"``: 1``, \"dep\"``: [``0``], \"args\"``: {``\"text\"``: \"a girl is reading a book\"``, \"image\"``: \"-0\" }}]\nuser\nplease show me a video and an image of (based on the text) 'a boy is running' and dub it\nassistant\n[{``\"task\"``: \"text-to-video\"``, \"id\"``: 0``, \"dep\"``: [-``1``], \"args\"``: {``\"text\"``: \"a boy is running\" }}, {``\"task\"``: \"text-to-speech\"``, \"id\"``: 1``, \"dep\"``: [-``1``], \"args\"``: {``\"text\"``: \"a boy is running\" }}, {``\"task\"``: \"text-to-image\"``, \"id\"``: 2``, \"dep\"``: [-``1``], \"args\"``: {``\"text\"``: \"a boy is running\" }}]\nuser\nplease show me a joke and an image of cat\nassistant\n[{``\"task\"``: \"conversational\"``, \"id\"``: 0``, \"dep\"``: [-``1``], \"args\"``: {``\"text\"``: \"please show me a joke of cat\" }}, {``\"task\"``: \"text-to-image\"``, \"id\"``: 1``, \"dep\"``: [-``1``], \"args\"``: {``\"text\"``: \"a photo of cat\" }}]\nuser\nThe chat log [ [] ] may contain the resources I mentioned. Now I input { tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff }. Pay attention to the input and output types of tasks and the dependencies between tasks.\nassistant\n?\n{\n\"id\"``:``\"cmpl-7895qWMaFr1owxmoVhLFrt6vyRlap\"``,\n\"object\"``:``\"text_completion\"``,\n\"created\"``:``1682175934``,\n\"model\"``:``\"text-davinci-003\"``,\n\"choices\"``:[\n{\n\"text\"``:[\n{\n\"task\"``:``\"image-to-text\"``,\n\"id\"``:``0``,\n\"dep\"``:Array[``1``],\n\"args\"``:{\n\"image\"``:``\"/example/vege-meat.jpg\"\n}\n},\n{\n\"task\"``:``\"text-generation\"``,\n\"id\"``:``1``,\n\"dep\"``:Array[``1``],\n\"args\"``:{\n\"text\"``:``\"-0\"\n}\n},\n{\n\"task\"``:``\"text-to-image\"``,\n\"id\"``:``2``,\n\"dep\"``:Array[``1``],\n\"args\"``:{\n\"text\"``:``\"-1\"\n}\n}\n],\n\"index\"``:``0``,\n\"logprobs\"``:``null``,\n\"finish_reason\"``:``\"stop\"\n}\n],\n\"usage\"``:{\n\"prompt_tokens\"``:``1927``,\n\"completion_tokens\"``:``113``,\n\"total_tokens\"``:``2040\n}\n}\nⅲ. 模型选择 经过上一个任务规划后，下一步将是模型选择：\n?\n[\n{\n\"task\"``: \"image-to-text\"``,\n\"id\"``: 0``,\n\"dep\"``: [\n-``1\n],\n\"args\"``: {\n\"image\"``: \"/example/vege-meat.jpg\"\n}\n},\n{\n\"task\"``: \"text-generation\"``,\n\"id\"``: 1``,\n\"dep\"``: [\n0\n],\n\"args\"``: {\n\"text\"``: \"-0\"\n}\n},\n{\n\"task\"``: \"text-to-image\"``,\n\"id\"``: 2``,\n\"dep\"``: [\n1\n],\n\"args\"``: {\n\"text\"``: \"-1\"\n}\n}\n]\nHugging GPT，会针对当前的任务tpye给出一个建议的模型选择：\n如果任务type是：\"-text-to-image\"结尾，那么建议用本地模型—-lllyasviel/sd-controlnet/xxx系列，原因是：“ControlNet is the best model for this task.” 如果任务type是：[“summarization”, “translation”, “conversational”, “text-generation”, “text2text-generation”](“summarization”, “translation”, “conversational”, “text-generation”, “text2text-generation”)中任意一种，那么建议用ChatGPT，原因是：“ChatGPT performs well on some NLP tasks as well.” 如果是其他类型任务type，项目中有一个文件/server/data/p0_models.jsonl，里面列举了常用673个model的，可解决24类Task，如下所示： ?\n[``'text-classification'``, 'token-classification'``, 'text2text-generation'``, 'summarization'``, 'translation'``, 'question-answering'``, 'conversational'``, 'text-generation'``, 'sentence-similarity'``, 'tabular-classification'``, 'object-detection'``, 'image-classification'``, 'image-to-text'``, 'text-to-image'``, 'image-to-image'``, 'visual-question-answering'``, 'document-question-answering'``, 'image-segmentation'``, 'depth-estimation'``, 'text-to-video'``, 'text-to-speech'``, 'automatic-speech-recognition'``, 'audio-to-audio'``, 'audio-classification'``]\n上述3种Task，“text-to-image”,“text-generation”,“image-to-text”,分别选择是如下模型：\n“text-to-image”：{‘local’: ‘runwayml/stable-diffusion-v1-5’, ‘huggingface’: ‘andite/anything-v4.0’}\n“text-generation”：ChatGPT\n“image-to-text”：{‘local’: ‘nlpconnect/vit-gpt2-image-captioning’, ‘huggingface’: [‘kha-white/manga-ocr-base’, ‘microsoft/trocr-base-printed’, ‘nlpconnect/vit-gpt2-image-captioning’](‘kha-white/manga-ocr-base’, ‘microsoft/trocr-base-printed’, ’nlpconnect/vit-gpt2-image-captioning’)}\n里面有一个逻辑：\n如果可用模型中只有一个，不管是local本地的还是hugging 线上的，都选择这个模型； 如果可用模型中有多个，就涉及到如何选择最合适的模型。choose_model函数用于选择最合适的模型，其需要传入（input, command, 候选模型信息, api_key, api_type, api_endpoint），其中候选模型信息中含有字段：likes、tags、description、id等信息； 将这些组合信息作为prompt，传给ChatGPT，返回最合适的模型名称。选择的核心变量有两个：是否是local、模型点赞like数量，其实，只是通过这两个变量来决定使用哪个模型model有一点简单、粗暴； ?\n[{``'role'``: 'system'``, 'content'``: '#2 Model Selection Stage: Given the user request and the parsed tasks, the AI assistant helps the user to select a suitable model from a list of models to process the user request. The assistant should focus more on the description of the model and find the model that has the most potential to solve requests and tasks. Also, prefer models with local inference endpoints for speed and stability.'``}, {``'role'``: 'user'``, 'content'``: 'tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff'``}, {``'role'``: 'assistant'``, 'content'``: \"{'task': 'text-to-image', 'id': 2, 'dep': [1], 'args': {'text': 'a table topped with bowls of vegetables and a bowl of meat '}}\"``}, {``'role'``: 'user'``, 'content'``: 'Please choose the most suitable model from [{'``id``': '``runwayml/stable-diffusion-v1-``5``', '``inference endpoint``': ['``runwayml/stable-diffusion-v1-``5``'], '``likes``': 6367, '``description``': '``\\n\\n# Stable Diffusion v1-``5 Model Card\\n\\nStable Diffusion is a latent text-to-image diffusion model cap``', '``tags``': ['``stable-diffusion``', '``stable-diffusion-diffusers``', '``text-to-image``']}, {'``id``': '``andite/anything-v4.``0``', '``inference endpoint``': ['``andite/anything-v4.``0``'], '``likes``': 1815, '``description``': '``\\n\\nFantasy.ai is the official and exclusive hosted AI generation platform that holds a commercial use``', '``tags``': ['``stable-diffusion``', '``stable-diffusion-diffusers``', '``text-to-image``', '``diffusers``']}] for the task {'``task``': '``text-to-image``', '``id``': 2, '``dep``': [1], '``args``': {'``text``': '``a table topped with bowls of vegetables and a bowl of meat '}}. The output must be in a strict JSON format: {\"id\": \"id\", \"reason\": \"your detail reasons for the choice\"}.'``}]\nChatGPT返回的内容是：“text-to-image”：\n?\n{\n\"id\"``: \"runwayml/stable-diffusion-v1-5\"``,\n\"reason\"``: \"This model is specifically designed for text-to-image diffusion tasks, has a high number of likes, and has a local inference endpoint that guarantees faster and stable processing.\"\n}\n?\n[{``'role'``: 'system'``, 'content'``: '#2 Model Selection Stage: Given the user request and the parsed tasks, the AI assistant helps the user to select a suitable model from a list of models to process the user request. The assistant should focus more on the description of the model and find the model that has the most potential to solve requests and tasks. Also, prefer models with local inference endpoints for speed and stability.'``}, {``'role'``: 'user'``,\n'content'``: 'tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff'``}, {``'role'``: 'assistant'``, 'content'``: \"{'task': 'image-to-text', 'id': 0, 'dep': [-1], 'args': {'image': 'public//example/vege-meat.jpg'}}\"``}, {``'role'``: 'user'``, 'content'``: 'Please choose the most suitable model from [{'``id``': '``nlpconnect/vit-gpt2-image-captioning``', '``inference endpoint``': ['``nlpconnect/vit-gpt2-image-captioning``'], '``likes``': 219, '``description``': '``\\n\\n# nlpconnect/vit-gpt2-image-captioning\\n\\nThis is an image captioning model trained by @ydshieh in [``', '``tags``': ['``image-to-text``', '``image-captioning``']}, {'``id``': '``Salesforce/blip-image-captioning-large``', '``inference endpoint``': ['``Salesforce/blip-image-captioning-large``', '``nlpconnect/vit-gpt2-image-captioning``'], '``likes``': 52, '``description``': '``\\n\\n# BLIP: Bootstrapping Language-Image Pre-training for Unified Vision-Language Understanding and Ge``', '``tags``': ['``image-captioning``']}] for the task {'``task``': '``image-to-text``', '``id``': 0, '``dep``': [-1], '``args``': {'``image``': '``public``//example/vege-meat.jpg``'}}. The output must be in a strict JSON format: {\"id\": \"id\", \"reason\": \"your detail reasons for the choice\"}.'``}]\nChatGPT返回的内容是：“image-to-text”：\n?\n{\n\"id\"``: \"nlpconnect/vit-gpt2-image-captioning\"``,\n\"reason\"``: \"This model is specifically designed for image captioning tasks, has a high number of likes, and has a local inference endpoint that guarantees faster and stable processing.\"\n}\nd. 模型执行 确定了选择的模型model后，如果是本地模型，调用本地模型：\n逻辑如下：\n1、将任务分类为：contronlet神经网络、NLP task、CV task、Audio task；针对每一类任务、已选择的model_id，分别写调用方法、解析响应方法\n如果是在线模型，调用在线模型：\n需要使用到Hugging face的接口调用方法，详情见：InferenceApi，项目中出现根据任务的不同的两种调用方式，一种是通过url调用方式：\"https://api-inference.huggingface.co/models/{model_id}\"，另外一种是：InferenceApi(repo_id=“model_id”, token=API_TOKEN)； 在模型执行过程中，如果有生成文件，如图片、音频、视频等，生成完毕之后会保存在系统中。\ne. 结果生成 之后就是将模型执行阶段的结果，结合Hugging GPT预设的propmpt，组成新的prompt，输入到ChatGPT中：\n?\n[{``'role'``: 'system'``, 'content'``: '#4 Response Generation Stage: With the task execution logs, the AI assistant needs to describe the process and inference results.'``}, {``'role'``: 'user'``, 'content'``: 'tell me the content abo ut the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff'``}, {``'role'``: 'assistant'``, 'content'``: \"Before give you a response, I want to introduce my workflow for your request, which is shown in the fo llowing JSON data: [{'task': {'task': 'image-to-text', 'id': 0, 'dep': [-1], 'args': {'image': 'public//example/vege-meat.jpg'}}, 'inference result': {'generated text': 'a table topped with bowls of vegetables and a bowl of meat '}, 'choose model result': {'id': 'nlpconnect/vit-gpt2-image-captioning', 'reason': 'This model is best suited for the task of image-to-text as it is specifically designed for image captioning and has the highest number of likes'}}, {' task': {'task': 'text-generation', 'id': 1, 'dep': [0], 'args': {'text': 'a table topped with bowls of vegetables and a bowl of meat '}}, 'inference result': {'response': 'One way to use the vegetables and meat in this photo is to c reate a healthy stir fry. Begin by heating some oil in a large skillet. Add diced onions and minced garlic and sauté until lightly browned. Add chopped or shredded vegetables - like broccoli, carrots, and bell peppers - to the skill ed to generate a text description of the image, which was: \"``a table topped with bowls of vegetables and a bowl of meat``\". \\n\\nThe second model, ChatGPT, was used to generate a recipe based on the text description, which was: \"``One way to use the vegetables and meat in this photo is to create a healthy stir fry. Begin by heating some oil in a large skillet. Add diced onions and minced garlic and sauté until lightly browned. Add chopped or shredded vegetables - like broccoli, carrots, and bell peppers - to the skillet and cook until just tender. Add the diced meat followed by seasonings of your choice - like soy sauce, sesame oil, and sriracha - and an optional touch of sweetness like honey or brown sugar. Finally, stir everything together until evenly mixed and serve hot.``\"\\n\\nThe third model, runwayml/stable-diffusion-v1-5, was used to generate an image based on the recipe, which can be found at the following URL: /images/54eb.png.\\n\\nI hope this answers your question. Is there anything else I can help you with?\"``,``\"index\"``:``0``,``\"logprobs\"``:``null``,``\"finish_reason\"``:``\"stop\"``}],``\"usage\"``:{``\"prompt_tokens\"``:``716``,``\"completion_tokens\"``:``337``,``\"total_tokens\"``:``1053``}}\nChatGPT返回的内容是：“generate”：\n备注：在Web页面上，“/images/9541.png”是带链接可以点击的\n?\nBased on the inference results, I can generate a recipe picture according to the foodstuff in the image you provided. The image you provided shows a table with bowls of vegetables and a bowl of meat, which can be used to make a delicious and healthy meal. Try this recipe: Sauteed vegetables and meat with garlic and herbs.\n- Start by heating a pan over medium heat\n- Add a tablespoon of olive oil and a clove of garlic (minced)\n- Add the vegetables and cook until they become tender\n- Add the meat, season with salt and pepper\n- Cook until the meat is cooked through\n- Add in chopped fresh herbs like parsley, chives, etc.\n- Serve and enjoy!\nThe complete path or url of the generated image is /images/``9541``.png.\nTo generate the recipe picture, I used three tasks: image-to-text, text-generation, and text-to-image. For the image-to-text task, I used the model nlpconnect/vit-gpt2-image-captioning, which is best suited for the task of image-to-\ntext as it is specifically designed for image captioning and has a higher number of likes. For the text-generation task, I used the model ChatGPT, which performs well on some NLP tasks as well. For the text-to-image task, I used the model runwayml/stable-diffusion-v1-``5``, which has the highest number of likes and is the most suitable for text-to-image tasks.\nI hope this answers your question. Is there anything else I can help you with?\n效果分析 实验1 输入：\ntell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to those food ingredients\n输出：\nHuggingGPT :\nBased on the inference results, I can generate a recipe picture according to the foodstuff in the image you provided. The image you provided shows a table with bowls of vegetables and a bowl of meat, which can be used to make a delicious and healthy meal. Try this recipe: Sauteed vegetables and meat with garlic and herbs.\nStart by heating a pan over medium heat Add a tablespoon of olive oil and a clove of garlic (minced) Add the vegetables and cook until they become tender Add the meat, season with salt and pepper Cook until the meat is cooked through Add in chopped fresh herbs like parsley, chives, etc. Serve and enjoy! The complete path or url of the generated image is Image\nTo generate the recipe picture, I used three tasks: image-to-text, text-generation, and text-to-image. For the image-to-text task, I used the model nlpconnect/vit-gpt2-image-captioning, which is best suited for the task of image-to-text as it is specifically designed for image captioning and has a higher number of likes. For the text-generation task, I used the model ChatGPT, which performs well on some NLP tasks as well. For the text-to-image task, I used the model runwayml/stable-diffusion-v1-5, which has the highest number of likes and is the most suitable for text-to-image tasks.\nI hope this answers your question. Is there anything else I can help you with?\n实验2 输入：\nGiven a collection of image A: /examples/a.jpg, B: /examples/b.jpg, C: /examples/c.jpg, please tell me how many zebras in these picture?\n输出： 犯了事实性错误，答案是2只斑马，实际图中有4只\nHuggingGPT :\nBased on the inference results, there are two zebras in the picture. The workflow I used to answer your request is as follows:\nFirst, I used the image-to-text model nlpconnect/vit-gpt2-image-captioning to generate a text description for each image. For image A, the generated text was “a cat sitting on a window sill looking out”. For image B, the generated text was “a zebra standing in a field of tall grass”. For image C, the generated text was “two zebras standing in a field of dry grass”.\nThen, I used the object-detection model facebook/detr-resnet-50 to detect objects in each image. For image A, the model detected a cat and a potted plant. For image B, the model detected a zebra. For image C, the model detected three zebras.\nFinally, I used the visual-question-answering model dandelin/vilt-b32-finetuned-vqa to answer the question “How many zebras in the picture?”. For image A, the model predicted 0 zebras. For image B, the model predicted 1 zebra. For image C, the model predicted 2 zebras.\nTherefore, based on the inference results, there are two zebras in the picture. The complete path or urls of files in inference results are:Image A: Image B：Image C:\nDo you have any other questions?\n实验3 输入：\nDraw a picture about “A field of wildflowers stretches out as far as the eye can see, each one a different color and shape. In the distance, a massive tree towers over the landscape, its branches reaching up to the sky like tentacles.”\n输出： 图片效果分辨率低，细节处理粗糙，毫无美感\nHuggingGPT :\nI have carefully considered your request and based on the inference results, I have generated an image of a field of wildflowers stretching out as far as the eye can see, each one a different color and shape. In the distance, a massive tree towers over the landscape, its branches reaching up to the sky like tentacles. The model I used to generate this image is runwayml/stable-diffusion-v1-5, which is the most suitable for the task as it is a latent text-to-image diffusion model capable of generating high-quality images from text descriptions. The inference result is the generated image which can be found at the following URL: Image(http://localhost:8004/images/7e3c.png). I hope this answers your request. Is there anything else I can help you with?\nMidjourney效果：\n实验4 输入：\nGiven two images:/example/egg.jpg、/example/chili2.jpg，what are they and generate a recipe picture\n输出：—-输出的食谱recipe，完全离题。每次输入后结果都不一样\nHuggingGPT :\nBased on the inference results, I have generated a recipe picture that contains the food ingredients and steps. The ingredients are eggs and chili peppers, and the steps are\nscramble the eggs in a large bowl, cook the chili peppers in a skillet until they are slightly charred, add the peppers to the eggs and mix together, pour the mixture into the white bowl and serve. The generated image can be found at the following URL: Image(http://localhost:8004/images/5358.png). To generate this recipe picture, I used the following models: nlpconnect/vit-gpt2-image-captioning for image-to-text, ChatGPT for text-generation, and runwayml/stable-diffusion-v1-5 for text-to-image. I hope this answer is helpful. Is there anything else I can help you with?\n实验5 输入：\nGenerate a video about\"a blue bird is flying around the apple tree, the sky is bright\"\n输出：—-生成的视频比较模糊\nHuggingGPT :\nI have carefully considered your request and based on the inference results, I have generated a video about ‘a blue bird is flying around the apple tree, the sky is bright’. The model used for this task is ‘damo-vilab/text-to-video-ms-1.7b’ and the inference result is ‘video’. I hope this response meets your needs. Is there anything else I can help you with?\n点击链接查看：3d31.mp4\n(https://www.yuque.com/666come/zh982x/sclvmxtnhvufkuf0#gQRe0)\n实验结论 1、理论逻辑能够跑通，文章中的实验数据成立，但实际上案例特别是生成图片这块效果很差；\n2、实验4 输入相同的内容，返回的内容不一样，问题出现在第一步任务解析上，每次返回的任务类型不一样，有时候第一步是image-to-text，有时候是image-classification，这就导致最后的结果不同\n3、实验2出现了事实性错误\n4、实验5中生成的视频比较模糊\nFilter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "3205",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      HunggingGPT像素级学习分析报告（一）
+    </h1>
+    <div class="post-description">
+      GPT相关
+    </div>
+    <div class="post-meta">16 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%bb%93%e8%ae%ba" aria-label="结论">结论</a></li>
+                <li>
+                    <a href="#%e4%b8%8e%e4%b8%9a%e5%8a%a1%e7%9b%b8%e5%85%b3%e7%9a%84%e5%90%af%e5%8f%91" aria-label="与业务相关的启发">与业务相关的启发</a></li>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%80%e8%a1%8c%e4%b8%9a%e8%83%8c%e6%99%af" aria-label="一、行业背景">一、行业背景</a></li>
+                <li>
+                    <a href="#%e4%ba%8chugging-gpt%e5%8f%91%e5%b8%83%e5%8f%8a%e8%83%bd%e5%8a%9b" aria-label="二、Hugging GPT发布及能力">二、Hugging GPT发布及能力</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%8a%e6%9c%ba%e6%a8%a1%e6%8b%9f" aria-label="上机模拟">上机模拟</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%8e%a8%e8%8d%90%e9%85%8d%e7%bd%ae" aria-label="1. 推荐配置">1. 推荐配置</a></li>
+                <li>
+                    <a href="#2-%e8%bf%90%e8%a1%8c" aria-label="2. 运行">2. 运行</a><ul>
+                        
+                <li>
+                    <a href="#a-%e8%bf%90%e8%a1%8c%e9%a1%b9%e7%9b%ae" aria-label="a. 运行项目">a. 运行项目</a></li>
+                <li>
+                    <a href="#b-%e9%93%be%e8%b7%af%e8%b0%83%e7%94%a8" aria-label="b. 链路调用">b. 链路调用</a></li>
+                <li>
+                    <a href="#c-%e4%b8%be%e4%be%8b%e5%88%86%e6%9e%90" aria-label="c. 举例分析">c. 举例分析</a><ul>
+                        
+                <li>
+                    <a href="#-%e7%94%a8%e6%88%b7%e8%be%93%e5%85%a5" aria-label="ⅰ. 用户输入">ⅰ. 用户输入</a></li>
+                <li>
+                    <a href="#-%e4%bb%bb%e5%8a%a1%e8%a7%84%e5%88%92" aria-label="ⅱ. 任务规划">ⅱ. 任务规划</a></li>
+                <li>
+                    <a href="#-%e6%a8%a1%e5%9e%8b%e9%80%89%e6%8b%a9" aria-label="ⅲ. 模型选择">ⅲ. 模型选择</a></li></ul>
+                </li>
+                <li>
+                    <a href="#d-%e6%a8%a1%e5%9e%8b%e6%89%a7%e8%a1%8c" aria-label="d. 模型执行">d. 模型执行</a></li>
+                <li>
+                    <a href="#e-%e7%bb%93%e6%9e%9c%e7%94%9f%e6%88%90" aria-label="e. 结果生成">e. 结果生成</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%95%88%e6%9e%9c%e5%88%86%e6%9e%90" aria-label="效果分析">效果分析</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%9e%e9%aa%8c1" aria-label="实验1">实验1</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e9%aa%8c2" aria-label="实验2">实验2</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e9%aa%8c3" aria-label="实验3">实验3</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e9%aa%8c4" aria-label="实验4">实验4</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e9%aa%8c5" aria-label="实验5">实验5</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e9%aa%8c%e7%bb%93%e8%ae%ba" aria-label="实验结论">实验结论</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><ul>
+<li>1<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#结论">结论</a></li>
+<li>2<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#与业务相关的启发">与业务相关的启发</a></li>
+<li>3<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#前言">前言</a>
+<ul>
+<li>3.1<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#一、行业背景">一、行业背景</a></li>
+<li>3.2<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#二、HuggingGPT发布及能力">二、Hugging GPT发布及能力</a></li>
+</ul>
+</li>
+<li>4<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#上机模拟">上机模拟</a>
+<ul>
+<li>4.1<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#1.推荐配置">1. 推荐配置</a></li>
+<li>4.2<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#2.运行">2. 运行</a>
+<ul>
+<li>4.2.1<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#a.运行项目">a. 运行项目</a></li>
+<li>4.2.2<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#b.链路调用">b. 链路调用</a></li>
+<li>4.2.3<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#c.举例分析">c. 举例分析</a>
+<ul>
+<li>4.2.3.1<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#ⅰ.用户输入">ⅰ. 用户输入</a></li>
+<li>4.2.3.2<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#ⅱ.任务规划">ⅱ. 任务规划</a></li>
+<li>4.2.3.3<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#ⅲ.模型选择">ⅲ. 模型选择</a></li>
+</ul>
+</li>
+<li>4.2.4<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#d.模型执行">d. 模型执行</a></li>
+<li>4.2.5<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#e.结果生成">e. 结果生成</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>5<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#效果分析">效果分析</a>
+<ul>
+<li>5.1<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#实验1">实验1</a></li>
+<li>5.2<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#实验2">实验2</a></li>
+<li>5.3<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#实验3">实验3</a></li>
+<li>5.4<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#实验4">实验4</a></li>
+<li>5.5<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#实验5">实验5</a></li>
+<li>5.6<a href="/posts/wiki/hungginggpt%E5%83%8F%E7%B4%A0%E7%BA%A7%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A%E4%B8%80/#实验结论">实验结论</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="结论">结论<a hidden class="anchor" aria-hidden="true" href="#结论">#</a></h2>
+<p>1、总的来说，Hugging GPT和微软之前开源的“Visual ChatGPT”一样，此类项目的象征意义要远大于现实意义，逻辑满分，应用效果值得深思和拓展。Jarvis代表的是大多数技术同仁对于人工智能发展共同愿景;<br>
+2、Hugging GPT可以理解为借助ChatGPT的逻辑推理能力，使用Hugging GPT提供的工程化的任务模板、各个步骤下的prompt design模板来生成 输入到ChatGPT用到的prompt；并从场景逻辑上将任务分类，从工程实现上细化了这些模型的调用方式，并最终聚合结果反馈给用户；<br>
+3、最优模型选择上，只是利用模型在Hugging Face平台上的点赞likes数量（本人本地项目中改为下载量downloads，学术文档<a href="https://arxiv.org/pdf/2303.17580.pdf">https://arxiv.org/pdf/2303.17580.pdf</a> 上也是downloads，可理解为项目bug）有些简单，<strong>能不能考虑多其他的标签来优化一个模型的匹配度值得思考和优化</strong>；<br>
+4、提示prompt对于ChatGPT输出准确的答案真的很重要，引导式，角色定位，描述细节等等做到细致才会用的好ChatGPT和其他的AIGC工具。</p>
+<h2 id="与业务相关的启发">与业务相关的启发<a hidden class="anchor" aria-hidden="true" href="#与业务相关的启发">#</a></h2>
+<p>在这其中受到的启发有：</p>
+<p>1、产品实践一个人工智能算法相关的项目，硬件配置要符合项目要求，如果涉及到训练相关的，没有强大的显卡是做不了这个事情，此种需求最经济的方式是使用云服务商对应服务；</p>
+<p>2、对话管理模块，结合上下文这种，使用ChatGPT挺好用，这要求提示prompt做好引导，给出模板示例。所以针对业务场景设计一个prompt design系统很有价值；</p>
+<p>3、目前对于AI的多任务治理、任务自动处理，这种强通用能力目前能力还在发展中；</p>
+<p>4、单个食材识别，目前已有模型库做得很好，但要求图片清楚无误，同时对摆放位置要求较高；</p>
+<p>5、识别出来食材后，图片转文本之后，可利用ChatGPT生成菜谱，效果不错，但是需求生成食谱步骤图片，目前对应的效果不好；</p>
+<h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<h3 id="一行业背景">一、行业背景<a hidden class="anchor" aria-hidden="true" href="#一行业背景">#</a></h3>
+<p>基于对大规模文本语料库的大规模预训练和来自人类反馈（RLHF）的强化学习，LLM可以在语言理解、生成、交互和推理方面产生卓越的能力。</p>
+<p>尽管取得了这些巨大的成功，但目前的LLM技术仍然不完善，在构建先进的人工智能系统的过程中面临着一些紧迫的挑战。我们从以下方面进行讨论：</p>
+<ol>
+<li>
+<ol>
+<li>局限于文本生成的输入和输出形式， 当前的LLM缺乏处理视觉和语音等复杂信息的能力，无论它们在自然语言处理任务中取得了重大成就；</li>
+<li>在现实场景中，一些复杂任务通常由多个子任务组成，因此需要多个模型的调度和协作，这也超出了语言模型的力；</li>
+<li>对于一些具有挑战性的任务，LLM表明在零样本学习或者少样本学习中表现出良好的效果，但表现仍然比一些专家差不少(例如，微调模型）</li>
+</ol>
+</li>
+</ol>
+<p>为了解决复杂的AI任务，LLM需要和外部AI模型相辅而行，互相配合。因此，关键点就变成了怎么选择合适的中间件来作为桥梁链接LLM和各种各样的AI模型。每个AI模型都能通过总结其模型功能来表示为一种语言形式，因此，可以提出一个新的概念：“语言是LLM连接AI模型的通用接口”。也就是说，通过将这些模型描述合并到提示prompt中，LLM可被认为是管理AI模型的大脑，如计划、调度和合作等等。那怎么获取大量而又高质量的AI模型描述呢？一些开源机器学习社区提供大量适用模型，具有良好的模型描述，以解决特定的AI任务。基于以上，是不是可以通过一个基于语言的界面，连接LLM和开源机器学习社区，来解决复杂的AI任务？答案是可行。</p>
+<h3 id="二hugging-gpt发布及能力">二、Hugging GPT发布及能力<a hidden class="anchor" aria-hidden="true" href="#二hugging-gpt发布及能力">#</a></h3>
+<p>LLM选择的是ChatGPT，开源的机器学习社区选择是<a href="https://huggingface.co/">hugging face（机器学习界的Github）</a>，两者之间的连接系统被命名为Hungging GPT，能处理用户多模态信息输入（多模态感知能力），并解决各种各样复杂的AI任务。Hungging GPT解决一个AI任务，可分解为如下4个步骤：</p>
+<ol>
+<li>
+<ol>
+<li>任务规划：使用ChatGPT来分析用户的请求及理解用户意图并将其分解为可能可解决的结构化任务，并通过Hugging GPT理解任务之间的逻辑关系并决定执行顺序【并通过Hugging GPT设计好提示系统以便于ChatGPT生成任务计划】；<strong>HuggingGPT辅助ChatGPT完成任务计划</strong></li>
+</ol>
+</li>
+</ol>
+<p>为了promote ChatGPT更有效执行任务planning，Hugging GPT应用基于规范的指令和基于演示的解析到提示设计系统中。</p>
+<ol>
+<li>
+<p>Hugging GPT设计了4个插槽供任务解析，分别是任务ID、任务type、任务dependencies、任务arguments，任务规范提供了一个统一的模版供ChatGPT通过插槽归档的方式来执行任务解析。任务type有lanuage、visual、video、audio，也可理解为NLP、CV、Video、Audio任务；具体看Hugging GPT中总结有：“token-classification”, “text2text-generation”, “summarization”, “translation”, “question-answering”, “conversational”, “text-generation”, “sentence-similarity”, “tabular-classification”, “object-detection”, “image-classification”, “image-to-image”, “image-to-text”, “text-to-image”, “text-to-video”, “visual-question-answering”, “document-question-answering”, “image-segmentation”, “depth-estimation”, “text-to-speech”, “automatic-speech-recognition”, “audio-to-audio”, “audio-classification”, “canny-control”, “hed-control”, “mlsd-control”, “normal-control”, “openpose-control”, “canny-text-to-image”, “depth-text-to-image”, “hed-text-to-image”, “mlsd-text-to-image”, “normal-text-to-image”, “openpose-text-to-image”, “seg-text-to-image”，共35种；</p>
+</li>
+<li>
+<p>Hugging GPT引入上下文学习来实现更好的任务解析和任务计划，就是项目中/server/demo文件夹中的json文件，通过在提示中注入一些演示，能够让ChatGPT更好理解意图和标准，每一个演示是一组任务计划的输入和输出—来自用户的请求和要解析出来的预期任务序列。此外这些演示由从用户请求解析的任务之间的依赖关系组成，能够有效帮助Hugging GPT理解任务之间的逻辑关系，并决定任务的执行循顺序和资源依赖。</p>
+</li>
+<li>
+<ol>
+<li>模型选择：为了解决规划中的任务，ChatGPT基于Hugging Face平台上的模型描述选择专业模型；</li>
+</ol>
+</li>
+<li>
+<p>基于上下文的任务模型分配，通过用户的输入和在提示中解析出来的任务，Hugging GPT能够为任务选择最合适的模型；为了应对提示中对于上下文长度的限制，Hugging GPT基于任务类型筛选，并只保留符合的模型，同时将筛选出来的模型在Hugging Face根据下载量进行排名。</p>
+</li>
+<li>
+<ol>
+<li>模型执行：启用和执行已选择的模型，并将执行结果返回给ChatGPT；</li>
+</ol>
+</li>
+<li>
+<p>一旦任务确定了对应的模型，接下来就进入了任务执行阶段。为了稳定性和加速计算，Hugging GPT采用混合推理端点（本地+云端），并允许没有资源依赖的任务并行运行；</p>
+</li>
+<li>
+<p>对于推理耗时、网络限制、<strong>某些用到的模型不存</strong>在的情况下，为了爆出系统稳定有效，Hugging GPT将这些模型和一些常用模型放在本地。本地模型数量少一些但执行速度快，Hugging Face上的云端模型正相反–数量多但<strong>执行速度慢一些</strong>；因此，本地模型优先级高于云端模型，只有当无法执行本地模型时，Hugging GPT才会选择执行Hugging GPT上的云端模型；</p>
+</li>
+<li>
+<ol>
+<li>响应生成：最后，使用ChatGPT整合所有模型的预测，并为用户生成答案。</li>
+</ol>
+</li>
+<li>
+<p>所以任务执行完毕之后，Hugging GPT会将之前三个阶段所有的信息整合为一个简要的总结，其中最重要的是已结构化格式表达的推理结果，ChatGPT将这些信息作为输入并生成人类惯用表达方式的语言</p>
+</li>
+</ol>
+<p>Hugging GPT目前已有的能力如下：围绕着ChatGPT，目前已集成了数百个建立在Hugging GPT平台的AI模型，涵盖文本分类、物体检测、语义分割、图像生成、问题问答、文本转语音、文本转视频等等，具有处理多模态信息和复杂AI任务的能力。</p>
+<p>Hugging GPT的从以下3个方面来体现通用AI能力：</p>
+<ul>
+<li>
+<ul>
+<li>Huuginging GPT使用ChatGPT作为接口来将用户请求转到专业模型，有效结合了ChatGPT的语言理解能力和其他专业AI模型的专业能力；</li>
+<li>Hugging GPT不局限于视觉感知任务，还能通过ChatGPT来组织各种模型之间的合作来处理任何模式或领域的任务；</li>
+<li>Hugging GPT 基于模型描述来分配和组织任务，通过仅提供模型描述，能够连续和方便地集成各种专家模型，而不用改变任何结构和提示设置。</li>
+</ul>
+</li>
+</ul>
+<h2 id="上机模拟">上机模拟<a hidden class="anchor" aria-hidden="true" href="#上机模拟">#</a></h2>
+<h3 id="1-推荐配置">1. 推荐配置<a hidden class="anchor" aria-hidden="true" href="#1-推荐配置">#</a></h3>
+<p><a href="/">?</a></p>
+<p><code>● Ubuntu</code> <code>16.04</code> <code>LTS</code></p>
+<p><code>● VRAM &gt;= 24GB</code></p>
+<p><code>● RAM &gt; 12GB (minimal), 16GB (standard), 80GB (full)</code></p>
+<p><code>● Disk &gt; 284GB</code></p>
+<p>  <code>○ 42GB</code> <code>for</code> <code>damo-vilab/text-to-video-ms-``1``.7b</code></p>
+<p>  <code>○ 126GB</code> <code>for</code> <code>ControlNet</code></p>
+<p>  <code>○ 66GB</code> <code>for</code> <code>stable-diffusion-v1-``5</code></p>
+<p>  <code>○ 50GB</code> <code>for</code> <code>others</code></p>
+<p>推荐配置这块实操说明：</p>
+<ol>
+<li>windows系统和Ubuntu皆可以，不推荐macOS（大多数都不兼容NVIDIA）；</li>
+<li>电脑需要配置NVIDIA显卡，最好是物理内存大于8G，其中加上电脑共享GPU内存，是可以满足如上配置的24G显卡要求。本人使用的 RTX 3080TI 16G，电脑共享GPU内存为32G。<a href="https://cdn.nlark.com/yuque/0/2023/jpeg/136198/1682152579308-a3a64719-86fc-4997-9830-414836ed91b5.jpeg?x-oss-process=image%2Fresize%2Cw_1080%2Climit_0%2Finterlace%2C1">2023年Q1季度显卡芯片性能排行</a>；</li>
+<li>电脑物理内存最好是64G及以上，加上电脑动态虚拟内存，可满足如上配置中full模式下内存80G的要求；</li>
+<li>项目中常用模型下载后共有270G左右，下载时间需要考虑。3M/s的话，也需要不间断一天左右时间；</li>
+</ol>
+<h3 id="2-运行">2. 运行<a hidden class="anchor" aria-hidden="true" href="#2-运行">#</a></h3>
+<h4 id="a-运行项目">a. 运行项目<a hidden class="anchor" aria-hidden="true" href="#a-运行项目">#</a></h4>
+<p>配置好如上环境后，接下来按照操作流程：</p>
+<p><a href="/">?</a></p>
+<p><code>git clone https:``//github.com/microsoft/JARVIS.git</code></p>
+<p><a href="/">?</a></p>
+<p><code># setup env</code></p>
+<p><code>cd server</code></p>
+<p><code>conda create -n jarvis python=``3.8</code></p>
+<p><code>conda activate jarvis</code></p>
+<p><code>conda install pytorch torchvision torchaudio pytorch-cuda=``11.7</code> <code>-c pytorch -c nvidia</code></p>
+<p><code>pip install -r requirements.txt</code></p>
+<p><code># download models. Make sure that `git-lfs` is installed.</code></p>
+<p><code>cd models</code></p>
+<p><code>bash download.sh # required when `inference_mode` is `local` or `hybrid`.</code></p>
+<p><code># run server</code></p>
+<p><code>cd ..</code></p>
+<p><code># required when `inference_mode` is `local` or `hybrid`,start port</code> <code>8005</code></p>
+<p><code>python models_server.py --config configs/config.``default``.yaml</code></p>
+<p><code>#</code> <code>for</code> <code>text-davinci-``003``,start port</code> <code>8004</code></p>
+<p><code>python awesome_chat.py --config configs/config.``default``.yaml --mode server</code></p>
+<p><a href="/">?</a></p>
+<p><code>cd web</code></p>
+<p><code>npm install</code></p>
+<p><code>npm run dev</code></p>
+<h4 id="b-链路调用">b. 链路调用<a hidden class="anchor" aria-hidden="true" href="#b-链路调用">#</a></h4>
+<p>调用链是：</p>
+<ol>
+<li>用户通过web前端界面输入请求内容——&gt;</li>
+<li>8004接口响应—分析用户请求意图，模型选择——&gt;</li>
+<li>然后调用8005接口–模型执行、生成结果;</li>
+</ol>
+<h4 id="c-举例分析">c. 举例分析<a hidden class="anchor" aria-hidden="true" href="#c-举例分析">#</a></h4>
+<h5 id="-用户输入">ⅰ. 用户输入<a hidden class="anchor" aria-hidden="true" href="#-用户输入">#</a></h5>
+<p>内容：tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/781d62bed9494bb1836afd31560c88b3~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<h5 id="-任务规划">ⅱ. 任务规划<a hidden class="anchor" aria-hidden="true" href="#-任务规划">#</a></h5>
+<p><strong>第一步</strong>：生成promt</p>
+<p><strong>第二步</strong>：调用接口：<a href="https://api.openai.com/v1/completions">https://api.openai.com/v1/completions</a> ；</p>
+<p>参数中：</p>
+<ol>
+<li>model:text-davinci-003</li>
+<li>prompt: 如下–完整的prompt。具体来看，prompt中的提示词大量由项目中/server/demos/demo_parse_task.json，中组成，并配合 用户输入的内容。demo_parse_task.json中的内容为6对上下文，每一对都包含一个user和assistant的输入与输出 作为上下文【个人理解是告诉ChatGPT回答这个问题的“训练数据”】【将这些上下文单独放到chat.open.com中也是类似的效果，模型不同略不一样】，<strong>也就是说Hugging GPT提供模板作为prompt，输入到ChatGPT完成生成任务规划</strong>；</li>
+</ol>
+<p><strong>第三步</strong>：生成任务规划结果。</p>
+<ol>
+<li>结果由ChatGPT生成，返回任务类型列表list，每条数据包含有任务类型type、任务ID、任务参数args，详细结果如下–完整的任务规划列表数据</li>
+</ol>
+<p><a href="/">?</a></p>
+<p><code>#``1</code> <code>Task Planning Stage: The AI assistant can parse user input to several tasks: [{``&quot;task&quot;``: task,</code> <code>&quot;id&quot;``: task_id,</code> <code>&quot;dep&quot;``: dependency_task_id,</code> <code>&quot;args&quot;``: {``&quot;text&quot;``: text or &lt;GENERATED&gt;-dep_id,</code> <code>&quot;image&quot;``: image_url or &lt;GENERATED&gt;-dep_id,</code> <code>&quot;audio&quot;``: audio_url or &lt;GENERATED&gt;-dep_id}}]. The special tag</code> <code>&quot;&lt;GENERATED&gt;-dep_id&quot;</code> <code>refer to the one generated text/image/audio in the dependency task (Please consider whether the dependency task generates resources of</code> <code>this</code> <code>type.) and</code> <code>&quot;dep_id&quot;</code> <code>must be in</code> <code>&quot;dep&quot;</code> <code>list. The</code> <code>&quot;dep&quot;</code> <code>field denotes the ids of the previous prerequisite tasks which generate a</code> <code>new</code> <code>resource that the current task relies on. The</code> <code>&quot;args&quot;</code> <code>field must in [``&quot;text&quot;``,</code> <code>&quot;image&quot;``,</code> <code>&quot;audio&quot;``], nothing</code> <code>else``. The task MUST be selected from the following options:</code> <code>&quot;token-classification&quot;``,</code> <code>&quot;text2text-generation&quot;``,</code> <code>&quot;summarization&quot;``,</code> <code>&quot;translation&quot;``,</code> <code>&quot;question-answering&quot;``,</code> <code>&quot;conversational&quot;``,</code> <code>&quot;text-generation&quot;``,</code> <code>&quot;sentence-similarity&quot;``,</code> <code>&quot;tabular-classification&quot;``,</code> <code>&quot;object-detection&quot;``,</code> <code>&quot;image-classification&quot;``,</code> <code>&quot;image-to-image&quot;``,</code> <code>&quot;image-to-text&quot;``,</code> <code>&quot;text-to-image&quot;``,</code> <code>&quot;text-to-video&quot;``,</code> <code>&quot;visual-question-answering&quot;``,</code> <code>&quot;document-question-answering&quot;``,</code> <code>&quot;image-segmentation&quot;``,</code> <code>&quot;depth-estimation&quot;``,</code> <code>&quot;text-to-speech&quot;``,</code> <code>&quot;automatic-speech-recognition&quot;``,</code> <code>&quot;audio-to-audio&quot;``,</code> <code>&quot;audio-classification&quot;``,</code> <code>&quot;canny-control&quot;``,</code> <code>&quot;hed-control&quot;``,</code> <code>&quot;mlsd-control&quot;``,</code> <code>&quot;normal-control&quot;``,</code> <code>&quot;openpose-control&quot;``,</code> <code>&quot;canny-text-to-image&quot;``,</code> <code>&quot;depth-text-to-image&quot;``,</code> <code>&quot;hed-text-to-image&quot;``,</code> <code>&quot;mlsd-text-to-image&quot;``,</code> <code>&quot;normal-text-to-image&quot;``,</code> <code>&quot;openpose-text-to-image&quot;``,</code> <code>&quot;seg-text-to-image&quot;``. There may be multiple tasks of the same type. Think step by step about all the tasks needed to resolve the user``'s request. Parse out as few tasks as possible while ensuring that the user request can be resolved. Pay attention to the dependencies and order among tasks. If the user input can'``t be parsed, you need to reply empty JSON []. &lt;im_start&gt;user</code></p>
+<p><code>Give you some pictures e1.jpg, e2.png, e3.jpg, help me count the number of sheep?&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;assistant</code></p>
+<p><code>[{``&quot;task&quot;``:</code> <code>&quot;image-to-text&quot;``,</code> <code>&quot;id&quot;``:</code> <code>0``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;e1.jpg&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;object-detection&quot;``,</code> <code>&quot;id&quot;``:</code> <code>1``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;e1.jpg&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;visual-question-answering&quot;``,</code> <code>&quot;id&quot;``:</code> <code>2``,</code> <code>&quot;dep&quot;``: [``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-1&quot;``,</code> <code>&quot;text&quot;``:</code> <code>&quot;How many sheep in the picture&quot;``}} }}, {``&quot;task&quot;``:</code> <code>&quot;image-to-text&quot;``,</code> <code>&quot;id&quot;``:</code> <code>3``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;e2.png&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;object-detection&quot;``,</code> <code>&quot;id&quot;``:</code> <code>4``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;e2.png&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;visual-question-answering&quot;``,</code> <code>&quot;id&quot;``:</code> <code>5``,</code> <code>&quot;dep&quot;``: [``4``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-4&quot;``,</code> <code>&quot;text&quot;``:</code> <code>&quot;How many sheep in the picture&quot;``}} }}, {``&quot;task&quot;``:</code> <code>&quot;image-to-text&quot;``,</code> <code>&quot;id&quot;``:</code> <code>6``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;e3.jpg&quot;</code> <code>}},  {``&quot;task&quot;``:</code> <code>&quot;object-detection&quot;``,</code> <code>&quot;id&quot;``:</code> <code>7``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;e3.jpg&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;visual-question-answering&quot;``,</code> <code>&quot;id&quot;``:</code> <code>8``,</code> <code>&quot;dep&quot;``: [``7``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-7&quot;``,</code> <code>&quot;text&quot;``:</code> <code>&quot;How many sheep in the picture&quot;``}}]&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;user</code></p>
+<p><code>Look at /e.jpg, can you tell me how many objects in the picture? Give me a picture and video similar to</code> <code>this</code> <code>one.&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;assistant</code></p>
+<p><code>[{``&quot;task&quot;``:</code> <code>&quot;image-to-text&quot;``,</code> <code>&quot;id&quot;``:</code> <code>0``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;/e.jpg&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;object-detection&quot;``,</code> <code>&quot;id&quot;``:</code> <code>1``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;/e.jpg&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;visual-question-answering&quot;``,</code> <code>&quot;id&quot;``:</code> <code>2``,</code> <code>&quot;dep&quot;``: [``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-1&quot;``,</code> <code>&quot;text&quot;``:</code> <code>&quot;how many objects in the picture?&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;text-to-image&quot;``,</code> <code>&quot;id&quot;``:</code> <code>3``,</code> <code>&quot;dep&quot;``: [``0``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;&lt;GENERATED-0&gt;&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;image-to-image&quot;``,</code> <code>&quot;id&quot;``:</code> <code>4``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;/e.jpg&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;text-to-video&quot;``,</code> <code>&quot;id&quot;``:</code> <code>5``,</code> <code>&quot;dep&quot;``: [``0``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;&lt;GENERATED-0&gt;&quot;</code> <code>}}]&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;user</code></p>
+<p><code>given a document /images/e.jpeg, answer me what is the student amount? And describe the image with your voice&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;assistant</code></p>
+<p><code>{``&quot;task&quot;``:</code> <code>&quot;document-question-answering&quot;``,</code> <code>&quot;id&quot;``:</code> <code>0``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;/images/e.jpeg&quot;``,</code> <code>&quot;text&quot;``:</code> <code>&quot;what is the student amount?&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;visual-question-answering&quot;``,</code> <code>&quot;id&quot;``:</code> <code>1``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;/images/e.jpeg&quot;``,</code> <code>&quot;text&quot;``:</code> <code>&quot;what is the student amount?&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;image-to-text&quot;``,</code> <code>&quot;id&quot;``:</code> <code>2``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;/images/e.jpg&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;text-to-speech&quot;``,</code> <code>&quot;id&quot;``:</code> <code>3``,</code> <code>&quot;dep&quot;``: [``2``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-2&quot;</code> <code>}}]&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;user</code></p>
+<p><code>Given an image /example.jpg, first generate a hed image, then based on the hed image generate a</code> <code>new</code> <code>image where a girl is reading a book&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;assistant</code></p>
+<p><code>[{``&quot;task&quot;``:</code> <code>&quot;openpose-control&quot;``,</code> <code>&quot;id&quot;``:</code> <code>0``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;image&quot;``:</code> <code>&quot;/example.jpg&quot;</code> <code>}},  {``&quot;task&quot;``:</code> <code>&quot;openpose-text-to-image&quot;``,</code> <code>&quot;id&quot;``:</code> <code>1``,</code> <code>&quot;dep&quot;``: [``0``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;a girl is reading a book&quot;``,</code> <code>&quot;image&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-0&quot;</code> <code>}}]&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;user</code></p>
+<p><code>please show me a video and an image of (based on the text)</code> <code>'a boy is running'</code> <code>and dub it&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;assistant</code></p>
+<p><code>[{``&quot;task&quot;``:</code> <code>&quot;text-to-video&quot;``,</code> <code>&quot;id&quot;``:</code> <code>0``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;a boy is running&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;text-to-speech&quot;``,</code> <code>&quot;id&quot;``:</code> <code>1``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;a boy is running&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;text-to-image&quot;``,</code> <code>&quot;id&quot;``:</code> <code>2``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;a boy is running&quot;</code> <code>}}]&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;user</code></p>
+<p><code>please show me a joke and an image of cat&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;assistant</code></p>
+<p><code>[{``&quot;task&quot;``:</code> <code>&quot;conversational&quot;``,</code> <code>&quot;id&quot;``:</code> <code>0``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;please show me a joke of cat&quot;</code> <code>}}, {``&quot;task&quot;``:</code> <code>&quot;text-to-image&quot;``,</code> <code>&quot;id&quot;``:</code> <code>1``,</code> <code>&quot;dep&quot;``: [-``1``],</code> <code>&quot;args&quot;``: {``&quot;text&quot;``:</code> <code>&quot;a photo of cat&quot;</code> <code>}}]&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;user</code></p>
+<p><code>The chat log [ [] ] may contain the resources I mentioned. Now I input { tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff }. Pay attention to the input and output types of tasks and the dependencies between tasks.&lt;im_end&gt;</code></p>
+<p><code>&lt;im_start&gt;assistant</code></p>
+<p><a href="/">?</a></p>
+<p><code>{</code></p>
+<p>  <code>&quot;id&quot;``:``&quot;cmpl-7895qWMaFr1owxmoVhLFrt6vyRlap&quot;``,</code></p>
+<p>  <code>&quot;object&quot;``:``&quot;text_completion&quot;``,</code></p>
+<p>  <code>&quot;created&quot;``:``1682175934``,</code></p>
+<p>  <code>&quot;model&quot;``:``&quot;text-davinci-003&quot;``,</code></p>
+<p>  <code>&quot;choices&quot;``:[</code></p>
+<p>    <code>{</code></p>
+<p>      <code>&quot;text&quot;``:[</code></p>
+<p>        <code>{</code></p>
+<p>          <code>&quot;task&quot;``:``&quot;image-to-text&quot;``,</code></p>
+<p>          <code>&quot;id&quot;``:``0``,</code></p>
+<p>          <code>&quot;dep&quot;``:Array[``1``],</code></p>
+<p>          <code>&quot;args&quot;``:{</code></p>
+<p>            <code>&quot;image&quot;``:``&quot;/example/vege-meat.jpg&quot;</code></p>
+<p>          <code>}</code></p>
+<p>        <code>},</code></p>
+<p>        <code>{</code></p>
+<p>          <code>&quot;task&quot;``:``&quot;text-generation&quot;``,</code></p>
+<p>          <code>&quot;id&quot;``:``1``,</code></p>
+<p>          <code>&quot;dep&quot;``:Array[``1``],</code></p>
+<p>          <code>&quot;args&quot;``:{</code></p>
+<p>            <code>&quot;text&quot;``:``&quot;&lt;GENERATED&gt;-0&quot;</code></p>
+<p>          <code>}</code></p>
+<p>        <code>},</code></p>
+<p>        <code>{</code></p>
+<p>          <code>&quot;task&quot;``:``&quot;text-to-image&quot;``,</code></p>
+<p>          <code>&quot;id&quot;``:``2``,</code></p>
+<p>          <code>&quot;dep&quot;``:Array[``1``],</code></p>
+<p>          <code>&quot;args&quot;``:{</code></p>
+<p>            <code>&quot;text&quot;``:``&quot;&lt;GENERATED&gt;-1&quot;</code></p>
+<p>          <code>}</code></p>
+<p>        <code>}</code></p>
+<p>      <code>],</code></p>
+<p>      <code>&quot;index&quot;``:``0``,</code></p>
+<p>      <code>&quot;logprobs&quot;``:``null``,</code></p>
+<p>      <code>&quot;finish_reason&quot;``:``&quot;stop&quot;</code></p>
+<p>    <code>}</code></p>
+<p>  <code>],</code></p>
+<p>  <code>&quot;usage&quot;``:{</code></p>
+<p>    <code>&quot;prompt_tokens&quot;``:``1927``,</code></p>
+<p>    <code>&quot;completion_tokens&quot;``:``113``,</code></p>
+<p>    <code>&quot;total_tokens&quot;``:``2040</code></p>
+<p>  <code>}</code></p>
+<p><code>}</code></p>
+<h5 id="-模型选择">ⅲ. 模型选择<a hidden class="anchor" aria-hidden="true" href="#-模型选择">#</a></h5>
+<p>经过上一个任务规划后，下一步将是模型选择：</p>
+<p><a href="/">?</a></p>
+<p><code>[</code></p>
+<p>  <code>{</code></p>
+<p>    <code>&quot;task&quot;``:</code> <code>&quot;image-to-text&quot;``,</code></p>
+<p>    <code>&quot;id&quot;``:</code> <code>0``,</code></p>
+<p>    <code>&quot;dep&quot;``: [</code></p>
+<p>      <code>-``1</code></p>
+<p>    <code>],</code></p>
+<p>    <code>&quot;args&quot;``: {</code></p>
+<p>      <code>&quot;image&quot;``:</code> <code>&quot;/example/vege-meat.jpg&quot;</code></p>
+<p>    <code>}</code></p>
+<p>  <code>},</code></p>
+<p>  <code>{</code></p>
+<p>    <code>&quot;task&quot;``:</code> <code>&quot;text-generation&quot;``,</code></p>
+<p>    <code>&quot;id&quot;``:</code> <code>1``,</code></p>
+<p>    <code>&quot;dep&quot;``: [</code></p>
+<p>      <code>0</code></p>
+<p>    <code>],</code></p>
+<p>    <code>&quot;args&quot;``: {</code></p>
+<p>      <code>&quot;text&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-0&quot;</code></p>
+<p>    <code>}</code></p>
+<p>  <code>},</code></p>
+<p>  <code>{</code></p>
+<p>    <code>&quot;task&quot;``:</code> <code>&quot;text-to-image&quot;``,</code></p>
+<p>    <code>&quot;id&quot;``:</code> <code>2``,</code></p>
+<p>    <code>&quot;dep&quot;``: [</code></p>
+<p>      <code>1</code></p>
+<p>    <code>],</code></p>
+<p>    <code>&quot;args&quot;``: {</code></p>
+<p>      <code>&quot;text&quot;``:</code> <code>&quot;&lt;GENERATED&gt;-1&quot;</code></p>
+<p>    <code>}</code></p>
+<p>  <code>}</code></p>
+<p><code>]</code></p>
+<p>Hugging GPT，会针对当前的任务tpye给出一个建议的模型选择：</p>
+<ol>
+<li>如果任务type是：&quot;-text-to-image&quot;结尾，那么建议用本地模型—-lllyasviel/sd-controlnet/xxx系列，原因是：“ControlNet is the best model for this task.”</li>
+<li>如果任务type是：[“summarization”, “translation”, “conversational”, “text-generation”, “text2text-generation”](&ldquo;summarization&rdquo;, &ldquo;translation&rdquo;, &ldquo;conversational&rdquo;, &ldquo;text-generation&rdquo;, &ldquo;text2text-generation&rdquo;)中任意一种，那么建议用ChatGPT，原因是：“ChatGPT performs well on some NLP tasks as well.”</li>
+<li>如果是其他类型任务type，项目中有一个文件/server/data/p0_models.jsonl，里面列举了常用673个model的，可解决24类Task，如下所示：</li>
+</ol>
+<p><a href="/">?</a></p>
+<p><code>[``'text-classification'``,</code> <code>'token-classification'``,</code> <code>'text2text-generation'``,</code> <code>'summarization'``,</code> <code>'translation'``,</code> <code>'question-answering'``,</code> <code>'conversational'``,</code> <code>'text-generation'``,</code> <code>'sentence-similarity'``,</code> <code>'tabular-classification'``,</code> <code>'object-detection'``,</code> <code>'image-classification'``,</code> <code>'image-to-text'``,</code> <code>'text-to-image'``,</code> <code>'image-to-image'``,</code> <code>'visual-question-answering'``,</code> <code>'document-question-answering'``,</code> <code>'image-segmentation'``,</code> <code>'depth-estimation'``,</code> <code>'text-to-video'``,</code> <code>'text-to-speech'``,</code> <code>'automatic-speech-recognition'``,</code> <code>'audio-to-audio'``,</code> <code>'audio-classification'``]</code></p>
+<ol>
+<li>
+<p>上述3种Task，“text-to-image”,“text-generation”,“image-to-text”,分别选择是如下模型：</p>
+</li>
+<li>
+<p>“text-to-image”：{‘local’: <a href="'runwayml/stable-diffusion-v1-5'">‘runwayml/stable-diffusion-v1-5’</a>, ‘huggingface’: <a href="'andite/anything-v4.0'">‘andite/anything-v4.0’</a>}</p>
+</li>
+<li>
+<p>“text-generation”：ChatGPT</p>
+</li>
+<li>
+<p>“image-to-text”：{‘local’: <a href="'nlpconnect/vit-gpt2-image-captioning'">‘nlpconnect/vit-gpt2-image-captioning’</a>, ‘huggingface’: [‘kha-white/manga-ocr-base’, ‘microsoft/trocr-base-printed’, ‘nlpconnect/vit-gpt2-image-captioning’](&lsquo;kha-white/manga-ocr-base&rsquo;, &lsquo;microsoft/trocr-base-printed&rsquo;, &rsquo;nlpconnect/vit-gpt2-image-captioning&rsquo;)}</p>
+</li>
+</ol>
+<p>里面有一个逻辑：</p>
+<ol>
+<li>如果可用模型中只有一个，不管是local本地的还是hugging 线上的，都选择这个模型；</li>
+<li>如果可用模型中有多个，就涉及到如何选择最合适的模型。choose_model函数用于选择最合适的模型，其需要传入（input, command, 候选模型信息, api_key, api_type, api_endpoint），其中候选模型信息中含有字段：likes、tags、description、id等信息；</li>
+<li>将这些组合信息作为prompt，传给ChatGPT，返回最合适的模型名称。选择的核心变量有两个：是否是local、模型点赞like数量，其实，只是通过这两个变量来决定使用哪个模型model有一点简单、粗暴；</li>
+</ol>
+<p><a href="/">?</a></p>
+<p><code>[{``'role'``:</code> <code>'system'``,</code> <code>'content'``:</code> <code>'#2 Model Selection Stage: Given the user request and the parsed tasks, the AI assistant helps the user to select a suitable model from a list of models to process the user request. The assistant should focus more on the description of the model and find the model that has the most potential to solve requests and tasks. Also, prefer models with local inference endpoints for speed and stability.'``}, {``'role'``:</code> <code>'user'``,</code> <code>'content'``:</code> <code>'tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff'``}, {``'role'``:</code> <code>'assistant'``,</code> <code>'content'``:</code> <code>&quot;{'task': 'text-to-image', 'id': 2, 'dep': [1], 'args': {'text': 'a table topped with bowls of vegetables and a bowl of meat '}}&quot;``}, {``'role'``:</code> <code>'user'``,</code> <code>'content'``:</code> <code>'Please choose the most suitable model from [{'``id``': '``runwayml/stable-diffusion-v1-``5``', '``inference endpoint``': ['``runwayml/stable-diffusion-v1-``5``'], '``likes``': 6367, '``description``': '``\n\n# Stable Diffusion v1-``5</code> <code>Model Card\n\nStable Diffusion is a latent text-to-image diffusion model cap``', '``tags``': ['``stable-diffusion``', '``stable-diffusion-diffusers``', '``text-to-image``']}, {'``id``': '``andite/anything-v4.``0``', '``inference endpoint``': ['``andite/anything-v4.``0``'], '``likes``': 1815, '``description``': '``\n\nFantasy.ai is the official and exclusive hosted AI generation platform that holds a commercial use``', '``tags``': ['``stable-diffusion``', '``stable-diffusion-diffusers``', '``text-to-image``', '``diffusers``']}] for the task {'``task``': '``text-to-image``', '``id``': 2, '``dep``': [1], '``args``': {'``text``': '``a table topped with bowls of vegetables and a bowl of meat</code> <code>'}}. The output must be in a strict JSON format: {&quot;id&quot;: &quot;id&quot;, &quot;reason&quot;: &quot;your detail reasons for the choice&quot;}.'``}]</code></p>
+<p>ChatGPT返回的内容是：“text-to-image”：</p>
+<p><a href="/">?</a></p>
+<p><code>{</code></p>
+<p>  <code>&quot;id&quot;``:</code> <code>&quot;runwayml/stable-diffusion-v1-5&quot;``,</code></p>
+<p>  <code>&quot;reason&quot;``:</code> <code>&quot;This model is specifically designed for text-to-image diffusion tasks, has a high number of likes, and has a local inference endpoint that guarantees faster and stable processing.&quot;</code></p>
+<p><code>}</code></p>
+<p><a href="/">?</a></p>
+<p><code>[{``'role'``:</code> <code>'system'``,</code> <code>'content'``:</code> <code>'#2 Model Selection Stage: Given the user request and the parsed tasks, the AI assistant helps the user to select a suitable model from a list of models to process the user request. The assistant should focus more on the description of the model and find the model that has the most potential to solve requests and tasks. Also, prefer models with local inference endpoints for speed and stability.'``}, {``'role'``:</code> <code>'user'``,</code></p>
+<p><code>'content'``:</code> <code>'tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff'``}, {``'role'``:</code> <code>'assistant'``,</code> <code>'content'``:</code> <code>&quot;{'task': 'image-to-text', 'id': 0, 'dep': [-1], 'args': {'image': 'public//example/vege-meat.jpg'}}&quot;``}, {``'role'``:</code> <code>'user'``,</code> <code>'content'``:</code> <code>'Please choose the most suitable model from [{'``id``': '``nlpconnect/vit-gpt2-image-captioning``', '``inference endpoint``': ['``nlpconnect/vit-gpt2-image-captioning``'], '``likes``': 219, '``description``': '``\n\n# nlpconnect/vit-gpt2-image-captioning\n\nThis is an image captioning model trained by</code> <code>@ydshieh</code> <code>in [``', '``tags``': ['``image-to-text``', '``image-captioning``']}, {'``id``': '``Salesforce/blip-image-captioning-large``', '``inference endpoint``': ['``Salesforce/blip-image-captioning-large``', '``nlpconnect/vit-gpt2-image-captioning``'], '``likes``': 52, '``description``': '``\n\n# BLIP: Bootstrapping Language-Image Pre-training</code> <code>for</code> <code>Unified Vision-Language Understanding and Ge``', '``tags``': ['``image-captioning``']}] for the task {'``task``': '``image-to-text``', '``id``': 0, '``dep``': [-1], '``args``': {'``image``': '``public``//example/vege-meat.jpg``'}}. The output must be in a strict JSON format: {&quot;id&quot;: &quot;id&quot;, &quot;reason&quot;: &quot;your detail reasons for the choice&quot;}.'``}]</code></p>
+<p>ChatGPT返回的内容是：“image-to-text”：</p>
+<p><a href="/">?</a></p>
+<p><code>{</code></p>
+<p>  <code>&quot;id&quot;``:</code> <code>&quot;nlpconnect/vit-gpt2-image-captioning&quot;``,</code></p>
+<p>  <code>&quot;reason&quot;``:</code> <code>&quot;This model is specifically designed for image captioning tasks, has a high number of likes, and has a local inference endpoint that guarantees faster and stable processing.&quot;</code></p>
+<p><code>}</code></p>
+<h4 id="d-模型执行">d. 模型执行<a hidden class="anchor" aria-hidden="true" href="#d-模型执行">#</a></h4>
+<p>确定了选择的模型model后，如果是本地模型，调用本地模型：</p>
+<p>逻辑如下：</p>
+<p>1、将任务分类为：contronlet神经网络、NLP task、CV task、Audio task；针对每一类任务、已选择的model_id，分别写调用方法、解析响应方法</p>
+<p>如果是在线模型，调用在线模型：</p>
+<ol>
+<li>需要使用到Hugging face的接口调用方法，详情见：<a href="https://huggingface.co/docs/huggingface_hub/guides/inference">InferenceApi</a>，项目中出现根据任务的不同的两种调用方式，一种是通过url调用方式：&quot;<a href="https://api-inference.huggingface.co/models/%7Bmodel_id%7D%22">https://api-inference.huggingface.co/models/{model_id}&quot;</a>，另外一种是：InferenceApi(repo_id=“model_id”, token=API_TOKEN)；</li>
+</ol>
+<p>在模型执行过程中，如果有生成文件，如图片、音频、视频等，生成完毕之后会保存在系统中。</p>
+<h4 id="e-结果生成">e. 结果生成<a hidden class="anchor" aria-hidden="true" href="#e-结果生成">#</a></h4>
+<p>之后就是将模型执行阶段的结果，结合Hugging GPT预设的propmpt，组成新的prompt，输入到ChatGPT中：</p>
+<p><a href="/">?</a></p>
+<p><code>[{``'role'``:</code> <code>'system'``,</code> <code>'content'``:</code> <code>'#4 Response Generation Stage: With the task execution logs, the AI assistant needs to describe the process and inference results.'``}, {``'role'``:</code> <code>'user'``,</code> <code>'content'``:</code> <code>'tell me the content abo ut the image /example/vege-meat.jpg,and generate a recipe picture according to the foodstuff'``}, {``'role'``:</code> <code>'assistant'``,</code> <code>'content'``:</code> <code>&quot;Before give you a response, I want to introduce my workflow for your request, which is shown in the fo llowing JSON data: [{'task': {'task': 'image-to-text', 'id': 0, 'dep': [-1], 'args': {'image': 'public//example/vege-meat.jpg'}}, 'inference result': {'generated text': 'a table topped with bowls of vegetables and a bowl of meat '}, 'choose model result': {'id': 'nlpconnect/vit-gpt2-image-captioning', 'reason': 'This model is best suited for the task of image-to-text as it is specifically designed for image captioning and has the highest number of likes'}}, {' task': {'task': 'text-generation', 'id': 1, 'dep': [0], 'args': {'text': 'a table topped with bowls of vegetables and a bowl of meat '}}, 'inference result': {'response': 'One way to use the vegetables and meat in this photo is to c reate a healthy stir fry. Begin by heating some oil in a large skillet. Add diced onions and minced garlic and sauté until lightly browned. Add chopped or shredded vegetables - like broccoli, carrots, and bell peppers - to the skill ed to generate a text description of the image, which was: &quot;``a table topped with bowls of vegetables and a bowl of meat``&quot;. \n\nThe second model, ChatGPT, was used to generate a recipe based on the text description, which was: &quot;``One way to use the vegetables and meat in</code> <code>this</code> <code>photo is to create a healthy stir fry. Begin by heating some oil in a large skillet. Add diced onions and minced garlic and sauté until lightly browned. Add chopped or shredded vegetables - like broccoli, carrots, and bell peppers - to the skillet and cook until just tender. Add the diced meat followed by seasonings of your choice - like soy sauce, sesame oil, and sriracha - and an optional touch of sweetness like honey or brown sugar. Finally, stir everything together until evenly mixed and serve hot.``&quot;\n\nThe third model, runwayml/stable-diffusion-v1-5, was used to generate an image based on the recipe, which can be found at the following URL: /images/54eb.png.\n\nI hope this answers your question. Is there anything else I can help you with?&quot;``,``&quot;index&quot;``:``0``,``&quot;logprobs&quot;``:``null``,``&quot;finish_reason&quot;``:``&quot;stop&quot;``}],``&quot;usage&quot;``:{``&quot;prompt_tokens&quot;``:``716``,``&quot;completion_tokens&quot;``:``337``,``&quot;total_tokens&quot;``:``1053``}}</code></p>
+<p>ChatGPT返回的内容是：“generate”：</p>
+<p>备注：在Web页面上，“/images/9541.png”是带链接可以点击的</p>
+<p><a href="/">?</a></p>
+<p><code>Based on the inference results, I can generate a recipe picture according to the foodstuff in the image you provided. The image you provided shows a table with bowls of vegetables and a bowl of meat, which can be used to make a delicious and healthy meal. Try</code> <code>this</code> <code>recipe: Sauteed vegetables and meat with garlic and herbs.</code></p>
+<p><code>- Start by heating a pan over medium heat</code></p>
+<p><code>- Add a tablespoon of olive oil and a clove of garlic (minced)</code></p>
+<p><code>- Add the vegetables and cook until they become tender</code></p>
+<p><code>- Add the meat, season with salt and pepper</code></p>
+<p><code>- Cook until the meat is cooked through</code></p>
+<p><code>- Add in chopped fresh herbs like parsley, chives, etc.</code></p>
+<p><code>- Serve and enjoy!</code></p>
+<p><code>The complete path or url of the generated image is /images/``9541``.png.</code></p>
+<p><code>To generate the recipe picture, I used three tasks: image-to-text, text-generation, and text-to-image. For the image-to-text task, I used the model nlpconnect/vit-gpt2-image-captioning, which is best suited</code> <code>for</code> <code>the task of image-to-</code></p>
+<p><code>text as it is specifically designed</code> <code>for</code> <code>image captioning and has a higher number of likes. For the text-generation task, I used the model ChatGPT, which performs well on some NLP tasks as well. For the text-to-image task, I used the model runwayml/stable-diffusion-v1-``5``, which has the highest number of likes and is the most suitable</code> <code>for</code> <code>text-to-image tasks.</code></p>
+<p><code>I hope</code> <code>this</code> <code>answers your question. Is there anything</code> <code>else</code> <code>I can help you with?</code></p>
+<h2 id="效果分析">效果分析<a hidden class="anchor" aria-hidden="true" href="#效果分析">#</a></h2>
+<h3 id="实验1">实验1<a hidden class="anchor" aria-hidden="true" href="#实验1">#</a></h3>
+<p><strong>输入：</strong></p>
+<p>tell me the content about the image /example/vege-meat.jpg,and generate a recipe picture according to those food ingredients</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95b02f1c87694cb090a0af0669ec17f5~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p><strong>输出：</strong></p>
+<p>HuggingGPT :<br>
+Based on the inference results, I can generate a recipe picture according to the foodstuff in the image you provided. The image you provided shows a table with bowls of vegetables and a bowl of meat, which can be used to make a delicious and healthy meal. Try this recipe: Sauteed vegetables and meat with garlic and herbs.</p>
+<ul>
+<li>Start by heating a pan over medium heat</li>
+<li>Add a tablespoon of olive oil and a clove of garlic (minced)</li>
+<li>Add the vegetables and cook until they become tender</li>
+<li>Add the meat, season with salt and pepper</li>
+<li>Cook until the meat is cooked through</li>
+<li>Add in chopped fresh herbs like parsley, chives, etc.</li>
+<li>Serve and enjoy!</li>
+</ul>
+<p>The complete path or url of the generated image is <a href="Image">Image</a></p>
+<p>To generate the recipe picture, I used three tasks: image-to-text, text-generation, and text-to-image. For the image-to-text task, I used the model nlpconnect/vit-gpt2-image-captioning, which is best suited for the task of image-to-text as it is specifically designed for image captioning and has a higher number of likes. For the text-generation task, I used the model ChatGPT, which performs well on some NLP tasks as well. For the text-to-image task, I used the model runwayml/stable-diffusion-v1-5, which has the highest number of likes and is the most suitable for text-to-image tasks.</p>
+<p>I hope this answers your question. Is there anything else I can help you with?</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ef724c3fc46e4ae6916ba8a088cc9df0~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<h3 id="实验2">实验2<a hidden class="anchor" aria-hidden="true" href="#实验2">#</a></h3>
+<p><strong>输入：</strong></p>
+<p>Given a collection of image A: /examples/a.jpg, B: /examples/b.jpg, C: /examples/c.jpg, please tell me how many zebras in these picture?</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c4818daa0d9549fd9c199dde3ed887c5~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+<img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3f11affd0a104ebd91bb9dc1f9e76e72~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+<img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c5115465135643c1992dd9735697a04c~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p><strong>输出：</strong> <strong>犯了事实性错误，答案是2只斑马，实际图中有4只</strong></p>
+<p>HuggingGPT :</p>
+<p>Based on the inference results, there are two zebras in the picture. The workflow I used to answer your request is as follows:</p>
+<p>First, I used the image-to-text model nlpconnect/vit-gpt2-image-captioning to generate a text description for each image. For image A, the generated text was “a cat sitting on a window sill looking out”. For image B, the generated text was “a zebra standing in a field of tall grass”. For image C, the generated text was “two zebras standing in a field of dry grass”.</p>
+<p>Then, I used the object-detection model facebook/detr-resnet-50 to detect objects in each image. For image A, the model detected a cat and a potted plant. For image B, the model detected a zebra. For image C, the model detected three zebras.</p>
+<p>Finally, I used the visual-question-answering model dandelin/vilt-b32-finetuned-vqa to answer the question “How many zebras in the picture?”. For image A, the model predicted 0 zebras. For image B, the model predicted 1 zebra. For image C, the model predicted 2 zebras.</p>
+<p>Therefore, based on the inference results, <strong>there are two zebras in the picture</strong>. The complete path or urls of files in inference results are:Image A: Image B：Image C:</p>
+<p>Do you have any other questions?</p>
+<h3 id="实验3">实验3<a hidden class="anchor" aria-hidden="true" href="#实验3">#</a></h3>
+<p><strong>输入：</strong></p>
+<p>Draw a picture about “A field of wildflowers stretches out as far as the eye can see, each one a different color and shape. In the distance, a massive tree towers over the landscape, its branches reaching up to the sky like tentacles.”</p>
+<p><strong>输出：</strong> <strong>图片效果分辨率低，细节处理粗糙，毫无美感</strong></p>
+<p><strong>HuggingGPT :</strong></p>
+<p>I have carefully considered your request and based on the inference results, I have generated an image of a field of wildflowers stretching out as far as the eye can see, each one a different color and shape. In the distance, a massive tree towers over the landscape, its branches reaching up to the sky like tentacles. The model I used to generate this image is runwayml/stable-diffusion-v1-5, which is the most suitable for the task as it is a latent text-to-image diffusion model capable of generating high-quality images from text descriptions. The inference result is the generated image which can be found at the following URL: <a href="/pages/createpage.action?spaceKey=VDP&title=Image&linkCreation=true&fromPageId=101814576">Image</a>(<a href="http://localhost:8004/images/7e3c.png">http://localhost:8004/images/7e3c.png</a>). I hope this answers your request. Is there anything else I can help you with?</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21b32e4f5a9346f382b42ca5df6511fe~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p><strong>Midjourney效果：</strong></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f7a6ccb0c38347d0812f533da2d85863~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<h3 id="实验4">实验4<a hidden class="anchor" aria-hidden="true" href="#实验4">#</a></h3>
+<p><strong>输入：</strong></p>
+<p>Given two images:/example/egg.jpg、/example/chili2.jpg，what are they and generate a recipe picture</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/729b8801d2564d36916f6e7158d0541c~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+ <img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4d052448ed5e4a2bae45fe89bfbdfd44~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p><strong>输出：—-输出的食谱recipe，完全离题。每次输入后结果都不一样</strong></p>
+<p><strong>HuggingGPT :</strong></p>
+<p>Based on the inference results, I have generated a recipe picture that contains the food ingredients and steps. The ingredients are <strong>eggs and chili peppers</strong>, and the steps are</p>
+<ul>
+<li>scramble the eggs in a large bowl,</li>
+<li>cook the chili peppers in a skillet until they are slightly charred,</li>
+<li>add the peppers to the eggs and mix together,</li>
+<li>pour the mixture into the white bowl and serve.</li>
+</ul>
+<p>The generated image can be found at the following URL: <a href="/pages/createpage.action?spaceKey=VDP&title=Image&linkCreation=true&fromPageId=101814576">Image</a>(<a href="http://localhost:8004/images/5358.png">http://localhost:8004/images/5358.png</a>). To generate this recipe picture, I used the following models: nlpconnect/vit-gpt2-image-captioning for image-to-text, ChatGPT for text-generation, and runwayml/stable-diffusion-v1-5 for text-to-image. I hope this answer is helpful. Is there anything else I can help you with?</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1f30194449714f0ba4a44c89324f06dc~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<h3 id="实验5">实验5<a hidden class="anchor" aria-hidden="true" href="#实验5">#</a></h3>
+<p><strong>输入：</strong></p>
+<p>Generate a video about&quot;a blue bird is flying around the apple tree, the sky is bright&quot;</p>
+<p><strong>输出：—-生成的视频比较模糊</strong></p>
+<p><strong>HuggingGPT :</strong></p>
+<p>I have carefully considered your request and based on the inference results, I have generated a video about ‘a blue bird is flying around the apple tree, the sky is bright’. The model used for this task is ‘damo-vilab/text-to-video-ms-1.7b’ and the inference result is ‘<a href="video">video</a>’. I hope this response meets your needs. Is there anything else I can help you with?</p>
+<p>点击链接查看：<a href="3d31.mp4">3d31.mp4</a><br>
+(<a href="https://www.yuque.com/666come/zh982x/sclvmxtnhvufkuf0#gQRe0">https://www.yuque.com/666come/zh982x/sclvmxtnhvufkuf0#gQRe0</a>)</p>
+<h3 id="实验结论">实验结论<a hidden class="anchor" aria-hidden="true" href="#实验结论">#</a></h3>
+<p>1、理论逻辑能够跑通，文章中的实验数据成立，但实际上案例特别是生成图片这块效果很差；<br>
+2、实验4 输入相同的内容，返回的内容不一样，问题出现在第一步任务解析上，每次返回的任务类型不一样，有时候第一步是image-to-text，有时候是image-classification，这就导致最后的结果不同<br>
+3、实验2出现了事实性错误<br>
+4、实验5中生成的视频比较模糊</p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/gpt%E7%9B%B8%E5%85%B3/">GPT相关</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/2023%E5%B9%B41.15demo%E5%86%B2%E5%88%BA%E9%A1%B9%E7%9B%AE%E8%AE%A1%E5%88%92/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>2023年1.15Demo冲刺项目计划</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/%E5%B9%B3%E6%9B%BF%E6%9D%A5%E4%BA%86/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>“平替”来了？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HunggingGPT像素级学习分析报告（一） on x"
+            href="https://x.com/intent/tweet/?text=HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f&amp;hashtags=GPT%e7%9b%b8%e5%85%b3">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HunggingGPT像素级学习分析报告（一） on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f&amp;title=HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89&amp;summary=HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HunggingGPT像素级学习分析报告（一） on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f&title=HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HunggingGPT像素级学习分析报告（一） on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HunggingGPT像素级学习分析报告（一） on whatsapp"
+            href="https://api.whatsapp.com/send?text=HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HunggingGPT像素级学习分析报告（一） on telegram"
+            href="https://telegram.me/share/url?text=HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share HunggingGPT像素级学习分析报告（一） on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=HunggingGPT%e5%83%8f%e7%b4%a0%e7%ba%a7%e5%ad%a6%e4%b9%a0%e5%88%86%e6%9e%90%e6%8a%a5%e5%91%8a%ef%bc%88%e4%b8%80%ef%bc%89&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fhungginggpt%25E5%2583%258F%25E7%25B4%25A0%25E7%25BA%25A7%25E5%25AD%25A6%25E4%25B9%25A0%25E5%2588%2586%25E6%259E%2590%25E6%258A%25A5%25E5%2591%258A%25E4%25B8%2580%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

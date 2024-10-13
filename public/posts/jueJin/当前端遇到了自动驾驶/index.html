@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>当前端遇到了自动驾驶 | PaperMod</title>
+<meta name="keywords" content="前端, three.js, 自动驾驶">
+<meta name="description" content="这是一篇用ThreeJS开发自动驾驶点云标注系统的实战记录，也是《THREEJS无师自通》的第一篇。通常情况，一个系列文章开篇应该是QuickStart或者Guide之类的简单口水文，而我选择以此开">
+<meta name="author" content="沐洒">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%BD%93%E5%89%8D%E7%AB%AF%E9%81%87%E5%88%B0%E4%BA%86%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%BD%93%E5%89%8D%E7%AB%AF%E9%81%87%E5%88%B0%E4%BA%86%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="当前端遇到了自动驾驶" />
+<meta property="og:description" content="这是一篇用ThreeJS开发自动驾驶点云标注系统的实战记录，也是《THREEJS无师自通》的第一篇。通常情况，一个系列文章开篇应该是QuickStart或者Guide之类的简单口水文，而我选择以此开" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%BD%93%E5%89%8D%E7%AB%AF%E9%81%87%E5%88%B0%E4%BA%86%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-07T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-07T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="当前端遇到了自动驾驶"/>
+<meta name="twitter:description" content="这是一篇用ThreeJS开发自动驾驶点云标注系统的实战记录，也是《THREEJS无师自通》的第一篇。通常情况，一个系列文章开篇应该是QuickStart或者Guide之类的简单口水文，而我选择以此开"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "当前端遇到了自动驾驶",
+      "item": "http://localhost:1313/posts/juejin/%E5%BD%93%E5%89%8D%E7%AB%AF%E9%81%87%E5%88%B0%E4%BA%86%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "当前端遇到了自动驾驶",
+  "name": "当前端遇到了自动驾驶",
+  "description": "这是一篇用ThreeJS开发自动驾驶点云标注系统的实战记录，也是《THREEJS无师自通》的第一篇。通常情况，一个系列文章开篇应该是QuickStart或者Guide之类的简单口水文，而我选择以此开",
+  "keywords": [
+    "前端", "three.js", "自动驾驶"
+  ],
+  "articleBody": " 这是一篇用ThreeJS开发自动驾驶点云标注系统的实战记录，也是《THREEJS无师自通》的第一篇。通常情况，一个系列文章开篇应该是Quick Start或者Guide之类的简单口水文，而我选择以此开篇，最主要的原因还是因为这次经历足够有趣。\n**公众号｜**沐洒（ID：musama2018）\n前端开发，大家熟啊，有很多亲(bi)切(shi)的称谓，诸如“切图仔”，“Bug路由器”。自动驾驶，大家更熟了吧，最近几年但凡新能源汽车，谁要是不说自己搭配点自动驾驶（或辅助驾驶）功能，都不好意思拿出来卖。那么，当前端和自动驾驶碰到了一起，会发生什么有意思的事呢？\n有点云标注相关背景的可以跳过背景普及，直接看方案。\n背景 去年9月，我们业务因为某些原因（商业机密）开始接触自动驾驶领域的数据处理，经过仔细一系列调研和盘算，我们最终决定从零开始，独立自研一套自动驾驶点云数据标注系统。你可能要说了，自动驾驶我知道啊，但是“点云”是个啥？呐，就是这玩意儿：\n点云的学术定义比较复杂，大家可以自行搜索学习，这里我简单贴一个引述： 点云是指目标表面特性的海量点集合。 根据激光测量原理得到的点云，包括三维坐标（XYZ）和激光反射强度（Intensity）。 根据摄影测量原理得到的点云，包括三维坐标（XYZ）和颜色信息（RGB）。 结合激光测量和摄影测量原理得到点云，包括三维坐标（XYZ）、激光反射强度（Intensity）和颜色信息（RGB）。 在获取物体表面每个采样点的空间坐标后，得到的是一个点的集合，称之为“点云”(Point Cloud)。\n看不懂？没事，不重要，你只需要知道，我们周围的世界，都是点构成的，而点云只不过是用一些仪器（比如激光雷达），对真实世界进行了采样（且只对部分属性进行采样）。\n好了，假设你已经知道“点云”是啥了，但你心里肯定还有十万个为什么：\n你不是说自动驾驶么？前端呢？这仨有啥关联么？这东西自研成本很高么？\n别急，容我慢慢解释，先快速普及一下啥叫“数据标注”：\n人工智能数据标注是对文本、视频、图像等元数据进行标注的过程，标记好的数据将用于训练机器学习的模型。常见的数据标注类型有文本标注、语义分割和图像视频标注。\n这些经标注的训练数据集可用于训练自动驾驶、聊天机器人、翻译系统、智能客服和搜索引擎等人工智能应用场景之中\n假设你懒得看，或者看不懂，我再给你翻译翻译，什么叫数据标注：\n一个婴儿来到这个世界，你在它面前放两张卡片，一张红色，一张绿色，你问它，这是什么颜色，它必然是不知道的（我们假设它能听懂并理解你的话）。只有当你一遍又一遍的，不断的告诉它，这是红色，这是绿色，它才会记住。等下次你带它过马路时，它就能准确地识别出红绿灯，并在你面前大声喊出来 “红色（的灯）！”没错，你应该猜到了，那两张卡片本身没有标签（元数据），是你给它们“打上了标”（分别标注了红色和绿色），然后把这个“结构化的数据”，“喂养”给你的宝宝，久而久之，这个宝宝就学会了分辨世间万物，成为一个“智人”。\n（图片来源于网络）\n你的“喂养”，就是人工；宝宝的成长，就是智能。人工智能（AI，Artificial Intelligence），就是数据喂养的成果，没有数据标注，就没有人工智能。\n从这个意义上聊，你和我，都是别人（父母，老师，朋友…）用成千上万的标注数据喂养出来的AI。\n扯远了，收！我们说回自动驾驶。\n大家都知道现在自动驾驶很火啊，那自动驾驶的“智能”是怎么训练的呢？当然是算法工程师用模型训练出来的啦，而自动驾驶模型需要喂养的数据，就是点云。仪器扫描回来的点云数据里，仅仅只是包含了所有点的基本信息（位置，颜色，激光强度等），模型怎么知道这个点是人身上采的，还是出租车上采的呢？!\n（图片来源于网络）\n于是这些点就需要被加工（标注），被我们用一系列手段（包括人工和机器）给点赋予更多的信息，区分出每一个点的含义（语义分割）。在自动驾驶领域的点云标注里，我们需要通过2D+3D工具，把物体识别出来。本文重点讲3D的部分。可以先看下3D框的效果：\n（图中黄色高亮的点，就是被3D框圈中的点云）\n挑战 以往我们较为常见的数据标注，主要集中在文本，图片，视频等类型，例如文本翻译，音频转写，图片分类等等，涉及的工具基本上都是传统web开发知识可以搞定的，而点云标注则完全不同，点云需要作为3D数据渲染到立体空间内，这就需要使用到3D渲染引擎。我们使用的是ThreeJS，这是一个基于WebGL封装的3D引擎。\n写了10年的web前端代码，能有机会把玩一下3D技术，还真是挺令人兴奋的。于是我们吭哧吭哧把基本的3D拉框功能做出来了，效果是这样的：\n（3D拉框 - 人工调整边缘：2倍速录制）\n动图是我加了2倍速的效果，真实情况是，要标出图上这辆小汽车，我需要先拉出一个大概的2D矩形区域，然后在三视图上不断的人工调整边缘细节，确保把应该纳入的点都框进去（未框入的点呈白色，框体垂直方向未框入则呈现蓝色，框入的呈现黄色）\n看起来好像也还行？\nno，no，no！你知道一份完整的点云标注任务需要标多少个框么？也不吓唬大家，保守点，一般情况一份连续帧平均20帧左右，每帧里要标注的框体保守点，取100个吧，而这一份连续帧标注，必须同一个标注员完成，那么20帧至少有2000个框体需要标注！\n按照上面实现的这种人工调节边缘的方式来拉框，一个框需要22秒（GIF共11秒，2倍速），熟练工可能能在10秒内调整完成。那么2000个框体，单纯只是拉框这一件小事，不包括其他工序（打标等），就需要耗费20000秒，约等于5.5小时！\n这是什么概念？通常情况标注员都是坐班制，平均一天有效工作时长不超过6小时，也就是说，一个标注员，在工位上一动不动，大气都不敢喘一下的工作一天，就只能把一条点云数据标完，哦不对，仅仅只是拉完框！没错，只是拉框而已。\n这种低效的重复性工作，哪个组织受得了？怎么办呢？\n方法比较容易想，不就是引入自动化能力么，实现自动边缘检测，嗯，想想倒是挺简单的，问题是怎么实现呢？\n以下进入干货区，友情提示：货很干，注意补水。\n方案 点云分类 基本思路就是进行边缘探测：\n找出三个坐标轴(XYZ)方向上的框体边缘点，计算出边缘点之间的距离，调整框体的长宽高，进而将框体贴合到边缘点。\n边缘的定义：\n某方向上的同值坐标点数大于某个设定值（可配置，默认3，三者为众）\n找出边缘点的核心算法：\n遍历框体内的点，分别将XYZ方向的坐标值存入数组，加权，排序，取第一个满足边缘定义的点，作为该方向极限值。\n进行边缘判定之前，我们得先找出存在于框体内的点，这就涉及到第一个核心问题：点云和3D框的相对位置判断。\n为了更好的管理与框体“强相关”的点云，我们先对点云进行一个基本分类：\n从俯视图看，把3D图降维成2D图，立方体则看作矩形，如下图：\n则点与框的相对位置可以降维等效为：\n第一类（点在立方体内）\n点在矩形内，且点的Z值在立方体[Zmin, Zmax]范围内\n第二类（点在立方体垂直方向）\n点在矩形内，且Z值在立方体[Zmin, Zmax]范围外\n第三类（点在立方体周围）\n点在延展矩形（向外延展N个距离）内，且不属于第二类。\n我们先按这个思路实现一版代码：\njs\n代码解读\n复制代码\n// 判断点是否位于框体XY平面区域内 function isPointInXYPlane(gap: IGap, distance = 0) { const { gapL, gapR, gapB, gapU } = gap; // 在框体XY平面区域内 return gapL \u003e - distance \u0026\u0026 gapR \u003c distance \u0026\u0026 gapU \u003c distance \u0026\u0026 gapB \u003e - distance; } // 在框体垂直方向上下边界内 function isPointInVerticalBoundry(up: number, bottom: number, z: number) { return z \u003e= bottom \u0026\u0026 z \u003c= up; }\njs\n代码解读\n复制代码\n// 位于框体XY平面向外延伸NEAR_DISTANCE距离的区域内 if (isPointInXYPlane(posInfo.gap, NEAR_DISTANCE)) { const isInVerticalBoundry = isPointInVerticalBoundry(posInfo.up, posInfo.bottom, posInfo.z); // 位于框体XY平面区域内 if (isPointInXYPlane(posInfo.gap)) { // 在框体内 if (isInVerticalBoundry) { isInside = true; } else { // 在框体外的垂直方向上 isVertical = true; } } // 在框体上下边界内 if (isInVerticalBoundry) { isNearBy = true; } }\n通过以上逻辑，我们就拿到了与框体“相关”的点云（正确与否先按下不表，后面会说），我们先存起来，后面做极值寻找（即边缘检测）时候使用。\n第一版效果\n看起来好像还行，基本实现了贴合，但是……我们旋转一下看看：\n好家伙，旋转后框体边界没更新！所以点云高亮也没变化。\n这个问题其实也好理解，我们在处理边界的时候，只采用position和scale计算，并没有使用rotation属性，所以当框体的旋转分量发生变化，我们计算边界时没有及时调整，程序就会认为框体此时仍然留在原地未动呢。\n我们来优化一下。我先尝试用三角函数来计算旋转后的新坐标点，类似这样\n折腾了很久的三角函数，有点变化了，但是效果却成了这样：\n已经接近真相了，只需要把待判定点放到三角函数判定公式里，就可以知道该点是否在旋转后的框体内了，不过到这里我突然意识到问题被我搞复杂了，是不是可以有更简单的方法来判定矩形内部点呢？\n我们回到最初的问题：判断一个点，与一个立方体的相对位置\n对这个原始问题进行逻辑拆解，可以拆为3个子问题：\n如何判断一个点位于立方体内部？ 如何判断一个点位于立方体的垂直方向（排除体内点）？ 如何判断一个点位于立方体的周围（排除垂直方向点）？ 关于问题1，第一反应还是立体几何，而且我笃定这是个非常成熟的几何问题，没必要自己硬憋。于是我就上网搜索：How to determine a point is inside or outside a cube? 结果如下：\n上面是stackoverflow上大神给的两种数学方法，一看就知道能解，奈何我看图是看懂了，公式没有完全吸收透，于是最终没有采纳（尽量不干不求甚解的事，写成代码就要求自己得是真的懂）\n于是我进一步思考：\n几种数学方法确实都很虎，但我是不是把问题搞复杂了？能不能没事踩踩别人的肩膀呢？\n看看ThreeJS 是否有相应的API……果然有：\n这不正好就是我想要的效果么？踏破铁鞋无觅处，得来全不费功夫啊！\n直接拿来用，搞定！\n但问题来了，人家是怎么做到的呢？带着这个疑问，我开始翻相关源码。\n首先看到containsPoint，其实就和我们用的方法是一样的：\njs\n代码解读\n复制代码\n// https://github.com/mrdoob/three.js/blob/4503ef10b81a00f5c6c64fe9a856881ee31fe6a3/src/math/Box3.js#L243 containsPoint( point ) { return point.x \u003c this.min.x || point.x \u003e this.max.x || point.y \u003c this.min.y || point.y \u003e this.max.y || point.z \u003c this.min.z || point.z \u003e this.max.z ? false : true; }\n而核心问题还是得想办法计算出box.min和box.max，那ThreeJS是怎么计算的呢？继续看：\narduino\n代码解读\n复制代码\n// https://github.com/mrdoob/three.js/blob/4503ef10b81a00f5c6c64fe9a856881ee31fe6a3/src/core/BufferGeometry.js#L290 computeBoundingBox() { // ..... 省略部分代码 .... const position = this.attributes.position; if ( position !== undefined ) { this.boundingBox.setFromBufferAttribute(position); } // ..... 省略部分代码 .... }\n看起来boundingBox的属性来自于attributes.position，这个position就是box在世界坐标里的具体位置，是我们在创建box时候设定的。再继续深挖下setFromBufferAttribute：\njs\n代码解读\n复制代码\n// https://github.com/mrdoob/three.js/blob/4503ef10b81a00f5c6c64fe9a856881ee31fe6a3/src/math/Box3.js#L56 setFromBufferAttribute( attribute ) { // ..... 省略部分代码 .... for ( let i = 0, l = attribute.count; i \u003c l; i ++ ) { const x = attribute.getX( i ); const y = attribute.getY( i ); const z = attribute.getZ( i ); if ( x \u003c minX ) minX = x; if ( y \u003c minY ) minY = y; if ( z \u003c minZ ) minZ = z; if ( x \u003e maxX ) maxX = x; if ( y \u003e maxY ) maxY = y; if ( z \u003e maxZ ) maxZ = z; } this.min.set( minX, minY, minZ ); this.max.set( maxX, maxY, maxZ ); return this; }\n平平无奇啊这代码，几乎和我们自己写的边界判定代码一模一样啊，也没引入rotation变量，那到底怎么是在哪处理的旋转分量呢？\n关键点在这里：\n我尝试给你解释下：\n在调用containsPoint之前，我们使用box的转换矩阵，对point使用了一次矩阵逆变换，从而把point的坐标系转换到了box的坐标系，而这个转换矩阵，是一个Matrix4（四维矩阵），而point是一个Vector3（三维向量）。 使用四维矩阵对三维向量进行转换的时候，会逐一提取出矩阵的position（位置），scale（缩放）和rotation（旋转）分量，分别对三维向量做矩阵乘法。 也就是这么一个操作，使得该point在经过矩阵变换之后，其position已经是一个附加了rotation分量的新的坐标值了，然后就可以直接拿来和box的8个顶点的position做简单的边界比对了。\n这里涉及大量的数学知识和ThreeJS底层知识，就不展开讲了，后面找机会单独写一篇关于转换矩阵的。\n我们接着看点与框体相对位置判断的第二个问题：如何判断一个点位于立方体的垂直方向（排除体内点）？\n首先，我们置换下概念：\n垂直方向上的点 = Z轴方向上的点 = 从俯视图看，在XY平面上投射的点 - 框内点\n那么，如何判断一个点在一个矩形内，这个问题就进一步转化为：\n(AB X AE ) * (CD X CE) \u003e= 0 \u0026\u0026 (DA X DE ) * (BC X BE) \u003e= 0\n这里涉及到的数学知识是向量点乘和叉乘的几何意义，也不展开了，感兴趣的朋友可以自行搜索学习下。\n还剩最后一个问题：如何判断一个点位于立方体的周围（排除垂直方向点）？\n这个问题我们先放一放，周围点判断主要用来扩展框体的，并不影响本次的边界探测结果，以后再找机会展开讲，这里先跳过了。\n到此为止，我们就至少拿到了两类点（框内点，和框体垂直方向的点），接下来就可以开始探测边缘了。\n边缘探测 边缘探测的核心逻辑其实也不复杂，就是：\n遍历框体内的点，分别将X，Y，Z方向的坐标值存入数组，加权，排序，取第一个满足边缘定义的点，作为该方向极限值。\n这里我们可以拆分位两个Step。\nStep 1：点位排序\n基本思路如下：\n选择一个方向，遍历点云，取到该方向上点云的坐标值，放入一个map中，key为坐标值，value为出现次数。同时对该坐标进行排序，并返回有序数组。**\n那么问题来了，点云的坐标值多半精确到小数点七八位，如果直接以原值作为key，那么这个map很难命中重复坐标，那map的意义就不大了，难以聚合坐标。\n于是这里对原坐标取2个精度后作为key来聚合点云，效果如下：\n可以明显看到已经有聚合了。这是源码实现：\nStep 2：夹逼探测\n拿到了点云坐标的聚合map，和排序数组，那么现在要检测边缘就很简单了，基本思路就是：\n从排序数组的两头开始检查，只要该点的聚合度大于DENSE_COUNT（根据需要设置，默认为3），我们就认为这个点是一个相对可信的边缘点。\n从这个算法描述来看，这不就是个夹逼算法么，可以一次遍历就拿到两个极值。\n到这里，某方向的两个极值（low 和 high）就拿到手了，那么剩下的工作无非就是分别计算XYZ三个方向的极值就好了。\n我们来看下效果，真的是“啪”一下，就贴上去了：\n上面的案例录制的比较早，有点模糊，再来看个高清带色彩的版本：\n这个体验是不是很丝滑？就这效率，拉框速度提升了10倍有吧？（22秒 -\u003e 2秒）\n读到这里，不知道大家还记不记得前面，我们刻意跳过了一个环节的介绍，就是“框体周围点位”这一部分，这里简单补充两句吧。\n在实际的场景里，有很多物体是靠得很近的，还有很多物体的点云并没有那么整齐，会有一些离散点在物体周围。那么这些点就可能会影响到你的边缘极限值的判断。\n因此我在这里引入了两个常量：\n附近点判定距离 NEAR_DISTANCE（框体紧凑的场景，NEAR_DISTANCE就小一点，否则就大一点）!\n密集点数 DENSE_COUNT（点云稀少的场景，就可以把DENSE_COUNT设置小一点，而点云密集厚重的场景，DENSE_COUNT就适当增加。）\n通过在不同的场景下，调整这两个常量的取值，就可以使得边缘探测更加的准确。\n遗留问题 其实在3D的世界里，多一个维度之后，很多问题都会变得更加的麻烦起来。上面的方案，在处理大部分场景的时候都能work，但实际上依然有一些小众场景下存在问题，比如：\n平时多半都是物体都是围绕Z轴旋转，但如果有上下坡路，物体围绕XY轴旋转，那垂直方向就需要进行矫正。\n再比如：\n用户移动了镜头方位，在屏幕上拉2D框的时候，就需要对2D框采集到的坐标进行3D投射，拿到真实的世界坐标，才能创建合适的立方体。\n当然，这些问题在后面的版本都已经完善修复了，之所以放在遗留问题，是想说明，仅仅依照正文部分的方法去实现的话，还会有这些个遗留的问题需要单独处理。\n如果大家感兴趣的话可以留言告诉我，我再决定要不要接着写。\n全文完。 码字不易，如果你还想继续看我写的东西，就关注我吧（记得加星标🌟哦），顺便给个赞👍或点一下在看，你的支持是我继续写下去的动力。\n**公众号｜**沐洒（ID：musama2018）\n",
+  "wordCount" : "478",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-10-07T00:00:00Z",
+  "dateModified": "2024-10-07T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "沐洒"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%BD%93%E5%89%8D%E7%AB%AF%E9%81%87%E5%88%B0%E4%BA%86%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      当前端遇到了自动驾驶
+    </h1>
+    <div class="post-description">
+      这是一篇用ThreeJS开发自动驾驶点云标注系统的实战记录，也是《THREEJS无师自通》的第一篇。通常情况，一个系列文章开篇应该是QuickStart或者Guide之类的简单口水文，而我选择以此开
+    </div>
+    <div class="post-meta"><span title='2024-10-07 00:00:00 +0000 UTC'>十月 7, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;沐洒&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af" aria-label="背景   ">背景   </a></li>
+                <li>
+                    <a href="#%e6%8c%91%e6%88%98" aria-label="挑战   ">挑战   </a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%a1%88" aria-label="方案">方案</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e7%82%b9%e4%ba%91%e5%88%86%e7%b1%bb" aria-label="点云分类">点云分类</a></li>
+                <li>
+                    <a href="#%e8%be%b9%e7%bc%98%e6%8e%a2%e6%b5%8b" aria-label="边缘探测   ">边缘探测   </a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e9%81%97%e7%95%99%e9%97%ae%e9%a2%98" aria-label="遗留问题   ">遗留问题   </a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>这是一篇用ThreeJS开发自动驾驶点云标注系统的实战记录，也是《THREEJS无师自通》的第一篇。通常情况，一个系列文章开篇应该是Quick Start或者Guide之类的简单口水文，而我选择以此开篇，最主要的原因还是因为这次经历足够有趣。</p>
+</blockquote>
+<p>**公众号｜**沐洒（ID：musama2018）</p>
+<p>前端开发，大家熟啊，有很多亲(bi)切(shi)的称谓，诸如“切图仔”，“Bug路由器”。自动驾驶，大家更熟了吧，最近几年但凡新能源汽车，谁要是不说自己搭配点自动驾驶（或辅助驾驶）功能，都不好意思拿出来卖。那么，当前端和自动驾驶碰到了一起，会发生什么有意思的事呢？</p>
+<p>有点云标注相关背景的可以跳过背景普及，直接看方案。</p>
+<h2 id="背景">背景   <a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h2>
+<p>去年9月，我们业务因为某些原因（商业机密）开始接触自动驾驶领域的数据处理，经过仔细一系列调研和盘算，我们最终决定从零开始，独立自研一套自动驾驶点云数据标注系统。你可能要说了，自动驾驶我知道啊，但是“点云”是个啥？呐，就是这玩意儿：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2153d146cb2d42a6989c5e27651d8fe6~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=617&amp;s=671448&amp;e=png&amp;b=040404" alt=""  />
+</p>
+<blockquote>
+<p>点云的学术定义比较复杂，大家可以自行搜索学习，这里我简单贴一个引述： 点云是指目标表面特性的海量点集合。 根据激光测量原理得到的点云，包括三维坐标（XYZ）和激光反射强度（Intensity）。  根据摄影测量原理得到的点云，包括三维坐标（XYZ）和颜色信息（RGB）。 结合激光测量和摄影测量原理得到点云，包括三维坐标（XYZ）、激光反射强度（Intensity）和颜色信息（RGB）。  在获取物体表面每个采样点的空间坐标后，得到的是一个点的集合，称之为“点云”(Point Cloud)。</p>
+</blockquote>
+<p>看不懂？没事，不重要，你只需要知道，我们周围的世界，都是点构成的，而点云只不过是用一些仪器（比如激光雷达），对真实世界进行了采样（且只对部分属性进行采样）。</p>
+<p>好了，假设你已经知道“点云”是啥了，但你心里肯定还有十万个为什么：</p>
+<blockquote>
+<p>你不是说自动驾驶么？前端呢？这仨有啥关联么？这东西自研成本很高么？</p>
+</blockquote>
+<p>别急，容我慢慢解释，先快速普及一下啥叫“数据标注”：</p>
+<blockquote>
+<p>人工智能数据标注是对文本、视频、图像等元数据进行标注的过程，标记好的数据将用于训练机器学习的模型。常见的数据标注类型有文本标注、语义分割和图像视频标注。</p>
+</blockquote>
+<p>这些经标注的训练数据集可用于训练自动驾驶、聊天机器人、翻译系统、智能客服和搜索引擎等人工智能应用场景之中</p>
+<p>假设你懒得看，或者看不懂，我再给你翻译翻译，什么叫数据标注：</p>
+<p><em>一个婴儿来到这个世界，你在它面前放两张卡片，一张红色，一张绿色，你问它，这是什么颜色，它必然是不知道的（我们假设它能听懂并理解你的话）。只有当你一遍又一遍的，不断的告诉它，这是红色，这是绿色，它才会记住。等下次你带它过马路时，它就能准确地识别出红绿灯，并在你面前大声喊出来 “红色（的灯）！”没错，你应该猜到了，那两张卡片本身没有标签（元数据），是你给它们“打上了标”（分别标注了红色和绿色），然后把这个“结构化的数据”，“喂养”给你的宝宝，久而久之，这个宝宝就学会了分辨世间万物，成为一个“智人”。</em></p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8886e752b54f439b966ddaafea1c18a7~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=541&amp;s=267941&amp;e=png&amp;b=fdfdfd" alt="image.png"  />
+</p>
+<p>（图片来源于网络）</p>
+<p>你的“喂养”，就是人工；宝宝的成长，就是智能。人工智能（AI，Artificial Intelligence），就是数据喂养的成果，没有数据标注，就没有人工智能。</p>
+<p>从这个意义上聊，你和我，都是别人（父母，老师，朋友…）用成千上万的标注数据喂养出来的AI。</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c1d1ec99d0e24438abdf1c12bca8b70c~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=240&amp;h=240&amp;s=15041&amp;e=png&amp;a=1&amp;b=fcfafa" alt="image.png"  />
+</p>
+<p>扯远了，收！我们说回自动驾驶。</p>
+<p>大家都知道现在自动驾驶很火啊，那自动驾驶的“智能”是怎么训练的呢？当然是算法工程师用模型训练出来的啦，而自动驾驶模型需要喂养的数据，就是点云。仪器扫描回来的点云数据里，仅仅只是包含了所有点的基本信息（位置，颜色，激光强度等），模型怎么知道这个点是人身上采的，还是出租车上采的呢？!</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c2ed48256ec460990da4f38d6978a40~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=713&amp;s=1052616&amp;e=png&amp;b=7c776b" alt="image.png"  />
+</p>
+<p>（图片来源于网络）</p>
+<p>于是这些点就需要被加工（标注），被我们用一系列手段（包括人工和机器）给点赋予更多的信息，区分出每一个点的含义（语义分割）。在自动驾驶领域的点云标注里，我们需要通过2D+3D工具，把物体识别出来。本文重点讲3D的部分。可以先看下3D框的效果：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/84ed08d5512f479aafaa138d60acc2b4~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=629&amp;s=351053&amp;e=png&amp;b=000000" alt="图片"  />
+</p>
+<p>（图中黄色高亮的点，就是被3D框圈中的点云）</p>
+<h2 id="挑战">挑战   <a hidden class="anchor" aria-hidden="true" href="#挑战">#</a></h2>
+<p>以往我们较为常见的数据标注，主要集中在文本，图片，视频等类型，例如文本翻译，音频转写，图片分类等等，涉及的工具基本上都是传统web开发知识可以搞定的，而点云标注则完全不同，点云需要作为3D数据渲染到立体空间内，这就需要使用到3D渲染引擎。我们使用的是ThreeJS，这是一个基于WebGL封装的3D引擎。</p>
+<p>写了10年的web前端代码，能有机会把玩一下3D技术，还真是挺令人兴奋的。于是我们吭哧吭哧把基本的3D拉框功能做出来了，效果是这样的：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a41b8bb7584480094bf0793a0aedf2f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1079&amp;h=607&amp;s=1806604&amp;e=gif&amp;f=191&amp;b=000000" alt="图片"  />
+</p>
+<p>（3D拉框 - 人工调整边缘：2倍速录制）</p>
+<p>动图是我加了2倍速的效果，真实情况是，要标出图上这辆小汽车，我需要先拉出一个大概的2D矩形区域，然后在三视图上不断的人工调整边缘细节，确保把应该纳入的点都框进去（未框入的点呈白色，框体垂直方向未框入则呈现蓝色，框入的呈现黄色）</p>
+<p>看起来好像也还行？</p>
+<p>no，no，no！你知道一份完整的点云标注任务需要标多少个框么？也不吓唬大家，保守点，一般情况一份连续帧平均20帧左右，每帧里要标注的框体保守点，取100个吧，而这一份连续帧标注，<strong>必须同一个标注员完成</strong>，那么<strong>20帧至少有2000个框体需要标注</strong>！</p>
+<p>按照上面实现的这种人工调节边缘的方式来拉框，一个框需要22秒（GIF共11秒，2倍速），熟练工可能能在10秒内调整完成。那么2000个框体，单纯只是拉框这一件小事，不包括其他工序（打标等），就需要耗费<strong>20000</strong>秒，约等于<strong>5.5小时</strong>！</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f9817d334a9d49a79af62b8e0f7431b3~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=240&amp;h=240&amp;s=99236&amp;e=gif&amp;f=16&amp;b=f8f5f4" alt=""  />
+</p>
+<p>这是什么概念？通常情况标注员都是坐班制，平均一天<strong>有效工作时长不超过6小时</strong>，也就是说，一个标注员，在工位上一动不动，大气都不敢喘一下的工作一天，就只能把一条点云数据标完，哦不对，仅仅只是拉完框！没错，只是拉框而已。</p>
+<p>这种低效的重复性工作，哪个组织受得了？怎么办呢？</p>
+<p>方法比较容易想，不就是引入自动化能力么，实现自动边缘检测，嗯，想想倒是挺简单的，问题是怎么实现呢？</p>
+<p>以下进入干货区，友情提示：货很干，注意补水。</p>
+<hr>
+<h2 id="方案">方案<a hidden class="anchor" aria-hidden="true" href="#方案">#</a></h2>
+<h4 id="点云分类">点云分类<a hidden class="anchor" aria-hidden="true" href="#点云分类">#</a></h4>
+<p>基本思路就是进行边缘探测：</p>
+<blockquote>
+<p>找出三个坐标轴(XYZ)方向上的框体边缘点，计算出边缘点之间的距离，调整框体的长宽高，进而将框体贴合到边缘点。</p>
+</blockquote>
+<p>边缘的定义：</p>
+<blockquote>
+<p>某方向上的同值坐标点数大于某个设定值（可配置，默认3，三者为众）</p>
+</blockquote>
+<p>找出边缘点的核心算法：</p>
+<blockquote>
+<p>遍历框体内的点，分别将XYZ方向的坐标值存入数组，加权，排序，取第一个满足边缘定义的点，作为该方向极限值。</p>
+</blockquote>
+<p>进行边缘判定之前，我们得先找出存在于框体内的点，这就涉及到第一个核心问题：<strong>点云和3D框的相对位置判断</strong>。</p>
+<p>为了更好的管理与框体“强相关”的点云，我们先对点云进行一个基本分类：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8a26261bc79431ea5428b6f17c0751c~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=283&amp;s=103015&amp;e=png&amp;b=fdf9f9" alt="image.png"  />
+</p>
+<p>从俯视图看，把3D图降维成2D图，立方体则看作矩形，如下图：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bfc1997ce1b947eb9fb23dd089104601~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=639&amp;s=781940&amp;e=png&amp;b=070707" alt="image.png"  />
+</p>
+<p>则点与框的相对位置可以降维等效为：</p>
+<p>第一类（点在立方体内）</p>
+<blockquote>
+<p>点在矩形内，且点的Z值在立方体[Zmin, Zmax]范围内</p>
+</blockquote>
+<p>第二类（点在立方体垂直方向）</p>
+<blockquote>
+<p>点在矩形内，且Z值在立方体[Zmin, Zmax]范围外</p>
+</blockquote>
+<p>第三类（点在立方体周围）</p>
+<blockquote>
+<p>点在延展矩形（向外延展N个距离）内，且不属于第二类。</p>
+</blockquote>
+<p>我们先按这个思路实现一版代码：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 判断点是否位于框体XY平面区域内 function isPointInXYPlane(gap: IGap, distance = 0) {   const { gapL, gapR, gapB, gapU } = gap;   // 在框体XY平面区域内   return gapL &gt; - distance &amp;&amp; gapR &lt; distance &amp;&amp; gapU &lt; distance &amp;&amp; gapB &gt; - distance; } // 在框体垂直方向上下边界内 function isPointInVerticalBoundry(up: number, bottom: number, z: number) {   return z &gt;= bottom &amp;&amp; z &lt;= up; }</code></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 位于框体XY平面向外延伸NEAR_DISTANCE距离的区域内 if (isPointInXYPlane(posInfo.gap, NEAR_DISTANCE)) {   const isInVerticalBoundry = isPointInVerticalBoundry(posInfo.up, posInfo.bottom, posInfo.z);   // 位于框体XY平面区域内   if (isPointInXYPlane(posInfo.gap)) {     // 在框体内     if (isInVerticalBoundry) {       isInside = true;     } else {       // 在框体外的垂直方向上       isVertical = true;     }   }   // 在框体上下边界内   if (isInVerticalBoundry) {     isNearBy = true;   } }</code></p>
+<p>通过以上逻辑，我们就拿到了与框体“相关”的点云（正确与否先按下不表，后面会说），我们先存起来，后面做极值寻找（即边缘检测）时候使用。</p>
+<p>第一版效果</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/18ac7dec5bd842ac98b69013470e742d~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=1467&amp;s=474214&amp;e=png&amp;b=030303" alt="图片"  />
+</p>
+<p>看起来好像还行，基本实现了贴合，但是……我们旋转一下看看：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3dd02f8276b94eef9d7096bbd29eb9d8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=920&amp;h=916&amp;s=343999&amp;e=png&amp;b=000000" alt="image.png"  />
+</p>
+<p>好家伙，旋转后框体边界没更新！所以点云高亮也没变化。</p>
+<p>这个问题其实也好理解，我们在处理边界的时候，只采用position和scale计算，并没有使用rotation属性，所以当框体的旋转分量发生变化，我们计算边界时没有及时调整，程序就会认为框体此时仍然留在原地未动呢。</p>
+<p>我们来优化一下。我先尝试用三角函数来计算旋转后的新坐标点，类似这样</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c37217f993f7475b8a03a8c796eabdc9~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=209&amp;s=100130&amp;e=png&amp;b=201f1e" alt="image.png"  />
+</p>
+<p>折腾了很久的三角函数，有点变化了，但是效果却成了这样：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/db423deccc3a4096ba98b53bb6232f90~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=241&amp;s=163258&amp;e=png&amp;b=faede3" alt="image.png"  />
+</p>
+<p>已经接近真相了，只需要把待判定点放到三角函数判定公式里，就可以知道该点是否在旋转后的框体内了，不过到这里我突然意识到问题被我搞复杂了，是不是可以有更简单的方法来判定矩形内部点呢？</p>
+<p>我们回到最初的问题：<strong>判断一个点，与一个立方体的相对位置</strong></p>
+<p>对这个原始问题进行逻辑拆解，可以拆为3个子问题：</p>
+<ol>
+<li>如何判断一个点位于立方体内部？</li>
+<li>如何判断一个点位于立方体的垂直方向（排除体内点）？</li>
+<li>如何判断一个点位于立方体的周围（排除垂直方向点）？</li>
+</ol>
+<p>关于问题1，第一反应还是立体几何，而且我笃定这是个非常成熟的几何问题，没必要自己硬憋。于是我就上网搜索：<strong>How to determine a point is inside or outside a cube</strong>? 结果如下：</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/af7313cae6194c4ca0a4716cd99dcdc4~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=974&amp;s=187621&amp;e=png&amp;b=fdfdfd" alt="image.png"  />
+</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/aca5e62c752241d2a02aa7beb0d81e91~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=927&amp;s=158539&amp;e=png&amp;b=fefefe" alt="image.png"  />
+</p>
+<p>上面是stackoverflow上大神给的两种数学方法，一看就知道能解，奈何我看图是看懂了，公式没有完全吸收透，于是最终没有采纳（尽量不干不求甚解的事，写成代码就要求自己得是真的懂）</p>
+<p>于是我进一步思考：</p>
+<p>几种数学方法确实都很虎，但我是不是把问题搞复杂了？能不能没事踩踩别人的肩膀呢？</p>
+<p>看看ThreeJS 是否有相应的API……果然有：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c0bad15eb91b4ca4beb18b7c4a5e5154~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=536&amp;h=159&amp;s=11604&amp;e=jpg&amp;b=fdfdfd" alt="图片"  />
+</p>
+<p>这不正好就是我想要的效果么？踏破铁鞋无觅处，得来全不费功夫啊！</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec58cd2aada94b1fb3c62e85c48af40f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=279&amp;s=19134&amp;e=jpg&amp;b=201f1f" alt="图片"  />
+</p>
+<p>直接拿来用，搞定！</p>
+<p>但问题来了，人家是怎么做到的呢？带着这个疑问，我开始翻相关源码。</p>
+<p>首先看到containsPoint，其实就和我们用的方法是一样的：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// https://github.com/mrdoob/three.js/blob/4503ef10b81a00f5c6c64fe9a856881ee31fe6a3/src/math/Box3.js#L243 containsPoint( point ) {   return point.x &lt; this.min.x || point.x &gt; this.max.x ||     point.y &lt; this.min.y || point.y &gt; this.max.y ||     point.z &lt; this.min.z || point.z &gt; this.max.z ? false : true; }</code></p>
+<p>而核心问题还是得想办法计算出box.min和box.max，那ThreeJS是怎么计算的呢？继续看：</p>
+<p>arduino</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// https://github.com/mrdoob/three.js/blob/4503ef10b81a00f5c6c64fe9a856881ee31fe6a3/src/core/BufferGeometry.js#L290 computeBoundingBox() {   // ..... 省略部分代码 ....   const position = this.attributes.position;   if ( position !== undefined ) {     this.boundingBox.setFromBufferAttribute(position);   }   // ..... 省略部分代码 .... }</code></p>
+<p>看起来boundingBox的属性来自于attributes.position，这个position就是box在世界坐标里的具体位置，是我们在创建box时候设定的。再继续深挖下setFromBufferAttribute：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// https://github.com/mrdoob/three.js/blob/4503ef10b81a00f5c6c64fe9a856881ee31fe6a3/src/math/Box3.js#L56 setFromBufferAttribute( attribute ) {   // ..... 省略部分代码 ....   for ( let i = 0, l = attribute.count; i &lt; l; i ++ ) {     const x = attribute.getX( i );     const y = attribute.getY( i );     const z = attribute.getZ( i );     if ( x &lt; minX ) minX = x;     if ( y &lt; minY ) minY = y;     if ( z &lt; minZ ) minZ = z;     if ( x &gt; maxX ) maxX = x;     if ( y &gt; maxY ) maxY = y;     if ( z &gt; maxZ ) maxZ = z;   }   this.min.set( minX, minY, minZ );   this.max.set( maxX, maxY, maxZ );   return this; }</code></p>
+<p>平平无奇啊这代码，几乎和我们自己写的边界判定代码一模一样啊，也没引入rotation变量，那到底怎么是在哪处理的旋转分量呢？</p>
+<p>关键点在这里：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/acdda2b560414ee7882dae635b78e027~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1080&amp;h=112&amp;s=93025&amp;e=png&amp;b=1f1e1e" alt="image.png"  />
+</p>
+<p>我尝试给你解释下：</p>
+<blockquote>
+<p>在调用containsPoint之前，我们使用box的转换矩阵，对point使用了一次矩阵逆变换，从而把point的坐标系转换到了box的坐标系，而这个转换矩阵，是一个Matrix4（四维矩阵），而point是一个Vector3（三维向量）。 使用四维矩阵对三维向量进行转换的时候，会逐一提取出矩阵的position（位置），scale（缩放）和rotation（旋转）分量，分别对三维向量做矩阵乘法。 也就是这么一个操作，使得该point在经过矩阵变换之后，其position已经是一个附加了rotation分量的新的坐标值了，然后就可以直接拿来和box的8个顶点的position做简单的边界比对了。</p>
+</blockquote>
+<p>这里涉及大量的数学知识和ThreeJS底层知识，就不展开讲了，后面找机会单独写一篇关于转换矩阵的。</p>
+<p>我们接着看点与框体相对位置判断的第二个问题：<strong>如何判断一个点位于立方体的垂直方向（排除体内点）？</strong></p>
+<p>首先，我们置换下概念：</p>
+<p><strong>垂直方向上的点</strong> = Z轴方向上的点 = 从俯视图看，在XY平面上投射的点 - 框内点</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5a57f798e9344473adf4647b7524f50a~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=462&amp;s=24815&amp;e=png&amp;b=ffffff" alt="image.png"  />
+</p>
+<p>那么，如何判断一个点在一个矩形内，这个问题就进一步转化为：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/28eab524d951420896e35d467034087d~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=429&amp;s=167802&amp;e=png&amp;b=fceee1" alt="image.png"  />
+ (AB X AE ) * (CD X CE) &gt;= 0 &amp;&amp; (DA X DE ) * (BC X BE) &gt;= 0</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/53d6116a1e104cd1816c93727a11656e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=265&amp;s=15249&amp;e=jpg&amp;b=20201f" alt="图片"  />
+</p>
+<p>这里涉及到的数学知识是<strong>向量点乘和叉乘的几何意义</strong>，也不展开了，感兴趣的朋友可以自行搜索学习下。</p>
+<p>还剩最后一个问题：<strong>如何判断一个点位于立方体的周围（排除垂直方向点）？</strong></p>
+<p>这个问题我们先放一放，<strong>周围点判断主要用来扩展框体的</strong>，并不影响本次的边界探测结果，以后再找机会展开讲，这里先跳过了。</p>
+<p>到此为止，我们就至少拿到了两类点（框内点，和框体垂直方向的点），接下来就可以开始探测边缘了。</p>
+<h4 id="边缘探测">边缘探测   <a hidden class="anchor" aria-hidden="true" href="#边缘探测">#</a></h4>
+<p>边缘探测的核心逻辑其实也不复杂，就是：</p>
+<blockquote>
+<p>遍历框体内的点，分别将X，Y，Z方向的坐标值存入数组，加权，排序，取第一个满足边缘定义的点，作为该方向极限值。</p>
+</blockquote>
+<p>这里我们可以拆分位两个Step。</p>
+<p><strong>Step 1：点位排序</strong></p>
+<p>基本思路如下：</p>
+<blockquote>
+<p>选择一个方向，遍历点云，取到该方向上点云的坐标值，放入一个map中，key为坐标值，value为出现次数。同时对该坐标进行排序，并返回有序数组。**</p>
+</blockquote>
+<p>那么问题来了，点云的坐标值多半精确到小数点七八位，如果直接以原值作为key，那么这个map很难命中重复坐标，那map的意义就不大了，难以聚合坐标。</p>
+<p>于是这里对原坐标取2个精度后作为key来聚合点云，效果如下：</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62b553caee064c1ca3f9dc3840a4212f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=109&amp;s=90237&amp;e=png&amp;b=232428" alt="image.png"  />
+</p>
+<p>可以明显看到已经有聚合了。这是源码实现：</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/824d3c0c951f4e47bd84c283dd9ef02b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=299&amp;s=192756&amp;e=png&amp;b=201f1f" alt="image.png"  />
+</p>
+<p><strong>Step 2：夹逼探测</strong></p>
+<p>拿到了点云坐标的聚合map，和排序数组，那么现在要检测边缘就很简单了，基本思路就是：</p>
+<blockquote>
+<p>从排序数组的两头开始检查，只要该点的聚合度大于DENSE_COUNT（根据需要设置，默认为3），我们就认为这个点是一个相对可信的边缘点。</p>
+</blockquote>
+<p>从这个算法描述来看，这不就是个夹逼算法么，可以一次遍历就拿到两个极值。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0aeb5448113a4e6baf403d4b54873320~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=589&amp;s=197160&amp;e=png&amp;b=fdfdfd" alt="image.png"  />
+</p>
+<p>到这里，某方向的两个极值（low 和 high）就拿到手了，那么剩下的工作无非就是分别计算XYZ三个方向的极值就好了。</p>
+<p>我们来看下效果，真的是“啪”一下，就贴上去了：</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/19c9439fb63b4ffa9d4748fbd5fae10e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1020&amp;h=869&amp;s=210674&amp;e=gif&amp;f=95&amp;b=080808" alt="640.gif"  />
+</p>
+<p>上面的案例录制的比较早，有点模糊，再来看个高清带色彩的版本：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/705a4935a960490fba786eaae9b41001~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1079&amp;h=607&amp;s=839812&amp;e=gif&amp;f=48&amp;b=010101" alt="图片"  />
+</p>
+<p>这个体验是不是很丝滑？就这效率，拉框速度提升了10倍有吧？（22秒 -&gt; <strong>2秒</strong>）</p>
+<p>读到这里，不知道大家还记不记得前面，我们刻意跳过了一个环节的介绍，就是“框体周围点位”这一部分，这里简单补充两句吧。</p>
+<p>在实际的场景里，有很多物体是靠得很近的，还有很多物体的点云并没有那么整齐，会有一些离散点在物体周围。那么这些点就可能会影响到你的边缘极限值的判断。</p>
+<p>因此我在这里引入了两个常量：</p>
+<p><strong>附近点判定距离</strong> <strong>NEAR_DISTANCE</strong>（框体紧凑的场景，NEAR_DISTANCE就小一点，否则就大一点）!</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/33b167cfb4c94f2486d210f3e1bebc0e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=632&amp;h=94&amp;s=79748&amp;e=png&amp;b=21201f" alt="image.png"  />
+</p>
+<p><strong>密集点数</strong> <strong>DENSE_COUNT</strong>（点云稀少的场景，就可以把DENSE_COUNT设置小一点，而点云密集厚重的场景，DENSE_COUNT就适当增加。）</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/210e292026424c74895e5e5735839279~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=640&amp;h=86&amp;s=8029&amp;e=jpg&amp;b=222120" alt="图片"  />
+</p>
+<p>通过在不同的场景下，调整这两个常量的取值，就可以使得边缘探测更加的准确。</p>
+<hr>
+<h2 id="遗留问题">遗留问题   <a hidden class="anchor" aria-hidden="true" href="#遗留问题">#</a></h2>
+<p>其实在3D的世界里，多一个维度之后，很多问题都会变得更加的麻烦起来。上面的方案，在处理大部分场景的时候都能work，但实际上依然有一些小众场景下存在问题，比如：</p>
+<blockquote>
+<p>平时多半都是物体都是围绕Z轴旋转，但如果有上下坡路，物体围绕XY轴旋转，那垂直方向就需要进行矫正。</p>
+</blockquote>
+<p>再比如：</p>
+<blockquote>
+<p>用户移动了镜头方位，在屏幕上拉2D框的时候，就需要对2D框采集到的坐标进行3D投射，拿到真实的世界坐标，才能创建合适的立方体。</p>
+</blockquote>
+<p>当然，这些问题在后面的版本都已经完善修复了，之所以放在遗留问题，是想说明，仅仅依照正文部分的方法去实现的话，还会有这些个遗留的问题需要单独处理。</p>
+<p>如果大家感兴趣的话可以留言告诉我，我再决定要不要接着写。</p>
+<p><strong>全文完。</strong> <strong>码字不易，如果你还想继续看我写的东西，就关注我吧（记得加星标🌟哦），顺便给个赞👍或点一下在看，你的支持是我继续写下去的动力。</strong></p>
+<p>**公众号｜**沐洒（ID：musama2018）</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/three.js/">Three.js</a></li>
+      <li><a href="http://localhost:1313/tags/%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/">自动驾驶</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/jmeter%E8%BF%9E%E6%8E%A5websocketpython%E8%BF%9B%E8%A1%8C%E5%B9%B6%E5%8F%91%E9%AA%8C%E8%AF%81/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Jmeter连接Websocket（python）进行并发验证</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/8000%E5%AD%97%E6%B6%B5%E7%9B%96%E5%87%A0%E4%B9%8E%E6%89%80%E6%9C%89%E7%9A%84springboot%E6%B3%A8%E8%A7%A3%E4%BB%A5%E5%8F%8A%E8%AF%A6%E8%A7%A3/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>8000字涵盖几乎所有的springboot注解以及详解！！</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 当前端遇到了自动驾驶 on x"
+            href="https://x.com/intent/tweet/?text=%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cthree.js%2c%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 当前端遇到了自动驾驶 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f&amp;title=%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6&amp;summary=%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 当前端遇到了自动驾驶 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f&title=%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 当前端遇到了自动驾驶 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 当前端遇到了自动驾驶 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 当前端遇到了自动驾驶 on telegram"
+            href="https://telegram.me/share/url?text=%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 当前端遇到了自动驾驶 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%bd%93%e5%89%8d%e7%ab%af%e9%81%87%e5%88%b0%e4%ba%86%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%25BD%2593%25E5%2589%258D%25E7%25AB%25AF%25E9%2581%2587%25E5%2588%25B0%25E4%25BA%2586%25E8%2587%25AA%25E5%258A%25A8%25E9%25A9%25BE%25E9%25A9%25B6%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

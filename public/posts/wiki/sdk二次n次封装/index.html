@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>sdk二次（n次）封装 | PaperMod</title>
+<meta name="keywords" content="数字员工（H5）">
+<meta name="description" content="数字员工（H5）">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/sdk%E4%BA%8C%E6%AC%A1n%E6%AC%A1%E5%B0%81%E8%A3%85/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/sdk%E4%BA%8C%E6%AC%A1n%E6%AC%A1%E5%B0%81%E8%A3%85/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="sdk二次（n次）封装" />
+<meta property="og:description" content="数字员工（H5）" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/sdk%E4%BA%8C%E6%AC%A1n%E6%AC%A1%E5%B0%81%E8%A3%85/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="sdk二次（n次）封装"/>
+<meta name="twitter:description" content="数字员工（H5）"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "sdk二次（n次）封装",
+      "item": "http://localhost:1313/posts/wiki/sdk%E4%BA%8C%E6%AC%A1n%E6%AC%A1%E5%B0%81%E8%A3%85/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "sdk二次（n次）封装",
+  "name": "sdk二次（n次）封装",
+  "description": "数字员工（H5）",
+  "keywords": [
+    "数字员工（H5）"
+  ],
+  "articleBody": "0905版本，基于上个版本，将虚拟人更底层能力抽取出来，UI和逻辑分离，包括class和Avatar.vue\nClass 虚拟人Class基础能力 init：初始化虚拟人 status： 状态\"loading\" | “idle” | “talking” getAnswers: 提问返回文本 talk：播报文本 listen：执行收音动作 thiking：nlp思考中 boring：触发无聊时动作，一般是没其他操作时，倒计时一定时间触发 idle：打断动作、播报 move：调用动作 setBackground：设置2D背景，暂时没用，暂时是用css变量换背景 注意点 所有操作都需要虚拟人异步加载完成才能进行，都需要判空特殊处理，方法较多，直接用proxy加方法白名单做统一拦截 内部有talking的计时，方便后面操作太快来做拦截 计划优化点 异常提示比较重复、散乱，要做常量配置 配合语音识别，也是异步操作比较多，考虑rxjs管理异步操作 完整代码 class\n?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100\n101\n102\n103\n104\n105\n106\n107\n108\n109\n110\n111\n112\n113\n114\n115\n116\n117\n118\n119\n120\n121\n122\n123\n124\n125\n126\n127\n128\n129\n130\n131\n132\n133\n134\n135\n136\n137\n138\n139\n140\n141\n142\n143\n144\n145\nimport { Avatar } from \"./haihuman.module.js\"``;\nimport { userId } from \"@/storage/user\"``;\nimport showMsg from \"@/utils/showMsg\"``;\nclass AvatarH5 {\nappId: string;\nappKey: string;\nappSecret: string;\navatarId: string;\ninstance: any;\nstatus: \"loading\" | \"idle\" | \"talking\"``;\ntimer: NodeJS.Timer;\ntalkTime?: number;\nconstructor() {\nthis``.appId = \"6006805041792430\"``;\nthis``.appKey = \"TTZ92YT1mSDRLSGs5Mv1bMYJ\"``;\nthis``.appSecret = \"qBHOHn8OUHc17ulW756E2YmcpuMVqNnh\"``;\nthis``.avatarId = \"11100020000282450000000000000000\"``;\nthis``.status = \"loading\"``;\nthis``.timer = null``;\nthis``.talkTime = void 0;\n}\ninit(cbs) {\nconsole.log(``\"init\"``, userId.value);\nthis``.instance = new Avatar(\nthis``.avatarId,\n\"v1.0\"``,\n\"wandemei.glb\"``,\n\"haihuman\"``,\n\"\"``,\n{\nlocale: \"cn\"``,\nuserId: userId.value, // 用户唯一标识\nprefabs: [{ type: \"ani\"``, name: \"human_idle\" }], // 预加载动画资源\n}\n);\nthis``.instance.init(``this``.appId, this``.appKey, this``.appSecret, {\n...cbs,\nonEndOfChat: () =\u003e {\ncbs?.onEndOfChat();\nthis``.talkTime = void 0;\nclearTimeout(``this``.timer);\n},\n});\n}\ngetAnswers(text, callback, errorFn, timeout = 30000) {\nconsole.log(``'getAnswers text'``, text, callback)\nthis``.instance.chat.getAnswers(\ntext,\ncallback,\n(e) =\u003e {\nerrorFn?.(e);\nthis``.talkTime = void 0;\nclearTimeout(``this``.timer);\n},\ntimeout\n);\n}\ntalk(text) {\nthis``.idle();\nthis``.instance.chat.talk(\ntext,\n\"read\"``,\n0,\n() =\u003e console.log(``\"talk success\"``),\n() =\u003e {\nshowMsg(``\"当前网络较差，请稍后再试\"``, 1000);\nconsole.log(``\"talk fail\"``);\n},\n10 * 1000\n);\nthis``.status = \"talking\"``;\nthis``.talkTime = 0;\nclearTimeout(``this``.timer);\nlet _this = this``;\nfunction count() {\nif (_this.talkTime \u003e= 2) {\n_this.talkTime = void 0\nclearTimeout(_this.timer);\nreturn\n}\n_this.talkTime++;\n_this.timer = setTimeout(count, 1000);\n}\ncount();\n}\ngetStatus() {\nreturn this``.status;\n}\nsetStatus(_status) {\nthis``.status = _status;\n}\n// 收音动作\nlisten() {\nthis``.instance.engine.move(\nMath.random() \u003e 0.5 ? \"human_listen\" : \"human_response\"``,\nfalse``,\nDate.now()\n);\n}\n// 等待服务器动作\nthink() {\nthis``.instance.engine.move(\nMath.random() \u003e 0.5 ? \"human_thinking\" : \"human_confused\"``,\nfalse``,\nDate.now()\n);\n}\n// 待命动作\nboring() {\nif ([``\"idle\"``].includes(``this``.getStatus())) {\nthis``.instance.engine.move(\nMath.random() \u003e 0.5 ? \"human_hello\" : \"human_niuyiniu\"``,\nfalse``,\nDate.now()\n);\n}\n}\nidle() {\nthis``.talkTime = 0;\nclearTimeout(``this``.timer);\nthis``.instance.idle();\n}\nsetBackground(url) {\nthis``.instance.stage.setBackground2D(url);\n}\n}\nexport default AvatarH5;\n// export const avatar = new AvatarH5();\nexport const avatar = new Proxy(``new AvatarH5(), {\nget(target, propKey, receiver) {\nif (\ntypeof target[propKey] === \"function\" \u0026\u0026\n![``\"init\"``, \"setStatus\"``].includes(propKey)\n) {\nif (!target.instance || target.instance?.state === \"loading\"``) {\nreturn () =\u003e {\nalert(``\"虚拟人加载中，请稍等\"``);\n};\n}\n}\nreturn Reflect.get(target, propKey, receiver);\n},\n});\nAvatar.vue 功能 在class基础上增加业务逻辑\n判断话术类型，做相应回答和后续交互 增加了手势动画，单击、双击、长按、滑动、复位，包括一些随机动画 ?\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100\n101\n102\n103\n104\n105\n106\n107\n108\n109\n110\n111\n112\n113\n114\n115\n116\n117\n118\n119\n120\n121\n122\n123\n124\n125\n126\n127\n128\n129\n130\n131\n132\n133\n134\n135\n136\n137\n138\n139\n140\n141\n142\n143\n144\n145\n146\n147\n148\n149\n150\n151\n152\n153\n154\n155\n156\n157\n158\n159\n160\n161\n162\n163\n164\n165\n166\n167\n168\n169\n170\n171\n172\n173\n174\n175\n176\n177\n178\n179\n180\n181\n182\n183\n184\n185\n186\n187\n188\n189\n190\n191\n192\n193\n194\n195\n196\n197\n198\n199\n200\n201\n202\n203\n204\n205\n206\n207\n208\n209\n210\n211\n212\n213\n214\n215\n216\n217\n218\n219\n220\n221\n222\n223\n224\n225\n226\n227\n228\n229\n230\n231\n232\n233\n234\n235\n236\n237\n238\n239\n240\n241\n242\n243\n244\n245\n246\n247\n248\n249\n250\n251\n252\n253\n254\n255\n256\n257\n258\n259\n260\n261\n262\n263\n264\n265\n266\n267\n268\n269\n270\n271\n272\n273\n274\n275\n276\n277\n278\n279\n280\n281\n282\n283\n284\n285\n286\n287\n288\n289\n290\n291\n292\n293\n294\n295\n296\n297\n298\n299\n300\n301\n302\n303\n304\n305\n306\n307\n308\n309\n310\n311\n312\n313\n314\n315\n316\n317\n318\n319\n320\n321\n322\n323\n324\n325\n326\n327\n328\n329\n330\n331\n332\n",
+  "wordCount" : "1686",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/sdk%E4%BA%8C%E6%AC%A1n%E6%AC%A1%E5%B0%81%E8%A3%85/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      sdk二次（n次）封装
+    </h1>
+    <div class="post-description">
+      数字员工（H5）
+    </div>
+    <div class="post-meta">8 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#class" aria-label="Class">Class</a><ul>
+                        
+                <li>
+                    <a href="#%e8%99%9a%e6%8b%9f%e4%ba%baclass%e5%9f%ba%e7%a1%80%e8%83%bd%e5%8a%9b" aria-label="虚拟人Class基础能力">虚拟人Class基础能力</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e7%82%b9" aria-label="注意点">注意点</a></li>
+                <li>
+                    <a href="#%e8%ae%a1%e5%88%92%e4%bc%98%e5%8c%96%e7%82%b9" aria-label="计划优化点">计划优化点</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%8c%e6%95%b4%e4%bb%a3%e7%a0%81" aria-label="完整代码">完整代码</a></li>
+                <li>
+                    <a href="#avatarvue" aria-label="Avatar.vue">Avatar.vue</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd" aria-label="功能">功能</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>0905版本，基于上个版本，将虚拟人更底层能力抽取出来，UI和逻辑分离，包括class和Avatar.vue</p>
+<h2 id="class">Class<a hidden class="anchor" aria-hidden="true" href="#class">#</a></h2>
+<h3 id="虚拟人class基础能力">虚拟人Class基础能力<a hidden class="anchor" aria-hidden="true" href="#虚拟人class基础能力">#</a></h3>
+<ol>
+<li>init：初始化虚拟人</li>
+<li>status： 状态&quot;loading&quot; | &ldquo;idle&rdquo; | &ldquo;talking&rdquo;</li>
+<li>getAnswers: 提问返回文本</li>
+<li>talk：播报文本</li>
+<li>listen：执行收音动作</li>
+<li>thiking：nlp思考中</li>
+<li>boring：触发无聊时动作，一般是没其他操作时，倒计时一定时间触发</li>
+<li>idle：打断动作、播报</li>
+<li>move：调用动作</li>
+<li>setBackground：设置2D背景，暂时没用，暂时是用css变量换背景</li>
+</ol>
+<h3 id="注意点">注意点<a hidden class="anchor" aria-hidden="true" href="#注意点">#</a></h3>
+<ol>
+<li>所有操作都需要虚拟人异步加载完成才能进行，都需要判空特殊处理，方法较多，直接用proxy加方法白名单做统一拦截</li>
+<li>内部有talking的计时，方便后面操作太快来做拦截</li>
+</ol>
+<h3 id="计划优化点">计划优化点<a hidden class="anchor" aria-hidden="true" href="#计划优化点">#</a></h3>
+<ul>
+<li>异常提示比较重复、散乱，要做常量配置</li>
+<li>配合语音识别，也是异步操作比较多，考虑rxjs管理异步操作</li>
+</ul>
+<h2 id="完整代码">完整代码<a hidden class="anchor" aria-hidden="true" href="#完整代码">#</a></h2>
+<p><strong>class</strong></p>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p>34</p>
+<p>35</p>
+<p>36</p>
+<p>37</p>
+<p>38</p>
+<p>39</p>
+<p>40</p>
+<p>41</p>
+<p>42</p>
+<p>43</p>
+<p>44</p>
+<p>45</p>
+<p>46</p>
+<p>47</p>
+<p>48</p>
+<p>49</p>
+<p>50</p>
+<p>51</p>
+<p>52</p>
+<p>53</p>
+<p>54</p>
+<p>55</p>
+<p>56</p>
+<p>57</p>
+<p>58</p>
+<p>59</p>
+<p>60</p>
+<p>61</p>
+<p>62</p>
+<p>63</p>
+<p>64</p>
+<p>65</p>
+<p>66</p>
+<p>67</p>
+<p>68</p>
+<p>69</p>
+<p>70</p>
+<p>71</p>
+<p>72</p>
+<p>73</p>
+<p>74</p>
+<p>75</p>
+<p>76</p>
+<p>77</p>
+<p>78</p>
+<p>79</p>
+<p>80</p>
+<p>81</p>
+<p>82</p>
+<p>83</p>
+<p>84</p>
+<p>85</p>
+<p>86</p>
+<p>87</p>
+<p>88</p>
+<p>89</p>
+<p>90</p>
+<p>91</p>
+<p>92</p>
+<p>93</p>
+<p>94</p>
+<p>95</p>
+<p>96</p>
+<p>97</p>
+<p>98</p>
+<p>99</p>
+<p>100</p>
+<p>101</p>
+<p>102</p>
+<p>103</p>
+<p>104</p>
+<p>105</p>
+<p>106</p>
+<p>107</p>
+<p>108</p>
+<p>109</p>
+<p>110</p>
+<p>111</p>
+<p>112</p>
+<p>113</p>
+<p>114</p>
+<p>115</p>
+<p>116</p>
+<p>117</p>
+<p>118</p>
+<p>119</p>
+<p>120</p>
+<p>121</p>
+<p>122</p>
+<p>123</p>
+<p>124</p>
+<p>125</p>
+<p>126</p>
+<p>127</p>
+<p>128</p>
+<p>129</p>
+<p>130</p>
+<p>131</p>
+<p>132</p>
+<p>133</p>
+<p>134</p>
+<p>135</p>
+<p>136</p>
+<p>137</p>
+<p>138</p>
+<p>139</p>
+<p>140</p>
+<p>141</p>
+<p>142</p>
+<p>143</p>
+<p>144</p>
+<p>145</p>
+<p><code>import { Avatar } from</code> <code>&quot;./haihuman.module.js&quot;``;</code></p>
+<p><code>import { userId } from</code> <code>&quot;@/storage/user&quot;``;</code></p>
+<p><code>import showMsg from</code> <code>&quot;@/utils/showMsg&quot;``;</code></p>
+<p><code>class AvatarH5 {</code></p>
+<p>  <code>appId: string;</code></p>
+<p>  <code>appKey: string;</code></p>
+<p>  <code>appSecret: string;</code></p>
+<p>  <code>avatarId: string;</code></p>
+<p>  <code>instance: any;</code></p>
+<p>  <code>status:</code> <code>&quot;loading&quot;</code> <code>|</code> <code>&quot;idle&quot;</code> <code>|</code> <code>&quot;talking&quot;``;</code></p>
+<p>  <code>timer: NodeJS.Timer;</code></p>
+<p>  <code>talkTime?: number;</code></p>
+<p>  <code>constructor() {</code></p>
+<p>    <code>this``.appId =</code> <code>&quot;6006805041792430&quot;``;</code></p>
+<p>    <code>this``.appKey =</code> <code>&quot;TTZ92YT1mSDRLSGs5Mv1bMYJ&quot;``;</code></p>
+<p>    <code>this``.appSecret =</code> <code>&quot;qBHOHn8OUHc17ulW756E2YmcpuMVqNnh&quot;``;</code></p>
+<p>    <code>this``.avatarId =</code> <code>&quot;11100020000282450000000000000000&quot;``;</code></p>
+<p>    <code>this``.status =</code> <code>&quot;loading&quot;``;</code></p>
+<p>    <code>this``.timer =</code> <code>null``;</code></p>
+<p>    <code>this``.talkTime = void 0;</code></p>
+<p>  <code>}</code></p>
+<p>  <code>init(cbs) {</code></p>
+<p>    <code>console.log(``&quot;init&quot;``, userId.value);</code></p>
+<p>    <code>this``.instance =</code> <code>new</code> <code>Avatar(</code></p>
+<p>      <code>this``.avatarId,</code></p>
+<p>      <code>&quot;v1.0&quot;``,</code></p>
+<p>      <code>&quot;wandemei.glb&quot;``,</code></p>
+<p>      <code>&quot;haihuman&quot;``,</code></p>
+<p>      <code>&quot;&quot;``,</code></p>
+<p>      <code>{</code></p>
+<p>        <code>locale:</code> <code>&quot;cn&quot;``,</code></p>
+<p>        <code>userId: userId.value,</code> <code>// 用户唯一标识</code></p>
+<p>        <code>prefabs: [{ type:</code> <code>&quot;ani&quot;``, name:</code> <code>&quot;human_idle&quot;</code> <code>}],</code> <code>// 预加载动画资源</code></p>
+<p>      <code>}</code></p>
+<p>    <code>);</code></p>
+<p>    <code>this``.instance.init(``this``.appId,</code> <code>this``.appKey,</code> <code>this``.appSecret, {</code></p>
+<p>      <code>...cbs,</code></p>
+<p>      <code>onEndOfChat: () =&gt; {</code></p>
+<p>        <code>cbs?.onEndOfChat();</code></p>
+<p>        <code>this``.talkTime = void 0;</code></p>
+<p>        <code>clearTimeout(``this``.timer);</code></p>
+<p>      <code>},</code></p>
+<p>    <code>});</code></p>
+<p>  <code>}</code></p>
+<p>  <code>getAnswers(text, callback, errorFn, timeout = 30000) {</code></p>
+<p>    <code>console.log(``'getAnswers text'``, text, callback)</code></p>
+<p>    <code>this``.instance.chat.getAnswers(</code></p>
+<p>      <code>text,</code></p>
+<p>      <code>callback,</code></p>
+<p>      <code>(e) =&gt; {</code></p>
+<p>        <code>errorFn?.(e);</code></p>
+<p>        <code>this``.talkTime = void 0;</code></p>
+<p>        <code>clearTimeout(``this``.timer);</code></p>
+<p>      <code>},</code></p>
+<p>      <code>timeout</code></p>
+<p>    <code>);</code></p>
+<p>  <code>}</code></p>
+<p>  <code>talk(text) {</code></p>
+<p>    <code>this``.idle();</code></p>
+<p>    <code>this``.instance.chat.talk(</code></p>
+<p>      <code>text,</code></p>
+<p>      <code>&quot;read&quot;``,</code></p>
+<p>      <code>0,</code></p>
+<p>      <code>() =&gt; console.log(``&quot;talk success&quot;``),</code></p>
+<p>      <code>() =&gt; {</code></p>
+<p>        <code>showMsg(``&quot;当前网络较差，请稍后再试&quot;``, 1000);</code></p>
+<p>        <code>console.log(``&quot;talk fail&quot;``);</code></p>
+<p>      <code>},</code></p>
+<p>      <code>10 * 1000</code></p>
+<p>    <code>);</code></p>
+<p>    <code>this``.status =</code> <code>&quot;talking&quot;``;</code></p>
+<p>    <code>this``.talkTime = 0;</code></p>
+<p>    <code>clearTimeout(``this``.timer);</code></p>
+<p>    <code>let _this =</code> <code>this``;</code></p>
+<p>    <code>function</code> <code>count() {</code></p>
+<p>      <code>if</code> <code>(_this.talkTime &gt;= 2) {</code></p>
+<p>        <code>_this.talkTime = void 0</code></p>
+<p>        <code>clearTimeout(_this.timer);</code></p>
+<p>        <code>return</code></p>
+<p>      <code>}</code></p>
+<p>      <code>_this.talkTime++;</code></p>
+<p>      <code>_this.timer = setTimeout(count, 1000);</code></p>
+<p>    <code>}</code></p>
+<p>    <code>count();</code></p>
+<p>  <code>}</code></p>
+<p>  <code>getStatus() {</code></p>
+<p>    <code>return</code> <code>this``.status;</code></p>
+<p>  <code>}</code></p>
+<p>  <code>setStatus(_status) {</code></p>
+<p>    <code>this``.status = _status;</code></p>
+<p>  <code>}</code></p>
+<p>  <code>// 收音动作</code></p>
+<p>  <code>listen() {</code></p>
+<p>    <code>this``.instance.engine.move(</code></p>
+<p>      <code>Math.random() &gt; 0.5 ?</code> <code>&quot;human_listen&quot;</code> <code>:</code> <code>&quot;human_response&quot;``,</code></p>
+<p>      <code>false``,</code></p>
+<p>      <code>Date.now()</code></p>
+<p>    <code>);</code></p>
+<p>  <code>}</code></p>
+<p>  <code>// 等待服务器动作</code></p>
+<p>  <code>think() {</code></p>
+<p>    <code>this``.instance.engine.move(</code></p>
+<p>      <code>Math.random() &gt; 0.5 ?</code> <code>&quot;human_thinking&quot;</code> <code>:</code> <code>&quot;human_confused&quot;``,</code></p>
+<p>      <code>false``,</code></p>
+<p>      <code>Date.now()</code></p>
+<p>    <code>);</code></p>
+<p>  <code>}</code></p>
+<p>  <code>// 待命动作</code></p>
+<p>  <code>boring() {</code></p>
+<p>    <code>if</code> <code>([``&quot;idle&quot;``].includes(``this``.getStatus())) {</code></p>
+<p>      <code>this``.instance.engine.move(</code></p>
+<p>        <code>Math.random() &gt; 0.5 ?</code> <code>&quot;human_hello&quot;</code> <code>:</code> <code>&quot;human_niuyiniu&quot;``,</code></p>
+<p>        <code>false``,</code></p>
+<p>        <code>Date.now()</code></p>
+<p>      <code>);</code></p>
+<p>    <code>}</code></p>
+<p>  <code>}</code></p>
+<p>  <code>idle() {</code></p>
+<p>    <code>this``.talkTime = 0;</code></p>
+<p>    <code>clearTimeout(``this``.timer);</code></p>
+<p>    <code>this``.instance.idle();</code></p>
+<p>  <code>}</code></p>
+<p>  <code>setBackground(url) {</code></p>
+<p>    <code>this``.instance.stage.setBackground2D(url);</code></p>
+<p>  <code>}</code></p>
+<p><code>}</code></p>
+<p><code>export</code> <code>default</code> <code>AvatarH5;</code></p>
+<p><code>// export const avatar = new AvatarH5();</code></p>
+<p><code>export const avatar =</code> <code>new</code> <code>Proxy(``new</code> <code>AvatarH5(), {</code></p>
+<p>  <code>get(target, propKey, receiver) {</code></p>
+<p>    <code>if</code> <code>(</code></p>
+<p>      <code>typeof</code> <code>target[propKey] ===</code> <code>&quot;function&quot;</code> <code>&amp;&amp;</code></p>
+<p>      <code>![``&quot;init&quot;``,</code> <code>&quot;setStatus&quot;``].includes(propKey)</code></p>
+<p>    <code>) {</code></p>
+<p>      <code>if</code> <code>(!target.instance || target.instance?.state ===</code> <code>&quot;loading&quot;``) {</code></p>
+<p>        <code>return</code> <code>() =&gt; {</code></p>
+<p>          <code>alert(``&quot;虚拟人加载中，请稍等&quot;``);</code></p>
+<p>        <code>};</code></p>
+<p>      <code>}</code></p>
+<p>    <code>}</code></p>
+<p>    <code>return</code> <code>Reflect.get(target, propKey, receiver);</code></p>
+<p>  <code>},</code></p>
+<p><code>});</code></p>
+<h2 id="avatarvue">Avatar.vue<a hidden class="anchor" aria-hidden="true" href="#avatarvue">#</a></h2>
+<h3 id="功能">功能<a hidden class="anchor" aria-hidden="true" href="#功能">#</a></h3>
+<p>在class基础上增加业务逻辑</p>
+<ol>
+<li>判断话术类型，做相应回答和后续交互</li>
+<li>增加了手势动画，单击、双击、长按、滑动、复位，包括一些随机动画</li>
+</ol>
+<p><a href="/">?</a></p>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+<p>4</p>
+<p>5</p>
+<p>6</p>
+<p>7</p>
+<p>8</p>
+<p>9</p>
+<p>10</p>
+<p>11</p>
+<p>12</p>
+<p>13</p>
+<p>14</p>
+<p>15</p>
+<p>16</p>
+<p>17</p>
+<p>18</p>
+<p>19</p>
+<p>20</p>
+<p>21</p>
+<p>22</p>
+<p>23</p>
+<p>24</p>
+<p>25</p>
+<p>26</p>
+<p>27</p>
+<p>28</p>
+<p>29</p>
+<p>30</p>
+<p>31</p>
+<p>32</p>
+<p>33</p>
+<p>34</p>
+<p>35</p>
+<p>36</p>
+<p>37</p>
+<p>38</p>
+<p>39</p>
+<p>40</p>
+<p>41</p>
+<p>42</p>
+<p>43</p>
+<p>44</p>
+<p>45</p>
+<p>46</p>
+<p>47</p>
+<p>48</p>
+<p>49</p>
+<p>50</p>
+<p>51</p>
+<p>52</p>
+<p>53</p>
+<p>54</p>
+<p>55</p>
+<p>56</p>
+<p>57</p>
+<p>58</p>
+<p>59</p>
+<p>60</p>
+<p>61</p>
+<p>62</p>
+<p>63</p>
+<p>64</p>
+<p>65</p>
+<p>66</p>
+<p>67</p>
+<p>68</p>
+<p>69</p>
+<p>70</p>
+<p>71</p>
+<p>72</p>
+<p>73</p>
+<p>74</p>
+<p>75</p>
+<p>76</p>
+<p>77</p>
+<p>78</p>
+<p>79</p>
+<p>80</p>
+<p>81</p>
+<p>82</p>
+<p>83</p>
+<p>84</p>
+<p>85</p>
+<p>86</p>
+<p>87</p>
+<p>88</p>
+<p>89</p>
+<p>90</p>
+<p>91</p>
+<p>92</p>
+<p>93</p>
+<p>94</p>
+<p>95</p>
+<p>96</p>
+<p>97</p>
+<p>98</p>
+<p>99</p>
+<p>100</p>
+<p>101</p>
+<p>102</p>
+<p>103</p>
+<p>104</p>
+<p>105</p>
+<p>106</p>
+<p>107</p>
+<p>108</p>
+<p>109</p>
+<p>110</p>
+<p>111</p>
+<p>112</p>
+<p>113</p>
+<p>114</p>
+<p>115</p>
+<p>116</p>
+<p>117</p>
+<p>118</p>
+<p>119</p>
+<p>120</p>
+<p>121</p>
+<p>122</p>
+<p>123</p>
+<p>124</p>
+<p>125</p>
+<p>126</p>
+<p>127</p>
+<p>128</p>
+<p>129</p>
+<p>130</p>
+<p>131</p>
+<p>132</p>
+<p>133</p>
+<p>134</p>
+<p>135</p>
+<p>136</p>
+<p>137</p>
+<p>138</p>
+<p>139</p>
+<p>140</p>
+<p>141</p>
+<p>142</p>
+<p>143</p>
+<p>144</p>
+<p>145</p>
+<p>146</p>
+<p>147</p>
+<p>148</p>
+<p>149</p>
+<p>150</p>
+<p>151</p>
+<p>152</p>
+<p>153</p>
+<p>154</p>
+<p>155</p>
+<p>156</p>
+<p>157</p>
+<p>158</p>
+<p>159</p>
+<p>160</p>
+<p>161</p>
+<p>162</p>
+<p>163</p>
+<p>164</p>
+<p>165</p>
+<p>166</p>
+<p>167</p>
+<p>168</p>
+<p>169</p>
+<p>170</p>
+<p>171</p>
+<p>172</p>
+<p>173</p>
+<p>174</p>
+<p>175</p>
+<p>176</p>
+<p>177</p>
+<p>178</p>
+<p>179</p>
+<p>180</p>
+<p>181</p>
+<p>182</p>
+<p>183</p>
+<p>184</p>
+<p>185</p>
+<p>186</p>
+<p>187</p>
+<p>188</p>
+<p>189</p>
+<p>190</p>
+<p>191</p>
+<p>192</p>
+<p>193</p>
+<p>194</p>
+<p>195</p>
+<p>196</p>
+<p>197</p>
+<p>198</p>
+<p>199</p>
+<p>200</p>
+<p>201</p>
+<p>202</p>
+<p>203</p>
+<p>204</p>
+<p>205</p>
+<p>206</p>
+<p>207</p>
+<p>208</p>
+<p>209</p>
+<p>210</p>
+<p>211</p>
+<p>212</p>
+<p>213</p>
+<p>214</p>
+<p>215</p>
+<p>216</p>
+<p>217</p>
+<p>218</p>
+<p>219</p>
+<p>220</p>
+<p>221</p>
+<p>222</p>
+<p>223</p>
+<p>224</p>
+<p>225</p>
+<p>226</p>
+<p>227</p>
+<p>228</p>
+<p>229</p>
+<p>230</p>
+<p>231</p>
+<p>232</p>
+<p>233</p>
+<p>234</p>
+<p>235</p>
+<p>236</p>
+<p>237</p>
+<p>238</p>
+<p>239</p>
+<p>240</p>
+<p>241</p>
+<p>242</p>
+<p>243</p>
+<p>244</p>
+<p>245</p>
+<p>246</p>
+<p>247</p>
+<p>248</p>
+<p>249</p>
+<p>250</p>
+<p>251</p>
+<p>252</p>
+<p>253</p>
+<p>254</p>
+<p>255</p>
+<p>256</p>
+<p>257</p>
+<p>258</p>
+<p>259</p>
+<p>260</p>
+<p>261</p>
+<p>262</p>
+<p>263</p>
+<p>264</p>
+<p>265</p>
+<p>266</p>
+<p>267</p>
+<p>268</p>
+<p>269</p>
+<p>270</p>
+<p>271</p>
+<p>272</p>
+<p>273</p>
+<p>274</p>
+<p>275</p>
+<p>276</p>
+<p>277</p>
+<p>278</p>
+<p>279</p>
+<p>280</p>
+<p>281</p>
+<p>282</p>
+<p>283</p>
+<p>284</p>
+<p>285</p>
+<p>286</p>
+<p>287</p>
+<p>288</p>
+<p>289</p>
+<p>290</p>
+<p>291</p>
+<p>292</p>
+<p>293</p>
+<p>294</p>
+<p>295</p>
+<p>296</p>
+<p>297</p>
+<p>298</p>
+<p>299</p>
+<p>300</p>
+<p>301</p>
+<p>302</p>
+<p>303</p>
+<p>304</p>
+<p>305</p>
+<p>306</p>
+<p>307</p>
+<p>308</p>
+<p>309</p>
+<p>310</p>
+<p>311</p>
+<p>312</p>
+<p>313</p>
+<p>314</p>
+<p>315</p>
+<p>316</p>
+<p>317</p>
+<p>318</p>
+<p>319</p>
+<p>320</p>
+<p>321</p>
+<p>322</p>
+<p>323</p>
+<p>324</p>
+<p>325</p>
+<p>326</p>
+<p>327</p>
+<p>328</p>
+<p>329</p>
+<p>330</p>
+<p>331</p>
+<p>332</p>
+<p><code>&lt;script setup&gt;</code></p>
+<p><code>import { ref, onMounted } from</code> <code>&quot;vue&quot;``;</code></p>
+<p><code>import { Avatar } from</code> <code>&quot;./haihuman.module.js&quot;``;</code></p>
+<p><code>import { useDebounceFn, onLongPress } from</code> <code>&quot;@vueuse/core&quot;``;</code></p>
+<p><code>import { userId } from</code> <code>&quot;@/storage/user&quot;``;</code></p>
+<p><code>import { avatar } from</code> <code>&quot;./class&quot;``;</code></p>
+<p><code>import showMsg from</code> <code>&quot;@/utils/showMsg&quot;``;</code></p>
+<p><code>import { getSimilarity } from</code> <code>&quot;@/utils&quot;``;</code></p>
+<p><code>// let status = &quot;idle&quot;;</code></p>
+<p><code>let a;</code></p>
+<p><code>const props = defineProps([``&quot;onReady&quot;``]);</code></p>
+<p><code>const haihumanRef = ref(``null``);</code></p>
+<p><code>/**</code></p>
+<p> <code>* Sdk loading callback</code></p>
+<p> <code>* called while assets loading</code></p>
+<p> <code>*/</code></p>
+<p><code>const onProgress = (progress) =&gt; {</code></p>
+<p>  <code>// console.log(progress / 100)</code></p>
+<p><code>};</code></p>
+<p><code>/**</code></p>
+<p> <code>* Sdk loading callback</code></p>
+<p> <code>* called as assets loaded and stage ready</code></p>
+<p> <code>*/</code></p>
+<p><code>const onReady = () =&gt; {</code></p>
+<p>  <code>a = avatar.instance;</code></p>
+<p>  <code>avatar.setStatus(``&quot;idle&quot;``);</code></p>
+<p>  <code>if</code> <code>(a.model) {</code></p>
+<p>    <code>a.model.position.y = -1.2;</code></p>
+<p>    <code>a.model.position.x = 0;</code></p>
+<p>    <code>a.model.scale.set(2.5, 2.5, 2.5);</code></p>
+<p>    <code>a.stage.clearGround();</code></p>
+<p>    <code>a.stage.controls.enableZoom =</code> <code>false``;</code></p>
+<p>    <code>// a.stage.controls.enableDamping = false</code></p>
+<p>    <code>a.stage.controls.enablePan =</code> <code>false``;</code></p>
+<p>  <code>}</code></p>
+<p>  <code>// if (a.speechRecognizer) {</code></p>
+<p>  <code>//   a.speechRecognizer.setOnChange((text) =&gt; {</code></p>
+<p>  <code>//     console.log(text);</code></p>
+<p>  <code>//   });</code></p>
+<p>  <code>// }</code></p>
+<p>  <code>props?.onReady?.(a);</code></p>
+<p>  <code>window.addEventListener(``&quot;visibilitychange&quot;``, () =&gt; {</code></p>
+<p>    <code>if</code> <code>(document.hidden) {</code></p>
+<p>      <code>a.idle();</code></p>
+<p>    <code>}</code> <code>else</code> <code>{</code></p>
+<p>      <code>a.engine?.move(``&quot;human_hello&quot;``,</code> <code>false``, Date.now());</code></p>
+<p>      <code>avatar.setStatus(``&quot;idle&quot;``);</code></p>
+<p>    <code>}</code></p>
+<p>  <code>});</code></p>
+<p><code>};</code></p>
+<p><code>/**</code></p>
+<p> <code>* Sdk render callback</code></p>
+<p> <code>* called every frame</code></p>
+<p> <code>*/</code></p>
+<p><code>const onRender = (delta) =&gt; {};</code></p>
+<p><code>const onError = (e) =&gt; {</code></p>
+<p>  <code>console.error(``&quot;avatar error:&quot;``, e);</code></p>
+<p><code>};</code></p>
+<p><code>// 全局talk完成</code></p>
+<p><code>const onEndOfChat = () =&gt; {</code></p>
+<p>  <code>console.log(``&quot;onEndOfChat&quot;``);</code></p>
+<p>  <code>avatar.setStatus(``&quot;idle&quot;``);</code></p>
+<p>  <code>// 移除所有speaker里的speaking</code></p>
+<p>  <code>// document.querySelector('.conversation-container-body')</code></p>
+<p>  <code>// let nodeList = document.querySelectorAll('.conversation-container-body .conversation-list .official .speaker.speaking')</code></p>
+<p>  <code>// Array.prototype.forEach.call(nodeList, el =&gt; {</code></p>
+<p>  <code>//   el.classList.remove('speaking')</code></p>
+<p>  <code>// })</code></p>
+<p><code>};</code></p>
+<p><code>const cbs = { onProgress, onReady, onRender, onError, onEndOfChat };</code></p>
+<p><code>onMounted(() =&gt; {</code></p>
+<p>  <code>avatar.init(cbs);</code></p>
+<p><code>});</code></p>
+<p><code>const createA = (options, ans) =&gt;</code></p>
+<p>  <code>Object.keys(options)</code></p>
+<p>    <code>.map((_) =&gt; `&lt;a class=```&quot;goInstruct&quot;`  </code>data-ans=${ans}&gt;${_}</a>`)``</p>
+<p>    <code>.join(``&quot;&quot;``);</code></p>
+<p><code>// 创建指令选项</code></p>
+<p><code>const instruction = (_obj) =&gt; {</code></p>
+<p>  <code>return</code> <code>{</code></p>
+<p>    <code>showText: `${_obj.text}${createA(_obj.options, _obj.ans)}`,</code></p>
+<p>    <code>readText: `${_obj.text}`,</code></p>
+<p>  <code>};</code></p>
+<p><code>};</code></p>
+<p><code>// 创建富文本a标签</code></p>
+<p><code>const createRich = (_obj) =&gt; {</code></p>
+<p>  <code>return</code> <code> `&lt;a class= ```&quot;goToLesson&quot;` `href=${_obj.href ||` `&quot;&quot;```}&gt;${_obj.text}&lt;/a&gt;`;</code></p>
+<p><code>};</code></p>
+<p><code>// // 切换背景</code></p>
+<p><code>// const setBackground = (url) =&gt; {</code></p>
+<p><code>//   a.stage.setBackground2D(url);</code></p>
+<p><code>// };</code></p>
+<p><code>// 创建再问一次</code></p>
+<p><code>const createRedo = (question) =&gt; {</code></p>
+<p>  <code>return</code> <code>`&lt;a class= ```&quot;goToRedo&quot;`</code>data-ques=${question}&gt;<span></span>再问一次</a>`;``</p>
+<p><code>};</code></p>
+<p><code>// 创建“去反馈”</code></p>
+<p><code>const createFeedBack = (tag) =&gt; {</code></p>
+<p>  <code>let res =</code> <code>&quot;&quot;``;</code></p>
+<p>  <code>if</code> <code>(tag?.code ===</code> <code>&quot;h5_ptyy_wdc_useful&quot;``) {</code></p>
+<p>    <code>return</code> <code>JSON.parse(tag?.succeed_answer)?.value;</code></p>
+<p>  <code>}</code></p>
+<p>  <code>if</code> <code>(tag?.code ===</code> <code>&quot;h5_ptyy_wdc_useless&quot;``) {</code></p>
+<p>    <code>return</code> <code>`${JSON.parse(tag?.succeed_answer)?.value.replace(</code></p>
+<p>      <code>&quot;去反馈＞&quot;``,</code></p>
+<p>      <code>'&lt;a class=&quot;goFeedback&quot;&gt;去反馈&gt;&lt;/a&gt;'</code></p>
+<p>    <code>)}`;</code></p>
+<p>  <code>}</code></p>
+<p>  <code>return</code> <code>`未知错误`;</code></p>
+<p><code>};</code></p>
+<p><code>defineExpose({</code></p>
+<p>  <code>getAnswers: (text, callback, errorFn, timeout = 30000) =&gt; {</code></p>
+<p>    <code>avatar.getAnswers(</code></p>
+<p>      <code>text,</code></p>
+<p>      <code>async (answers) =&gt; {</code></p>
+<p>        <code>console.log(``&quot;answers:&quot;``, answers);</code></p>
+<p>        <code>let showText, readText;</code></p>
+<p>        <code>if</code> <code>(answers.length) {</code></p>
+<p>          <code>let as = answers.join(``&quot;&quot;``);</code></p>
+<p>          <code>let tag = answers[0]?.tag;</code></p>
+<p>          <code>let res;</code></p>
+<p>          <code>// 指令库</code></p>
+<p>          <code>if</code> <code>(tag?.service ===</code> <code>&quot;Instruction_library&quot;``) {</code></p>
+<p>            <code>console.log(``&quot;指令库&quot;``);</code></p>
+<p>            <code>try</code> <code>{</code></p>
+<p>              <code>const succeed_answer = JSON.parse(tag?.succeed_answer);</code></p>
+<p>              <code>console.log(``&quot;succeed_answer&quot;``, succeed_answer);</code></p>
+<p>              <code>let succeed_answer_value = succeed_answer.value</code></p>
+<p>                <code>.replaceAll(``&quot;[&quot;``,</code> <code>&quot;{&quot;``)</code></p>
+<p>                <code>.replaceAll(``&quot;]&quot;``,</code> <code>&quot;}&quot;``)</code></p>
+<p>                <code>?.replaceAll(``&quot;\n&quot;``,</code> <code>&quot;&quot;``);</code></p>
+<p>              <code>// 直接命中反馈</code></p>
+<p>              <code>if</code> <code>(</code></p>
+<p>                <code>[``&quot;h5_ptyy_wdc_useful&quot;``,</code> <code>&quot;h5_ptyy_wdc_useless&quot;``].includes(</code></p>
+<p>                  <code>tag?.code</code></p>
+<p>                <code>)</code></p>
+<p>              <code>) {</code></p>
+<p>                <code>console.log(``&quot;反馈&quot;``);</code></p>
+<p>                <code>showText = createFeedBack(tag);</code></p>
+<p>                <code>readText = showText.replace(</code></p>
+<p>                  <code>'&lt;a class=&quot;goFeedback&quot;&gt;去反馈&gt;&lt;/a&gt;'``,</code></p>
+<p>                  <code>&quot;去反馈&quot;</code></p>
+<p>                <code>);</code></p>
+<p>              <code>}</code> <code>else</code> <code>{</code></p>
+<p>                <code>let value = JSON.parse(succeed_answer_value);</code></p>
+<p>                <code>console.log(``&quot;succeed_answer_value&quot;``, succeed_answer_value);</code></p>
+<p>                <code>// 命中回答</code></p>
+<p>                <code>if</code> <code>(answers[0]?.text ===</code> <code>&quot;DEFAULT&quot;``) {</code></p>
+<p>                  <code>if</code> <code>(tag?.isMulti ===</code> <code>&quot;false&quot;</code> <code>&amp;&amp; tag?.isEnd ==</code> <code>&quot;true&quot;``) {</code></p>
+<p>                    <code>// 文本+超链接</code></p>
+<p>                    <code>// 不带选项</code></p>
+<p>                    <code>if</code> <code>(value?.text &amp;&amp;</code> <code>typeof</code> <code>value.text ===</code> <code>&quot;string&quot;``) {</code></p>
+<p>                      <code>showText = value.text.replace(</code></p>
+<p>                        <code>value.replace,</code></p>
+<p>                        <code>createRich({</code></p>
+<p>                          <code>text: value.replace,</code></p>
+<p>                          <code>href: value.href,</code></p>
+<p>                        <code>})</code></p>
+<p>                      <code>);</code></p>
+<p>                      <code>readText = value.text;</code></p>
+<p>                    <code>}</code> <code>else</code> <code>{</code></p>
+<p>                      <code>// 直达追问回答</code></p>
+<p>                      <code>console.log(``&quot;直达追问回答&quot;``, value);</code></p>
+<p>                      <code>let key = text.replace(tag?.intent,</code> <code>&quot;&quot;``);</code></p>
+<p>                      <code>let _value = value[key];</code></p>
+<p>                      <code>// 没匹配到</code></p>
+<p>                      <code>if</code> <code>(!_value) {</code></p>
+<p>                        <code>let m = 0,</code></p>
+<p>                          <code>k;</code></p>
+<p>                        <code>for</code> <code>(let k</code> <code>in</code> <code>value) {</code></p>
+<p>                          <code>console.log(``'k, key'``, k, key)</code></p>
+<p>                          <code>const p = getSimilarity(k, key);</code></p>
+<p>                          <code>console.log(``'p'``, p)</code></p>
+<p>                          <code>if</code> <code>(p &gt; m) {</code></p>
+<p>                            <code>m = p;</code></p>
+<p>                            <code>_value = value[k];</code></p>
+<p>                          <code>}</code></p>
+<p>                        <code>}</code></p>
+<p>                      <code>}</code></p>
+<p>                      <code>console.log(``&quot;tag&quot;``, tag);</code></p>
+<p>                      <code>console.log(``&quot;_value&quot;``, _value);</code></p>
+<p>                      <code>showText = _value?.replace</code></p>
+<p>                        <code>? _value.text.replace(</code></p>
+<p>                            <code>_value.replace,</code></p>
+<p>                            <code>createRich({</code></p>
+<p>                              <code>text: _value.replace,</code></p>
+<p>                              <code>href: _value.href,</code></p>
+<p>                            <code>})</code></p>
+<p>                          <code>)</code></p>
+<p>                        <code>: _value.text;</code></p>
+<p>                      <code>// showText = _value.text;</code></p>
+<p>                      <code>readText = _value.text;</code></p>
+<p>                    <code>}</code></p>
+<p>                  <code>}</code></p>
+<p>                <code>}</code> <code>else</code> <code>{</code></p>
+<p>                  <code>// 追问失败</code></p>
+<p>                  <code>if</code> <code>(</code></p>
+<p>                    <code>JSON.parse(tag?.continue_failed_answer).value ===</code></p>
+<p>                    <code>tag?.answer</code></p>
+<p>                  <code>) {</code></p>
+<p>                    <code>console.log(``&quot;追问失败&quot;``);</code></p>
+<p>                    <code>showText = readText = tag.answer;</code></p>
+<p>                    <code>readText = tag.answer;</code></p>
+<p>                    <code>showText = `${tag.answer}&lt;div&gt;${createRedo(text)}&lt;/div&gt;`;</code></p>
+<p>                  <code>}</code> <code>else</code> <code>{</code></p>
+<p>                    <code>// 问题</code></p>
+<p>                    <code>as = {</code></p>
+<p>                      <code>text: answers[0]?.text,</code></p>
+<p>                      <code>ans: tag?.intent,</code></p>
+<p>                      <code>options: value,</code></p>
+<p>                    <code>};</code></p>
+<p>                    <code>res = instruction(as);</code></p>
+<p>                    <code>showText = res.showText;</code></p>
+<p>                    <code>readText = res.readText;</code></p>
+<p>                    <code>// .replace(/&lt;(a+)[^&gt;]*&gt;/g, &quot;&quot;)</code></p>
+<p>                    <code>// .replace(/&lt;\/a&gt;/g, &quot;&quot;)</code></p>
+<p>                    <code>// .replace(/\&gt;/, &quot;&quot;);</code></p>
+<p>                  <code>}</code></p>
+<p>                <code>}</code></p>
+<p>              <code>}</code></p>
+<p>            <code>}</code> <code>catch</code> <code>(error) {</code></p>
+<p>              <code>console.error(error);</code></p>
+<p>            <code>}</code></p>
+<p>          <code>}</code></p>
+<p>          <code>// FAQ</code></p>
+<p>          <code>else</code> <code>if</code> <code>(tag?.service ===</code> <code>&quot;FAQ_Library&quot;``) {</code></p>
+<p>            <code>console.log(``&quot;faq&quot;``);</code></p>
+<p>            <code>try</code> <code>{</code></p>
+<p>              <code>res = answers?.map((_) =&gt; _.text).join(``&quot;&quot;``);</code></p>
+<p>              <code>const reg = /\[(.*?)\]|\((.*?)\)/g;</code> <code>// 匹配(xxx=xxx)出来</code></p>
+<p>              <code>const matchs = res.match(reg);</code></p>
+<p>              <code>// 有富文本内容</code></p>
+<p>              <code>if</code> <code>(matchs?.length) {</code></p>
+<p>                <code>showText = res.replace(reg, (match) =&gt; {</code></p>
+<p>                  <code>const info = match.slice(1, match.length - 1).split(``&quot;=&quot;``);</code></p>
+<p>                  <code>return</code> `` <code>&lt;a class= ```&quot;goToLesson&quot;</code> <code>href=${info</code></p>
+<p>                    <code>.slice(1)</code></p>
+<p>                    <code>.join(``&quot;=&quot;```)}&gt;${info[0]}&lt;/a&gt;</code>;``</p>
+<p>                <code>});</code></p>
+<p>                <code>readText = res.replace(reg,</code> <code>&quot;&quot;``);</code></p>
+<p>              <code>}</code> <code>else</code> <code>{</code></p>
+<p>                <code>showText = readText = res;</code></p>
+<p>              <code>}</code></p>
+<p>            <code>}</code> <code>catch</code> <code>(error) {</code></p>
+<p>              <code>console.error(error);</code></p>
+<p>            <code>}</code></p>
+<p>          <code>}</code></p>
+<p>          <code>// 闲聊</code></p>
+<p>          <code>else</code> <code>{</code></p>
+<p>            <code>as = answers?.map((_) =&gt; _.text).join(``&quot;&quot;``);</code></p>
+<p>            <code>showText = readText = as;</code></p>
+<p>          <code>}</code></p>
+<p>          <code>console.log(``&quot;最终showText&quot;``, showText);</code></p>
+<p>          <code>console.log(``&quot;最终readText&quot;``, readText);</code></p>
+<p>          <code>if</code> <code>(``typeof</code> <code>callback ===</code> <code>&quot;function&quot;``) {</code></p>
+<p>            <code>as = await callback?.(showText, readText, tag);</code></p>
+<p>          <code>}</code></p>
+<p>          <code>// 正在读的先停了,不然后续都会没声音</code></p>
+<p>          <code>avatar.idle();</code></p>
+<p>          <code>avatar.talk(as,</code> <code>&quot;read&quot;``);</code></p>
+<p>        <code>}</code></p>
+<p>      <code>},</code></p>
+<p>      <code>async (e) =&gt; {</code></p>
+<p>        <code>// 超时也能进这里</code></p>
+<p>        <code>const as = await errorFn?.(e);</code></p>
+<p>        <code>if</code> <code>(``typeof</code> <code>as ===</code> <code>&quot;string&quot;``) {</code></p>
+<p>          <code>avatar.idle();</code></p>
+<p>          <code>avatar.talk(as,</code> <code>&quot;read&quot;``);</code></p>
+<p>        <code>}</code></p>
+<p>      <code>},</code></p>
+<p>      <code>timeout,</code></p>
+<p>      <code>(e) =&gt; {</code></p>
+<p>        <code>console.error(``&quot;超时&quot;``, e);</code></p>
+<p>      <code>}</code></p>
+<p>    <code>);</code></p>
+<p>  <code>},</code></p>
+<p>  <code>talk: (text) =&gt; {</code></p>
+<p>    <code>avatar.talk(text);</code></p>
+<p>    <code>avatar.setStatus(``&quot;talking&quot;``);</code></p>
+<p>  <code>},</code></p>
+<p>  <code>getStatus: () =&gt; avatar.status,</code></p>
+<p>  <code>listen: (params) =&gt; avatar.listen(params),</code></p>
+<p>  <code>think: (params) =&gt; avatar.think(params),</code></p>
+<p>  <code>boring: (params) =&gt; avatar.boring(params),</code></p>
+<p>  <code>idle: () =&gt; avatar?.idle(),</code></p>
+<p>  <code>// setBackground,</code></p>
+<p><code>});</code></p>
+<p><code>const moveList0 = [</code></p>
+<p>  <code>&quot;human_baishui&quot;``,</code></p>
+<p>  <code>&quot;human_feiwen&quot;``,</code></p>
+<p>  <code>&quot;human_pain&quot;``,</code></p>
+<p>  <code>&quot;human_shakehead&quot;``,</code></p>
+<p>  <code>&quot;human_tramplefeet&quot;``,</code></p>
+<p>  <code>&quot;human_stagger&quot;``,</code></p>
+<p><code>];</code></p>
+<p><code>const moveList1 = [``&quot;human_ballet&quot;``,</code> <code>&quot;human_dance&quot;``,</code> <code>&quot;human_mechanicaldance&quot;``];</code></p>
+<p><code>const moveList2 = [</code></p>
+<p>  <code>&quot;human_lookaround&quot;``,</code></p>
+<p>  <code>&quot;human_clickonrightfoot&quot;``,</code></p>
+<p>  <code>&quot;human_eatfull&quot;``,</code></p>
+<p>  <code>&quot;human_hungry&quot;``,</code></p>
+<p><code>];</code></p>
+<p><code>let clickNum = 1,</code></p>
+<p>  <code>clickTimer =</code> <code>null``,</code></p>
+<p>  <code>lastClickTim</code></p>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E6%95%B0%E5%AD%97%E5%91%98%E5%B7%A5h5/">数字员工（H5）</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%95/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>优化记录</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>功能设计</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share sdk二次（n次）封装 on x"
+            href="https://x.com/intent/tweet/?text=sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f&amp;hashtags=%e6%95%b0%e5%ad%97%e5%91%98%e5%b7%a5%ef%bc%88H5%ef%bc%89">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share sdk二次（n次）封装 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f&amp;title=sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85&amp;summary=sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share sdk二次（n次）封装 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f&title=sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share sdk二次（n次）封装 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share sdk二次（n次）封装 on whatsapp"
+            href="https://api.whatsapp.com/send?text=sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share sdk二次（n次）封装 on telegram"
+            href="https://telegram.me/share/url?text=sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share sdk二次（n次）封装 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=sdk%e4%ba%8c%e6%ac%a1%ef%bc%88n%e6%ac%a1%ef%bc%89%e5%b0%81%e8%a3%85&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2fsdk%25E4%25BA%258C%25E6%25AC%25A1n%25E6%25AC%25A1%25E5%25B0%2581%25E8%25A3%2585%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

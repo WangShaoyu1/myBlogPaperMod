@@ -1,0 +1,9 @@
+{
+	"title": "语音相关关键方法",
+	"author": "王宇",
+	"publishTime": "九月09,2023",
+	"readTime": "12s",
+	"tags": "[\"语音知识体系\"]",
+	"description": "语音知识体系",
+	"article": "简易流程demo\n========\n\n创建上下文\n-----\n\nconst audioContext = new (window.AudioContext || window.webkitAudioContext)()\n\n  \n\n创建容器\n----\n\nconst source = audioContext.createBufferSource()\n\nsource.buffer = buffer //  audioBuffer\n\n创建各种节点，需要1个连接1个\n---------------\n\n### gainNode\n\n//  增益节点，常用来调节音量\n\nconst gainNode = audioContext.createGain()\n\nsource.connect(gainNode)\n\ngainNode.gain.value = 0.5\n\n### filterNode\n\n// 二阶滤波器，过滤某段频率的数据\n\nconst filterNode = audioContext.createBiquadFilter()\n\ngainNode.connect(filterNode)\n\n  \n\n链接外放设备\n------\n\n// 扬声器输出\n\nfilterNode.connect(audioContext.destination)\n\n  \n\n播放出来\n----\n\nsource.start()\n\n录音\n==\n\n获取权限\n\nnavigator.mediaDevices.getUserMedia（navigator.getUserMedia）\n\n  \n\n录取类\n\nnew MediaRecorder(stream)\n\n  \n\n  \n\n代码段\n===\n\n  \n\n**音频数据**\n\n[?](#)\n\n1\n\n2\n\n3\n\n4\n\n5\n\n`const audioCtx =` `new` `AudioContext()` `// 创建音频上下文`\n\n`const scriptNode = audioCtx.createScriptProcessor(0, 1, 1) 创建音频节点`\n\n`scriptNode.onaudioprocess = e => {`\n\n    `e.inputBuffer.getChannelData(0)` `// 采集出来的数据是float32类型【Float32Array(2048)】`\n\n`}` `// 监听音频变化,收到PCM数据`\n\n学习网站\n====\n\n[https://web-audio.johnsonlee.site/](https://web-audio.johnsonlee.site/)\n\n[Filter table data](#)[Create a pivot table](#)[Create a chart from data series](#)\n\n[Configure buttons visibility](/users/tfac-settings.action)"
+}

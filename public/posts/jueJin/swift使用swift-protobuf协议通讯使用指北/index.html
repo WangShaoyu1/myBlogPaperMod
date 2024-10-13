@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>swift使用swift-protobuf协议通讯，使用指北 | PaperMod</title>
+<meta name="keywords" content="前端">
+<meta name="description" content="什么是ProtobufProtobuf（ProtocolBuffers）协议😉Protobuf是一种由Google开发的二进制序列化格式和相关的技术，它用于高效地序列化和反序列化结构化数据">
+<meta name="author" content="1024小神">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/swift%E4%BD%BF%E7%94%A8swift-protobuf%E5%8D%8F%E8%AE%AE%E9%80%9A%E8%AE%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/swift%E4%BD%BF%E7%94%A8swift-protobuf%E5%8D%8F%E8%AE%AE%E9%80%9A%E8%AE%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="swift使用swift-protobuf协议通讯，使用指北" />
+<meta property="og:description" content="什么是ProtobufProtobuf（ProtocolBuffers）协议😉Protobuf是一种由Google开发的二进制序列化格式和相关的技术，它用于高效地序列化和反序列化结构化数据" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/swift%E4%BD%BF%E7%94%A8swift-protobuf%E5%8D%8F%E8%AE%AE%E9%80%9A%E8%AE%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-06-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-06-19T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="swift使用swift-protobuf协议通讯，使用指北"/>
+<meta name="twitter:description" content="什么是ProtobufProtobuf（ProtocolBuffers）协议😉Protobuf是一种由Google开发的二进制序列化格式和相关的技术，它用于高效地序列化和反序列化结构化数据"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "swift使用swift-protobuf协议通讯，使用指北",
+      "item": "http://localhost:1313/posts/juejin/swift%E4%BD%BF%E7%94%A8swift-protobuf%E5%8D%8F%E8%AE%AE%E9%80%9A%E8%AE%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "swift使用swift-protobuf协议通讯，使用指北",
+  "name": "swift使用swift-protobuf协议通讯，使用指北",
+  "description": "什么是ProtobufProtobuf（ProtocolBuffers）协议😉Protobuf是一种由Google开发的二进制序列化格式和相关的技术，它用于高效地序列化和反序列化结构化数据",
+  "keywords": [
+    "前端"
+  ],
+  "articleBody": "\r什么是Protobuf Protobuf（Protocol Buffers）协议😉 Protobuf 是一种由 Google 开发的二进制序列化格式和相关的技术，它用于高效地序列化和反序列化结构化数据，通常用于网络通信、数据存储等场景。\n为什么要使用Protobuf? 因为快\n其实 Protobuf 在许多领域都得到了广泛应用，特别是在分布式系统、RPC（Remote Procedure Call）框架和数据存储中，它提供了一种高效、简洁和可扩展的方式来序列化和交换数据，\nProtobuf 的主要优点包括：\n高效性：Protobuf 序列化后的二进制数据通常比其他序列化格式（比如超级常用的JSON）更小，并且序列化和反序列化的速度更快，这对于性能敏感的应用非常有益。\n简洁性：Protobuf 使用一种定义消息格式的语法，它允许定义字段类型、顺序和规则（消息结构更加清晰和简洁）\n版本兼容性：Protobuf 支持向前和向后兼容的版本控制，使得在消息格式发生变化时可以更容易地处理不同版本的通信。\n语言无关性：Protobuf 定义的消息格式可以在多种编程语言中使用，这有助于跨语言的通信和数据交换（截至本文发布目前官方支持的有C++/C#/Dart/Go/Java/Kotlin/python/Swift）\n自动生成代码：Protobuf 通常与相应的工具一起使用，可以自动生成代码，包括序列化/反序列化代码和相关的类（减少了手动编写代码的工作量，提高效率）\n安装编译器 注意：需要swift5.8以上的版本和xcode14.3以后的版本才可以\n你也可以通过命令行使用 swift --version 命令来查看安装的Swift版本。这将会输出类似于下面的信息，显示当前安装的Swift编译器的版本：\n安装swift-protobuf：这条命令将会给你的电脑上安装 protoc 和 Swift 代码生成器插件。\n代码解读\n复制代码\nbrew install swift-protobuf\n根据官方文档可以使用brew安装：\n安装完之后，输入protoc将会出现提示：\n编译Proto文件 将.proto文件编译为swift代码：–swift_out=. 表示将生成的文件放在当前文件夹中\nini\n代码解读\n复制代码\nprotoc --swift_out=. my.proto\n运行之后，就会出现一个GameMsg.pb.swift文件，这就是编译后的swift文件：\n生成的代码将为每个 proto 字段公开一个 Swift 属性以及一组序列化和反序列化功能。假如你的proto文件内容是：\nini\n代码解读\n复制代码\nsyntax = \"proto3\"; message BookInfo { int64 id = 1; string title = 2; string author = 3; }\n那么生成的swift代码：\nSwift\n代码解读\n复制代码\n// DO NOT EDIT. // swift-format-ignore-file // // Generated by the Swift generator plugin for the protocol buffer compiler. // Source: game.proto // // For information on using the generated types, please see the documentation: // https://github.com/apple/swift-protobuf/ import Foundation import SwiftProtobuf // If the compiler emits an error on this type, it is because this file // was generated by a version of the `protoc` Swift plug-in that is // incompatible with the version of SwiftProtobuf to which you are linking. // Please ensure that you are building against the same version of the API // that was used to generate this file. fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck { struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {} typealias Version = _2 } struct BookInfo { // SwiftProtobuf.Message conformance is added in an extension below. See the // `Message` and `Message+*Additions` files in the SwiftProtobuf library for // methods supported on all messages. var id: Int64 = 0 var title: String = String() var author: String = String() var unknownFields = SwiftProtobuf.UnknownStorage() init() {} } #if swift(\u003e=5.5) \u0026\u0026 canImport(_Concurrency) extension BookInfo: @unchecked Sendable {} #endif // swift(\u003e=5.5) \u0026\u0026 canImport(_Concurrency) // MARK: - Code below here is support for the SwiftProtobuf runtime. extension BookInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding { static let protoMessageName: String = \"BookInfo\" static let _protobuf_nameMap: SwiftProtobuf._NameMap = [ 1: .same(proto: \"id\"), 2: .same(proto: \"title\"), 3: .same(proto: \"author\"), ] mutating func decodeMessage(decoder: inout D) throws { while let fieldNumber = try decoder.nextFieldNumber() { // The use of inline closures is to circumvent an issue where the compiler // allocates stack space for every case branch when no optimizations are // enabled. https://github.com/apple/swift-protobuf/issues/1034 switch fieldNumber { case 1: try { try decoder.decodeSingularInt64Field(value: \u0026self.id) }() case 2: try { try decoder.decodeSingularStringField(value: \u0026self.title) }() case 3: try { try decoder.decodeSingularStringField(value: \u0026self.author) }() default: break } } } func traverse(visitor: inout V) throws { if self.id != 0 { try visitor.visitSingularInt64Field(value: self.id, fieldNumber: 1) } if !self.title.isEmpty { try visitor.visitSingularStringField(value: self.title, fieldNumber: 2) } if !self.author.isEmpty { try visitor.visitSingularStringField(value: self.author, fieldNumber: 3) } try unknownFields.traverse(visitor: \u0026visitor) } static func ==(lhs: BookInfo, rhs: BookInfo) -\u003e Bool { if lhs.id != rhs.id {return false} if lhs.title != rhs.title {return false} if lhs.author != rhs.author {return false} if lhs.unknownFields != rhs.unknownFields {return false} return true } }\n在项目中使用的话：\nSwift\n代码解读\n复制代码\n// 创建一个BookInfo对象，并给它赋值 var info = BookInfo() info.id = 1734 info.title = \"Really Interesting Book\" info.author = \"Jane Smith\" // 如上所述，但生成只读值： let info2 = BookInfo.with { $0.id = 1735 $0.title = \"Even More Interesting\" $0.author = \"Jane Q. Smith\" } // 序列化为二进制protobuf格式：可以选择序列化为 // 符合SwiftProtobufContiqueBytes的任何类型。例如 let binaryData: Data = try info.serializedBytes() let binaryDataAsBytes: [UInt8] = try info.serializedBytes() // 从`binaryData反序列化接收到的Data对象` let decodedInfo = try BookInfo(serializedData: binaryData) // 反序列化从`binaryDataAsBytes接收的[UInt8]对象` let decodedInfo = try BookInfo(serializedBytes: binaryDataAsBytes) //序列化为JSON格式的数据对象，或符合 //SwiftProtobufContiqueBytes。例如 let jsonData: Data = try info.jsonUTF8Data() let jsonBytes: [UInt8] = try info.jsonUTF8Bytes() // 从`jsonBytes从JSON格式反序列化` let receivedFromJSON = try BookInfo(jsonUTF8Bytes: jsonBytes)\n添加SwiftProtobuf到你的项目中 要想使用Protobuf还需要在你的项目中添加SwiftProtobuf，可以使用SPM添加或者使用CocoaPods添加，我这里习惯使用SPM，在xcode项目中可以直接右键添加包就可以了：\n添加之后就可以在左侧项目的依赖包里面显示出来了：\n解决遇到的问题\n1.如果你在finder中在proto文件夹中生成swift代码，但是当你会到xcode总，发现proto文件夹中不一定会显示proto文件和生成的swift文件：\n需要在xcode中手动添加文件到文件夹中：\n再回到项目文件夹就可以看到了：\n2.但是这个时候，当你打开生成的swift文件，可能发现报错了：\nCould not find module ‘SwiftProtobuf’ for target ‘arm64-apple-watchos’; found: arm64_32-apple-watchos, at: /Users/song/Library/Developer/Xcode/DerivedData/mywatch-coaeflxmpfflredurreogfyfvbxz/Index.noindex/Build/Products/Debug-watchos/SwiftProtobuf.swiftmodule 这是因为你没有将 SwiftProtobuf 真正添加到项目中：\n需要你手动再将依赖添加到项目中\n就不会报错了：\n",
+  "wordCount" : "583",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-06-19T00:00:00Z",
+  "dateModified": "2024-06-19T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "1024小神"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/swift%E4%BD%BF%E7%94%A8swift-protobuf%E5%8D%8F%E8%AE%AE%E9%80%9A%E8%AE%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      swift使用swift-protobuf协议通讯，使用指北
+    </h1>
+    <div class="post-description">
+      什么是ProtobufProtobuf（ProtocolBuffers）协议😉Protobuf是一种由Google开发的二进制序列化格式和相关的技术，它用于高效地序列化和反序列化结构化数据
+    </div>
+    <div class="post-meta"><span title='2024-06-19 00:00:00 +0000 UTC'>六月 19, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;1024小神&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%afprotobuf" aria-label="什么是Protobuf">什么是Protobuf</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e7%bc%96%e8%af%91%e5%99%a8" aria-label="安装编译器">安装编译器</a></li>
+                <li>
+                    <a href="#%e7%bc%96%e8%af%91proto%e6%96%87%e4%bb%b6" aria-label="编译Proto文件">编译Proto文件</a></li>
+                <li>
+                    <a href="#%e6%b7%bb%e5%8a%a0swiftprotobuf%e5%88%b0%e4%bd%a0%e7%9a%84%e9%a1%b9%e7%9b%ae%e4%b8%ad" aria-label="添加SwiftProtobuf到你的项目中">添加SwiftProtobuf到你的项目中</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d09da838b66e486eacf4da73f47bea70~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<h1 id="什么是protobuf">什么是Protobuf<a hidden class="anchor" aria-hidden="true" href="#什么是protobuf">#</a></h1>
+<p>Protobuf（Protocol Buffers）协议😉 Protobuf 是一种由 Google 开发的二进制序列化格式和相关的技术，它用于高效地序列化和反序列化结构化数据，通常用于网络通信、数据存储等场景。</p>
+<p>为什么要使用Protobuf? 因为快</p>
+<p>其实 Protobuf 在许多领域都得到了广泛应用，特别是在分布式系统、RPC（Remote Procedure Call）框架和数据存储中，它提供了一种高效、简洁和可扩展的方式来序列化和交换数据，</p>
+<p>Protobuf 的主要优点包括：</p>
+<p>高效性：Protobuf 序列化后的二进制数据通常比其他序列化格式（比如超级常用的JSON）更小，并且序列化和反序列化的速度更快，这对于性能敏感的应用非常有益。<br>
+简洁性：Protobuf 使用一种定义消息格式的语法，它允许定义字段类型、顺序和规则（消息结构更加清晰和简洁）<br>
+版本兼容性：Protobuf 支持向前和向后兼容的版本控制，使得在消息格式发生变化时可以更容易地处理不同版本的通信。<br>
+语言无关性：Protobuf 定义的消息格式可以在多种编程语言中使用，这有助于跨语言的通信和数据交换（截至本文发布目前官方支持的有C++/C#/Dart/Go/Java/Kotlin/python/Swift）<br>
+自动生成代码：Protobuf 通常与相应的工具一起使用，可以自动生成代码，包括序列化/反序列化代码和相关的类（减少了手动编写代码的工作量，提高效率）</p>
+<h1 id="安装编译器">安装编译器<a hidden class="anchor" aria-hidden="true" href="#安装编译器">#</a></h1>
+<p>注意：需要swift5.8以上的版本和xcode14.3以后的版本才可以</p>
+<p>你也可以通过命令行使用 <code>swift --version</code> 命令来查看安装的Swift版本。这将会输出类似于下面的信息，显示当前安装的Swift编译器的版本：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ed623bb3898d467087a20420d11a01d4~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>安装swift-protobuf：这条命令将会给你的电脑上安装 protoc 和 Swift 代码生成器插件。</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>brew install swift-protobuf</code></p>
+<p>根据官方文档可以使用brew安装：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/342e2e7e234f4c7fadbff00f9dc06e3d~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>安装完之后，输入protoc将会出现提示：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3cbdf36d04fa4f52a7e4e4b3e6a74ece~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<h1 id="编译proto文件">编译Proto文件<a hidden class="anchor" aria-hidden="true" href="#编译proto文件">#</a></h1>
+<p>将.proto文件编译为swift代码：&ndash;swift_out=. 表示将生成的文件放在当前文件夹中</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>protoc --swift_out=. my.proto</code></p>
+<p>运行之后，就会出现一个GameMsg.pb.swift文件，这就是编译后的swift文件：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/02ca967bd4d44996b5e5c15fd52dc2e0~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>生成的代码将为每个 proto 字段公开一个 Swift 属性以及一组序列化和反序列化功能。假如你的proto文件内容是：</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>syntax = &quot;proto3&quot;; message BookInfo {    int64 id = 1;    string title = 2;    string author = 3; }</code></p>
+<p>那么生成的swift代码：</p>
+<p>Swift</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// DO NOT EDIT. // swift-format-ignore-file // // Generated by the Swift generator plugin for the protocol buffer compiler. // Source: game.proto // // For information on using the generated types, please see the documentation: //   https://github.com/apple/swift-protobuf/ import Foundation import SwiftProtobuf // If the compiler emits an error on this type, it is because this file // was generated by a version of the `protoc` Swift plug-in that is // incompatible with the version of SwiftProtobuf to which you are linking. // Please ensure that you are building against the same version of the API // that was used to generate this file. fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}   typealias Version = _2 } struct BookInfo {   // SwiftProtobuf.Message conformance is added in an extension below. See the   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for   // methods supported on all messages.   var id: Int64 = 0   var title: String = String()   var author: String = String()   var unknownFields = SwiftProtobuf.UnknownStorage()   init() {} } #if swift(&gt;=5.5) &amp;&amp; canImport(_Concurrency) extension BookInfo: @unchecked Sendable {} #endif  // swift(&gt;=5.5) &amp;&amp; canImport(_Concurrency) // MARK: - Code below here is support for the SwiftProtobuf runtime. extension BookInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {   static let protoMessageName: String = &quot;BookInfo&quot;   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [     1: .same(proto: &quot;id&quot;),     2: .same(proto: &quot;title&quot;),     3: .same(proto: &quot;author&quot;),   ]   mutating func decodeMessage&lt;D: SwiftProtobuf.Decoder&gt;(decoder: inout D) throws {     while let fieldNumber = try decoder.nextFieldNumber() {       // The use of inline closures is to circumvent an issue where the compiler       // allocates stack space for every case branch when no optimizations are       // enabled. https://github.com/apple/swift-protobuf/issues/1034       switch fieldNumber {       case 1: try { try decoder.decodeSingularInt64Field(value: &amp;self.id) }()       case 2: try { try decoder.decodeSingularStringField(value: &amp;self.title) }()       case 3: try { try decoder.decodeSingularStringField(value: &amp;self.author) }()       default: break       }     }   }   func traverse&lt;V: SwiftProtobuf.Visitor&gt;(visitor: inout V) throws {     if self.id != 0 {       try visitor.visitSingularInt64Field(value: self.id, fieldNumber: 1)     }     if !self.title.isEmpty {       try visitor.visitSingularStringField(value: self.title, fieldNumber: 2)     }     if !self.author.isEmpty {       try visitor.visitSingularStringField(value: self.author, fieldNumber: 3)     }     try unknownFields.traverse(visitor: &amp;visitor)   }   static func ==(lhs: BookInfo, rhs: BookInfo) -&gt; Bool {     if lhs.id != rhs.id {return false}     if lhs.title != rhs.title {return false}     if lhs.author != rhs.author {return false}     if lhs.unknownFields != rhs.unknownFields {return false}     return true   } }</code></p>
+<p>在项目中使用的话：</p>
+<p>Swift</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// 创建一个BookInfo对象，并给它赋值 var info = BookInfo() info.id = 1734 info.title = &quot;Really Interesting Book&quot; info.author = &quot;Jane Smith&quot; // 如上所述，但生成只读值： let info2 = BookInfo.with {     $0.id = 1735     $0.title = &quot;Even More Interesting&quot;     $0.author = &quot;Jane Q. Smith&quot;   } // 序列化为二进制protobuf格式：可以选择序列化为 // 符合SwiftProtobufContiqueBytes的任何类型。例如 let binaryData: Data = try info.serializedBytes() let binaryDataAsBytes: [UInt8] = try info.serializedBytes() // 从`binaryData反序列化接收到的Data对象` let decodedInfo = try BookInfo(serializedData: binaryData) // 反序列化从`binaryDataAsBytes接收的[UInt8]对象` let decodedInfo = try BookInfo(serializedBytes: binaryDataAsBytes) //序列化为JSON格式的数据对象，或符合 //SwiftProtobufContiqueBytes。例如 let jsonData: Data = try info.jsonUTF8Data() let jsonBytes: [UInt8] = try info.jsonUTF8Bytes() // 从`jsonBytes从JSON格式反序列化` let receivedFromJSON = try BookInfo(jsonUTF8Bytes: jsonBytes)</code></p>
+<h1 id="添加swiftprotobuf到你的项目中">添加SwiftProtobuf到你的项目中<a hidden class="anchor" aria-hidden="true" href="#添加swiftprotobuf到你的项目中">#</a></h1>
+<p>要想使用Protobuf还需要在你的项目中添加SwiftProtobuf，可以使用SPM添加或者使用CocoaPods添加，我这里习惯使用SPM，在xcode项目中可以直接右键添加包就可以了：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b067b89d79749379847ebea98ed580b~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>添加之后就可以在左侧项目的依赖包里面显示出来了：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c0645da30a4b4d6da08196f31b8b6819~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>解决遇到的问题</p>
+<p>1.如果你在finder中在proto文件夹中生成swift代码，但是当你会到xcode总，发现proto文件夹中不一定会显示proto文件和生成的swift文件：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0a37b924a3b243b18daad34c39fc4fe8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>需要在xcode中手动添加文件到文件夹中：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9c60ce61db514b2b8a3cfc5a563137f9~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>再回到项目文件夹就可以看到了：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e221e9ca47b4b03a9469d86468a8062~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+ </p>
+<p>2.但是这个时候，当你打开生成的swift文件，可能发现报错了：</p>
+<blockquote>
+<p>Could not find module &lsquo;SwiftProtobuf&rsquo; for target &lsquo;arm64-apple-watchos&rsquo;; found: arm64_32-apple-watchos, at: /Users/song/Library/Developer/Xcode/DerivedData/mywatch-coaeflxmpfflredurreogfyfvbxz/Index.noindex/Build/Products/Debug-watchos/SwiftProtobuf.swiftmodule </p>
+</blockquote>
+<p>这是因为你没有将 SwiftProtobuf 真正添加到项目中：</p>
+<p>需要你手动再将依赖添加到项目中</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e9076b2a23414fff9f8b81a9d4bf67ea~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+<p>就不会报错了：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/660faab97a4246cda727840b0577aec1~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp" alt=""  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E8%81%8A%E4%B8%80%E4%B8%8B%E6%95%B0%E6%8D%AE%E8%84%B1%E6%95%8F/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>聊一下数据脱敏</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E7%99%BE%E5%BA%A6%E4%B8%80%E9%9D%A2%E5%90%93%E5%B0%BF%E4%BA%86/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>面试：百度一面，吓尿了</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share swift使用swift-protobuf协议通讯，使用指北 on x"
+            href="https://x.com/intent/tweet/?text=swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f&amp;hashtags=%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share swift使用swift-protobuf协议通讯，使用指北 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f&amp;title=swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97&amp;summary=swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share swift使用swift-protobuf协议通讯，使用指北 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f&title=swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share swift使用swift-protobuf协议通讯，使用指北 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share swift使用swift-protobuf协议通讯，使用指北 on whatsapp"
+            href="https://api.whatsapp.com/send?text=swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share swift使用swift-protobuf协议通讯，使用指北 on telegram"
+            href="https://telegram.me/share/url?text=swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share swift使用swift-protobuf协议通讯，使用指北 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=swift%e4%bd%bf%e7%94%a8swift-protobuf%e5%8d%8f%e8%ae%ae%e9%80%9a%e8%ae%af%ef%bc%8c%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8c%97&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fswift%25E4%25BD%25BF%25E7%2594%25A8swift-protobuf%25E5%258D%258F%25E8%25AE%25AE%25E9%2580%259A%25E8%25AE%25AF%25E4%25BD%25BF%25E7%2594%25A8%25E6%258C%2587%25E5%258C%2597%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

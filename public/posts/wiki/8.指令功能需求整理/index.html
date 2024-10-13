@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>8.、指令功能需求整理 | PaperMod</title>
+<meta name="keywords" content="指令库">
+<meta name="description" content="指令库">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/8.%E6%8C%87%E4%BB%A4%E5%8A%9F%E8%83%BD%E9%9C%80%E6%B1%82%E6%95%B4%E7%90%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/8.%E6%8C%87%E4%BB%A4%E5%8A%9F%E8%83%BD%E9%9C%80%E6%B1%82%E6%95%B4%E7%90%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="8.、指令功能需求整理" />
+<meta property="og:description" content="指令库" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/8.%E6%8C%87%E4%BB%A4%E5%8A%9F%E8%83%BD%E9%9C%80%E6%B1%82%E6%95%B4%E7%90%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="8.、指令功能需求整理"/>
+<meta name="twitter:description" content="指令库"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "8.、指令功能需求整理",
+      "item": "http://localhost:1313/posts/wiki/8.%E6%8C%87%E4%BB%A4%E5%8A%9F%E8%83%BD%E9%9C%80%E6%B1%82%E6%95%B4%E7%90%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "8.、指令功能需求整理",
+  "name": "8.、指令功能需求整理",
+  "description": "指令库",
+  "keywords": [
+    "指令库"
+  ],
+  "articleBody": "一、通配符 1、其他产品 1.1 百度 通配词槽使用demo (baidu.com)\nUNIT2.0模板标注详细说明 (baidu.com)\n（1）通配符：可以匹配指定长度的任意字符串；可表示为\"[W:0-10]“标识，表示可匹配总字节数在 0 到10之间的任意字符串。\n（2）通配词槽必须被限定，根据实际情况下通配词槽识别的内容在句子中的位置，去进行前限定或者后限定，或者前后都进行限定\n（3）因为特征词配置了“发短信”“发短信说”，这种属于有交叠的词典值内容，在通配词槽的识别边界中难以区分，所以不要配置这种重叠形式的特征词\n（4）注意：尽量不要在模板片段中只写一个通配符，否则有可能会影响模板的识别效果\n（5）使用场景：一般不需要使用通配符，除非两个词槽或者特征词必须放在一个模板片段中，且中间需要识别不确定的内容，可以在中间用通配符\n1.2 讯飞 （1）通配词：匹配任意1-20个字符（Wildcard）\n（2）训练数据为“打开[通配词]的菜谱”，如果测试问句为“打开xx菜谱”（缺少“的”），则会无法识别\n（3）对于超过5个字的通配符，无法识别，如“打开奥尔良烤鸡翅的菜谱”\n1.3 功能评价 优点 （1）可以匹配任意文字，针对数据量很大的词槽（如食谱、食材），无需穷举，减少维护的工作量\n（2）对于搜索的指令，可以取用户的真实实体去进行搜索，执行的结果会更贴合用户的想法\n（3）支持需要个性化词槽的指令，如提醒事项，用户需要提醒的事情千人千面，无法通过词槽来穷举，此时可以使用通配词槽\n缺点 （1）需要使用比较固定的句式，容易造成误识别，如针对于“搜索[通配符]”这一话术，如果用户说”搜索食谱“，会将”食谱“两个字匹配为通配符的内容\n（2）需要尽可能穷举指令话术，且话术之间又不能有重叠形式的词，如“做法”和“的做法”，无法满足用户的多种话术\n（3）话术无法泛化，对话术要求严格，训练数据为“打开[通配词]的菜谱”，如果测试问句为“打开xx菜谱”（缺少“的”字），则会无法识别\n总结 （1）针对“搜索食谱”的指令，用通配词的功能可以减少词槽维护的工作量，但是对指令的使用话术会有限制，用户需要严格按照撰写的话术，对于找菜谱，用户会用的话术多种多样，从而会产生指令无法识别的情况\n（2）针对“提醒事项”的指令，话术格式比较统一，一般为“提醒我xx时间做xx事情”，通配词功能比较适用\n2、FTT相关需求 功能 提供“通配符”系统词槽，支持自定义设置匹配的字符长度 使用场景 用于“提醒事项”指令，如：[duration]后提醒我[通配符] 二、指令分库 1、百度、讯飞、FTT技能对比 系统\n阈值\n技能优先级\n百度\n以技能为单位\n以技能为单位自定义\n讯飞\n以技能为单位\n系统默认顺序：自定义技能最高\nFTT\n以技能类型为单位（指令、问答等）\n以技能类型为单位（指令、问答等）\n讯飞技能优先级：自定义技能\u003e自定义语句问答\u003e设备人设\u003e 商店技能\u003e自定义关键词问答\n2、FTT当前能力 （1）一个应用只能配置一个指令库，多个问答库\n（2）只能以技能类型（指令、问答等）为单位设置阈值\n（3）只能以技能类型（指令、问答等）为单位设置回复优先级\n3、FTT相关需求 功能 （1）支持一个应用配置多个指令库和多个问答库\n（2）支持以库为单位自定义设置阈值\n（3）支持以库为单位自定义设置回复优先级\n使用场景 对同一个应用的指令进行分库处理，将硬件操控类的指令和数据查询的指令分成两个指令库，避免因为数据量不均衡导致的训练模型的偏差 三、同义词（特征词）\n1、其他产品 1.1 百度 （1）特征词定义：由口语化词、辅助表述词、标点符号等对用户输入的文本内容真实理解无影响的词组成，支持多个，用户可自定义且解析结果中不展示。\n（2）特征词功能定位：通过对模版的标注实现对用户输入文本内容进行解析的能力，可以根据用户标注实现一定的泛化能力，可以提高对话模板的精度和覆盖度。如对于“查天气”意图，用户可能会说“查一下天气”、“查询天气”，那么对应的模板中，可以设置表示“查询”的特征词：“查一下”、“查询”等等。特征词不需要作为词槽被提取出来提供给业务，仅用于约束模板的匹配。\n（3）特征词词表需要用户自己上传或添加，不提供系统的特征词\n1.2 讯飞 （1）辅助词：副词、介词、连词、助词、叹词和拟声词。\n（2）提供26个官方辅助词，包括查询、我想要、帮我、语气词等\n1.3 云小蜜 （1）全局名词：通过配置全局名词和同义词，批量解决对话过程中对于同义不同词的快速支持\n（2）全局名词将随FAQ一同发布，无需单独发布。同时将环境分为测试环境和正式环境，默认为测试环境，可以进行编辑和删除操作，切换为正式环境时则只能查看名词。\n2、FTT当前能力 （1）asr容易识别成同音字的词语、意思一样但是表述不同的词语都需要通过添加相似问的形式来提高识别率\n（2）对于同音字、同义词，在指令库内的其中一个指令添加后，无法泛化到其他的指令\n3、FTT相关需求 功能 （1）提供同义词（特征词）功能，将意思相近但对用户输入的内容理解无影响的词归为一个特征词\n使用场景 （1）用于asr容易识别成同义词的与业务相关的业务名词，如：万得厨（万得出、万德福）、微波（微博）、息屏（熄屏）\n（2）用于意思相同但表述不同的词语，如食谱（菜谱、做法、的食谱、的菜谱、的做法）、搜索（打开、查找、查看、浏览、找一下）\n四、重量、体积的词槽\n1、其他产品 1.1 百度 （1）百度提供“数字+单位”的系统词槽\n（2）能识别到的单位：两、斤、公斤、克、千克、毫升、升、份、碗、桶、打\n（3）单位后面的关于重量的字识别不到，如“一斤半”；组合的重量（如：3斤300克）会识别成两个词槽\n（4）该词槽的作用是识别“数字+单位”，所以对于所有的单位都可以识别，无法限制在“分量”相关的单位\n1.2 讯飞 讯飞不提供“重量”和“体积”的系统词槽 2、FTT现有能力 （1）没有“重量”和“体积”相关的系统词槽\n（2）提供duration系统词槽，支持时、分、秒三种单位，支持三种单位的组合，时长范围无限制\n（3）可以自动将整个时间段换算成最后一个单位并返回“单位”，如：设置1小时20分钟，会换算成80分钟；设置1小时20分钟30秒，会换算成4380秒\n3、FTT相关需求 功能 （1）提供“规格”单位的词槽，包含两、斤、公斤、克、千克、毫升、升7个单位\n（2）支持进行单位换算，将重量的单位都换算成克，将体积单位换算成毫升\n使用场景 （1）功率推荐的指令，需要识别到用户要烹饪的食物的分量，但是食物分量的单位有多种，包括重量和体积，单位不一致的情况下无法仅通过number词槽来判断食材的真实分量\n五、词槽非必填\n1、其他产品 1.1 百度 百度支持以词槽为单位设置是否必填 1.2 讯飞\n讯飞支持以词槽为单位设置是否必填 2、FTT现有能力\n提供词槽非必填功能，但以指令为单位而不是以词槽为单位，即如果一个指令引用了两个词槽，只支持两个词槽同时必填或同时非必填 3、FTT相关需求 功能 （1）支持以词槽为单位的非必填功能\n使用场景 （1）食谱搜索推荐的指令，支持用户用多个关键词来搜索食谱，如“牛肉有什么辣味的食谱推荐”，此时可以设置其中一个词槽非必填\n六、批量测试\n1、其他产品 1.1 百度 百度提供技能内批量测试的能力，以txt格式导入测试问句，返回问题、答复、意图、词槽原始值四个字段 2.1 讯飞\n讯飞不提供批量测试的功能 2、FTT现有能力 FAQ提供批量测试和逐条测试能力，指令和应用只能逐条测试 3、FTT相关需求 功能 （1）提供指令批量测试的功能，返回测试问句、answer、score、intent、similar_standard五个字段结果\n（2）应用上提供批量测试的功能，返回测试问句、answer、service、intent（非指令则空着）四个字段结果\n使用场景 （1）随着指令数量的增加且黑名单功能的使用，需要进行大量测试，包括指令间的冲突及FAQ误触指令的排查，逐条测试效率低，工作量大\n七、对话日志标注 1、其他产品 1.1 百度 （1）在对话日志模块，百度支持将用户的对话语料转化为对话样本，转化为对话样本的语料会收录到待优化样本集，可以进一步对语料进行意图标注并转化为指令训练数据\n（2）在技能测试模块，针对每一条测试问句，百度支持对测试结果进行调试，可以选择先添加进对话样本集统一标注，也可以直接标注正确的意图\n1.2 讯飞 讯飞未提供对话日志的功能 2、FTT现有能力 （1）只支持对话日志查看功能，无法直观展示用户的问题，只能以终端为单位展示该终端的所有对话记录\n（2）无法根据日期筛选准确定位到相应日期的对话记录\n3、FTT相关需求 功能 （1）直观展示用户所有的对话日志，且支持根据日期、指令、回复进行筛选\n（2）提供对话日志标注的功能，支持对用户的对话语料进行意图和词槽的标注，直接添加进指令相似问和词槽实体\n使用场景 根据用户的真实对话数据直接进行话术的优化 Filter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "173",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/8.%E6%8C%87%E4%BB%A4%E5%8A%9F%E8%83%BD%E9%9C%80%E6%B1%82%E6%95%B4%E7%90%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      8.、指令功能需求整理
+    </h1>
+    <div class="post-description">
+      指令库
+    </div>
+    <div class="post-meta">1 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e9%80%9a%e9%85%8d%e7%ac%a6" aria-label="一、通配符">一、通配符</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%85%b6%e4%bb%96%e4%ba%a7%e5%93%81" aria-label="1、其他产品">1、其他产品</a><ul>
+                        
+                <li>
+                    <a href="#11-%e7%99%be%e5%ba%a6" aria-label="1.1 百度">1.1 百度</a></li>
+                <li>
+                    <a href="#12-%e8%ae%af%e9%a3%9e" aria-label="1.2 讯飞">1.2 讯飞</a></li>
+                <li>
+                    <a href="#13-%e5%8a%9f%e8%83%bd%e8%af%84%e4%bb%b7" aria-label="1.3 功能评价">1.3 功能评价</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bc%98%e7%82%b9" aria-label="优点">优点</a></li>
+                <li>
+                    <a href="#%e7%bc%ba%e7%82%b9" aria-label="缺点">缺点</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#2ftt%e7%9b%b8%e5%85%b3%e9%9c%80%e6%b1%82" aria-label="2、FTT相关需求">2、FTT相关需求</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af" aria-label="使用场景">使用场景</a></li></ul>
+                    </ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8c%e6%8c%87%e4%bb%a4%e5%88%86%e5%ba%93" aria-label="二、指令分库">二、指令分库</a><ul>
+                        
+                <li>
+                    <a href="#1%e7%99%be%e5%ba%a6%e8%ae%af%e9%a3%9eftt%e6%8a%80%e8%83%bd%e5%af%b9%e6%af%94" aria-label="1、百度、讯飞、FTT技能对比">1、百度、讯飞、FTT技能对比</a></li>
+                <li>
+                    <a href="#2ftt%e5%bd%93%e5%89%8d%e8%83%bd%e5%8a%9b" aria-label="2、FTT当前能力">2、FTT当前能力</a></li>
+                <li>
+                    <a href="#3ftt%e7%9b%b8%e5%85%b3%e9%9c%80%e6%b1%82" aria-label="3、FTT相关需求">3、FTT相关需求</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd-1" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af-1" aria-label="使用场景">使用场景</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#1%e5%85%b6%e4%bb%96%e4%ba%a7%e5%93%81-1" aria-label="1、其他产品">1、其他产品</a><ul>
+                        
+                <li>
+                    <a href="#11-%e7%99%be%e5%ba%a6-1" aria-label="1.1 百度">1.1 百度</a></li>
+                <li>
+                    <a href="#12-%e8%ae%af%e9%a3%9e-1" aria-label="1.2 讯飞">1.2 讯飞</a></li>
+                <li>
+                    <a href="#13-%e4%ba%91%e5%b0%8f%e8%9c%9c" aria-label="1.3 云小蜜">1.3 云小蜜</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2ftt%e5%bd%93%e5%89%8d%e8%83%bd%e5%8a%9b-1" aria-label="2、FTT当前能力">2、FTT当前能力</a></li>
+                <li>
+                    <a href="#3ftt%e7%9b%b8%e5%85%b3%e9%9c%80%e6%b1%82-1" aria-label="3、FTT相关需求">3、FTT相关需求</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd-2" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af-2" aria-label="使用场景">使用场景</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#1%e5%85%b6%e4%bb%96%e4%ba%a7%e5%93%81-2" aria-label="1、其他产品">1、其他产品</a><ul>
+                        
+                <li>
+                    <a href="#11-%e7%99%be%e5%ba%a6-2" aria-label="1.1 百度">1.1 百度</a></li>
+                <li>
+                    <a href="#12-%e8%ae%af%e9%a3%9e-2" aria-label="1.2 讯飞">1.2 讯飞</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2ftt%e7%8e%b0%e6%9c%89%e8%83%bd%e5%8a%9b" aria-label="2、FTT现有能力">2、FTT现有能力</a></li>
+                <li>
+                    <a href="#3ftt%e7%9b%b8%e5%85%b3%e9%9c%80%e6%b1%82-2" aria-label="3、FTT相关需求">3、FTT相关需求</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd-3" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af-3" aria-label="使用场景">使用场景</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#1%e5%85%b6%e4%bb%96%e4%ba%a7%e5%93%81-3" aria-label="1、其他产品">1、其他产品</a><ul>
+                        
+                <li>
+                    <a href="#11-%e7%99%be%e5%ba%a6-3" aria-label="1.1 百度">1.1 百度</a></li></ul>
+                </li>
+                <li>
+                    <a href="#3ftt%e7%9b%b8%e5%85%b3%e9%9c%80%e6%b1%82-3" aria-label="3、FTT相关需求">3、FTT相关需求</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd-4" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af-4" aria-label="使用场景">使用场景</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#1%e5%85%b6%e4%bb%96%e4%ba%a7%e5%93%81-4" aria-label="1、其他产品">1、其他产品</a><ul>
+                        
+                <li>
+                    <a href="#11-%e7%99%be%e5%ba%a6-4" aria-label="1.1 百度">1.1 百度</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2ftt%e7%8e%b0%e6%9c%89%e8%83%bd%e5%8a%9b-1" aria-label="2、FTT现有能力">2、FTT现有能力</a></li>
+                <li>
+                    <a href="#3ftt%e7%9b%b8%e5%85%b3%e9%9c%80%e6%b1%82-4" aria-label="3、FTT相关需求">3、FTT相关需求</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd-5" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af-5" aria-label="使用场景">使用场景</a></li></ul>
+                    </ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%83%e5%af%b9%e8%af%9d%e6%97%a5%e5%bf%97%e6%a0%87%e6%b3%a8" aria-label="七、对话日志标注">七、对话日志标注</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%85%b6%e4%bb%96%e4%ba%a7%e5%93%81-5" aria-label="1、其他产品">1、其他产品</a><ul>
+                        
+                <li>
+                    <a href="#11-%e7%99%be%e5%ba%a6-5" aria-label="1.1 百度">1.1 百度</a></li>
+                <li>
+                    <a href="#12-%e8%ae%af%e9%a3%9e-3" aria-label="1.2 讯飞">1.2 讯飞</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2ftt%e7%8e%b0%e6%9c%89%e8%83%bd%e5%8a%9b-2" aria-label="2、FTT现有能力">2、FTT现有能力</a></li>
+                <li>
+                    <a href="#3ftt%e7%9b%b8%e5%85%b3%e9%9c%80%e6%b1%82-5" aria-label="3、FTT相关需求">3、FTT相关需求</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd-6" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af-6" aria-label="使用场景">使用场景</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="一通配符">一、通配符<a hidden class="anchor" aria-hidden="true" href="#一通配符">#</a></h2>
+<h3 id="1其他产品">1、其他产品<a hidden class="anchor" aria-hidden="true" href="#1其他产品">#</a></h3>
+<h4 id="11-百度">1.1 百度<a hidden class="anchor" aria-hidden="true" href="#11-百度">#</a></h4>
+<p><a href="https://ai.baidu.com/forum/topic/show/957131">通配词槽使用demo (baidu.com)</a></p>
+<p><a href="https://ai.baidu.com/forum/topic/show/940955">UNIT2.0模板标注详细说明 (baidu.com)</a></p>
+<p>（1）通配符：可以匹配指定长度的任意字符串；可表示为&quot;[W:0-10]&ldquo;标识，表示可匹配总字节数在 0 到10之间的任意字符串。</p>
+<p>（2）通配词槽必须被限定，根据实际情况下通配词槽识别的内容在句子中的位置，去进行前限定或者后限定，或者前后都进行限定</p>
+<p>（3）因为特征词配置了“发短信”“发短信说”，这种属于有交叠的词典值内容，在通配词槽的识别边界中难以区分，所以不要配置这种重叠形式的特征词</p>
+<p>（4）注意：尽量不要在模板片段中只写一个通配符，否则有可能会影响模板的识别效果</p>
+<p>（5）使用场景：一般不需要使用通配符，除非两个词槽或者特征词必须放在一个模板片段中，且中间需要识别不确定的内容，可以在中间用通配符</p>
+<p><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-56-27.png?version=1&amp;modificationDate=1689774987900&amp;api=v2" alt=""  />
+<img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-56-36.png?version=1&amp;modificationDate=1689774996917&amp;api=v2" alt=""  />
+</p>
+<h4 id="12-讯飞">1.2 讯飞<a hidden class="anchor" aria-hidden="true" href="#12-讯飞">#</a></h4>
+<p>（1）通配词：匹配任意1-20个字符（Wildcard）</p>
+<p>（2）训练数据为“打开[通配词]的菜谱”，如果测试问句为“打开xx菜谱”（缺少“的”），则会无法识别</p>
+<p>（3）对于超过5个字的通配符，无法识别，如“打开奥尔良烤鸡翅的菜谱”</p>
+<p><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-57-9.png?version=1&amp;modificationDate=1689775029887&amp;api=v2" alt=""  />
+</p>
+<h4 id="13-功能评价">1.3 功能评价<a hidden class="anchor" aria-hidden="true" href="#13-功能评价">#</a></h4>
+<h5 id="优点">优点<a hidden class="anchor" aria-hidden="true" href="#优点">#</a></h5>
+<p>（1）可以匹配任意文字，针对数据量很大的词槽（如食谱、食材），无需穷举，减少维护的工作量</p>
+<p>（2）对于搜索的指令，可以取用户的真实实体去进行搜索，执行的结果会更贴合用户的想法</p>
+<p>（3）支持需要个性化词槽的指令，如提醒事项，用户需要提醒的事情千人千面，无法通过词槽来穷举，此时可以使用通配词槽</p>
+<h5 id="缺点">缺点<a hidden class="anchor" aria-hidden="true" href="#缺点">#</a></h5>
+<p>（1）需要使用比较固定的句式，容易造成误识别，如针对于“搜索[通配符]”这一话术，如果用户说”搜索食谱“，会将”食谱“两个字匹配为通配符的内容</p>
+<p>（2）需要尽可能穷举指令话术，且话术之间又不能有重叠形式的词，如“做法”和“的做法”，无法满足用户的多种话术</p>
+<p>（3）话术无法泛化，对话术要求严格，训练数据为“打开[通配词]的菜谱”，如果测试问句为“打开xx菜谱”（缺少“的”字），则会无法识别</p>
+<h5 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h5>
+<p>（1）针对“搜索食谱”的指令，用通配词的功能可以减少词槽维护的工作量，但是对指令的使用话术会有限制，用户需要严格按照撰写的话术，对于找菜谱，用户会用的话术多种多样，从而会产生指令无法识别的情况</p>
+<p>（2）针对“提醒事项”的指令，话术格式比较统一，一般为“提醒我xx时间做xx事情”，通配词功能比较适用</p>
+<h3 id="2ftt相关需求">2、FTT相关需求<a hidden class="anchor" aria-hidden="true" href="#2ftt相关需求">#</a></h3>
+<h5 id="功能">功能<a hidden class="anchor" aria-hidden="true" href="#功能">#</a></h5>
+<ul>
+<li>提供“通配符”系统词槽，支持自定义设置匹配的字符长度</li>
+</ul>
+<h5 id="使用场景">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景">#</a></h5>
+<ul>
+<li>用于“提醒事项”指令，如：[duration]后提醒我[通配符]</li>
+</ul>
+<h2 id="二指令分库">二、指令分库<a hidden class="anchor" aria-hidden="true" href="#二指令分库">#</a></h2>
+<h3 id="1百度讯飞ftt技能对比">1、百度、讯飞、FTT技能对比<a hidden class="anchor" aria-hidden="true" href="#1百度讯飞ftt技能对比">#</a></h3>
+<p><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-57-34.png?version=1&amp;modificationDate=1689775054882&amp;api=v2" alt=""  />
+</p>
+<p>系统</p>
+<p>阈值</p>
+<p>技能优先级</p>
+<p>百度</p>
+<p>以技能为单位</p>
+<p>以技能为单位自定义</p>
+<p>讯飞</p>
+<p>以技能为单位</p>
+<p>系统默认顺序：自定义技能最高</p>
+<p>FTT</p>
+<p>以技能类型为单位（指令、问答等）</p>
+<p>以技能类型为单位（指令、问答等）</p>
+<p>讯飞技能优先级：自定义技能&gt;自定义语句问答&gt;设备人设&gt; 商店技能&gt;自定义关键词问答</p>
+<h3 id="2ftt当前能力">2、FTT当前能力<a hidden class="anchor" aria-hidden="true" href="#2ftt当前能力">#</a></h3>
+<p>（1）一个应用只能配置一个指令库，多个问答库</p>
+<p>（2）只能以技能类型（指令、问答等）为单位设置阈值</p>
+<p>（3）只能以技能类型（指令、问答等）为单位设置回复优先级</p>
+<h3 id="3ftt相关需求">3、FTT相关需求<a hidden class="anchor" aria-hidden="true" href="#3ftt相关需求">#</a></h3>
+<h5 id="功能-1">功能<a hidden class="anchor" aria-hidden="true" href="#功能-1">#</a></h5>
+<p>（1）支持一个应用配置多个指令库和多个问答库</p>
+<p>（2）支持以库为单位自定义设置阈值</p>
+<p>（3）支持以库为单位自定义设置回复优先级</p>
+<h5 id="使用场景-1">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景-1">#</a></h5>
+<ul>
+<li>对同一个应用的指令进行分库处理，将硬件操控类的指令和数据查询的指令分成两个指令库，避免因为数据量不均衡导致的训练模型的偏差</li>
+</ul>
+<p>三、同义词（特征词）</p>
+<hr>
+<h3 id="1其他产品-1">1、其他产品<a hidden class="anchor" aria-hidden="true" href="#1其他产品-1">#</a></h3>
+<h4 id="11-百度-1">1.1 百度<a hidden class="anchor" aria-hidden="true" href="#11-百度-1">#</a></h4>
+<p>（1）特征词定义：由口语化词、辅助表述词、标点符号等对用户输入的文本内容真实理解无影响的词组成，支持多个，用户可自定义且解析结果中不展示。</p>
+<p>（2）特征词功能定位：通过对模版的标注实现对用户输入文本内容进行解析的能力，可以根据用户标注实现一定的泛化能力，可以提高对话模板的精度和覆盖度。如对于“查天气”意图，用户可能会说“查一下天气”、“查询天气”，那么对应的模板中，可以设置表示“查询”的特征词：“查一下”、“查询”等等。特征词不需要作为词槽被提取出来提供给业务，仅用于约束模板的匹配。</p>
+<p>（3）特征词词表需要用户自己上传或添加，不提供系统的特征词</p>
+<h4 id="12-讯飞-1">1.2 讯飞<a hidden class="anchor" aria-hidden="true" href="#12-讯飞-1">#</a></h4>
+<p>（1）辅助词：副词、介词、连词、助词、叹词和拟声词。</p>
+<p>（2）提供26个官方辅助词，包括查询、我想要、帮我、语气词等</p>
+<p><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-58-11.png?version=1&amp;modificationDate=1689775091745&amp;api=v2" alt=""  />
+</p>
+<h4 id="13-云小蜜">1.3 云小蜜<a hidden class="anchor" aria-hidden="true" href="#13-云小蜜">#</a></h4>
+<p>（1）全局名词：通过配置全局名词和同义词，批量解决对话过程中对于同义不同词的快速支持</p>
+<p>（2）全局名词将随FAQ一同发布，无需单独发布。同时将环境分为测试环境和正式环境，默认为测试环境，可以进行编辑和删除操作，切换为正式环境时则只能查看名词。</p>
+<p><img loading="lazy" src="/download/thumbnails/105265857/image2023-7-19_21-58-31.png?version=1&amp;modificationDate=1689775111211&amp;api=v2" alt=""  />
+</p>
+<h3 id="2ftt当前能力-1">2、FTT当前能力<a hidden class="anchor" aria-hidden="true" href="#2ftt当前能力-1">#</a></h3>
+<p>（1）asr容易识别成同音字的词语、意思一样但是表述不同的词语都需要通过添加相似问的形式来提高识别率</p>
+<p>（2）对于同音字、同义词，在指令库内的其中一个指令添加后，无法泛化到其他的指令</p>
+<h3 id="3ftt相关需求-1">3、FTT相关需求<a hidden class="anchor" aria-hidden="true" href="#3ftt相关需求-1">#</a></h3>
+<h5 id="功能-2">功能<a hidden class="anchor" aria-hidden="true" href="#功能-2">#</a></h5>
+<p>（1）提供同义词（特征词）功能，将意思相近但对用户输入的内容理解无影响的词归为一个特征词</p>
+<h5 id="使用场景-2">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景-2">#</a></h5>
+<p>（1）用于asr容易识别成同义词的与业务相关的业务名词，如：万得厨（万得出、万德福）、微波（微博）、息屏（熄屏）</p>
+<p>（2）用于意思相同但表述不同的词语，如食谱（菜谱、做法、的食谱、的菜谱、的做法）、搜索（打开、查找、查看、浏览、找一下）</p>
+<p>四、重量、体积的词槽</p>
+<hr>
+<h3 id="1其他产品-2">1、其他产品<a hidden class="anchor" aria-hidden="true" href="#1其他产品-2">#</a></h3>
+<h4 id="11-百度-2">1.1 百度<a hidden class="anchor" aria-hidden="true" href="#11-百度-2">#</a></h4>
+<p>（1）百度提供“数字+单位”的系统词槽</p>
+<p><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-59-4.png?version=1&amp;modificationDate=1689775144140&amp;api=v2" alt=""  />
+</p>
+<p>（2）能识别到的单位：两、斤、公斤、克、千克、毫升、升、份、碗、桶、打</p>
+<p>（3）单位后面的关于重量的字识别不到，如“一斤半”；组合的重量（如：3斤300克）会识别成两个词槽<br>
+<img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-59-12.png?version=1&amp;modificationDate=1689775152113&amp;api=v2" alt=""  />
+</p>
+<p>（4）该词槽的作用是识别“数字+单位”，所以对于所有的单位都可以识别，无法限制在“分量”相关的单位</p>
+<h4 id="12-讯飞-2">1.2 讯飞<a hidden class="anchor" aria-hidden="true" href="#12-讯飞-2">#</a></h4>
+<ul>
+<li>讯飞不提供“重量”和“体积”的系统词槽</li>
+</ul>
+<h3 id="2ftt现有能力">2、FTT现有能力<a hidden class="anchor" aria-hidden="true" href="#2ftt现有能力">#</a></h3>
+<p>（1）没有“重量”和“体积”相关的系统词槽</p>
+<p>（2）提供duration系统词槽，支持时、分、秒三种单位，支持三种单位的组合，时长范围无限制</p>
+<p>（3）可以自动将整个时间段换算成最后一个单位并返回“单位”，如：设置1小时20分钟，会换算成80分钟；设置1小时20分钟30秒，会换算成4380秒<br>
+<img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-59-32.png?version=1&amp;modificationDate=1689775172143&amp;api=v2" alt=""  />
+</p>
+<h3 id="3ftt相关需求-2">3、FTT相关需求<a hidden class="anchor" aria-hidden="true" href="#3ftt相关需求-2">#</a></h3>
+<h5 id="功能-3">功能<a hidden class="anchor" aria-hidden="true" href="#功能-3">#</a></h5>
+<p>（1）提供“规格”单位的词槽，包含两、斤、公斤、克、千克、毫升、升7个单位</p>
+<p>（2）支持进行单位换算，将重量的单位都换算成克，将体积单位换算成毫升</p>
+<h5 id="使用场景-3">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景-3">#</a></h5>
+<p>（1）功率推荐的指令，需要识别到用户要烹饪的食物的分量，但是食物分量的单位有多种，包括重量和体积，单位不一致的情况下无法仅通过number词槽来判断食材的真实分量</p>
+<p>五、词槽非必填</p>
+<hr>
+<h3 id="1其他产品-3">1、其他产品<a hidden class="anchor" aria-hidden="true" href="#1其他产品-3">#</a></h3>
+<h4 id="11-百度-3">1.1 百度<a hidden class="anchor" aria-hidden="true" href="#11-百度-3">#</a></h4>
+<ul>
+<li>百度支持以词槽为单位设置是否必填</li>
+</ul>
+<h4 id="downloadattachments105265857image2023-7-19_21-59-45pngversion1modificationdate1689775186151apiv2"><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_21-59-45.png?version=1&amp;modificationDate=1689775186151&amp;api=v2" alt=""  />
+</h4>
+<p>1.2 讯飞</p>
+<ul>
+<li>讯飞支持以词槽为单位设置是否必填</li>
+</ul>
+<h4 id="downloadattachments105265857image2023-7-19_22-0-4pngversion1modificationdate1689775204517apiv2"><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_22-0-4.png?version=1&amp;modificationDate=1689775204517&amp;api=v2" alt=""  />
+</h4>
+<p>2、FTT现有能力</p>
+<ul>
+<li>提供词槽非必填功能，但以指令为单位而不是以词槽为单位，即如果一个指令引用了两个词槽，只支持两个词槽同时必填或同时非必填</li>
+</ul>
+<h3 id="3ftt相关需求-3">3、FTT相关需求<a hidden class="anchor" aria-hidden="true" href="#3ftt相关需求-3">#</a></h3>
+<h5 id="功能-4">功能<a hidden class="anchor" aria-hidden="true" href="#功能-4">#</a></h5>
+<p>（1）支持以词槽为单位的非必填功能</p>
+<h5 id="使用场景-4">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景-4">#</a></h5>
+<p>（1）食谱搜索推荐的指令，支持用户用多个关键词来搜索食谱，如“牛肉有什么辣味的食谱推荐”，此时可以设置其中一个词槽非必填</p>
+<p>六、批量测试</p>
+<hr>
+<h3 id="1其他产品-4">1、其他产品<a hidden class="anchor" aria-hidden="true" href="#1其他产品-4">#</a></h3>
+<h4 id="11-百度-4">1.1 百度<a hidden class="anchor" aria-hidden="true" href="#11-百度-4">#</a></h4>
+<ul>
+<li>百度提供技能内批量测试的能力，以txt格式导入测试问句，返回问题、答复、意图、词槽原始值四个字段</li>
+</ul>
+<h4 id="downloadattachments105265857image2023-7-19_22-0-23pngversion1modificationdate1689775223483apiv2"><img loading="lazy" src="/download/attachments/105265857/image2023-7-19_22-0-23.png?version=1&amp;modificationDate=1689775223483&amp;api=v2" alt=""  />
+</h4>
+<p>2.1 讯飞</p>
+<ul>
+<li>讯飞不提供批量测试的功能</li>
+</ul>
+<h3 id="2ftt现有能力-1">2、FTT现有能力<a hidden class="anchor" aria-hidden="true" href="#2ftt现有能力-1">#</a></h3>
+<ul>
+<li>FAQ提供批量测试和逐条测试能力，指令和应用只能逐条测试</li>
+</ul>
+<h3 id="3ftt相关需求-4">3、FTT相关需求<a hidden class="anchor" aria-hidden="true" href="#3ftt相关需求-4">#</a></h3>
+<h5 id="功能-5">功能<a hidden class="anchor" aria-hidden="true" href="#功能-5">#</a></h5>
+<p>（1）提供指令批量测试的功能，返回测试问句、answer、score、intent、similar_standard五个字段结果</p>
+<p>（2）应用上提供批量测试的功能，返回测试问句、answer、service、intent（非指令则空着）四个字段结果</p>
+<h5 id="使用场景-5">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景-5">#</a></h5>
+<p>（1）随着指令数量的增加且黑名单功能的使用，需要进行大量测试，包括指令间的冲突及FAQ误触指令的排查，逐条测试效率低，工作量大</p>
+<h2 id="七对话日志标注">七、对话日志标注<a hidden class="anchor" aria-hidden="true" href="#七对话日志标注">#</a></h2>
+<h3 id="1其他产品-5">1、其他产品<a hidden class="anchor" aria-hidden="true" href="#1其他产品-5">#</a></h3>
+<h4 id="11-百度-5">1.1 百度<a hidden class="anchor" aria-hidden="true" href="#11-百度-5">#</a></h4>
+<p>（1）在对话日志模块，百度支持将用户的对话语料转化为对话样本，转化为对话样本的语料会收录到待优化样本集，可以进一步对语料进行意图标注并转化为指令训练数据</p>
+<p><img loading="lazy" src="/download/attachments/105265857/image2023-7-21_15-7-48.png?version=1&amp;modificationDate=1689923269109&amp;api=v2" alt=""  />
+</p>
+<p>（2）在技能测试模块，针对每一条测试问句，百度支持对测试结果进行调试，可以选择先添加进对话样本集统一标注，也可以直接标注正确的意图</p>
+<p><img loading="lazy" src="/download/thumbnails/105265857/image2023-7-21_15-16-32.png?version=1&amp;modificationDate=1689923793030&amp;api=v2" alt=""  />
+<img loading="lazy" src="/download/attachments/105265857/image2023-7-21_15-34-13.png?version=1&amp;modificationDate=1689924853792&amp;api=v2" alt=""  />
+</p>
+<h4 id="12-讯飞-3">1.2 讯飞<a hidden class="anchor" aria-hidden="true" href="#12-讯飞-3">#</a></h4>
+<ul>
+<li>讯飞未提供对话日志的功能</li>
+</ul>
+<h3 id="2ftt现有能力-2">2、FTT现有能力<a hidden class="anchor" aria-hidden="true" href="#2ftt现有能力-2">#</a></h3>
+<p>（1）只支持对话日志查看功能，无法直观展示用户的问题，只能以终端为单位展示该终端的所有对话记录</p>
+<p>（2）无法根据日期筛选准确定位到相应日期的对话记录</p>
+<h3 id="3ftt相关需求-5">3、FTT相关需求<a hidden class="anchor" aria-hidden="true" href="#3ftt相关需求-5">#</a></h3>
+<h5 id="功能-6">功能<a hidden class="anchor" aria-hidden="true" href="#功能-6">#</a></h5>
+<p>（1）直观展示用户所有的对话日志，且支持根据日期、指令、回复进行筛选</p>
+<p>（2）提供对话日志标注的功能，支持对用户的对话语料进行意图和词槽的标注，直接添加进指令相似问和词槽实体</p>
+<h5 id="使用场景-6">使用场景<a hidden class="anchor" aria-hidden="true" href="#使用场景-6">#</a></h5>
+<ul>
+<li>根据用户的真实对话数据直接进行话术的优化</li>
+</ul>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E6%8C%87%E4%BB%A4%E5%BA%93/">指令库</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/10%E4%B8%BB%E5%8A%A8%E5%AF%B9%E8%AF%9D%E6%96%B9%E6%A1%88/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>10、主动对话方案</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/5%E6%8C%87%E4%BB%A4%E6%B5%8B%E8%AF%95%E5%B0%8F%E7%BB%93/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>5、指令测试小结</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 8.、指令功能需求整理 on x"
+            href="https://x.com/intent/tweet/?text=8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f&amp;hashtags=%e6%8c%87%e4%bb%a4%e5%ba%93">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 8.、指令功能需求整理 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f&amp;title=8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86&amp;summary=8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 8.、指令功能需求整理 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f&title=8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 8.、指令功能需求整理 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 8.、指令功能需求整理 on whatsapp"
+            href="https://api.whatsapp.com/send?text=8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 8.、指令功能需求整理 on telegram"
+            href="https://telegram.me/share/url?text=8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 8.、指令功能需求整理 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=8.%e3%80%81%e6%8c%87%e4%bb%a4%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82%e6%95%b4%e7%90%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f8.%25E6%258C%2587%25E4%25BB%25A4%25E5%258A%259F%25E8%2583%25BD%25E9%259C%2580%25E6%25B1%2582%25E6%2595%25B4%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>『Webpack系列』——路由懒加载的原理 | PaperMod</title>
+<meta name="keywords" content="Webpack">
+<meta name="description" content="说起路由懒加载，大家很快就知道怎么实现它，但是问到路由懒加载的原理，怕有一部分小伙伴是一头雾水了吧。下面带大家一起去理解路由懒加载的原理。路由懒加载也可以叫做路由组件懒加载，最常用的是通过import()来实现它。然后通过Webpack编译打包后，会把每个路由组件的代码分割…">
+<meta name="author" content="前端大骆">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97%E8%B7%AF%E7%94%B1%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8E%9F%E7%90%86/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97%E8%B7%AF%E7%94%B1%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8E%9F%E7%90%86/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="『Webpack系列』——路由懒加载的原理" />
+<meta property="og:description" content="说起路由懒加载，大家很快就知道怎么实现它，但是问到路由懒加载的原理，怕有一部分小伙伴是一头雾水了吧。下面带大家一起去理解路由懒加载的原理。路由懒加载也可以叫做路由组件懒加载，最常用的是通过import()来实现它。然后通过Webpack编译打包后，会把每个路由组件的代码分割…" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97%E8%B7%AF%E7%94%B1%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8E%9F%E7%90%86/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-06-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-06-04T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="『Webpack系列』——路由懒加载的原理"/>
+<meta name="twitter:description" content="说起路由懒加载，大家很快就知道怎么实现它，但是问到路由懒加载的原理，怕有一部分小伙伴是一头雾水了吧。下面带大家一起去理解路由懒加载的原理。路由懒加载也可以叫做路由组件懒加载，最常用的是通过import()来实现它。然后通过Webpack编译打包后，会把每个路由组件的代码分割…"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "『Webpack系列』——路由懒加载的原理",
+      "item": "http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97%E8%B7%AF%E7%94%B1%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8E%9F%E7%90%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "『Webpack系列』——路由懒加载的原理",
+  "name": "『Webpack系列』——路由懒加载的原理",
+  "description": "说起路由懒加载，大家很快就知道怎么实现它，但是问到路由懒加载的原理，怕有一部分小伙伴是一头雾水了吧。下面带大家一起去理解路由懒加载的原理。路由懒加载也可以叫做路由组件懒加载，最常用的是通过import()来实现它。然后通过Webpack编译打包后，会把每个路由组件的代码分割…",
+  "keywords": [
+    "Webpack"
+  ],
+  "articleBody": "前言 说起路由懒加载，大家很快就知道怎么实现它，但是问到路由懒加载的原理，怕有一部分小伙伴是一头雾水了吧。下面带大家一起去理解路由懒加载的原理。\n路由懒加载也可以叫做路由组件懒加载，最常用的是通过import()来实现它。\njavascript\n代码解读\n复制代码\nfunction load(component) { return () =\u003e import(`views/${component}`) }\n然后通过Webpack编译打包后，会把每个路由组件的代码分割成一一个js文件，初始化时不会加载这些js文件，只当激活路由组件才会去加载对应的js文件。\n在这里先不管Webpack是怎么按路由组件分割代码，只管在Webpack编译后，怎么实现按需加载对应的路由组件js文件。\n一、准备工作 1、搭建项目 想要理解路由懒加载的原理，建议从最简单的项目开始，用Vue Cli3搭建一个项目，其中只包含一个路由组件。在main.js只引入vue-router，其它统统不要。\nmain.js\njavascript\n代码解读\n复制代码\nimport Vue from 'vue'; import App from './App.vue'; import Router from 'vue-router'; Vue.use(Router); //路由懒加载 function load(component) { return () =\u003e import(`views/${component}`) } // 路由配置 const router = new Router({ mode: 'history', base: process.env.BASE_URL, routes: [ { path: '/', name: 'home', component: load('Home'), meta: { title: '首页' } }, ] }); new Vue({ router, render: h =\u003e h(App) }).$mount('#app')\nviews/Home.vue\nxml\n代码解读\n复制代码\n{{tip}} 2、webpackChunkName 利用webpackChunkName，使编译打包后的js文件名字能和路由组件一一对应,修改一下load函数。\njavascript\n代码解读\n复制代码\nfunction load(component) { return () =\u003e import(/* webpackChunkName: \"[request]\" */ `views/${component}`) }\n3、去掉代码压缩混淆 去掉代码压缩混淆，便于我们阅读编译打包后的代码。在vue.config.js中配置\nini\n代码解读\n复制代码\nmodule.exports={ chainWebpack:config =\u003e { config.optimization.minimize(false); }, }\n4、npm run build 执行命令npm run build，编译打包后的dist文件结构如下所示\n其中Home.67f3cd34.js就是路由组件Home.vue编译打包后对应的js文件。\n二、分析index.html 从上面我们可以看到，先用link定义Home.js、app.js、chunk-vendors.js这些资源和web客户端的关系。\nref=preload：告诉浏览器这个资源要给我提前加载。 rel=prefetch：告诉浏览器这个资源空闲的时候给我加载一下。 as=script：告诉浏览器这个资源是script，提升加载的优先级。 然后在body里面加载了chunk-vendors.js、app.js这两个js资源。可以看出web客户端初始化时候就加载了这个两个js资源。\n三、分析chunk-vendors.js chunk-vendors.js可以称为项目公共模块集合，代码精简后如下所示，\njavascript\n代码解读\n复制代码\n(window[\"webpackJsonp\"] = window[\"webpackJsonp\"] || []).push([[\"chunk-vendors\"],{ \"01f9\":(function(module,exports,__webpack_require__){ ...//省略 }) ...//省略 }])\n从代码中可以看出，执行chunk-vendors.js，仅仅把下面这个数组push到window[\"webpackJsonp\"]中，而数组第二项是个对象，对象的每个value值是一个函数表达式，不会执行。就这样结束了，当然不是，我们带着window[\"webpackJsonp\"]去app.js中找找。\n四、分析app.js app.js可以称为项目的入口文件。\napp.js里面是一个自执行函数，通过搜索window[\"webpackJsonp\"]可以找到如下相关代码。\nini\n代码解读\n复制代码\n(function(modules){ //省略... var jsonpArray = window[\"webpackJsonp\"] = window[\"webpackJsonp\"] || []; var oldJsonpFunction = jsonpArray.push.bind(jsonpArray); jsonpArray.push = webpackJsonpCallback; jsonpArray = jsonpArray.slice(); for (var i = 0; i \u003c jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]); var parentJsonpFunction = oldJsonpFunction; //省略... }({ 0:(function(module, exports, __webpack_require__) { module.exports = __webpack_require__(\"56d7\"); }) //省略... }))\n先把window[\"webpackJsonp\"]赋值给jsonpArray。 把jsonpArray的push方法赋值给oldJsonpFunction。 用webpackJsonpCallback函数拦截jsopArray的push方法，也就是说调用window[\"webpackJsonp\"]的push方法都会执行webpackJsonpCallback函数。 将jsonpArray浅拷贝一下再赋值给jsonpArray。 因为执行chunk-vendors.js中的window[\"webpackJsonp\"].push时push方法还未被webpackJsonpCallback函数拦截，所以要循环jsonpArray，将每项作为参数传入webpackJsonpCallback函数并调用。 将jsonpArray的push方法再赋值给parentJsonpFunction。 1、webpackJsonpCallback函数 接下来我们看一下webpackJsonpCallback这个函数。\nini\n代码解读\n复制代码\n(function(modules){ function webpackJsonpCallback(data) { var chunkIds = data[0]; var moreModules = data[1]; var executeModules = data[2]; var moduleId, chunkId, i = 0, resolves = []; for (; i \u003c chunkIds.length; i++) { chunkId = chunkIds[i]; if (Object.prototype.hasOwnProperty.call(installedChunks, chunkId) \u0026\u0026 installedChunks[chunkId]) { resolves.push(installedChunks[chunkId][0]); } installedChunks[chunkId] = 0; } for (moduleId in moreModules) { if (Object.prototype.hasOwnProperty.call(moreModules, moduleId)) { modules[moduleId] = moreModules[moduleId]; } } if (parentJsonpFunction) parentJsonpFunction(data); while (resolves.length) { resolves.shift()(); } deferredModules.push.apply(deferredModules, executeModules || []); return checkDeferredModules(); }; var installedChunks = { \"app\": 0 }; //省略... }({ 0:(function(module, exports, __webpack_require__) { module.exports = __webpack_require__(\"56d7\"); }) //省略... }))\n想知道webpackJsonpCallback函数有什么作用，要先弄明白modules、installedChunks、deferredModules这三个变量的作用。\nmodule是指任意的代码块，chunk是webpack处理过程中被分组的module的合集。 modules缓存所有的module（代码块），调用modules中的module就可以执行里面的代码。 installedChunks缓存所有chunk的加载状态，如果installedChunks[chunk]为0，代表chunk已经加载完毕。 deferredModules中每项也是一个数组，例如[module,chunk1,chunk2,chunk3],其作用是如果要执行module，必须在chunk1、chunk2、chunk3都加载完毕后才能执行。 if (parentJsonpFunction) parentJsonpFunction(data)这句代码在多入口项目中才有作用，在前面提到过jsonpArray的push方法被赋值给parentJsonpFunction，调用parentJsonpFunction是真正把chunk中push方法中的参数push到window[\"webpackJsonp\"]这个数组中。\n比如说现在项目有两个入口，app.js和app1.js，app.js中缓存一些module，在app1.js就可以通过window[\"webpackJsonp\"]来调用这些module，调用代码如下。\ncss\n代码解读\n复制代码\nfor (var i = 0; i \u003c jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);\n再来理解webpackJsonpCallback函数是不是清楚了很多，接下来看一下checkDeferredModules这个函数。\n2、checkDeferredModules函数 ini\n代码解读\n复制代码\nvar deferredModules = []; var installedChunks = { \"app\": 0 } function checkDeferredModules() { var result; for (var i = 0; i \u003c deferredModules.length; i++) { var deferredModule = deferredModules[i]; var fulfilled = true; for (var j = 1; j \u003c deferredModule.length; j++) { var depId = deferredModule[j]; if (installedChunks[depId] !== 0) fulfilled = false; } if (fulfilled) { deferredModules.splice(i--, 1); result = __webpack_require__(__webpack_require__.s = deferredModule[0]); } } return result; }\n循环deferredModules，创建变量fulfilled表示deferredModule中的chunk加载情况，true表示全部加载完毕，false表示未全部加载完毕。 从j=1开始循环deferredModule中的chunk，因为deferredModule[0]是module，如果installedChunks[chunk]!==0，则这个chunk未加载完毕，把变量fulfilled设置为false。循环结束后返回result。 经循环deferredModule中的chunk并判断chunk的加载状态后，fulfilled还是为true，则调用__webpack_require__函数，将deferredModule[0]（module）作为参数传入执行。 deferredModules.splice(i--, 1),删除满足条件的deferredModule，并将i减一，其中i--是先使用i，然后在减一。 因为在webpackJsonpCallback函数中deferredModules为[]，所以回到主体函数继续往下看。\nini\n代码解读\n复制代码\ndeferredModules.push([0, \"chunk-vendors\"]); return checkDeferredModules();\n按上面逻辑分析后，会执行__webpack_require__(0),那么来看一下__webpack_require__这个函数。\n3、__webpack_require__函数 java\n代码解读\n复制代码\nvar installedModules = {}; function __webpack_require__(moduleId) { if (installedModules[moduleId]) { return installedModules[moduleId].exports; } var module = installedModules[moduleId] = { i: moduleId, l: false, exports: {} }; modules[moduleId].call(module.exports, module, module.exports, __webpack_require__); module.l = true; return module.exports; }\n从代码可知__webpack_require__就是一个执行module的方法。\ninstalledModules用来缓存module的执行状态。 通过moduleId在modules（在webpackJsonpCallback函数中缓存所有module的集合）获取对应的module用call方法执行。 将执行结果赋值到module.exports并返回。 所以执行__webpack_require__(0),其实就是执行下面的代码。\njavascript\n代码解读\n复制代码\n(function (module, exports, __webpack_require__) { module.exports = __webpack_require__(\"56d7\"); }),\n在里面又用__webpack_require__执行id为56d7的module，我们找到对应的module继续看，看一下里面关键的代码片段。\nlua\n代码解读\n复制代码\nfunction load(component) { return function () { return __webpack_require__(\"9dac\")(\"./\".concat(component)); }; } var routes = [{ path: '/', name: 'home', component: load('Home'), meta: { title: '首页' } }, { path: '*', redirect: { path: '/' } }];\n看到这里是不是非常熟悉了，就是配置路由的地方。load还是作为加载路由组件的函数，里面用__webpack_require__(\"9dac\")返回的方法来执行加载路由组件，我们来看一下__webpack_require__(\"9dac\")。\njavascript\n代码解读\n复制代码\n(function (module, exports, __webpack_require__) { var map = { \"./Home\": [ \"bb51\", \"Home\" ], \"./Home.vue\": [ \"bb51\", \"Home\" ] }; function webpackAsyncContext(req) { if (!__webpack_require__.o(map, req)) { return Promise.resolve().then(function () { var e = new Error(\"Cannot find module '\" + req + \"'\"); e.code = 'MODULE_NOT_FOUND'; throw e; }); } var ids = map[req], id = ids[0]; return __webpack_require__.e(ids[1]).then(function () { return __webpack_require__(id); }); } webpackAsyncContext.keys = function webpackAsyncContextKeys() { return Object.keys(map); }; webpackAsyncContext.id = \"9dac\"; module.exports = webpackAsyncContext; })\n4、webpackAsyncContext函数 其中的关键函数为webpackAsyncContext,调用load('Home')时，req为'./Home'，__webpack_require__.o方法为\nvbnet\n代码解读\n复制代码\n__webpack_require__.o = function (object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n这个方法就是判断在变量map中有没有key为./Home的项，如果没有抛出Cannot find module './Home'的错误。有执行__webpack_require__.e方法，参数为Home。\n5、webpack_require.e方法 ini\n代码解读\n复制代码\nvar installedChunks = { \"app\": 0 } __webpack_require__.p = \"/\"; function jsonpScriptSrc(chunkId) { return __webpack_require__.p + \"js/\" + ({ \"Home\": \"Home\" }[chunkId] || chunkId) + \".\" + { \"Home\": \"37ee624e\" }[chunkId] + \".js\" } __webpack_require__.e = function requireEnsure(chunkId) { var promises = []; var installedChunkData = installedChunks[chunkId]; if (installedChunkData !== 0) { if (installedChunkData) { promises.push(installedChunkData[2]); } else { var promise = new Promise(function (resolve, reject) { installedChunkData = installedChunks[chunkId] = [resolve, reject]; }); promises.push(installedChunkData[2] = promise); var script = document.createElement('script'); var onScriptComplete; script.charset = 'utf-8'; script.timeout = 120; if (__webpack_require__.nc) { script.setAttribute(\"nonce\", __webpack_require__.nc); } script.src = jsonpScriptSrc(chunkId); var error = new Error(); onScriptComplete = function (event) { // 避免IE内存泄漏。 script.onerror = script.onload = null; clearTimeout(timeout); var chunk = installedChunks[chunkId]; if (chunk !== 0) { if (chunk) { var errorType = event \u0026\u0026 (event.type === 'load' ? 'missing' : event.type); var realSrc = event \u0026\u0026 event.target \u0026\u0026 event.target.src; error.message = 'Loading chunk ' + chunkId + ' failed.\\n(' + errorType + ': ' + realSrc + ')'; error.name = 'ChunkLoadError'; error.type = errorType; error.request = realSrc; chunk[1](error); } installedChunks[chunkId] = undefined; } }; var timeout = setTimeout(function () { onScriptComplete({ type: 'timeout', target: script }); }, 120000); script.onerror = script.onload = onScriptComplete; document.head.appendChild(script); } } return Promise.all(promises); };\n__webpack_require__.e方法是实现懒加载的核心，在这个方法里面处理了三件事情。\n使用JSONP模式加载路由对应的js文件，也可以称为chunk。 设置chunk加载的三种状态并缓存在installedChunks中，防止chunk重复加载。 处理chunk加载超时和加载出错的场景。 chunk加载的三种状态\ninstalledChunks[chunkId]为0，代表该chunk已经加载完毕。 installedChunks[chunkId]为undefined，代表该chunk加载失败、加载超时、从未加载过。 installedChunks[chunkId]为Promise对象，代表该chunk正在加载。 chunk加载超时处理\nini\n代码解读\n复制代码\nscript.timeout = 120; var timeout = setTimeout(function () { onScriptComplete({ type: 'timeout', target: script }); }, 120000);\nscript.timeout = 120代表该chunk加载120秒后还没加载完毕则超时。 用setTimeout设置个120秒的计时器，在120秒后执行onScriptComplete({ type: 'timeout', target: script })。\n在看一下onScriptComplete函数\nini\n代码解读\n复制代码\nvar onScriptComplete = function (event) { // 避免IE内存泄漏。 script.onerror = script.onload = null; clearTimeout(timeout); var chunk = installedChunks[chunkId]; if (chunk !== 0) { if (chunk) { var errorType = event \u0026\u0026 (event.type === 'load' ? 'missing' : event.type); var realSrc = event \u0026\u0026 event.target \u0026\u0026 event.target.src; error.message = 'Loading chunk ' + chunkId + ' failed.\\n(' + errorType + ': ' + realSrc + ')'; error.name = 'ChunkLoadError'; error.type = errorType; error.request = realSrc; chunk[1](error); } installedChunks[chunkId] = undefined; } };\n此时chunkId为Home，加载是Home.js,代码是\njavascript\n代码解读\n复制代码\n(window[\"webpackJsonp\"] = window[\"webpackJsonp\"] || []).push([[\"Home\"],{ \"bb51\":(function(module, __webpack_exports__, __webpack_require__){ //省略... }) }]))\n在前面有提到window[\"webpackJsonp\"]的push方法被webpackJsonpCallback函数拦截了，如果Home.js加载成功会自动执行，随后会执行webpackJsonpCallback函数，其中有installedChunks[chunkId] = 0;会把installedChunks['Home']的值置为0。\n也就是说,如果Home.js加载超时了，就不能执行，就不能将installedChunks['Home']的值置为0，所以此时installedChunks['Home']的值还是Promise对象。那么就会进入以下代码执行，最后chunk[1](error)将错误抛出去。\nini\n代码解读\n复制代码\nvar chunk = installedChunks[chunkId]; if(chunk!==0){ if(chunk){ var errorType = event \u0026\u0026 (event.type === 'load' ? 'missing' : event.type); var realSrc = event \u0026\u0026 event.target \u0026\u0026 event.target.src; error.message = 'Loading chunk ' + chunkId + ' failed.\\n(' + errorType + ': ' + realSrc + ')'; error.name = 'ChunkLoadError'; error.type = errorType; error.request = realSrc; chunk[1](error); } }\nchunk[1]其实就是reject函数，在以下代码中给它赋值的。\nini\n代码解读\n复制代码\nvar promise = new Promise(function (resolve, reject) { installedChunkData = installedChunks[chunkId] = [resolve, reject]; });\nchunk加载失败处理\n加载失败分为两种情况，一是Home.js资源加载失败，二是资源加载成功了，但是执行Home.js里面代码出错了导致失败，所以chunk加载失败处理的代码要这么写\nini\n代码解读\n复制代码\nscript.onerror = script.onload = onScriptComplete;\n后面处理的方式和处理加载超时的一样。\n__webpack_require__.e最后返回是一个Promise对象。回到webpackAsyncContext函数中\njavascript\n代码解读\n复制代码\nreturn __webpack_require__.e(ids[1]).then(function () { return __webpack_require__(id); });\n__webpack_require__.e(ids[1])执行成功后，执行 __webpack_require__(id);，此时id为bb51。那么又回到__webpack_require__函数中了。在前面提过__webpack_require__函数的作用就是执行module。id为bb51的nodule是在Home.js内，在webpackJsonpCallback函数有以下代码\nscss\n代码解读\n复制代码\nfunction webpackJsonpCallback(data) { var moreModules = data[1]; for (moduleId in moreModules) { if (Object.prototype.hasOwnProperty.call(moreModules, moduleId)) { modules[moduleId] = moreModules[moduleId]; } } }\n五、分析Home.js Home.js\njavascript\n代码解读\n复制代码\n(window[\"webpackJsonp\"] = window[\"webpackJsonp\"] || []).push([[\"Home\"],{ \"bb51\":(function(module, __webpack_exports__, __webpack_require__){ //省略... }) }]))\n可以看出moreModules就是{\"bb51\":(function(module, __webpack_exports__, __webpack_require__){})},\n循环moreModules，把Home.js里面的module缓存到app.js里面的modules中。\n再看__webpack_require__函数中有这段代码\njava\n代码解读\n复制代码\nmodules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n这样就执行了Home.js里面的module，在module里面有渲染页面的一系列的方法，就把Home.vue这个路由组件页面渲染出来了。\n到这里路由组件懒加载的整个流程就结束了，也详细介绍了怎么加载chunk和怎么执行module。 ",
+  "wordCount" : "1143",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2020-06-04T00:00:00Z",
+  "dateModified": "2020-06-04T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "前端大骆"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/webpack%E7%B3%BB%E5%88%97%E8%B7%AF%E7%94%B1%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8E%9F%E7%90%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      『Webpack系列』——路由懒加载的原理
+    </h1>
+    <div class="post-description">
+      说起路由懒加载，大家很快就知道怎么实现它，但是问到路由懒加载的原理，怕有一部分小伙伴是一头雾水了吧。下面带大家一起去理解路由懒加载的原理。路由懒加载也可以叫做路由组件懒加载，最常用的是通过import()来实现它。然后通过Webpack编译打包后，会把每个路由组件的代码分割…
+    </div>
+    <div class="post-meta"><span title='2020-06-04 00:00:00 +0000 UTC'>六月 4, 2020</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;前端大骆&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e4%b8%80%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c" aria-label="一、准备工作">一、准备工作</a><ul>
+                        
+                <li>
+                    <a href="#1%e6%90%ad%e5%bb%ba%e9%a1%b9%e7%9b%ae" aria-label="1、搭建项目">1、搭建项目</a></li>
+                <li>
+                    <a href="#2webpackchunkname" aria-label="2、webpackChunkName">2、webpackChunkName</a></li>
+                <li>
+                    <a href="#3%e5%8e%bb%e6%8e%89%e4%bb%a3%e7%a0%81%e5%8e%8b%e7%bc%a9%e6%b7%b7%e6%b7%86" aria-label="3、去掉代码压缩混淆">3、去掉代码压缩混淆</a></li>
+                <li>
+                    <a href="#4npm-run-build" aria-label="4、npm run build">4、npm run build</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%88%86%e6%9e%90indexhtml" aria-label="二、分析index.html">二、分析index.html</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e5%88%86%e6%9e%90chunk-vendorsjs" aria-label="三、分析chunk-vendors.js">三、分析chunk-vendors.js</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e5%88%86%e6%9e%90appjs" aria-label="四、分析app.js">四、分析app.js</a><ul>
+                        
+                <li>
+                    <a href="#1webpackjsonpcallback%e5%87%bd%e6%95%b0" aria-label="1、webpackJsonpCallback函数">1、webpackJsonpCallback函数</a></li>
+                <li>
+                    <a href="#2checkdeferredmodules%e5%87%bd%e6%95%b0" aria-label="2、checkDeferredModules函数">2、checkDeferredModules函数</a></li>
+                <li>
+                    <a href="#3__webpack_require__%e5%87%bd%e6%95%b0" aria-label="3、__webpack_require__函数">3、__webpack_require__函数</a></li>
+                <li>
+                    <a href="#4webpackasynccontext%e5%87%bd%e6%95%b0" aria-label="4、webpackAsyncContext函数">4、webpackAsyncContext函数</a></li>
+                <li>
+                    <a href="#5webpack_requiree%e6%96%b9%e6%b3%95" aria-label="5、webpack_require.e方法">5、webpack_require.e方法</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%94%e5%88%86%e6%9e%90homejs" aria-label="五、分析Home.js">五、分析Home.js</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h3>
+<p>说起路由懒加载，大家很快就知道怎么实现它，但是问到路由懒加载的原理，怕有一部分小伙伴是一头雾水了吧。下面带大家一起去理解路由懒加载的原理。</p>
+<p>路由懒加载也可以叫做路由组件懒加载，最常用的是通过<code>import()</code>来实现它。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function load(component) {     return () =&gt; import(`views/${component}`) }</code></p>
+<p>然后通过Webpack编译打包后，会把每个路由组件的代码分割成一一个js文件，初始化时不会加载这些js文件，只当激活路由组件才会去加载对应的js文件。</p>
+<p>在这里先不管Webpack是怎么按路由组件分割代码，只管在Webpack编译后，怎么实现按需加载对应的路由组件js文件。</p>
+<h3 id="一准备工作">一、准备工作<a hidden class="anchor" aria-hidden="true" href="#一准备工作">#</a></h3>
+<h4 id="1搭建项目">1、搭建项目<a hidden class="anchor" aria-hidden="true" href="#1搭建项目">#</a></h4>
+<p>想要理解路由懒加载的原理，建议从最简单的项目开始，用Vue Cli3搭建一个项目，其中只包含一个路由组件。在main.js只引入vue-router，其它统统不要。</p>
+<p>main.js</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import Vue from 'vue'; import App from './App.vue'; import Router from 'vue-router'; Vue.use(Router); //路由懒加载 function load(component) {     return () =&gt; import(`views/${component}`) } // 路由配置 const router = new Router({     mode: 'history',     base: process.env.BASE_URL,     routes: [         {             path: '/',             name: 'home',             component: load('Home'),             meta: {                 title: '首页'             }         },     ] }); new Vue({     router,     render: h =&gt; h(App) }).$mount('#app')</code></p>
+<p>views/Home.vue</p>
+<p>xml</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;template&gt;     &lt;div&gt;         {{tip}}     &lt;/div&gt; &lt;/template&gt; &lt;script&gt; export default {     data(){         return {             tip:'欢迎使用Vue项目'         }     } } &lt;/script&gt;</code></p>
+<h4 id="2webpackchunkname">2、webpackChunkName<a hidden class="anchor" aria-hidden="true" href="#2webpackchunkname">#</a></h4>
+<p>利用<a href="https://link.juejin.cn?target=https%3A%2F%2Fwebpack.docschina.org%2Fapi%2Fmodule-methods%2F%23magic-comments" title="https://webpack.docschina.org/api/module-methods/#magic-comments">webpackChunkName</a>，使编译打包后的js文件名字能和路由组件一一对应,修改一下load函数。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function load(component) {     return () =&gt; import(/* webpackChunkName: &quot;[request]&quot; */ `views/${component}`) }</code></p>
+<h4 id="3去掉代码压缩混淆">3、去掉代码压缩混淆<a hidden class="anchor" aria-hidden="true" href="#3去掉代码压缩混淆">#</a></h4>
+<p>去掉代码压缩混淆，便于我们阅读编译打包后的代码。在vue.config.js中配置</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>module.exports={     chainWebpack:config =&gt; {         config.optimization.minimize(false);     }, }</code></p>
+<h4 id="4npm-run-build">4、npm run build<a hidden class="anchor" aria-hidden="true" href="#4npm-run-build">#</a></h4>
+<p>执行命令<code>npm run build</code>，编译打包后的dist文件结构如下所示</p>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/3/1727ad433ff01674~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>其中Home.67f3cd34.js就是路由组件Home.vue编译打包后对应的js文件。</p>
+<h3 id="二分析indexhtml">二、分析index.html<a hidden class="anchor" aria-hidden="true" href="#二分析indexhtml">#</a></h3>
+<p><img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/1/172705177cb52ad6~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+ 从上面我们可以看到，先用link定义Home.js、app.js、chunk-vendors.js这些资源和web客户端的关系。</p>
+<ul>
+<li><code>ref=preload</code>：告诉浏览器这个资源要给我提前加载。</li>
+<li><code>rel=prefetch</code>：告诉浏览器这个资源空闲的时候给我加载一下。</li>
+<li><code>as=script</code>：告诉浏览器这个资源是script，提升加载的优先级。</li>
+</ul>
+<p>然后在body里面加载了chunk-vendors.js、app.js这两个js资源。可以看出web客户端初始化时候就加载了这个两个js资源。</p>
+<h3 id="三分析chunk-vendorsjs">三、分析chunk-vendors.js<a hidden class="anchor" aria-hidden="true" href="#三分析chunk-vendorsjs">#</a></h3>
+<p>chunk-vendors.js可以称为项目公共模块集合，代码精简后如下所示，</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>(window[&quot;webpackJsonp&quot;] = window[&quot;webpackJsonp&quot;] || []).push([[&quot;chunk-vendors&quot;],{     &quot;01f9&quot;:(function(module,exports,__webpack_require__){         ...//省略     })     ...//省略 }])</code></p>
+<p>从代码中可以看出，执行chunk-vendors.js，仅仅把下面这个数组<code>push</code>到<code>window[&quot;webpackJsonp&quot;]</code>中，而数组第二项是个对象，对象的每个value值是一个函数表达式，不会执行。就这样结束了，当然不是，我们带着<code>window[&quot;webpackJsonp&quot;]</code>去app.js中找找。</p>
+<h3 id="四分析appjs">四、分析app.js<a hidden class="anchor" aria-hidden="true" href="#四分析appjs">#</a></h3>
+<p>app.js可以称为项目的入口文件。</p>
+<p>app.js里面是一个自执行函数，通过搜索<code>window[&quot;webpackJsonp&quot;]</code>可以找到如下相关代码。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>(function(modules){     //省略...     var jsonpArray = window[&quot;webpackJsonp&quot;] = window[&quot;webpackJsonp&quot;] || [];     var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);     jsonpArray.push = webpackJsonpCallback;     jsonpArray = jsonpArray.slice();     for (var i = 0; i &lt; jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);     var parentJsonpFunction = oldJsonpFunction;     //省略... }({     0:(function(module, exports, __webpack_require__) {         module.exports = __webpack_require__(&quot;56d7&quot;);     })     //省略... }))</code></p>
+<ul>
+<li>先把<code>window[&quot;webpackJsonp&quot;]</code>赋值给<code>jsonpArray</code>。</li>
+<li>把<code>jsonpArray</code>的<code>push</code>方法赋值给<code>oldJsonpFunction</code>。</li>
+<li>用<code>webpackJsonpCallback</code>函数拦截<code>jsopArray</code>的<code>push</code>方法，也就是说调用<code>window[&quot;webpackJsonp&quot;]</code>的<code>push</code>方法都会执行<code>webpackJsonpCallback</code>函数。</li>
+<li>将<code>jsonpArray</code>浅拷贝一下再赋值给<code>jsonpArray</code>。</li>
+<li>因为执行chunk-vendors.js中的<code>window[&quot;webpackJsonp&quot;].push</code>时<code>push</code>方法还未被<code>webpackJsonpCallback</code>函数拦截，所以要循环<code>jsonpArray</code>，将每项作为参数传入<code>webpackJsonpCallback</code>函数并调用。</li>
+<li>将<code>jsonpArray</code>的<code>push</code>方法再赋值给<code>parentJsonpFunction</code>。</li>
+</ul>
+<h4 id="1webpackjsonpcallback函数">1、webpackJsonpCallback函数<a hidden class="anchor" aria-hidden="true" href="#1webpackjsonpcallback函数">#</a></h4>
+<p>接下来我们看一下<code>webpackJsonpCallback</code>这个函数。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>(function(modules){     function webpackJsonpCallback(data) {         var chunkIds = data[0];         var moreModules = data[1];         var executeModules = data[2];         var moduleId, chunkId, i = 0, resolves = [];         for (; i &lt; chunkIds.length; i++) {             chunkId = chunkIds[i];             if (Object.prototype.hasOwnProperty.call(installedChunks, chunkId)             &amp;&amp; installedChunks[chunkId]) {                 resolves.push(installedChunks[chunkId][0]);             }             installedChunks[chunkId] = 0;         }         for (moduleId in moreModules) {             if (Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {                 modules[moduleId] = moreModules[moduleId];             }         }         if (parentJsonpFunction) parentJsonpFunction(data);         while (resolves.length) {             resolves.shift()();         }         deferredModules.push.apply(deferredModules, executeModules || []);         return checkDeferredModules();     };     var installedChunks = {         &quot;app&quot;: 0     };     //省略... }({     0:(function(module, exports, __webpack_require__) {         module.exports = __webpack_require__(&quot;56d7&quot;);     })     //省略... }))</code></p>
+<p>想知道<code>webpackJsonpCallback</code>函数有什么作用，要先弄明白<code>modules</code>、<code>installedChunks</code>、<code>deferredModules</code>这三个变量的作用。</p>
+<ul>
+<li>module是指任意的代码块，chunk是webpack处理过程中被分组的module的合集。</li>
+<li><code>modules</code>缓存所有的module（代码块），调用<code>modules</code>中的module就可以执行里面的代码。</li>
+<li><code>installedChunks</code>缓存所有chunk的加载状态，如果<code>installedChunks[chunk]</code>为0，代表chunk已经加载完毕。</li>
+<li><code>deferredModules</code>中每项也是一个数组，例如<code>[module,chunk1,chunk2,chunk3]</code>,其作用是如果要执行module，必须在chunk1、chunk2、chunk3都加载完毕后才能执行。</li>
+</ul>
+<p><code>if (parentJsonpFunction) parentJsonpFunction(data)</code>这句代码在多入口项目中才有作用，在前面提到过<code>jsonpArray</code>的<code>push</code>方法被赋值给<code>parentJsonpFunction</code>，调用<code>parentJsonpFunction</code>是真正把chunk中push方法中的参数push到<code>window[&quot;webpackJsonp&quot;]</code>这个数组中。</p>
+<p>比如说现在项目有两个入口，app.js和app1.js，app.js中缓存一些module，在app1.js就可以通过<code>window[&quot;webpackJsonp&quot;]</code>来调用这些module，调用代码如下。</p>
+<p>css</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>for (var i = 0; i &lt; jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);</code></p>
+<p>再来理解<code>webpackJsonpCallback</code>函数是不是清楚了很多，接下来看一下<code>checkDeferredModules</code>这个函数。</p>
+<h4 id="2checkdeferredmodules函数">2、checkDeferredModules函数<a hidden class="anchor" aria-hidden="true" href="#2checkdeferredmodules函数">#</a></h4>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var deferredModules = []; var installedChunks = {     &quot;app&quot;: 0 } function checkDeferredModules() {     var result;     for (var i = 0; i &lt; deferredModules.length; i++) {         var deferredModule = deferredModules[i];         var fulfilled = true;         for (var j = 1; j &lt; deferredModule.length; j++) {             var depId = deferredModule[j];             if (installedChunks[depId] !== 0) fulfilled = false;         }         if (fulfilled) {             deferredModules.splice(i--, 1);             result = __webpack_require__(__webpack_require__.s = deferredModule[0]);         }     }     return result; }</code></p>
+<ul>
+<li>循环<code>deferredModules</code>，创建变量<code>fulfilled</code>表示<code>deferredModule</code>中的chunk加载情况，<code>true</code>表示全部加载完毕，<code>false</code>表示未全部加载完毕。</li>
+<li>从<code>j=1</code>开始循环<code>deferredModule</code>中的chunk，因为<code>deferredModule[0]</code>是module，如果<code>installedChunks[chunk]!==0</code>，则这个chunk未加载完毕，把变量<code>fulfilled</code>设置为<code>false</code>。循环结束后返回result。</li>
+<li>经循环<code>deferredModule</code>中的chunk并判断chunk的加载状态后，<code>fulfilled</code>还是为true，则调用<code>__webpack_require__</code>函数，将<code>deferredModule[0]</code>（module）作为参数传入执行。</li>
+<li><code>deferredModules.splice(i--, 1)</code>,删除满足条件的deferredModule，并将i减一，其中<code>i--</code>是先使用i，然后在减一。</li>
+</ul>
+<p>因为在<code>webpackJsonpCallback</code>函数中<code>deferredModules</code>为<code>[]</code>，所以回到主体函数继续往下看。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>deferredModules.push([0, &quot;chunk-vendors&quot;]); return checkDeferredModules();</code></p>
+<p>按上面逻辑分析后，会执行<code>__webpack_require__(0)</code>,那么来看一下<code>__webpack_require__</code>这个函数。</p>
+<h4 id="3__webpack_require__函数">3、__webpack_require__函数<a hidden class="anchor" aria-hidden="true" href="#3__webpack_require__函数">#</a></h4>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var installedModules = {}; function __webpack_require__(moduleId) {     if (installedModules[moduleId]) {         return installedModules[moduleId].exports;     }     var module = installedModules[moduleId] = {         i: moduleId,         l: false,         exports: {}     };     modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);     module.l = true;     return module.exports; }</code></p>
+<p>从代码可知<code>__webpack_require__</code>就是一个执行module的方法。</p>
+<ul>
+<li><code>installedModules</code>用来缓存module的执行状态。</li>
+<li>通过moduleId在modules（在<code>webpackJsonpCallback</code>函数中缓存所有module的集合）获取对应的module用call方法执行。</li>
+<li>将执行结果赋值到module.exports并返回。</li>
+</ul>
+<p>所以执行<code>__webpack_require__(0)</code>,其实就是执行下面的代码。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>(function (module, exports, __webpack_require__) {     module.exports = __webpack_require__(&quot;56d7&quot;); }),</code></p>
+<p>在里面又用<code>__webpack_require__</code>执行id为56d7的module，我们找到对应的module继续看，看一下里面关键的代码片段。</p>
+<p>lua</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function load(component) {     return function () {         return __webpack_require__(&quot;9dac&quot;)(&quot;./&quot;.concat(component));     }; } var routes = [{     path: '/',     name: 'home',     component: load('Home'),     meta: {         title: '首页'     } }, {     path: '*',     redirect: {         path: '/'     } }];</code></p>
+<p>看到这里是不是非常熟悉了，就是配置路由的地方。<code>load</code>还是作为加载路由组件的函数，里面用<code>__webpack_require__(&quot;9dac&quot;)</code>返回的方法来执行加载路由组件，我们来看一下<code>__webpack_require__(&quot;9dac&quot;)</code>。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>(function (module, exports, __webpack_require__) {     var map = {         &quot;./Home&quot;: [             &quot;bb51&quot;,             &quot;Home&quot;         ],         &quot;./Home.vue&quot;: [             &quot;bb51&quot;,             &quot;Home&quot;         ]     };     function webpackAsyncContext(req) {         if (!__webpack_require__.o(map, req)) {             return Promise.resolve().then(function () {                 var e = new Error(&quot;Cannot find module '&quot; + req + &quot;'&quot;);                 e.code = 'MODULE_NOT_FOUND';                 throw e;             });         }         var ids = map[req], id = ids[0];         return __webpack_require__.e(ids[1]).then(function () {             return __webpack_require__(id);         });     }     webpackAsyncContext.keys = function webpackAsyncContextKeys() {         return Object.keys(map);     };     webpackAsyncContext.id = &quot;9dac&quot;;     module.exports = webpackAsyncContext; })</code></p>
+<h4 id="4webpackasynccontext函数">4、webpackAsyncContext函数<a hidden class="anchor" aria-hidden="true" href="#4webpackasynccontext函数">#</a></h4>
+<p>其中的关键函数为<code>webpackAsyncContext</code>,调用<code>load('Home')</code>时，<code>req</code>为<code>'./Home'</code>，<code>__webpack_require__.o</code>方法为</p>
+<p>vbnet</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>__webpack_require__.o = function (object, property) {     return Object.prototype.hasOwnProperty.call(object, property); };</code></p>
+<p>这个方法就是判断在变量<code>map</code>中有没有key为<code>./Home</code>的项，如果没有抛出<code>Cannot find module './Home'</code>的错误。有执行<code>__webpack_require__.e</code>方法，参数为<code>Home</code>。</p>
+<h4 id="5webpack_requiree方法">5、<strong>webpack_require</strong>.e方法<a hidden class="anchor" aria-hidden="true" href="#5webpack_requiree方法">#</a></h4>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var installedChunks = {     &quot;app&quot;: 0 } __webpack_require__.p = &quot;/&quot;; function jsonpScriptSrc(chunkId) {     return __webpack_require__.p + &quot;js/&quot; + ({ &quot;Home&quot;: &quot;Home&quot; }[chunkId] || chunkId) +     &quot;.&quot; + { &quot;Home&quot;: &quot;37ee624e&quot; }[chunkId] + &quot;.js&quot; } __webpack_require__.e = function requireEnsure(chunkId) {     var promises = [];     var installedChunkData = installedChunks[chunkId];     if (installedChunkData !== 0) {         if (installedChunkData) {             promises.push(installedChunkData[2]);         } else {             var promise = new Promise(function (resolve, reject) {                 installedChunkData = installedChunks[chunkId] = [resolve, reject];             });             promises.push(installedChunkData[2] = promise);             var script = document.createElement('script');             var onScriptComplete;             script.charset = 'utf-8';             script.timeout = 120;             if (__webpack_require__.nc) {                 script.setAttribute(&quot;nonce&quot;, __webpack_require__.nc);             }             script.src = jsonpScriptSrc(chunkId);             var error = new Error();             onScriptComplete = function (event) {                 // 避免IE内存泄漏。                 script.onerror = script.onload = null;                 clearTimeout(timeout);                 var chunk = installedChunks[chunkId];                 if (chunk !== 0) {                     if (chunk) {                         var errorType = event &amp;&amp;                          (event.type === 'load' ? 'missing' : event.type);                         var realSrc = event &amp;&amp; event.target &amp;&amp; event.target.src;                         error.message = 'Loading chunk ' + chunkId                          + ' failed.\n(' + errorType + ': ' + realSrc + ')';                         error.name = 'ChunkLoadError';                         error.type = errorType;                         error.request = realSrc;                         chunk[1](error);                     }                     installedChunks[chunkId] = undefined;                 }             };             var timeout = setTimeout(function () {                 onScriptComplete({ type: 'timeout', target: script });             }, 120000);             script.onerror = script.onload = onScriptComplete;             document.head.appendChild(script);         }     }     return Promise.all(promises); };</code></p>
+<p><strong><code>__webpack_require__.e</code>方法是实现懒加载的核心</strong>，在这个方法里面处理了三件事情。</p>
+<ul>
+<li>使用JSONP模式加载路由对应的js文件，也可以称为chunk。</li>
+<li>设置chunk加载的三种状态并缓存在<code>installedChunks</code>中，防止chunk重复加载。</li>
+<li>处理chunk加载超时和加载出错的场景。</li>
+</ul>
+<p>chunk加载的三种状态</p>
+<ul>
+<li><code>installedChunks[chunkId]</code>为<code>0</code>，代表该chunk已经加载完毕。</li>
+<li><code>installedChunks[chunkId]</code>为<code>undefined</code>，代表该chunk加载失败、加载超时、从未加载过。</li>
+<li><code>installedChunks[chunkId]</code>为<code>Promise</code>对象，代表该chunk正在加载。</li>
+</ul>
+<p>chunk加载超时处理</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>script.timeout = 120; var timeout = setTimeout(function () {     onScriptComplete({ type: 'timeout', target: script }); }, 120000);</code></p>
+<p><code>script.timeout = 120</code>代表该chunk加载120秒后还没加载完毕则超时。 用<code>setTimeout</code>设置个120秒的计时器，在120秒后执行<code>onScriptComplete({ type: 'timeout', target: script })</code>。</p>
+<p>在看一下<code>onScriptComplete</code>函数</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var onScriptComplete = function (event) {     // 避免IE内存泄漏。     script.onerror = script.onload = null;     clearTimeout(timeout);     var chunk = installedChunks[chunkId];     if (chunk !== 0) {         if (chunk) {             var errorType = event &amp;&amp; (event.type === 'load' ? 'missing' : event.type);             var realSrc = event &amp;&amp; event.target &amp;&amp; event.target.src;             error.message = 'Loading chunk ' + chunkId              + ' failed.\n(' + errorType + ': ' + realSrc + ')';             error.name = 'ChunkLoadError';             error.type = errorType;             error.request = realSrc;             chunk[1](error);         }         installedChunks[chunkId] = undefined;     } };</code></p>
+<p>此时chunkId为<code>Home</code>，加载是Home.js,代码是</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>(window[&quot;webpackJsonp&quot;] = window[&quot;webpackJsonp&quot;] || []).push([[&quot;Home&quot;],{     &quot;bb51&quot;:(function(module, __webpack_exports__, __webpack_require__){         //省略...     }) }]))</code></p>
+<p>在前面有提到<code>window[&quot;webpackJsonp&quot;]</code>的push方法被<code>webpackJsonpCallback</code>函数拦截了，如果Home.js加载成功会自动执行，随后会执行<code>webpackJsonpCallback</code>函数，其中有<code>installedChunks[chunkId] = 0;</code>会把<code>installedChunks['Home']</code>的值置为0。</p>
+<p>也就是说,如果Home.js加载超时了，就不能执行，就不能将<code>installedChunks['Home']</code>的值置为0，所以此时<code>installedChunks['Home']</code>的值还是<code>Promise</code>对象。那么就会进入以下代码执行，最后<code>chunk[1](error)</code>将错误抛出去。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var chunk = installedChunks[chunkId]; if(chunk!==0){     if(chunk){         var errorType = event &amp;&amp; (event.type === 'load' ? 'missing' : event.type);         var realSrc = event &amp;&amp; event.target &amp;&amp; event.target.src;         error.message = 'Loading chunk ' + chunkId          + ' failed.\n(' + errorType + ': ' + realSrc + ')';         error.name = 'ChunkLoadError';         error.type = errorType;         error.request = realSrc;         chunk[1](error);     } }</code></p>
+<p><code>chunk[1]</code>其实就是reject函数，在以下代码中给它赋值的。</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>var promise = new Promise(function (resolve, reject) {     installedChunkData = installedChunks[chunkId] = [resolve, reject]; });</code></p>
+<p>chunk加载失败处理</p>
+<p>加载失败分为两种情况，一是Home.js资源加载失败，二是资源加载成功了，但是执行Home.js里面代码出错了导致失败，所以chunk加载失败处理的代码要这么写</p>
+<p>ini</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>script.onerror = script.onload = onScriptComplete;</code></p>
+<p>后面处理的方式和处理加载超时的一样。</p>
+<p><code>__webpack_require__.e</code>最后返回是一个<code>Promise</code>对象。回到<code>webpackAsyncContext</code>函数中</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>return __webpack_require__.e(ids[1]).then(function () {     return __webpack_require__(id); });</code></p>
+<p><code>__webpack_require__.e(ids[1])</code>执行成功后，执行 <code>__webpack_require__(id);</code>，此时id为bb51。那么又回到<code>__webpack_require__</code>函数中了。在前面提过<code>__webpack_require__</code>函数的作用就是执行module。id为bb51的nodule是在Home.js内，在<code>webpackJsonpCallback</code>函数有以下代码</p>
+<p>scss</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>function webpackJsonpCallback(data) {     var moreModules = data[1];     for (moduleId in moreModules) {         if (Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {             modules[moduleId] = moreModules[moduleId];         }     } }</code></p>
+<h3 id="五分析homejs">五、分析Home.js<a hidden class="anchor" aria-hidden="true" href="#五分析homejs">#</a></h3>
+<p>Home.js</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>(window[&quot;webpackJsonp&quot;] = window[&quot;webpackJsonp&quot;] || []).push([[&quot;Home&quot;],{     &quot;bb51&quot;:(function(module, __webpack_exports__, __webpack_require__){         //省略...     }) }]))</code></p>
+<p>可以看出moreModules就是<code>{&quot;bb51&quot;:(function(module, __webpack_exports__, __webpack_require__){})}</code>,</p>
+<p>循环moreModules，把Home.js里面的module缓存到app.js里面的modules中。</p>
+<p>再看<code>__webpack_require__</code>函数中有这段代码</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);</code></p>
+<p>这样就执行了Home.js里面的module，在module里面有渲染页面的一系列的方法，就把Home.vue这个路由组件页面渲染出来了。</p>
+<p>到这里路由组件懒加载的整个流程就结束了，也详细介绍了怎么加载chunk和怎么执行module。 <img loading="lazy" src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/6/23/172e1c51b21ae306~tplv-t2oaga2asx-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/webpack/">Webpack</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E4%B8%80%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%9A%84%E6%A8%A1%E5%9D%97%E4%B8%8E%E6%A1%86%E6%9E%B6/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>一、聊天机器人的模块与框架</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/2023~~%E4%B8%80%E6%9C%88%E4%BB%BD/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>2023~~一月份</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——路由懒加载的原理 on x"
+            href="https://x.com/intent/tweet/?text=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&amp;hashtags=Webpack">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——路由懒加载的原理 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&amp;title=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86&amp;summary=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——路由懒加载的原理 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&title=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——路由懒加载的原理 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——路由懒加载的原理 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——路由懒加载的原理 on telegram"
+            href="https://telegram.me/share/url?text=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 『Webpack系列』——路由懒加载的原理 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e3%80%8eWebpack%e7%b3%bb%e5%88%97%e3%80%8f%e2%80%94%e2%80%94%e8%b7%af%e7%94%b1%e6%87%92%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8e%9f%e7%90%86&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fwebpack%25E7%25B3%25BB%25E5%2588%2597%25E8%25B7%25AF%25E7%2594%25B1%25E6%2587%2592%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

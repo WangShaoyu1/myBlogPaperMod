@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>从源码入手，手把手带你剖析Java类加载的双亲委派 | PaperMod</title>
+<meta name="keywords" content="面试, Java">
+<meta name="description" content="文章首发于博客：布袋青年，原文链接直达：Java类加载器剖析。Java的类加载作为核心特性之一拥有众多的特性，理解和掌握类的加载方式和机制能够更好的了解程序的执行流程，本篇文章将详细介绍Java">
+<meta name="author" content="烽火戏诸诸诸侯">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%85%A5%E6%89%8B%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%A6%E4%BD%A0%E5%89%96%E6%9E%90java%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%85%A5%E6%89%8B%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%A6%E4%BD%A0%E5%89%96%E6%9E%90java%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="从源码入手，手把手带你剖析Java类加载的双亲委派" />
+<meta property="og:description" content="文章首发于博客：布袋青年，原文链接直达：Java类加载器剖析。Java的类加载作为核心特性之一拥有众多的特性，理解和掌握类的加载方式和机制能够更好的了解程序的执行流程，本篇文章将详细介绍Java" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%85%A5%E6%89%8B%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%A6%E4%BD%A0%E5%89%96%E6%9E%90java%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-08-15T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="从源码入手，手把手带你剖析Java类加载的双亲委派"/>
+<meta name="twitter:description" content="文章首发于博客：布袋青年，原文链接直达：Java类加载器剖析。Java的类加载作为核心特性之一拥有众多的特性，理解和掌握类的加载方式和机制能够更好的了解程序的执行流程，本篇文章将详细介绍Java"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "从源码入手，手把手带你剖析Java类加载的双亲委派",
+      "item": "http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%85%A5%E6%89%8B%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%A6%E4%BD%A0%E5%89%96%E6%9E%90java%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从源码入手，手把手带你剖析Java类加载的双亲委派",
+  "name": "从源码入手，手把手带你剖析Java类加载的双亲委派",
+  "description": "文章首发于博客：布袋青年，原文链接直达：Java类加载器剖析。Java的类加载作为核心特性之一拥有众多的特性，理解和掌握类的加载方式和机制能够更好的了解程序的执行流程，本篇文章将详细介绍Java",
+  "keywords": [
+    "面试", "Java"
+  ],
+  "articleBody": "文章首发于博客：布袋青年，原文链接直达：Java类加载器剖析。\nJava 的类加载作为核心特性之一拥有众多的特性，理解和掌握类的加载方式和机制能够更好的了解程序的执行流程，本篇文章将详细介绍 Java 的类加载机制与其相关必备知识。\n下面就让我们直接开始吧\n一、文件编译 在介绍类加载器之前先介绍一下 Java 文件的基本编译与执行命令以供后续使用。\n1. Class编译 文件编译 通过 javac 命令将 .java 文件编译为 .class 文件，默认输出到当前目录。\nbash\n代码解读\n复制代码\njavac MyBean.java\n编码处理 当 Java 文件中包含中文等编码时，在编译时需要指定编码格式，否则将会编译异常。\nbash\n代码解读\n复制代码\njavac -encoding utf-8 MyBean.java\n包名处理 默认 javac 命令编译的文件是不包含包路径的，通过参数 -d 编译生成的文件将在同级目录创建包名层级文件夹。其中 . 表示保存至当前目录下，可根据需要指定目录。\nbash\n代码解读\n复制代码\njavac -d . MyBean.java\n依赖处理 如需要的编译的类中引用了其它类，在编译时则需要通过 -cp 指定依赖类的 class 文件。\nbash\n代码解读\n复制代码\njavac -cp ./Denpend.class -d . MyBean.java\n编译版本 当编程环境中存在多个 JDK 版本时，可以通过输入完整路径从而指定 JDK 编译版本。\nbash\n代码解读\n复制代码\n\"C:\\Program Files\\Java\\jdk1.8.0_202\\bin\\javac\" -d MyBean.java\n2. 文件执行 Class运行 Class 文件运行较为简单，直接通过 java + 文件名 即可，需要注意的是若文件时编译设置了包名则运行时同样需要指定包名。\nbash\n代码解读\n复制代码\n# 运行不含包名 class 文件 java MyBean # 运行含包名 class 文件 java xyz.ibudai.MyBean\nJar运行 运行 Jar 文件与 运行 Class 文件类似，只需添加 -jar 参数即可。\nbash\n代码解读\n复制代码\njava -jar jar-name.jar\n二、加载机制 1. 加载过程 所谓类加载过程，简单一句话而言即将编译完成的 class 文件通过特定的方式载入 JVM 虚拟机内存中，之后应该就可以在虚拟机内存中进行读取。\n类加载器将字节码文件加载到内存中主要经历三个阶段 加载 -\u003e 连接 -\u003e 实例化。\n注意的是 .class 并不是一次性全部加载到内存中，而是在 Java 应用程序需要的时候才会加载。也就是说当 JVM 请求一个类进行加载的时候，类加载器就会尝试查找定位这个类，当查找对应的类之后将他的完全限定类定义加载到运行时数据区中。\n2. 加载阶段 主要负责查找并且加载类的二进制数据文件，其实就是 class 文件，简单而言即将编译后的 class 文件以二进制的形式加载进 JVM 内存中。\n3. 连接阶段 主要是确保类文件的正确性，比如 class 的版本，class 文件的魔术因子是否正确。\n(1) 验证(文件)\n验证文件格式，是否以魔数 0xCAFEBABE 开头。 主、次版本号是否在当前 Java 虚拟机接受范围之内。 常量池的常量中是否有不被支持的常量类型（检查常量 tag 标志）。 文件中各个部分及文件本身是否有被删除的或附加的其他信息。 (2) 验证(元数据)\n类是否有父类（除了 java.lang.Object 之外，所有的类都应当有父类）。 类的父类是否继承了不允许被继承的类（被final修饰的类）。 如果这个类不是抽象类，是否实现了其父类或接口之中要求实现的所有方法。 类中的字段、方法是否与父类产生矛盾（例如覆盖了父类的 final 字段，或者出现不符合规则的方法重载，例如方法参数都一致，但返回值类型却不同等）。 (3) 验证(字节码)\n通过数据流分析和控制流分析，确定程序语义是合法的、符合逻辑的。 保证任何跳转指令都不会跳转到方法体以外的字节码指令上。 (4) 准备\n准备阶段是正式为类中定义的变量（即静态变量，被 static 修饰的变量）分配内存并设置类变量初始值的阶段。当前阶段在进行内存分配的仅包括类变量，而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。\n(5) 解析\n解析阶段是 Java 虚拟机将常量池内的符号引用替换为直接引用的过程。\n4. 初始化阶段 准备阶段时，变量已经赋过一次系统要求的初始零值，而在初始化阶段，则会根据程序员通过程序编码制定的主观计划去初始化类变量和其他资源。除了在加载阶段用户应用程序可以通过自定义类加载器的方式局部参与外，其余动作都完全由 Java 虚拟机来主导控制。\n如定义的 static int i = 123; 等类变量在准备阶段已经完成初始化，而类的普通成员变量如 int j; 仍未进行初始化，因此经过初始化阶段之后 int j; 则会初始化为 int j = 0;，类中其它普通成员变量同理。\n三、类加载器 1. 基本类别 在 Java 中类加载器分为以下四类，各类加载器说明如下：\n加载器\n描述\nBootstrapClassLoader\n顶层加载器，主要负责加载核心的类库(java.lang.*等)。\nExtClassLoader\n主要负责加载 jre/lib/ext 目录下的一些扩展的 JAR 包。\nAppClassLoader\n主要负责加载应用程序的主函数 main 等。\nCustomClassLoader\n自定义类加载器，即我们继承 ClassLoad 而自定义加载器，属于最底层加载器。\n2. 命名空间 每一个类加载器实例都有各自的命名空间，命名空间是由该加载器及其所有父加载器所构成的，因此在每个类加载器中同一个 class 都是独一无二的。\n在类加载器进行类加载的时候，首先会到加载记录表也就是缓存中，查看该类是否已经被加载过了，如果已经被加载过了就不会重复加载，否则将会认为其是首次加载。但是使用不同的类加载器，或者同一个类加载器的不同实例，去加载同一个 class 则会在堆内存和方法区产生多个 class 的对象。\n3. 运行时包 在 JVM 运行时 class 会有一个运行时包，运行时的包是由类加载器的命名空间和类的全限定名称共同组成的，在判断类的属性或方法等作用域是也是基于运行时包进行的。\n例如由系统类加载加载的 com.example.Test 类其对应的运行时包则为：\njava\n代码解读\n复制代码\nBootstrapclassLoader.ExtclassLoader.Appclassloader.com.example.Test\n4. 初始类加载器 根据 JVM 规范的规定，在类的加载过程中，所有参与的类加载器即使没有亲自加载过该类也都会被标识为该类的初始类加载器。\n在基于双亲委派的机制下，类依次经过了系统类加载器、扩展类加载器、根类加载器，则这些加载器都称为被加载类的初始类加载器，JVM 会在每一个类加载器维护的列表中添加该 class 类型。\n以 String 类为例，根据双亲委派机制其依次经过了三个类加载器，因此对应的初始类加载如下：\n5. 加载类型 类加载器负责从不同的源（例如文件系统、网络、内存等）加载类的字节码，如最常见的 .class 文件，将其转换为 Java 对象使得程序可以使用这些类。\n类加载器同时还负责解析类的依赖关系，即查找并加载被当前类所依赖的其他类，以及确定每个类应该由哪个类加载器来加载。\nJava 类加载机制具有以下特点：\n懒加载: 只有在需要使用类时才会加载该类，以节省内存和加载时间。 双亲委派: 类加载器会按照层次结构来加载类，即先委托父类加载器加载，如果父类加载器无法加载则再交给自己来加载。 缓存机制: 已经加载过的类会被缓存，避免重复加载同一类。 破坏双亲委派机制: 允许用户自定义类加载器来加载类，从而可以实现一些自定义的类加载策略，例如热部署、插件化等。 四、双亲委派 双亲委派机制是类加载中非常重要的一类加载机制，通过该机制保证了类的安全完整性。\n默认 JDK 中使用的即双亲委派机制，你可以在 java.lang 包下找到 ClassLoader 类，下面就从源码的角度分析双亲委派机制。\n1. 加载方式 在 Java 中加载类可以共有 Class.forName() 与 Classloader.laodClass() 两种方式，下面分别进行介绍。\nClass.forName() 通过 Class.forName() 方式加载不仅会将当前类加载进内存并且会初始化对象，可在需被加载的类中添加 static 静态块打印提示，当使用 Class.forName() 加载类时可以发现静态块代码将会被执行，说明此时创建了对象。\n若想实现类加载但不创建对象可通过 Class.forName(className, false, classLoader) 方法加载，其中第二个参数用于指定是否创建对象，第三个参数指定类加载器。\njava\n代码解读\n复制代码\npublic void initDemo2() { String className = \"xyz.ibudai.bean.User\"; ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); try { Class\u003c?\u003e clazz1 = Class.forName(className); Class\u003c?\u003e clazz2 = Class.forName(className, false, classLoader); System.out.println(\"clazz1 loader: \" + clazz1.getClassLoader()); System.out.println(\"clazz2 loader: \" + clazz2.getClassLoader()); } catch (ClassNotFoundException e) { e.printStackTrace(); } }\nClassloader.laodClass() 通过 laodClass() 方式加载并不会解析类只实现加载并不会创建相应对象，只有当对象被引用时才会初始化。\njava\n代码解读\n复制代码\npublic void initDemo2() { String className = \"xyz.ibudai.bean.User\"; ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); try { Class\u003c?\u003e clazz3 = classLoader.loadClass(className); System.out.println(\"clazz3 loader: \" + clazz3.getClassLoader()); } catch (Exception e) { e.printStackTrace(); } }\n需要注意一点 java.lang.String 等核心类库是在 JVM 启动时加载的，它们位于 Java 虚拟机的核心类库中，并由 Bootstrap ClassLoader 加载。因此在获取这些类的类加载器时，结果通常为 null ，需要注意的是 null 表示类加载器未知或者无法确定，而非没有类加载器。\n2. 方法描述 在解析核心源码之前先过一遍下面这个表格，其中各方法在后面将会涉及到，在此简单描述其作用功能，后续不作详细描述。\n方法\n作用\ngetClassLoadingLock()\n防止类被同时加载。\nfindLoadedClass()\n判断类是否加载过，若加载过则返回加载器否则返回 null。\nfindBootstrapClassOrNull()\n委托父加载器进行加载，不存父加载器返回 null。\nfindClass()\n根据完整类名读取 .class 文件并调用 defineClass() 查找对应的 java.lang.Class 对象。\ndefineClass()\n将 byte 字节流转换为 java.lang.Class 对象，字节流可以来源 .class 文件等途径。\nresolveClass()\n在类加载过程中字节码文件被加载到 JVM 中并不会立即转换成 java.lang.Class 对象。只有在使用这个类时才会调用 resolveClass() 进行转化，才能够进行创建实例等操作。\n3. 源码解读 在类加载实现中最为核心的即为 loadClass() 方法，其通过 synchronized 关键字保证类不会被重复加载，下面为 JDK 中 loadClass() 的源码，在关键处我都提供了注释说明。\n其中 parent 即为当前加载器的父级加载器。\njava\n代码解读\n复制代码\nprotected Class\u003c?\u003e loadClass(String name, boolean resolve) throws ClassNotFoundException { synchronized (getClassLoadingLock(name)) { // 1. 判断类是否已经加载过 Class\u003c?\u003e c = findLoadedClass(name); // 1.1 若不为空表明已加载则返回 if (c == null) { try { // 2. 未加载 -\u003e 判断是否存在父加载器 if (parent != null) { // 2.1 存在 -\u003e 递归调用直至获取顶层父加载器 c = parent.loadClass(name); } else { // 2.2 不存在(已达顶层加载器) -\u003e 委托父类进行加载 c = findBootstrapClassOrNull(name); } } catch (ClassNotFoundException e) { // ClassNotFoundException thrown if class not found } // 3. 没有父加载器可以加载类 -\u003e 由类自身实现加载 if (c == null) { c = findClass(name); } } return c; } }\n五、自定义加载 自定义类加载器最常见的分为两种，遵循双亲委派机制与打破双亲委派机制，这里主要讨论后者。\n1. 父类继承 新建自定义加载器类 CustomClassLoader 并继承 ClassLoader ，在类中定义构造方法与默认 class 文件存放路径等基本信息。构造函数中的 super() 与 super(parent) 用于指定当前加载器的父级加载器，前者默认获取当前上下文的类加载器为父加载器，在绝大多数情况下为 AppClassLoader 。\n在实际应用中通常只有特定类需要实现自定义加载，因此这里定义了集合 targetList 存放需要实现自定义加载的目标类，不在此集合中类则使用默认的加载方法。\njava\n代码解读\n复制代码\npublic class CustomClassLoader extends ClassLoader { private final Path classDir; private static final Path DEFAULT_CLASS_DIR = Paths.get(\"E:\\\\Workspace\\\\Class\"); private List targetList = new ArrayList\u003c\u003e(); static { targetList.add(\"xyz.ibudai.bean.TestA\"); targetList.add(\"xyz.ibudai.bean.TestB\"); } /** * 使用默认的信息 */ public CustomClassLoader() { super(); this.classDir = DEFAULT_CLASS_DIR; } /** * 指定文件目录与父类加载器 */ public CustomClassLoader(String path, ClassLoader parent) { super(parent); this.classDir = Paths.get(path); } }\n2. loadClass() 接下来也是自定义类加载的重点，在 JDK 中类的加载核心流程由 loadClass() 方法控制，想要打破默认的双亲委派机制就必须重写该方法。\n重写的 loadClass() 其具象化的加载实现流程如下：\n(1) 检查当前类是否已经被加载过？\n若已加载，则返回结果。 若未加载，则进入下一步。 (2) 加载类是否在目标集合中？\n若是，则实现自定义 .class 文件读取加载。 若否，则调用父加载器的 loadClass() 加载重试，即仍按双亲委派机制。 (3) 判断自定义加载是否成功？\n若是，则返回结果。 若否，则调用父加载器的 loadClass() 加载重试，即仍按双亲委派机制。 上述逻辑流程相对应的代码实现如下：\njava\n代码解读\n复制代码\n@Override public Class\u003c?\u003e loadClass(String name, boolean resolve) throws ClassNotFoundException { synchronized (getClassLoadingLock(name)) { Class\u003c?\u003e c = findLoadedClass(name); if (c != null) { // 若已加载则返回 return c; } if(targetList.contains(name)) { try { // 若在目标集合则自定义加载 c = customFindClass(name); } catch (ClassNotFoundException ignored) { // 加载异常重新委派父类加载 c = super.loadClass(name, resolve); } } if (c == null) { // 加载不成功重新委派父类加载 c = super.loadClass(name, resolve); } return c; } }\n3. findClass() 在类的加载中 loadClass() 用于控制类的加载流程，而 findClass() 则用于控制具体的 .class 文件加载实现，即如何将 .class 装载进 JVM 中。\n这里我选择的是新建 customFindClass() 方法而并非重写 findClass() 目的在于防止当自定义类加载失败时重新调用父类的 loadClass() 时其在调用 findClass() 时发生混乱冲突。\n在 customFindClass() 中实现了将编译后的类文件载入 JVM 中，即从本地读取编译后的 .class 文件转为字节数据并通过 defineClass() 查找对应的 java.lang.Class 对象。\n其中 name 为类文件的完整类名，例如：xyz.ibudai.bean.TestA 。\njava\n代码解读\n复制代码\nprivate Class\u003c?\u003e customFindClass(String name) throws ClassNotFoundException { // 读取 class 的二进制数据 byte[] classBytes = this.readClassBytes(name); if (classBytes == null || classBytes.length == 0) { throw new ClassNotFoundException(\"The class byte \" + name + \" is empty.\"); } // 调用 defineClass 方法定义 class return this.defineClass(name, classBytes, 0, classBytes.length); } /** * 将 class 文件转为字节数组以供后续内存载入 */ private byte[] readClassBytes(String name) throws ClassNotFoundException { // 将包名分符转换为文件路径分隔符 String classPath = name.replace(\".\", \"/\"); Path classFullPath = classDir.resolve(Paths.get(classPath + \".class\")); if (!classFullPath.toFile().exists()) { throw new ClassNotFoundException(\"Class file \" + classFullPath + \" doesn't exists.\"); } try (ByteArrayOutputStream out = new ByteArrayOutputStream()) { Files.copy(classFullPath, out); return out.toByteArray(); } catch (IOException e) { throw new ClassNotFoundException(\"Read class \" + classFullPath + \" file to byte error.\"); } }\n4. 测试示例 完成上述的示例之后通过一个示例验证一下我们类加载效果。\n新建测试类 TestA 并通过 java -d . TestA.java 命令将其编译为 .class 文件，将编译完成的带包名层级结构的 .class 文件移动至 CustomClassLoader 类中定义的默认目录下。\njava\n代码解读\n复制代码\npublic class TestA { public void sayHello() { System.out.println(\"Hello world!\"); } }\n完成上述操作后编写相应的测试示例，分别通过默认的类加载与 CustomClassLoader 两种方式实现 TestA 类的加载，并分别输出了 TestA 的具体加载类信息。\n相对应的测试示例代码如下：\njava\n代码解读\n复制代码\n@Test public void loadTest() throws Exception { // 默认类加载器加载类 Class\u003c?\u003e clazz1 = Class.forName(\"xyz.ibudai.bean.TestA\"); System.out.println(\"Loader-1: \" + clazz1.getClassLoader()); // 自定义类加载器加载类 CustomClassLoader myLoader = new CustomClassLoader(); Thread.currentThread().setContextClassLoader(myLoader); Class\u003c?\u003e clazz2 = myLoader.loadClass(\"xyz.ibudai.bean.TestA\"); System.out.println(\"Loader-2: \" + clazz2.getClassLoader()); }\n上述程序运行的结果如下，从结果可以看出通过 CustomClassLoader 我们成功实现了 TestA 的自定义加载。\njava\n代码解读\n复制代码\nLoader-1: sun.misc.Launcher$AppClassLoader@18b4aac2 Loader-2: xyz.ibudai.loader.CustomClassLoader@1b9e1916\n六、进阶操作 1. 上下文加载器 在之前的示例中通过了 Thread.currentThread().getContextClassLoader() 获取了当前上下文的类加载，那么上下文类加载究竟有何用处？\n在 Java 程序启动时会将核心类交由 Bootstrap Classloader 加载，但存在一部分服务提供者接口 (SPI) 只定义的规范接口，如最常见的 JDBC 其具体的实现都是由各大数据库厂商自行实现。而这部分接口实现类显然无法被系统类加载器加载（系统类加载只会加载核心包，不会加载第三方来源包），而默认的类加载机制（双亲委派机制）并不支持父加载器向下委派，上下文加载器正是为此而生，通过子委派（由当前线程上下文加载器加载 SPI 实现类）的方式打破了双亲委派机制。\nJava 应用运行时的初始线程的上下文类加载器是系统类加载器（AppClassLoader），线程的上下文类加载器的获取与设置通过 Thread.currentThread().getContextClassLoader() 与 Thread.currentThread().setContextClassLoader() 方法即可，一个线程若没有指定则默认继承其父线程上下文类加载器。\n2. 动态加载 在 Java 启动时会将相关的类进行加载，而通过 URLClassLoader 即可实现程序运行期间的动态类加载。\nURLClassLoader 继承于 ClassLoader，其可以通过 URL 从资源文件从加载类，如下示例中即通过 URLClassLoader 加载 JAR 驱动包。\njava\n代码解读\n复制代码\npublic static ClassLoader getClassLoader(String driverPath) { // 获取当前线程上下文加载器 ClassLoader parent = Thread.currentThread().getContextClassLoader(); URL[] urls; try { File driver = new File(driverPath); // 驱动包不存在抛出异常 if (!driver.exists()) { throw new FileNotFoundException(); } // File 转 URL 资源格式 list.add(driver.toURI().toURL()); urls = list.toArray(new URL[0]); } catch (Exception e) { throw new RuntimeException(e); } return new URLClassLoader(urls, parent); }\n3. 类的卸载 虽然通过 URLClassLoader 可实现类的动态加载，但 Java 中并没有提供显式的方式实现类的卸载，想要卸载一个已经加载的类只能通过垃圾回收的方式实现。\n一个类若想通过垃圾回收卸载则需要满足以下三个条件：\n当前类不存在任何实例，即所有对象实例都已被销毁。 当前类不存在引用（Reference）。 当前类的类加载已被垃圾回收（GC）。 七、类隔离 在上面我们介绍了类的加载方式并且重点分析了双亲委派机制，下面介绍一下类加载的应用场景。\n1. 基本介绍 与之前提到线程上下文加载器类似（子线程默认继承父线程加载器），一个类的引用类同样都将由该应用类的类加载器加载，即若在 ClassA 中引用了 ClassB ，则 ClassB 也将会由 ClassA 的类加载进行加载，这也正是能够类隔离的实现原理之一。\n那么类隔离的作用是究竟是什么呢？正如上述所言，类的加载具有引用传递性，而一个模块中一个类只会加载一次，在类加载时通过 findLoadedClass() 判断是否加载，如是则跳过加载，也就是 JVM 虚拟机中每个类有且仅有一份。\n2. 示例介绍 根据上述的介绍当程序需要依赖同一个类的多个版本时该方式将会产生大量的问题。\n如工程中存在两个模块 module-a 和 module-b ，二者分别依赖了 module-c 的 1.0 和 2.0 两个版本，但由于 module-a 与 module-b 同属一个工程都由 AppClassLoader 进行加载，最终在 JVM 仅会加载 module-c 的一个版本并非两个版本共同加载。\n根据 Maven 中先定义先导入顺序，若 module-a 定义在前则最终加载的 module-c 则为 1.0 版本，此时若 module-b 引用了 2.0 中新特性在运行时则会抛出 ClassNotFoundException。\n在 Java 中同一个类由不同的类加载器加载对于 JVM 而言是两个不同的类，因此针对上述情况我们只要自定义类加载并将 module-a 与 module-b 分别通过两个不同的类加载（这里不同的类加载并不是指不同的类加载类别，只需由两个不同的实例对象即可）进行加载即可。如上述我们自定义实现了类加载 CustomClassLoader ，我们通过其两个实例 loader1 与 loader2 分别对 module-a 与 module-b 进行加载类加载引用继承原理 module-c 将被加载分别加载两次，从而实现多版本的兼容隔离加载。\n需要注意这里的 CustomClassLoader1 和 CustomClassLoader2 所对应的自定义类加载器必须重写 loadClass() 方法并破坏其双亲委派机制，否则仍会逐层向上代理最终加载类的加载器都将为系统类加载器。\n",
+  "wordCount" : "1183",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-08-15T00:00:00Z",
+  "dateModified": "2023-08-15T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "烽火戏诸诸诸侯"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%85%A5%E6%89%8B%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%A6%E4%BD%A0%E5%89%96%E6%9E%90java%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      从源码入手，手把手带你剖析Java类加载的双亲委派
+    </h1>
+    <div class="post-description">
+      文章首发于博客：布袋青年，原文链接直达：Java类加载器剖析。Java的类加载作为核心特性之一拥有众多的特性，理解和掌握类的加载方式和机制能够更好的了解程序的执行流程，本篇文章将详细介绍Java
+    </div>
+    <div class="post-meta"><span title='2023-08-15 00:00:00 +0000 UTC'>八月 15, 2023</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;烽火戏诸诸诸侯&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e6%96%87%e4%bb%b6%e7%bc%96%e8%af%91" aria-label="一、文件编译">一、文件编译</a><ul>
+                        
+                <li>
+                    <a href="#1-class%e7%bc%96%e8%af%91" aria-label="1. Class编译">1. Class编译</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%87%e4%bb%b6%e7%bc%96%e8%af%91" aria-label="文件编译">文件编译</a></li>
+                <li>
+                    <a href="#%e7%bc%96%e7%a0%81%e5%a4%84%e7%90%86" aria-label="编码处理">编码处理</a></li>
+                <li>
+                    <a href="#%e5%8c%85%e5%90%8d%e5%a4%84%e7%90%86" aria-label="包名处理">包名处理</a></li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e5%a4%84%e7%90%86" aria-label="依赖处理">依赖处理</a></li>
+                <li>
+                    <a href="#%e7%bc%96%e8%af%91%e7%89%88%e6%9c%ac" aria-label="编译版本">编译版本</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-%e6%96%87%e4%bb%b6%e6%89%a7%e8%a1%8c" aria-label="2. 文件执行">2. 文件执行</a><ul>
+                        
+                <li>
+                    <a href="#class%e8%bf%90%e8%a1%8c" aria-label="Class运行">Class运行</a></li>
+                <li>
+                    <a href="#jar%e8%bf%90%e8%a1%8c" aria-label="Jar运行">Jar运行</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%8a%a0%e8%bd%bd%e6%9c%ba%e5%88%b6" aria-label="二、加载机制">二、加载机制</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%8a%a0%e8%bd%bd%e8%bf%87%e7%a8%8b" aria-label="1. 加载过程">1. 加载过程</a></li>
+                <li>
+                    <a href="#2-%e5%8a%a0%e8%bd%bd%e9%98%b6%e6%ae%b5" aria-label="2. 加载阶段">2. 加载阶段</a></li>
+                <li>
+                    <a href="#3-%e8%bf%9e%e6%8e%a5%e9%98%b6%e6%ae%b5" aria-label="3. 连接阶段">3. 连接阶段</a></li>
+                <li>
+                    <a href="#4-%e5%88%9d%e5%a7%8b%e5%8c%96%e9%98%b6%e6%ae%b5" aria-label="4. 初始化阶段">4. 初始化阶段</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89%e7%b1%bb%e5%8a%a0%e8%bd%bd%e5%99%a8" aria-label="三、类加载器">三、类加载器</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%9f%ba%e6%9c%ac%e7%b1%bb%e5%88%ab" aria-label="1. 基本类别">1. 基本类别</a></li>
+                <li>
+                    <a href="#2-%e5%91%bd%e5%90%8d%e7%a9%ba%e9%97%b4" aria-label="2. 命名空间">2. 命名空间</a></li>
+                <li>
+                    <a href="#3-%e8%bf%90%e8%a1%8c%e6%97%b6%e5%8c%85" aria-label="3. 运行时包">3. 运行时包</a></li>
+                <li>
+                    <a href="#4-%e5%88%9d%e5%a7%8b%e7%b1%bb%e5%8a%a0%e8%bd%bd%e5%99%a8" aria-label="4. 初始类加载器">4. 初始类加载器</a></li>
+                <li>
+                    <a href="#5-%e5%8a%a0%e8%bd%bd%e7%b1%bb%e5%9e%8b" aria-label="5. 加载类型">5. 加载类型</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9b%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be" aria-label="四、双亲委派">四、双亲委派</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%8a%a0%e8%bd%bd%e6%96%b9%e5%bc%8f" aria-label="1. 加载方式">1. 加载方式</a><ul>
+                        
+                <li>
+                    <a href="#classforname" aria-label="Class.forName()">Class.forName()</a></li>
+                <li>
+                    <a href="#classloaderlaodclass" aria-label="Classloader.laodClass()">Classloader.laodClass()</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-%e6%96%b9%e6%b3%95%e6%8f%8f%e8%bf%b0" aria-label="2. 方法描述">2. 方法描述</a></li>
+                <li>
+                    <a href="#3-%e6%ba%90%e7%a0%81%e8%a7%a3%e8%af%bb" aria-label="3. 源码解读">3. 源码解读</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%94%e8%87%aa%e5%ae%9a%e4%b9%89%e5%8a%a0%e8%bd%bd" aria-label="五、自定义加载">五、自定义加载</a><ul>
+                        
+                <li>
+                    <a href="#1-%e7%88%b6%e7%b1%bb%e7%bb%a7%e6%89%bf" aria-label="1. 父类继承">1. 父类继承</a></li>
+                <li>
+                    <a href="#2-loadclass" aria-label="2. loadClass()">2. loadClass()</a></li>
+                <li>
+                    <a href="#3-findclass" aria-label="3. findClass()">3. findClass()</a></li>
+                <li>
+                    <a href="#4-%e6%b5%8b%e8%af%95%e7%a4%ba%e4%be%8b" aria-label="4. 测试示例">4. 测试示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%ad%e8%bf%9b%e9%98%b6%e6%93%8d%e4%bd%9c" aria-label="六、进阶操作">六、进阶操作</a><ul>
+                        
+                <li>
+                    <a href="#1-%e4%b8%8a%e4%b8%8b%e6%96%87%e5%8a%a0%e8%bd%bd%e5%99%a8" aria-label="1. 上下文加载器">1. 上下文加载器</a></li>
+                <li>
+                    <a href="#2-%e5%8a%a8%e6%80%81%e5%8a%a0%e8%bd%bd" aria-label="2. 动态加载">2. 动态加载</a></li>
+                <li>
+                    <a href="#3-%e7%b1%bb%e7%9a%84%e5%8d%b8%e8%bd%bd" aria-label="3. 类的卸载">3. 类的卸载</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%83%e7%b1%bb%e9%9a%94%e7%a6%bb" aria-label="七、类隔离">七、类隔离</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%9f%ba%e6%9c%ac%e4%bb%8b%e7%bb%8d" aria-label="1. 基本介绍">1. 基本介绍</a></li>
+                <li>
+                    <a href="#2-%e7%a4%ba%e4%be%8b%e4%bb%8b%e7%bb%8d" aria-label="2. 示例介绍">2. 示例介绍</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>文章首发于博客：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgreat-jin.github.io%2F" title="https://great-jin.github.io/">布袋青年</a>，原文链接直达：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgreat-jin.github.io%2Fjava%2Fadvance%2Floader%2F" title="https://great-jin.github.io/java/advance/loader/">Java类加载器剖析</a>。</p>
+<hr>
+<p><code>Java</code> 的类加载作为核心特性之一拥有众多的特性，理解和掌握类的加载方式和机制能够更好的了解程序的执行流程，本篇文章将详细介绍 Java 的类加载机制与其相关必备知识。</p>
+<blockquote>
+<p>下面就让我们直接开始吧</p>
+</blockquote>
+<h3 id="一文件编译">一、文件编译<a hidden class="anchor" aria-hidden="true" href="#一文件编译">#</a></h3>
+<p>在介绍类加载器之前先介绍一下 <code>Java</code> 文件的基本编译与执行命令以供后续使用。</p>
+<h4 id="1-class编译">1. Class编译<a hidden class="anchor" aria-hidden="true" href="#1-class编译">#</a></h4>
+<ul>
+<li>
+<h5 id="文件编译">文件编译<a hidden class="anchor" aria-hidden="true" href="#文件编译">#</a></h5>
+<p>通过 <code>javac</code> 命令将 <code>.java</code> 文件编译为 <code>.class</code> 文件，默认输出到当前目录。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>javac MyBean.java</code></p>
+</li>
+<li>
+<h5 id="编码处理">编码处理<a hidden class="anchor" aria-hidden="true" href="#编码处理">#</a></h5>
+<p>当 <code>Java</code> 文件中包含中文等编码时，在编译时需要指定编码格式，否则将会编译异常。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>javac -encoding utf-8 MyBean.java</code></p>
+</li>
+<li>
+<h5 id="包名处理">包名处理<a hidden class="anchor" aria-hidden="true" href="#包名处理">#</a></h5>
+<p>默认 <code>javac</code> 命令编译的文件是不包含包路径的，通过参数 <code>-d</code> 编译生成的文件将在同级目录创建包名层级文件夹。其中 <code>.</code> 表示保存至当前目录下，可根据需要指定目录。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>javac -d . MyBean.java</code></p>
+</li>
+<li>
+<h5 id="依赖处理">依赖处理<a hidden class="anchor" aria-hidden="true" href="#依赖处理">#</a></h5>
+<p>如需要的编译的类中引用了其它类，在编译时则需要通过 -cp 指定依赖类的 class 文件。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>javac -cp ./Denpend.class -d . MyBean.java</code></p>
+</li>
+<li>
+<h5 id="编译版本">编译版本<a hidden class="anchor" aria-hidden="true" href="#编译版本">#</a></h5>
+<p>当编程环境中存在多个 <code>JDK</code> 版本时，可以通过输入完整路径从而指定 <code>JDK</code> 编译版本。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&quot;C:\Program Files\Java\jdk1.8.0_202\bin\javac&quot; -d &lt;target_path&gt; MyBean.java</code></p>
+</li>
+</ul>
+<h4 id="2-文件执行">2. 文件执行<a hidden class="anchor" aria-hidden="true" href="#2-文件执行">#</a></h4>
+<ul>
+<li>
+<h5 id="class运行">Class运行<a hidden class="anchor" aria-hidden="true" href="#class运行">#</a></h5>
+<p><code>Class</code> 文件运行较为简单，直接通过 <code>java</code> + <code>文件名</code> 即可，需要注意的是若文件时编译设置了包名则运行时同样需要指定包名。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code># 运行不含包名 class 文件 java MyBean   # 运行含包名 class 文件 java xyz.ibudai.MyBean</code></p>
+</li>
+<li>
+<h5 id="jar运行">Jar运行<a hidden class="anchor" aria-hidden="true" href="#jar运行">#</a></h5>
+<p>运行 <code>Jar</code> 文件与 运行 <code>Class</code> 文件类似，只需添加 <code>-jar</code> 参数即可。</p>
+<p>bash</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>java -jar jar-name.jar</code></p>
+</li>
+</ul>
+<h3 id="二加载机制">二、加载机制<a hidden class="anchor" aria-hidden="true" href="#二加载机制">#</a></h3>
+<h4 id="1-加载过程">1. 加载过程<a hidden class="anchor" aria-hidden="true" href="#1-加载过程">#</a></h4>
+<p>所谓类加载过程，简单一句话而言即将编译完成的 <code>class</code> 文件通过特定的方式载入 <code>JVM</code> 虚拟机内存中，之后应该就可以在虚拟机内存中进行读取。</p>
+<p>类加载器将字节码文件加载到内存中主要经历三个阶段 <code>加载 -&gt; 连接 -&gt; 实例化</code>。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4b4b5d42e35e43b381a6fc718a3a1cb9~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=610&amp;h=199&amp;s=60786&amp;e=png&amp;b=fdfdfd" alt="image.png"  />
+</p>
+<p>注意的是 <code>.class</code> 并不是一次性全部加载到内存中，而是在 <code>Java</code> 应用程序需要的时候才会加载。也就是说当 <code>JVM</code> 请求一个类进行加载的时候，类加载器就会尝试查找定位这个类，当查找对应的类之后将他的完全限定类定义加载到运行时数据区中。</p>
+<h4 id="2-加载阶段">2. 加载阶段<a hidden class="anchor" aria-hidden="true" href="#2-加载阶段">#</a></h4>
+<p>主要负责查找并且加载类的二进制数据文件，其实就是 <code>class</code> 文件，简单而言即将编译后的 <code>class</code> 文件以二进制的形式加载进 <code>JVM</code> 内存中。</p>
+<h4 id="3-连接阶段">3. 连接阶段<a hidden class="anchor" aria-hidden="true" href="#3-连接阶段">#</a></h4>
+<p>主要是确保类文件的正确性，比如 <code>class</code> 的版本，<code>class</code> 文件的魔术因子是否正确。</p>
+<blockquote>
+<p><strong>(1) 验证(文件)</strong></p>
+</blockquote>
+<ul>
+<li>验证文件格式，是否以魔数 <code>0xCAFEBABE</code> 开头。</li>
+<li>主、次版本号是否在当前 <code>Java</code> 虚拟机接受范围之内。</li>
+<li>常量池的常量中是否有不被支持的常量类型（检查常量 <code>tag</code> 标志）。</li>
+<li>文件中各个部分及文件本身是否有被删除的或附加的其他信息。</li>
+</ul>
+<blockquote>
+<p><strong>(2) 验证(元数据)</strong></p>
+</blockquote>
+<ul>
+<li>类是否有父类（除了 <code>java.lang.Object</code> 之外，所有的类都应当有父类）。</li>
+<li>类的父类是否继承了不允许被继承的类（被final修饰的类）。</li>
+<li>如果这个类不是抽象类，是否实现了其父类或接口之中要求实现的所有方法。</li>
+<li>类中的字段、方法是否与父类产生矛盾（例如覆盖了父类的 <code>final</code> 字段，或者出现不符合规则的方法重载，例如方法参数都一致，但返回值类型却不同等）。</li>
+</ul>
+<blockquote>
+<p><strong>(3) 验证(字节码)</strong></p>
+</blockquote>
+<ul>
+<li>通过数据流分析和控制流分析，确定程序语义是合法的、符合逻辑的。</li>
+<li>保证任何跳转指令都不会跳转到方法体以外的字节码指令上。</li>
+</ul>
+<blockquote>
+<p><strong>(4) 准备</strong></p>
+</blockquote>
+<p>准备阶段是正式为类中定义的变量（即静态变量，被 <code>static</code> 修饰的变量）分配内存并设置类变量初始值的阶段。当前阶段在进行内存分配的仅包括类变量，而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 <code>Java</code> 堆中。</p>
+<blockquote>
+<p><strong>(5) 解析</strong></p>
+</blockquote>
+<p>解析阶段是 <code>Java</code> 虚拟机将常量池内的符号引用替换为直接引用的过程。</p>
+<h4 id="4-初始化阶段">4. 初始化阶段<a hidden class="anchor" aria-hidden="true" href="#4-初始化阶段">#</a></h4>
+<p>准备阶段时，变量已经赋过一次系统要求的初始零值，而在初始化阶段，则会根据程序员通过程序编码制定的主观计划去初始化类变量和其他资源。除了在加载阶段用户应用程序可以通过自定义类加载器的方式局部参与外，其余动作都完全由 <code>Java</code> 虚拟机来主导控制。</p>
+<p>如定义的 <code>static int i = 123;</code> 等类变量在准备阶段已经完成初始化，而类的普通成员变量如 <code>int j;</code> 仍未进行初始化，因此经过初始化阶段之后 <code>int j;</code> 则会初始化为 <code>int j = 0;</code>，类中其它普通成员变量同理。</p>
+<h3 id="三类加载器">三、类加载器<a hidden class="anchor" aria-hidden="true" href="#三类加载器">#</a></h3>
+<h4 id="1-基本类别">1. 基本类别<a hidden class="anchor" aria-hidden="true" href="#1-基本类别">#</a></h4>
+<p>在 <code>Java</code> 中类加载器分为以下四类，各类加载器说明如下：</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/853ad217e92a4fa18b0772513b024b33~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=495&amp;h=307&amp;s=8528&amp;e=png&amp;b=f3f3f3" alt="image.png"  />
+</p>
+<p>加载器</p>
+<p>描述</p>
+<p>BootstrapClassLoader</p>
+<p>顶层加载器，主要负责加载核心的类库(java.lang.*等)。</p>
+<p>ExtClassLoader</p>
+<p>主要负责加载 jre/lib/ext 目录下的一些扩展的 JAR 包。</p>
+<p>AppClassLoader</p>
+<p>主要负责加载应用程序的主函数 main 等。</p>
+<p>CustomClassLoader</p>
+<p>自定义类加载器，即我们继承 ClassLoad 而自定义加载器，属于最底层加载器。</p>
+<h4 id="2-命名空间">2. 命名空间<a hidden class="anchor" aria-hidden="true" href="#2-命名空间">#</a></h4>
+<p>每一个类加载器实例都有各自的命名空间，命名空间是由该加载器及其所有父加载器所构成的，因此在每个类加载器中同一个 <code>class</code> 都是独一无二的。</p>
+<p>在类加载器进行类加载的时候，首先会到加载记录表也就是缓存中，查看该类是否已经被加载过了，如果已经被加载过了就不会重复加载，否则将会认为其是首次加载。但是使用不同的类加载器，或者同一个类加载器的不同实例，去加载同一个 <code>class</code> 则会在堆内存和方法区产生多个 <code>class</code> 的对象。</p>
+<h4 id="3-运行时包">3. 运行时包<a hidden class="anchor" aria-hidden="true" href="#3-运行时包">#</a></h4>
+<p>在 <code>JVM</code> 运行时 <code>class</code> 会有一个运行时包，运行时的包是由类加载器的命名空间和类的全限定名称共同组成的，在判断类的属性或方法等作用域是也是基于运行时包进行的。</p>
+<p>例如由系统类加载加载的 <code>com.example.Test</code> 类其对应的运行时包则为：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>BootstrapclassLoader.ExtclassLoader.Appclassloader.com.example.Test</code></p>
+<h4 id="4-初始类加载器">4. 初始类加载器<a hidden class="anchor" aria-hidden="true" href="#4-初始类加载器">#</a></h4>
+<p>根据 <code>JVM</code> 规范的规定，在类的加载过程中，所有参与的类加载器即使没有亲自加载过该类也都会被标识为该类的初始类加载器。</p>
+<p>在基于双亲委派的机制下，类依次经过了系统类加载器、扩展类加载器、根类加载器，则这些加载器都称为被加载类的初始类加载器，<code>JVM</code> 会在每一个类加载器维护的列表中添加该 <code>class</code> 类型。</p>
+<p>以 <code>String</code> 类为例，根据双亲委派机制其依次经过了三个类加载器，因此对应的初始类加载如下：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/80724d18bd6548f9bf09770af2caa5f6~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=788&amp;h=215&amp;s=11557&amp;e=png&amp;b=eeeeee" alt="image.png"  />
+</p>
+<h4 id="5-加载类型">5. 加载类型<a hidden class="anchor" aria-hidden="true" href="#5-加载类型">#</a></h4>
+<p>类加载器负责从不同的源（例如文件系统、网络、内存等）加载类的字节码，如最常见的 <code>.class</code> 文件，将其转换为 <code>Java</code> 对象使得程序可以使用这些类。</p>
+<p>类加载器同时还负责解析类的依赖关系，即查找并加载被当前类所依赖的其他类，以及确定每个类应该由哪个类加载器来加载。</p>
+<blockquote>
+<p><code>Java</code> 类加载机制具有以下特点：</p>
+<ul>
+<li><strong>懒加载</strong>: 只有在需要使用类时才会加载该类，以节省内存和加载时间。</li>
+<li><strong>双亲委派</strong>: 类加载器会按照层次结构来加载类，即先委托父类加载器加载，如果父类加载器无法加载则再交给自己来加载。</li>
+<li><strong>缓存机制</strong>: 已经加载过的类会被缓存，避免重复加载同一类。</li>
+<li><strong>破坏双亲委派机制</strong>: 允许用户自定义类加载器来加载类，从而可以实现一些自定义的类加载策略，例如热部署、插件化等。</li>
+</ul>
+</blockquote>
+<h3 id="四双亲委派">四、双亲委派<a hidden class="anchor" aria-hidden="true" href="#四双亲委派">#</a></h3>
+<p>双亲委派机制是类加载中非常重要的一类加载机制，通过该机制保证了类的安全完整性。</p>
+<p>默认 <code>JDK</code> 中使用的即双亲委派机制，你可以在 <code>java.lang</code> 包下找到 <code>ClassLoader</code> 类，下面就从源码的角度分析双亲委派机制。</p>
+<h4 id="1-加载方式">1. 加载方式<a hidden class="anchor" aria-hidden="true" href="#1-加载方式">#</a></h4>
+<p>在 <code>Java</code> 中加载类可以共有 <code>Class.forName()</code> 与 <code>Classloader.laodClass()</code> 两种方式，下面分别进行介绍。</p>
+<ul>
+<li>
+<h5 id="classforname">Class.forName()<a hidden class="anchor" aria-hidden="true" href="#classforname">#</a></h5>
+<p>通过 <code>Class.forName()</code> 方式加载不仅会将当前类加载进内存并且会初始化对象，可在需被加载的类中添加 <code>static</code> 静态块打印提示，当使用 <code>Class.forName()</code> 加载类时可以发现静态块代码将会被执行，说明此时创建了对象。</p>
+<p>若想实现类加载但不创建对象可通过 <code>Class.forName(className, false, classLoader)</code> 方法加载，其中第二个参数用于指定是否创建对象，第三个参数指定类加载器。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void initDemo2() {     String className = &quot;xyz.ibudai.bean.User&quot;;     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();     try {         Class&lt;?&gt; clazz1 = Class.forName(className);         Class&lt;?&gt; clazz2 = Class.forName(className, false, classLoader);         System.out.println(&quot;clazz1 loader: &quot; + clazz1.getClassLoader());         System.out.println(&quot;clazz2 loader: &quot; + clazz2.getClassLoader());     } catch (ClassNotFoundException e) {         e.printStackTrace();     } }</code></p>
+</li>
+<li>
+<h5 id="classloaderlaodclass">Classloader.laodClass()<a hidden class="anchor" aria-hidden="true" href="#classloaderlaodclass">#</a></h5>
+<p>通过 <code>laodClass()</code> 方式加载并不会解析类只实现加载并不会创建相应对象，只有当对象被引用时才会初始化。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public void initDemo2() {     String className = &quot;xyz.ibudai.bean.User&quot;;     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();     try {         Class&lt;?&gt; clazz3 = classLoader.loadClass(className);         System.out.println(&quot;clazz3 loader: &quot; + clazz3.getClassLoader());     } catch (Exception e) {         e.printStackTrace();     } }</code></p>
+</li>
+</ul>
+<p>需要注意一点 <code>java.lang.String</code> 等核心类库是在 <code>JVM</code> 启动时加载的，它们位于 <code>Java</code> 虚拟机的核心类库中，并由 <code>Bootstrap ClassLoader</code> 加载。因此在获取这些类的类加载器时，结果通常为 <code>null</code> ，需要注意的是 <code>null</code> 表示类加载器未知或者无法确定，而非没有类加载器。</p>
+<h4 id="2-方法描述">2. 方法描述<a hidden class="anchor" aria-hidden="true" href="#2-方法描述">#</a></h4>
+<p>在解析核心源码之前先过一遍下面这个表格，其中各方法在后面将会涉及到，在此简单描述其作用功能，后续不作详细描述。</p>
+<p>方法</p>
+<p>作用</p>
+<p>getClassLoadingLock()</p>
+<p>防止类被同时加载。</p>
+<p>findLoadedClass()</p>
+<p>判断类是否加载过，若加载过则返回加载器否则返回 null。</p>
+<p>findBootstrapClassOrNull()</p>
+<p>委托父加载器进行加载，不存父加载器返回 null。</p>
+<p>findClass()</p>
+<p>根据完整类名读取 .class 文件并调用 defineClass() 查找对应的 java.lang.Class 对象。</p>
+<p>defineClass()</p>
+<p>将 byte 字节流转换为 java.lang.Class 对象，字节流可以来源 .class 文件等途径。</p>
+<p>resolveClass()</p>
+<p>在类加载过程中字节码文件被加载到 JVM 中并不会立即转换成 java.lang.Class 对象。只有在使用这个类时才会调用 resolveClass() 进行转化，才能够进行创建实例等操作。</p>
+<h4 id="3-源码解读">3. 源码解读<a hidden class="anchor" aria-hidden="true" href="#3-源码解读">#</a></h4>
+<p>在类加载实现中最为核心的即为 <code>loadClass()</code> 方法，其通过 <code>synchronized</code> 关键字保证类不会被重复加载，下面为 <code>JDK</code> 中 <code>loadClass()</code> 的源码，在关键处我都提供了注释说明。</p>
+<p>其中 <code>parent</code> 即为当前加载器的父级加载器。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>protected Class&lt;?&gt; loadClass(String name, boolean resolve) throws ClassNotFoundException {     synchronized (getClassLoadingLock(name)) {         // 1. 判断类是否已经加载过         Class&lt;?&gt; c = findLoadedClass(name);         // 1.1 若不为空表明已加载则返回         if (c == null) {             try {                 // 2. 未加载 -&gt; 判断是否存在父加载器                 if (parent != null) {                     // 2.1 存在 -&gt; 递归调用直至获取顶层父加载器                     c = parent.loadClass(name);                 } else {                     // 2.2 不存在(已达顶层加载器) -&gt; 委托父类进行加载                     c = findBootstrapClassOrNull(name);                 }             } catch (ClassNotFoundException e) {                 // ClassNotFoundException thrown if class not found             }             // 3. 没有父加载器可以加载类 -&gt; 由类自身实现加载             if (c == null) {                 c = findClass(name);             }         }         return c;     } }</code></p>
+<h3 id="五自定义加载">五、自定义加载<a hidden class="anchor" aria-hidden="true" href="#五自定义加载">#</a></h3>
+<p>自定义类加载器最常见的分为两种，遵循双亲委派机制与打破双亲委派机制，这里主要讨论后者。</p>
+<h4 id="1-父类继承">1. 父类继承<a hidden class="anchor" aria-hidden="true" href="#1-父类继承">#</a></h4>
+<p>新建自定义加载器类 <code>CustomClassLoader</code> 并继承 <code>ClassLoader</code> ，在类中定义构造方法与默认 <code>class</code> 文件存放路径等基本信息。构造函数中的 <code>super()</code> 与 <code>super(parent)</code> 用于指定当前加载器的父级加载器，前者默认获取当前上下文的类加载器为父加载器，在绝大多数情况下为 <code>AppClassLoader</code> 。</p>
+<p>在实际应用中通常只有特定类需要实现自定义加载，因此这里定义了集合 <code>targetList</code> 存放需要实现自定义加载的目标类，不在此集合中类则使用默认的加载方法。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class CustomClassLoader extends ClassLoader {     private final Path classDir;     private static final Path DEFAULT_CLASS_DIR = Paths.get(&quot;E:\\Workspace\\Class&quot;);     private List&lt;String&gt; targetList = new ArrayList&lt;&gt;();     static {         targetList.add(&quot;xyz.ibudai.bean.TestA&quot;);         targetList.add(&quot;xyz.ibudai.bean.TestB&quot;);     }     /**      * 使用默认的信息      */     public CustomClassLoader() {         super();         this.classDir = DEFAULT_CLASS_DIR;     }     /**      * 指定文件目录与父类加载器      */     public CustomClassLoader(String path, ClassLoader parent) {         super(parent);         this.classDir = Paths.get(path);     } }</code></p>
+<h4 id="2-loadclass">2. loadClass()<a hidden class="anchor" aria-hidden="true" href="#2-loadclass">#</a></h4>
+<p>接下来也是自定义类加载的重点，在 <code>JDK</code> 中类的加载核心流程由 <code>loadClass()</code> 方法控制，想要打破默认的双亲委派机制就必须重写该方法。</p>
+<p>重写的 <code>loadClass()</code> 其具象化的加载实现流程如下：</p>
+<blockquote>
+<p><strong>(1) 检查当前类是否已经被加载过？</strong></p>
+</blockquote>
+<ul>
+<li>若已加载，则返回结果。</li>
+<li>若未加载，则进入下一步。</li>
+</ul>
+<blockquote>
+<p><strong>(2) 加载类是否在目标集合中？</strong></p>
+</blockquote>
+<ul>
+<li>若是，则实现自定义 <code>.class</code> 文件读取加载。</li>
+<li>若否，则调用父加载器的 <code>loadClass()</code> 加载重试，即仍按双亲委派机制。</li>
+</ul>
+<blockquote>
+<p><strong>(3) 判断自定义加载是否成功？</strong></p>
+</blockquote>
+<ul>
+<li>若是，则返回结果。</li>
+<li>若否，则调用父加载器的 <code>loadClass()</code> 加载重试，即仍按双亲委派机制。</li>
+</ul>
+<p>上述逻辑流程相对应的代码实现如下：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Override public Class&lt;?&gt; loadClass(String name, boolean resolve) throws ClassNotFoundException {     synchronized (getClassLoadingLock(name)) {         Class&lt;?&gt; c = findLoadedClass(name);         if (c != null) {             // 若已加载则返回             return c;         }         if(targetList.contains(name)) {             try {                 // 若在目标集合则自定义加载                 c = customFindClass(name);             } catch (ClassNotFoundException ignored) {                 // 加载异常重新委派父类加载                 c = super.loadClass(name, resolve);             }         }         if (c == null) {             // 加载不成功重新委派父类加载             c = super.loadClass(name, resolve);         }         return c;     } }</code></p>
+<h4 id="3-findclass">3. findClass()<a hidden class="anchor" aria-hidden="true" href="#3-findclass">#</a></h4>
+<p>在类的加载中 <code>loadClass()</code> 用于控制类的加载流程，而 <code>findClass()</code> 则用于控制具体的 <code>.class</code> 文件加载实现，即如何将 <code>.class</code> 装载进 <code>JVM</code> 中。</p>
+<p>这里我选择的是新建 <code>customFindClass()</code> 方法而并非重写 <code>findClass()</code> 目的在于防止当自定义类加载失败时重新调用父类的 <code>loadClass()</code> 时其在调用 <code>findClass()</code> 时发生混乱冲突。</p>
+<p>在 <code>customFindClass()</code> 中实现了将编译后的类文件载入 <code>JVM</code> 中，即从本地读取编译后的 <code>.class</code> 文件转为字节数据并通过 <code>defineClass()</code> 查找对应的 <code>java.lang.Class</code> 对象。</p>
+<p>其中 <code>name</code> 为类文件的完整类名，例如：<code>xyz.ibudai.bean.TestA</code> 。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>private Class&lt;?&gt; customFindClass(String name) throws ClassNotFoundException {     // 读取 class 的二进制数据     byte[] classBytes = this.readClassBytes(name);     if (classBytes == null || classBytes.length == 0) {         throw new ClassNotFoundException(&quot;The class byte &quot; + name + &quot; is empty.&quot;);     }     // 调用 defineClass 方法定义 class     return this.defineClass(name, classBytes, 0, classBytes.length); } /**  * 将 class 文件转为字节数组以供后续内存载入  */ private byte[] readClassBytes(String name) throws ClassNotFoundException {     // 将包名分符转换为文件路径分隔符     String classPath = name.replace(&quot;.&quot;, &quot;/&quot;);     Path classFullPath = classDir.resolve(Paths.get(classPath + &quot;.class&quot;));     if (!classFullPath.toFile().exists()) {         throw new ClassNotFoundException(&quot;Class file &quot; + classFullPath + &quot; doesn't exists.&quot;);     }     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {         Files.copy(classFullPath, out);         return out.toByteArray();     } catch (IOException e) {         throw new ClassNotFoundException(&quot;Read class &quot; + classFullPath + &quot; file to byte error.&quot;);     } }</code></p>
+<h4 id="4-测试示例">4. 测试示例<a hidden class="anchor" aria-hidden="true" href="#4-测试示例">#</a></h4>
+<p>完成上述的示例之后通过一个示例验证一下我们类加载效果。</p>
+<p>新建测试类 <code>TestA</code> 并通过 <code>java -d . TestA.java</code> 命令将其编译为 <code>.class</code> 文件，将编译完成的带包名层级结构的 <code>.class</code> 文件移动至 <code>CustomClassLoader</code> 类中定义的默认目录下。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public class TestA {     public void sayHello() {         System.out.println(&quot;Hello world!&quot;);     } }</code></p>
+<p>完成上述操作后编写相应的测试示例，分别通过默认的类加载与 <code>CustomClassLoader</code> 两种方式实现 <code>TestA</code> 类的加载，并分别输出了 <code>TestA</code> 的具体加载类信息。</p>
+<p>相对应的测试示例代码如下：</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>@Test public void loadTest() throws Exception {     // 默认类加载器加载类     Class&lt;?&gt; clazz1 = Class.forName(&quot;xyz.ibudai.bean.TestA&quot;);     System.out.println(&quot;Loader-1: &quot; + clazz1.getClassLoader());     // 自定义类加载器加载类     CustomClassLoader myLoader = new CustomClassLoader();     Thread.currentThread().setContextClassLoader(myLoader);     Class&lt;?&gt; clazz2 = myLoader.loadClass(&quot;xyz.ibudai.bean.TestA&quot;);     System.out.println(&quot;Loader-2: &quot; + clazz2.getClassLoader()); }</code></p>
+<p>上述程序运行的结果如下，从结果可以看出通过 <code>CustomClassLoader</code> 我们成功实现了 <code>TestA</code> 的自定义加载。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>Loader-1: sun.misc.Launcher$AppClassLoader@18b4aac2 Loader-2: xyz.ibudai.loader.CustomClassLoader@1b9e1916</code></p>
+<h3 id="六进阶操作">六、进阶操作<a hidden class="anchor" aria-hidden="true" href="#六进阶操作">#</a></h3>
+<h4 id="1-上下文加载器">1. 上下文加载器<a hidden class="anchor" aria-hidden="true" href="#1-上下文加载器">#</a></h4>
+<p>在之前的示例中通过了 <code>Thread.currentThread().getContextClassLoader()</code> 获取了当前上下文的类加载，那么上下文类加载究竟有何用处？</p>
+<p>在 <code>Java</code> 程序启动时会将核心类交由 <code>Bootstrap Classloader</code> 加载，但存在一部分服务提供者接口 <code>(SPI)</code> 只定义的规范接口，如最常见的 <code>JDBC</code> 其具体的实现都是由各大数据库厂商自行实现。而这部分接口实现类显然无法被系统类加载器加载（系统类加载只会加载核心包，不会加载第三方来源包），而默认的类加载机制（<code>双亲委派机制</code>）并不支持父加载器向下委派，上下文加载器正是为此而生，通过子委派（由当前线程上下文加载器加载 <code>SPI</code> 实现类）的方式打破了双亲委派机制。</p>
+<p><code>Java</code> 应用运行时的初始线程的上下文类加载器是系统类加载器（<code>AppClassLoader</code>），线程的上下文类加载器的获取与设置通过 <code>Thread.currentThread().getContextClassLoader()</code> 与 <code>Thread.currentThread().setContextClassLoader()</code> 方法即可，一个线程若没有指定则默认继承其父线程上下文类加载器。</p>
+<h4 id="2-动态加载">2. 动态加载<a hidden class="anchor" aria-hidden="true" href="#2-动态加载">#</a></h4>
+<p>在 <code>Java</code> 启动时会将相关的类进行加载，而通过 <code>URLClassLoader</code> 即可实现程序运行期间的动态类加载。</p>
+<p><code>URLClassLoader</code> 继承于 <code>ClassLoader</code>，其可以通过 <code>URL</code> 从资源文件从加载类，如下示例中即通过 <code>URLClassLoader</code> 加载 <code>JAR</code> 驱动包。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public static ClassLoader getClassLoader(String driverPath) {     // 获取当前线程上下文加载器     ClassLoader parent = Thread.currentThread().getContextClassLoader();     URL[] urls;     try {         File driver = new File(driverPath);         // 驱动包不存在抛出异常         if (!driver.exists()) {             throw new FileNotFoundException();         }         // File 转 URL 资源格式         list.add(driver.toURI().toURL());         urls = list.toArray(new URL[0]);     } catch (Exception e) {         throw new RuntimeException(e);     }     return new URLClassLoader(urls, parent); }</code></p>
+<h4 id="3-类的卸载">3. 类的卸载<a hidden class="anchor" aria-hidden="true" href="#3-类的卸载">#</a></h4>
+<p>虽然通过 <code>URLClassLoader</code> 可实现类的动态加载，但 <code>Java</code> 中并没有提供显式的方式实现类的卸载，想要卸载一个已经加载的类只能通过垃圾回收的方式实现。</p>
+<blockquote>
+<p>一个类若想通过垃圾回收卸载则需要满足以下三个条件：</p>
+<ul>
+<li>当前类不存在任何实例，即所有对象实例都已被销毁。</li>
+<li>当前类不存在引用（<code>Reference</code>）。</li>
+<li>当前类的类加载已被垃圾回收（<code>GC</code>）。</li>
+</ul>
+</blockquote>
+<h3 id="七类隔离">七、类隔离<a hidden class="anchor" aria-hidden="true" href="#七类隔离">#</a></h3>
+<p>在上面我们介绍了类的加载方式并且重点分析了双亲委派机制，下面介绍一下类加载的应用场景。</p>
+<h4 id="1-基本介绍">1. 基本介绍<a hidden class="anchor" aria-hidden="true" href="#1-基本介绍">#</a></h4>
+<p>与之前提到线程上下文加载器类似（子线程默认继承父线程加载器），一个类的引用类同样都将由该应用类的类加载器加载，即若在 <code>ClassA</code> 中引用了 <code>ClassB</code> ，则 <code>ClassB</code> 也将会由 <code>ClassA</code> 的类加载进行加载，这也正是能够类隔离的实现原理之一。</p>
+<p>那么类隔离的作用是究竟是什么呢？正如上述所言，类的加载具有引用传递性，而一个模块中一个类只会加载一次，在类加载时通过 <code>findLoadedClass()</code> 判断是否加载，如是则跳过加载，也就是 <code>JVM</code> 虚拟机中每个类有且仅有一份。</p>
+<h4 id="2-示例介绍">2. 示例介绍<a hidden class="anchor" aria-hidden="true" href="#2-示例介绍">#</a></h4>
+<p>根据上述的介绍当程序需要依赖同一个类的多个版本时该方式将会产生大量的问题。</p>
+<p>如工程中存在两个模块 <code>module-a</code> 和 <code>module-b</code> ，二者分别依赖了 <code>module-c</code> 的 <code>1.0</code> 和 <code>2.0</code> 两个版本，但由于 <code>module-a</code> 与 <code>module-b</code> 同属一个工程都由 <code>AppClassLoader</code> 进行加载，最终在 <code>JVM</code> 仅会加载 <code>module-c</code> 的一个版本并非两个版本共同加载。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f7530bc61be4418bb03eed11772d6a49~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=458&amp;h=375&amp;s=9720&amp;e=png&amp;b=fafafa" alt="image.png"  />
+</p>
+<p>根据 <code>Maven</code> 中先定义先导入顺序，若 <code>module-a</code> 定义在前则最终加载的 <code>module-c</code> 则为 <code>1.0</code> 版本，此时若 <code>module-b</code> 引用了 <code>2.0</code> 中新特性在运行时则会抛出 <code>ClassNotFoundException</code>。</p>
+<p>在 <code>Java</code> 中同一个类由不同的类加载器加载对于 <code>JVM</code> 而言是两个不同的类，因此针对上述情况我们只要自定义类加载并将 <code>module-a</code> 与 <code>module-b</code> 分别通过两个不同的类加载（这里不同的类加载并不是指不同的类加载类别，只需由两个不同的实例对象即可）进行加载即可。如上述我们自定义实现了类加载 <code>CustomClassLoader</code> ，我们通过其两个实例 <code>loader1</code> 与 <code>loader2</code> 分别对 <code>module-a</code> 与 <code>module-b</code> 进行加载类加载引用继承原理 <code>module-c</code> 将被加载分别加载两次，从而实现多版本的兼容隔离加载。</p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ef8a090425b447eaa4ccffada9c29d3f~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=405&amp;h=375&amp;s=11395&amp;e=png&amp;b=fafafa" alt="image.png"  />
+</p>
+<p>需要注意这里的 <code>CustomClassLoader1</code> 和 <code>CustomClassLoader2</code> 所对应的自定义类加载器必须重写 <code>loadClass()</code> 方法并破坏其双亲委派机制，否则仍会逐层向上代理最终加载类的加载器都将为系统类加载器。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E8%8C%83%E6%99%93%E7%83%BD/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>范晓烽</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/electron%E5%BC%80%E5%8F%91-%E4%BB%8E%E6%8E%A8%E9%97%A8%E5%88%B0%E8%BF%9B%E9%97%A8/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Electron开发-从推门到进门</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码入手，手把手带你剖析Java类加载的双亲委派 on x"
+            href="https://x.com/intent/tweet/?text=%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f&amp;hashtags=%e9%9d%a2%e8%af%95%2cJava">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码入手，手把手带你剖析Java类加载的双亲委派 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f&amp;title=%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be&amp;summary=%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码入手，手把手带你剖析Java类加载的双亲委派 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f&title=%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码入手，手把手带你剖析Java类加载的双亲委派 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码入手，手把手带你剖析Java类加载的双亲委派 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码入手，手把手带你剖析Java类加载的双亲委派 on telegram"
+            href="https://telegram.me/share/url?text=%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从源码入手，手把手带你剖析Java类加载的双亲委派 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%bb%8e%e6%ba%90%e7%a0%81%e5%85%a5%e6%89%8b%ef%bc%8c%e6%89%8b%e6%8a%8a%e6%89%8b%e5%b8%a6%e4%bd%a0%e5%89%96%e6%9e%90Java%e7%b1%bb%e5%8a%a0%e8%bd%bd%e7%9a%84%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%b4%be&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E4%25BB%258E%25E6%25BA%2590%25E7%25A0%2581%25E5%2585%25A5%25E6%2589%258B%25E6%2589%258B%25E6%258A%258A%25E6%2589%258B%25E5%25B8%25A6%25E4%25BD%25A0%25E5%2589%2596%25E6%259E%2590java%25E7%25B1%25BB%25E5%258A%25A0%25E8%25BD%25BD%25E7%259A%2584%25E5%258F%258C%25E4%25BA%25B2%25E5%25A7%2594%25E6%25B4%25BE%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>我把vue3项目中的vuex去除了，改用pinia | PaperMod</title>
+<meta name="keywords" content="前端">
+<meta name="description" content="相对于以前的vuex，pinia具有以下优势更简单的写法，代码更清晰简洁更完善的typescript支持非常轻量，只有1kb的大小">
+<meta name="author" content="kaaaaaaai">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E6%88%91%E6%8A%8Avue3%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84vuex%E5%8E%BB%E9%99%A4%E4%BA%86%E6%94%B9%E7%94%A8pinia/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E6%88%91%E6%8A%8Avue3%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84vuex%E5%8E%BB%E9%99%A4%E4%BA%86%E6%94%B9%E7%94%A8pinia/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="我把vue3项目中的vuex去除了，改用pinia" />
+<meta property="og:description" content="相对于以前的vuex，pinia具有以下优势更简单的写法，代码更清晰简洁更完善的typescript支持非常轻量，只有1kb的大小" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E6%88%91%E6%8A%8Avue3%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84vuex%E5%8E%BB%E9%99%A4%E4%BA%86%E6%94%B9%E7%94%A8pinia/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-02-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-02-24T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="我把vue3项目中的vuex去除了，改用pinia"/>
+<meta name="twitter:description" content="相对于以前的vuex，pinia具有以下优势更简单的写法，代码更清晰简洁更完善的typescript支持非常轻量，只有1kb的大小"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "我把vue3项目中的vuex去除了，改用pinia",
+      "item": "http://localhost:1313/posts/juejin/%E6%88%91%E6%8A%8Avue3%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84vuex%E5%8E%BB%E9%99%A4%E4%BA%86%E6%94%B9%E7%94%A8pinia/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "我把vue3项目中的vuex去除了，改用pinia",
+  "name": "我把vue3项目中的vuex去除了，改用pinia",
+  "description": "相对于以前的vuex，pinia具有以下优势更简单的写法，代码更清晰简洁更完善的typescript支持非常轻量，只有1kb的大小",
+  "keywords": [
+    "前端"
+  ],
+  "articleBody": "Pinia ​ pinia 目前已经是 vue 官方正式的状态库。适用于 vue2 和 vue3，本文只描述vue3的写法。\npinia 的优势 相对于以前的 vuex，pinia具有以下优势\n更简单的写法，代码更清晰简洁，支持 composition api 和 options api 语法 更完善的 typescript 支持，无需创建自定义复杂的包装类型来支持 TypeScript，所有内容都是类型化的，并且 API 的设计方式尽可能利用 TS 类型推断 非常轻量，只有1kb的大小 不需要再注入魔法字符串等进行调用 安装 typescript\n代码解读\n复制代码\nyarn add pinia // or npm install pinia\n定义、使用store 创建一个 pinia 并传递给 vue 应用\ntypescript\n代码解读\n复制代码\nimport { createPinia } from 'pinia' import { createApp } from 'vue' import App from './app.vue' createApp(App).use(createPinia()).mount('#app')\n定义store store的定义是通过 defineStore 这个函数，\n它需要一个唯一的名称，该名称可以作为第一个参数传递，也可以用 id 熟悉传递。\ntypescript\n代码解读\n复制代码\nimport { defineStore } from 'pinia' export const useMainStore = defineStore('main', { // other options... })\ntypescript\n代码解读\n复制代码\nimport { defineStore } from 'pinia' export const useMainStore = defineStore({ id: 'main' // other options... })\n该 id 是必要的，主要是用于 vue devtools\n使用store typescript\n代码解读\n复制代码\nimport { useMainStore } from '@/stores/main' export default defineComponent({ setup() { const store = useMainStore() return { store, } }, })\n上述代码中，useMainStore实例化后的，我们就可以在 store 上访问 state、getters、actions 等（pinia中没有mutations）。\n该 store 是一个 reactive 对象，所以不需要 “.value”，也不能对其进行解构使用，否则失去响应性（类似 props）。\nstoreToRefs\n如果一定要对其进行解构使用，可以使用 storeToRefs ，类似 vue3 中的 toRefs\ntypescript\n代码解读\n复制代码\nimport { storeToRefs } from 'pinia' export default defineComponent({ setup() { const store = useMainStore() const { user, company } = storeToRefs(store) return { user, company } }, })\nstate 定义state 在 pinia 中，定义 state 是在函数中返回 state 初始状态\ntypescript\n代码解读\n复制代码\nimport { defineStore } from 'pinia' const useMainStore = defineStore('main', { state: () =\u003e ({ teacherName: '艾伦', userList: [ { name: '小明', age: 18 }, { name: '小李', age: 15 }, { name: '小白', age: 16 }, ], }), }) export default useMainStore\n访问state 可以通过store 实例直接访问\ntypescript\n代码解读\n复制代码\nimport useMainStore from '@/store/main' export default defineComponent({ setup() { const mainStore = useMainStore() const teacherName = computed(() =\u003e mainStore.teacherName) const userList = computed(() =\u003e mainStore.userList) return { teacherName, userList, } }, })\n也可以直接修改状态\ntypescript\n代码解读\n复制代码\nimport useMainStore from '@/store/main' export default defineComponent({ setup() { const mainStore = useMainStore() function change() { mainStore.teacherName = '米利' mainStore.userList.push({ name: '小琪', age: 19 }) } return { change } }, })\n虽然可以直接修改，但是出于代码结构来说，全局的状态管理还是不要直接在各个组件处随意修改状态，应放于 action 中统一方法修改（没有mutation了）\n重置状态 可以通过调用store 上的方法将状态重置为初始状态\ntypescript\n代码解读\n复制代码\nconst mainStore = useMainStore() mainStore.$reset()\n$patch 修改state还可以通过使用 $patch 方法\n$patch 可以同时修改多个值，举个例子\ntypescript\n代码解读\n复制代码\nimport useMainStore from '@/store/main' export default defineComponent({ setup() { const mainStore = useMainStore() mainStore.$patch({ teacherName: '德普', userList: [ { name: '小明', age: 18 }, { name: '小李', age: 15 }, ] }) return {} }, })\n但是，这种写法的在修改数组时，例如我只想要把 userList 的中第一项\"小明\"的age 改为 20，也需要传入整个包括所有成员的数组，这无疑增加了书写成本和风险，于是一般都推荐使用以下的传入一个函数的写法\ntypescript\n代码解读\n复制代码\nmainStore.$patch((state)=\u003e{ state.teacherName = '德普' state.userList[0].age = 20 })\n监听订阅state 通过 store.$subscribe() 的方法，\n该方法的第一个参数接受一个回调函数，该函数可以在 state 变化时触发\ntypescript\n代码解读\n复制代码\nconst subscribe = mainStore.$subscribe((mutation, state) =\u003e { console.log(mutation) console.log(state) })\n如上所示，该回调函数的两个参数\n其中 state 是 mainStore 实例，而 mutation 打印如下\n可以发现，打印结果的mutation对象主要包含三个属性\nevents : 是这次state改变的具体数据，包括改变前的值和改变后的值等等数据 storeId ：是当前store的id type：type表示这次变化是通过什么产生的，主要有三个分别是 “direct” ：通过 action 变化的 ”patch object“ ：通过 $patch 传递对象的方式改变的 “patch function” ：通过 $patch 传递函数的方式改变的 停止监听\n上面代码中，调用mainStore.$subscribe返回的值（即上方示例的 subscribe 变量）可以停止订阅\ntypescript\n代码解读\n复制代码\nsubscribe()\nstore.$subscribe() 的方法的第二个参数options对象，是各种配置参数，包括\ndetached属性，其值是一个布尔值，默认是 false， 正常情况下，当 订阅所在的组件被卸载时，订阅将被停止删除，如果设置detached值为 true 时，即使所在组件被卸载，订阅依然可以生效。\n其他属性主要还有 immediate、deep、flush 等等，和 vue3 watch的对应参数效果一样。\ngetter 定义getter getter 是 store 中的 state 计算值，以defineStore中的getters属性定义\ngetters属性的值是一个函数，该函数的第一个参数是 state\ntypescript\n代码解读\n复制代码\nconst useMainStore = defineStore('main', { state: () =\u003e ({ user: { name: '小明', age: 7, }, }), getters: { userInfo: (state) =\u003e `${state.user.name}今年${state.user.age}岁了`, // 这里想要正确推断参数 state 的类型，则定义 state 时需要使用箭头函数定义 }, })\n上面代码中，getters的值是箭头函数，当getters的值是普通函数时，可以通过 this 访问整个store实例（如下）\n但是如果是普通函数，想要通过 this 获取state的值并希望this的类型能正确推断，同时希望函数的返回值类型正确推断，我们需要声明函数的返回类型。\ntypescript\n代码解读\n复制代码\ngetters: { userDesc: (state) =\u003e `${state.user.name}今年${state.user.age}岁了`, userBesidesDesc(): string{ // 需注明类型 return `${this.user.age}岁的${this.user.name}` // 可以使用 this 获取值 }, returnUserInfo() { return this.userDesc // 也可以使用 this 获取其他getters }, },\n访问getter typescript\n代码解读\n复制代码\nimport useMainStore from '@/store/main' export default defineComponent({ setup() { const mainStore = useMainStore() const userDesc = computed(() =\u003e mainStore.userDesc) const userBesidesDesc = computed(() =\u003e mainStore.userBesidesDesc) const returnUserInfo = computed(() =\u003e mainStore.returnUserInfo) return { userDesc, userBesidesDesc, returnUserInfo, } }, })\naction 定义action action 是 store 中的 方法，支持同步或异步。\naction 定义的函数可以是普通函数从而可以通过 this 访问整个store实例，同时该函数可以传入任意参数并返回任何数据\ntypescript\n代码解读\n复制代码\nconst useMainStore = defineStore('main', { state: () =\u003e ({ count: 0, }), actions: { add() { this.count++ }, addCountNum(num: number) { this.count += num }, }, })\n调用action typescript\n代码解读\n复制代码\nsetup() { const mainStore = useMainStore() function mainAction() { mainStore.addCount() } function addCountTwo() { mainStore.addCountNum(2) } return { mainAction, addCountTwo } },\n监听订阅action 通过 store.$onAction()，可以监听action的动作及结果等\n该函数可以接收一个回调函数作为参数，回调函数的参数中有五个属性，具体如下\ntypescript\n代码解读\n复制代码\nconst unsubscribe = mainStore.$onAction(({ name, // action 函数的名称 store, // store 实例，这里是 mainStore args, // action 函数参数数组 after, // 钩子函数，在action函数执行完成返回或者resolves后执行 onError, // 钩子函数，在action函数报错或者rejects后执行 }) =\u003e {})\n举个例子，\n首先，定义一个store\ntypescript\n代码解读\n复制代码\nimport { defineStore } from 'pinia' const useMainStore = defineStore('main', { state: () =\u003e ({ user: { name: '小明', age: 7, }, }), actions: { subscribeAction(name: string, age: number, manualError?: boolean) { return new Promise((resolve, reject) =\u003e { console.log('subscribeAction函数执行') if (manualError) { reject('手动报错') } else { this.user.name = name this.user.age = age resolve(`${this.user.name}今年${this.user.age}岁了`) } }) }, }, }) export default useMainStore\n然后在 setup 中使用\ntypescript\n代码解读\n复制代码\nimport useMainStore from '@/store/main' import { ref, defineComponent, computed } from 'vue' export default defineComponent({ setup() { const mainStore = useMainStore() function subscribeNormal() { mainStore.subscribeAction('小李', 18, false) } function subscribeError() { mainStore.subscribeAction('小白', 17, true) } const unsubscribe = mainStore.$onAction(({ name, // action 函数的名称 store, // store 实例，这里是 mainStore args, // action 函数参数数组 after, // 钩子函数，在action函数执行完成返回或者resolves后执行 onError, // 钩子函数，在action函数报错或者rejects后执行 }) =\u003e { console.log('action的函数名', name) console.log('参数数组', args) console.log('store实例', store) after((result) =\u003e { console.log('$onAction after函数', result) }) onError(error =\u003e { console.log('错误捕获', error) }) }) return { subscribeNormal, subscribeError, } }, })\n如上，在 setup 中，调用了 subscribeNormal 函数后，页面打印如下\n调用了 subscribeError 函数后，页面打印如下\n同样，可以通过调用 mainStore.$onAction 返回的值来手动停止订阅，在上面代码的例子中，即是\ntypescript\n代码解读\n复制代码\nunsubscribe() // 手动停止订阅\nstore.$onAction 默认在所在组件卸载时会被自动删除，可以通过传递第二个参数 true，来将action订阅和所在组件分开（即组件卸载时，订阅依然有效）\ntypescript\n代码解读\n复制代码\nmainStore.$onAction(callback, true)\nstore使用位置 在组件中使用时，useStore() 在大多数情况下都可以在调用后开箱即用。\n在其他地方使用时，需确保在 pinia 激活使用后（ app.use(createPinia()) ）才能使用 useStore()\n例如在路由守卫中\ntypescript\n代码解读\n复制代码\nimport { createRouter } from 'vue-router' import useMainStore from '@/store/main' const router = createRouter({ // ... }) // 报错 const mainStore = useMainStore() router.beforeEach((to) =\u003e { // 正常使用 const mainStore = useMainStore() })\n在store中也可以访问其他store\ntypescript\n代码解读\n复制代码\nimport { defineStore } from 'pinia' import { useUserStore } from './user' export const useMainStore = defineStore('main', { getters: { otherGetter(state) { const userStore = useUserStore() return userStore.data + state.data }, }, actions: { async fetchUserInfo() { const userStore = useUserStore() if (userStore.userInfo) { ... } }, }, })\npinia插件 pinia store 支持扩展，通过 pinia 插件我们可以实现以下\n给 store 添加新属性\n给 store 添加新选项\n给 store 添加新方法\n包装已存在的方法\n修改甚至删除actions\n…\n例如可以写一个简单的插件来给所有store添加一个静态属性\ntypescript\n代码解读\n复制代码\nimport { createPinia } from 'pinia' const pinia = createPinia() // 传递一个返回函数 pinia.use(() =\u003e ({ env: 'dev' })) app.use(pinia)\n然后，在所有其他的store都可以访问到上面添加的 env 属性\ntypescript\n代码解读\n复制代码\nsetup() { const mainStore = useMainStore() console.log(mainStore.env) // dev }\n插件函数 从上方代码可以发现，pinia 插件是一个函数，这个函数有一个可选参数\ntypescript\n代码解读\n复制代码\nimport { PiniaPluginContext } from 'pinia' function myPiniaPlugin(context: PiniaPluginContext) { console.log(context) }\ncontext 打印出来主要有\napp : 当前应用 Vue.createApp() 创建的 app options : defineStore 配置的数据 pinia : 当前通过 createPinia() 创建的 pinia 实例 store ：当前 store 实例 通过 context 我们可以在 store 上设置属性\ntypescript\n代码解读\n复制代码\npinia.use(({ store }) =\u003e { store.env = 'dev' })\n这样，在所有其他的store都可以访问到上面添加的 env 属性\npinia 的 store 是通过 reactive 包装的，可以自动解包它包含的任何 ref 对象\ntypescript\n代码解读\n复制代码\npinia.use(({ store }) =\u003e { store.env = ref('dev') })\n通过上面插件，访问store 的 env 时不需要 .value，就可以直接访问\ntypescript\n代码解读\n复制代码\nsetup() { const mainStore = useMainStore() console.log(mainStore.env) // 不需要加 .value }\n添加外部属性 当需要添加来自其他库或不需要响应式的数据时，应该用 markRaw() 包装传递的对象，例如\nmarkRaw 来自 vue3，可以标记一个对象，使其永远不会转换为 proxy。返回对象本身。\ntypescript\n代码解读\n复制代码\nimport { markRaw } from 'vue' import { router } from './router' import { axios } from 'axios' pinia.use(({ store }) =\u003e { store.router = markRaw(router) store.axios = markRaw(axios) })\n在插件内部使用$subscribe、$onAction typescript\n代码解读\n复制代码\npinia.use(({ store }) =\u003e { store.$subscribe(() =\u003e { // react to store changes }) store.$onAction(() =\u003e { // react to store actions }) })\n新属性的typescript支持 当通过插件添加新属性时，可以扩展 PiniaCustomProperties接口\n可以用设置get，set或者简单声明值的类型，以此来安全地写入和读取新加的属性\ntypescript\n代码解读\n复制代码\nimport 'pinia' declare module 'pinia' { export interface PiniaCustomProperties { set env(value: string | Ref) get env(): string // 或者 env: string } }\n",
+  "wordCount" : "1233",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2022-02-24T00:00:00Z",
+  "dateModified": "2022-02-24T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "kaaaaaaai"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E6%88%91%E6%8A%8Avue3%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84vuex%E5%8E%BB%E9%99%A4%E4%BA%86%E6%94%B9%E7%94%A8pinia/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      我把vue3项目中的vuex去除了，改用pinia
+    </h1>
+    <div class="post-description">
+      相对于以前的vuex，pinia具有以下优势更简单的写法，代码更清晰简洁更完善的typescript支持非常轻量，只有1kb的大小
+    </div>
+    <div class="post-meta"><span title='2022-02-24 00:00:00 +0000 UTC'>二月 24, 2022</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;kaaaaaaai&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#pinia" aria-label="Pinia">Pinia</a><ul>
+                        
+                <li>
+                    <a href="#pinia-%e7%9a%84%e4%bc%98%e5%8a%bf" aria-label="pinia 的优势">pinia 的优势</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85" aria-label="安装">安装</a></li>
+                <li>
+                    <a href="#%e5%ae%9a%e4%b9%89%e4%bd%bf%e7%94%a8store" aria-label="定义、使用store">定义、使用store</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%9a%e4%b9%89store" aria-label="定义store">定义store</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8store" aria-label="使用store">使用store</a></li></ul>
+                </li>
+                <li>
+                    <a href="#state" aria-label="state">state</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%9a%e4%b9%89state" aria-label="定义state">定义state</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%aestate" aria-label="访问state">访问state</a></li>
+                <li>
+                    <a href="#%e9%87%8d%e7%bd%ae%e7%8a%b6%e6%80%81" aria-label="重置状态">重置状态</a></li>
+                <li>
+                    <a href="#patch" aria-label="$patch">$patch</a></li>
+                <li>
+                    <a href="#%e7%9b%91%e5%90%ac%e8%ae%a2%e9%98%85state" aria-label="监听订阅state">监听订阅state</a></li></ul>
+                </li>
+                <li>
+                    <a href="#getter" aria-label="getter">getter</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%9a%e4%b9%89getter" aria-label="定义getter">定义getter</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%aegetter" aria-label="访问getter">访问getter</a></li></ul>
+                </li>
+                <li>
+                    <a href="#action" aria-label="action">action</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%9a%e4%b9%89action" aria-label="定义action">定义action</a></li>
+                <li>
+                    <a href="#%e8%b0%83%e7%94%a8action" aria-label="调用action">调用action</a></li>
+                <li>
+                    <a href="#%e7%9b%91%e5%90%ac%e8%ae%a2%e9%98%85action" aria-label="监听订阅action">监听订阅action</a></li></ul>
+                </li>
+                <li>
+                    <a href="#store%e4%bd%bf%e7%94%a8%e4%bd%8d%e7%bd%ae" aria-label="store使用位置">store使用位置</a></li>
+                <li>
+                    <a href="#pinia%e6%8f%92%e4%bb%b6" aria-label="pinia插件">pinia插件</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8f%92%e4%bb%b6%e5%87%bd%e6%95%b0" aria-label="插件函数">插件函数</a></li>
+                <li>
+                    <a href="#%e6%b7%bb%e5%8a%a0%e5%a4%96%e9%83%a8%e5%b1%9e%e6%80%a7" aria-label="添加外部属性">添加外部属性</a></li>
+                <li>
+                    <a href="#%e5%9c%a8%e6%8f%92%e4%bb%b6%e5%86%85%e9%83%a8%e4%bd%bf%e7%94%a8subscribeonaction" aria-label="在插件内部使用$subscribe、$onAction">在插件内部使用$subscribe、$onAction</a></li>
+                <li>
+                    <a href="#%e6%96%b0%e5%b1%9e%e6%80%a7%e7%9a%84typescript%e6%94%af%e6%8c%81" aria-label="新属性的typescript支持">新属性的typescript支持</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="pinia">Pinia<a hidden class="anchor" aria-hidden="true" href="#pinia">#</a></h1>
+<p>​ pinia 目前已经是 vue 官方正式的状态库。适用于 vue2 和 vue3，本文只描述vue3的写法。</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/179f795a4a6f4fe184bb158dae6f49a9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image-20220217155244154.png"  />
+</p>
+<h2 id="pinia-的优势">pinia 的优势<a hidden class="anchor" aria-hidden="true" href="#pinia-的优势">#</a></h2>
+<p>相对于以前的 vuex，pinia具有以下优势</p>
+<ul>
+<li>更简单的写法，代码更清晰简洁，支持 <code>composition api</code> 和 <code>options api</code> 语法</li>
+<li>更完善的 typescript 支持，无需创建自定义复杂的包装类型来支持 TypeScript，所有内容都是类型化的，并且 API 的设计方式尽可能利用 TS 类型推断</li>
+<li>非常轻量，只有1kb的大小</li>
+<li>不需要再注入魔法字符串等进行调用</li>
+</ul>
+<h2 id="安装">安装<a hidden class="anchor" aria-hidden="true" href="#安装">#</a></h2>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>yarn add pinia // or npm install pinia</code></p>
+<h2 id="定义使用store">定义、使用store<a hidden class="anchor" aria-hidden="true" href="#定义使用store">#</a></h2>
+<p>创建一个 pinia 并传递给 vue 应用</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { createPinia } from 'pinia' import { createApp } from 'vue' import App from './app.vue' createApp(App).use(createPinia()).mount('#app')</code></p>
+<h3 id="定义store">定义store<a hidden class="anchor" aria-hidden="true" href="#定义store">#</a></h3>
+<p>store的定义是通过 defineStore 这个函数，</p>
+<p>它需要一个唯一的名称，该名称可以作为第一个参数传递，也可以用 id 熟悉传递。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { defineStore } from 'pinia' export const useMainStore = defineStore('main', {   // other options... })</code></p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { defineStore } from 'pinia' export const useMainStore = defineStore({   id: 'main'   // other options... })</code></p>
+<p>该 id 是必要的，主要是用于 vue devtools</p>
+<h3 id="使用store">使用store<a hidden class="anchor" aria-hidden="true" href="#使用store">#</a></h3>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { useMainStore } from '@/stores/main' export default defineComponent({   setup() {     const store = useMainStore()     return {       store,     }   }, })</code></p>
+<p>上述代码中，useMainStore实例化后的，我们就可以在 store 上访问 state、getters、actions 等（pinia中没有mutations）。</p>
+<p>该 store 是一个 reactive 对象，所以不需要 “.value”，也不能对其进行解构使用，否则失去响应性（类似 props）。</p>
+<blockquote>
+<p>storeToRefs</p>
+</blockquote>
+<p>如果一定要对其进行解构使用，可以使用 storeToRefs ，类似 vue3 中的 <code>toRefs</code></p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { storeToRefs } from 'pinia' export default defineComponent({   setup() {     const store = useMainStore()     const { user, company } = storeToRefs(store)     return {       user,        company     }   }, })</code></p>
+<h2 id="state">state<a hidden class="anchor" aria-hidden="true" href="#state">#</a></h2>
+<h3 id="定义state">定义state<a hidden class="anchor" aria-hidden="true" href="#定义state">#</a></h3>
+<p>在 pinia 中，定义 state 是在函数中返回 state 初始状态</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { defineStore } from 'pinia' const useMainStore = defineStore('main', {     state: () =&gt; ({         teacherName: '艾伦',         userList: [             { name: '小明', age: 18 },             { name: '小李', age: 15 },             { name: '小白', age: 16 },         ],     }), }) export default useMainStore</code></p>
+<h3 id="访问state">访问state<a hidden class="anchor" aria-hidden="true" href="#访问state">#</a></h3>
+<p>可以通过store 实例直接访问</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import useMainStore from '@/store/main' export default defineComponent({     setup() {         const mainStore = useMainStore()         const teacherName = computed(() =&gt; mainStore.teacherName)         const userList = computed(() =&gt; mainStore.userList)         return {             teacherName,             userList,         }     }, })</code></p>
+<p>也可以直接修改状态</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import useMainStore from '@/store/main' export default defineComponent({     setup() {         const mainStore = useMainStore()         function change() {             mainStore.teacherName = '米利'             mainStore.userList.push({                 name: '小琪',                 age: 19             })         }         return {             change         }     }, })</code></p>
+<p>虽然可以直接修改，但是出于代码结构来说，全局的状态管理还是不要直接在各个组件处随意修改状态，应放于 action 中统一方法修改（没有mutation了）</p>
+<h3 id="重置状态">重置状态<a hidden class="anchor" aria-hidden="true" href="#重置状态">#</a></h3>
+<p>可以通过调用store 上的方法将状态重置为初始状态</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const mainStore = useMainStore() mainStore.$reset()</code></p>
+<h3 id="patch">$patch<a hidden class="anchor" aria-hidden="true" href="#patch">#</a></h3>
+<p>修改state还可以通过使用 $patch 方法</p>
+<p>$patch 可以同时修改多个值，举个例子</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import useMainStore from '@/store/main' export default defineComponent({     setup() {         const mainStore = useMainStore()          		mainStore.$patch({     		teacherName: '德普',             userList: [                 { name: '小明', age: 18 },                 { name: '小李', age: 15 },             ] 		})         return {}     }, })</code></p>
+<p>但是，这种写法的在修改数组时，例如我只想要把 userList 的中第一项&quot;小明&quot;的age 改为 20，也需要传入整个包括所有成员的数组，这无疑增加了书写成本和风险，于是一般都推荐使用以下的传入一个函数的写法</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mainStore.$patch((state)=&gt;{ 		state.teacherName = '德普' 		state.userList[0].age = 20 })</code></p>
+<h3 id="监听订阅state">监听订阅state<a hidden class="anchor" aria-hidden="true" href="#监听订阅state">#</a></h3>
+<p>通过 store.$subscribe() 的方法，</p>
+<p>该方法的第一个参数接受一个回调函数，该函数可以在 state 变化时触发</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const subscribe = mainStore.$subscribe((mutation, state) =&gt; {     console.log(mutation)     console.log(state) })</code></p>
+<p>如上所示，该回调函数的两个参数</p>
+<p>其中 state 是 mainStore 实例，而 mutation 打印如下</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7e5951610dd84df0bfba41c40ba186af~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="企业微信截图_16451556432369.png"  />
+</p>
+<p>可以发现，打印结果的mutation对象主要包含三个属性</p>
+<ul>
+<li>events : 是这次state改变的具体数据，包括改变前的值和改变后的值等等数据</li>
+<li>storeId ：是当前store的id</li>
+<li>type：type表示这次变化是通过什么产生的，主要有三个分别是
+<ul>
+<li>“direct” ：通过 action 变化的</li>
+<li>”patch object“ ：通过 $patch 传递对象的方式改变的</li>
+<li>“patch function” ：通过 $patch 传递函数的方式改变的</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>停止监听</p>
+</blockquote>
+<p>上面代码中，调用mainStore.$subscribe返回的值（即上方示例的 subscribe 变量）可以停止订阅</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>subscribe()</code></p>
+<p>store.$subscribe() 的方法的第二个参数options对象，是各种配置参数，包括</p>
+<p>detached属性，其值是一个布尔值，默认是 false， 正常情况下，当 订阅所在的组件被卸载时，订阅将被停止删除，如果设置detached值为 true 时，即使所在组件被卸载，订阅依然可以生效。</p>
+<p>其他属性主要还有 immediate、deep、flush 等等，和 vue3 watch的对应参数效果一样。</p>
+<h2 id="getter">getter<a hidden class="anchor" aria-hidden="true" href="#getter">#</a></h2>
+<h3 id="定义getter">定义getter<a hidden class="anchor" aria-hidden="true" href="#定义getter">#</a></h3>
+<p>getter 是 store 中的 state 计算值，以defineStore中的<code>getters</code>属性定义</p>
+<p>getters属性的值是一个函数，该函数的第一个参数是 state</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const useMainStore = defineStore('main', {     state: () =&gt; ({         user: {             name: '小明',             age: 7,         },     }),     getters: {         userInfo: (state) =&gt; `${state.user.name}今年${state.user.age}岁了`,         // 这里想要正确推断参数 state 的类型，则定义 state 时需要使用箭头函数定义     }, })</code></p>
+<p>上面代码中，getters的值是箭头函数，当getters的值是普通函数时，可以通过 this 访问整个store实例（如下）</p>
+<p>但是如果是普通函数，想要通过 this 获取state的值并希望this的类型能正确推断，同时希望函数的返回值类型正确推断，我们需要声明函数的返回类型。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>getters: {         userDesc: (state) =&gt; `${state.user.name}今年${state.user.age}岁了`,                      userBesidesDesc(): string{ // 需注明类型             return `${this.user.age}岁的${this.user.name}` // 可以使用 this 获取值         },                      returnUserInfo() {             return this.userDesc // 也可以使用 this 获取其他getters         },     },</code></p>
+<h3 id="访问getter">访问getter<a hidden class="anchor" aria-hidden="true" href="#访问getter">#</a></h3>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import useMainStore from '@/store/main' export default defineComponent({     setup() {         const mainStore = useMainStore()         const userDesc = computed(() =&gt; mainStore.userDesc)         const userBesidesDesc = computed(() =&gt; mainStore.userBesidesDesc)         const returnUserInfo = computed(() =&gt; mainStore.returnUserInfo)         return {             userDesc,             userBesidesDesc,             returnUserInfo,         }     }, })</code></p>
+<h2 id="action">action<a hidden class="anchor" aria-hidden="true" href="#action">#</a></h2>
+<h3 id="定义action">定义action<a hidden class="anchor" aria-hidden="true" href="#定义action">#</a></h3>
+<p>action 是 store 中的 方法，支持同步或异步。</p>
+<p>action 定义的函数可以是普通函数从而可以通过 this 访问整个store实例，同时该函数可以传入任意参数并返回任何数据</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const useMainStore = defineStore('main', {     state: () =&gt; ({         count: 0,     }),     actions: {         add() {             this.count++         },                  addCountNum(num: number) {             this.count += num         },     }, })</code></p>
+<h3 id="调用action">调用action<a hidden class="anchor" aria-hidden="true" href="#调用action">#</a></h3>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>setup() {         const mainStore = useMainStore()         function mainAction() {             mainStore.addCount()         }          	function addCountTwo() {             mainStore.addCountNum(2)         }         return {             mainAction,             addCountTwo         } },</code></p>
+<h3 id="监听订阅action">监听订阅action<a hidden class="anchor" aria-hidden="true" href="#监听订阅action">#</a></h3>
+<p>通过 <code>store.$onAction()</code>，可以监听action的动作及结果等</p>
+<p>该函数可以接收一个回调函数作为参数，回调函数的参数中有五个属性，具体如下</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const unsubscribe = mainStore.$onAction(({     name, // action 函数的名称     store, // store 实例，这里是 mainStore     args, // action 函数参数数组     after, // 钩子函数，在action函数执行完成返回或者resolves后执行     onError, // 钩子函数，在action函数报错或者rejects后执行 }) =&gt; {})</code></p>
+<p>举个例子，</p>
+<p>首先，定义一个store</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { defineStore } from 'pinia' const useMainStore = defineStore('main', {     state: () =&gt; ({         user: {             name: '小明',             age: 7,         },     }),     actions: {         subscribeAction(name: string, age: number, manualError?: boolean) {             return new Promise((resolve, reject) =&gt; {                 console.log('subscribeAction函数执行')                 if (manualError) {                     reject('手动报错')                 } else {                     this.user.name = name                     this.user.age = age                     resolve(`${this.user.name}今年${this.user.age}岁了`)                 }             })         },     }, }) export default useMainStore</code></p>
+<p>然后在 setup 中使用</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import useMainStore from '@/store/main' import { ref, defineComponent, computed } from 'vue' export default defineComponent({     setup() {         const mainStore = useMainStore()         function subscribeNormal() {             mainStore.subscribeAction('小李', 18, false)         }                  function subscribeError() {             mainStore.subscribeAction('小白', 17, true)         }         const unsubscribe = mainStore.$onAction(({             name, // action 函数的名称             store, // store 实例，这里是 mainStore             args, // action 函数参数数组             after, // 钩子函数，在action函数执行完成返回或者resolves后执行             onError, // 钩子函数，在action函数报错或者rejects后执行         }) =&gt; {             console.log('action的函数名', name)             console.log('参数数组', args)             console.log('store实例', store)             after((result) =&gt; {                 console.log('$onAction after函数', result)             })             onError(error =&gt; {                 console.log('错误捕获', error)             })         })         return {             subscribeNormal,             subscribeError,         }     }, })</code></p>
+<p>如上，在 setup 中，调用了 subscribeNormal 函数后，页面打印如下</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c8c541eba474ee7baa711f7248c40ac~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image-20220218105411157.png"  />
+</p>
+<p>调用了 subscribeError 函数后，页面打印如下</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b4293805a43e45f4962af0c426c1dec1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image-20220218105452580.png"  />
+</p>
+<p>同样，可以通过调用 mainStore.$onAction 返回的值来手动停止订阅，在上面代码的例子中，即是</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>unsubscribe() // 手动停止订阅</code></p>
+<p>store.$onAction 默认在所在组件卸载时会被自动删除，可以通过传递第二个参数 true，来将action订阅和所在组件分开（即组件卸载时，订阅依然有效）</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>mainStore.$onAction(callback, true)</code></p>
+<h2 id="store使用位置">store使用位置<a hidden class="anchor" aria-hidden="true" href="#store使用位置">#</a></h2>
+<p>在组件中使用时，useStore() 在大多数情况下都可以在调用后开箱即用。</p>
+<p>在其他地方使用时，需确保在 pinia 激活使用后（ app.use(createPinia()) ）才能使用 useStore()</p>
+<p>例如在路由守卫中</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { createRouter } from 'vue-router' import useMainStore from '@/store/main' const router = createRouter({   // ... }) // 报错 const mainStore = useMainStore() router.beforeEach((to) =&gt; {   // 正常使用   const mainStore = useMainStore() })</code></p>
+<p>在store中也可以访问其他store</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { defineStore } from 'pinia' import { useUserStore } from './user' export const useMainStore = defineStore('main', {   getters: {     otherGetter(state) {       const userStore = useUserStore()       return userStore.data + state.data     },   },   actions: {     async fetchUserInfo() {       const userStore = useUserStore()       if (userStore.userInfo) {         ...       }     },   }, })</code></p>
+<h2 id="pinia插件">pinia插件<a hidden class="anchor" aria-hidden="true" href="#pinia插件">#</a></h2>
+<p>pinia store 支持扩展，通过 pinia 插件我们可以实现以下</p>
+<ul>
+<li>
+<p>给 store 添加新属性</p>
+</li>
+<li>
+<p>给 store 添加新选项</p>
+</li>
+<li>
+<p>给 store 添加新方法</p>
+</li>
+<li>
+<p>包装已存在的方法</p>
+</li>
+<li>
+<p>修改甚至删除actions</p>
+<p>&hellip;</p>
+</li>
+</ul>
+<p>例如可以写一个简单的插件来给所有store添加一个静态属性</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { createPinia } from 'pinia' const pinia = createPinia() // 传递一个返回函数 pinia.use(() =&gt; ({ env: 'dev' })) app.use(pinia)</code></p>
+<p>然后，在所有其他的store都可以访问到上面添加的 env 属性</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>setup() {         const mainStore = useMainStore()         console.log(mainStore.env) // dev }</code></p>
+<h3 id="插件函数">插件函数<a hidden class="anchor" aria-hidden="true" href="#插件函数">#</a></h3>
+<p>从上方代码可以发现，pinia 插件是一个函数，这个函数有一个可选参数</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { PiniaPluginContext } from 'pinia' function myPiniaPlugin(context: PiniaPluginContext) {     console.log(context) }</code></p>
+<p><img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ef298e643f80423ba8742a7f7c79d296~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?" alt="image-20220222165025712.png"  />
+</p>
+<p>context 打印出来主要有</p>
+<ul>
+<li>app : 当前应用 Vue.createApp() 创建的 app</li>
+<li>options : defineStore 配置的数据</li>
+<li>pinia : 当前通过 createPinia() 创建的 pinia 实例</li>
+<li>store ：当前 store 实例</li>
+</ul>
+<p>通过 context 我们可以在 store 上设置属性</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>pinia.use(({ store }) =&gt; {     store.env = 'dev' })</code></p>
+<p>这样，在所有其他的store都可以访问到上面添加的 env 属性</p>
+<p>pinia 的 store 是通过 reactive 包装的，可以自动解包它包含的任何 ref 对象</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>pinia.use(({ store }) =&gt; {     store.env = ref('dev') })</code></p>
+<p>通过上面插件，访问store 的 env 时不需要 .value，就可以直接访问</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>setup() {         const mainStore = useMainStore()         console.log(mainStore.env) // 不需要加 .value }</code></p>
+<h3 id="添加外部属性">添加外部属性<a hidden class="anchor" aria-hidden="true" href="#添加外部属性">#</a></h3>
+<p>当需要添加来自其他库或不需要响应式的数据时，应该用 markRaw() 包装传递的对象，例如</p>
+<p>markRaw 来自 vue3，可以标记一个对象，使其永远不会转换为 proxy。返回对象本身。</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { markRaw } from 'vue' import { router } from './router' import { axios } from 'axios' pinia.use(({ store }) =&gt; {   store.router = markRaw(router)   store.axios = markRaw(axios) })</code></p>
+<h3 id="在插件内部使用subscribeonaction">在插件内部使用$subscribe、$onAction<a hidden class="anchor" aria-hidden="true" href="#在插件内部使用subscribeonaction">#</a></h3>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>pinia.use(({ store }) =&gt; {   store.$subscribe(() =&gt; {     // react to store changes   })   store.$onAction(() =&gt; {     // react to store actions   }) })</code></p>
+<h3 id="新属性的typescript支持">新属性的typescript支持<a hidden class="anchor" aria-hidden="true" href="#新属性的typescript支持">#</a></h3>
+<p>当通过插件添加新属性时，可以扩展 <code>PiniaCustomProperties</code>接口</p>
+<p>可以用设置get，set或者简单声明值的类型，以此来安全地写入和读取新加的属性</p>
+<p>typescript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import 'pinia' declare module 'pinia' {     export interface PiniaCustomProperties {         set env(value: string | Ref&lt;string&gt;)         get env(): string         // 或者         env: string     } }</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E8%A1%8C%E4%B8%9A%E7%8E%B0%E7%8A%B6%E4%B8%8Eaigc%E7%9A%84%E6%80%9D%E8%80%83/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>虚拟人行业现状与AIGC的思考</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%B9%B4%E9%BE%84%E6%B8%90%E9%95%BF%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E5%8F%91%E5%B1%95%E4%B9%8B%E8%B7%AF%E8%AF%A5%E6%80%8E%E4%B9%88%E8%B5%B0/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>年龄渐长，技术人的发展之路该怎么走？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我把vue3项目中的vuex去除了，改用pinia on x"
+            href="https://x.com/intent/tweet/?text=%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f&amp;hashtags=%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我把vue3项目中的vuex去除了，改用pinia on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f&amp;title=%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia&amp;summary=%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我把vue3项目中的vuex去除了，改用pinia on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f&title=%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我把vue3项目中的vuex去除了，改用pinia on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我把vue3项目中的vuex去除了，改用pinia on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我把vue3项目中的vuex去除了，改用pinia on telegram"
+            href="https://telegram.me/share/url?text=%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 我把vue3项目中的vuex去除了，改用pinia on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%88%91%e6%8a%8avue3%e9%a1%b9%e7%9b%ae%e4%b8%ad%e7%9a%84vuex%e5%8e%bb%e9%99%a4%e4%ba%86%ef%bc%8c%e6%94%b9%e7%94%a8pinia&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E6%2588%2591%25E6%258A%258Avue3%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%25E7%259A%2584vuex%25E5%258E%25BB%25E9%2599%25A4%25E4%25BA%2586%25E6%2594%25B9%25E7%2594%25A8pinia%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

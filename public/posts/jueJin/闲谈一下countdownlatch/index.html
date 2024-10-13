@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>闲谈一下CountDownLatch | PaperMod</title>
+<meta name="keywords" content="Java, 后端, 面试">
+<meta name="description" content="前言：如果不掌握多线程，那么还谈不上是一位合格的Java开发工程师。回顾过往，发现我是如此的喜欢使用CountDownLatch，它带给我便捷、速度、也带给我谨慎。今天就来盘一盘这个爱不释手的">
+<meta name="author" content="uzong">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bcountdownlatch/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bcountdownlatch/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="闲谈一下CountDownLatch" />
+<meta property="og:description" content="前言：如果不掌握多线程，那么还谈不上是一位合格的Java开发工程师。回顾过往，发现我是如此的喜欢使用CountDownLatch，它带给我便捷、速度、也带给我谨慎。今天就来盘一盘这个爱不释手的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bcountdownlatch/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-06T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="闲谈一下CountDownLatch"/>
+<meta name="twitter:description" content="前言：如果不掌握多线程，那么还谈不上是一位合格的Java开发工程师。回顾过往，发现我是如此的喜欢使用CountDownLatch，它带给我便捷、速度、也带给我谨慎。今天就来盘一盘这个爱不释手的"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "闲谈一下CountDownLatch",
+      "item": "http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bcountdownlatch/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "闲谈一下CountDownLatch",
+  "name": "闲谈一下CountDownLatch",
+  "description": "前言：如果不掌握多线程，那么还谈不上是一位合格的Java开发工程师。回顾过往，发现我是如此的喜欢使用CountDownLatch，它带给我便捷、速度、也带给我谨慎。今天就来盘一盘这个爱不释手的",
+  "keywords": [
+    "Java", "后端", "面试"
+  ],
+  "articleBody": "前言：如果不掌握多线程，那么还谈不上是一位合格的 Java 开发工程师。\n回顾过往，发现我是如此的喜欢使用 CountDownLatch，它带给我便捷、速度、也带给我谨慎。今天就来盘一盘这个爱不释手的 CountDownLatch。\n一、“慢是原罪” 😊 最简单、最可靠的编程就是不要使用多线程，但同时系统的某些功能运行也会因此慢得不能忍受！\n认识 CountDownLatch 这个核心工具类，还得从以下几个故事开始。\n1.1 故事一：同步任务 同步作业，从系统 A，同步到系统 B， 主要同步的内容为：部门 + 人员\n注：部门和人员的信息来源不同的 API，需要分成两个接口同步，且先同步部门再同步人员，并且部门要构造成一棵树，人员信息没有批量接口。\n伪代码逻辑：\n先同步整个部门树 再串行同步每个部门树上的人员信息， 人员信息的获取和写入都依赖部门ID。 逻辑清晰，代码自然很快实现。但跑真实数据的时候，才发现整个过程超级慢，同步每个部门和人员的接口都是 http ，数量一多，调用次数也就多，耗时自然就高。\n结果就几万人，同步花了两小时！虽然说是让机器自己跑，但时间太长，不符合我的要求！\n由于单个部门人员信息的获取和写入不存在先后依赖，可以并行。 最后用 CountDownLatch 改造，时间缩短 10 倍。\n1.2 故事二：导出数据 我们的交付老师(非技术出身)找到我，说系统有一个导出任务，当数量少的时候，可以导出成功，但是当任务多的时候总是导出失败，根本导不出来。\n有时候抽象的语言，需要用图来做证明，当我们看到图就知道所描述的内容是什么，真正是“一图胜千言”\n我追问了一句，导不出来是什么现象?\n她说了就是不行，然后把电脑拿过来，导出五千多条数据，点击导出，等待快到 2 分钟的时候，请求中断。（串行获取所有数据，然后写入 Excel 中，由于串行过程耗时过长，连接断开）\n由于导出的数据，每一条都需要请求 RPC 补充完整数据，由于串行执行，肯定比较耗时。 最后用 CountDownLatch 进行改造。先使用 CountDownLatch 进行多线程数据组装，然后再写入 Excel 中。\n备注：由于数量上限为 1 w，因此允许这么做，当数据量太大时，即使用 CountDownLatch 也不好使。最好的方式还是需要走离线调度，但也会失去一定的实时性。CountDownLatch 的改造不是一个最佳方法，算是一个简单的折中解决方式。\n1.3 故事三：首页加载太慢 首页加载太慢，需要几秒，有一个聚合等待逻辑比较耗时。其中有一个数据需要其他几个数据计算出来以后，才能计算。\n系统运行一段时间，开始变得慢起来， 检查发现请求接口串行。\n使用 CountDownLatch 将依赖的数据并行计算。\n1.4 故事四：更新丢失 写出数据，依赖前面的更新数据。由于更新数据较多，采用多线程，但是并没等每个任务都更新结束。因此存在部分数据不符合预期。（多线程执行更新，但是没有等待执行结果就进入下一步）\n使用 CountDownLatch，等所有数据更新结束，再读取。显然这是非常典型的依赖。\n故事最后：我们没有批评和抨击别人的权利，但是我们要有解决问题的实际能力！\n二、依赖等待是本质 CountDownLatch 属于线程之间的通信，或者线程之间的协作，但我认为它解决的是多任务依赖等待问题。\n2.1 案例描述 如下图所示： ABC 都是繁重的 http/RPC 接口，执行完毕才能执行 D，因此整个执行时间，随着 ABC 耗时增加而增加。但是并行任务，则取 ABC 的最大值即可。因此在耗时上来讲，串行属于时间和，并行属于时间极值。\n2.2 场景总结 那么哪些场景可以使用 CountDownLatch。 简言之：有多任务执行结果的依赖都可以考虑 CountDownLatch\n三、认识 CountDownLatch A synchronization aid that allows one or more threads to wait until a set of operations being performed in other threads completes(一个同步辅助工具，允许一个或多个线程等待其他线程执行的一组操作完成)\nCountDownLatch 初始化一个给定值，调用 await 方法阻塞，直到当前计数由于调用 countDown 方法而达到零，\n之后所有等待的线程都会被释放。\n3.1 CountDownLatch 接口 CountDownLatch 源码给出了两个使用案例。（只是简单 demo，实践在使用上我们更应该考虑异常）\nCountDownLatch 的关键方法：\nCountDownLatch(int count) ：构造方法，初始化计数器的值。 countDown() ：每调用一次，计数器减一。当计数器的值达到零时，所有等待的线程将被唤醒。 await() ：调用此方法的线程将被阻塞，直到计数器的值为零。 await(long timeout, TimeUnit unit) ：超时机制的等待方法。 3.2 注意事项 注意事项： countDownLatch 的数量减到 0， 否则会存在一直等待，因为其他线程没有办法继续获取锁。这也是十分危险的事情。\n无法执行 countDown()， 导致其他等待线程无法执行。例异常时，不能执行到该段代码一样。\n可以将await() 替换成await(long timeout, TimeUnit unit) 带有超时机制的等待方法，避免特殊情况的等待。\n3.3 替代 CompletableFuture 工具类 可以使用 CompletableFuture 这些 API 来替换 CountDownLatch 的功能。 CompletableFuture 提供了较多的 API 来替代 CountDownLatch。 处理异常时特别方便的。\n组合多个异步任务：使用 CompletableFuture.allOf() 可以等待多个 CompletableFuture 任务完成。这类似于 CountDownLatch，但是更灵活，因为它可以等待任何数量的 CompletableFuture 任务。 异常处理：CompletableFuture 可以通过 exceptionally() 方法来处理异步任务中的异常，而 CountDownLatch 需要你在 countDown() 之前手动处理。 回调：CompletableFuture 可以使用 whenComplete() 或 handle() 方法来添加回调，这些回调会在异步任务完成时执行。 当然 CompletableFuture 还有很多高级 API，可以根据场景选择合适的 API。 虽然 CompletableFuture 很好用，但是我也建议你尝试用用 CountDownLatch。\n3.4 CountDownLatch 部分源码 CountDownLatch 的代码很少，主要复用了 AbstractQueuedSynchronizer （AQS）的能力。\nCountDownLatch 的内部类 Sync 继承自 AbstractQueuedSynchronizer，重写了 tryAcquireShared 和 tryReleaseShared 方法来实现同步逻辑。tryAcquireShared 方法用于判断是否可以获取共享锁（即计数器是否为零），而 tryReleaseShared 方法用于减少计数器并唤醒等待的线程。\ncountDown() 方法通过调用 AQS 的 releaseShared 方法来减少计数器，并在计数器为零时唤醒所有等待的线程。 await() 方法通过调用 AQS 的 acquireSharedInterruptibly 方法来阻塞当前线程，直到计数器为零或线程被中断。 java\n代码解读\n复制代码\nprivate static final class Sync extends AbstractQueuedSynchronizer { private static final long serialVersionUID = 4982264981922014374L; Sync(int count) { setState(count); } int getCount() { return getState(); } // ===== 实现 tryAcquireShared 和 tryReleaseShared 两个方法 === // 这个方法是用来尝试获取共享模式下的同步状态。 // 在 CountDownLatch 的使用场景中，当一个或多个线程调用 await() 方法时， // 它们会尝试获取共享锁。tryAcquireShared 方法的实现逻辑是检查 AQS 同步状态 //（即 CountDownLatch 的计数器）是否为0 protected int tryAcquireShared(int acquires) { return (getState() == 0) ? 1 : -1; } // 这个方法是用来尝试释放共享模式下的同步状态。 // 当线程调用 countDown() 方法时，实际上是在减少 CountDownLatch 的计数器 /* 1. 通过循环，获取当前同步状态（计数器值）。 2. 如果计数器已经为0，说明已经没有需要等待的事件了，方法返回false，不再执行任何操作。 3. 如果计数器不为0，方法会尝试通过 CAS（比较并交换）操作将计数器减1。 4. 如果 CAS 操作成功，并且新的计数器值为0，表示所有事件都已经完成，方法返回true，此时 AQS 会释放所有等待的线程。 */ protected boolean tryReleaseShared(int releases) { // Decrement count; signal when transition to zero for (;;) { int c = getState(); if (c == 0) return false; int nextc = c-1; if (compareAndSetState(c, nextc)) return nextc == 0; } } }\n为什么实现这两个方法\ntryAcquireShared 和 tryReleaseShared 是为了定义 CountDownLatch 特定的同步逻辑：\ntryAcquireShared: 确定调用 await() 的线程是否应该被阻塞。如果是在计数器还没减到 0 的时候调用，那么线程应该被阻塞。 tryReleaseShared: 定义当一个事件完成时（调用 countDown()），计数器如何减少，并在所有事件都完成时（计数器为0）释放所有等待的线程。 这两个方法是 AQS 框架中的钩子方法，允许开发者定义自己的同步逻辑，以实现不同的同步工具，如 CountDownLatch、Semaphore、ReentrantLock 等。通过这种方式，CountDownLatch 能够提供一种机制，让一个或多个线程等待直到其他线程执行完毕某些操作。\n四、结束语 4.1 面试经历 曾经被大厂的面试官问过是否使用过 CountDownLatch，当然也当过面试官考核过别人。（历史总是这样惊人地相似）\n考核的背后原因：\n校招同学：是否知道 CountDownLatch 这个知识点，有没有进一步了解原理。 以考核知识点，技术钻研度为主。\n社招同学：有没有使用经验，能不能遇到 CountDownLatch 场景能够合理正确地使用。以考核实际应用为主。\n特别说明：面试并不是说让你背下多少源码，也并不需要这么做。更应该理解源码后，梳理出原理、流程。 不可本末倒置，以为理解源码就是背诵和记忆源码，并不是。\n4.2 CountDownLatch 总结 如何介绍 CountDownLatch，可以从功能理解、应用场景、使用经验和注意事项\n功能介绍： Java 中的一个同步辅助类，它允许一个或多个线程等待一组操作完成； 线程之间的协作！\n场景经验： 前后依赖任务，前面属于多任务，可并行执行。 比如部门人员同步、数据聚合等待、异步数据获取返回。注意需要保证 countDown() 方法的调用，特别注意在异常情况\n部分源码：使用上的两个核心方法：countDown() 和 await()/await(…); 内部继承 AbstractQueuedSynchronizer (AQS) 作为其同步器。并继承重写 tryAcquireShared/tryReleaseShared 作为判断获取公平锁和释放锁的关键\n4.3 一些感想 以前觉得这个 countDownLatch 没有太大的作用，直到在一些场景后实践后才知道它是有多么的好用，但是也有很多注意事项，要非常谨慎地处理。（在使用任何线程工具的时候，都需要记住异常、边界问题的处理）\n每一次换工作都免不了要做一些重复的事情，希望这是最后一次！毕竟重复的事情是浪费生命！\n从上一家离职后所有资料都回收了，可惜好多代码和文档都不能拿走，能带走就只有思路了。\n好了，本文到此结束。\n",
+  "wordCount" : "441",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-10-06T00:00:00Z",
+  "dateModified": "2024-10-06T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "uzong"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bcountdownlatch/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      闲谈一下CountDownLatch
+    </h1>
+    <div class="post-description">
+      前言：如果不掌握多线程，那么还谈不上是一位合格的Java开发工程师。回顾过往，发现我是如此的喜欢使用CountDownLatch，它带给我便捷、速度、也带给我谨慎。今天就来盘一盘这个爱不释手的
+    </div>
+    <div class="post-meta"><span title='2024-10-06 00:00:00 +0000 UTC'>十月 6, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;uzong&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e6%85%a2%e6%98%af%e5%8e%9f%e7%bd%aa" aria-label="一、&ldquo;慢是原罪&rdquo;">一、&ldquo;慢是原罪&rdquo;</a><ul>
+                        
+                <li>
+                    <a href="#11-%e6%95%85%e4%ba%8b%e4%b8%80%e5%90%8c%e6%ad%a5%e4%bb%bb%e5%8a%a1" aria-label="1.1 故事一：同步任务">1.1 故事一：同步任务</a></li>
+                <li>
+                    <a href="#12-%e6%95%85%e4%ba%8b%e4%ba%8c%e5%af%bc%e5%87%ba%e6%95%b0%e6%8d%ae" aria-label="1.2 故事二：导出数据">1.2 故事二：导出数据</a></li>
+                <li>
+                    <a href="#13-%e6%95%85%e4%ba%8b%e4%b8%89%e9%a6%96%e9%a1%b5%e5%8a%a0%e8%bd%bd%e5%a4%aa%e6%85%a2" aria-label="1.3 故事三：首页加载太慢">1.3 故事三：首页加载太慢</a></li>
+                <li>
+                    <a href="#14-%e6%95%85%e4%ba%8b%e5%9b%9b%e6%9b%b4%e6%96%b0%e4%b8%a2%e5%a4%b1" aria-label="1.4 故事四：更新丢失">1.4 故事四：更新丢失</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8c%e4%be%9d%e8%b5%96%e7%ad%89%e5%be%85%e6%98%af%e6%9c%ac%e8%b4%a8" aria-label="二、依赖等待是本质">二、依赖等待是本质</a><ul>
+                        
+                <li>
+                    <a href="#21-%e6%a1%88%e4%be%8b%e6%8f%8f%e8%bf%b0" aria-label="2.1 案例描述">2.1 案例描述</a></li>
+                <li>
+                    <a href="#22-%e5%9c%ba%e6%99%af%e6%80%bb%e7%bb%93" aria-label="2.2 场景总结">2.2 场景总结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89%e8%ae%a4%e8%af%86-countdownlatch" aria-label="三、认识 CountDownLatch">三、认识 CountDownLatch</a><ul>
+                        
+                <li>
+                    <a href="#31-countdownlatch-%e6%8e%a5%e5%8f%a3" aria-label="3.1 CountDownLatch 接口">3.1 CountDownLatch 接口</a></li>
+                <li>
+                    <a href="#32-%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="3.2 注意事项">3.2 注意事项</a></li>
+                <li>
+                    <a href="#33-%e6%9b%bf%e4%bb%a3-completablefuture-%e5%b7%a5%e5%85%b7%e7%b1%bb" aria-label="3.3 替代 CompletableFuture 工具类">3.3 替代 CompletableFuture 工具类</a></li>
+                <li>
+                    <a href="#34-countdownlatch-%e9%83%a8%e5%88%86%e6%ba%90%e7%a0%81" aria-label="3.4 CountDownLatch 部分源码">3.4 CountDownLatch 部分源码</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9b%e7%bb%93%e6%9d%9f%e8%af%ad" aria-label="四、结束语">四、结束语</a><ul>
+                        
+                <li>
+                    <a href="#41-%e9%9d%a2%e8%af%95%e7%bb%8f%e5%8e%86" aria-label="4.1 面试经历">4.1 面试经历</a></li>
+                <li>
+                    <a href="#42-countdownlatch-%e6%80%bb%e7%bb%93" aria-label="4.2 CountDownLatch 总结">4.2 CountDownLatch 总结</a></li>
+                <li>
+                    <a href="#43-%e4%b8%80%e4%ba%9b%e6%84%9f%e6%83%b3" aria-label="4.3 一些感想">4.3 一些感想</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>前言</strong>：如果不掌握多线程，那么还谈不上是一位合格的 Java 开发工程师。</p>
+<p>回顾过往，发现我是如此的喜欢使用 CountDownLatch，它带给我便捷、速度、也带给我谨慎。今天就来盘一盘这个爱不释手的 CountDownLatch。</p>
+<h3 id="一慢是原罪">一、&ldquo;慢是原罪&rdquo;<a hidden class="anchor" aria-hidden="true" href="#一慢是原罪">#</a></h3>
+<p>😊 最简单、最可靠的编程就是不要使用多线程，但同时系统的某些功能运行也会因此慢得不能忍受！</p>
+<p>认识 CountDownLatch 这个核心工具类，还得从以下几个故事开始。</p>
+<h4 id="11-故事一同步任务">1.1 故事一：同步任务<a hidden class="anchor" aria-hidden="true" href="#11-故事一同步任务">#</a></h4>
+<p>同步作业，从系统 A，同步到系统 B， 主要同步的内容为：<strong>部门 + 人员</strong></p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/a5d9162ed7524edb978858667808d3dd~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=Zce1dZpE2P4zg662B5DAnPvoc9Q%3D" alt=""  />
+</p>
+<p>注：部门和人员的信息来源不同的 API，需要分成两个接口同步，且先同步部门再同步人员，<strong>并且部门要构造成一棵树，人员信息没有批量接口。</strong></p>
+<p><strong>伪代码逻辑</strong>：</p>
+<ol>
+<li>先同步整个部门树</li>
+<li>再串行同步每个部门树上的人员信息， <strong>人员信息的获取和写入都依赖部门ID。</strong></li>
+</ol>
+<p>逻辑清晰，代码自然很快实现。但跑真实数据的时候，才发现整个过程超级慢，同步每个部门和人员的接口都是 http ，数量一多，调用次数也就多，耗时自然就高。</p>
+<p><strong>结果就几万人，同步花了两小时</strong>！<strong>虽然说是让机器自己跑，但时间太长，不符合我的要求！</strong></p>
+<hr>
+<p>由于单个部门人员信息的获取和写入不存在先后依赖，可以并行。 最后用 CountDownLatch 改造，时间缩短 10 倍。</p>
+<hr>
+<h4 id="12-故事二导出数据">1.2 故事二：导出数据<a hidden class="anchor" aria-hidden="true" href="#12-故事二导出数据">#</a></h4>
+<p>我们的交付老师(非技术出身)找到我，说系统有一个导出任务，当数量少的时候，可以导出成功，<strong>但是当任务多的时候总是导出失败，根本导不出来。</strong></p>
+<p>有时候抽象的语言，需要用图来做证明，当我们看到图就知道所描述的内容是什么，真正是“一图胜千言”</p>
+<p><strong>我追问了一句，导不出来是什么现象?</strong></p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/a18ec1db8af24861b15b2991a22fc6f3~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=ZZGI8fBSJoIK4KDNjLuX9ISplYM%3D" alt=""  />
+</p>
+<p>她说了就是不行，然后把电脑拿过来，导出五千多条数据，点击导出，等待快到 2 分钟的时候，请求中断。（<strong>串行获取所有数据，然后写入 Excel 中，由于串行过程耗时过长，连接断开</strong>）</p>
+<p>由于导出的数据，每一条都需要请求 RPC 补充完整数据，由于串行执行，肯定比较耗时。 最后用 CountDownLatch 进行改造。先使用 CountDownLatch 进行多线程数据组装，然后再写入 Excel 中。</p>
+<p>备注：由于数量上限为 1 w，因此允许这么做，当数据量太大时，即使用 CountDownLatch 也不好使。最好的方式还是需要走离线调度，但也会失去一定的实时性。CountDownLatch 的改造不是一个最佳方法，算是一个简单的折中解决方式。</p>
+<h4 id="13-故事三首页加载太慢">1.3 故事三：首页加载太慢<a hidden class="anchor" aria-hidden="true" href="#13-故事三首页加载太慢">#</a></h4>
+<p>首页加载太慢，需要几秒，有一个聚合等待逻辑比较耗时。其中有一个数据需要其他几个数据计算出来以后，才能计算。</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/19d3107be0ac45b9bdf4c03a269bafdf~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=TPBgxSaX6B5%2BZaXAjhUZtSA7Tm0%3D" alt=""  />
+</p>
+<p>系统运行一段时间，开始变得慢起来， 检查发现请求接口串行。</p>
+<p>使用 CountDownLatch 将依赖的数据并行计算。</p>
+<h4 id="14-故事四更新丢失">1.4 故事四：更新丢失<a hidden class="anchor" aria-hidden="true" href="#14-故事四更新丢失">#</a></h4>
+<p>写出数据，依赖前面的更新数据。由于更新数据较多，采用多线程，但是并没等每个任务都更新结束。因此存在部分数据不符合预期。（多线程执行更新，但是没有等待执行结果就进入下一步）</p>
+<p>使用 CountDownLatch，等所有数据更新结束，再读取。显然这是非常典型的依赖。</p>
+<hr>
+<p><strong>故事最后：我们没有批评和抨击别人的权利，但是我们要有解决问题的实际能力！</strong></p>
+<h3 id="二依赖等待是本质">二、依赖等待是本质<a hidden class="anchor" aria-hidden="true" href="#二依赖等待是本质">#</a></h3>
+<p>CountDownLatch 属于线程之间的通信，或者线程之间的协作，<strong>但我认为它解决的是多任务依赖等待问题</strong>。</p>
+<h4 id="21-案例描述">2.1 案例描述<a hidden class="anchor" aria-hidden="true" href="#21-案例描述">#</a></h4>
+<p>如下图所示： ABC 都是繁重的 http/RPC 接口，执行完毕才能执行 D，因此整个执行时间，随着 ABC 耗时增加而增加。但是并行任务，则取 ABC 的最大值即可。<strong>因此在耗时上来讲，串行属于时间和，并行属于时间极值</strong>。</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/6f6fcd8621d446c69a3aabfff7d86774~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=TIof4CfMreovN%2B2fp8x8YpYcbig%3D" alt=""  />
+</p>
+<h4 id="22-场景总结">2.2 场景总结<a hidden class="anchor" aria-hidden="true" href="#22-场景总结">#</a></h4>
+<p>那么哪些场景可以使用 CountDownLatch。 简言之：<strong>有多任务执行结果的依赖都可以考虑 CountDownLatch</strong></p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f608617364974935b25e0ae234203464~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=mKnkiZPoAwDFfpj3qa3nMZQExI4%3D" alt=""  />
+</p>
+<h3 id="三认识-countdownlatch">三、认识 CountDownLatch<a hidden class="anchor" aria-hidden="true" href="#三认识-countdownlatch">#</a></h3>
+<p>A synchronization aid that allows one or more threads to wait until a set of operations being performed in other threads completes(<strong>一个同步辅助工具，允许一个或多个线程等待其他线程执行的一组操作完成</strong>)</p>
+<p>CountDownLatch 初始化一个给定值，调用 await 方法阻塞，直到当前计数由于调用 countDown 方法而达到零，</p>
+<p>之后所有等待的线程都会被释放。</p>
+<h4 id="31-countdownlatch-接口">3.1 CountDownLatch 接口<a hidden class="anchor" aria-hidden="true" href="#31-countdownlatch-接口">#</a></h4>
+<p>CountDownLatch 源码给出了两个使用案例。（只是简单 demo，实践在使用上我们更应该考虑异常）</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/300f595059b74e0fa0b66bff4ed68d34~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=7K6oCYDhp96CmSYa3Bo4J815t%2Bc%3D" alt=""  />
+</p>
+<p><strong>CountDownLatch 的关键方法：</strong></p>
+<ul>
+<li><code>CountDownLatch(int count)</code> ：构造方法，初始化计数器的值。</li>
+<li><code>countDown()</code> ：每调用一次，计数器减一。当计数器的值达到零时，所有等待的线程将被唤醒。</li>
+<li><code>await()</code> ：调用此方法的线程将被阻塞，直到计数器的值为零。</li>
+<li><code>await(long timeout, TimeUnit unit)</code> ：超时机制的等待方法。</li>
+</ul>
+<h4 id="32-注意事项">3.2 注意事项<a hidden class="anchor" aria-hidden="true" href="#32-注意事项">#</a></h4>
+<p>注意事项： countDownLatch 的数量减到 0， 否则会存在一直等待，因为其他线程没有办法继续获取锁。这也是十分危险的事情。</p>
+<p>无法执行 <code>countDown()</code>， 导致其他等待线程无法执行。例异常时，不能执行到该段代码一样。</p>
+<p>可以将await() 替换成<code>await(long timeout, TimeUnit unit)</code> 带有超时机制的等待方法，避免特殊情况的等待。</p>
+<h4 id="33-替代-completablefuture-工具类">3.3 替代 CompletableFuture 工具类<a hidden class="anchor" aria-hidden="true" href="#33-替代-completablefuture-工具类">#</a></h4>
+<p>可以使用 CompletableFuture 这些 API 来替换 CountDownLatch 的功能。 CompletableFuture 提供了较多的 API 来替代 CountDownLatch。 处理异常时特别方便的。</p>
+<ul>
+<li><strong>组合多个异步任务</strong>：使用 <code>CompletableFuture.allOf()</code> 可以等待多个 <code>CompletableFuture</code> 任务完成。这类似于 <code>CountDownLatch</code>，但是更灵活，因为它可以等待任何数量的 <code>CompletableFuture</code> 任务。</li>
+<li><strong>异常处理</strong>：<code>CompletableFuture</code> 可以通过 <code>exceptionally()</code> 方法来处理异步任务中的异常，而 <code>CountDownLatch</code> 需要你在 <code>countDown()</code> 之前手动处理。</li>
+<li><strong>回调</strong>：<code>CompletableFuture</code> 可以使用 <code>whenComplete()</code> 或 <code>handle()</code> 方法来添加回调，这些回调会在异步任务完成时执行。</li>
+</ul>
+<p>当然 CompletableFuture 还有很多高级 API，可以根据场景选择合适的 API。 虽然 CompletableFuture 很好用，<strong>但是我也建议你尝试用用 CountDownLatch</strong>。</p>
+<h4 id="34-countdownlatch-部分源码">3.4 CountDownLatch 部分源码<a hidden class="anchor" aria-hidden="true" href="#34-countdownlatch-部分源码">#</a></h4>
+<p>CountDownLatch 的代码很少，主要复用了 AbstractQueuedSynchronizer （AQS）的能力。</p>
+<p><code>CountDownLatch</code> 的内部类 <code>Sync</code> 继承自 <code>AbstractQueuedSynchronizer</code>，重写了 <code>tryAcquireShared</code> 和 <code>tryReleaseShared</code> 方法来实现同步逻辑。<code>tryAcquireShared</code> 方法用于判断是否可以获取共享锁（即计数器是否为零），而 <code>tryReleaseShared</code> 方法用于减少计数器并唤醒等待的线程。</p>
+<ul>
+<li><code>countDown()</code> 方法通过调用 AQS 的 <code>releaseShared</code> 方法来减少计数器，并在计数器为零时唤醒所有等待的线程。</li>
+<li><code>await()</code> 方法通过调用 AQS 的 <code>acquireSharedInterruptibly</code> 方法来阻塞当前线程，直到计数器为零或线程被中断。</li>
+</ul>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>private static final class Sync extends AbstractQueuedSynchronizer {         private static final long serialVersionUID = 4982264981922014374L;         Sync(int count) {             setState(count);         }         int getCount() {             return getState();         }        // ===== 实现 tryAcquireShared 和 tryReleaseShared 两个方法 ===        // 这个方法是用来尝试获取共享模式下的同步状态。        // 在 CountDownLatch 的使用场景中，当一个或多个线程调用 await() 方法时，        // 它们会尝试获取共享锁。tryAcquireShared 方法的实现逻辑是检查 AQS 同步状态        //（即 CountDownLatch 的计数器）是否为0                 protected int tryAcquireShared(int acquires) {             return (getState() == 0) ? 1 : -1;         }        // 这个方法是用来尝试释放共享模式下的同步状态。        // 当线程调用 countDown() 方法时，实际上是在减少 CountDownLatch 的计数器        /*        1. 通过循环，获取当前同步状态（计数器值）。        2. 如果计数器已经为0，说明已经没有需要等待的事件了，方法返回false，不再执行任何操作。        3. 如果计数器不为0，方法会尝试通过 CAS（比较并交换）操作将计数器减1。        4. 如果 CAS 操作成功，并且新的计数器值为0，表示所有事件都已经完成，方法返回true，此时 AQS 会释放所有等待的线程。        */                 protected boolean tryReleaseShared(int releases) {             // Decrement count; signal when transition to zero             for (;;) {                 int c = getState();                 if (c == 0)                     return false;                 int nextc = c-1;                 if (compareAndSetState(c, nextc))                     return nextc == 0;             }         }     }</code></p>
+<p><strong>为什么实现这两个方法</strong></p>
+<p><code>tryAcquireShared</code> 和 <code>tryReleaseShared</code> 是为了定义 <code>CountDownLatch</code> 特定的同步逻辑：</p>
+<ol>
+<li><code>tryAcquireShared</code>: 确定调用 <code>await()</code> 的线程是否应该被阻塞。如果是在计数器还没减到 0 的时候调用，那么线程应该被阻塞。</li>
+<li><code>tryReleaseShared</code>: 定义当一个事件完成时（调用 <code>countDown()</code>），计数器如何减少，并在所有事件都完成时（计数器为0）释放所有等待的线程。</li>
+</ol>
+<p>这两个方法是 AQS 框架中的钩子方法，允许开发者定义自己的同步逻辑，以实现不同的同步工具，如 <code>CountDownLatch</code>、<code>Semaphore</code>、<code>ReentrantLock</code> 等。通过这种方式，<code>CountDownLatch</code> 能够提供一种机制，让一个或多个线程等待直到其他线程执行完毕某些操作。</p>
+<h3 id="四结束语">四、结束语<a hidden class="anchor" aria-hidden="true" href="#四结束语">#</a></h3>
+<h4 id="41-面试经历">4.1 面试经历<a hidden class="anchor" aria-hidden="true" href="#41-面试经历">#</a></h4>
+<p>曾经被大厂的面试官问过是否使用过 CountDownLatch，当然也当过面试官考核过别人。（历史总是这样惊人地相似）</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/1ea660b05a5a4fcfa5fb8fd99b885d01~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=aeZHf83vgYiJfgX3CyGoCWOBaOc%3D" alt=""  />
+</p>
+<p>考核的背后原因：</p>
+<p><strong>校招同学</strong>：是否知道 CountDownLatch 这个知识点，有没有进一步了解原理。 以考核知识点，技术钻研度为主。</p>
+<p><strong>社招同学</strong>：有没有使用经验，能不能遇到 CountDownLatch 场景能够合理正确地使用。以考核实际应用为主。</p>
+<p><strong>特别说明</strong>：面试并不是说让你背下多少源码，也并不需要这么做。更应该理解源码后，<strong>梳理出原理、流程</strong>。 不可本末倒置，<strong>以为理解源码就是背诵和记忆源码，并不是。</strong></p>
+<h4 id="42-countdownlatch-总结">4.2 CountDownLatch 总结<a hidden class="anchor" aria-hidden="true" href="#42-countdownlatch-总结">#</a></h4>
+<p>如何介绍 CountDownLatch，可以从功能理解、应用场景、使用经验和注意事项</p>
+<p><strong>功能介绍</strong>： Java 中的一个同步辅助类，它允许一个或多个线程等待一组操作完成； 线程之间的协作！</p>
+<p><strong>场景经验</strong>： 前后依赖任务，前面属于多任务，可并行执行。 比如部门人员同步、数据聚合等待、异步数据获取返回。注意需要保证 countDown() 方法的调用，特别注意在异常情况</p>
+<p><strong>部分源码</strong>：使用上的两个核心方法：countDown() 和 await()/await(&hellip;); 内部继承 <code>AbstractQueuedSynchronizer</code> (AQS) 作为其同步器。并继承重写 tryAcquireShared/tryReleaseShared 作为判断获取公平锁和释放锁的关键</p>
+<h4 id="43-一些感想">4.3 一些感想<a hidden class="anchor" aria-hidden="true" href="#43-一些感想">#</a></h4>
+<p>以前觉得这个 countDownLatch 没有太大的作用，直到在一些场景后实践后才知道它是有多么的好用，但是也有很多注意事项，要非常谨慎地处理。（<strong>在使用任何线程工具的时候，都需要记住异常、边界问题的处理</strong>）</p>
+<p>每一次换工作都免不了要做一些重复的事情，希望这是最后一次！毕竟重复的事情是浪费生命！</p>
+<p>从上一家离职后所有资料都回收了，可惜好多代码和文档都不能拿走，能带走就只有思路了。</p>
+<p><img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/4122b3db7c014a408e9f0045f70005ae~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728795243&amp;x-signature=%2F8QN%2FDGUU%2FQ7ObT2ULNvavpy7Y4%3D" alt=""  />
+</p>
+<p>好了，本文到此结束。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%A8%A1%E5%9D%97%E5%8D%8F%E8%AE%AE%E5%AF%B9%E6%8E%A5%E7%96%91%E9%97%AEprotocolsareinterrogated/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>虚拟人模块协议对接疑问Protocolsareinterrogated</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E6%80%BB%E7%BB%93%E4%B8%8Bvuereact%E9%87%8C%E7%9A%84%E6%8F%92%E6%A7%BD/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>总结下VueReact里的插槽</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下CountDownLatch on x"
+            href="https://x.com/intent/tweet/?text=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f&amp;hashtags=Java%2c%e5%90%8e%e7%ab%af%2c%e9%9d%a2%e8%af%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下CountDownLatch on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f&amp;title=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch&amp;summary=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下CountDownLatch on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f&title=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下CountDownLatch on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下CountDownLatch on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下CountDownLatch on telegram"
+            href="https://telegram.me/share/url?text=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下CountDownLatch on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bCountDownLatch&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bcountdownlatch%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

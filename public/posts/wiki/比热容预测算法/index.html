@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>比热容预测算法 | PaperMod</title>
+<meta name="keywords" content="烹饪方案预测语音技能">
+<meta name="description" content="烹饪方案预测语音技能">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="比热容预测算法" />
+<meta property="og:description" content="烹饪方案预测语音技能" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="比热容预测算法"/>
+<meta name="twitter:description" content="烹饪方案预测语音技能"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "比热容预测算法",
+      "item": "http://localhost:1313/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "比热容预测算法",
+  "name": "比热容预测算法",
+  "description": "烹饪方案预测语音技能",
+  "keywords": [
+    "烹饪方案预测语音技能"
+  ],
+  "articleBody": "撰文目的：详细介绍比热容预测算法的原理以及效果。为使用相关模型和预测数据的同事，提供前置的信息和警示。\n模型文件和预测数据文件\n训练好的模型文件：model_svr.pkl 使用模型预测的比热容数据：predict_Specific_Heat 2023-07-24 10-54-09.xlsx；《中国食物营养成分 第六版》\u0026万得厨APP食材比热容：万得厨食品比热容【更换为《中国食物成分 第六版》数据】2023.7.28.xlsx 训练数据和待预测数据：data_file.py 模型代码：model_train_file.py 11. 背景 22. 模型介绍 2.12.1. 训练数据集 2.1.12.1.1. 为什么不使用其他公布的实验法测算出的数据集？ 2.22.2. 模型参数 33. 使用比热容数据，可能所包含的误差 3.13.1. 算法本身的误差 3.23.2. 比热容变化带来的误差：随着食材温度的身高，比热容会变化 3.2.13.2.1. 冷冻物的比热容波峰现象 3.2.23.2.2. 常温物的比热容变化现象 3.33.3. 食材本身的误差 44. 误差评估 1. 背景 虚拟人提供”烹饪功率查询语音技能“，该技能要能根据用户提供的食材、食品名称提供一个合适的烹饪参数。烹饪参数即表现为万得厨具体的”功率+时间“。虚拟人通过询问获得食材和质量，然后根据预设的温度、和比热容，就能算出需要做的功Q。最后把功，转化成具体的功率和时间。\n但是通过搜索国内外的文献、教材和相关网站后发现，目前网络上公开的比热容数据并不多，目前收集到的只有126条左右，但是实际在烹饪场景中，面对的食材是很丰富的，例如《中国食物成分表 标准版 第6版第2册.pdf》中，所包含的食材有3千条左右，光靠网络公布的比热容数据很难满足需求。实际上很多需要用到该数据的公司或者研究所都有此困扰。面对这个困扰，各个研究员或者组织目前有2种解决办法，第一种即是使用实验法，一个个的去检测出比热容（如《基于BP神经网络模型对果蔬热物性的预测》一文中用于训练模型的比热容数据即是通过做实验而得来的。实验方法如”蓝宝石测量法“）；第二种是预测法，即使用经验公式、预测模型去得到相对准确的比热容数据（如温玉锋、张雷杰等人通过BP神经网络、支持向量机或者线性回归模型拟合出预测模型，用于新食物比热容的预测。国外如13-Unfrozen-Composition-Data.PDF (worldcool.co.th)）。\n实验法测量的数据更准确，但数量有限。目前通过查阅文献方式，发现最多的一次大批量实验检测只覆盖了200余个果蔬，远达不到我们的应用需求。并且有些数据并未公开。目前所收集到的公布的大量数据均是通过创建方程式或者模型而预测出来的（如13-Unfrozen-Composition-Data.PDF (worldcool.co.th)中的比热容是通过经验方程式计算出来的）。\n由于我们的应用场景需要更多食材的比热容，而且目前网络上公布的比热容数据未完全满足需求。所以复现了《食品比热容的支持向量回归预测》（温玉锋等）文章中的模型。并使用该模型预测了”中国食品营养成分2002年版“、”香哈网“、”唤醒食物“3个网站数据集的食品比热容。\nQ焦耳\n＝\nC 比热容\nm 质量\n✖\n∆t 温差\n✖\nt0 温差？\nt1 温差\n_\n询问词槽\n万得厨：功率+时间\n食材\n计算？\n询问词槽\n计算？\n食谱\n食材\n食材\n计算？\n摆放位置\n厨具\n损耗\n影响\n大小\n温度传感器？\n热转化效率\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-7817d204-3566-4b7a-8200-a5a72b431e20’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE/105268555?revision=3’; readerOpts.imageUrl = ’’ + ‘/download/attachments/105268555/未命名绘图.png’ + ‘?version=3\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=105268555\u0026owningPageId=105268555\u0026diagramName=%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE\u0026revision=3’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘600’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘比热容预测算法’; readerOpts.attVer = ‘3’; readerOpts.attId = ‘105268566’; readerOpts.lastModifierName = ‘未知用户 (tangwei)’; readerOpts.lastModified = ‘2023-07-24 18:08:09.341’; readerOpts.creatorName = ‘未知用户 (tangwei)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n2. 模型介绍 模型参考了《食品比热容的支持向量回归预测》（温玉锋等）、《食品比热容的BP神经网络预测》（张雷杰等）、《SCG—BP网络用于食品比热容的曲线拟合》（李幸国）、《基于BP神经网络模型对果蔬热物性的预测》（张哲等）等文献的模型和参数。\n经测试最终选定了支持向量回归算法用于模型构建\n2.1. 训练数据集 预测算法是通过”水“、”碳水化合物“、”脂肪“、”蛋白质“4种营养物质的大小来预测比热容的。这4个指标是影响食品比热容的主要因素（Rahman shafilur. Food properties handbook[M]. BocaRolon, FL: CRC Press, 1995: 238.）。数据集使用《食品比热容的支持向量回归预测》文献中的数据集\n食品\n水\n蛋白质\n碳水化合物\n脂肪\n比热容\n食品\n水\n蛋白质\n碳水化合物\n脂肪\n比热容\n1\n淀粉\n12\n0.5\n87\n0.2\n1.754\n2\n橙汁\n87.5\n0.8\n11.1\n0.2\n3.822\n3\n脱脂乳粉\n3.5\n35.6\n52\n1\n1.52\n4\n黄油\n15.5\n0.6\n0.4\n81\n2.125\n5\n全脂乳\n87\n3.5\n4.9\n3.9\n3.981\n6\n鳕鱼\n82.6\n15\n0\n0.4\n3.697\n7\n脱脂乳\n90.5\n3.5\n5.1\n0.1\n4.011\n8\n番茄酱\n81.4\n1.8\n14.6\n1.8\n3.676\n9\n瘦牛肉\n71.7\n21.6\n0\n5.7\n3.433\n10\n马铃薯\n79.8\n2.1\n17.1\n0.1\n3.634\n11\n苹果\n84.4\n0.2\n14.5\n0.6\n3.759\n12\n熏肉\n49.9\n27.6\n0.3\n17.5\n2.014\n13\n黄瓜\n96.1\n0.5\n1.9\n0.1\n4.103\n14\n小牛肉\n68\n21\n0\n10\n3.223\n15\n干酪\n65\n25\n1\n2\n3.265\n16\n虾\n66.2\n26.8\n0\n1.4\n3.302\n17\n沙丁鱼\n57.4\n25.7\n1.2\n11\n3.014\n18\n牛排\n60\n25\n0\n13\n3.056\n19\n胡萝卜\n88.2\n1.2\n9.3\n0.3\n3.886\n通过PDA降维后，绘制散点图。可以看到比热容与4个营养指标之间，呈现较为规律的关系。说明基于这4个指标构建预测模型是可行的。\n2.1.1. 为什么不使用其他公布的实验法测算出的数据集？ 其他通过实验法测算出来的数据集，并没有在实验当时同时测量食材的”水“、”碳水化合物“、”脂肪“、”蛋白质“4种营养物质的含量。数据不完整无法用于训练模型。\n2.2. 模型参数 构建模型使用了python中的sklearn包。模型参数设置如下，使用同《食品比热容的支持向量回归预测》中的参数设置。另外对4种营养成分的含量进行了正则化处理。\nSVR(kernel=‘linear’,epsilon=0.0001,C=10567.226979,gamma=8.374954)\n其中从数据集中抽出6条作为测试集，其余为训练集。计算结果为：\n平均绝对误差（Mean Absolute Error）: 0.040518190567119104 均方误差（Mean Squared Error）: 0.0035251462600195027 均方根误差（Root Mean Squared Error）: 0.05937294215397703 决定系数（R2 Score）: 0.9954324598850315 决定系统R²，为0.9954。R²代表模型解释变化的能力，同时也代表了模型的预测能力。R²取值为[0~1]之间，越接近1，说明模型预测的效果越好。结果显示，模型具有很好的比热容预测能力。\n3. 使用比热容数据，可能所包含的误差 3.1. 算法本身的误差 算法本身并不能百分百准确预测比热容，虽然R²达到了99.54%\n3.2. 比热容变化带来的误差：随着食材温度的身高，比热容会变化 我们预测的预测算法， 以及网络上公开的比热容实验数据，均是从常温状态下，某一个时点上测量而得到的值。同时由于场景是烹饪，温度的升高必然带来比热容的变化。这就会造成误差。但是这种变化本质上是由于物质本身营养物质含量的变化而引起的，例如随着温度的升高，水分逐渐散失，因水的比热容比大部分的物质的比热容高，所以物质的比热容会逐渐下降。\n3.2.1. 冷冻物的比热容波峰现象 如《果蔬比热容的影响因素》（张 敏等人）一文中对35个果蔬进行了持续的检测。结果发现这些冷冻果蔬的比热容随着温度的升高而变化。下图是从《果蔬比热容的影响因素》《离体生物组织不同含水量下比热的DSC测试》等文献中文章中截取的图片，表示了不同冷冻食材的比热容随温度变化的趋势。当含水量较多的食材是由冷冻状态进行加热的，即会在0度左右出现一个较为陡峭比热容升高现象。这是由于水由冰晶转化为液态水，导致的。当液态水转变基本完成后，其比热容就会趋于较为稳定的状态，浮动会变得很小。含水量不多的食材则更早的进入稳定状态，如下图中间的核桃和黄豆。\n3.2.2. 常温物的比热容变化现象 若是未冷冻的食材，可以默认其处于比热容稳定状态。但是其比热容依旧有一种下降或者上升的趋势。其变化速率，即斜率，不同食材也有差别。如下图所示\n3.3. 食材本身的误差 获取的实验测量比热容数据或者预测的比热容数据，其食材的营养成分是特定的。和实际用户烹饪所使用的食材营养成分很大可能有差别。会导致误差。例如同样烹饪五花肉，可能用户实际用的五花肉更肥一点，其脂肪含量、蛋白质含量可能更高，造成比热容有一些差别。\n4. 误差评估 评估比热容数据的误差\n食材1\n常温食材比热容库\n食材1*\n加热\n措施：\n假设为常温\n关键2：同一食材，不同温度，比热容不一样。因为温度变化，引起营养含量的变化，进而引起比热容变化\n＝\n？\n匹配\nt0 温差？\n常温\nt1 温差\n模型预测\n比热容\n传入\n用户询问\n①预测误差\n②营养含量误差\n③温度误差\n④比热容变化误差\n措施：更多更细食材营养数据\n措施：\n提示为常温\n实验数据收集\n预测\n关键1：可以这么认为比热容和食材无关，只和“水、碳水化合物、脂肪和蛋白质”有关。（其他营养物质也影响，比如微量元素：铁、锌、钙等，但是由于我们是烹饪场景，可以说都是和食材有关，食材里这些元素的含量微乎其微，所以其影响可以忽略不记。其他营养物质如脂类、氨基酸同理）\n//\u003c![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-a84f2853-97b1-4867-aa27-18202259438c’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ + ‘/rest/drawio/1.0/diagram/crud/%E6%AF%94%E7%83%AD%E5%AE%B9%E8%AF%AF%E5%B7%AE%E9%A1%B9%E6%8F%8F%E8%BF%B0/105268555?revision=5’; readerOpts.imageUrl = ’’ + ‘/download/attachments/105268555/比热容误差项描述.png’ + ‘?version=5\u0026api=v2’; readerOpts.editUrl = ’’ + ‘/plugins/drawio/addDiagram.action?ceoId=105268555\u0026owningPageId=105268555\u0026diagramName=%E6%AF%94%E7%83%AD%E5%AE%B9%E8%AF%AF%E5%B7%AE%E9%A1%B9%E6%8F%8F%E8%BF%B0\u0026revision=5’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + ‘/reader’; readerOpts.border = true; readerOpts.width = ‘1741’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E6%AF%94%E7%83%AD%E5%AE%B9%E8%AF%AF%E5%B7%AE%E9%A1%B9%E6%8F%8F%E8%BF%B0’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘比热容预测算法’; readerOpts.attVer = ‘5’; readerOpts.attId = ‘105269198’; readerOpts.lastModifierName = ‘未知用户 (tangwei)’; readerOpts.lastModified = ‘2023-07-26 11:14:57.707’; readerOpts.creatorName = ‘未知用户 (tangwei)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]\u003e\n在比热容数据应用在 ”烹饪功率查询语音技能“ 中时，即到实际应用时会出现4个误差\n第一，预测误差。即算法模型的计算的预测值与实际值的差别。\n算法模型如前2.2已述，R²值为99.54%，即可以粗略的认为算法模型的引起的误差总体应该在1%以内。\n第二，营养含量误差。即用户所用食材与食材比热容库中的食材的营养含量差别。\n如果用户说烹饪五花肉，用户所烹饪的五花肉的营养含量，和我们食材营养库中五花肉的营养含量可能是有差别的。但是可推理出来的：食材越具体，营养含量的差别也就越小。比如用户说烹饪猪头皮、五花肉、猪里脊，而不是猪肉这个大类。扩充更多更详细的食材营养数据库，并且引导用户把食材描述更具体，将能有效减少误差。\n以猪肉为例，使用预测的比热容数据。若让用户给出更细分类的食材，而不是直接用大类猪肉的比热容，那么将能直接降低约17%的误差。\n第三，温度误差。同样食材在不同温度下，比热容不一样。\n同一食材的营养含量是会随着温度的变化而变化的，进而引发比热容的变化。冷冻物在0度左右会发生很大的比热容波动。冷冻物解冻后，或者其他常温的食材也会随着温度的升高，产生一些变化。不过在我们的烹饪场景中，大多数场景都是使用非冷冻食材，或者使用解冻后的食材进行烹饪的。若食材都是常温（10~30℃），那么根据《果蔬比热容的影响因素》（张 敏等）数据（如下图），若差异5℃，比热容的误差在1.3%左右。若差异10℃，比热容的误差在5.55%左右。若是能够控制食材处于常温状态下开始烹饪，如提示用户先将冷冻物解冻，或者提示提供的功率是以常温状态下进行推荐的，那么这部分的误差或许是处在可以接受范围。\n第四，比热容变化误差。即加热过程中，食材营养物质变化，进而引起比热容的变化所引起的误差。\n如下图所示，假如黄点A为猪瘦肉的比热容，假如我们默认比热容是不变化的，那么通过计算得到所需做的功Q是 红色区B+绿色区C 的总和。然而因为过程中猪瘦肉的比热容实际是下降的，实际应做的功应该只是红色区B而已，我们给出的结果多出了绿色区C这部分的功。绿色区C的大小，即是误差。\n参考文献：\n基于BP神经网络模型对果蔬热物性的预测.pdf SCG-BP网络用于食品比热容的曲线拟合.pdf 食品比热容的支持向量回归预测.pdf 食品比热容的BP神经网络预测.pdf 食品热焓和比热容的经验计算公式.pdf Food and Foodstuff - Specific Heat (engineeringtoolbox.com) Filter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "789",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      比热容预测算法
+    </h1>
+    <div class="post-description">
+      烹饪方案预测语音技能
+    </div>
+    <div class="post-meta">4 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e8%83%8c%e6%99%af" aria-label="1. 背景">1. 背景</a></li>
+                <li>
+                    <a href="#2-%e6%a8%a1%e5%9e%8b%e4%bb%8b%e7%bb%8d" aria-label="2. 模型介绍">2. 模型介绍</a><ul>
+                        
+                <li>
+                    <a href="#21-%e8%ae%ad%e7%bb%83%e6%95%b0%e6%8d%ae%e9%9b%86" aria-label="2.1. 训练数据集">2.1. 训练数据集</a><ul>
+                        
+                <li>
+                    <a href="#211-%e4%b8%ba%e4%bb%80%e4%b9%88%e4%b8%8d%e4%bd%bf%e7%94%a8%e5%85%b6%e4%bb%96%e5%85%ac%e5%b8%83%e7%9a%84%e5%ae%9e%e9%aa%8c%e6%b3%95%e6%b5%8b%e7%ae%97%e5%87%ba%e7%9a%84%e6%95%b0%e6%8d%ae%e9%9b%86" aria-label="2.1.1. 为什么不使用其他公布的实验法测算出的数据集？">2.1.1. 为什么不使用其他公布的实验法测算出的数据集？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#22-%e6%a8%a1%e5%9e%8b%e5%8f%82%e6%95%b0" aria-label="2.2. 模型参数">2.2. 模型参数</a></li></ul>
+                </li>
+                <li>
+                    <a href="#3-%e4%bd%bf%e7%94%a8%e6%af%94%e7%83%ad%e5%ae%b9%e6%95%b0%e6%8d%ae%e5%8f%af%e8%83%bd%e6%89%80%e5%8c%85%e5%90%ab%e7%9a%84%e8%af%af%e5%b7%ae" aria-label="3. 使用比热容数据，可能所包含的误差">3. 使用比热容数据，可能所包含的误差</a><ul>
+                        
+                <li>
+                    <a href="#31-%e7%ae%97%e6%b3%95%e6%9c%ac%e8%ba%ab%e7%9a%84%e8%af%af%e5%b7%ae" aria-label="3.1. 算法本身的误差">3.1. 算法本身的误差</a></li>
+                <li>
+                    <a href="#32-%e6%af%94%e7%83%ad%e5%ae%b9%e5%8f%98%e5%8c%96%e5%b8%a6%e6%9d%a5%e7%9a%84%e8%af%af%e5%b7%ae%e9%9a%8f%e7%9d%80%e9%a3%9f%e6%9d%90%e6%b8%a9%e5%ba%a6%e7%9a%84%e8%ba%ab%e9%ab%98%e6%af%94%e7%83%ad%e5%ae%b9%e4%bc%9a%e5%8f%98%e5%8c%96" aria-label="3.2. 比热容变化带来的误差：随着食材温度的身高，比热容会变化">3.2. 比热容变化带来的误差：随着食材温度的身高，比热容会变化</a><ul>
+                        
+                <li>
+                    <a href="#321-%e5%86%b7%e5%86%bb%e7%89%a9%e7%9a%84%e6%af%94%e7%83%ad%e5%ae%b9%e6%b3%a2%e5%b3%b0%e7%8e%b0%e8%b1%a1" aria-label="3.2.1. 冷冻物的比热容波峰现象">3.2.1. 冷冻物的比热容波峰现象</a></li>
+                <li>
+                    <a href="#322-%e5%b8%b8%e6%b8%a9%e7%89%a9%e7%9a%84%e6%af%94%e7%83%ad%e5%ae%b9%e5%8f%98%e5%8c%96%e7%8e%b0%e8%b1%a1" aria-label="3.2.2. 常温物的比热容变化现象">3.2.2. 常温物的比热容变化现象</a></li></ul>
+                </li>
+                <li>
+                    <a href="#33-%e9%a3%9f%e6%9d%90%e6%9c%ac%e8%ba%ab%e7%9a%84%e8%af%af%e5%b7%ae" aria-label="3.3. 食材本身的误差">3.3. 食材本身的误差</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4-%e8%af%af%e5%b7%ae%e8%af%84%e4%bc%b0" aria-label="4. 误差评估">4. 误差评估</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>撰文目的：详细介绍比热容预测算法的原理以及效果。为使用相关模型和预测数据的同事，提供前置的信息和警示。</p>
+<p><strong>模型文件和预测数据文件</strong></p>
+<ul>
+<li>训练好的模型文件：<a href="/download/attachments/105268555/model_svr.pkl?version=1&modificationDate=1690191866244&api=v2">model_svr.pkl</a></li>
+<li>使用模型预测的比热容数据：<a href="/download/attachments/105268555/predict_Specific_Heat%202023-07-24%2010-54-09.xlsx?version=1&modificationDate=1690191895442&api=v2">predict_Specific_Heat 2023-07-24 10-54-09.xlsx</a>；《中国食物营养成分 第六版》&amp;万得厨APP食材比热容：<a href="/download/attachments/105268555/%E4%B8%87%E5%BE%97%E5%8E%A8%E9%A3%9F%E5%93%81%E6%AF%94%E7%83%AD%E5%AE%B9%E3%80%90%E6%9B%B4%E6%8D%A2%E4%B8%BA%E3%80%8A%E4%B8%AD%E5%9B%BD%E9%A3%9F%E7%89%A9%E6%88%90%E5%88%86%20%E7%AC%AC%E5%85%AD%E7%89%88%E3%80%8B%E6%95%B0%E6%8D%AE%E3%80%912023.7.28.xlsx?version=1&modificationDate=1690529129323&api=v2">万得厨食品比热容【更换为《中国食物成分 第六版》数据】2023.7.28.xlsx</a></li>
+<li>训练数据和待预测数据：<a href="/download/attachments/105268555/data_file.py?version=1&modificationDate=1690192022684&api=v2">data_file.py</a></li>
+<li>模型代码：<a href="/download/attachments/105268555/model_train_file.py?version=1&modificationDate=1690256486628&api=v2">model_train_file.py</a></li>
+</ul>
+<hr>
+<ul>
+<li>1<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-背景">1. 背景</a></li>
+<li>2<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-模型介绍">2. 模型介绍</a>
+<ul>
+<li>2.1<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-训练数据集">2.1. 训练数据集</a>
+<ul>
+<li>2.1.1<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-为什么不使用其他公布的实验法测算出的数据集？">2.1.1. 为什么不使用其他公布的实验法测算出的数据集？</a></li>
+</ul>
+</li>
+<li>2.2<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-模型参数">2.2. 模型参数</a></li>
+</ul>
+</li>
+<li>3<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-使用比热容数据，可能所包含的误差">3. 使用比热容数据，可能所包含的误差</a>
+<ul>
+<li>3.1<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-算法本身的误差">3.1. 算法本身的误差</a></li>
+<li>3.2<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-比热容变化带来的误差：随着食材温度的身高，比热容会变化">3.2. 比热容变化带来的误差：随着食材温度的身高，比热容会变化</a>
+<ul>
+<li>3.2.1<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-冷冻物的比热容波峰现象">3.2.1. 冷冻物的比热容波峰现象</a></li>
+<li>3.2.2<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-常温物的比热容变化现象">3.2.2. 常温物的比热容变化现象</a></li>
+</ul>
+</li>
+<li>3.3<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-食材本身的误差">3.3. 食材本身的误差</a></li>
+</ul>
+</li>
+<li>4<a href="/posts/wiki/%E6%AF%94%E7%83%AD%E5%AE%B9%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95/#id-比热容预测算法-误差评估">4. 误差评估</a></li>
+</ul>
+<h1 id="1-背景">1. 背景<a hidden class="anchor" aria-hidden="true" href="#1-背景">#</a></h1>
+<p>虚拟人提供”烹饪功率查询语音技能“，该技能要能根据用户提供的食材、食品名称提供一个合适的烹饪参数。烹饪参数即表现为万得厨具体的”功率+时间“。虚拟人通过询问获得食材和质量，然后根据预设的温度、和<a href="/pages/viewpage.action?pageId=105264227">比热容</a>，就能算出需要做的功Q。最后把功，转化成具体的功率和时间。</p>
+<p>但是通过搜索国内外的文献、教材和相关网站后发现，目前网络上公开的比热容数据并不多，目前收集到的只有126条左右，但是实际在烹饪场景中，面对的食材是很丰富的，例如《<a href="https://wiki.yingzi.com/download/attachments/105261143/%E4%B8%AD%E5%9B%BD%E9%A3%9F%E7%89%A9%E6%88%90%E5%88%86%E8%A1%A8%20%E6%A0%87%E5%87%86%E7%89%88%20%E7%AC%AC6%E7%89%88%20%E7%AC%AC2%E5%86%8C%2014711358.pdf?version=1&modificationDate=1689040081618&api=v2">中国食物成分表 标准版 第6版第2册.pdf</a>》中，所包含的食材有3千条左右，光靠网络公布的比热容数据很难满足需求。实际上很多需要用到该数据的公司或者研究所都有此困扰。面对这个困扰，各个研究员或者组织目前有2种解决办法，第一种即是使用实验法，一个个的去检测出比热容（如《基于BP神经网络模型对果蔬热物性的预测》一文中用于训练模型的比热容数据即是通过做实验而得来的。实验方法如”蓝宝石测量法“）；第二种是预测法，即使用经验公式、预测模型去得到相对准确的比热容数据（如温玉锋、张雷杰等人通过BP神经网络、支持向量机或者线性回归模型拟合出预测模型，用于新食物比热容的预测。国外如<a href="http://www.worldcool.co.th/images/Knowlage/13-Unfrozen-Composition-Data.PDF">13-Unfrozen-Composition-Data.PDF (worldcool.co.th)</a>）。</p>
+<p>实验法测量的数据更准确，但数量有限。目前通过查阅文献方式，发现最多的一次大批量实验检测只覆盖了200余个果蔬，远达不到我们的应用需求。并且有些数据并未公开。目前所收集到的公布的大量数据均是通过创建方程式或者模型而预测出来的（如<a href="http://www.worldcool.co.th/images/Knowlage/13-Unfrozen-Composition-Data.PDF">13-Unfrozen-Composition-Data.PDF (worldcool.co.th)</a>中的比热容是通过经验方程式计算出来的）。</p>
+<p>由于我们的应用场景需要更多食材的比热容，而且目前网络上公布的比热容数据未完全满足需求。所以复现了《食品比热容的支持向量回归预测》（温玉锋等）文章中的模型。并使用该模型预测了”中国食品营养成分2002年版“、”香哈网“、”唤醒食物“3个网站数据集的食品比热容。</p>
+<p>Q焦耳</p>
+<p>＝</p>
+<p>C 比热容</p>
+<p>m 质量</p>
+<p>✖</p>
+<p>∆t 温差</p>
+<p>✖</p>
+<p>t0 温差？</p>
+<p>t1 温差</p>
+<p>_</p>
+<p>询问词槽</p>
+<p>万得厨：功率+时间</p>
+<p>食材</p>
+<p>计算？</p>
+<p>询问词槽</p>
+<p>计算？</p>
+<p>食谱</p>
+<p>食材</p>
+<p>食材</p>
+<p>计算？</p>
+<p>摆放位置</p>
+<p>厨具</p>
+<p>损耗</p>
+<p>影响</p>
+<p>大小</p>
+<p>温度传感器？</p>
+<p>热转化效率</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-7817d204-3566-4b7a-8200-a5a72b431e20&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE/105268555?revision=3&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/105268555/未命名绘图.png&rsquo; + &lsquo;?version=3&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=105268555&amp;owningPageId=105268555&amp;diagramName=%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE&amp;revision=3&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;600&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;比热容预测算法&rsquo;; readerOpts.attVer = &lsquo;3&rsquo;; readerOpts.attId = &lsquo;105268566&rsquo;; readerOpts.lastModifierName = &lsquo;未知用户 (tangwei)&rsquo;; readerOpts.lastModified = &lsquo;2023-07-24 18:08:09.341&rsquo;; readerOpts.creatorName = &lsquo;未知用户 (tangwei)&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<h1 id="2-模型介绍">2. 模型介绍<a hidden class="anchor" aria-hidden="true" href="#2-模型介绍">#</a></h1>
+<p>模型参考了《食品比热容的支持向量回归预测》（温玉锋等）、《食品比热容的BP神经网络预测》（张雷杰等）、《SCG—BP网络用于食品比热容的曲线拟合》（李幸国）、《基于BP神经网络模型对果蔬热物性的预测》（张哲等）等文献的模型和参数。</p>
+<p>经测试最终选定了支持向量回归算法用于模型构建</p>
+<h2 id="21-训练数据集">2.1. 训练数据集<a hidden class="anchor" aria-hidden="true" href="#21-训练数据集">#</a></h2>
+<p>预测算法是通过”水“、”碳水化合物“、”脂肪“、”蛋白质“4种营养物质的大小来预测比热容的。这4个指标是影响食品比热容的主要因素（Rahman shafilur. Food properties handbook[M]. BocaRolon, FL: CRC Press, 1995: 238.）。数据集使用《食品比热容的支持向量回归预测》文献中的数据集</p>
+<p>食品</p>
+<p>水</p>
+<p>蛋白质</p>
+<p>碳水化合物</p>
+<p>脂肪</p>
+<p>比热容</p>
+<p>食品</p>
+<p>水</p>
+<p>蛋白质</p>
+<p>碳水化合物</p>
+<p>脂肪</p>
+<p>比热容</p>
+<p>1</p>
+<p>淀粉</p>
+<p>12</p>
+<p>0.5</p>
+<p>87</p>
+<p>0.2</p>
+<p>1.754</p>
+<p>2</p>
+<p>橙汁</p>
+<p>87.5</p>
+<p>0.8</p>
+<p>11.1</p>
+<p>0.2</p>
+<p>3.822</p>
+<p>3</p>
+<p>脱脂乳粉</p>
+<p>3.5</p>
+<p>35.6</p>
+<p>52</p>
+<p>1</p>
+<p>1.52</p>
+<p>4</p>
+<p>黄油</p>
+<p>15.5</p>
+<p>0.6</p>
+<p>0.4</p>
+<p>81</p>
+<p>2.125</p>
+<p>5</p>
+<p>全脂乳</p>
+<p>87</p>
+<p>3.5</p>
+<p>4.9</p>
+<p>3.9</p>
+<p>3.981</p>
+<p>6</p>
+<p>鳕鱼</p>
+<p>82.6</p>
+<p>15</p>
+<p>0</p>
+<p>0.4</p>
+<p>3.697</p>
+<p>7</p>
+<p>脱脂乳</p>
+<p>90.5</p>
+<p>3.5</p>
+<p>5.1</p>
+<p>0.1</p>
+<p>4.011</p>
+<p>8</p>
+<p>番茄酱</p>
+<p>81.4</p>
+<p>1.8</p>
+<p>14.6</p>
+<p>1.8</p>
+<p>3.676</p>
+<p>9</p>
+<p>瘦牛肉</p>
+<p>71.7</p>
+<p>21.6</p>
+<p>0</p>
+<p>5.7</p>
+<p>3.433</p>
+<p>10</p>
+<p>马铃薯</p>
+<p>79.8</p>
+<p>2.1</p>
+<p>17.1</p>
+<p>0.1</p>
+<p>3.634</p>
+<p>11</p>
+<p>苹果</p>
+<p>84.4</p>
+<p>0.2</p>
+<p>14.5</p>
+<p>0.6</p>
+<p>3.759</p>
+<p>12</p>
+<p>熏肉</p>
+<p>49.9</p>
+<p>27.6</p>
+<p>0.3</p>
+<p>17.5</p>
+<p>2.014</p>
+<p>13</p>
+<p>黄瓜</p>
+<p>96.1</p>
+<p>0.5</p>
+<p>1.9</p>
+<p>0.1</p>
+<p>4.103</p>
+<p>14</p>
+<p>小牛肉</p>
+<p>68</p>
+<p>21</p>
+<p>0</p>
+<p>10</p>
+<p>3.223</p>
+<p>15</p>
+<p>干酪</p>
+<p>65</p>
+<p>25</p>
+<p>1</p>
+<p>2</p>
+<p>3.265</p>
+<p>16</p>
+<p>虾</p>
+<p>66.2</p>
+<p>26.8</p>
+<p>0</p>
+<p>1.4</p>
+<p>3.302</p>
+<p>17</p>
+<p>沙丁鱼</p>
+<p>57.4</p>
+<p>25.7</p>
+<p>1.2</p>
+<p>11</p>
+<p>3.014</p>
+<p>18</p>
+<p>牛排</p>
+<p>60</p>
+<p>25</p>
+<p>0</p>
+<p>13</p>
+<p>3.056</p>
+<p>19</p>
+<p>胡萝卜</p>
+<p>88.2</p>
+<p>1.2</p>
+<p>9.3</p>
+<p>0.3</p>
+<p>3.886</p>
+<p>通过PDA降维后，绘制散点图。可以看到比热容与4个营养指标之间，呈现较为规律的关系。说明基于这4个指标构建预测模型是可行的。</p>
+<p><img loading="lazy" src="/download/attachments/105268555/Figure%202023-07-25%20095913.png?version=1&amp;modificationDate=1690250365069&amp;api=v2" alt=""  />
+</p>
+<h3 id="211-为什么不使用其他公布的实验法测算出的数据集">2.1.1. 为什么不使用其他公布的实验法测算出的数据集？<a hidden class="anchor" aria-hidden="true" href="#211-为什么不使用其他公布的实验法测算出的数据集">#</a></h3>
+<p>其他通过实验法测算出来的数据集，并没有在实验当时同时测量食材的”水“、”碳水化合物“、”脂肪“、”蛋白质“4种营养物质的含量。数据不完整无法用于训练模型。</p>
+<h2 id="22-模型参数">2.2. 模型参数<a hidden class="anchor" aria-hidden="true" href="#22-模型参数">#</a></h2>
+<p>构建模型使用了python中的sklearn包。模型参数设置如下，使用同《食品比热容的支持向量回归预测》中的参数设置。另外对4种营养成分的含量进行了正则化处理。</p>
+<blockquote>
+<p><strong>SVR(kernel=&lsquo;linear&rsquo;,epsilon=0.0001,C=10567.226979,gamma=8.374954)</strong></p>
+</blockquote>
+<p>其中从数据集中抽出6条作为测试集，其余为训练集。计算结果为：</p>
+<ul>
+<li>平均绝对误差（Mean Absolute Error）: <strong>0.0405</strong>18190567119104</li>
+<li>均方误差（Mean Squared Error）: <strong>0.0035</strong>251462600195027</li>
+<li>均方根误差（Root Mean Squared Error）: <strong>0.0593</strong>7294215397703</li>
+<li><strong>决定系数</strong>（R2 Score）: <strong>0.9954</strong>324598850315</li>
+</ul>
+<p>决定系统R²，为0.9954。R²代表模型解释变化的能力，同时也代表了模型的预测能力。R²取值为[0~1]之间，越接近1，说明模型预测的效果越好。结果显示，模型具有很好的比热容预测能力。</p>
+<h1 id="3-使用比热容数据可能所包含的误差">3. 使用比热容数据，可能所包含的误差<a hidden class="anchor" aria-hidden="true" href="#3-使用比热容数据可能所包含的误差">#</a></h1>
+<h2 id="31-算法本身的误差">3.1. 算法本身的误差<a hidden class="anchor" aria-hidden="true" href="#31-算法本身的误差">#</a></h2>
+<p>算法本身并不能百分百准确预测比热容，虽然R²达到了99.54%</p>
+<h2 id="32-比热容变化带来的误差随着食材温度的身高比热容会变化">3.2. 比热容变化带来的误差：随着食材温度的身高，比热容会变化<a hidden class="anchor" aria-hidden="true" href="#32-比热容变化带来的误差随着食材温度的身高比热容会变化">#</a></h2>
+<p><strong>我们预测的预测算法， 以及网络上公开的比热容实验数据，均是从常温状态下，某一个时点上测量而得到的值。同时由于场景是烹饪，温度的升高必然带来比热容的变化。这就会造成误差。但是这种变化本质上是由于物质本身营养物质含量的变化而引起的，例如随着温度的升高，水分逐渐散失，因水的比热容比大部分的物质的比热容高，所以物质的比热容会逐渐下降。</strong></p>
+<h3 id="321-冷冻物的比热容波峰现象">3.2.1. 冷冻物的比热容波峰现象<a hidden class="anchor" aria-hidden="true" href="#321-冷冻物的比热容波峰现象">#</a></h3>
+<p>如《果蔬比热容的影响因素》（张 敏等人）一文中对35个果蔬进行了持续的检测。结果发现这些<strong>冷冻果蔬的比热容随着温度的升高而变化</strong>。下图是从《果蔬比热容的影响因素》《离体生物组织不同含水量下比热的DSC测试》等文献中文章中截取的图片，表示了不同冷冻食材的比热容随温度变化的趋势。当含水量较多的食材是由冷冻状态进行加热的，即会在0度左右出现一个较为陡峭比热容升高现象。<strong>这是由于水由冰晶转化为液态水，导致的</strong>。当液态水转变基本完成后，其比热容就会趋于较为稳定的状态，浮动会变得很小。含水量不多的食材则更早的进入稳定状态，如下图中间的核桃和黄豆。</p>
+<p><img loading="lazy" src="/download/attachments/105268555/image2023-7-25_11-9-11.png?version=1&amp;modificationDate=1690254551818&amp;api=v2" alt=""  />
+<img loading="lazy" src="/download/attachments/105268555/image2023-7-25_11-11-25.png?version=1&amp;modificationDate=1690254685552&amp;api=v2" alt=""  />
+<img loading="lazy" src="/download/attachments/105268555/image2023-7-25_14-5-54.png?version=1&amp;modificationDate=1690265154689&amp;api=v2" alt=""  />
+<img loading="lazy" src="/download/attachments/105268555/image2023-7-25_14-22-53.png?version=1&amp;modificationDate=1690266173960&amp;api=v2" alt=""  />
+</p>
+<h3 id="322-常温物的比热容变化现象">3.2.2. 常温物的比热容变化现象<a hidden class="anchor" aria-hidden="true" href="#322-常温物的比热容变化现象">#</a></h3>
+<p>若是未冷冻的食材，可以默认其处于比热容稳定状态。但是其比热容依旧有一种下降或者上升的趋势。其变化速率，即斜率，不同食材也有差别。如下图所示</p>
+<p><img loading="lazy" src="/download/attachments/105268555/image2023-7-25_14-6-55.png?version=1&amp;modificationDate=1690265215499&amp;api=v2" alt=""  />
+</p>
+<h2 id="33-食材本身的误差">3.3. 食材本身的误差<a hidden class="anchor" aria-hidden="true" href="#33-食材本身的误差">#</a></h2>
+<p>获取的实验测量比热容数据或者预测的比热容数据，其食材的营养成分是特定的。和实际用户烹饪所使用的食材营养成分很大可能有差别。会导致误差。例如同样烹饪五花肉，可能用户实际用的五花肉更肥一点，其脂肪含量、蛋白质含量可能更高，造成比热容有一些差别。</p>
+<h1 id="4-误差评估">4. 误差评估<a hidden class="anchor" aria-hidden="true" href="#4-误差评估">#</a></h1>
+<p>评估比热容数据的误差</p>
+<p>食材1</p>
+<p>常温食材比热容库</p>
+<p>食材1*</p>
+<p>加热</p>
+<p>措施：<br>
+假设为常温</p>
+<p>关键2：同一食材，不同温度，比热容不一样。因为温度变化，引起营养含量的变化，进而引起比热容变化</p>
+<p>＝</p>
+<p>？</p>
+<p>匹配</p>
+<p>t0 温差？<br>
+常温</p>
+<p>t1 温差</p>
+<p>模型预测</p>
+<p>比热容</p>
+<p>传入</p>
+<p>用户询问</p>
+<p>①预测误差</p>
+<p>②营养含量误差</p>
+<p>③温度误差</p>
+<p>④比热容变化误差</p>
+<p>措施：更多更细食材营养数据</p>
+<p>措施：<br>
+提示为常温</p>
+<p>实验数据收集</p>
+<p>预测</p>
+<p>关键1：可以这么认为比热容和食材无关，只和“水、碳水化合物、脂肪和蛋白质”有关。（其他营养物质也影响，比如微量元素：铁、锌、钙等，但是由于我们是烹饪场景，可以说都是和食材有关，食材里这些元素的含量微乎其微，所以其影响可以忽略不记。其他营养物质如脂类、氨基酸同理）</p>
+<p><img loading="lazy" src="data:image/svg&#43;xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt=""  title="显示评论"  />
+</p>
+<p>//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(&lsquo;drawio-macro-content-a84f2853-97b1-4867-aa27-18202259438c&rsquo;); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = &rsquo;&rsquo; + &lsquo;/rest/drawio/1.0/diagram/crud/%E6%AF%94%E7%83%AD%E5%AE%B9%E8%AF%AF%E5%B7%AE%E9%A1%B9%E6%8F%8F%E8%BF%B0/105268555?revision=5&rsquo;; readerOpts.imageUrl = &rsquo;&rsquo; + &lsquo;/download/attachments/105268555/比热容误差项描述.png&rsquo; + &lsquo;?version=5&amp;api=v2&rsquo;; readerOpts.editUrl = &rsquo;&rsquo; + &lsquo;/plugins/drawio/addDiagram.action?ceoId=105268555&amp;owningPageId=105268555&amp;diagramName=%E6%AF%94%E7%83%AD%E5%AE%B9%E8%AF%AF%E5%B7%AE%E9%A1%B9%E6%8F%8F%E8%BF%B0&amp;revision=5&rsquo;; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH + &lsquo;/reader&rsquo;; readerOpts.border = true; readerOpts.width = &lsquo;1741&rsquo;; readerOpts.simpleViewer = false; readerOpts.tbstyle = &rsquo;top&rsquo;; readerOpts.links = &lsquo;auto&rsquo;; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE + &lsquo;/resources/viewer&rsquo;; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = &lsquo;zh&rsquo;; readerOpts.licenseStatus = &lsquo;OK&rsquo;; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(&rsquo;%E6%AF%94%E7%83%AD%E5%AE%B9%E8%AF%AF%E5%B7%AE%E9%A1%B9%E6%8F%8F%E8%BF%B0&rsquo;); readerOpts.diagramDisplayName = &lsquo;&rsquo;; readerOpts.aspect = &lsquo;&rsquo;; readerOpts.ceoName = &lsquo;比热容预测算法&rsquo;; readerOpts.attVer = &lsquo;5&rsquo;; readerOpts.attId = &lsquo;105269198&rsquo;; readerOpts.lastModifierName = &lsquo;未知用户 (tangwei)&rsquo;; readerOpts.lastModified = &lsquo;2023-07-26 11:14:57.707&rsquo;; readerOpts.creatorName = &lsquo;未知用户 (tangwei)&rsquo;; //Embed macro specific info readerOpts.extSrvIntegType = &lsquo;$extSrvIntegType&rsquo;; readerOpts.gClientId = &lsquo;$gClientId&rsquo;; readerOpts.oClientId = &lsquo;$oClientId&rsquo;; readerOpts.service = &lsquo;$service&rsquo;; readerOpts.sFileId = &lsquo;$sFileId&rsquo;; readerOpts.odriveId = &lsquo;$odriveId&rsquo;; readerOpts.diagramUrl = &lsquo;$diagramUrl&rsquo;; readerOpts.csvFileUrl = &lsquo;$csvFileUrl&rsquo;; readerOpts.pageId = &lsquo;$pageId&rsquo; || Confluence.getContentId(); readerOpts.aspectHash = &lsquo;$aspectHash&rsquo;; readerOpts.useExternalImageService = &lsquo;$useExternalImageService&rsquo; == &rsquo;true&rsquo;; readerOpts.isTemplate = &lsquo;$isTemplate&rsquo; == &rsquo;true&rsquo;; if (readerOpts.width == &lsquo;&rsquo;) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(&lsquo;viewerConfig&rsquo;, readerOpts); $(graphContainer).on(&lsquo;drawioViewerUpdate&rsquo;, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;</p>
+<p>在比热容数据应用在 ”烹饪功率查询语音技能“ 中时，即到实际应用时会出现4个误差</p>
+<p><strong>第一，预测误差。即算法模型的计算的预测值与实际值的差别。</strong></p>
+<p>算法模型如前2.2已述，R²值为99.54%，即可以粗略的认为算法模型的引起的误差总体应该在1%以内。</p>
+<p><strong>第二，营养含量误差。即用户所用食材与食材比热容库中的食材的营养含量差别。</strong></p>
+<p>如果用户说烹饪五花肉，用户所烹饪的五花肉的营养含量，和我们食材营养库中五花肉的营养含量可能是有差别的。但是可推理出来的：食材越具体，营养含量的差别也就越小。比如用户说烹饪猪头皮、五花肉、猪里脊，而不是猪肉这个大类。扩充更多更详细的食材营养数据库，并且引导用户把食材描述更具体，将能有效减少误差。</p>
+<p>以猪肉为例，使用预测的比热容数据。若让用户给出更细分类的食材，而不是直接用大类猪肉的比热容，那么将能直接降低约17%的误差。</p>
+<p><img loading="lazy" src="/download/thumbnails/105268555/image2023-7-26_12-0-21.png?version=1&amp;modificationDate=1690344022058&amp;api=v2" alt=""  />
+</p>
+<p><strong>第三，温度误差。同样食材在不同温度下，比热容不一样。</strong></p>
+<p>同一食材的营养含量是会随着温度的变化而变化的，进而引发比热容的变化。冷冻物在0度左右会发生很大的比热容波动。冷冻物解冻后，或者其他常温的食材也会随着温度的升高，产生一些变化。不过在我们的烹饪场景中，大多数场景都是使用非冷冻食材，或者使用解冻后的食材进行烹饪的。若食材都是常温（10~30℃），那么根据《果蔬比热容的影响因素》（张 敏等）数据（如下图），若差异5℃，比热容的误差在1.3%左右。若差异10℃，比热容的误差在5.55%左右。若是能够控制食材处于常温状态下开始烹饪，如提示用户先将冷冻物解冻，或者提示提供的功率是以常温状态下进行推荐的，那么这部分的误差或许是处在可以接受范围。</p>
+<p><img loading="lazy" src="/download/attachments/105268555/image2023-7-26_10-57-10.png?version=1&amp;modificationDate=1690340230476&amp;api=v2" alt=""  />
+</p>
+<p><strong>第四，比热容变化误差。即加热过程中，食材营养物质变化，进而引起比热容的变化所引起的误差。</strong></p>
+<p>如下图所示，假如黄点A为猪瘦肉的比热容，假如我们默认比热容是不变化的，那么通过计算得到所需做的功Q是 红色区B+绿色区C 的总和。然而因为过程中猪瘦肉的比热容实际是下降的，实际应做的功应该只是红色区B而已，我们给出的结果多出了绿色区C这部分的功。绿色区C的大小，即是误差。</p>
+<p><img loading="lazy" src="/download/attachments/105268555/image2023-7-26_11-7-17.png?version=1&amp;modificationDate=1690340837823&amp;api=v2" alt=""  />
+</p>
+<p>参考文献：</p>
+<ol>
+<li><a href="/download/attachments/105268555/%E5%9F%BA%E4%BA%8EBP%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E5%AF%B9%E6%9E%9C%E8%94%AC%E7%83%AD%E7%89%A9%E6%80%A7%E7%9A%84%E9%A2%84%E6%B5%8B.pdf?version=1&modificationDate=1690193107265&api=v2">基于BP神经网络模型对果蔬热物性的预测.pdf</a></li>
+<li><a href="/download/attachments/105268555/SCG-BP%E7%BD%91%E7%BB%9C%E7%94%A8%E4%BA%8E%E9%A3%9F%E5%93%81%E6%AF%94%E7%83%AD%E5%AE%B9%E7%9A%84%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88.pdf?version=1&modificationDate=1690193107437&api=v2">SCG-BP网络用于食品比热容的曲线拟合.pdf</a></li>
+<li><a href="/download/attachments/105268555/%E9%A3%9F%E5%93%81%E6%AF%94%E7%83%AD%E5%AE%B9%E7%9A%84%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E5%9B%9E%E5%BD%92%E9%A2%84%E6%B5%8B.pdf?version=1&modificationDate=1690193107940&api=v2">食品比热容的支持向量回归预测.pdf</a></li>
+<li><a href="/download/attachments/105268555/%E9%A3%9F%E5%93%81%E6%AF%94%E7%83%AD%E5%AE%B9%E7%9A%84BP%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E9%A2%84%E6%B5%8B.pdf?version=1&modificationDate=1690193108087&api=v2">食品比热容的BP神经网络预测.pdf</a></li>
+<li><a href="/download/attachments/105268555/%E9%A3%9F%E5%93%81%E7%83%AD%E7%84%93%E5%92%8C%E6%AF%94%E7%83%AD%E5%AE%B9%E7%9A%84%E7%BB%8F%E9%AA%8C%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F%20%281%29.pdf?version=1&modificationDate=1690193982906&api=v2">食品热焓和比热容的经验计算公式.pdf</a></li>
+<li><a href="https://www.engineeringtoolbox.com/specific-heat-capacity-food-d_295.html">Food and Foodstuff - Specific Heat (engineeringtoolbox.com)</a></li>
+</ol>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E7%83%B9%E9%A5%AA%E6%96%B9%E6%A1%88%E9%A2%84%E6%B5%8B%E8%AF%AD%E9%9F%B3%E6%8A%80%E8%83%BD/">烹饪方案预测语音技能</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>算法优化方案设计</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/%E7%83%B9%E9%A5%AA%E6%96%B9%E6%A1%88%E9%A2%84%E6%B5%8B%E8%AF%AD%E9%9F%B3%E6%8A%80%E8%83%BD/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>烹饪方案预测语音技能</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 比热容预测算法 on x"
+            href="https://x.com/intent/tweet/?text=%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f&amp;hashtags=%e7%83%b9%e9%a5%aa%e6%96%b9%e6%a1%88%e9%a2%84%e6%b5%8b%e8%af%ad%e9%9f%b3%e6%8a%80%e8%83%bd">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 比热容预测算法 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f&amp;title=%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95&amp;summary=%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 比热容预测算法 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f&title=%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 比热容预测算法 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 比热容预测算法 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 比热容预测算法 on telegram"
+            href="https://telegram.me/share/url?text=%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 比热容预测算法 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%af%94%e7%83%ad%e5%ae%b9%e9%a2%84%e6%b5%8b%e7%ae%97%e6%b3%95&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E6%25AF%2594%25E7%2583%25AD%25E5%25AE%25B9%25E9%25A2%2584%25E6%25B5%258B%25E7%25AE%2597%25E6%25B3%2595%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

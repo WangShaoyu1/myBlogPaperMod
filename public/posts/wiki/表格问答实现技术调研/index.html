@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>表格问答实现技术调研 | PaperMod</title>
+<meta name="keywords" content="黄婷">
+<meta name="description" content="黄婷">
+<meta name="author" content="王宇">
+<link rel="canonical" href="http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="表格问答实现技术调研" />
+<meta property="og:description" content="黄婷" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="表格问答实现技术调研"/>
+<meta name="twitter:description" content="黄婷"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "表格问答实现技术调研",
+      "item": "http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "表格问答实现技术调研",
+  "name": "表格问答实现技术调研",
+  "description": "黄婷",
+  "keywords": [
+    "黄婷"
+  ],
+  "articleBody": " 11. 概述 1.11.1. 什么是表格问答？ 1.21.2. 表格问答支持的问题类型有哪些？ 1.31.3. 表格问答任务细分 1.41.4. 一种表格问答系统架构 22. 表格问答相关方法-学术界 2.12.1. 表格检索 (Table Retrieval) 2.1.12.1.1. 表格候选检索 2.1.22.1.2. 表格候选打分 2.22.2. 基于语义分析的方法 2.32.3. 基于非语义解析的方法 2.3.12.3.1. 生成式方法（Generative methods） 2.3.22.3.2. 提取式方法（Extractive methods） 2.3.32.3.3. 匹配式方法（Match-Based methods） 33. 表格问答常见实现方案 3.13.1. 端到端的 NL2SQL 3.23.2. 基于多轮对话形式的 SQL 关键字提取 3.33.3. 七鱼表格问答落地方案 3.43.4. FTT系统表格问答解决方案 44. 未来的技术展望 55. 参考文档 1. 概述 企业数据在很多情况下是以一种二维表形式保存在数据库中，如果针对二维表配置 FAQ，会导致 FAQ 数量剧增；若客户修改了其中某条记录，还需要去修改之前配置的 FAQ，不利于维护。如果问答系统具备从表格中直接提取信息进行问答的功能，则可以完美地解决此类问题，这就是表格问答的优势。表格问答实现方案有多种，大多数都集中在论文或者比赛范畴内，难以商业落地。本文参考网易七鱼客服场景，梳理表格问答落地方案。\n1.1. 什么是表格问答？ 表格问答（TableQA），是指根据给定的表格，针对表格相关内容的查询、推理等问题，提供对应的智能问答能力。表格问答是基于表格数据来进行问答的技能。其中表格数据是由实体和属性构成。\n狭义上的表格问答是仅针对表格的问答，但随着相关研究的进行，出现了许多表格+文本的、类似文档形式的混合数据集。这些数据集依赖对表格的理解，也因此，广义上的表格问答可看做是包含表格数据的问答。\n从技术层面上看，表格问答是基于自然语言处理（NLP）技术，把用户的问句话术转换成SQL语句，去执行对有关表格数据的查询与推理**，并基于此对用户问句进行回复。**表格问答根据用户的问法和实体在表格中进行搜索，输出与之对应的属性值。具体如下图所示：\n1.2. 表格问答支持的问题类型有哪些？ 1.3. 表格问答任务细分 对于表格问答，参考相关研究和综述，可以将任务按以下角度进行细分。\n角度\n分类\n解释\n备注\n问题类别\n事实(Factoid)\n询问一个特定的事实，答案来自于表格中的一个片段或由聚合操作得到的值\n自由形式(Free Form)\n回答无固定格式，通常较长，类似于对话，如ChatGPT一样\n多项选择(Multiple Choice)\n问题要求从多个选项中选择一个作为答案\n数据类别\n仅包含表格(Table Only)\n数据集里仅包含表格这一种数据形式\n表格+其他数据形式(Non Table Only)\n除了表格本体，还包含表格附近的文本或其他文本信息，甚至是其他数据模态\n表格类别\n普通表格(Flat)\n表格较为规整，一般只有一级的列表头\n层次化表格(Hierarchical)\n表格可能包含行表头和列表头，同时表格不止一级，具有层次化的结构\nDomain Type\n开放域(Open Domain)\n面向真实场景，需要先从大量数据中检索得到候选表格及其他文本，再从中推理出答案\n封闭域(Close Domain)\n面向有限数量的表格或文本，一般仅包含一个表格或少量的文本片段，从中推理得到答案\n1.4. 一种表格问答系统架构 数据预处理模块，对用户提出的问题文本进行中文分词、正则去模糊处理；实现问题文本与知识库实体的语义填充完善。 文本编码模块，将用户提出的问题文本与知识库实体转化为计算机形式的数据类型和计算单元；即采用预训练模型，对问题文本与知识库实体进行语义表示； 结构化查询语句生成模块，利用槽位填充，根据文本编码生成问题对应的结构化查询语句； 自然答案生成模块，根据生成的结构化查询语句进行自然答案的生成，包含主语生成、谓语生成和宾语生成。 2. 表格问答相关方法-学术界 目前，与表格相关的自然语言处理研究发展迅速，数据集大幅增加，学术界已有许多成熟的方法，可以将与表格问答相关的任务定义为以下五类：\n**表格检索：**从表格集合中找到与输入问题最相关的表格 **语义解析：**将自然语言问题转换成可被机器理解的语义表示（meaning representation，一般指SQL语句），在表格中执行该表示即可获得答案 **问题生成：**可看作语义解析的逆过程，能减轻语义解析器对大量标注训练数据的依赖 **对话：**主要用于多轮对话场景的语义解析任务，需有效解决上下文中的省略和指代现象 文本生成：使用自然语言描述表格中（如给定的一行）的内容 2.1. 表格检索 (Table Retrieval) 对于给定的自然语言q和给定的表格全集T={T1, T2, .., Tn}，表格检索任务的目的是从T中找到与q内容最相关的表格，如下图所示。每个表格通常由三部分构成：表头/列名（table header）、表格单元（table cell）和表格标题（table caption）。广义上的表格问答有时也会面对包含表格的一个或多个文档，在面向开放域或混合数据问答时，需要依赖表格检索模块得到候选的表格或其他文本。\n在方法实现上，表格检索往往包含表格候选检索和表格候选打分两个步骤。\n2.1.1. 表格候选检索 从表格全集中快速筛选得到一个表格子集T={T1, T2, .., Tn}，并尽量保证与Q最相关的表格包含在T之中。\n表格全集相对有限：可以将每个表格的结构打散并将内容顺序连接构成一个“文档”，然后基于现有文本检索技术找到与输入问题Q最相关的表格子集T。 表格全集为互联网所有表格：需要先基于搜索引擎找到与问题最相关的结果页面集合。然后抽取该结果网页集合中包含的全部表格作为表格子集T。这一过程无法保证排名靠前网页中包含的表格和输入问题之间也存在较高的相关性，这也就引入了下一个任务。 2.1.2. 表格候选打分 表格候选打分负责计算表格子集T中每个表格和问题Q的相关度，并选择与Q相关度最高的表格\r作为表格检索的结果：\n其中\r表示N个特征函数，每个特征函数用来衡量Q和\r的某种相关性。\r是特征函数集合对应的特征权重集合，它通过在标注数据上使用机器学习算法训练得到。\n如果将表格看作文档，可以采用文本检索中最常见的BM25作为一个表格候选打分特征。\n如果将表格看作字符串，忽略表格结构，最长公共子串、编辑距离在内的多种字符串匹配方法都可以用来设计匹配特征。\n2.2. 基于语义分析的方法 基于语义分析的方法通过两步完成任务。第一步，基于表格T对问题Q进行语义分析，将其转化为对应的语义表示LF（Logical Form）；第二步，将LF作为结构化查询，通过在T上执行得到问题对应的答案。和KBQA类似，基于表格的语义分析方法既可以基于\u003c问题，答案\u003e标注间接训练语义分析模型，也可以基于\u003c问题，语义表示\u003e标注直接训练语义分析模型。\n以下所示的是基于语义分析的方法的一个示例。\n2.3. 基于非语义解析的方法 该类方法在问答时不会生成LF，而是直接由模型得到答案。此类方法省去了设计模板的成本，一般只需要答案、答案所在的一个或多个单元格、聚合操作等少量信息即可完成训练。非语义解析的方法主要可分为生成式方法、提取式方法和匹配式的方法。\n2.3.1. 生成式方法（Generative methods） 生成式方法类似于Encoder-Decoder的结构，通过Encoder对问题和表格编码，得到问题和表格的语义表示，在通过Decoder从中解码出答案。自由形式的问答往往需要依赖Decoder来生成自由形式的答案。\n2.3.2. 提取式方法（Extractive methods） 提取式方法类似于Encoder-Classification Layer的结构，其不依赖Decoder生成答案，而是通过分类等方式，从表格中选取token spans作为答案或答案依据。一个典型的提取式方法是TaPas模型，TaPas模型基于Bert模型实现，将问题与线性化的表格作为模型的输入。输出包含了对表格的每一个单元格的预测，判断该单元格是答案或答案依据的可能性。\n2.3.3. 匹配式方法（Match-Based methods） 匹配式方法类似于KBQA里的向量建模的方法，对问题和表格的片段（如特定的行、列）进行编码，再通过特定方法得到与问题相似度较高的表格片段，从表格片段中推理出答案。一个典型的匹配式方法是RCI模型，将问题与表格的所有行列进行匹配，选择得到相似度最高的行列，行列相交即得到答案所在的单元格。\n3. 表格问答常见实现方案 当前表格知识问答的实现方案主要有：端到端的 NL2SQL、多轮对话形式的 SQL 关键字提取等。这些方案当前主要在学术界进行研究，工业界落地的挑战包括：领域可迁移性不强、标注成本太高、算法预测结果不可控、综合效果未达预期等。\n3.1. 端到端的 NL2SQL NL2SQL（Natural Language to SQL）是一项将用户的自然语言语句转成可执行的 SQL 语句的技术，有很大的实际应用价值，对改善用户与数据库之间的交互方式有重大意义。\n在深度学习端到端解决方案流行之前，NL2SQL 的解决方案主要是通过高质量的语法树和词典来构建语义解析器，分析访客的诉求，再将分析的结果依据规则转写成相应的 SQL。**最新的解决方案是基于端到端模型与 SQL 特征规则相结合，**例如 X-SQL，HydraNet 等。\n3.2. 基于多轮对话形式的 SQL 关键字提取 **这种方式是把访客的意图看成一个任务型对话过程，**首先把 SQL 常见的查询方式整理成一个对话流程，完成这个查询需要的条件，设置成对话中的槽位，通过一轮或者多轮从用户获取需要的 SQL 关键字，最后和用户确认查询的含义，并且返回最后的答案。\n这种方式和 NL2SQL 表格问答最大的差别是， NL2SQL 的表格问答是模型自动抽取 SQL 中的所有关键字，不需要人工介入。而多轮对话形式的 SQL 是把 SQL 关键字提取转成对话的槽位，系统没理解的部分，可以通过澄清话术再次询问用户，降低了难度。但是这种方式需要事先配置多个对话流程，把主流的 SQL 语法都涵盖进去，人工成本巨大，不利于领域迁移。\n3.3. 七鱼表格问答落地方案 **网易七鱼在线客服场景使用的表格问答，通过创新方式，把表格问答转成基于多轮对话形式的实体和属性识别。**用户可以在澄清话术的引导下，通过单轮或者多轮对话的方式自然地提供查询所需的实体和属性，从而为用户精准地找到表格中的答案。\n七鱼的表格问答，采用的是一种创新的实现方式，把表格问答转成实体和属性的识别。实体为二维表中的列；属性为二维表中的行。实体和属性的识别有成熟的落地方案，例如可以通过关键词识别，也可以通过语义相似度算法识别。同时，根据七鱼客服机器人的实际落地场景，把表格问答设计成一种多轮对话的形式，用户可以在话术引导下，分多次提供有效的实体和属性信息，不需要一次对话就必须提供实体和属性信息，同时还可以支持实体或者属性的反问和推荐，进一步提升实用性。\n**七鱼通过成熟的实体、属性识别来实现表格问答。**属性识别采用了当前最先进的预训练语言模型，效果优异。**七鱼的表格问答采用多轮对话框架，支持用户上下文多次问答，逐渐澄清意图。**如果用户一轮对话只说了实体或者只说了属性，系统具备反问和推荐功能，让用户提供查询所需要的完整信息。\n3.4. FTT系统表格问答解决方案 分析：结合之前的沟通情况来看，FTT系统大概率会采用基于多轮对话形式的 SQL 关键字提取方案来实现表格问答，与网易七鱼使用的技术相近。需要基于主流sql填写对应的话术，把 SQL 关键字提取转化为对应实体和属性槽位的提取，相比指令系统，增加多轮对话的实体和属性继承功能。表格内容基本涵盖以下内容：\n4. 未来的技术展望 TableQA 从单轮到多轮，从单表到多表，从下游模型到上游预训练表格模型，初步形成了比较体系的创新。但总体上，TableQA 还是一个新方向，面向未来，还有很多难题需要研究：\n大规模预训练表格理解模型；\n大规模预训练表格生成模型；\n更强大的 Text-to-SQL 模型；\n忠实流畅类人的 TableNLG；\n端到端开箱即用的 TableQA 系统；\n推广到更多的应用场景。\n5. 参考文档 表格问答在客服场景下的落地应用-网易七鱼 TQA调研——学术界 基于表格问答的自然答案生成系统及其方法 NL2SQL模型介绍 Filter table dataCreate a pivot tableCreate a chart from data series\nConfigure buttons visibility\n",
+  "wordCount" : "260",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "王宇"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      表格问答实现技术调研
+    </h1>
+    <div class="post-description">
+      黄婷
+    </div>
+    <div class="post-meta">2 分钟&nbsp;·&nbsp;王宇&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/wiki/%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e6%a6%82%e8%bf%b0" aria-label="1. 概述">1. 概述</a><ul>
+                        
+                <li>
+                    <a href="#11-%e4%bb%80%e4%b9%88%e6%98%af%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94" aria-label="1.1. 什么是表格问答？">1.1. 什么是表格问答？</a></li>
+                <li>
+                    <a href="#12-%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e6%94%af%e6%8c%81%e7%9a%84%e9%97%ae%e9%a2%98%e7%b1%bb%e5%9e%8b%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="1.2. 表格问答支持的问题类型有哪些？">1.2. 表格问答支持的问题类型有哪些？</a></li>
+                <li>
+                    <a href="#13-%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e4%bb%bb%e5%8a%a1%e7%bb%86%e5%88%86" aria-label="1.3. 表格问答任务细分">1.3. 表格问答任务细分</a></li>
+                <li>
+                    <a href="#14-%e4%b8%80%e7%a7%8d%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84" aria-label="1.4. 一种表格问答系统架构">1.4. 一种表格问答系统架构</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e7%9b%b8%e5%85%b3%e6%96%b9%e6%b3%95-%e5%ad%a6%e6%9c%af%e7%95%8c" aria-label="2. 表格问答相关方法-学术界">2. 表格问答相关方法-学术界</a><ul>
+                        
+                <li>
+                    <a href="#21-%e8%a1%a8%e6%a0%bc%e6%a3%80%e7%b4%a2-table-retrieval" aria-label="2.1. 表格检索 (Table Retrieval)">2.1. 表格检索 (Table Retrieval)</a><ul>
+                        
+                <li>
+                    <a href="#211-%e8%a1%a8%e6%a0%bc%e5%80%99%e9%80%89%e6%a3%80%e7%b4%a2" aria-label="2.1.1. 表格候选检索">2.1.1. 表格候选检索</a></li>
+                <li>
+                    <a href="#212-%e8%a1%a8%e6%a0%bc%e5%80%99%e9%80%89%e6%89%93%e5%88%86" aria-label="2.1.2. 表格候选打分">2.1.2. 表格候选打分</a></li></ul>
+                </li>
+                <li>
+                    <a href="#22-%e5%9f%ba%e4%ba%8e%e8%af%ad%e4%b9%89%e5%88%86%e6%9e%90%e7%9a%84%e6%96%b9%e6%b3%95" aria-label="2.2. 基于语义分析的方法">2.2. 基于语义分析的方法</a></li>
+                <li>
+                    <a href="#23-%e5%9f%ba%e4%ba%8e%e9%9d%9e%e8%af%ad%e4%b9%89%e8%a7%a3%e6%9e%90%e7%9a%84%e6%96%b9%e6%b3%95" aria-label="2.3. 基于非语义解析的方法">2.3. 基于非语义解析的方法</a><ul>
+                        
+                <li>
+                    <a href="#231-%e7%94%9f%e6%88%90%e5%bc%8f%e6%96%b9%e6%b3%95generative-methods" aria-label="2.3.1. 生成式方法（Generative methods）">2.3.1. 生成式方法（Generative methods）</a></li>
+                <li>
+                    <a href="#232-%e6%8f%90%e5%8f%96%e5%bc%8f%e6%96%b9%e6%b3%95extractive-methods" aria-label="2.3.2. 提取式方法（Extractive methods）">2.3.2. 提取式方法（Extractive methods）</a></li>
+                <li>
+                    <a href="#233-%e5%8c%b9%e9%85%8d%e5%bc%8f%e6%96%b9%e6%b3%95match-based-methods" aria-label="2.3.3. 匹配式方法（Match-Based methods）">2.3.3. 匹配式方法（Match-Based methods）</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#3-%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%b8%b8%e8%a7%81%e5%ae%9e%e7%8e%b0%e6%96%b9%e6%a1%88" aria-label="3. 表格问答常见实现方案">3. 表格问答常见实现方案</a><ul>
+                        
+                <li>
+                    <a href="#31-%e7%ab%af%e5%88%b0%e7%ab%af%e7%9a%84-nl2sql" aria-label="3.1. 端到端的 NL2SQL">3.1. 端到端的 NL2SQL</a></li>
+                <li>
+                    <a href="#32-%e5%9f%ba%e4%ba%8e%e5%a4%9a%e8%bd%ae%e5%af%b9%e8%af%9d%e5%bd%a2%e5%bc%8f%e7%9a%84-sql-%e5%85%b3%e9%94%ae%e5%ad%97%e6%8f%90%e5%8f%96" aria-label="3.2. 基于多轮对话形式的 SQL 关键字提取">3.2. 基于多轮对话形式的 SQL 关键字提取</a></li>
+                <li>
+                    <a href="#33-%e4%b8%83%e9%b1%bc%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e8%90%bd%e5%9c%b0%e6%96%b9%e6%a1%88" aria-label="3.3. 七鱼表格问答落地方案">3.3. 七鱼表格问答落地方案</a></li>
+                <li>
+                    <a href="#34-ftt%e7%b3%bb%e7%bb%9f%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="3.4. FTT系统表格问答解决方案">3.4. FTT系统表格问答解决方案</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4-%e6%9c%aa%e6%9d%a5%e7%9a%84%e6%8a%80%e6%9c%af%e5%b1%95%e6%9c%9b" aria-label="4. 未来的技术展望">4. 未来的技术展望</a></li>
+                <li>
+                    <a href="#5-%e5%8f%82%e8%80%83%e6%96%87%e6%a1%a3" aria-label="5. 参考文档">5. 参考文档</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><ul>
+<li>1<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-概述">1. 概述</a>
+<ul>
+<li>1.1<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-什么是表格问答？">1.1. 什么是表格问答？</a></li>
+<li>1.2<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-表格问答支持的问题类型有哪些？">1.2. 表格问答支持的问题类型有哪些？</a></li>
+<li>1.3<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-表格问答任务细分">1.3. 表格问答任务细分</a></li>
+<li>1.4<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-一种表格问答系统架构">1.4. 一种表格问答系统架构</a></li>
+</ul>
+</li>
+<li>2<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-表格问答相关方法-学术界">2. 表格问答相关方法-学术界</a>
+<ul>
+<li>2.1<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-表格检索\\(TableRetrieval\\)">2.1. 表格检索 (Table Retrieval)</a>
+<ul>
+<li>2.1.1<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-表格候选检索">2.1.1. 表格候选检索</a></li>
+<li>2.1.2<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-表格候选打分">2.1.2. 表格候选打分</a></li>
+</ul>
+</li>
+<li>2.2<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-基于语义分析的方法">2.2. 基于语义分析的方法</a></li>
+<li>2.3<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-基于非语义解析的方法">2.3. 基于非语义解析的方法</a>
+<ul>
+<li>2.3.1<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-生成式方法（Generativemethods）">2.3.1. 生成式方法（Generative methods）</a></li>
+<li>2.3.2<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-提取式方法（Extractivemethods）">2.3.2. 提取式方法（Extractive methods）</a></li>
+<li>2.3.3<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-匹配式方法（Match-Basedmethods）">2.3.3. 匹配式方法（Match-Based methods）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>3<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-表格问答常见实现方案">3. 表格问答常见实现方案</a>
+<ul>
+<li>3.1<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-端到端的NL2SQL">3.1. 端到端的 NL2SQL</a></li>
+<li>3.2<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-基于多轮对话形式的SQL关键字提取">3.2. 基于多轮对话形式的 SQL 关键字提取</a></li>
+<li>3.3<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-七鱼表格问答落地方案">3.3. 七鱼表格问答落地方案</a></li>
+<li>3.4<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-FTT系统表格问答解决方案">3.4. FTT系统表格问答解决方案</a></li>
+</ul>
+</li>
+<li>4<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-未来的技术展望">4. 未来的技术展望</a></li>
+<li>5<a href="/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/#id-表格问答实现技术调研-参考文档">5. 参考文档</a></li>
+</ul>
+<h1 id="1-概述">1. 概述<a hidden class="anchor" aria-hidden="true" href="#1-概述">#</a></h1>
+<p>企业数据在很多情况下是以一种二维表形式保存在数据库中，如果针对二维表配置 FAQ，会导致 FAQ 数量剧增；若客户修改了其中某条记录，还需要去修改之前配置的 FAQ，不利于维护。如果问答系统具备从表格中直接提取信息进行问答的功能，则可以完美地解决此类问题，这就是表格问答的优势。表格问答实现方案有多种，大多数都集中在论文或者比赛范畴内，难以商业落地。本文参考网易七鱼客服场景，梳理表格问答落地方案。</p>
+<h2 id="11-什么是表格问答">1.1. 什么是表格问答？<a hidden class="anchor" aria-hidden="true" href="#11-什么是表格问答">#</a></h2>
+<p><strong>表格问答</strong>（TableQA），是指根据给定的表格，针对表格相关内容的<strong>查询、推理</strong>等问题，提供对应的智能问答能力。表格问答是基于表格数据来进行问答的技能。其中表格数据是由<strong>实体和属性</strong>构成。</p>
+<p>狭义上的表格问答是<strong>仅针对表格</strong>的问答，但随着相关研究的进行，出现了许多<strong>表格+文本</strong>的、类似文档形式的混合数据集。这些数据集依赖对表格的理解，也因此，广义上的表格问答可看做是<strong>包含表格数据</strong>的问答。</p>
+<p><strong>从技术层面上看，表格问答是基于自然语言处理（NLP）技术，把用户的问句话术转换成SQL语句，去执行对有关表格数据的查询与推理</strong>**，并基于此对用户问句进行回复。**表格问答根据用户的问法和实体在表格中进行搜索，输出与之对应的属性值。具体如下图所示：</p>
+<p><img loading="lazy" src="/download/attachments/109717533/image2023-9-27_18-45-1.png?version=1&amp;modificationDate=1695811501789&amp;api=v2" alt=""  />
+</p>
+<h2 id="12-表格问答支持的问题类型有哪些">1.2. 表格问答支持的问题类型有哪些？<a hidden class="anchor" aria-hidden="true" href="#12-表格问答支持的问题类型有哪些">#</a></h2>
+<p><img loading="lazy" src="https://simg.baai.ac.cn/uploads/2022/12/c15b92a735e8242b51b92b9f1490e664.png" alt="图片"  />
+</p>
+<h2 id="13-表格问答任务细分">1.3. 表格问答任务细分<a hidden class="anchor" aria-hidden="true" href="#13-表格问答任务细分">#</a></h2>
+<p>对于表格问答，参考相关研究和<a href="https://github.com/BDBC-KG-NLP/QA-Survey-CN/blob/master/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%5C%28Table_Question_Answering,TQA%5C%29-%E5%AD%A6%E6%9C%AF%E7%95%8C.md#zs">综述</a>，可以将任务按以下角度进行细分。</p>
+<p>角度</p>
+<p>分类</p>
+<p>解释</p>
+<p>备注</p>
+<p>问题类别</p>
+<p>事实(Factoid)</p>
+<p>询问一个特定的事实，答案来自于表格中的一个片段或由聚合操作得到的值</p>
+<p>自由形式(Free Form)</p>
+<p>回答无固定格式，通常较长，类似于对话，如ChatGPT一样</p>
+<p>多项选择(Multiple Choice)</p>
+<p>问题要求从多个选项中选择一个作为答案</p>
+<p>数据类别</p>
+<p>仅包含表格(Table Only)</p>
+<p>数据集里仅包含表格这一种数据形式</p>
+<p>表格+其他数据形式(Non Table Only)</p>
+<p>除了表格本体，还包含表格附近的文本或其他文本信息，甚至是其他数据模态</p>
+<p>表格类别</p>
+<p>普通表格(Flat)</p>
+<p>表格较为规整，一般只有一级的列表头</p>
+<p>层次化表格(Hierarchical)</p>
+<p>表格可能包含行表头和列表头，同时表格不止一级，具有层次化的结构</p>
+<p>Domain Type</p>
+<p>开放域(Open Domain)</p>
+<p>面向真实场景，需要先从大量数据中检索得到候选表格及其他文本，再从中推理出答案</p>
+<p>封闭域(Close Domain)</p>
+<p>面向有限数量的表格或文本，一般仅包含一个表格或少量的文本片段，从中推理得到答案</p>
+<h2 id="14-一种表格问答系统架构">1.4. 一种表格问答系统架构<a hidden class="anchor" aria-hidden="true" href="#14-一种表格问答系统架构">#</a></h2>
+<p><img loading="lazy" src="/download/attachments/109717533/image2023-9-27_23-31-17.png?version=1&amp;modificationDate=1695828678136&amp;api=v2" alt=""  />
+</p>
+<ul>
+<li>数据预处理模块，对用户提出的问题文本进行中文分词、正则去模糊处理；实现问题文本与知识库实体的语义填充完善。</li>
+<li>文本编码模块，将用户提出的问题文本与知识库实体转化为计算机形式的数据类型和计算单元；即采用预训练模型，对问题文本与知识库实体进行语义表示；</li>
+<li>结构化查询语句生成模块，利用槽位填充，根据文本编码生成问题对应的结构化查询语句；</li>
+<li>自然答案生成模块，根据生成的结构化查询语句进行自然答案的生成，包含主语生成、谓语生成和宾语生成。</li>
+</ul>
+<h1 id="2-表格问答相关方法-学术界">2. 表格问答相关方法-学术界<a hidden class="anchor" aria-hidden="true" href="#2-表格问答相关方法-学术界">#</a></h1>
+<p>目前，与表格相关的自然语言处理研究发展迅速，数据集大幅增加，学术界已有许多成熟的方法，可以将与表格问答相关的任务定义为以下五类：</p>
+<ul>
+<li>**表格检索：**从表格集合中找到与输入问题最相关的表格</li>
+<li>**语义解析：**将自然语言问题转换成可被机器理解的语义表示（meaning representation，一般指SQL语句），在表格中执行该表示即可获得答案</li>
+<li>**问题生成：**可看作语义解析的逆过程，能减轻语义解析器对大量标注训练数据的依赖</li>
+<li>**对话：**主要用于多轮对话场景的语义解析任务，需有效解决上下文中的省略和指代现象</li>
+<li><strong>文本生成</strong>：使用自然语言描述表格中（如给定的一行）的内容</li>
+</ul>
+<h2 id="21-表格检索-table-retrieval">2.1. 表格检索 (Table Retrieval)<a hidden class="anchor" aria-hidden="true" href="#21-表格检索-table-retrieval">#</a></h2>
+<p>对于给定的自然语言q和给定的表格全集T={T1, T2, .., Tn}，表格检索任务的目的是从T中找到与q内容最相关的表格，如下图所示。每个表格通常由三部分构成：表头/列名（table header）、表格单元（table cell）和表格标题（table caption）。广义上的表格问答有时也会面对包含表格的一个或多个文档，在面向开放域或混合数据问答时，需要依赖表格检索模块得到候选的表格或其他文本。</p>
+<p><img loading="lazy" src="/download/attachments/109717533/image2023-9-25_16-33-20.png?version=1&amp;modificationDate=1695630800976&amp;api=v2" alt=""  />
+</p>
+<p>在方法实现上，<strong>表格检索往往包含表格候选检索和表格候选打分两个步骤。</strong></p>
+<h3 id="211-表格候选检索">2.1.1. 表格候选检索<a hidden class="anchor" aria-hidden="true" href="#211-表格候选检索">#</a></h3>
+<p><strong>从表格全集中快速筛选得到一个表格子集T={T1, T2, .., Tn}，并尽量保证与Q最相关的表格包含在T之中。</strong></p>
+<ul>
+<li><strong>表格全集相对有限</strong>：可以将每个表格的结构打散并将内容顺序连接构成一个“文档”，然后基于现有文本检索技术找到与输入问题Q最相关的表格子集T。</li>
+<li><strong>表格全集为互联网所有表格</strong>：需要先基于搜索引擎找到与问题最相关的结果页面集合。然后抽取该结果网页集合中包含的全部表格作为表格子集T。这一过程无法保证排名靠前网页中包含的表格和输入问题之间也存在较高的相关性，这也就引入了下一个任务。</li>
+</ul>
+<h3 id="212-表格候选打分">2.1.2. 表格候选打分<a hidden class="anchor" aria-hidden="true" href="#212-表格候选打分">#</a></h3>
+<p><strong>表格候选打分负责计算表格子集T中每个表格和问题Q的相关度，并选择与Q相关度最高的表格<a href="https://camo.githubusercontent.com/0e6ff8ba97405c3ffec63315df89ca7d403a9125d1585267161aeaa9bd4ea880/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f545f25374262657374253744"><img loading="lazy" src="https://camo.githubusercontent.com/0e6ff8ba97405c3ffec63315df89ca7d403a9125d1585267161aeaa9bd4ea880/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f545f25374262657374253744" alt=""  />
+</a>作为表格检索的结果</strong>：</p>
+<p><a href="https://camo.githubusercontent.com/f5e23d27052775ad600f6db7c06c69231ae3c0de1cd3c33f602e37e423fe2db4/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f545f253742626573742537443d6172676d61785f253742545f25374269253744253543696e2537425425374425374425354373756d5f253742693d312537442535452537424e2537442535436c616d6264615f2537426925374425354363646f74253742685f2537426925374428512c545f2537426925374429253744"><img loading="lazy" src="https://camo.githubusercontent.com/f5e23d27052775ad600f6db7c06c69231ae3c0de1cd3c33f602e37e423fe2db4/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f545f253742626573742537443d6172676d61785f253742545f25374269253744253543696e2537425425374425374425354373756d5f253742693d312537442535452537424e2537442535436c616d6264615f2537426925374425354363646f74253742685f2537426925374428512c545f2537426925374429253744" alt=""  />
+</a></p>
+<p>其中<a href="https://camo.githubusercontent.com/50a6f53786072b6c28c0a5923acf4f08a8c3d2723d8e0a0eeaae13fa6874ac5e/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f253742685f2537426925374428512c545f25374269253744292537445f253742693d312537442535452537424e253744"><img loading="lazy" src="https://camo.githubusercontent.com/50a6f53786072b6c28c0a5923acf4f08a8c3d2723d8e0a0eeaae13fa6874ac5e/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f253742685f2537426925374428512c545f25374269253744292537445f253742693d312537442535452537424e253744" alt=""  />
+</a>表示N个特征函数，每个特征函数用来衡量Q和<a href="https://camo.githubusercontent.com/b2ddfbb0f4bf19b32145ef437a821cedb720d0434578a05b4e62d752de423721/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f545f25374269253744"><img loading="lazy" src="https://camo.githubusercontent.com/b2ddfbb0f4bf19b32145ef437a821cedb720d0434578a05b4e62d752de423721/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f545f25374269253744" alt=""  />
+</a>的某种相关性。<a href="https://camo.githubusercontent.com/3d7d8f343b6589816522f4340c9884b23a348ecbbf103373050ceb650c7edf7b/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f2537422535436c616d6264615f253742692537442537445f253742693d312537442535452537424e253744"><img loading="lazy" src="https://camo.githubusercontent.com/3d7d8f343b6589816522f4340c9884b23a348ecbbf103373050ceb650c7edf7b/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f2537422535436c616d6264615f253742692537442537445f253742693d312537442535452537424e253744" alt=""  />
+</a>是特征函数集合对应的特征权重集合，它通过在标注数据上使用机器学习算法训练得到。</p>
+<ul>
+<li>
+<p>如果将表格看作文档，可以采用文本检索中最常见的BM25作为一个表格候选打分特征。</p>
+</li>
+<li>
+<p>如果将表格看作字符串，忽略表格结构，最长公共子串、编辑距离在内的多种字符串匹配方法都可以用来设计匹配特征。</p>
+</li>
+</ul>
+<h2 id="22-基于语义分析的方法">2.2. 基于语义分析的方法<a hidden class="anchor" aria-hidden="true" href="#22-基于语义分析的方法">#</a></h2>
+<p>基于语义分析的方法通过两步完成任务。第一步，基于表格T对问题Q进行语义分析，将其转化为对应的语义表示LF（Logical Form）；第二步，将LF作为结构化查询，通过在T上执行得到问题对应的答案。和KBQA类似，基于表格的语义分析方法既可以基于&lt;问题，答案&gt;标注间接训练语义分析模型，也可以基于&lt;问题，语义表示&gt;标注直接训练语义分析模型。</p>
+<p>以下所示的是基于语义分析的方法的一个示例。</p>
+<p><img loading="lazy" src="/download/attachments/109717533/image2023-9-25_16-40-30.png?version=1&amp;modificationDate=1695631230778&amp;api=v2" alt=""  />
+</p>
+<h2 id="23-基于非语义解析的方法">2.3. 基于非语义解析的方法<a hidden class="anchor" aria-hidden="true" href="#23-基于非语义解析的方法">#</a></h2>
+<p>该类方法在问答时不会生成LF，而是直接由模型得到答案。此类方法省去了设计模板的成本，一般只需要答案、答案所在的一个或多个单元格、聚合操作等少量信息即可完成训练。<strong>非语义解析的方法主要可分为生成式方法、提取式方法和匹配式的方法。</strong></p>
+<h3 id="231-生成式方法generative-methods">2.3.1. 生成式方法（Generative methods）<a hidden class="anchor" aria-hidden="true" href="#231-生成式方法generative-methods">#</a></h3>
+<p>生成式方法类似于Encoder-Decoder的结构，通过Encoder对问题和表格编码，得到问题和表格的语义表示，在通过Decoder从中解码出答案。自由形式的问答往往需要依赖Decoder来生成自由形式的答案。</p>
+<h3 id="232-提取式方法extractive-methods">2.3.2. 提取式方法（Extractive methods）<a hidden class="anchor" aria-hidden="true" href="#232-提取式方法extractive-methods">#</a></h3>
+<p>提取式方法类似于Encoder-Classification Layer的结构，其不依赖Decoder生成答案，而是通过分类等方式，从表格中选取token spans作为答案或答案依据。一个典型的提取式方法是<a href="https://github.com/BDBC-KG-NLP/QA-Survey-CN/blob/master/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%5C%28Table_Question_Answering,TQA%5C%29-%E5%AD%A6%E6%9C%AF%E7%95%8C.md#TaPas">TaPas</a>模型，TaPas模型基于Bert模型实现，将问题与线性化的表格作为模型的输入。输出包含了对表格的每一个单元格的预测，判断该单元格是答案或答案依据的可能性。</p>
+<h3 id="233-匹配式方法match-based-methods">2.3.3. 匹配式方法（Match-Based methods）<a hidden class="anchor" aria-hidden="true" href="#233-匹配式方法match-based-methods">#</a></h3>
+<p>匹配式方法类似于KBQA里的向量建模的方法，对问题和表格的片段（如特定的行、列）进行编码，再通过特定方法得到与问题相似度较高的表格片段，从表格片段中推理出答案。一个典型的匹配式方法是<a href="https://github.com/BDBC-KG-NLP/QA-Survey-CN/blob/master/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%5C%28Table_Question_Answering,TQA%5C%29-%E5%AD%A6%E6%9C%AF%E7%95%8C.md#RCI">RCI</a>模型，将问题与表格的所有行列进行匹配，选择得到相似度最高的行列，行列相交即得到答案所在的单元格。</p>
+<h1 id="3-表格问答常见实现方案">3. 表格问答常见实现方案<a hidden class="anchor" aria-hidden="true" href="#3-表格问答常见实现方案">#</a></h1>
+<p>当前表格知识问答的实现方案主要有：端到端的 NL2SQL、多轮对话形式的 SQL 关键字提取等。这些方案当前主要在学术界进行研究，工业界落地的挑战包括：<strong>领域可迁移性不强、标注成本太高、算法预测结果不可控、综合效果未达预期等。</strong></p>
+<h2 id="31-端到端的-nl2sql">3.1. 端到端的 NL2SQL<a hidden class="anchor" aria-hidden="true" href="#31-端到端的-nl2sql">#</a></h2>
+<p>NL2SQL（Natural Language to SQL）是一项将用户的自然语言语句转成可执行的 SQL 语句的技术，有很大的实际应用价值，<strong>对改善用户与数据库之间的交互方式有重大意义。</strong></p>
+<p>在深度学习端到端解决方案流行之前，NL2SQL 的解决方案主要是通过高质量的语法树和词典来构建语义解析器，分析访客的诉求，再将分析的结果依据规则转写成相应的 SQL。**最新的解决方案是基于端到端模型与 SQL 特征规则相结合，**例如 X-SQL，HydraNet 等。</p>
+<h2 id="32-基于多轮对话形式的-sql-关键字提取">3.2. 基于多轮对话形式的 SQL 关键字提取<a hidden class="anchor" aria-hidden="true" href="#32-基于多轮对话形式的-sql-关键字提取">#</a></h2>
+<p>**这种方式是把访客的意图看成一个任务型对话过程，**首先把 SQL 常见的查询方式整理成一个对话流程，完成这个查询需要的条件，设置成对话中的槽位，通过一轮或者多轮从用户获取需要的 SQL 关键字，最后和用户确认查询的含义，并且返回最后的答案。</p>
+<p>这种方式和 NL2SQL 表格问答最大的差别是， <strong>NL2SQL 的表格问答是模型自动抽取 SQL 中的所有关键字，不需要人工介入。而多轮对话形式的 SQL 是把 SQL 关键字提取转成对话的槽位，系统没理解的部分，可以通过澄清话术再次询问用户，降低了难度。但是这种方式需要事先配置多个对话流程，把主流的 SQL 语法都涵盖进去，人工成本巨大，不利于领域迁移。</strong></p>
+<h2 id="33-七鱼表格问答落地方案">3.3. 七鱼表格问答落地方案<a hidden class="anchor" aria-hidden="true" href="#33-七鱼表格问答落地方案">#</a></h2>
+<p>**网易七鱼在线客服场景使用的表格问答，通过创新方式，把表格问答转成基于多轮对话形式的实体和属性识别。**用户可以在澄清话术的引导下，通过单轮或者多轮对话的方式自然地提供查询所需的实体和属性，从而为用户精准地找到表格中的答案。</p>
+<p>七鱼的表格问答，采用的是一种创新的实现方式，把表格问答转成实体和属性的识别。实体为二维表中的列；属性为二维表中的行。实体和属性的识别有成熟的落地方案，例如可以通过关键词识别，也可以通过语义相似度算法识别。同时，根据七鱼客服机器人的实际落地场景，把表格问答设计成一种多轮对话的形式，用户可以在话术引导下，分多次提供有效的实体和属性信息，不需要一次对话就必须提供实体和属性信息，同时还可以支持实体或者属性的反问和推荐，进一步提升实用性。</p>
+<p>**七鱼通过成熟的实体、属性识别来实现表格问答。**属性识别采用了当前最先进的预训练语言模型，效果优异。**七鱼的表格问答采用多轮对话框架，支持用户上下文多次问答，逐渐澄清意图。**如果用户一轮对话只说了实体或者只说了属性，系统具备反问和推荐功能，让用户提供查询所需要的完整信息。</p>
+<h2 id="34-ftt系统表格问答解决方案">3.4. FTT系统表格问答解决方案<a hidden class="anchor" aria-hidden="true" href="#34-ftt系统表格问答解决方案">#</a></h2>
+<p><img loading="lazy" src="/download/attachments/109717533/image2023-9-27_23-47-10.png?version=1&amp;modificationDate=1695829631148&amp;api=v2" alt=""  />
+</p>
+<p><strong>分析：<strong>结合之前的沟通情况来看，FTT系统大概率会采用</strong>基于多轮对话形式的 SQL 关键字提取</strong>方案来实现表格问答，与网易七鱼使用的技术相近。需要基于主流sql填写对应的话术，把 SQL 关键字提取转化为对应实体和属性槽位的提取，相比指令系统，增加多轮对话的实体和属性继承功能。表格内容基本涵盖以下内容：</p>
+<p><img loading="lazy" src="/download/attachments/109717533/image2023-9-27_23-58-44.png?version=1&amp;modificationDate=1695830324865&amp;api=v2" alt=""  />
+</p>
+<h1 id="4-未来的技术展望">4. 未来的技术展望<a hidden class="anchor" aria-hidden="true" href="#4-未来的技术展望">#</a></h1>
+<p>TableQA 从单轮到多轮，从单表到多表，从下游模型到上游预训练表格模型，初步形成了比较体系的创新。但总体上，TableQA 还是一个新方向，面向未来，还有很多难题需要研究：</p>
+<ol>
+<li>
+<p>大规模预训练表格理解模型；</p>
+</li>
+<li>
+<p>大规模预训练表格生成模型；</p>
+</li>
+<li>
+<p>更强大的 Text-to-SQL 模型；</p>
+</li>
+<li>
+<p>忠实流畅类人的 TableNLG；</p>
+</li>
+<li>
+<p>端到端开箱即用的 TableQA 系统；</p>
+</li>
+<li>
+<p>推广到更多的应用场景。</p>
+</li>
+</ol>
+<h1 id="5-参考文档">5. 参考文档<a hidden class="anchor" aria-hidden="true" href="#5-参考文档">#</a></h1>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/431970230">表格问答在客服场景下的落地应用-网易七鱼</a></li>
+<li><a href="https://github.com/BDBC-KG-NLP/QA-Survey-CN/blob/master/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%5C%28Table_Question_Answering,TQA%5C%29-%E5%AD%A6%E6%9C%AF%E7%95%8C.md#zs">TQA调研——学术界</a></li>
+<li><a href="https://patents.google.com/patent/CN114780582A/zh">基于表格问答的自然答案生成系统及其方法</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1617204">NL2SQL模型介绍</a></li>
+</ol>
+<p><a href="/">Filter table data</a><a href="/">Create a pivot table</a><a href="/">Create a chart from data series</a></p>
+<p><a href="/users/tfac-settings.action">Configure buttons visibility</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E9%BB%84%E5%A9%B7/">黄婷</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/2023~~%E5%8D%81%E4%B8%80%E6%9C%88%E4%BB%BD/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>2023~~十一月份</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/%E5%BC%80%E6%BA%90%E5%AF%B9%E8%AF%9D%E4%B8%AD%E6%8E%A7%E6%A8%A1%E5%9D%97uskit%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>开源对话中控模块USKit学习笔记</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 表格问答实现技术调研 on x"
+            href="https://x.com/intent/tweet/?text=%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f&amp;hashtags=%e9%bb%84%e5%a9%b7">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 表格问答实现技术调研 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f&amp;title=%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94&amp;summary=%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 表格问答实现技术调研 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f&title=%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 表格问答实现技术调研 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 表格问答实现技术调研 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 表格问答实现技术调研 on telegram"
+            href="https://telegram.me/share/url?text=%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 表格问答实现技术调研 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e8%a1%a8%e6%a0%bc%e9%97%ae%e7%ad%94%e5%ae%9e%e7%8e%b0%e6%8a%80%e6%9c%af%e8%b0%83%e7%a0%94&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fwiki%2f%25E8%25A1%25A8%25E6%25A0%25BC%25E9%2597%25AE%25E7%25AD%2594%25E5%25AE%259E%25E7%258E%25B0%25E6%258A%2580%25E6%259C%25AF%25E8%25B0%2583%25E7%25A0%2594%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

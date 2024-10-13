@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>前端文艺复兴：Vue3真的需要Pinia吗？ | PaperMod</title>
+<meta name="keywords" content="Vue.js, 前端框架">
+<meta name="description" content="我们真的需要PiniaVuex吗？PiniaVuex解决了什么问题？没有PiniaVuex前我们是怎么做的呢，会有什么问题？">
+<meta name="author" content="思路为王">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%96%87%E8%89%BA%E5%A4%8D%E5%85%B4vue3%E7%9C%9F%E7%9A%84%E9%9C%80%E8%A6%81pinia%E5%90%97/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%96%87%E8%89%BA%E5%A4%8D%E5%85%B4vue3%E7%9C%9F%E7%9A%84%E9%9C%80%E8%A6%81pinia%E5%90%97/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="前端文艺复兴：Vue3真的需要Pinia吗？" />
+<meta property="og:description" content="我们真的需要PiniaVuex吗？PiniaVuex解决了什么问题？没有PiniaVuex前我们是怎么做的呢，会有什么问题？" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%96%87%E8%89%BA%E5%A4%8D%E5%85%B4vue3%E7%9C%9F%E7%9A%84%E9%9C%80%E8%A6%81pinia%E5%90%97/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-10-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-10-19T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="前端文艺复兴：Vue3真的需要Pinia吗？"/>
+<meta name="twitter:description" content="我们真的需要PiniaVuex吗？PiniaVuex解决了什么问题？没有PiniaVuex前我们是怎么做的呢，会有什么问题？"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "前端文艺复兴：Vue3真的需要Pinia吗？",
+      "item": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%96%87%E8%89%BA%E5%A4%8D%E5%85%B4vue3%E7%9C%9F%E7%9A%84%E9%9C%80%E8%A6%81pinia%E5%90%97/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "前端文艺复兴：Vue3真的需要Pinia吗？",
+  "name": "前端文艺复兴：Vue3真的需要Pinia吗？",
+  "description": "我们真的需要PiniaVuex吗？PiniaVuex解决了什么问题？没有PiniaVuex前我们是怎么做的呢，会有什么问题？",
+  "keywords": [
+    "Vue.js", "前端框架"
+  ],
+  "articleBody": "前言 说起Pinia，熟悉vue3开发的程序员肯定不会陌生，甚至被vue官方推荐取代vuex，成为vue全家桶之一。\n疑惑 还记得之前用 vuex 时，更改state还分同步和异步（这里有尤雨溪的回答www.zhihu.com/question/48… ，面试还被问过为什么…，当时也是不太理解，觉得肯定有他的道理，谁知看了pinia后，更改state同步异步都可以……\n回到正题：但我们真的需要Pinia/Vuex吗？Pinia/Vuex解决了什么问题？没有Pinia/Vuex前我们是怎么做的呢，会有什么问题？\n刨根 对于以上问题，以下是本人的一些思考（有不足之处，还望赐教🙏）\n为什么需要Pinia，它解决了什么问题？先查下官网/别人怎么说；\n网上很多是说，Pinia 是 Vue.js 的轻量级状态管理库；\n官方文档如下描述：\n对于以上支撑观点，下面一个个来看，看下Pinia是否是必须的：\n1. Pinia 是 Vue.js 的轻量级状态管理库 详阅vue官网关于状态管理 的文章，里面提到一个场景：多个组件共享一个共同的状态时，用vue原生的能力实现有点麻烦，文章推荐以下方法，将公用的数据提取到全局，这样需要的组件可以直接引用：\njs\n代码解读\n复制代码\n// store.js import { reactive } from \"vue\"; export const store = reactive({ count: 0, // ... });\nvue\n代码解读\n复制代码\nFrom A: {{ store.count }}\nvue\n代码解读\n复制代码\nFrom B: {{ store.count }}\n那我们先用这个简单的方法解决状态管理的问题，后面看下会遇到什么问题；\n2. Devtools 支持（…） 不好意思，本人开发过好几个vue项目，从来没用过 vue devtools，都是console.log一把梭，目前感觉可以满足调试需要，这个在我这里就先跳过了，忽略！（用vue devtools很爽的可以评论分享下使用场景\u0026经验，跪求🙏）\n3. 热更新(不必重载页面即可修改 Store、开发时可保持当前的 State) 呃…，没看太懂这个场景，如果说是下面这种热更新，上面的简单方法也可以做到，而且严格上说这应该是构建工具提供的能力吧，像webpack hmr/vite hmr；\n既然简单的方法也可以做到我理解的热更新，平时好像也没有这方面的困扰，先跳过，忽略！（有这方面需要的请分享下经验，跪求🙏）\n4. 插件：可通过插件扩展 Pinia 功能 这个等需要用Pinia再考虑这个，先跳过，忽略！\n5. 为 JS 开发者提供适当的 TypeScript 支持以及自动补全功能 呃呃，上面的简单方法也可以做到，而且ts声明更方便，如下：\nts\n代码解读\n复制代码\n// store.ts import { reactive } from \"vue\"; interface IStore { count: number; // ... } export const store = reactive({ count: 0, // ... });\n有了ts声明后，自动补全 是编辑器提供的功能。先跳过，忽略！\n6. 支持服务端渲染 简单方案 先说上面简单的方法，用该方法会导致跨请求状态污染 问题；如下图，从技术上讲，我们可以在每个请求上重新初始化 store,\n对于上图的 初始化 JavaScript 模块的成本可能很高 说法，我有点怀疑，因为 onMounted 或者 onUpdated 这样的生命周期钩子不会在 SSR 期间被调用，而通常让 store 变大变复杂的更改是在 onMounted 里获取数据接口回调里执行的，默认 store 就是一堆初始化的数据声明而已吧，所以在 SSR 里，为了解决 跨请求状态污染 问题，在每个请求上重新初始化 store 成本我感觉不高（个人观点，还望指教🙏），适配ssr修改如下：\njs\n代码解读\n复制代码\n// store.js import { reactive } from \"vue\"; export let store = createStore(); export const createStore = ()=\u003e{ return reactive({ count: 0, // ... }); }\njs\n代码解读\n复制代码\n// app.js （在服务端和客户端间共享） import { createSSRApp } from 'vue' import { createStore, store } from './store.js' // 每次请求时调用 export function createApp() { // 对每个请求都重新初始化 store 实例 store = createStore(); const app = createSSRApp(/* ... */) return { app } }\nPinia方案 pinia.vuejs.org/zh/ssr/\n经过对比，简单方法个人认为也可以支持服务端渲染，且没有额外的概念、学习成本！\n结论 据以上分析，我发现并没有必须用Pinia的理由，虽然其中第一点和第六点在实战中可能会需要，但用简单方法也可以解决且没有很麻烦。所以，如果为了解决这两个问题而引入一堆概念、用法，从而增大心智负担/学习成本，我觉得性价比不高，且容易居高而忘了事情本质，糊里糊涂地跟着用而已，殊不知有更简单直接的方法！全部代码如下：\n只需要状态管理 js\n代码解读\n复制代码\n// store.js import { reactive } from \"vue\"; export const store = reactive({ count: 0, // ... });\n需要支持服务端渲染 js\n代码解读\n复制代码\n// store.js import { reactive } from \"vue\"; export let store = createStore(); export const createStore = ()=\u003e{ return reactive({ count: 0, // ... }); }\njs\n代码解读\n复制代码\n// app.js （在服务端和客户端间共享） import { createSSRApp } from 'vue' import { createStore, store } from './store.js' // 每次请求时调用 export function createApp() { // 对每个请求都重新初始化 store 实例 store = createStore(); const app = createSSRApp(/* ... */) return { app } }\n其他 简单方法不好维护 有人拿出官方文档说上面简单的方法从长远来看不好维护。\n长远来看应该是数据量变多会导致不好维护吧，但随着数据量增多，我们把store分模块不就行了，对于每个独立小模块，还是一如开始，例如：\njs\n代码解读\n复制代码\n// store.js import { reactive } from \"vue\"; export const store = reactive({ moduleA: { count: 0, // ... }, moduleB: { count: 0, // ... }, // ... }); // 或者直接铺平 export const moduleAStore = reactive({ count: 0, // ... }); export const moduleBStore = reactive({ count: 0, // ... }); // 或者分文件模块 // ...\n本人很反感那种没有事实依据的论点，有点 专家说 那味；我更推崇的是一步步深入，用事实说话，举例说明‘在xx情况下，你看很难维护了吧’，这会令我信服且更加理解。\n刷新页面store数据丢失 按我理解，这只是一个现象，重要的是会造成什么问题。网上很多文章只根据现象就开始提解决方法了，比如把整个 store 缓存到 sessionStorage 里，或者 vuex/pinia 直接提供了持久化的插件。但我总感觉没触到事情本质，于是搜一下具体的场景：\n有人说登录状态信息，刷新后需要保持登录状态 找不到其他场景了…（有补充的朋友请以案例说明，跪求🙏） 那针对以上场景，简单来做不是哪个需要缓存就缓存哪个吗，比如登录信息需要缓存：\njs\n代码解读\n复制代码\nimport { store } from './store.js' // ... window.onbeforeunload = () =\u003e { // 用localStorage/sessionStorage/cookie/indexDB 根据自己需要判断 localStorage.setItem(\"__loginInfo__\", JSON.stringify(store.loginInfo)); }\njs\n代码解读\n复制代码\n// main.js import { store } from './store.js' // ... const loginInfo = localStorage.getItem(\"__loginInfo__\"); if (loginInfo) { store.loginInfo = JSON.parse(loginInfo); } // ...\n所以，我理解这种持久化问题和状态管理不应该放在一起讨论，我建议是根据场景，按需缓存\n最后 纸上得来终觉浅，绝知此事要躬行\n很多时候感觉在前端学不动了，其中原因之一必有：概念太多、轮子太多、技术更新太快，需要不断学习……\n但个人感觉很多概念都是莫须有的，利用原生知识亦可解决，而无需增加心智负担，但要识别这些信息谈何容易啊，希望我们始终保留对问题本质的好奇吧。最后分享一句很喜欢的编程哲学语句：\nKeep it simple, stupid (KISS)\n2023.12.6更新 一一看了大家的评论，下面列下我认同的文中简单方案的缺点：\n如果有多处改变了store.xx，想要查找特定一次 store.xx 在哪里变更会比较麻烦；如果用pinia的话，改变 store.xx 有统一的入口，这时在入口处打个断点，根据调用栈可以快速知道是哪里变更了 store.xx；打断点的话，加个watch，简单store也能通过查看调用栈查看变更起点！ ",
+  "wordCount" : "488",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2023-10-19T00:00:00Z",
+  "dateModified": "2023-10-19T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "思路为王"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%96%87%E8%89%BA%E5%A4%8D%E5%85%B4vue3%E7%9C%9F%E7%9A%84%E9%9C%80%E8%A6%81pinia%E5%90%97/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      前端文艺复兴：Vue3真的需要Pinia吗？
+    </h1>
+    <div class="post-description">
+      我们真的需要PiniaVuex吗？PiniaVuex解决了什么问题？没有PiniaVuex前我们是怎么做的呢，会有什么问题？
+    </div>
+    <div class="post-meta"><span title='2023-10-19 00:00:00 +0000 UTC'>十月 19, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;思路为王&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e7%96%91%e6%83%91" aria-label="疑惑">疑惑</a></li>
+                <li>
+                    <a href="#%e5%88%a8%e6%a0%b9" aria-label="刨根">刨根</a><ul>
+                        
+                <li>
+                    <a href="#1-pinia-%e6%98%af-vuejs-%e7%9a%84%e8%bd%bb%e9%87%8f%e7%ba%a7%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86%e5%ba%93" aria-label="1. Pinia 是 Vue.js 的轻量级状态管理库">1. Pinia 是 Vue.js 的轻量级状态管理库</a></li>
+                <li>
+                    <a href="#2-devtools-%e6%94%af%e6%8c%81" aria-label="2. Devtools 支持（&hellip;）">2. Devtools 支持（&hellip;）</a></li>
+                <li>
+                    <a href="#3-%e7%83%ad%e6%9b%b4%e6%96%b0%e4%b8%8d%e5%bf%85%e9%87%8d%e8%bd%bd%e9%a1%b5%e9%9d%a2%e5%8d%b3%e5%8f%af%e4%bf%ae%e6%94%b9-store%e5%bc%80%e5%8f%91%e6%97%b6%e5%8f%af%e4%bf%9d%e6%8c%81%e5%bd%93%e5%89%8d%e7%9a%84-state" aria-label="3. 热更新(不必重载页面即可修改 Store、开发时可保持当前的 State)">3. 热更新(不必重载页面即可修改 Store、开发时可保持当前的 State)</a></li>
+                <li>
+                    <a href="#4-%e6%8f%92%e4%bb%b6%e5%8f%af%e9%80%9a%e8%bf%87%e6%8f%92%e4%bb%b6%e6%89%a9%e5%b1%95-pinia-%e5%8a%9f%e8%83%bd" aria-label="4. 插件：可通过插件扩展 Pinia 功能">4. 插件：可通过插件扩展 Pinia 功能</a></li>
+                <li>
+                    <a href="#5-%e4%b8%ba-js-%e5%bc%80%e5%8f%91%e8%80%85%e6%8f%90%e4%be%9b%e9%80%82%e5%bd%93%e7%9a%84-typescript-%e6%94%af%e6%8c%81%e4%bb%a5%e5%8f%8a%e8%87%aa%e5%8a%a8%e8%a1%a5%e5%85%a8%e5%8a%9f%e8%83%bd" aria-label="5. 为 JS 开发者提供适当的 TypeScript 支持以及自动补全功能">5. 为 JS 开发者提供适当的 TypeScript 支持以及自动补全功能</a></li>
+                <li>
+                    <a href="#6-%e6%94%af%e6%8c%81%e6%9c%8d%e5%8a%a1%e7%ab%af%e6%b8%b2%e6%9f%93" aria-label="6. 支持服务端渲染">6. 支持服务端渲染</a><ul>
+                        
+                <li>
+                    <a href="#%e7%ae%80%e5%8d%95%e6%96%b9%e6%a1%88" aria-label="简单方案">简单方案</a></li>
+                <li>
+                    <a href="#pinia%e6%96%b9%e6%a1%88" aria-label="Pinia方案">Pinia方案</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%93%e8%ae%ba" aria-label="结论">结论</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8f%aa%e9%9c%80%e8%a6%81%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86" aria-label="只需要状态管理">只需要状态管理</a></li>
+                <li>
+                    <a href="#%e9%9c%80%e8%a6%81%e6%94%af%e6%8c%81%e6%9c%8d%e5%8a%a1%e7%ab%af%e6%b8%b2%e6%9f%93" aria-label="需要支持服务端渲染">需要支持服务端渲染</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%b6%e4%bb%96" aria-label="其他">其他</a><ul>
+                        
+                <li>
+                    <a href="#%e7%ae%80%e5%8d%95%e6%96%b9%e6%b3%95%e4%b8%8d%e5%a5%bd%e7%bb%b4%e6%8a%a4" aria-label="简单方法不好维护">简单方法不好维护</a></li>
+                <li>
+                    <a href="#%e5%88%b7%e6%96%b0%e9%a1%b5%e9%9d%a2store%e6%95%b0%e6%8d%ae%e4%b8%a2%e5%a4%b1" aria-label="刷新页面store数据丢失">刷新页面store数据丢失</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%80%e5%90%8e" aria-label="最后">最后</a></li>
+                <li>
+                    <a href="#2023126%e6%9b%b4%e6%96%b0" aria-label="2023.12.6更新">2023.12.6更新</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>说起<code>Pinia</code>，熟悉vue3开发的程序员肯定不会陌生，甚至被<code>vue</code>官方推荐取代<code>vuex</code>，成为<code>vue</code>全家桶之一。</p>
+<h1 id="疑惑">疑惑<a hidden class="anchor" aria-hidden="true" href="#疑惑">#</a></h1>
+<p>还记得之前用 <code>vuex</code> 时，更改state还分同步和异步（这里有尤雨溪的回答<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.zhihu.com%2Fquestion%2F48759748%25EF%25BC%2589" title="https://www.zhihu.com/question/48759748%EF%BC%89">www.zhihu.com/question/48…</a> ，面试还被问过为什么&hellip;，当时也是不太理解，觉得肯定有他的道理，谁知看了<code>pinia</code>后，更改state同步异步都可以&hellip;&hellip;</p>
+<p>回到正题：<strong>但我们真的需要<code>Pinia/Vuex</code>吗？<code>Pinia/Vuex</code>解决了什么问题？没有<code>Pinia/Vuex</code>前我们是怎么做的呢，会有什么问题？</strong></p>
+<h1 id="刨根">刨根<a hidden class="anchor" aria-hidden="true" href="#刨根">#</a></h1>
+<p>对于以上问题，以下是本人的一些思考（有不足之处，还望赐教🙏）</p>
+<p>为什么需要<code>Pinia</code>，它解决了什么问题？先查下官网/别人怎么说；</p>
+<p>网上很多是说，<strong>Pinia 是 Vue.js 的轻量级状态管理库</strong>；</p>
+<p>官方文档如下描述：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2f33c77bd68e4f97b165e62a87f183b8~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2044&amp;h=1314&amp;s=320853&amp;e=png&amp;b=fefefe" alt="image.png"  />
+</p>
+<p>对于以上支撑观点，下面一个个来看，看下Pinia是否是必须的：</p>
+<h2 id="1-pinia-是-vuejs-的轻量级状态管理库">1. Pinia 是 Vue.js 的轻量级状态管理库<a hidden class="anchor" aria-hidden="true" href="#1-pinia-是-vuejs-的轻量级状态管理库">#</a></h2>
+<p>详阅vue官网关于<a href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fguide%2Fscaling-up%2Fstate-management.html" title="https://cn.vuejs.org/guide/scaling-up/state-management.html">状态管理</a> 的文章，里面提到一个场景：<strong>多个组件共享一个共同的状态</strong>时，用vue原生的能力实现有点<a href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fguide%2Fcomponents%2Fprovide-inject.html%23prop-drilling" title="https://cn.vuejs.org/guide/components/provide-inject.html#prop-drilling">麻烦</a>，文章推荐以下方法，将公用的数据提取到全局，这样需要的组件可以直接引用：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// store.js import { reactive } from &quot;vue&quot;; export const store = reactive({   count: 0,   // ... });</code></p>
+<p>vue</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!-- ComponentA.vue --&gt; &lt;script setup&gt; import { store } from './store.js' &lt;/script&gt; &lt;template&gt;From A: {{ store.count }}&lt;/template&gt;</code></p>
+<p>vue</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>&lt;!-- ComponentB.vue --&gt; &lt;script setup&gt; import { store } from './store.js' &lt;/script&gt; &lt;template&gt;From B: {{ store.count }}&lt;/template&gt;</code></p>
+<p>那我们先用这个简单的方法解决状态管理的问题，后面看下会遇到什么问题；</p>
+<h2 id="2-devtools-支持">2. Devtools 支持（&hellip;）<a hidden class="anchor" aria-hidden="true" href="#2-devtools-支持">#</a></h2>
+<p>不好意思，本人开发过好几个vue项目，从来没用过 vue devtools，都是console.log一把梭，目前感觉可以满足调试需要，这个在我这里就先跳过了，忽略！（用vue devtools很爽的可以评论分享下使用场景&amp;经验，跪求🙏）</p>
+<h2 id="3-热更新不必重载页面即可修改-store开发时可保持当前的-state">3. 热更新(不必重载页面即可修改 Store、开发时可保持当前的 State)<a hidden class="anchor" aria-hidden="true" href="#3-热更新不必重载页面即可修改-store开发时可保持当前的-state">#</a></h2>
+<p>呃&hellip;，没看太懂这个场景，如果说是下面这种热更新，上面的简单方法也可以做到，而且严格上说这应该是构建工具提供的能力吧，像webpack hmr/vite hmr；</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dc76e97f0bf54f9fb0751520034f6cfb~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2276&amp;h=1232&amp;s=623441&amp;e=gif&amp;f=90&amp;b=202725" alt="test.gif"  />
+</p>
+<p>既然简单的方法也可以做到我理解的热更新，平时好像也没有这方面的困扰，先跳过，忽略！（有这方面需要的请分享下经验，跪求🙏）</p>
+<h2 id="4-插件可通过插件扩展-pinia-功能">4. 插件：可通过插件扩展 Pinia 功能<a hidden class="anchor" aria-hidden="true" href="#4-插件可通过插件扩展-pinia-功能">#</a></h2>
+<p>这个等需要用Pinia再考虑这个，先跳过，忽略！</p>
+<h2 id="5-为-js-开发者提供适当的-typescript-支持以及自动补全功能">5. 为 JS 开发者提供适当的 TypeScript 支持以及<strong>自动补全</strong>功能<a hidden class="anchor" aria-hidden="true" href="#5-为-js-开发者提供适当的-typescript-支持以及自动补全功能">#</a></h2>
+<p>呃呃，上面的简单方法也可以做到，而且ts声明更方便，如下：</p>
+<p>ts</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// store.ts import { reactive } from &quot;vue&quot;; interface IStore {   count: number;   // ... } export const store = reactive&lt;IStore&gt;({   count: 0,   // ... });</code></p>
+<p>有了ts声明后，<strong>自动补全</strong> 是编辑器提供的功能。先跳过，忽略！</p>
+<h2 id="6-支持服务端渲染">6. 支持服务端渲染<a hidden class="anchor" aria-hidden="true" href="#6-支持服务端渲染">#</a></h2>
+<h3 id="简单方案">简单方案<a hidden class="anchor" aria-hidden="true" href="#简单方案">#</a></h3>
+<p>先说上面简单的方法，用该方法会导致<a href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fguide%2Fscaling-up%2Fssr.html%23cross-request-state-pollution" title="https://cn.vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution">跨请求状态污染</a> 问题；如下图，从技术上讲，我们可以在每个请求上重新初始化 <code>store</code>,</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cdb69d58152c4594bb2b0dfecb9fd881~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1952&amp;h=1088&amp;s=749058&amp;e=png&amp;b=ffffff" alt="image.png"  />
+</p>
+<p>对于上图的 <strong>初始化 JavaScript 模块的成本可能很高</strong> 说法，我有点怀疑，因为 <code>onMounted</code> 或者 <code>onUpdated</code> 这样的生命周期钩子<strong>不会</strong>在 SSR 期间被调用，而通常让 <code>store</code> 变大变复杂的更改是在 <code>onMounted</code> 里获取数据接口回调里执行的，默认 <code>store</code> 就是一堆初始化的数据声明而已吧，所以在 SSR 里，为了解决 <strong>跨请求状态污染</strong> 问题，在每个请求上重新初始化 <code>store</code> 成本我感觉不高（个人观点，还望指教🙏），适配ssr修改如下：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// store.js import { reactive } from &quot;vue&quot;; export let store = createStore(); export const createStore = ()=&gt;{   return reactive({     count: 0,     // ...   }); }</code></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// app.js （在服务端和客户端间共享） import { createSSRApp } from 'vue' import { createStore, store } from './store.js' // 每次请求时调用 export function createApp() {   // 对每个请求都重新初始化 store 实例   store = createStore();      const app = createSSRApp(/* ... */)   return { app } }</code></p>
+<h3 id="pinia方案">Pinia方案<a hidden class="anchor" aria-hidden="true" href="#pinia方案">#</a></h3>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fpinia.vuejs.org%2Fzh%2Fssr%2F" title="https://pinia.vuejs.org/zh/ssr/">pinia.vuejs.org/zh/ssr/</a></p>
+<p>经过对比，简单方法个人认为也可以支持服务端渲染，且没有额外的概念、学习成本！</p>
+<h1 id="结论">结论<a hidden class="anchor" aria-hidden="true" href="#结论">#</a></h1>
+<p>据以上分析，我发现并没有必须用Pinia的理由，虽然其中第一点和第六点在实战中可能会需要，但用简单方法也可以解决且没有很麻烦。所以，如果为了解决这两个问题而引入一堆概念、用法，从而增大心智负担/学习成本，我觉得<strong>性价比不高</strong>，且容易居高而忘了事情本质，糊里糊涂地跟着用而已，殊不知有更简单直接的方法！全部代码如下：</p>
+<h2 id="只需要状态管理">只需要状态管理<a hidden class="anchor" aria-hidden="true" href="#只需要状态管理">#</a></h2>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// store.js import { reactive } from &quot;vue&quot;; export const store = reactive({   count: 0,   // ... });</code></p>
+<h2 id="需要支持服务端渲染">需要支持服务端渲染<a hidden class="anchor" aria-hidden="true" href="#需要支持服务端渲染">#</a></h2>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// store.js import { reactive } from &quot;vue&quot;; export let store = createStore(); export const createStore = ()=&gt;{   return reactive({     count: 0,     // ...   }); }</code></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// app.js （在服务端和客户端间共享） import { createSSRApp } from 'vue' import { createStore, store } from './store.js' // 每次请求时调用 export function createApp() {   // 对每个请求都重新初始化 store 实例   store = createStore();      const app = createSSRApp(/* ... */)   return { app } }</code></p>
+<h1 id="其他">其他<a hidden class="anchor" aria-hidden="true" href="#其他">#</a></h1>
+<h2 id="简单方法不好维护">简单方法不好维护<a hidden class="anchor" aria-hidden="true" href="#简单方法不好维护">#</a></h2>
+<p>有人拿出官方文档说上面简单的方法从长远来看不好维护。</p>
+<p><img loading="lazy" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e379735881e847fdb46827ad18d9f215~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2156&amp;h=972&amp;s=407376&amp;e=png&amp;b=fefefe" alt="image.png"  />
+</p>
+<p>长远来看应该是数据量变多会导致不好维护吧，但随着数据量增多，我们把store分模块不就行了，对于每个独立小模块，还是一如开始，例如：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// store.js import { reactive } from &quot;vue&quot;; export const store = reactive({   moduleA: {     count: 0,     // ...   },   moduleB: {     count: 0,     // ...   },   // ... }); // 或者直接铺平 export const moduleAStore = reactive({   count: 0,   // ... }); export const moduleBStore = reactive({   count: 0,   // ... }); // 或者分文件模块 // ...</code></p>
+<p>本人很反感那种没有事实依据的论点，有点 <strong>专家说</strong> 那味；我更推崇的是一步步深入，用事实说话，举例说明‘在xx情况下，你看很难维护了吧’，这会令我信服且更加理解。</p>
+<h2 id="刷新页面store数据丢失">刷新页面store数据丢失<a hidden class="anchor" aria-hidden="true" href="#刷新页面store数据丢失">#</a></h2>
+<p>按我理解，这只是一个现象，<strong>重要的是会造成什么问题</strong>。网上很多文章只根据现象就开始提解决方法了，比如把整个 <code>store</code> 缓存到 <code>sessionStorage</code> 里，或者 <code>vuex/pinia</code> 直接提供了持久化的插件。但我总感觉没触到事情本质，于是搜一下具体的场景：</p>
+<ul>
+<li>
+<ol>
+<li>有人说登录状态信息，刷新后需要保持登录状态</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>找不到其他场景了&hellip;（有补充的朋友请以案例说明，跪求🙏）</li>
+</ol>
+</li>
+</ul>
+<p>那针对以上场景，简单来做不是<strong>哪个需要缓存就缓存哪个</strong>吗，比如登录信息需要缓存：</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import { store } from './store.js' // ...  window.onbeforeunload = () =&gt; {   // 用localStorage/sessionStorage/cookie/indexDB 根据自己需要判断   localStorage.setItem(&quot;__loginInfo__&quot;, JSON.stringify(store.loginInfo)); }</code></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>// main.js import { store } from './store.js' // ...  const loginInfo = localStorage.getItem(&quot;__loginInfo__&quot;); if (loginInfo) {   store.loginInfo = JSON.parse(loginInfo); } // ...</code></p>
+<p>所以，我理解这种持久化问题和状态管理不应该放在一起讨论，我建议是<strong>根据场景，按需缓存</strong></p>
+<h1 id="最后">最后<a hidden class="anchor" aria-hidden="true" href="#最后">#</a></h1>
+<blockquote>
+<p>纸上得来终觉浅，绝知此事要躬行</p>
+</blockquote>
+<p>很多时候感觉在前端学不动了，其中原因之一必有：概念太多、轮子太多、技术更新太快，需要不断学习&hellip;&hellip;</p>
+<p>但个人感觉很多概念都是莫须有的，利用原生知识亦可解决，而无需增加心智负担，但要识别这些信息谈何容易啊，希望我们始终保留对问题本质的好奇吧。最后分享一句很喜欢的编程哲学语句：</p>
+<blockquote>
+<p>Keep it simple, stupid (KISS)</p>
+</blockquote>
+<h1 id="2023126更新">2023.12.6更新<a hidden class="anchor" aria-hidden="true" href="#2023126更新">#</a></h1>
+<p>一一看了大家的评论，下面列下我认同的文中简单方案的缺点：</p>
+<ol>
+<li>如果有多处改变了<code>store.xx</code>，想要查找特定一次 <code>store.xx</code> 在哪里变更会比较麻烦；如果用<code>pinia</code>的话，改变 <code>store.xx</code> <strong>有统一的入口</strong>，这时在入口处打个断点，根据调用栈可以快速知道是哪里变更了 <code>store.xx</code>；<strong>打断点的话，加个watch，简单store也能通过查看调用栈查看变更起点！</strong></li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF%E6%A1%86%E6%9E%B6/">前端框架</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E7%82%89%E7%AB%AF%E8%99%9A%E6%8B%9F%E4%BA%BAcui%E8%B0%83%E7%A0%94%E4%B8%8E%E8%AE%BE%E6%83%B3/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>炉端虚拟人CUI调研与设想</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E8%A3%85%E6%9C%BA%E5%B7%A5%E5%85%B7%E6%8C%87%E5%8D%97window%E7%9C%9F%E9%A6%99%E7%89%88/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>前端装机工具指南window真香版</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端文艺复兴：Vue3真的需要Pinia吗？ on x"
+            href="https://x.com/intent/tweet/?text=%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f&amp;hashtags=Vue.js%2c%e5%89%8d%e7%ab%af%e6%a1%86%e6%9e%b6">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端文艺复兴：Vue3真的需要Pinia吗？ on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f&amp;title=%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f&amp;summary=%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端文艺复兴：Vue3真的需要Pinia吗？ on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f&title=%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端文艺复兴：Vue3真的需要Pinia吗？ on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端文艺复兴：Vue3真的需要Pinia吗？ on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端文艺复兴：Vue3真的需要Pinia吗？ on telegram"
+            href="https://telegram.me/share/url?text=%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端文艺复兴：Vue3真的需要Pinia吗？ on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%89%8d%e7%ab%af%e6%96%87%e8%89%ba%e5%a4%8d%e5%85%b4%ef%bc%9aVue3%e7%9c%9f%e7%9a%84%e9%9c%80%e8%a6%81Pinia%e5%90%97%ef%bc%9f&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%2596%2587%25E8%2589%25BA%25E5%25A4%258D%25E5%2585%25B4vue3%25E7%259C%259F%25E7%259A%2584%25E9%259C%2580%25E8%25A6%2581pinia%25E5%2590%2597%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

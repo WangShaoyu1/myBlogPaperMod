@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Vue35新增的baseWatch让watch函数和Vue组件彻底分手 | PaperMod</title>
+<meta name="keywords" content="前端, Vue.js, JavaScript">
+<meta name="description" content="Vue35新增了一个baseWatch，让watch函数和Vue组件彻底分手，他的实现和Vue组件以及生命周期没有一毛钱关系。">
+<meta name="author" content="前端欧阳">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/vue35%E6%96%B0%E5%A2%9E%E7%9A%84basewatch%E8%AE%A9watch%E5%87%BD%E6%95%B0%E5%92%8Cvue%E7%BB%84%E4%BB%B6%E5%BD%BB%E5%BA%95%E5%88%86%E6%89%8B/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/vue35%E6%96%B0%E5%A2%9E%E7%9A%84basewatch%E8%AE%A9watch%E5%87%BD%E6%95%B0%E5%92%8Cvue%E7%BB%84%E4%BB%B6%E5%BD%BB%E5%BA%95%E5%88%86%E6%89%8B/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Vue35新增的baseWatch让watch函数和Vue组件彻底分手" />
+<meta property="og:description" content="Vue35新增了一个baseWatch，让watch函数和Vue组件彻底分手，他的实现和Vue组件以及生命周期没有一毛钱关系。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/vue35%E6%96%B0%E5%A2%9E%E7%9A%84basewatch%E8%AE%A9watch%E5%87%BD%E6%95%B0%E5%92%8Cvue%E7%BB%84%E4%BB%B6%E5%BD%BB%E5%BA%95%E5%88%86%E6%89%8B/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-26T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="Vue35新增的baseWatch让watch函数和Vue组件彻底分手"/>
+<meta name="twitter:description" content="Vue35新增了一个baseWatch，让watch函数和Vue组件彻底分手，他的实现和Vue组件以及生命周期没有一毛钱关系。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Vue35新增的baseWatch让watch函数和Vue组件彻底分手",
+      "item": "http://localhost:1313/posts/juejin/vue35%E6%96%B0%E5%A2%9E%E7%9A%84basewatch%E8%AE%A9watch%E5%87%BD%E6%95%B0%E5%92%8Cvue%E7%BB%84%E4%BB%B6%E5%BD%BB%E5%BA%95%E5%88%86%E6%89%8B/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Vue35新增的baseWatch让watch函数和Vue组件彻底分手",
+  "name": "Vue35新增的baseWatch让watch函数和Vue组件彻底分手",
+  "description": "Vue35新增了一个baseWatch，让watch函数和Vue组件彻底分手，他的实现和Vue组件以及生命周期没有一毛钱关系。",
+  "keywords": [
+    "前端", "Vue.js", "JavaScript"
+  ],
+  "articleBody": "前言 在Vue 3.5.0-beta.3版本中新增了一个base watch函数，这个函数用法和我们熟知的watch API一模一样。区别就是我们之前用的watch API是和Vue组件以及生命周期是一起实现的，他们是深度绑定的。而Vue3.5新增的base watch函数是一个新的函数，他的实现和Vue组件以及生命周期没有一毛钱关系。\n加入欧阳的高质量vue源码交流群、欧阳平时写文章参考的多本vue源码电子书\n@vue/runtime-core vue3是模块化设计，他将核心功能拆分为多个独立的模块，如下图： 比如reactivity模块中就是响应式的核心代码、runtime-core模块就是运行时相关的核心代码、compiler-core模块就是编译相关的核心代码。\n并且这些模块还被单独当作npm包进行发布，命名规则是@vue+模块名。比如reactivity模块对应的npm包就是@vue/reactivity。如下图： 所以如果我们只需要vue的响应式功能，理论上只需要导入@vue/reactivity包即可。比如我之前的文章： 涨见识了！脱离vue项目竟然也可以使用响应式API，在这篇文章中我就介绍了如何脱离Vue项目，在node.js项目中使用vue的响应式API。\n但是不知道你有没有注意到，在demo中我是require(\"vue\")，而不是require(\"@vue/reactivity\")。\n因为watch不是由@vue/reactivity中导出的，而是由@vue/runtime-core中导出的，如果我只引入@vue/reactivity就会报错了。\njavascript\n代码解读\n复制代码\nconst { ref, watch, watchEffect } = require(\"vue\"); const count = ref(0); // 模拟count变量的值修改 setInterval(() =\u003e { count.value++; }, 1000); watch(count, (newVal) =\u003e { console.log(\"触发watch\", newVal); }); watchEffect( () =\u003e { console.log(\"触发watchEffect\", count.value); }, { flush: \"sync\", } );\nwatch的实现是和vue组件以及生命周期深度绑定的，而vue组件以及生命周期明显是和响应式无关的。他们的实现是在runtime-core模块中，而非reactivity模块中，这也就是为什么watch的实现是放在runtime-core模块中。 据说性能是 Taro 10 倍的小程序框架 vuemini 底层也是依靠@vue/reactivity实现的，但是由于watch是由@vue/runtime-core中提供的，小程序框架却只引入了@vue/reactivity，所以作者不得不手写了一个watch函数。 重构watch函数 智子在写Vue Vapor时又拆了一个新的模块，叫做runtime-vapor。如果你不了解Vue Vapor，可以看看我之前的文章： 没有虚拟DOM版本的vue（Vue Vapor）。 他们遇到一个问题需要在runtime-vapor模块中使用watch函数，而watch函数是位于runtime-core模块中。但是又不应该在runtime-vapor模块中直接引用runtime-core模块，所以Vue Vapor团队的绚香音就将watch函数重构到了reactivity模块中，这样在runtime-vapor模块中直接使用reactivity模块中的watch函数就行了。\n这也就是为什么需要重构watch函数到reactivity模块中。\n在欧阳的个人看法中watch函数本来就是属于响应式中的一部分，他在runtime-core模块中反而不合理。在欧阳第一次看vue3源码时就在奇怪为什么没有在reactivity模块中找到watch函数的实现，而是在runtime-core模块中实现的。\n当watch函数重构到reactivity模块后，小程序框架 vuemini 的作者也发了一篇帖子。 watch函数重构到reactivity模块后，小程序框架中手写的watch函数都不需要了，因为reactivity模块已经提供了。\n看见完了！这下 Vue Mini 真成 @vue/reactivity 套壳了...这个评论后，对不起！杨明山大佬欧阳确实没忍住笑出了声。\n总结 vue3.5版本中，Vue Vapor团队在reactivity模块中重构实现了一个watch函数。重构的这个watch函数和我们现在使用的watch函数用法是一样的，区别在于以前的watch函数的实现和Vue组件以及生命周期是深度绑定的，而重构的watch函数和Vue组件以及生命周期一毛钱关系都没有。\n这个改动对于普通开发者可能没什么影响，但是对于下游项目，比如Vue mini来说还是很受益的。因为以前他们需要自己去手写watch函数，现在reactivity提供了后就不需要这些手写的watch函数了。\n最后推荐一下欧阳自己写的开源电子书vue3编译原理揭秘，看完这本书可以让你对vue编译的认知有质的提升，并且这本书初、中级前端能看懂。完全免费，只求一个star。\n",
+  "wordCount" : "91",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-08-26T00:00:00Z",
+  "dateModified": "2024-08-26T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "前端欧阳"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/vue35%E6%96%B0%E5%A2%9E%E7%9A%84basewatch%E8%AE%A9watch%E5%87%BD%E6%95%B0%E5%92%8Cvue%E7%BB%84%E4%BB%B6%E5%BD%BB%E5%BA%95%E5%88%86%E6%89%8B/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Vue35新增的baseWatch让watch函数和Vue组件彻底分手
+    </h1>
+    <div class="post-description">
+      Vue35新增了一个baseWatch，让watch函数和Vue组件彻底分手，他的实现和Vue组件以及生命周期没有一毛钱关系。
+    </div>
+    <div class="post-meta"><span title='2024-08-26 00:00:00 +0000 UTC'>八月 26, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;前端欧阳&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#vueruntime-core" aria-label="@vue/runtime-core">@vue/runtime-core</a></li>
+                <li>
+                    <a href="#%e9%87%8d%e6%9e%84watch%e5%87%bd%e6%95%b0" aria-label="重构watch函数">重构watch函数</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<p>在<code>Vue 3.5.0-beta.3</code>版本中新增了一个<code>base watch</code>函数，这个函数用法和我们熟知的<code>watch API</code>一模一样。区别就是我们之前用的<code>watch API</code>是和Vue组件以及生命周期是一起实现的，他们是深度绑定的。而Vue3.5新增的<code>base watch</code>函数是一个新的函数，他的实现和Vue组件以及生命周期没有一毛钱关系。</p>
+<p><a href="https://link.juejin.cn?target=https%3A%2F%2Fvue-compiler.iamouyang.cn%2Fguide%2Fcontact.html" title="https://vue-compiler.iamouyang.cn/guide/contact.html">加入欧阳的高质量vue源码交流群、欧阳平时写文章参考的多本vue源码电子书</a></p>
+<h2 id="vueruntime-core">@vue/runtime-core<a hidden class="anchor" aria-hidden="true" href="#vueruntime-core">#</a></h2>
+<p>vue3是模块化设计，他将核心功能拆分为多个独立的模块，如下图： <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/6c9a592c6beb47db9ea7a6ca15045958~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728872301&amp;x-signature=ep08QJgf1XM8PidzKwtRS7XbwqI%3D" alt="modules"  />
+</p>
+<p>比如<code>reactivity</code>模块中就是响应式的核心代码、<code>runtime-core</code>模块就是运行时相关的核心代码、<code>compiler-core</code>模块就是编译相关的核心代码。</p>
+<p>并且这些模块还被单独当作npm包进行发布，命名规则是<code>@vue+模块名</code>。比如<code>reactivity</code>模块对应的npm包就是<code>@vue/reactivity</code>。如下图： <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/11c61cd248284d56b84763d0cd01cfaa~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728872301&amp;x-signature=Iu5FqKKGOr1TxIj%2B%2Bp1y6Pt52Gk%3D" alt="npm"  />
+</p>
+<p>所以如果我们只需要vue的响应式功能，理论上只需要导入<code>@vue/reactivity</code>包即可。比如我之前的文章： <a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FtfIZ7owk4H8BCAvswKZncg" title="https://mp.weixin.qq.com/s/tfIZ7owk4H8BCAvswKZncg">涨见识了！脱离vue项目竟然也可以使用响应式API</a>，在这篇文章中我就介绍了如何脱离Vue项目，在<code>node.js</code>项目中使用vue的响应式API。</p>
+<p>但是不知道你有没有注意到，在demo中我是<code>require(&quot;vue&quot;)</code>，而不是<code>require(&quot;@vue/reactivity&quot;)</code>。</p>
+<p>因为<code>watch</code>不是由<code>@vue/reactivity</code>中导出的，而是由<code>@vue/runtime-core</code>中导出的，如果我只引入<code>@vue/reactivity</code>就会报错了。</p>
+<p>javascript</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>const { ref, watch, watchEffect } = require(&quot;vue&quot;); const count = ref(0); // 模拟count变量的值修改 setInterval(() =&gt; {   count.value++; }, 1000); watch(count, (newVal) =&gt; {   console.log(&quot;触发watch&quot;, newVal); }); watchEffect(   () =&gt; {     console.log(&quot;触发watchEffect&quot;, count.value);   },   {     flush: &quot;sync&quot;,   } );</code></p>
+<p><code>watch</code>的实现是和vue组件以及生命周期深度绑定的，而vue组件以及生命周期明显是和响应式无关的。他们的实现是在<code>runtime-core</code>模块中，而非<code>reactivity</code>模块中，这也就是为什么<code>watch</code>的实现是放在<code>runtime-core</code>模块中。 <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/c299eba5a2c3425e8136743b22116d5d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728872301&amp;x-signature=XM4GWiLQPtJYcoeaQuvfexGC0OU%3D" alt="runtime"  />
+</p>
+<p>据说性能是 Taro 10 倍的小程序框架 <a href="https://link.juejin.cn?target=https%3A%2F%2Fvuemini.org%2F" title="https://vuemini.org/">vuemini</a> 底层也是依靠<code>@vue/reactivity</code>实现的，但是由于watch是由<code>@vue/runtime-core</code>中提供的，小程序框架却只引入了<code>@vue/reactivity</code>，所以作者不得不手写了一个<code>watch</code>函数。 <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/9e645c520f4f4f348ae96d8b00918f78~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728872301&amp;x-signature=ntBQfElmIc1zD4%2FFHMjYvrH5gOo%3D" alt="vue-mini"  />
+</p>
+<h2 id="重构watch函数">重构watch函数<a hidden class="anchor" aria-hidden="true" href="#重构watch函数">#</a></h2>
+<p>智子在写<code>Vue Vapor</code>时又拆了一个新的模块，叫做<code>runtime-vapor</code>。如果你不了解<code>Vue Vapor</code>，可以看看我之前的文章： <a href="https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FSAWApng__kZOxsBvvjK0aQ" title="https://mp.weixin.qq.com/s/SAWApng__kZOxsBvvjK0aQ">没有虚拟DOM版本的vue（Vue Vapor）</a>。 <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/537914cda7864d358afa79396d5ded70~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728872301&amp;x-signature=sxMZBDYa%2BOogfVOhDwcNlJ95Y%2B0%3D" alt="vue-vapor"  />
+</p>
+<p>他们遇到一个问题需要在<code>runtime-vapor</code>模块中使用watch函数，而watch函数是位于<code>runtime-core</code>模块中。但是又不应该在<code>runtime-vapor</code>模块中直接引用<code>runtime-core</code>模块，所以Vue Vapor团队的绚香音就将watch函数重构到了<code>reactivity</code>模块中，这样在<code>runtime-vapor</code>模块中直接使用<code>reactivity</code>模块中的watch函数就行了。</p>
+<p>这也就是为什么需要重构watch函数到<code>reactivity</code>模块中。</p>
+<p>在欧阳的个人看法中watch函数本来就是属于响应式中的一部分，他在<code>runtime-core</code>模块中反而不合理。在欧阳第一次看vue3源码时就在奇怪为什么没有在<code>reactivity</code>模块中找到watch函数的实现，而是在<code>runtime-core</code>模块中实现的。</p>
+<p>当watch函数重构到<code>reactivity</code>模块后，小程序框架 <a href="https://link.juejin.cn?target=https%3A%2F%2Fvuemini.org%2F" title="https://vuemini.org/">vuemini</a> 的作者也发了一篇帖子。 <img loading="lazy" src="https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/87e05d0677a84b86847bc84b052a913e~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728872301&amp;x-signature=q%2FX2LFPLgYVw7aiCNCPuZtzD%2Ff0%3D" alt="X"  />
+</p>
+<p>watch函数重构到<code>reactivity</code>模块后，小程序框架中手写的watch函数都不需要了，因为<code>reactivity</code>模块已经提供了。</p>
+<p>看见<code>完了！这下 Vue Mini 真成 @vue/reactivity 套壳了...</code>这个评论后，对不起！<strong>杨明山</strong>大佬欧阳确实没忍住笑出了声。</p>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>vue3.5版本中，Vue Vapor团队在<code>reactivity</code>模块中重构实现了一个watch函数。重构的这个watch函数和我们现在使用的watch函数用法是一样的，区别在于以前的watch函数的实现和Vue组件以及生命周期是深度绑定的，而重构的watch函数和Vue组件以及生命周期一毛钱关系都没有。</p>
+<p>这个改动对于普通开发者可能没什么影响，但是对于下游项目，比如<code>Vue mini</code>来说还是很受益的。因为以前他们需要自己去手写watch函数，现在<code>reactivity</code>提供了后就不需要这些手写的watch函数了。</p>
+<p>最后推荐一下欧阳自己写的开源电子书<a href="https://link.juejin.cn?target=https%3A%2F%2Fvue-compiler.iamouyang.cn%2F" title="https://vue-compiler.iamouyang.cn/">vue3编译原理揭秘</a>，看完这本书可以让你对vue编译的认知有质的提升，并且这本书初、中级前端能看懂。<code>完全免费，只求一个star。</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+      <li><a href="http://localhost:1313/tags/vue.js/">Vue.js</a></li>
+      <li><a href="http://localhost:1313/tags/javascript/">JavaScript</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/jmeter%E8%BF%9B%E8%A1%8Cnlp%E6%8E%A5%E5%8F%A3%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>jmeter进行nlp接口性能测试</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/2023.01.17~%E7%AC%AC%E4%B8%89%E5%91%A8%E5%BD%B1%E5%AD%90%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%A1%B9%E7%9B%AE%E6%B1%87%E6%8A%A5/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>2023.01.17~第三周影子虚拟人项目汇报</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue35新增的baseWatch让watch函数和Vue组件彻底分手 on x"
+            href="https://x.com/intent/tweet/?text=Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f&amp;hashtags=%e5%89%8d%e7%ab%af%2cVue.js%2cJavaScript">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue35新增的baseWatch让watch函数和Vue组件彻底分手 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f&amp;title=Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b&amp;summary=Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue35新增的baseWatch让watch函数和Vue组件彻底分手 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f&title=Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue35新增的baseWatch让watch函数和Vue组件彻底分手 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue35新增的baseWatch让watch函数和Vue组件彻底分手 on whatsapp"
+            href="https://api.whatsapp.com/send?text=Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue35新增的baseWatch让watch函数和Vue组件彻底分手 on telegram"
+            href="https://telegram.me/share/url?text=Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Vue35新增的baseWatch让watch函数和Vue组件彻底分手 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Vue35%e6%96%b0%e5%a2%9e%e7%9a%84baseWatch%e8%ae%a9watch%e5%87%bd%e6%95%b0%e5%92%8cVue%e7%bb%84%e4%bb%b6%e5%bd%bb%e5%ba%95%e5%88%86%e6%89%8b&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fvue35%25E6%2596%25B0%25E5%25A2%259E%25E7%259A%2584basewatch%25E8%25AE%25A9watch%25E5%2587%25BD%25E6%2595%25B0%25E5%2592%258Cvue%25E7%25BB%2584%25E4%25BB%25B6%25E5%25BD%25BB%25E5%25BA%2595%25E5%2588%2586%25E6%2589%258B%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

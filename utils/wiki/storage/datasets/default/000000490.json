@@ -1,0 +1,9 @@
+{
+	"title": "自定义vite插件，打包后替换成注释内容",
+	"author": "王宇",
+	"publishTime": "三月26,2024",
+	"readTime": "12s",
+	"tags": "[\"vite\"]",
+	"description": "vite",
+	"article": "背景\n==\n\n希望开发的时候用的资源是mp4格式，方便调试，而打包后生产用的是m3u8，流式的体验比较好。\n\n为什么不都统一m3u8，因为windows的chrome原生不支持打开，需要用插件，懒得装第三方兼容，于是想到在vite打包流程上处理\n\n理想用法\n----\n\n![](/download/attachments/123635167/image2024-3-26_15-22-18.png?version=1&modificationDate=1711437738634&api=v2)\n\n  \n\n代码加上\n----\n\n原理是暴力修改文件内容\n\n**vite.config.ts**\n\n[?](#)\n\n`const` `replaceJJVideo = (mode) => {`\n\n  `if` `(mode !==` `'dev'``) {`\n\n    `return` `{`\n\n      `async transform(src: string, file: string) {`\n\n        `if` `(file.endsWith(``'.vue'``)) {`\n\n          `const` `lines = src.split(``'\\n'``);`\n\n          `for` `(let i =` `0``; i < lines.length; i++) {`\n\n            `const` `match = lines[i].match(/\\/\\/\\s*``@vite``-jj-replace-video:\\s*``'(.*)'``/)`\n\n            `if` `(match && i < lines.length -` `1``) {`\n\n              `lines[i +` `1``] = lines[i +` `1```].replace(/video:.*/, `video:`` `'${match[1]}'```,`);``\n\n            `}`\n\n          `}`\n\n          `return` `{`\n\n            `code: lines.join(``'\\n'``),`\n\n            `map: { mappings:` `''` `}`\n\n          `}`\n\n        `}`\n\n      `}`\n\n    `}`\n\n  `}`\n\n`}`\n\n`// ...`\n\n`export` `default` `defineConfig(({ mode }) => {`\n\n  `return` `{`\n\n    `plugins: [`\n\n      `// ...`\n\n      `replaceJJVideo(mode),`\n\n      `// ...`\n\n    `],`\n\n`// ...`\n\n[Filter table data](#)[Create a pivot table](#)[Create a chart from data series](#)\n\n[Configure buttons visibility](/users/tfac-settings.action)"
+}

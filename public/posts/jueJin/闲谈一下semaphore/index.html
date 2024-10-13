@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>闲谈一下Semaphore | PaperMod</title>
+<meta name="keywords" content="后端, Java, 面试">
+<meta name="description" content="Semaphore在项目中使用很少，直到我读了一个开源项目，原来Semaphore可以被恰当地使用的。一、Semaphore简介Semaphore（信号量）是一种计数器，用于限制同时访问特">
+<meta name="author" content="uzong">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bsemaphore/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bsemaphore/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="闲谈一下Semaphore" />
+<meta property="og:description" content="Semaphore在项目中使用很少，直到我读了一个开源项目，原来Semaphore可以被恰当地使用的。一、Semaphore简介Semaphore（信号量）是一种计数器，用于限制同时访问特" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bsemaphore/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-07T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-07T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="闲谈一下Semaphore"/>
+<meta name="twitter:description" content="Semaphore在项目中使用很少，直到我读了一个开源项目，原来Semaphore可以被恰当地使用的。一、Semaphore简介Semaphore（信号量）是一种计数器，用于限制同时访问特"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "闲谈一下Semaphore",
+      "item": "http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bsemaphore/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "闲谈一下Semaphore",
+  "name": "闲谈一下Semaphore",
+  "description": "Semaphore在项目中使用很少，直到我读了一个开源项目，原来Semaphore可以被恰当地使用的。一、Semaphore简介Semaphore（信号量）是一种计数器，用于限制同时访问特",
+  "keywords": [
+    "后端", "Java", "面试"
+  ],
+  "articleBody": "Semaphore 在项目中使用很少，直到我读了一个开源项目，原来 Semaphore 可以被恰当地使用的。\n一、Semaphore 简介 Semaphore（信号量）是一种计数器，用于限制同时访问特定资源或执行某段代码的线程数量。\n它内部维护了一个许可的数量，每当一个线程进入需要被保护的代码块时，就尝试获取一个许可或者多个；当离开这个代码块时，则释放该许可。\n如果所有许可都被占用，那么新请求许可的线程将等待。\nSemaphore信号量与 CountDownLatch 不同的是，它内部的计数器是递增的，并且在一开始初始化允许的最大值。\n二、初识 Semaphore 第一次正式认识 Semaphore 还是在一款开源软件上。\n项目地址：gitee.com/uzongn/java…（fork到自己的仓库了）\n项目简单介绍： Aliyun LOG Java Producer 是一个易于使用且高度可配置的 Java 类库，专门为运行在大数据、高并发场景下的 Java 应用量身打造。\n2.1 Semaphore 的用途 用于控制正在发送空间的大小，类似于限流。 在这个开源软件它是这么使用的。下面是参数说明：maxBlockMs 表示最大的可用空间\n类的位置：com.aliyun.openservices.aliyun.log.producer.LogProducer\nmemoryController 用于控制当前机器中正在发送中的日志内存总大小。\ncom.aliyun.openservices.aliyun.log.producer.internals.LogAccumulator\n在这段逻辑中， 由于发送的日志是并发的，为了防止发送占用内存过大， Semaphore 类型的变量 memoryController，用于控制正在发送的内存总大小。 这样避免过多的发送线程发送日志，导致内存溢出。\n简而言之：限流，限制发送日志的内存占用量。\n三、Semaphore 使用注意事项 Semaphore调用acquire()获取许可， try ... finally在finally中释放许可。通常建议放在 finally 代码块中。\n调用acquire()可能会进入等待，直到满足条件为止。也可以使用tryAcquire()指定等待时间：\n另外：避免线程等待，可以设置最长等待时长。\n获取许可不允许设置负数。\njava\n代码解读\n复制代码\npublic boolean tryAcquire(int permits) { if (permits \u003c 0) throw new IllegalArgumentException(); return sync.nonfairTryAcquireShared(permits) \u003e= 0; }\n四、应用场景 根据 Semaphore 的特性，可以围绕 “限流” 场景，进行合理的落地。（注意是虚拟机级别的，非分布式）\n五、Semaphore 内部结构 Semaphore的核心在于其内部类Sync，它继承自AbstractQueuedSynchronizer（AQS），这是其核心。Sync类通过getState()和setState(int newState)方法管理许可数量。\n非公平模式：NonfairSync类通过nonfairTryAcquireShared(int acquires)和nonfairTryReleaseShared(int releases)方法实现许可的获取和释放，这种方式下，线程的调度可能不是公平的。 公平模式：FairSync类通过tryAcquireShared(int acquires)和tryReleaseShared(int releases)方法实现许可的获取和释放，这种方式下，线程调度是公平的，即按照线程等待的顺序来分配许可。 默认是：非公平模式\njava\n代码解读\n复制代码\npublic Semaphore(int permits) { sync = new NonfairSync(permits); }\n公平策略： 看当前线程节点的前驱节点是否也在等待获取该资源，如果是则放弃获取的权限，然后加入 AQS 阻塞队列，否则就直接获取。\n六、总结 Semaphore 跟 CountDownLatch 一样，都复用 AQS 的能力。 另外都使用for(;;) 自旋 ，compareAndSetState 对 state 进行安全操作\n整体上而言，Semaphore 在使用限流上经常被其他工具所替代，比如 guava#Ratelimiter 限流工具。所以在使用上不多。感兴趣可以再深入挖掘。\n",
+  "wordCount" : "126",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-10-07T00:00:00Z",
+  "dateModified": "2024-10-07T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "uzong"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E9%97%B2%E8%B0%88%E4%B8%80%E4%B8%8Bsemaphore/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      闲谈一下Semaphore
+    </h1>
+    <div class="post-description">
+      Semaphore在项目中使用很少，直到我读了一个开源项目，原来Semaphore可以被恰当地使用的。一、Semaphore简介Semaphore（信号量）是一种计数器，用于限制同时访问特
+    </div>
+    <div class="post-meta"><span title='2024-10-07 00:00:00 +0000 UTC'>十月 7, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;uzong&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80semaphore-%e7%ae%80%e4%bb%8b" aria-label="一、Semaphore 简介">一、Semaphore 简介</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e5%88%9d%e8%af%86-semaphore" aria-label="二、初识 Semaphore">二、初识 Semaphore</a><ul>
+                        
+                <li>
+                    <a href="#21-semaphore-%e7%9a%84%e7%94%a8%e9%80%94" aria-label="2.1 Semaphore 的用途">2.1 Semaphore 的用途</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%89semaphore-%e4%bd%bf%e7%94%a8%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="三、Semaphore 使用注意事项">三、Semaphore 使用注意事项</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af" aria-label="四、应用场景">四、应用场景</a></li>
+                <li>
+                    <a href="#%e4%ba%94semaphore-%e5%86%85%e9%83%a8%e7%bb%93%e6%9e%84" aria-label="五、Semaphore 内部结构">五、Semaphore 内部结构</a></li>
+                <li>
+                    <a href="#%e5%85%ad%e6%80%bb%e7%bb%93" aria-label="六、总结">六、总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Semaphore 在项目中使用很少，直到我读了一个开源项目，原来 Semaphore 可以被恰当地使用的。</p>
+<h3 id="一semaphore-简介">一、Semaphore 简介<a hidden class="anchor" aria-hidden="true" href="#一semaphore-简介">#</a></h3>
+<p><code>Semaphore</code>（信号量）是一种计数器，用于限制同时访问特定资源或执行某段代码的线程数量。</p>
+<p>它内部维护了一个许可的数量，每当一个线程进入需要被保护的代码块时，就尝试获取一个许可或者多个；当离开这个代码块时，则释放该许可。</p>
+<p>如果所有许可都被占用，那么新请求许可的线程将等待。</p>
+<p>Semaphore信号量与 CountDownLatch 不同的是，它内部的计数器是递增的，并且在一开始初始化允许的最大值。</p>
+<h3 id="二初识-semaphore">二、初识 Semaphore<a hidden class="anchor" aria-hidden="true" href="#二初识-semaphore">#</a></h3>
+<p>第一次正式认识 Semaphore 还是在一款开源软件上。</p>
+<p>项目地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgitee.com%2Fuzongn%2Fjava-log-producer" title="https://gitee.com/uzongn/java-log-producer">gitee.com/uzongn/java…</a>（fork到自己的仓库了）</p>
+<p>项目简单介绍： Aliyun LOG Java Producer 是一个易于使用且高度可配置的 Java 类库，专门为运行在大数据、高并发场景下的 Java 应用量身打造。</p>
+<h4 id="21-semaphore-的用途">2.1 Semaphore 的用途<a hidden class="anchor" aria-hidden="true" href="#21-semaphore-的用途">#</a></h4>
+<p>用于控制正在发送空间的大小，类似于限流。 在这个开源软件它是这么使用的。下面是参数说明：maxBlockMs 表示最大的可用空间</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/ec590dd019d74915ba49cc35256b58d9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728876098&amp;x-signature=7SAl%2FER7leBAVrZL27thUcov7Gc%3D" alt="image.png"  />
+ 类的位置：com.aliyun.openservices.aliyun.log.producer.LogProducer</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/1a0b1d21c56d4c8ea7f4d0ab4e8da2fa~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728876098&amp;x-signature=ZqQR5qZY2lpJkaBU%2F999Vs%2BdTyU%3D" alt="image.png"  />
+</p>
+<p>memoryController 用于控制当前机器中正在发送中的日志内存总大小。</p>
+<p>com.aliyun.openservices.aliyun.log.producer.internals.LogAccumulator</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/d075887babec4458ad5fb47a5dac25e1~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728876098&amp;x-signature=u2MLekzuT2ouMHR7NYCs2ynSAPg%3D" alt="image.png"  />
+</p>
+<p>在这段逻辑中， 由于发送的日志是并发的，为了防止发送占用内存过大， Semaphore 类型的变量 memoryController，用于控制正在发送的内存总大小。 这样避免过多的发送线程发送日志，导致内存溢出。</p>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/1a10e98b0b0f4ad5a99b7fe47ed3e31c~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728876098&amp;x-signature=Qybx847hQCFIGR4U2uXypymaqTY%3D" alt="image.png"  />
+</p>
+<p>简而言之：限流，限制发送日志的内存占用量。</p>
+<h3 id="三semaphore-使用注意事项">三、Semaphore 使用注意事项<a hidden class="anchor" aria-hidden="true" href="#三semaphore-使用注意事项">#</a></h3>
+<p><code>Semaphore</code>调用<code>acquire()</code>获取许可， <code>try ... finally</code>在<code>finally</code>中释放许可。通常建议放在 finally 代码块中。</p>
+<p>调用<code>acquire()</code>可能会进入等待，直到满足条件为止。也可以使用<code>tryAcquire()</code>指定等待时间：</p>
+<p>另外：避免线程等待，可以设置最长等待时长。</p>
+<p>获取许可不允许设置负数。</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public boolean tryAcquire(int permits) {     if (permits &lt; 0) throw new IllegalArgumentException();     return sync.nonfairTryAcquireShared(permits) &gt;= 0; }</code></p>
+<h3 id="四应用场景">四、应用场景<a hidden class="anchor" aria-hidden="true" href="#四应用场景">#</a></h3>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/93b2bb83bba34edb816e8164ff839489~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728876098&amp;x-signature=rHIxeCtAKnPraQYNwTILGFUklks%3D" alt="image.png"  />
+</p>
+<p>根据 Semaphore 的特性，可以围绕 “限流” 场景，进行合理的落地。（注意是虚拟机级别的，非分布式）</p>
+<h3 id="五semaphore-内部结构">五、Semaphore 内部结构<a hidden class="anchor" aria-hidden="true" href="#五semaphore-内部结构">#</a></h3>
+<p><code>Semaphore</code>的核心在于其内部类<code>Sync</code>，它继承自<code>AbstractQueuedSynchronizer</code>（AQS），这是其核心。<code>Sync</code>类通过<code>getState()</code>和<code>setState(int newState)</code>方法管理许可数量。</p>
+<ul>
+<li>非公平模式：<code>NonfairSync</code>类通过<code>nonfairTryAcquireShared(int acquires)</code>和<code>nonfairTryReleaseShared(int releases)</code>方法实现许可的获取和释放，这种方式下，线程的调度可能不是公平的。</li>
+<li>公平模式：<code>FairSync</code>类通过<code>tryAcquireShared(int acquires)</code>和<code>tryReleaseShared(int releases)</code>方法实现许可的获取和释放，这种方式下，线程调度是公平的，即按照线程等待的顺序来分配许可。</li>
+</ul>
+<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/96db71a708c14188beb06024af57a0f8~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgdXpvbmc=:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728876098&amp;x-signature=AiP0%2FBhfdSKlbvisnZndv6Oj03E%3D" alt=""  />
+</p>
+<p>默认是：非公平模式</p>
+<p>java</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>public Semaphore(int permits) {         sync = new NonfairSync(permits);  }</code></p>
+<p>公平策略： 看当前线程节点的前驱节点是否也在等待获取该资源，如果是则放弃获取的权限，然后加入 AQS 阻塞队列，否则就直接获取。</p>
+<h3 id="六总结">六、总结<a hidden class="anchor" aria-hidden="true" href="#六总结">#</a></h3>
+<p>Semaphore 跟 CountDownLatch 一样，都复用 AQS 的能力。 另外都使用<code>for(;;)</code> 自旋 ，<code>compareAndSetState</code> 对 state 进行安全操作</p>
+<p>整体上而言，Semaphore 在使用限流上经常被其他工具所替代，比如 guava#Ratelimiter 限流工具。所以在使用上不多。感兴趣可以再深入挖掘。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/">后端</a></li>
+      <li><a href="http://localhost:1313/tags/java/">Java</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/">面试</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E4%B8%80%E8%99%9A%E6%8B%9F%E6%95%B0%E5%AD%97%E4%BA%BA/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>一、虚拟数字人</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/wiki/2024.1.3%E7%82%89%E7%AB%AF0111%E7%89%88%E6%9C%AC%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E8%AF%84%E5%AE%A1%E7%BA%AA%E8%A6%81/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>2024.1.3炉端0111版本测试用例评审纪要</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下Semaphore on x"
+            href="https://x.com/intent/tweet/?text=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f&amp;hashtags=%e5%90%8e%e7%ab%af%2cJava%2c%e9%9d%a2%e8%af%95">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下Semaphore on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f&amp;title=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore&amp;summary=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下Semaphore on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f&title=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下Semaphore on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下Semaphore on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下Semaphore on telegram"
+            href="https://telegram.me/share/url?text=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 闲谈一下Semaphore on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e9%97%b2%e8%b0%88%e4%b8%80%e4%b8%8bSemaphore&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E9%2597%25B2%25E8%25B0%2588%25E4%25B8%2580%25E4%25B8%258Bsemaphore%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
