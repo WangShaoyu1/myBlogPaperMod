@@ -129,125 +129,118 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">一次说清Vue3中watch、watchEffect和computed的多种用法
+    <h2 class="entry-hint-parent">chrome调试秘籍，让你的开发速度飞起来🔥
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言： watch、watchEffect和computed这算是vue里面响应式API的核心了，特意总结一下当写个笔记，如有那里不对或者需要补充欢迎大佬指点。
-一、watch: 简单说明：侦听一个或多个响应式数据源，并在数据源变化时调用所给的回调函数。但有几种使用方法，下面一一说明。
-1、watch侦听一个对象里面一个属性： 直接侦听对象里面一个属性用法
-scss
+    <p>前言 熟练使用调试工具，势必能大幅提高我们的开发效率，达到事半功倍的效果。废话不多说，直接进入主题。
+Filter过滤 过滤器最简单的用法当然是直接输入过滤的字符，但这远远不够🤗。除了直接输入，我们还希望能排除不需要看到的请求、能多条件过滤、能根据指定的列过滤。输入的字符默认根据name属性搜索。具体方法如下：
+1. 排除过滤（反向搜索） 在要搜索的字符前加-value，表示反向搜索，如下图，过滤出name中不含png的请求： 2. 多条件搜索 每个搜索间用空格斜杆空格隔开,如图排除gif并过滤出有@字符的请求：
+3. 使用正则匹配 直接输入正则表达式，匹配想要的结果。
+结合反向搜索（正则表达式前加-，如：-/.../）可以排除满足正则表达式的请求。
+此方式搜索，功能非常强大，能满足大部分搜索场景 4. 指定列搜索 或 特性搜索 搜索出大于15KB的资源，如图： 其它的一些属性或特性就不一一示例了，大家可以去自行尝试： 5. Console等其它过滤框同样适用以上的搜索方式 ...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-09-01 00:00:00 +0000 UTC'>九月 1, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;tager</footer>
+  <a class="entry-link" aria-label="post link to chrome调试秘籍，让你的开发速度飞起来🔥" href="http://localhost:1313/posts/juejin/chrome%E8%B0%83%E8%AF%95%E7%A7%98%E7%B1%8D%E8%AE%A9%E4%BD%A0%E7%9A%84%E5%BC%80%E5%8F%91%E9%80%9F%E5%BA%A6%E9%A3%9E%E8%B5%B7%E6%9D%A5/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">ReactNative新架构：恐怖的性能提升
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>自2018年以来，React Native团队一直在重构其核心架构，以便开发者能够创建更高质量更好性能的体验。最近在 React Native 的官网看到他们在安利他们的新的架构，本文将我所了解到的一些皮毛带给大家。以浅薄的见解来揭示其所带来的显著的性能改进，并探讨为何以及如何过渡到这一新架构。
+为什么需要新的架构？ 多年来，使用React Native构建应用遇到了一些不可避免的限制。比如：React Native的布局和动画效果可能不如原生应用流畅，JavaScript和原生代码之间的通信效率低下，序列化和反序列化开销大，以及无法利用新的React特性等。这些限制在现有架构下无法解决，因此新的架构应运而生。新的架构提升了React Native在数个方面的能力，使得一些之前无法实现的特性和优化成为可能。
+同步布局和效果 对比下老的架构(左边)和新的架构(右边)的效果：
+构建自适应的UI体验通常需要测量视图的大小和位置并进行调整。在现有架构中，使用onLayout事件获取布局信息可能导致用户看到中间状态或视觉跳跃。而在新架构下，useLayoutEffect可以同步获取布局信息并更新，让这些中间状态彻底消失。可以明显看到不会存在跟不上的情况。
+javascript
 代码解读
 复制代码
-const state = reactive({ count: 0 }) watch( () =&gt; state.count, (newCount, oldCount) =&gt; { // 执行逻辑 } )
-2、watch侦听一个 ref： 对ref侦听时不需要.value,直接侦听即可
-scss
-代码解读
-复制代码
-const count = ref(0) watch(count, (newCount, oldCount) =&gt; { // 执行逻辑 })
+function ViewWithTooltip() { const targetRef = React.useRef(null); const [targetRect, setTargetRect] = React.useState(null); useLayoutEffect(() =&gt; { targetRef.current?.measureInWindow((x, y, width, height) =&gt; { setTargetRect({ x, y, width, height }); }); }, [setTargetRect]); return ( &lt;&gt; &lt;View ref={targetRef}&gt; &lt;Text&gt;一些内容，显示一个悬浮提示&lt;/Text&gt; &lt;/View&gt; &lt;Tooltip targetRect={targetRect} /&gt; &lt;/&gt; ); }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-17 00:00:00 +0000 UTC'>四月 17, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;天天鸭</footer>
-  <a class="entry-link" aria-label="post link to 一次说清Vue3中watch、watchEffect和computed的多种用法" href="http://localhost:1313/posts/juejin/%E4%B8%80%E6%AC%A1%E8%AF%B4%E6%B8%85vue3%E4%B8%ADwatchwatcheffect%E5%92%8Ccomputed%E7%9A%84%E5%A4%9A%E7%A7%8D%E7%94%A8%E6%B3%95/"></a>
+  <footer class="entry-footer"><span title='2024-06-07 00:00:00 +0000 UTC'>六月 7, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;brzhang</footer>
+  <a class="entry-link" aria-label="post link to ReactNative新架构：恐怖的性能提升" href="http://localhost:1313/posts/juejin/reactnative%E6%96%B0%E6%9E%B6%E6%9E%84%E6%81%90%E6%80%96%E7%9A%84%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">基于node的redis集群配置详解【看完必会】
+    <h2 class="entry-hint-parent">不花一分钱！前端监控安排上，还带回放功能！
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 关于node中使用redis集群功能，没有找到一篇比较完整且通俗易懂的文章，因此自己在开发调试的过程中也走了不少弯路。
-本文会详细介绍了在本地如何搭建redis集群、在客户端如何使用集群、在搭建过程中遇到的问题和错误汇总并说明，以避免下次使用的时候再走弯路，提高开发、工作效率。
-使用集群的背景是：在Redis单例模式下随着用户量、访问量的提高，qps值急剧上涨👆🏻，大量的io操作导致某一时刻占满cpu(100%)，随时有宕机的危险，同时通过批量处理redis等方式也是治标不治本，无法突破服务器性能的瓶颈。因此使用集群方案或增加redis实例就势在必行。
-名词解释–集群 集群一般是指服务器集群，区别于分布式系统，是将很多服务器集中起来一起进行同一种服务，在客户端看来就像是只有一个服务器。集群可以利用多个计算机进行并行计算从而获得很高的计算速度，也可以用多个计算机做备份，从而使得任何一个机器坏了整个系统还是能正常运行。(在redis3.0之前一般使用的都是 哨兵模式，但 哨兵的配置略微复杂，并且性能和高可用性等各方面表现一般)
-redis集群要求 由于投票容错机制要求超过半数节点认为某个节点挂了该节点才是挂了，所以2个节点无法构成集群，因此Redis集群至少需要3个节点。
-要保证集群的高可用、需要每个节点都有从节点（也就是备份节点），所以Redis集群至少需要6台服务器。 （三主三从、三存三取、高可用、可备份）
-当然，我们在本地调试时不可能用这么多服务器，因此我们可以在本地模拟运行6个redis实例，事实上生产环境的Redis集群搭建和这里基本上一样。
-mac 环境下搭建本地redis集群 1. 下载安装redis 可以在官网选择安装，也可以用命名行安装
-bash
-代码解读
-复制代码
-#安装 brew install redis #启动 redis-server #进入redis客户端 redis-cli
-2. 通过redis配置集群环境 首先要找到redis配置文件的位置 brew list redis # 查看redis安装的位置 cd /opt/homebrew/Cellar/redis/6.2.4 # 根据位置进入版本号所在的文件夹 open . # 打开文件夹 用Xcode.app打开homebrew.mxcl.redis.plist, 即可找到redis.conf所在的位置，如下所示： ...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-03-28 00:00:00 +0000 UTC'>三月 28, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;tager</footer>
-  <a class="entry-link" aria-label="post link to 基于node的redis集群配置详解【看完必会】" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Enode%E7%9A%84redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3%E7%9C%8B%E5%AE%8C%E5%BF%85%E4%BC%9A/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">3202年了，如何写出优雅的CSS
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>3202年了，估计已经没有人手写 CSS 了吧。的确，自从有了框架、UI 库，需要动手写 CSS 的机会变少了。但是，不代表不需要更好、更优的代码了。作为一个老前端（切图佬），看着现在的 CSS 就头大。
-那有什么方法能让我们写出更优雅的 CSS 呢？
-优雅第一原则：能不写就不写 css！
-优先使用默认样式 每个 UI 库都有各自的布局标签/方法。如 Bootstrap 的 row class / col class， element UI 的 el-row、el-col：
-html
-代码解读
-复制代码
-&lt;div class=&#34;container text-center&#34;&gt; &lt;div class=&#34;row&#34;&gt; &lt;div class=&#34;col&#34;&gt;Column&lt;/div&gt; &lt;div class=&#34;col&#34;&gt;Column&lt;/div&gt; &lt;div class=&#34;col&#34;&gt;Column&lt;/div&gt; &lt;/div&gt; &lt;/div&gt; &lt;el-row&gt; &lt;el-col :span=&#34;12&#34;&gt; &lt;div class=&#34;grid-content bg-purple&#34;&gt;&lt;/div&gt; &lt;/el-col&gt; &lt;el-col :span=&#34;12&#34;&gt; &lt;div class=&#34;grid-content bg-purple-light&#34;&gt;&lt;/div&gt; &lt;/el-col&gt; &lt;/el-row&gt;
+    <p>今天，我想给我的小 SAAS 项目加上一些前端监控，这样我就可以更好的了解我的用户在使用我的产品时遇到了什么问题，从而更好的改进我的产品。我首先想到的就是 Sentry，因为这货在掘金上还是比较有名气的。
+这货在 GitHub 上也是斩获了，37.6K 的 star，而且支持的特性也的确非常的优秀。比如性能监控、错误日志、录屏回放等等。我没打算自己部署一个，我期望使用他的 SAAS 服务，最后是有一定额度的穷鬼套餐。但是，当我注册了一个账号之后，准备使用的时候，就果断放弃了，因为他明明白白的写着只有 14 天的试用期，之后就需要付费 30 刀每个月，穷鬼退散。
+时至今日，我所用的 vercel、supabase，无一例外都是提供一定的免费额度的。所以，我也一定要找到一个有一定免费额度的，找着找着，我找到了 OpenReplay。
+OpenReplay 正如图上所述，OpenReplay 是一个开源的前端监控工具，它支持的特性也是非常的丰富，比如性能监控、错误日志、录屏回放等等。而且，它还提供了一个免费额度，每个月可以录制 1000 个会话，这对于一个小项目来说，已经足够了。下面是他的接入文档，支持 React、Vue、Angular、Next.js 等等。
+docs.openreplay.com/en/getting-…
+先说说效果 接入成功之后，如果数据上报上来，是可以看到一个 session 列表的，因此它是已一个 session 来管理记录的。 然后，对于每一个 session，可以点击查看回放，这样就可以看到用户在使用产品的时候的操作，这对于我们来说是非常有用的，可以帮助我们更好的了解用户的使用情况，从而更好的改进我们的产品。然后下面也可以看到 console 的输出，这样我们就可以看到用户在使用产品的时候遇到了什么问题，从而更好的解决问题，尤其是前端 js 错误，这对于我们来说是非常有用的。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-02-28 00:00:00 +0000 UTC'>二月 28, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;陈佬昔的编程人生</footer>
-  <a class="entry-link" aria-label="post link to 3202年了，如何写出优雅的CSS" href="http://localhost:1313/posts/juejin/3202%E5%B9%B4%E4%BA%86%E5%A6%82%E4%BD%95%E5%86%99%E5%87%BA%E4%BC%98%E9%9B%85%E7%9A%84css/"></a>
+  <footer class="entry-footer"><span title='2024-07-11 00:00:00 +0000 UTC'>七月 11, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;brzhang</footer>
+  <a class="entry-link" aria-label="post link to 不花一分钱！前端监控安排上，还带回放功能！" href="http://localhost:1313/posts/juejin/%E4%B8%8D%E8%8A%B1%E4%B8%80%E5%88%86%E9%92%B1%E5%89%8D%E7%AB%AF%E7%9B%91%E6%8E%A7%E5%AE%89%E6%8E%92%E4%B8%8A%E8%BF%98%E5%B8%A6%E5%9B%9E%E6%94%BE%E5%8A%9F%E8%83%BD/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">通过学会Object.defineProperty的用法彻底理解vue2响应式原理，附带对比vue3响应式原理
+    <h2 class="entry-hint-parent">我花了一天时间，做了一个图片上传组件，看起来很酷实际上确实很酷
     </h2>
   </header>
   <div class="entry-content">
-    <p>背景： 最近在看vue2的源码有感，想起以前刚入选行没多久时背面经的时候面试官一问到：你知道vue2的响应式原理吗？？然后自己就巴拉巴拉地说什么：通过Object.defineProperty然后get、set…..一通输出，其实自己并没有真正理解这个原理直到自己慢慢深入去学习，如果面试官深入问必然就凉了，然后就想写这编文章了，这文章说的没有多深入主要是让人更好地理解这个思路。
-可以对比vue3使用proxy实现响应式原理看这样理解更充分：通过学会Proxy代理的用法彻底理解vue3响应式原理思路，附带对比vue2响应式原理
-Object.defineProperty的作用简述： Object.defineProperty() 方法用于在对象上定义一个新属性或修改现有属性。 通过这个方法，可以精确地控制属性的特性，如可枚举性、可配置性、可写性等。这个方法提供了更高级别的属性定义，可以用于创建高度定制化的对象属性。
-用法： Object.defineproperty(myobj, prop, desc) 可以接收三个参数
-myobj : 第一个参数：就是要在哪个对象身上添加或者修改属性
-prop : 第二个参数就是添加或修改的属性名
-desc ： 可选项，一般是一个对象
-简单的例子说明：
-css
+    <p>今天，我花了一天的时间做了一个图片上传组件。效果如下：
+可能有人觉得，这个组件很简单，没什么技术含量，其实确实也啥技术含量。但是，我是想借这个组件，来表达一种封装的思想在里面，希望可以帮助到一些朋友。
+简单的描述下这个组件的功能：
+用户可以点击下面颜色比较绚丽的上传按钮，选择本地图片进行上传，也可以直接点击图片区域进行上传。 上传过程中，会有一个上传中的进度条，上传完成后，会有一个上传成功的提示，如果失败了，会有一个上传失败的提示，而且支持重试。 可以点击图片右上角的删除按钮，删除图片。 并发控制，最多只能同时上传 N 张图片，也就是所谓的限频，这里是 2 张。 是不是看了这么多功能之后，就开始有点头皮发麻了？哈哈，不要怕，这就带你了解下，如何拆解这种功能，而且，学会了这种拆解的办法，后面你遇到更加复杂的，也可以得心应手。
+拆解功能，逐步实现 首先，我们思考，我们该使用自底向上的思路，还是自顶向下的思路来拆解这个功能呢？我的建议自顶向下的思路去思考架构，然后自底向上的去实现功能。
+因为我们这个图片上传组件是支持多长图片同时上传的，而且，我们还需要支持上传失败重试的功能，所以，为了让功能更加聚焦，我们把关注点放在 PhotoItem 上，没一个 PhotoItem 就是一个图片上传的单元。他可以独立的上传，独立的删除，独立的重试。
+那么，为了让 PhotoItem 这个组件更加简洁，我们把上传逻辑放在hooks useUpload中，这样，PhotoItem 只需要关注自己的展示逻辑即可。
+这样做的目的是做到关注点分离，通常来讲，也是符合单一职责原则的。写出来的组件维护性必定大大提升。
+代码实现 我们先来看下 useUpload 的代码,因为PhotoItem 依赖他，我们先实现它。
+tsx
 代码解读
 复制代码
-`let personObj = { name:&#34;测试啊&#34;, age: 18 } Object.defineProperty(personObj,&#39;sex&#39;,{ value:&#34;男&#34; }) console.log(person) // 打印出来 { name:&#34;测试啊&#34;, age: 18, sex:男 }` ...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-03-29 00:00:00 +0000 UTC'>三月 29, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
-  <a class="entry-link" aria-label="post link to 通过学会Object.defineProperty的用法彻底理解vue2响应式原理，附带对比vue3响应式原理" href="http://localhost:1313/posts/juejin/%E9%80%9A%E8%BF%87%E5%AD%A6%E4%BC%9Aobject.defineproperty%E7%9A%84%E7%94%A8%E6%B3%95%E5%BD%BB%E5%BA%95%E7%90%86%E8%A7%A3vue2%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86%E9%99%84%E5%B8%A6%E5%AF%B9%E6%AF%94vue3%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Flutter进阶/最佳实践：自定义Flutter路由堆栈监听
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>一、需求来源 项目中需要判断路由堆栈是否包含哪个页面，如果包含就退回到此页面，如果没有就创建跳转。就是如此简单的需求困扰了半年多时间，今天看项目代码时偶然发现一种可能得实现方式，经过测试，完美解决此问题，可视为目前的最佳实践。
-二、寻找解决之道 1、之前知道sdk中有 RouteAware 的堆栈数组，但是 _listeners 是私有属性，此路不通。
-scala
-代码解读
-复制代码
-class RouteObserver&lt;R extends Route&lt;dynamic&gt;&gt; extends NavigatorObserver { ... final Map&lt;R, Set&lt;RouteAware&gt;&gt; _listeners = &lt;R, Set&lt;RouteAware&gt;&gt;{}; ... }
-2、stackflow 上没找到。
-3、把 getx 的issues 都翻遍了也没有找到合适的解决办法。
-三、解决之道 当偶然看到同事用监听器只获取当前路由时，突然发现这不正是我苦苦寻找良久的路由堆栈监听的切入口嘛。官方不暴露堆栈我自己实现一个不就完了。
-dart
-代码解读
-复制代码
-class CustomRouteObserver extends RouteObserver&lt;PageRoute&lt;dynamic&gt;&gt; { @override void didPush(Route&lt;dynamic&gt; route, Route&lt;dynamic&gt;? previousRoute) { super.didPush(route, previousRoute); ... } @override void didPop(Route&lt;dynamic&gt; route, Route&lt;dynamic&gt;? previousRoute) { super.didPop(route, previousRoute); ... }
+&#34;use client&#34;; export const useUploader = (uploadAction) =&gt; { const [isUploading, setIsUploading] = useState(false); const [error, setError] = useState(null); const upload = useCallback(async (file) =&gt; { setIsUploading(true); setError(null); try { return await uploadAction(file); } catch (err) { setError(err.message || &#39;Upload failed&#39;); } finally { setIsUploading(false); } }, [uploadAction]); const reset = useCallback(() =&gt; { setIsUploading(false); setError(null); }, []); return { upload, isUploading, error, reset }; };
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-28 00:00:00 +0000 UTC'>九月 28, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;SoaringHeart</footer>
-  <a class="entry-link" aria-label="post link to Flutter进阶/最佳实践：自定义Flutter路由堆栈监听" href="http://localhost:1313/posts/juejin/flutter%E8%BF%9B%E9%98%B6/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%AE%9A%E4%B9%89flutter%E8%B7%AF%E7%94%B1%E5%A0%86%E6%A0%88%E7%9B%91%E5%90%AC/"></a>
+  <footer class="entry-footer"><span title='2024-07-24 00:00:00 +0000 UTC'>七月 24, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;brzhang</footer>
+  <a class="entry-link" aria-label="post link to 我花了一天时间，做了一个图片上传组件，看起来很酷实际上确实很酷" href="http://localhost:1313/posts/juejin/%E6%88%91%E8%8A%B1%E4%BA%86%E4%B8%80%E5%A4%A9%E6%97%B6%E9%97%B4%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E7%BB%84%E4%BB%B6%E7%9C%8B%E8%B5%B7%E6%9D%A5%E5%BE%88%E9%85%B7%E5%AE%9E%E9%99%85%E4%B8%8A%E7%A1%AE%E5%AE%9E%E5%BE%88%E9%85%B7/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">年终盘点：如何实现文件秒传？让用户体验开挂上传🚀
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 上传一个100MB的视频文件，只需要1~3秒，是真的吗？靠谱吗？
+此前，经常有用户反馈在正常网络下上传一个1GB的视频大约需要10分钟，感觉上传速度太慢。我们也只能回复：“其实这种情况和上传的网络以及文件大小有关”。
+在互联网高速发展的今天，文件上传已经成为网页应用中的一个基本功能。随着用户上传文件尺寸的不断增大、对质量清晰度的要求也越来越高。如何提高上传速度、优化用户体验成为了前端开发者必须面对的问题。
+在此之前，最常见的优化方案就是分块上传、断点续传，在用户因异常断开上传 或 刷新页面后，能继续在上一次的基础上继续上传。这的确能较好的提升用户上传体验，也是很有必要的优化手段，但无法实现文件秒传。
+什么是文件秒传？ 文件秒传指的是当用户上传文件时，如果服务器已存在完全相同的文件，那么无需用户再次上传，直接使用服务器上的文件副本，实现瞬间完成上传的过程。这种技术可以显著减少不必要的数据传输，节省时间和带宽资源。(服务器会根据有无hash的情况返回3种状态，下面会有详细说明)
+文件秒传的原理 文件秒传的核心原理是“文件指纹”。即文件唯一ID，通常是指文件的哈希值（如MD5、SHA-1等），它是通过哈希算法计算得出的一串固定长度的字符串，可以唯一标识文件的内容。即使文件非常庞大，其哈希值也能迅速计算出来，并且即便只是文件中的一个字节发生变化，所得到的哈希值也会完全不同。
+注📢：同一个资源下载链接在不同电脑下载🉐到的将是同一个资源，因此hash也会是同一个。
+当数据库视频等资源存量达到一定级别后能大幅提升上传体验，同时也能极大减少上传开销，避免重复视频上传，真正实现降本增效。
+秒传的三种状态处理说明 三种状态都需要将前端计算得出的文件hash传递给服务端查询获得
+状态一（notHash）：文件在服务器不存在
+此时正常分块上传，上传结束后返回上传结果
+状态二（hasHash）：文件在服务器存在
+根据文件hash查询到上传结果，直接返回（实现秒传）
+状态三（hashIng）：新文件第一次上传完，但后端任务未完成， 而该文件在前端又被上传。此时轮询后端接口，等待后端任务完成后直接拿到上传结果（该文件第二次或后续上传均已实现秒传）
+状态三中说的后端任务主要是：新文件上传完后，后端并不会直接拿前端的hash存到数据库，而是会自己在服务端根据上传完的视频生成hash（生成hash规则和前端一样）再和前端比对，以确保数据的准确性及唯一性。
+如何在前端页面实现文件秒传？ 关键技术点 文件分块hash计算 拿得到的hash到后端查询文件状态（确定文件是否在服务端存在） 根据服务端返回的上传状态，处理上传。 1. 计算文件hash 计算hash的方法封装，使用md5会有相对较大的概率出现重复hash，建议至少使用sha1的方式计算。
+js
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-01-07 00:00:00 +0000 UTC'>一月 7, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;tager</footer>
+  <a class="entry-link" aria-label="post link to 年终盘点：如何实现文件秒传？让用户体验开挂上传🚀" href="http://localhost:1313/posts/juejin/%E5%B9%B4%E7%BB%88%E7%9B%98%E7%82%B9%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E7%A7%92%E4%BC%A0%E8%AE%A9%E7%94%A8%E6%88%B7%E4%BD%93%E9%AA%8C%E5%BC%80%E6%8C%82%E4%B8%8A%E4%BC%A0/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/57/">
-      «&nbsp;上一页&nbsp;57/74
+      «&nbsp;上一页&nbsp;57/77
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/59/">下一页&nbsp;59/74&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/59/">下一页&nbsp;59/77&nbsp;»
     </a>
   </nav>
 </footer>

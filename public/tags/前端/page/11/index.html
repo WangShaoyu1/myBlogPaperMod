@@ -129,119 +129,144 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">React.ForwardRef探索：更简单的替代方案
+    <h2 class="entry-hint-parent">让我看看你们公司的代码规范都是啥样的？
     </h2>
   </header>
   <div class="entry-content">
-    <p>理解React中的ref 当我们向一个原生HTML元素，比如&lt;input&gt;，传递一个ref时，它会自动附加到DOM节点上。这样我们就可以使用这个节点的原生DOM API。
-jsx
+    <p>我这里提供一份我自己在使用的项目代码规范，当然我这里比较简陋，有补充的可以打在评论区，我丰富到文章里去。
+1.组件命名规范 components下的组件命名规范遵循大驼峰命名规范。
+示例：components/AlbumItemCard/AlbumItemCard.vue
+小驼峰式命名法（lower camel case）： 第一个单词以小写字母开始；第二个单词的首字母大写，例如：myName
+大驼峰式命名法（upper camel case）： 每一个单字的首字母都采用大写字母，例如：MyName
+2.目录命名规范 pages下的文件命名规范：遵循小驼峰命名规范。
+示例：pages/createAlbum/createAlbum.vue
+3.CSS命名规范 class命名规范为中划线。
+示例：
+xml
 代码解读
 复制代码
-import React, { useRef, useEffect } from &#39;react&#39;; const App = () =&gt; { const inputRef = useRef(null); useEffect(() =&gt; { if (inputRef.current) { // 访问DOM节点 inputRef.current.focus(); } }, []); return &lt;input ref={inputRef} /&gt;; };
+&lt;template&gt; &lt;view class=&#34;gui-padding&#34;&gt; ... &lt;/view&gt; &lt;/template&gt; &lt;style lang=&#34;scss&#34; scoped&gt; .gui-padding { ... } &lt;/style&gt;
+css使用scss进行书写。
+4.代码注释规范 行内注释://
+函数注释：
+typescript
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-06 00:00:00 +0000 UTC'>七月 6, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;叶知秋水</footer>
-  <a class="entry-link" aria-label="post link to React.ForwardRef探索：更简单的替代方案" href="http://localhost:1313/posts/juejin/react.forwardref%E6%8E%A2%E7%B4%A2%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88/"></a>
+  <footer class="entry-footer"><span title='2023-04-21 00:00:00 +0000 UTC'>四月 21, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;白哥学前端</footer>
+  <a class="entry-link" aria-label="post link to 让我看看你们公司的代码规范都是啥样的？" href="http://localhost:1313/posts/juejin/%E8%AE%A9%E6%88%91%E7%9C%8B%E7%9C%8B%E4%BD%A0%E4%BB%AC%E5%85%AC%E5%8F%B8%E7%9A%84%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E9%83%BD%E6%98%AF%E5%95%A5%E6%A0%B7%E7%9A%84/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">前端vue实现打印、下载
+    <h2 class="entry-hint-parent">vue3admin保姆教学指南｜项目规范集成教程，看完秒懂项目中各种奇怪的文件和配置
     </h2>
   </header>
   <div class="entry-content">
-    <p>分享一下几个后台管理系统比较常用的插件：下载、打印
-html2canvas介绍 html2canvas是在浏览器上对网页进行截图操作，实际上是操作DOM，这个插件也有好长时间了，比较稳定，目前使用还没有遇到什么bug
-jspdf介绍 如果下载出来是pdf文件，可以加上jspdf插件，会先通过html2canvas把页面转化成base64图片，再通过jspdf导出
-安装
-js
+    <p>今天来带大家从0开始搭建一个vue3版本的后台管理系统。
+一个项目要有统一的规范，需要使用eslint&#43;stylelint&#43;prettier来对我们的代码质量做检测和修复，需要使用husky来做commit拦截，需要使用commitlint来统一提交规范，需要使用preinstall来统一包管理工具。
+下面我们就用这一套规范来初始化我们的项目，集成一个规范的模版。
+环境准备 node v16.17.0 pnpm 7.11.0 项目初始化 本项目使用vite进行构建，vite官方中文文档参考：cn.vitejs.dev/guide/
+项目初始化命令
+lua
 代码解读
 复制代码
-npm i html2canvas jspdf 或 yarn add html2canvas jspdf
-使用
-js
+pnpm create vite
+我们这里选择使用vue&#43;typescript的方式进行初始化。
+Project name命名为guigu-sph-mall-admin,意为尚品汇商城管理系统。
+初始化完成以后进入guiug-sph-mall目录，安装依赖pnpm install,然后运行项目pnpm run dev，在浏览器打开http://localhost:5173/，即可看到预览效果：
+配置eslint eslint用来验证代码是否符合定义的规范
+首先安装eslint
+css
 代码解读
 复制代码
-&lt;template&gt; &lt;div&gt; &lt;h1 ref=&#34;toPdf&#34;&gt; 导出区域 &lt;/h1&gt; &lt;button @click=&#34;toPdfFn&#34;&gt;导出pdf&lt;/button&gt; &lt;/div&gt; &lt;/template&gt; &lt;script&gt; import html2canvas from &#34;html2canvas&#34; import JSPDF from &#34;jspdf&#34; export default { methods:{ toPdfFn(){ this.htmlToPdf(&#39;文件名&#39;,&#39;时间&#39;) }, htmlToPdf(name,time){ let element = this.$refs.toPdf html2canvas(element, { logging: false }).then(function(canvas) { let pdf = new JSPDF(&#34;p&#34;, &#34;mm&#34;, &#34;a4&#34;) // A4纸，纵向 let ctx = canvas.getContext(&#34;2d&#34;) let a4w = 190; let a4h = 277 // A4大小，210mm x 297mm，四边各保留20mm的边距，显示区域190x277 let imgHeight = Math.floor(a4h * canvas.width / a4w) // 按A4显示比例换算一页图像的像素高度 let renderedHeight = 0 while (renderedHeight &lt; canvas.height) { let page = document.createElement(&#34;canvas&#34;) page.width = canvas.width page.height = Math.min(imgHeight, canvas.height - renderedHeight) // 可能内容不足一页 // 用getImageData剪裁指定区域，并画到前面创建的canvas对象中 page.getContext(&#34;2d&#34;).putImageData(ctx.getImageData(0, renderedHeight, canvas.width, Math.min(imgHeight, canvas.height - renderedHeight)), 0, 0) pdf.addImage(page.toDataURL(&#34;image/jpeg&#34;, 1.0), &#34;JPEG&#34;, 10, 10, a4w, Math.min(a4h, a4w * page.height / page.width)) // 添加图像到页面，保留10mm边距 // 如果后面还有内容，添加一个空页 renderedHeight &#43;= imgHeight if (renderedHeight &lt; canvas.height) { pdf.addPage() } } pdf.save(name &#43; time) }) } } } &lt;/script&gt;
+pnpm i -D eslint
+生成配置文件
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-08-14 00:00:00 +0000 UTC'>八月 14, 2022</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;天神下凡_</footer>
-  <a class="entry-link" aria-label="post link to 前端vue实现打印、下载" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AFvue%E5%AE%9E%E7%8E%B0%E6%89%93%E5%8D%B0%E4%B8%8B%E8%BD%BD/"></a>
+  <footer class="entry-footer"><span title='2023-02-01 00:00:00 +0000 UTC'>二月 1, 2023</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;白哥学前端</footer>
+  <a class="entry-link" aria-label="post link to vue3admin保姆教学指南｜项目规范集成教程，看完秒懂项目中各种奇怪的文件和配置" href="http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E9%A1%B9%E7%9B%AE%E8%A7%84%E8%8C%83%E9%9B%86%E6%88%90%E6%95%99%E7%A8%8B%E7%9C%8B%E5%AE%8C%E7%A7%92%E6%87%82%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%90%84%E7%A7%8D%E5%A5%87%E6%80%AA%E7%9A%84%E6%96%87%E4%BB%B6%E5%92%8C%E9%85%8D%E7%BD%AE/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">花了一天时间,搜刮的个人觉得不错的16套vue3后台管理模版
+    <h2 class="entry-hint-parent">🌈el-tooltip文字溢出提示框显示，否则不显示
     </h2>
   </header>
   <div class="entry-content">
-    <p>搭建一个后台管理，从零开始开发，其实并不容易，在众多开源管理后台中，Vue3是一个备受瞩目的选择。它是一个现代化的前端框架，具有高效、灵活、易用等特点，今天，要为大家介绍几款开源免费vue3开源管理后台，可以帮助你快速搭建企业级中后台产品原型。
-1. Vue vben admin： 是一个基于 Vue3.0、Vite、 Ant-Design-Vue、TypeScript的后台解决方案，目标是为开发中大型项目提供开箱即用的解决方案。
-掌握这个项目需要一定前端基础知识以及掌握 Vue 的基础知识，以便能处理一些常见的问题。建议在开发前先学一下以下内容，提前了解和学习这些知识，会对项目理解非常有帮助:
-项目功能：
-最新技术栈：基于Vue3、Vite、TypeScript等最新技术栈开发.
-轻量快速的热重载：无论应用程序大小如何，都始终极快的模块热重载（HMR）
-丰富的示例：常见的Web端插件示例实现.
-组件封装：对日常使用频率较高的组件二次封装,满足基础工作需求. 主题配置：丰富的主题配置及黑暗主题适配. 关于黑暗主题：项目已经内置了黑暗主题切换，只需配置自己需要的颜色变量，即可在项目中使用。
-原理：通过 vite-plugin-theme 插件，将所有的颜色变量抽取到独立的 css 文件，并且全部在 html 上面加上 css 选择器。通过改变 html 标签的 data-theme 属性来进行黑暗主题切换。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-11-24 00:00:00 +0000 UTC'>十一月 24, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;徐小夕</footer>
-  <a class="entry-link" aria-label="post link to 花了一天时间,搜刮的个人觉得不错的16套vue3后台管理模版" href="http://localhost:1313/posts/juejin/%E8%8A%B1%E4%BA%86%E4%B8%80%E5%A4%A9%E6%97%B6%E9%97%B4%E6%90%9C%E5%88%AE%E7%9A%84%E4%B8%AA%E4%BA%BA%E8%A7%89%E5%BE%97%E4%B8%8D%E9%94%99%E7%9A%8416%E5%A5%97vue3%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E6%A8%A1%E7%89%88/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">分享5款开源企业级后台模版，开发项目必备
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>做过项目大家都知道，一套既美观又方便的后台框架可以大大幅节约开发时间和成本。今天我们5款热门的开源后台管理模版，涵盖了VUE、React、Bootstrap等多种类型，可以根据自己团队的实际情况在项目中选择。
-No.1 vue-element-admin GitHub 链接：github.com/PanJiaChen/… 文档：panjiachen.gitee.io/vue-element… 在线预览：panjiachen.github.io/vue-element… GitHub Star 数：85K &#43; vue-element-admin 是VUE圈里的老牌后台管理解决方案，目前在GitHub上已经超过了85K Star。
-它基于 vue 和 element-ui实现。它使用了最新的前端技术栈，内置了 i18 国际化解决方案，动态路由，权限验证，提炼了典型的业务模型，提供了丰富的功能组件，它可以帮助你快速搭建企业级中后台产品原型。相信不管你的需求是什么，本项目都能帮助到你。
-本项目的定位是后台集成方案，不太适合当基础模板来进行二次开发。因为本项目集成了很多你可能用不到的功能，会造成不少的代码冗余，毕竟鱼与熊掌不可兼得。除了vue-element-admin这个集成方案外，还有几个可选的使用方案。如果你的项目不关注这方面的问题，也可以直接基于它进行二次开发。
-基础模板: vue-admin-template 桌面终端: electron-vue-admin Typescript 版: vue-typescript-admin-template 最后来看看一些预览效果吧。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-03-13 00:00:00 +0000 UTC'>三月 13, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;IT咖啡馆</footer>
-  <a class="entry-link" aria-label="post link to 分享5款开源企业级后台模版，开发项目必备" href="http://localhost:1313/posts/juejin/%E5%88%86%E4%BA%AB5%E6%AC%BE%E5%BC%80%E6%BA%90%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%90%8E%E5%8F%B0%E6%A8%A1%E7%89%88%E5%BC%80%E5%8F%91%E9%A1%B9%E7%9B%AE%E5%BF%85%E5%A4%87/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">春晚刘谦魔术的模拟程序
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>昨晚春晚上刘谦的两个魔术表演都非常精彩，尤其是第二个魔术，他演绎了经典的约瑟夫环问题！
-什么是约瑟夫环问题？ 约瑟夫环（Josephus problem）是一个经典的数学问题，最早由古罗马历史学家弗拉维奥·约瑟夫斯提出，但它的名字是在19世纪由德国数学家约瑟夫·乔瑟夫斯（Josef Stein）命名的。
-问题的描述是这样的：假设有n个人（编号从1到n）站成一个圆圈，从第一个人开始报数，报到某个数字（例如k）的人就被杀死，然后从下一个人开始重新报数并继续这个过程，直到只剩下一个人留下来。
-问题的关键是找出存活下来的那个人的编号。
-结合扑克牌解释约瑟夫环问题 1、考虑最简单的情况 假设有2张牌，编号分别是1和2。
-首先将1放到后面，扔掉2。剩下的就是最开始放在最上边的那张1。
-2、稍微复杂一点的情况，牌的张数是2的n次方 比如有8张牌，编号分别是1、2、3、4、5、6、7、8。
-第一轮会把2、4、6、8扔掉，剩下1、3、5、7按顺序放在后面，又退化成了4张牌的情况。
-第二轮会把3、7扔掉，剩下1、5按顺序放在后面，又退化成了2张牌的情况。
-第三轮把5扔掉，剩下1，就是最初在最前面的那张。
-结论：如果牌的张数是2^n，最后剩下的一定是最开始放在牌堆顶的那张。
-3、考虑任意的情况，牌的张数是2^n&#43;m 比如牌的张数是11，等于8&#43;3。把1放到后面，把2扔掉，把3放到后面，把4扔掉，把5放到后面，把6扔掉，现在剩下的编号序列是7、8、9、10、11、1、3、5，这又是8张牌的情况！最后一定剩下的是现在牌堆顶的7！
-因此，只要提前知道牌的张数，就一定能马上推导出最终是剩下哪一张牌。一切的魔法都是数学！！都是算法！！
-见证奇迹的时刻！魔术的流程 4张牌对折后撕开，就是8张，叠放在一起就是ABCDABCD。注意，ABCD四个数字是完全等价的。 根据名字字数，把顶上的牌放到下面，但怎么放都不会改变循环序列的相对位置。譬如2次，最后变成CDABCDAB；譬如3次，最后换成DABCDABC。但无论怎么操作，第4张和第8张牌都是一样的。 把顶上3张插到中间任意位置。这一步非常重要！因为操作完之后必然出现第1张和第8张牌是一样的！以名字两个字为例，可以写成BxxxxxxB（这里的x是其他和B不同的牌）。 拿掉顶上的牌放到一边，记为B。剩下的序列是xxxxxxB，一共7张牌。 南方人/北方人/不确定，分别拿顶上的1/2/3张牌插到中间，但是不会改变剩下7张牌是xxxxxxB的结果。 男生拿掉1张，女生拿掉2张。也就是男生剩下6张，女生剩下5张。分别是xxxxxB和xxxxB。 循环7次，把最顶上的放到最底下，男生和女生分别会是xxxxBx和xxBxx。 最后执行约瑟夫环过程！操作到最后只剩下1张。当牌数为6时（男生），剩下的就是第5张牌；当牌数为5时（女生），剩下的就是第3张牌。Bingo！就是第4步拿掉的那张牌！ 下面是完整的 JavaScript 代码实现：
-javascript
+    <p>el-tooltip 文字溢出提示框显示，否则不显示 1.简介
+2.代码部分
+3.逻辑部分
+4.核心思路
+5.重点说明
+👤简介 接上篇文章，是解决了某元素全屏状态下 tooltip组件提示框不显示问题，这次说一下tooltip组件 文字溢出出现提示框，否则不出现问题；
+✍创作不易；如本文章帮助到了您，请给我一个👍吧；
+其实该需求跟上次说的某元素全屏状态下 tooltip组件提示框不显示问题 问题，解决方法差不多；废话不多说，直接上代码；
+🤖 代码部分 vue
 代码解读
 复制代码
-// 定义一个函数，用于把牌堆顶n张牌移动到末尾 function moveCardBack(n, arr) { // 循环n次，把队列第一张牌放到队列末尾 for (let i = 0; i &lt; n; i&#43;&#43;) { const moveCard = arr.shift(); // 弹出队头元素，即第一张牌 arr.push(moveCard); // 把原队头元素插入到序列末尾 } return arr; } // 定义一个函数，用于把牌堆顶n张牌移动到中间的任意位置 function moveCardMiddleRandom(n, arr) { // 插入在arr中的的位置，随机生成一个idx // 这个位置必须是在n&#43;1到arr.length-1之间 const idx = Math.floor(Math.random() * (arr.length - n - 1)) &#43; n &#43; 1; // 执行插入操作 const newArr = arr.slice(n, idx).concat(arr.slice(0, n)).concat(arr.slice(idx)); return newArr; } // 步骤1：初始化8张牌，假设为&#34;ABCDABCD&#34; let arr = [&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;, &#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;]; console.log(&#34;步骤1：拿出4张牌，对折撕成8张，按顺序叠放。&#34;); console.log(&#34;此时序列为：&#34; &#43; arr.join(&#39;&#39;) &#43; &#34;\n---&#34;); // 步骤2（无关步骤）：名字长度随机选取，这里取2到5（其实任意整数都行） const nameLen = Math.floor(Math.random() * 4) &#43; 2; // 把nameLen张牌移动到序列末尾 arr = moveCardBack(nameLen, arr); console.log(`步骤2：随机选取名字长度为${nameLen}，把第1张牌放到末尾，操作${nameLen}次。`); console.log(`此时序列为：${arr.join(&#39;&#39;)}\n---`); // 步骤3（关键步骤）：把牌堆顶三张放到中间任意位置 arr = moveCardMiddleRandom(3, arr); console.log(`步骤3：把牌堆顶3张放到中间的随机位置。`); console.log(`此时序列为：${arr.join(&#39;&#39;)}\n---`); // 步骤4（关键步骤）：把最顶上的牌拿走 const restCard = arr.shift(); // 弹出队头元素 console.log(`步骤4：把最顶上的牌拿走，放在一边。`); console.log(`拿走的牌为：${restCard}`); console.log(`此时序列为：${arr.join(&#39;&#39;)}\n---`); // 步骤5（无关步骤）：根据南方人/北方人/不确定，把顶上的1/2/3张牌插入到中间任意位置 // 随机选择1、2、3中的任意一个数字 const moveNum = Math.floor(Math.random() * 3) &#43; 1; arr = moveCardMiddleRandom(moveNum, arr); console.log(`步骤5：我${moveNum === 1 ? &#39;是南方人&#39; : moveNum === 2 ? &#39;是北方人&#39; : &#39;不确定自己是哪里人&#39;}，\ 把${moveNum}张牌插入到中间的随机位置。`); console.log(`此时序列为：${arr.join(&#39;&#39;)}\n---`); // 步骤6（关键步骤）：根据性别男或女，移除牌堆顶的1或2张牌 const maleNum = Math.floor(Math.random() * 2) &#43; 1; // 随机选择1或2 for (let i = 0; i &lt; maleNum; i&#43;&#43;) { // 循环maleNum次，移除牌堆顶的牌 arr.shift(); } console.log(`步骤6：我是${maleNum === 1 ? &#39;男&#39; : &#39;女&#39;}生，移除牌堆顶的${maleNum}张牌。`); console.log(`此时序列为：${arr.join(&#39;&#39;)}\n---`); // 步骤7（关键步骤）：把顶部的牌移动到末尾，执行7次 arr = moveCardBack(7, arr); console.log(`步骤7：把顶部的牌移动到末尾，执行7次`); console.log(`此时序列为：${arr.join(&#39;&#39;)}\n---`); // 步骤8（关键步骤）：执行约瑟夫环过程。把牌堆顶一张牌放到末尾，再移除一张牌，直到只剩下一张牌。 console.log(`步骤8：把牌堆顶一张牌放到末尾，再移除一张牌，直到只剩下一张牌。`); while (arr.length &gt; 1) { const luck = arr.shift(); // 好运留下来 arr.push(luck); console.log(`好运留下来：${luck}\t\t此时序列为：${arr.join(&#39;&#39;)}`); const sadness = arr.shift(); // 烦恼都丢掉 console.log(`烦恼都丢掉：${sadness}\t\t此时序列为：${arr.join(&#39;&#39;)}`); } console.log(`---\n最终结果：剩下的牌为${arr[0]}，步骤4中留下来的牌也是${restCard}`);
+&lt;div class=&#34;rBtmL_&#34;&gt; &lt;div class=&#34;personBox_&#34; v-for=&#34;(value, key, index) in dataLeft&#34; :key=&#34;key&#34;&gt; &lt;div class=&#34;personIcon_&#34;&gt; &lt;img :src=&#34;dataLeft[key].icon&#34; alt=&#34;&#34;&gt; &lt;/div&gt; &lt;div class=&#34;contentPerson_&#34; ref=&#34;contentPerson&#34;&gt; &lt;el-tooltip :disabled=&#34;!isShowTooltip[index]&#34; ref=&#34;myTooltip&#34; :append-to-body=&#34;false&#34; class=&#34;item&#34; effect=&#34;dark&#34; :content=&#34;computedContent(formData[value.value])&#34; placement=&#34;top&#34;&gt; &lt;span ref=&#34;content&#34; @mouseenter=&#34;toggleTooltip(index)&#34; v-if=&#34;formData[value.value]&#34; class=&#34;ellipsis_&#34;&gt;{{formData[value.value] }}&lt;/span&gt; &lt;span v-else style=&#34;font-size: 14px;color: #ccc;&#34;&gt;暂无数据&lt;/span&gt; &lt;/el-tooltip&gt; &lt;/div&gt; &lt;div class=&#34;personKey_&#34;&gt; {{ key }} &lt;/div&gt; &lt;/div&gt; &lt;/div&gt; ...... import {tooMixin} from &#39;path:xxx&#39;// 这里是用的 mixins；因为多个相同组件逻辑一致； export default { mixins: [tooMixin]//注册 ... }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-02-10 00:00:00 +0000 UTC'>二月 10, 2024</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;小u</footer>
-  <a class="entry-link" aria-label="post link to 春晚刘谦魔术的模拟程序" href="http://localhost:1313/posts/juejin/%E6%98%A5%E6%99%9A%E5%88%98%E8%B0%A6%E9%AD%94%E6%9C%AF%E7%9A%84%E6%A8%A1%E6%8B%9F%E7%A8%8B%E5%BA%8F/"></a>
+  <footer class="entry-footer"><span title='2024-09-30 00:00:00 +0000 UTC'>九月 30, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;南風知意</footer>
+  <a class="entry-link" aria-label="post link to 🌈el-tooltip文字溢出提示框显示，否则不显示" href="http://localhost:1313/posts/juejin/el-tooltip%E6%96%87%E5%AD%97%E6%BA%A2%E5%87%BA%E6%8F%90%E7%A4%BA%E6%A1%86%E6%98%BE%E7%A4%BA%E5%90%A6%E5%88%99%E4%B8%8D%E6%98%BE%E7%A4%BA/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">35岁时我改掉的三个习惯
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>大家好，我是双越老师，wangEditor 作者。
+我正在开发一个 Nodejs 全栈 AIGC 知识库项目 划水AI，包括富文本编辑器，多人协同编辑，AI 写作，AI 处理文本等。有兴趣的同学可以围观项目。
+开始 虽然标题是 35 岁，但其实本文 2024 年我 36 岁时写的。36 岁总结 35 岁，也没毛病。
+35 岁对于我们程序员来说是一个非常敏感的年龄，但我已过 35 ，看看往后会越来越敏感，还是越来越麻木？
+本文和大家分享一下我个人在业余生活中的，我觉得很有意义的事情。甚至我觉得这些是事情的意义，都大于工作的成绩。
+生活是一个整体，工作只是其中一部分，只是我们养家糊口的一个手段。工作以外的其他部分应该更加重要，例如业余爱好、饮食、休息、娱乐、家庭等。
+1. 戒烟 我从大学毕业开始学着吸烟，到 35 岁已经有十几年的烟龄了。虽然每天吸烟量不大，但也断不了，有瘾。
+我为什么要戒烟呢？
+是觉得吸烟有害健康？—— 对，吸烟肯定有害健康，但人类天生是一种及时行乐的动物，谁会在乎 20 年 30 年以后的健康呢？人类天生是一个心存侥幸的动物（赌徒性质），也不是每个吸烟者都会有 xxx 病，对吧？之前看过一个段子，说某呼吸外科医生做完，累几个小时做完一台手术，先出去吸烟休息一下。
+我戒烟，单纯就是想戒。我想摆脱烟草和尼古丁的控制，而且是想了很久了，不是一时突发奇想，之前就有充分的心理准备。
+还有，我想在 35&#43; 的年纪做一点叛逆的事情，叛逆使人年轻，叛逆使人保持活力。年轻时吸烟是叛逆，年龄大了戒烟就是叛逆。年轻时叛逆是狂，年龄大了叛逆是帅。所以，各位大龄程序员，有机会要让自己叛逆起来，做一点帅的事情。
+最后，当时 2023 年夏天，我正好不忙，天天闲着，总得找点事儿干。既然工作上不忙，那就在自己身上找点有意义事情做吧 —— 外求不得而向内求，如果没法从外面挣取，那就去提高自身。
+烟瘾是什么？就是尼古丁的戒断反应，没有其他理由，没人其他任何事情会让你 1-2 小时就想一次，而且持续想。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;前端双越老师</footer>
+  <a class="entry-link" aria-label="post link to 35岁时我改掉的三个习惯" href="http://localhost:1313/posts/juejin/35%E5%B2%81%E6%97%B6%E6%88%91%E6%94%B9%E6%8E%89%E7%9A%84%E4%B8%89%E4%B8%AA%E4%B9%A0%E6%83%AF/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">有了小孩后,对我的影响还是挺大的
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>张雪峰曾经说: 闺女是上帝对父母的恩赐,儿子是上帝对父母的惩罚。
+2023年8月9日,上帝惩罚了我。
+事情的经过是这样的 我和我媳妇其实很早就领证结婚了，但是一直没要宝宝，因为那个时候感觉两个人过日子真是太滋润了，周六日可以睡到自然醒，也可以夜里12点去泡澡，一脚油门想去哪去哪。
+2022年房子装修好了，除完甲醛后就搬进来住了。“正好”那个时间又赶上了疫情，很多小区就封了，我们小区也不不例外。我记得那个时候买了好多肉和吃的，所以吃喝不用担心，再加上我和媳妇都是干的程序员，可以居家办公，家庭收入也没受到影响，总之那段时间过得还是挺爽😍。
+也就是在这段很爽的时间里，我们有了宝宝😂。
+怀孕的这段时间 除了正常的产检外，还拍了很多B超，不小心摔着了拍个B超，肚子疼了去拍个B超，胎动异常了去拍个B超🤓…
+总之也是一块不小的支出
+小插曲 到了孕晚期，我媳妇的胎位不正，不能顺产，但是我媳妇又想顺产，然后医生说可以做外道转手术，把胎位移正。
+然后发了5000大洋，在医院住了三天，终于把胎位搞正了。
+谁承想回到家不到一个星期，自己又掉转过来了😹
+最后还是选择了剖腹产
+看来干什么事情都要顺其自然，强求不来
+宝宝顺利出生了 时间过得最慢的就是媳妇推进手术室做剖腹产，我们在外面等着的时候，真是度秒如年，生怕出了什么意外。
+好在最后一切顺利
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-30 00:00:00 +0000 UTC'>九月 30, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;刘小灰</footer>
+  <a class="entry-link" aria-label="post link to 有了小孩后,对我的影响还是挺大的" href="http://localhost:1313/posts/juejin/%E6%9C%89%E4%BA%86%E5%B0%8F%E5%AD%A9%E5%90%8E%E5%AF%B9%E6%88%91%E7%9A%84%E5%BD%B1%E5%93%8D%E8%BF%98%E6%98%AF%E6%8C%BA%E5%A4%A7%E7%9A%84/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/10/">
-      «&nbsp;上一页&nbsp;10/74
+      «&nbsp;上一页&nbsp;10/77
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/12/">下一页&nbsp;12/74&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/12/">下一页&nbsp;12/77&nbsp;»
     </a>
   </nav>
 </footer>

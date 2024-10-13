@@ -5,11 +5,11 @@ import {parseCookies} from '../util.js'
 log.setLevel((log.LEVELS.DEBUG))
 log.debug('Setting up crawler.');
 
-const cookieString = 'b-user-id=21cc9acf-3a12-9910-5968-c54934dafd7e; JSESSIONID=B9E8074A705A58A70F649B2CEEB8DAA4'
+const cookieString = 'b-user-id=21cc9acf-3a12-9910-5968-c54934dafd7e; JSESSIONID=D1BFC532338B37BEE617B9FE2B30EDF6'
 const crawler = new PlaywrightCrawler({
     requestHandler: router,
-    maxConcurrency: 2,
-    minConcurrency: 1,
+    maxConcurrency: 10,
+    minConcurrency: 10,
     persistCookiesPerSession: true,
     maxRequestsPerCrawl: 10000,
     requestHandlerTimeoutSecs: 150,

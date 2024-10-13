@@ -129,125 +129,149 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">关于本地环境使用内网穿透工具的操作
+    <h2 class="entry-hint-parent">高并发系统没你想象的这么厉害！大厂一线技术实战经验总结
     </h2>
   </header>
   <div class="entry-content">
-    <p>一起养成写作习惯！这是我参与「掘金日新计划 · 4 月更文挑战」的第2天，点击查看活动详情。
-在一些特殊的开发场景，如微信小程序的登录等，需要获取微信小程序的回调信息， 而本地电脑开发又无法去获取网络上的回调，所以需要使用内网穿透工具。
-一 内网穿透 内网穿透：也称为 NAT 穿透，进行 NAT 穿透是为了使具有某一个特定源 IP 地址和源端口号的数据包不被 NAT 设备屏蔽而正确路由到内网主机。
-以ngrok工具为例介绍内网穿透功能
-官网地址：www.ngrok.cc/
-ngrok 是一个反向代理，通过在公共的端点和本地运行的 Web 服务器之间建立一个安全的通道。不但提供了一个在外网能够安全的访问内网Web主机，还能捕获所有请求的http内容，方便调试，甚至还支持tcp层端口映射，简单来说可以通过外网来访问本地的服务，方便本地开发代码。
-（最新版需要进行实名认证）
-二 ngrok的使用 1 添加隧道操作 1 首先登录官网，注册账号，进入首页
-2 隧道管理
-2.1 进入隧道管理，购买免费服务器
-2.2 设置自己的隧道信息
-协议选择http，隧道名称随便取， 前置域名，取自己知道且好记字段， 本地端口取自己相关服务的端口号，http用户名以及密码不填
+    <p>前言 Hi 你好，我是东东拿铁，一个正在探索个人IP&amp;副业的后端程序员。
+今天想和大家聊聊，高并发系统的背后都有什么，设计思路是什么，具体是如何优化的。
+为什么要写这个文章，起源于上一篇文章读者的评论。
+我本来是不想写这类话题的，因为做一个高并发系统，因为高并发涉及并发读和并发写，对应了IO密集型和CPU密集型，依赖的中间件有所不同，性能优化的点也不同，想一文写出来，一定会有些泛泛而谈。
+所以我一开始回复了“利用好缓存和多线程，你也可以的。”（我真的是这么想的）
+但后面的评论大家也看到了，大部分朋友的评论在我回复完之后，一般很少会继续回复我了，但他挺主动的。每一个积极主动的你都应该被认真对待，因此我决定尝试一下讲一下这个话题。
+许多刚工作几年的朋友，因为工作内容的原因，可能很难接触到高并发、大数据这些场景，因此在一定程度上，很多人觉着高并发系统有着天然的憧憬，刚毕业几年的我也是如此。
+本文更多的是一些设计思路、实战经验分享，希望你看完之后有所收获。为了尽可能一文能够讲完，文章一些概念我不会具体展开，可能需要你自己去学习基础概念。
+普通人只是缺少一个机会、一个环境，事实上每个人都可以做出高并发系统。
+架构设计三个思维 合适即可 选择适合当前现状的，而不是追求最好的。合适也就是适应当前业务的要求是首位的，不要追求完美与过度设计。
+针对合适原则，我们有几个考虑方向，人力资源、业务需求、公司资源几个角度考虑。
+比如当前开发人员只有2个，那么能用单体就用单体架构，微服务都不需要用。
+业务需求就是满足低频次的数据写入和读取，那么直接读数据库就好，缓存也不需要。
+简单原则 依赖系统、组件越多，就越有可能某个组件出故障。
+尽量减少服务调用链路 微服务架构已经不是什么新鲜事了，一次请求依赖几十个服务也不是没有可能，我们需要做的就是保证尽量少的依赖关系，模块之间的依赖关系应尽量减少，避免过多的依赖链条。
+这样可以降低修改一个模块对其他模块造成的影响，提高系统的稳定性和可维护性。
+在面对多种设计选择时，优先选择简单的解决方案。简单的解决方案往往更易于理解和实现，并且更不容易出错。
+演化原则 唯一不变的就是变化，所有的系统，都不是一开始就是这样设计的，而是一步步演变来的。
+迭代思维在架构设计中的应用可以体现在多个方面：
+渐进式完善系统：架构设计不必一开始就完全确定所有细节，而是可以先设计一个初步的架构，然后通过迭代不断优化和完善。
+快速验证想法：通过迭代，可以快速验证不同的架构想法和解决方案，从而找到最合适的方案。
+及时反馈和调整：迭代过程中可以及时获取用户和利益相关者的反馈，从而及时调整架构设计，保证系统的实际需求和预期一致。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-04-07 00:00:00 +0000 UTC'>四月 7, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;韩_师兄</footer>
-  <a class="entry-link" aria-label="post link to 关于本地环境使用内网穿透工具的操作" href="http://localhost:1313/posts/juejin/%E5%85%B3%E4%BA%8E%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%B7%A5%E5%85%B7%E7%9A%84%E6%93%8D%E4%BD%9C/"></a>
+  <footer class="entry-footer"><span title='2024-05-20 00:00:00 +0000 UTC'>五月 20, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;东东拿铁</footer>
+  <a class="entry-link" aria-label="post link to 高并发系统没你想象的这么厉害！大厂一线技术实战经验总结" href="http://localhost:1313/posts/juejin/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E6%B2%A1%E4%BD%A0%E6%83%B3%E8%B1%A1%E7%9A%84%E8%BF%99%E4%B9%88%E5%8E%89%E5%AE%B3%E5%A4%A7%E5%8E%82%E4%B8%80%E7%BA%BF%E6%8A%80%E6%9C%AF%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Navicat社区版终于来了！！！！
+    <h2 class="entry-hint-parent">再有人问你WebSocket为什么牛逼，就把这篇文章发给他！
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 2024年6月26日，知名数据库管理工具 Navicat 推出了全新的免费版本——Navicat Premium Lite，专为小企业和初创公司打造。作为一款功能强大且易于使用的数据库管理解决方案，Navicat Premium Lite 现已正式上线 TitanIDE 模板市场，供广大用户学习和使用。在这篇文章中，我们将为您介绍如何在 TitanIDE 上使用 Navicat Premium Lite，以及在TitanIDE上使用Navicat多便捷，多安全。
-一、使用 Navicat Premium Lite 使用 Navicat Premium Lite非常简单，只需几个步骤即可开始您的数据库管理之旅：
-登录 TitanIDE：只需要打开 TitanIDE 并登录。 创建项目：在TitanIDE模板市场市场下载Navicat以后，创建项目，输入项目名，选择Nacivat，点击创建即可 二、新建连接 新建连接：进入Navicat以后，Navicat Premium Lite的操作跟本地客户端的Navicat是没有任何区别的
+    <p> 点赞再看，Java进阶一大半
+2008年6月诞生了一个影响计算机世界的通信协议，原先需要二十台计算机资源才能支撑的业务场景，现在只需要一台，这得帮&#34;抠门&#34;老板们省下多少钱，它就是大名鼎鼎的WebSocket协议。很快在下一年也就是2009年的12月，Google浏览器就宣布成为第一个支持WebSocket标准的浏览器。
+WebSocket的推动者和设计者就是下面的Michael Carter，他设计的WebSocket协议技术现在每天在全地球有超过20亿的设备在使用。
+大家好，我是南哥。
+一个Java学习与进阶的领路人，相信对你通关面试进入心心念念的公司有所帮助。
+本文收录在我开源的《Java学习进阶指南》中，涵盖了在大厂工作的Javaer都不会不懂的核心知识、面试重点。相信能帮助到大家在Java成长路上不迷茫，南哥希望收到大家的 ⭐ Star ⭐支持，这是我创作的最大动力。GitHub地址：github.com/hdgaadd/Jav…。
+1. WebSocket概念 1.1 为什么会出现WebSocket 面试官：有了解过WebSocket吗？
+一般的Http请求我们只有主动去请求接口，才能获取到服务器的数据。例如前后端分离的开发场景，自嘲为切图仔实际扮猪吃老虎的前端大佬找你要一个配置信息的接口，我们后端开发三下两下开发出一个RESTful架构风格的API接口，只有当前端主动请求，后端接口才会响应。
+但上文这种基于HTTP的请求-响应模式并不能满足实时数据通信的场景，例如游戏、聊天室等实时业务场景。现在救世主来了，WebSocket作为一款主动推送技术，可以实现服务端主动推送数据给客户端。大家有没听说过全双工、半双工的概念。
+全双工通信允许数据同时双向流动，而半双工通信则是数据交替在两个方向上传输，但在任一时刻只能一个方向上有数据流动
+HTTP通信协议就是半双工，而数据实时传输需要的是全双工通信机制，WebSocket采用的便是全双工通信。举个微信聊天的例子，企业微信炸锅了，有成百条消息轰炸你手机，要实现这个场景，大家要怎么设计？用iframe、Ajax异步交互技术配合以客户端长轮询不断请求服务器数据也可以实现，但造成的问题是服务器资源的无端消耗，运维大佬直接找到你工位来。显然服务端主动推送数据的WebSocket技术更适合聊天业务场景。
+1.2 WebSocket优点 面试官：为什么WebSocket可以减少资源消耗？
+大家先看看传统的Ajax长轮询和WebSocket性能上掰手腕谁厉害。在websocket.org网站提供的Use Case C的测试里，客户端轮询频率为10w/s，使用Poling长轮询每秒需要消耗高达665Mbps，而我们的新宠儿WebSocet仅仅只需要花费1.526Mbps，435倍的差距！！
+为什么差距会这么大？南哥告诉你，WebSocket技术设计的目的就是要取代轮询技术和Comet技术。Http消息十分冗长和繁琐，一个Http消息就要包含了起始行、消息头、消息体、空行、换行符，其中请求头Header非常冗长，在大量Http请求的场景会占用过多的带宽和服务器资源。
+大家看下百度翻译接口的Http请求，拷贝成curl命令是非常冗长的，可用的消息肉眼看过去没多少。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-16 00:00:00 +0000 UTC'>七月 16, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;Clain</footer>
-  <a class="entry-link" aria-label="post link to Navicat社区版终于来了！！！！" href="http://localhost:1313/posts/juejin/navicat%E7%A4%BE%E5%8C%BA%E7%89%88%E7%BB%88%E4%BA%8E%E6%9D%A5%E4%BA%86/"></a>
+  <footer class="entry-footer"><span title='2024-07-05 00:00:00 +0000 UTC'>七月 5, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
+  <a class="entry-link" aria-label="post link to 再有人问你WebSocket为什么牛逼，就把这篇文章发给他！" href="http://localhost:1313/posts/juejin/%E5%86%8D%E6%9C%89%E4%BA%BA%E9%97%AE%E4%BD%A0websocket%E4%B8%BA%E4%BB%80%E4%B9%88%E7%89%9B%E9%80%BC%E5%B0%B1%E6%8A%8A%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E5%8F%91%E7%BB%99%E4%BB%96/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">又整新活，新版IntelliJIDEA2024.1有点东西！
+    <h2 class="entry-hint-parent">问你为什么选择Kafka，你会怎么回答？
     </h2>
   </header>
   <div class="entry-content">
-    <p>就在上周，Jetbrains 又迎来了一波大版本更新，这也是 JetBrains 2024首个大动作！
-JetBrains 为其多款 IDE 发布了 2024 年度首个大版本更新 (2024.1)。
-作为旗下重要的产品之一，IntelliJ IDEA当然也不例外。这不，现如今 IntelliJ IDEA 也来到了 2024.1 大版本了！
-据官方介绍，这次 2024.1 新版本进行了数十项改进。
-下面就针对本次新版 IntelliJ IDEA 的一些主要更新和特性做一个梳理和介绍，希望能对大家有所帮助。
-全行代码补全 IntelliJ IDEA Ultimate 2024.1 带有针对 Java 和 Kotlin 的全行代码补全。
-该项功能由无缝集成到 IDE 中的高级深度学习模型来提供支持。它可以基于上下文分析预测和建议整行代码，以助于提高编码效率。
-对 Java 22 的支持 IntelliJ IDEA 2024.1 提供了对 2024 年 3 月刚发布的 JDK 22 中的功能集的支持。
+    <p>可靠的含义在百度百科的解释是：可以信赖、可以相信、可靠的朋友。那Kafka究竟是不是一个可靠的朋友呢？既然全世界绝大部分高可用系统都有Kafka的支持，Kafka必定有其过人之处，跟着我来分析分析。
+另外多提一嘴Kafka在GitHub目前已有star数27.6k、fork数13.6k。
+在可靠的人手中，有强人在关照
+本文收录在我开源的《Java学习面试指南》中，一份覆盖Java程序员所需掌握的Java核心知识、面试重点。希望收到大家的 ⭐ Star ⭐支持。GitHub地址：github.com/hdgaadd/Jav…，相信你看了一定不会后悔。
+1. Kafka高水位 面试官：知道Kafka高水位吗？
+我们都知道Kafka消息保存在首领分区和分区副本中，Kafka要保证即使从分区副本读取消息也只会读取已提交的消息。Kafka的高水位就是为了这个目标而开发出来的。
+如果大家对消息已提交的概念不清楚的话，可以看下以下的解释。
+Kafka的消息只有在所有分区副本都同步该消息后，才算是已提交的消息
+在分区复制的过程中，首领分区会在发送的数据里加入当前高水位。当前高水位就是复制偏移量，记录了当前已提交消息的最大偏移量。而分区副本就可以根据首领分区副本提供的高水位，来避免未提交的消息被消费者消费。
+就如下图，最大偏移量的限制就像海面上的水位。
+2. Kafka消息可靠性 2.1 消息存储可靠性 面试官：你说说Kafka是怎么保证消息可靠性的？
+大家在回答面试官问题前可以思考下，可靠性的含义是什么？
+在业务系统中，消息的不丢失是最重要的，数据即是金钱。如果把客户的一条支付消息丢失，而这条支付信息的涉及的金额不菲，想想对公司的损失有多大。所以可靠性意味着对消息的存储和保护。
+Kafka在这方面采用了复制机制和分区多副本架构来作为消息可靠性的核心。
+（1）分区多副本架构。
+Kafka的所有主题被分为了多个分区存储在多个Broker里，而每个分区可以有多个副本。例如有4个Broker节点，Broker1存储了分区首领副本，而Broker2、Broker3可以存储其分区副本。
+Kafka对消息的存储有多个分区副本来支持，可以避免单点问题导致数据丢失找不回来的情况。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-09 00:00:00 +0000 UTC'>四月 9, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;CodeSheep</footer>
-  <a class="entry-link" aria-label="post link to 又整新活，新版IntelliJIDEA2024.1有点东西！" href="http://localhost:1313/posts/juejin/%E5%8F%88%E6%95%B4%E6%96%B0%E6%B4%BB%E6%96%B0%E7%89%88intellijidea2024.1%E6%9C%89%E7%82%B9%E4%B8%9C%E8%A5%BF/"></a>
+  <footer class="entry-footer"><span title='2024-06-06 00:00:00 +0000 UTC'>六月 6, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
+  <a class="entry-link" aria-label="post link to 问你为什么选择Kafka，你会怎么回答？" href="http://localhost:1313/posts/juejin/%E9%97%AE%E4%BD%A0%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9kafka%E4%BD%A0%E4%BC%9A%E6%80%8E%E4%B9%88%E5%9B%9E%E7%AD%94/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">市场行情再差，也不要选择996，它真的会吞噬你
+    <h2 class="entry-hint-parent">因为不懂Redis集群，我被diss了
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 Hi 你好，我是东东拿铁，一个正在探索个人IP的后端程序员。
-最近，一连有两个朋友和我聊天，说新公司996，自己很犹豫，是不是应该换个工作。
-我的回答是，快走，一秒都不要犹豫。
-但在目前市场行情不佳的情况下，似乎也很难让人下定决心放弃一份已有的工作。
-恰巧，我也曾经入职过一家996的公司，而且也只有这么一家。我想把这段经历分享出来，希望能对你有一点点帮助。
-重复的工作，会限制人的视野。其实在世界上，还存在着无法想象的广袤天地。
-满怀憧憬 2019年，我终于决定从当前的小公司离职，准备换一家更大规模的公司。
-经过几轮面试，没想到很顺利的拿到一家公司的offer，涨薪50%，单纯从薪资角度来说，达到了我的预期，及时入职前，HR给我说，我们这边996，你是否能够接受，我也很果断的接了offer。
-那时候想法很简单，谁给的钱多，我就去哪里。初入职场的我们，大概率都是这么想的。
-由于换工作换的很快，我还没来得及搬家，前公司坐标丰台区，并且我住的地方离地铁站很远，需要坐公交车。
-早上七点，起床洗漱，抓紧时间下楼去赶7:20的公交车。七点四十坐上地铁，在八点五十左右到达望京附近，一路小跑在九点前完成打卡。
-前面也说了，既然是996，晚上九点才能下班，事实上九点公司根本没人走，但是我是刚入职，自然不会跟着他们一起加班。下班后打车回家，一般在十点半到家，结束一天的工作。
-太可怕了，我除了睡觉，剩下的时间不是在上班，就是在上班的路上。
-上班第二天，联系了自如的管家，我早下班去看了周边三个地方的房子，准备搬到这附近来，最后还交了定金，这样每天起码能省下通勤的时间。
-大家可以看到，这时候我还是很想留下来的，但接下来的两天，我便意识到，此地不宜久留。
-为了加班而加班 上面讲过，因为我是新人，加上住的地方离着公司很远，所以我都是九点就赶紧下班跑了。
-和我同时进入公司的还有一个哥们，就叫他阿文吧。
-阿文挺平易近人，对待工作也挺踏实。他告诉我他就住在离公司两三公里的地方，所以即使是新人，他下班都是和他们那些老员工一起下班。
-那么老员工下班是几点呢，他说一般大家都是11点才走，然后第二天早上再晚点来公司，而他依然会九点按时上班。
-中午吃饭的时候，大家普遍也是坐着不动，等到12点半才陆陆续续去楼下吃饭。
-第一周的周六加班，我七点下班了。周一的时候，阿文告诉我，周六他加班到11点才走。
-我是一个不会把工作往后拖的人，有工作就抓紧完成，但问题是白天的时间大家感觉也不是很忙，虽然是996，入职一周了，没有人强调过接下来项目的紧迫性，手头的工作也是一些边边角角的功能。
-此时的我已经心里交瘁了，一周的早起晚归，加上比较迷茫的工作内容，已经让我有了要辞职的想法。
-接下来的一周，依然是熟悉的内耗与纠结，同时也感到迷茫，如果在这里996下去，对自己的职业生涯，能有帮助吗？
-最终，入职半个月后，我决定离开这家公司。
-996背后是什么 开头说到，996的公司直到今天依然存在，甚至存在于一些外包公司。
+    <p> 点赞再看，Java进阶一大半
+Redis官方在官网里写着霸气的宣传语：从构建者那里获取世界上最快的内存数据库Get the world’s fastest in-memory database from the ones who built it。南哥相信国内没用Redis的科技公司也屈指可数。
+现在Redis已经走向了商业化，它所属的公司叫Redis Ltd。不过可惜的是Redis创始人Salvatore Sanfilippo在2020年就离开了Redis Labs，那个留着乱糟糟黑色头发的中年男人就是Redis的创始人。
+Redis的商业推广仍在继续着，今年8月29号新加坡就有Redis演讲活动，大家要去现场看看嘛。
+大家好，我是南哥。
+一个Java学习与进阶的领路人，相信对你通关面试、拿下Offer进入心心念念的公司有所帮助。
+历史精彩文章推荐
+面试官没想到一个ArrayList，我都能跟他扯半小时
+《我们一起进大厂》系列-Zookeeper基础
+再有人问你WebSocket为什么牛逼，就把这篇文章发给他！)
+全网把Kafka概念讲的最透彻的文章，别无二家
+可能是最漂亮的Java I/O流详解
+1. Redis集群 1.1 集群概念 面试官：我看你简历写了Redis集群，你说一说？
+Redis主从架构和Redis集群架构是两种不同的概念，大家刚接触Redis时经常弄混淆。南哥给大家贴下Redis官网对两者的解释。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-02 00:00:00 +0000 UTC'>八月 2, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;东东拿铁</footer>
-  <a class="entry-link" aria-label="post link to 市场行情再差，也不要选择996，它真的会吞噬你" href="http://localhost:1313/posts/juejin/%E5%B8%82%E5%9C%BA%E8%A1%8C%E6%83%85%E5%86%8D%E5%B7%AE%E4%B9%9F%E4%B8%8D%E8%A6%81%E9%80%89%E6%8B%A9996%E5%AE%83%E7%9C%9F%E7%9A%84%E4%BC%9A%E5%90%9E%E5%99%AC%E4%BD%A0/"></a>
+  <footer class="entry-footer"><span title='2024-08-01 00:00:00 +0000 UTC'>八月 1, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
+  <a class="entry-link" aria-label="post link to 因为不懂Redis集群，我被diss了" href="http://localhost:1313/posts/juejin/%E5%9B%A0%E4%B8%BA%E4%B8%8D%E6%87%82redis%E9%9B%86%E7%BE%A4%E6%88%91%E8%A2%ABdiss%E4%BA%86/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">作者把他写了3年的软件，给开源了！
+    <h2 class="entry-hint-parent">我以为简历上可以写精通Spring框架，直到我遇到了。。。
     </h2>
   </header>
   <div class="entry-content">
-    <p>不久前，GitHub上又一款热度很高的开源项目冲进了开发者们的视野。
-项目开源不久，现如今就已经收获了15000&#43;的Star标星。
-这就是最近非常火热的“顶流” Web OS，名为Puter！
-github.com/HeyPuter/puter
-作者直言，这个项目开发了3年，用户数量也突破了100万，现如今正式开源了！
-Puter，作为一个基于Web的桌面操作系统，运行于浏览器中，不仅拥有丰富的功能、极快的运行速度，而且具有高度的可扩展性，可以为用户提供了一个全新的Web端桌面体验环境。
-这里也给几张图，感受一下这款Internet OS的交互界面：
+    <p> 点赞再看，Java进阶一大半
+所有人都知道Spring MVC是Rod Johnson是开发的，却鲜有人知道Spring MVC的理论基础来自于1978 年提出MVC模式的一个老头子，他就是Trygve Mikkjel Heyerdahl Reenskaug，挪威计算机科学家，奥斯陆大学名誉教授。
+Trygve Reenskaug的MVC架构思想早期用于图形用户界面(GUI) 的软件设计，他对MVC是这样解释的。
+MVC 被认为是解决用户控制大型复杂数据集问题的通用解决方案。最困难的部分是为不同的架构组件想出好的名字。模型-视图-编辑器是第一个。经过长时间的讨论，特别是与Adele Goldberg的讨论，我们最终采用了模型-视图-控制器这个术语。
+大家好，我是南哥。
+一个Java学习与进阶的领路人，今天指南的是Spring MVC，跟着南哥我们一起Java成长。
+本文收录在我开源的《Java学习进阶指南》中，一份涵盖了你学习Java、成为更好的Java选手所需掌握的核心知识、面试重点。相信能帮助到大家在Java成长路上不迷茫。南哥希望收到大家的 ⭐ Star ⭐支持，这是我创作的最大动力。GitHub地址：github.com/hdgaadd/Jav…。
+1. Spring MVC概况 1.1 如何理解Spring MVC 大家都知道Spring MVC很强大，南哥问大家一个问题，Spring MVC为什么会出现？一项技术的出现必定是为了解决旧技术考虑不全所积累的软件熵。《程序员修炼之道》在软件的熵一节中对熵的解释很有冲击力，作者是这么说的，大家有没什么触动。
+虽然软件开发不受绝大多数物理法则的约束，但我们无法躲避来自熵的增加的重击。熵是一个物理学术语，它定义了一个系统的“无序”总量。不幸的是，热力学法则决定了宇宙中的熵会趋向最大化。当软件中的无序化增加时，程序员会说“软件在腐烂”。有些人可能会用更乐观的术语来称呼它，即“技术债”，潜台词是说他们总有一天会偿还的——恐怕不会还了。
+在没有出现Spring MVC之前，老一代的开发者会在Servlet中编写业务逻辑和控制代码，甚至属于后端的业务逻辑也会耦合在了jSP页面。在当时互联网不流行，业务都比较简单的年代，这样写问题不会太大，但随着时间的累积、互联网的爆发，业务复杂度也爆发式上升，这叫新来的实习生程序员怎么上手呢。缺乏统一和清晰的架构模式，会导致应用程序的可扩展性和可维护性降低。
+我们先不讲Spring MVC，把MVC拆解出来。MVC（Model View Controller）实践上是一种软件架构思想，这个思想指导把应用程序分为了三个模块，用于编写业务逻辑的模型、用于数据呈现的视图、用于协调前两者的控制器。
+在我们Java程序员第一次接触企业框架时，我们最开始一般用SSM来练练手。如果是SSM框架，充当Model的是编写业务逻辑Java类，充当View的是JSP页面，而充当Controller的则是Servlet。总的来说，MVC明确划分了各个模块的责任，不是你负责的东西不允许越线，这明显维护起来好看多了。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-23 00:00:00 +0000 UTC'>四月 23, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;CodeSheep</footer>
-  <a class="entry-link" aria-label="post link to 作者把他写了3年的软件，给开源了！" href="http://localhost:1313/posts/juejin/%E4%BD%9C%E8%80%85%E6%8A%8A%E4%BB%96%E5%86%99%E4%BA%863%E5%B9%B4%E7%9A%84%E8%BD%AF%E4%BB%B6%E7%BB%99%E5%BC%80%E6%BA%90%E4%BA%86/"></a>
+  <footer class="entry-footer"><span title='2024-07-11 00:00:00 +0000 UTC'>七月 11, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
+  <a class="entry-link" aria-label="post link to 我以为简历上可以写精通Spring框架，直到我遇到了。。。" href="http://localhost:1313/posts/juejin/%E6%88%91%E4%BB%A5%E4%B8%BA%E7%AE%80%E5%8E%86%E4%B8%8A%E5%8F%AF%E4%BB%A5%E5%86%99%E7%B2%BE%E9%80%9Aspring%E6%A1%86%E6%9E%B6%E7%9B%B4%E5%88%B0%E6%88%91%E9%81%87%E5%88%B0%E4%BA%86/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/25/">
-      «&nbsp;上一页&nbsp;25/38
+      «&nbsp;上一页&nbsp;25/40
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/27/">下一页&nbsp;27/38&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/27/">下一页&nbsp;27/40&nbsp;»
     </a>
   </nav>
 </footer>

@@ -129,109 +129,116 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程
+    <h2 class="entry-hint-parent">SpringBoot集成Redis向量数据库实现相似性搜索
     </h2>
   </header>
   <div class="entry-content">
-    <p>springboot优雅的改进你的输出日志，让你快速的定位问题 超详细的初始化教程 一个好的项目，一定会输出很多的日志，来让开发者，快速的去定位一些问题。下面我将带来一些在springboot中，你可以选择做的初始化技巧。这些都是比较通用的，可以直接进行复制使用，所以我这里不做过多的讲解。
-项目状态监听 这个是用来监听你的项目是否正确的运行。
-typescript
+    <p>1.什么是Redis向量数据库？ Redis 是一个开源（BSD 许可）的内存数据结构存储，用作数据库、缓存、消息代理和流式处理引擎。Redis 提供数据结构，例如字符串、哈希、列表、集合、带范围查询的有序集合、位图、超对数日志、地理空间索引和流。
+Redis 搜索和查询 扩展了 Redis OSS 的核心功能，并允许您将 Redis 用作向量数据库
+在哈希或 JSON 文档中存储向量和关联的元数据 检索向量 执行向量搜索 2.向量检索（Vector Search）的核心原理 向量检索（Vector Search）的核心原理是通过将文本或数据表示为高维向量，并在查询时根据向量的相似度进行搜索。在你的代码中，向量检索过程涉及以下几步：
+匹配的原理： 检索的核心是将文本或数据转换成向量，在高维向量空间中查找与查询最相似的向量。 在存储数据时将指定的字段通过嵌入模型生成了向量。 在检索时，查询文本被向量化，然后与 Redis 中存储的向量进行相似度比较，找到相似度最高的向量（即相关的文档）。 关键点： 嵌入模型 将文本转换成向量。 相似度计算 通过余弦相似度或欧几里得距离来度量相似性。 Top K 返回相似度最高的 K 个文档。 具体过程 1. 向量化数据： 当你将 JSON 中的字段存入 Redis 时，向量化工具（例如 vectorStore）会将指定的字段转换为高维向量。每个字段的内容会通过某种嵌入模型（如 Word2Vec、BERT、OpenAI Embeddings 等）转换成向量表示。每个向量表示的是该字段内容的语义特征。
+2. 搜索时的向量生成： 当执行 SearchRequest.query(message) 时，系统会将输入的 message 转换为一个查询向量。这一步是通过同样的嵌入模型，将查询文本转换为与存储在 Redis 中相同维度的向量。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;HBLOG</footer>
+  <a class="entry-link" aria-label="post link to SpringBoot集成Redis向量数据库实现相似性搜索" href="http://localhost:1313/posts/juejin/springboot%E9%9B%86%E6%88%90redis%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E7%9B%B8%E4%BC%BC%E6%80%A7%E6%90%9C%E7%B4%A2/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从零开始学机器学习——逻辑回归
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>首先给大家介绍一个很好用的学习地址：cloudstudio.net/columns
+在之前的学习中，我们学习了直线线性回归与多项式回归，我们今天的主题则是逻辑回归，我记得在前面有讲解过这两个回归的区别，那么今天我们主要看下逻辑回归有哪些特征需要我们识别的。
+逻辑回归 逻辑回归主要用于解决二元分类问题，帮助我们预测某个事件是否会发生，例如判断某种糖果是否为巧克力、某种疾病是否具有传染性，或者某位顾客是否会选择特定的产品，使我们能够将复杂的数据转化为简单的“是”或“否”的结果，适用于许多实际场景。这种通常是逻辑回归解决的问题。
+与线性回归不同，逻辑回归专注于预测二元分类结果，而线性回归则旨在预测连续值。例如，在线性回归中，我们可以根据南瓜的起源、收获时间以及其他相关特征来预测其价格可能上涨的幅度。然而，这个预测并不是绝对确定的，因为它依赖于历史数据的趋势和模式。通过分析过往的价格变动及其影响因素，线性回归能够提供一个合理的估计值
+其他分类 当然，除了二元分类问题，逻辑回归还可以扩展到多元分类问题。在多元分类中，目标变量可以有多个可能的固定答案，而每个答案都是明确的、可识别的正确选项。
+除了多元分类之外，还有一种特别的分类问题称为有序分类问题。在有序分类中，我们不仅关注类别的存在与否，还需要对结果进行逻辑上的排序，这在某些情况下非常有用。
+例如，假设我们想根据南瓜的大小将其分类为不同的等级，如“迷你”（mini）、“小”（sm）、“中等”（med）、“大”（lg）、“超大”（xl）和“特超大”（xxl）。在这种情况下，这些类别之间存在明确的顺序关系。
+这里单独说一下顺序逻辑回归，它是一种广义线性模型，它适用于因变量是有序分类的情况。简单来说就是：设定多个阈值 (T1,T2,T……,Tk−1)( T_1, T_2, T_……, T_{k-1} )(T1​,T2​,T.​…..,Tk−1​)，将连续变量 Y∗Y^*Y∗划分为 k个类别。假设 Y 有 k个类别，那么有序逻辑回归的模型可以表示为：
+还不懂的话，可以举个例子：例如，一位野外生物学家想研究蝾螈的生存时间，而且希望确定生存时间是否与区域和水中毒性水平相关。该生物学家将生存时间分为三个类别：小于 10 天、11 到 30 天和 30 天以上。由于响应是顺序变量，因此该生物学家使用顺序逻辑回归。
+什么是因变量和自变量 再简单说一下，怕有人不明白（其实我也忘记了），因变量和自变量是统计学和回归分析中的两个基本概念，常用于建立模型以理解变量之间的关系。
+自变量，也称为预测变量或解释变量，在回归分析中，自变量通常是输入数据。通常使用X表明。 因变量，也称为响应变量，是研究者关注的结果变量，通常是受到自变量影响的变量。因变量的变化是研究的目标。通常使用Y表明。 仍然是线性的 为什么说逻辑回归仍然是线性的呢？主要是因为逻辑回归实际上可以视为线性回归的一种扩展。尽管它的主要应用是进行类别预测，但其基础模型仍然依赖于线性关系。但是如果线性相关性更好的话，仍然能提高模型的效果。
+如果自变量与因变量之间存在强烈的线性关系，模型就能够更有效地捕捉这种关系，从而显著提高预测的准确性。当线性关系十分明确时，模型在拟合数据时能够更精准地反映变量之间的联系，从而减少预测误差。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;努力的小雨</footer>
+  <a class="entry-link" aria-label="post link to 从零开始学机器学习——逻辑回归" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何在VitePress站点中集成Gitalk评论插件及其关键注意事项
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>最近我使用了 Vitepress 来构建我的开源电子书 《Go 语言成长之路：从入门到精通》（Github 链接），并引入了 Gitalk 评论插件。这里分享一下集成 Gitalk 的实现步骤和心得体会，希望对有需要的人有所帮助。
+前言 VitePress 是一个静态站点生成器 (SSG)，非常适合用于个人博客或编写技术文档，深受很多开发者的喜爱。不过它缺少一个重要的功能——评论。
+虽然 VitePress 没有内置评论功能，但它支持默认主题的扩展，并允许在 markdown 文件中嵌入 vue 代码。因此，我们可以自行集成评论功能。
+本文将介绍如何在 Vitepress 站点中集成 Gitalk 插件，Gitalk 是一个基于 GitHub Issue 和 Preact 开发的评论插件。它支持使用 GitHub 登录、支持多语言 [en, zh-CN, zh-TW, es-ES, fr, ru, de, pl, ko, fa, ja]、支持个人或组织、无干扰模式（设置 distractionFreeMode 为 true 开启）、快捷键提交评论 （cmd|ctrl &#43; enter）。
+准备好了吗？准备一杯你最喜欢的咖啡或茶，随着本文一探究竟吧。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-26 00:00:00 +0000 UTC'>九月 26, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;陈明勇</footer>
+  <a class="entry-link" aria-label="post link to 如何在VitePress站点中集成Gitalk评论插件及其关键注意事项" href="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E5%9C%A8vitepress%E7%AB%99%E7%82%B9%E4%B8%AD%E9%9B%86%E6%88%90gitalk%E8%AF%84%E8%AE%BA%E6%8F%92%E4%BB%B6%E5%8F%8A%E5%85%B6%E5%85%B3%E9%94%AE%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">搭建后台管理系统的思路
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从零开始搭建后台管理系统
+当然，这是一个简易版本的，你可以在这两个基础上加以改造
+搭建后台管理系统最基础的是什么呢？个人的体会是整体的基础框架，这个是指最基础的框架，比如根 router-view, 侧边栏以及侧边栏的router-view，以及顶部栏，等基础布局的控制。
+root 首先 App.vue 只有展示 rouer-view, 这个就是 root, 所谓的根。
+html
 代码解读
 复制代码
-package com.xiaou.listener; ​ import lombok.extern.slf4j.Slf4j; import org.springframework.boot.ansi.AnsiColor; import org.springframework.boot.ansi.AnsiOutput; import org.springframework.boot.context.event.ApplicationReadyEvent; import org.springframework.context.ApplicationListener; import org.springframework.stereotype.Component; ​ /** * 项目启动成功日志打印监听器 */ @Component @Slf4j public class StartedListener implements ApplicationListener&lt;ApplicationReadyEvent&gt; { ​ /** * 项目启动成功将会在日志中输出对应的启动信息 * * @param applicationReadyEvent */ @Override public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) { String serverPort = applicationReadyEvent.getApplicationContext().getEnvironment().getProperty(&#34;server.port&#34;); String serverUrl = String.format(&#34;http://%s:%s&#34;, &#34;127.0.0.1&#34;, serverPort); log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, &#34;your project server started at: &#34;, serverUrl)); log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, &#34;your project server&#39;s doc started at:&#34;, serverUrl &#43; &#34;/doc.html&#34;)); log.info(AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, &#34;your project server has started successfully!&#34;)); } }
+&lt;template&gt; &lt;router-view&gt;&lt;/router-view&gt; &lt;/template&gt;
+ok 有了根之后，我们需要有一个 layout 页面，这个页面来承载我们的侧边栏，顶部栏
+layout 页面他是两栏布局的，一栏是我们的侧边导航栏，
+侧边栏 如何完成这个两栏布局
+可以使用 float 可以使用弹性布局 display: flex 也可以使用定位 侧边导航栏，可能我们需要来研究 element-ui 的组件 NavMenu 导航菜单
+侧边导航栏需要我们路由的一些信息，比如路由对应的组件，就像 router-link 对应的 router-view
+如果菜单是二级菜单，三级菜单，需要怎么处理
+如果需要折叠菜单，需要怎么处理，这里就需要阅读 折叠菜单组件
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-13 00:00:00 +0000 UTC'>四月 13, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;小u</footer>
-  <a class="entry-link" aria-label="post link to springboot优雅的改进你的输出日志，让你快速的定位问题超详细的初始化教程" href="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E7%9A%84%E6%94%B9%E8%BF%9B%E4%BD%A0%E7%9A%84%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E8%AE%A9%E4%BD%A0%E5%BF%AB%E9%80%9F%E7%9A%84%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98%E8%B6%85%E8%AF%A6%E7%BB%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%99%E7%A8%8B/"></a>
+  <footer class="entry-footer"><span title='2021-04-30 00:00:00 +0000 UTC'>四月 30, 2021</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;ToolkitUse</footer>
+  <a class="entry-link" aria-label="post link to 搭建后台管理系统的思路" href="http://localhost:1313/posts/juejin/%E6%90%AD%E5%BB%BA%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%9D%E8%B7%AF/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">做了一年多小程序副业，我赚了多少钱？
+    <h2 class="entry-hint-parent">教你如何领支付宝红包0撸可口可乐二维码
     </h2>
   </header>
   <div class="entry-content">
-    <p>现在做小程序还赚钱吗？我说的小程序主要是微信小程序，我做的也是微信小程序。22年年底，一个朋友找我说一起做小程序项目，我那时候工作不算忙，就想着顺便当做小程序练手，于是我就答应了，这一做两年就过去了，大大小小做了有五六个小程序。期间也没有做什么推广，比较佛系，纯靠自然流量和用户分享。以下就是我的小程序的一些基本情况。
-用户量 我们做的是学习类相关的小程序，用户主要是家长和学生。开学期间的用户使用和增长量最多，最多的一个英语小程序日访问量有3500&#43;，日新增用户1300&#43;，基本也就是开学期间的半个月左右，后面就会下降。平时的话日访问量基本是在1000左右，日新增用户在100左右。目前没有做推广，单纯自然流量还算可以了。
-开学期间日访问量比较大的小程序 累计用户量等 累计用户量等数据 累计用户量等数据 累计用户量等数据 可以看出，现在累计用户最多的是查字典的小程序，日访问是比较稳定的，不会随着开学季而有较大的波动。
-收益 我做的几个小程序都是完全免费的，没有会员充值以及付费的内容。所以所有的收入都是流量主，也就是广告收益。 因为是前期，要保证用户的体验度，所以广告也没有怎么加，英语点读的小程序只加了一个小程序启动的封面广告，其他的也就是在保证不影响用户使用的情况下加了一些。所以在前期阶段，收入微乎其微，基本上每天几毛，后面用户增加，基本上每天几块钱。在没有付费内容的情况下，只能是靠用户量了，终于理解流量为王这个几个字。现在和合伙人想的是先积累用户量，前期的收益肯定是很少的，后面再加其他的盈利模式。 下面是几个小程序的收入情况。
-...</p>
+    <p>本文首发于公众号：嘟爷创业日记 。 我已经坚持日更237天&#43;，欢迎过来追剧~
+大家好，我是嘟嘟MD，一个10年程序员，现在离职创业，有237天了，我每个月都会写一篇总结复盘，让大家可以近距离看看一个离职程序员都在干什么，今天这篇是5月份的总结，大概3000字，略长，有空的可以翻翻，希望对大家有一丢丢的借鉴作用！
+昨天不是发了个撸毛小业务的，有些人中奖了，有些人没中奖，没中奖的感觉亏了3毛钱，今天和大家分享一下如何免费白嫖吧。
+最近支付宝有红包红多，可以领红包，然后用来支付扣买可口可乐的费用，刚好可以抵扣3个，我试了2天，每天都可以领取，也就这几天会结束这个活动估计，所以别错过。
+第一步，打开支付宝首页，顶部这里tab可以看到立即领，点进去领取红包。
+点开后就可以领取红包，如下面这样购物消费红包就行。
+然后打开之前说的买可口可乐二维码的网址。（不懂是啥的看上一篇介绍）
+购买的时候，选择支付的时候使用支付宝，然后就可以抵扣红包了。
+ok,可以这样白嫖几天不晓得，能不能中奖就靠大家运气吧，有的号确实运气很好，我媳妇的号刚才连续中了3个1.88，我一个号两天了都没中过。
+别嫌钱少，我好几台设备，每天加起来都可以撸了10几元，挺好的。
+</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;Tom_Liu</footer>
-  <a class="entry-link" aria-label="post link to 做了一年多小程序副业，我赚了多少钱？" href="http://localhost:1313/posts/juejin/%E5%81%9A%E4%BA%86%E4%B8%80%E5%B9%B4%E5%A4%9A%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%89%AF%E4%B8%9A%E6%88%91%E8%B5%9A%E4%BA%86%E5%A4%9A%E5%B0%91%E9%92%B1/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">带你多种方法实体类转换玩转VO,PO,DTO之间转换
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>带你多种方法实体类转换 玩转VO,PO,DTO 之间转换 前置篇 首先介绍一下这些VO PO DTO 等等这些的概念。方便我们的理解。
-首先我们来说用的比较多的，就是DTO 和 VO
-随着互联网的发展，前后端分离的开发模式越来越流行。在前后端数据交互过程中，为了保证数据的安全性和效率，通常会采用 DTO 和 VO 来封装数据。
-DTO（Data Transfer Object）和 VO（Value Object）都是一种设计模式，用于封装数据和提供服务。
-这里需要注意的是这个VO
-我看有的地方也这样写：VO（View Object）：视图对象，用于展示层，它的作用是把某个指定页面（或组件）的所有数据封装起来。
-这个问题，我在查询了很多资料后，得到了这样的解释：
-尽管 “View Object” 也是一个有效的解释，但在面向对象设计和领域驱动设计（DDD）的上下文中，VO 通常指的是 “Value Object”。选择哪种解释取决于具体的上下文和使用场景。
-当讨论数据结构和业务逻辑时，VO 很可能指的是 “Value Object”。 当讨论用户界面和MVC架构时，VO 可能指的是 “View Object”。 因此，我们最好是根据该上下文来判断它指的是 “Value Object” 还是 “View Object”。
-它们的主要区别在于：
-DTO：用于封装数据传输对象，可以将数据库中的数据转换为前端需要的格式，方便前后端之间的数据交互。 VO：用于封装值对象，可以根据具体的需求来封装不同的数据属性，方便前端页面的显示和交互。 DTO 是一种数据传输对象，用于将数据库中的数据转换为前端需要的格式，方便前后端之间的数据交互。而 VO 是一种值对象，用于封装不同的数据属性，方便前端页面的显示和交互。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-04-20 00:00:00 +0000 UTC'>四月 20, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;小u</footer>
-  <a class="entry-link" aria-label="post link to 带你多种方法实体类转换玩转VO,PO,DTO之间转换" href="http://localhost:1313/posts/juejin/%E5%B8%A6%E4%BD%A0%E5%A4%9A%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AE%9E%E4%BD%93%E7%B1%BB%E8%BD%AC%E6%8D%A2%E7%8E%A9%E8%BD%ACvopodto%E4%B9%8B%E9%97%B4%E8%BD%AC%E6%8D%A2/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">vercel推出的前端ai工具，一句话生成前端页面
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>今天来介绍一个好用工具：v0
-v0是Vercel推出的一款**「前端组件代码生成工具」**
-官方地址如下
-v0 by Vercel
-我们来进行一个体验
-我给他输入下面的指令
-Please build a music player
-也就是构建一个音乐器。
-可以看到他弄的这个还是比较简约的。
-下面我又给了他优化建议
-I think this is too minimalist. Could you please make it more colorful and imitate the style of NetEase Cloud Music
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-02-17 00:00:00 +0000 UTC'>二月 17, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;小u</footer>
-  <a class="entry-link" aria-label="post link to vercel推出的前端ai工具，一句话生成前端页面" href="http://localhost:1313/posts/juejin/vercel%E6%8E%A8%E5%87%BA%E7%9A%84%E5%89%8D%E7%AB%AFai%E5%B7%A5%E5%85%B7%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%94%9F%E6%88%90%E5%89%8D%E7%AB%AF%E9%A1%B5%E9%9D%A2/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">陈随易：VSCode1.88更新记录
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>🐯 关于作者 大家好，我是前端之虎陈随易。
-目前是：
-农村程序员 (自 2020 年离职至今都在农村待着) 独立开发者 (有多个已经在盈利中的产品) 自由职业者 (睡到自然醒，困就马上睡) 个人创业者 (注册了自己的公司，为产品服务) 自驾爱好者 (经常自驾，边看风景边敲码) 小说写作者 (断更 10年，目前构思新作品中) 开源推进者 (自 2019 年持续开源至今) 欢迎跟我交朋友：
-微信：chensuiyime 扣扣：24323626 公众号：陈随易 网站：陈随易的个人网站 https://chensuiyi.me 如果微信加不上，可以公众号留言你的微信号，我加你。
-让我们一起积极向上，为自己而努力奋斗！
-一点碎碎念 这个版本挺期待的，因为 v1.87版本 搭载的 Electron 是 v27 版本。
-而在 2024年4月4日 发布了 v1.88 版本后，我查看了一下 关于 信息，显示的是 Electron v28 版本。
-这个版本有什么特点呢？
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-04-05 00:00:00 +0000 UTC'>四月 5, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端之虎陈随易</footer>
-  <a class="entry-link" aria-label="post link to 陈随易：VSCode1.88更新记录" href="http://localhost:1313/posts/juejin/%E9%99%88%E9%9A%8F%E6%98%93vscode1.88%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95/"></a>
+  <footer class="entry-footer"><span title='2024-06-18 00:00:00 +0000 UTC'>六月 18, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;嘟嘟MD</footer>
+  <a class="entry-link" aria-label="post link to 教你如何领支付宝红包0撸可口可乐二维码" href="http://localhost:1313/posts/juejin/%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E9%A2%86%E6%94%AF%E4%BB%98%E5%AE%9D%E7%BA%A2%E5%8C%850%E6%92%B8%E5%8F%AF%E5%8F%A3%E5%8F%AF%E4%B9%90%E4%BA%8C%E7%BB%B4%E7%A0%81/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/6/">
-      «&nbsp;上一页&nbsp;6/38
+      «&nbsp;上一页&nbsp;6/40
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/8/">下一页&nbsp;8/38&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/8/">下一页&nbsp;8/40&nbsp;»
     </a>
   </nav>
 </footer>

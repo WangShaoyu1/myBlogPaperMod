@@ -131,118 +131,167 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">H5页面加载慢？一招秒解！WebView性能优化实战！
+    <h2 class="entry-hint-parent">1.3、华为语音助手小艺产品调研
     </h2>
   </header>
   <div class="entry-content">
-    <p>**
-一、背景 **
-WebView作为展示H5页面的重要容器，它在移动应用开发中扮演了举足轻重的角色。然而，WebView性能瓶颈和H5页面加载缓慢的问题经常困扰着开发者。实现H5页面的秒开体验不仅可以极大地提升用户体验，还能够提高应用的整体性能和用户满意度。
-通过本文，我们将详细介绍一系列WebView优化方法，从预加载技术到网络优化，以及内存管理等方面展开讨论，这些方法将帮助你实现H5页面的秒开体验。
-**
-二、常见的性能问题 **
-WebView和H5页面在现代移动应用中广泛应用，但由于其性能瓶颈，常常导致用户体验不佳。以下是WebView和H5页面常见的性能问题及其原因：
-WebView性能瓶颈
-1、初始化时间长：WebView初始化时间较长，尤其是在首次加载时，可能导致页面响应延迟。
-2、脚本执行速度：JavaScript脚本执行速度是影响WebView性能的关键因素之一。在渲染过程中，脚本执行会阻塞页面解析，导致加载时间加长。
-3、资源加载较慢：由于WebView需要加载外部资源（CSS、JS、图片等），网络速度和延迟严重影响了加载速度。
-H5页面加载缓慢的原因
-1、复杂的页面内容：H5页面中的多媒体元素（如视频、图片等）和复杂的DOM结构都会显著增加加载时间。
-2、频繁的重绘：频繁的页面重绘和布局调整会大幅增加渲染时间，导致页面卡顿。
-3、网络依赖：H5页面通常依赖于网络资源，网络速度慢会直接影响页面加载速度。
-4、动画和交互：页面中如果包含大量动画和交互效果，GPU和CPU的负载会增加，导致页面渲染变慢。
-用户体验的影响
-延迟加载和卡顿：页面加载出现延迟或卡顿，会极大地降低用户体验，用户可能失去耐心并退出应用。
-5、白屏现象：加载页面时长时间显示白屏，会让用户感到困惑和不耐烦。
-6、高内存消耗：复杂的H5页面可能导致内存消耗过高，影响整体应用的性能。
-了解了这些常见的性能瓶颈和问题后，我们可以针对性地采用优化措施，从而提升WebView和H5页面的加载速度和用户体验。
-三、优化方向 优化方向，主要是通过预加载、渲染优化、网络优化和内存存储优化，通过这些技术手段可以显著提升Web应用的性能和用户体验。下面会分别介绍这几种优化方式。
-3.1、预加载 主要是通过提前准备的方式，就好比我们开学前，提前准备好书包、学习工具一样。在这里我们称之为预加载。实现预加载的方式主要是以下两个：
-1、预加载WebView：在用户安装或首次启动应用时，后台初始化WebView，在用户点击相关页面时立即显示。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-06-17 00:00:00 +0000 UTC'>六月 17, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;叶知秋水</footer>
-  <a class="entry-link" aria-label="post link to H5页面加载慢？一招秒解！WebView性能优化实战！" href="http://localhost:1313/posts/juejin/h5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%85%A2%E4%B8%80%E6%8B%9B%E7%A7%92%E8%A7%A3webview%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">听说你线程和对象八股很狂？saysaylook
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 线程是我们在日常工作中经常听到的词，如果你开发很多年只有CRUD，没有多线程操作过，那么你一定不是一个会炒菜的好javaer。
-一、走进线程 刚入门的时候我们一直操作的都是单线程进行一些类似于OA系统的开发工作，有时候可能会用Thread.sleep来做点小动作，除此便没了，我们要清楚线程只是一个工作单元，我们的软件或者我们的系统是由很多这样的工作单元来组成，之前很多文章都是先说线程的状态和多线程，但很少说线程的结构，而是在JVM里说去了，今天我放这里说。
-1.1 组成结构 首先线程是一个私有的东西，在JVM中呢我们的对象都是在堆这样的共享区，好了，接下来我们通过new Thread()创建线程,以下是创建过程，前面还有一步就是如果我们不给该线程命名，线程会自己通过Thread-加上一个线程创建自增的数字变量，下面代码是无参的方式初始化，有参最终也会调用该方法只是判断走的逻辑不一样；
-ini
-代码解读
-复制代码
-private void init(ThreadGroup g, Runnable target, String name, long stackSize, AccessControlContext acc, boolean inheritThreadLocals) { if (name == null) { throw new NullPointerException(&#34;name cannot be null&#34;); } this.name = name; //该处表示调用本地方法获取当前线程 Thread parent = currentThread(); SecurityManager security = System.getSecurityManager(); //咱们是无参构造，所以此处为null满足 if (g == null) { //如果存在安全管理器会从该处获得线程group（下面解释） if (security != null) { g = security.getThreadGroup(); } //如果依然为空，则会从当前线程获取线程group if (g == null) { g = parent.getThreadGroup(); } } //检查权限，通过上面那个安全管理器来check g.checkAccess(); if (security != null) { //这段简单意思就是是否重写了Thread，如果getclass就是Thread //返回false，跳过安全检查，否则要进行安全检查 if (isCCLOverridden(getClass())) { security.checkPermission(SUBCLASS_IMPLEMENTATION_PERMISSION); } } //增加线程组中未启动线程的计数 g.addUnstarted(); this.group = g; //判断parent是否是守护线程（注意parent就是当前线程） this.daemon = parent.isDaemon(); //获取parent权重 this.priority = parent.getPriority(); //这段判断简单说就是如果变化了重新获取否则直接获取 if (security == null || isCCLOverridden(parent.getClass())) this.contextClassLoader = parent.getContextClassLoader(); else this.contextClassLoader = parent.contextClassLoader; //下面两个咱们无参初始化，所以都是给null this.inheritedAccessControlContext = acc != null ? acc : AccessController.getContext(); this.target = target; setPriority(priority); if (inheritThreadLocals &amp;&amp; parent.inheritableThreadLocals != null) //此处大白话就是获取当前线程的给咱们创建的线程 this.inheritableThreadLocals = ThreadLocal.createInheritedMap(parent.inheritableThreadLocals); //无参表示0，不同平台效果不一样，字面意思：堆栈大小 this.stackSize = stackSize; //获取线程ID tid = nextThreadID(); }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-05-24 00:00:00 +0000 UTC'>五月 24, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;小红帽的大灰狼</footer>
-  <a class="entry-link" aria-label="post link to 听说你线程和对象八股很狂？saysaylook" href="http://localhost:1313/posts/juejin/%E5%90%AC%E8%AF%B4%E4%BD%A0%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%AF%B9%E8%B1%A1%E5%85%AB%E8%82%A1%E5%BE%88%E7%8B%82saysaylook/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">服了，一线城市的后端都卷成这样了吗！？
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 声明：本文首发在同名公众号：王中阳Go，未经授权禁止转载。
-先听TA的故事 投稿的主人公是一名工作5年的后端开发工程师，最近2年用Golang，之前其他语言。去年春节前被裁员了，各种心酸史，好愁人啊。
-刚开始找的特别费劲，简历已读不回，也不知道怎么做准备更好。在撞了很多南墙之后，终于摸到了门道，开始能约到面试了。
-然后更难顶的事情发生了：经过各种努力和约面，我拿到了北京的两个offer，但是深圳一个都没拿到，我自己更倾向在深圳工作的，实在实在没办法才会去北京。
-深圳这边的工作很卷，越面试考察越难，刚开始那几家我还扛得住，主要是八股和算法，后来不少公司更多的是考察各种各样的场景题，甚至还有公司问我如果让我带一个5~10人小团队做项目会考虑哪些事情？
-我真是服气了，我只是一个想找20K工作的gopher程序员，要求已经这么高了吗？太卷了。。。。
-在各种学习各种突击、踏踏实实提高自己之后，目前已经成功上岸深圳的公司了，在这里真心分享一个靠谱的经验：别想着速成，踏踏实实的提高自己才是王道。
-秉承着好人有好报的原则：我授权阳哥把我最近面试了十几家公司，将近30场面试的面经和经验都分享出来，希望对大家有帮助，希望阳哥的粉丝们都能顺利上岸！把我这份好运传递下去！！！
-下面开始秀一下最新面经：
-北京外包-掌阅科技 面试题：
-自我介绍 介绍一下你参与的模块的业务以及架构设计 交易流程 说一下微信支付流程 介绍一下你最了解的业务的技术实现 做了哪些业务封装？解决了哪些问题？ mongodb的集合是什么？文档是什么？ mongodb的底层数据结构是什么？怎么实现的？怎么存储的？ 编程题写代码
-使用go实现1000个并发控制并设置执行超时时间1秒
-go
-代码解读
-复制代码
-func worker(c context.Context, wg *sync.WaitGroup, id int) { defer wg.Done() select { case &lt;-time.After(time.Second): fmt.Sprintln(&#34;执行完成 %&#34;, id) case &lt;-c.Done(): fmt.Sprintln(&#34;请求超时 %&#34;, id) } } func main() { ctx, cancel := context.WithTimeout(context.Background(), time.Second) defer cancel() var wg sync.WaitGroup wg.Add(1000) for i := 0; i &lt; 1000; i&#43;&#43; { go worker(ctx, &amp;wg, i) } wg.Wait() }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-04-01 00:00:00 +0000 UTC'>四月 1, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;王中阳Go</footer>
-  <a class="entry-link" aria-label="post link to 服了，一线城市的后端都卷成这样了吗！？" href="http://localhost:1313/posts/juejin/%E6%9C%8D%E4%BA%86%E4%B8%80%E7%BA%BF%E5%9F%8E%E5%B8%82%E7%9A%84%E5%90%8E%E7%AB%AF%E9%83%BD%E5%8D%B7%E6%88%90%E8%BF%99%E6%A0%B7%E4%BA%86%E5%90%97/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">1.7、智能语音语言公司调研——思必驰
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 10. 调研目的 21. 公司背景 2.11.1. 基本概念 2.21.2. 公司历程 2.31.3. 行业内竞争对手（以DUI全链路智能对话平台为对标） 32. DUI全链路智能对话平台 3.12.1. 平台介绍 3.1.12.1.1. 平台概念 3.1.22.1.2. 优势技术 3.1.32.1.3. 四个子系统 3.22.2. 两大主要板块——产品&amp;技能 3.2.12.2.1. 在生产端 3.2.22.2.2. 在使用端 3.32.3. 产品管理工具 3.42.4. 技能定制工具 43. 消费级产品品牌 4.13.1. 智慧生活品牌——宾狗 4.1.13.1.1. 基本概念 4.1.23.1.2. 产品及服务 4.23.2. 智慧出行品牌——车萝卜 4.2.13.2.1. 基本概念 4.2.23.2.2. 产品及服务 54. 一些思考 0. 调研目的 （待补充）
-...</p>
-  </div>
-  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 1.7、智能语音语言公司调研——思必驰" href="http://localhost:1313/posts/wiki/1.7%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E8%AF%AD%E8%A8%80%E5%85%AC%E5%8F%B8%E8%B0%83%E7%A0%94%E6%80%9D%E5%BF%85%E9%A9%B0/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">1.8、小米语音助手小爱同学调研
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 1 一、产品背景 2二、产品架构和生态 3三、产品背后的核心技术 3.13.1 全双工关键技术 3.1.13.1.1 拒识 3.1.1.13.1.1.1 策略拒识 3.1.1.23.1.1.2 语义拒识 3.1.1.33.1.1.3 多模态拒识 3.1.23.1.2 语义判不停 3.1.2.13.1.2.1 规则系统 3.1.2.23.1.2.2 单轮判别模型 3.1.2.33.1.2.3 多轮判不停 4四、产品的硬件整体设计 4.14.1 小米小爱音箱pro拆解细节 4.1.1 4.1.1 外部细节 4.1.24.1.2 内部细节 4.24.2 拆解总结 5五、个人对于小爱同学的思考。 一、产品背景 小米公司推出的智能语音助手小爱同学，是一款基于人工智能技术的智能语音助手。它可以通过语音指令实现音乐播放、智能家居控制、日程提醒等多种功能。本文将对小爱同学进行调研分析，探讨其市场表现、用户评价、产品特点等方面。市场表现小爱同学自推出以来受到了很多用户的关注和追捧。目前，小爱同学已拥有超过1.6亿的用户，覆盖了中国大陆、香港、台湾等地区。在智能语音助手市场中，小爱同学已成为竞争对手无法忽视的一员。据小米公司公布的数据，截至2021年4月，小爱同学每天处理的语音指令超过2亿次，市场份额达到了50%以上。
+    <p> 1 21、调研背景 32、调研目的 43、调研产品 4.13.1、华为语音助手小艺是什么？ 4.23.2、华为语音助手小艺能干什么？ 54、软件体验与测评 5.14.1、通用功能设置 5.24.2、唤醒 5.34.3、ASR 5.44.4、NLP 5.54.5、TTS 65、硬件分析 6.15.1、硬件设计分析 6.25.2、小艺音箱硬件有哪些优点？ 6.35.3、小艺音箱如何解决降噪问题？ 6.45.4、小艺音箱与小度音箱对比？ 76、心得与总结 1、调研背景 现目前，产品研发团队在大力测评小万的语音交互体验，从唤醒、ASR、NLP再到TTS的全链路测评，团队现在大多人对这一领域属于一个萌新起步阶段，在测评的过程中对于市面上已有的语音助手了解甚少，没有深度体验，因此在测评的过程中没有标准数据的参考，无法判断跟成熟语音助手的差距具体体现在哪些方面，差距又有多大，我们后续又如何取开展小万语音功能模块的优化。基于此，通过对市面上成熟语音助手的调研是充分且必要的一件事。
+2、调研目的 为团队语音测评找到一个可提供参考价值的模板，为产品经理后续优化小万语音功能模块打样，终极目标，一定实现我们产品的核心理念“三听一反”，即：听得见、听得清、听得懂、能反馈。
+3、调研产品 华为语音助手小艺
+3.1、华为语音助手小艺是什么？ 小艺是华为推出的面向终端用户的智慧语音助手，既可以实现语音启动应用及服务，也可以实现多轮对话获取信息发布指令。
+3.2、华为语音助手小艺能干什么？ **连续对话：**在和主人对话时，小艺在回答完问题之后，还会继续聆听5秒，用户可以继续提问或者发出指令，无需再次唤醒。
+**插嘴打断：**在小艺回答或者播报的过程中可以打断小艺的播报，让小艺直接响应下一个问题或者取消语音播报。
+**滚屏翻译：**在阅读外文长文档时，只需跟小艺说“翻译屏幕”，瞬间外文就变成了中文。目前AI滚屏翻译已支持英语、日语、法语、俄语、葡萄牙语、西班牙语、德语、意大利语、韩语与中文的互译，走遍全球都不用怕。
+**垃圾分类：**2019年6月上海出台了号称“史上最强垃圾分类投放措施”，小艺在第一时间上线垃圾分类技能，一次提问分清多个垃圾，还可以根据不同的城市垃圾分类标准回答用户关于垃圾分类的问题。
+**查询快递：**只需对小艺说一声“查一下我的快递”，小艺便会将快递信息呈现并播报出来。
+**卡路里识别：**问小艺“吃这个会不会胖”，小艺便立即打开智慧视觉，识别出食物的卡路里。
+**记停车位：**停车后告诉小艺“记住我的车停在xxx”，回程时只需询问她就可以免去找车之忧。
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 1.8、小米语音助手小爱同学调研" href="http://localhost:1313/posts/wiki/1.8%E5%B0%8F%E7%B1%B3%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B%E5%B0%8F%E7%88%B1%E5%90%8C%E5%AD%A6%E8%B0%83%E7%A0%94/"></a>
+  <a class="entry-link" aria-label="post link to 1.3、华为语音助手小艺产品调研" href="http://localhost:1313/posts/wiki/1.3%E5%8D%8E%E4%B8%BA%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B%E5%B0%8F%E8%89%BA%E4%BA%A7%E5%93%81%E8%B0%83%E7%A0%94/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">2023.3.10会议~自烹场景评审会
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>会议名称
+“自烹”活动场景评审会
+会议时间
+2023年03月10日
+会议地点
+小鱼会议号：9006363736 入会密码：123123；606会议室
+主持人
+黄婷
+会议记录
+参会人员
+朱志强、黄婷、唐玮
+会议主题
+会议内容
+捕捉角色和状态：是通过什么方式去获取数据要说明清楚（因为要判断现在的仪器是否可以收集，如果收集不了是否需要虚拟人通过语音去识别） 识别角色状态：补充需要通过什么方式去收集，这个方式是现有的还是需要开发算法去获取的。要写明清楚 有些通过设备或语音无法很好获取的，需要算法去获取，需要梳理和列明清楚。 主力场景：可以先粗后细。 主力场景：任务要按主力场景划分。如果任务一致，那可以划为一个场景。 直接任务/协同任务：主任务是流程中的直接任务。协同任务是非直接任务。可能得看技术上怎么做比较合适。我们列虚拟人的，无虚拟人的可以不用列 收取反馈： 要素场景链 要素属性识别变成一个公共图层
+虚拟厨师场景识别：大的场景识别：烹饪、食谱研发
+主力场景识别：开始烹饪、暂停、终止。消费者绝大部分需求都要囊括在主力场景
+大场景识别放外面：先需要有一个大的判断，有哪些条件。
+可用性检查，设备软件是否可运行。
+通用是一级场景，不同用是2级场景。
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 2023.3.10会议~自烹场景评审会" href="http://localhost:1313/posts/wiki/2023.3.10%E4%BC%9A%E8%AE%AE~%E8%87%AA%E7%83%B9%E5%9C%BA%E6%99%AF%E8%AF%84%E5%AE%A1%E4%BC%9A/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">佛山互视达厂商提供不同角度定向麦测评数据对比
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 11. 数据来源 22. 唤醒率对比 33. 字准率对比 1. 数据来源 佛山厂商定向麦（正负15°）测评-0227
+佛山厂商定向麦（正负30°）测评-0320
+2. 唤醒率对比 唤醒词次数
+50次
+50次
+声源分贝
+60db
+70db
+噪音角度
+无噪音
+噪音10度
+噪音45度
+无噪音
+噪音45度
+测试距离
+1米
+2米
+1米
+2米
+1米
+2米
+1米
+2米
+1米
+2米
+定向麦30度
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 佛山互视达厂商提供不同角度定向麦测评数据对比" href="http://localhost:1313/posts/wiki/%E4%BD%9B%E5%B1%B1%E4%BA%92%E8%A7%86%E8%BE%BE%E5%8E%82%E5%95%86%E6%8F%90%E4%BE%9B%E4%B8%8D%E5%90%8C%E8%A7%92%E5%BA%A6%E5%AE%9A%E5%90%91%E9%BA%A6%E6%B5%8B%E8%AF%84%E6%95%B0%E6%8D%AE%E5%AF%B9%E6%AF%94/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">1.2、智能电动汽车智能语音类产品调研
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>小鹏汽车
+小鹏汽车
+⭕模式类
+🔹开启赛车模式：方向盘助力设为运动
+🔹打开睡觉模式（空调打开20度风速2档，座椅靠后，通风模式，空气净化）
+🔹打开弹射模式（整蛊朋友，活跃气氛）
+🔹开启极速降温模式（风速设为7档，温度调至最低）
+🔹开启通风模式（全部车窗下降至通风位置）
+⭕娱乐类
+🔹我想听歌
+🔹播放xxx的《xxx》
+🔹切换单曲循环
+🔹收藏这首歌
+🔹打开某APP
+🔹打开氛围灯
+🔹讲个笑话
+⭕导航类
+🔹开启/结束导航
+🔹查找附近停车场
+🔹导航到附近充电站
+🔹导航静音
+🔹我要回家（设定家庭地址）
+🔹我要去上班（设定工作地址）
+⭕控制类
+🔹打开智能泊车辅助
+🔹打开/关闭空调
+🔹开启/关闭充电口
+🔹打开/关闭主副驾座椅通风/加热
+🔹调节座椅
+🔹自动空调
+🔹今天天气怎么样
+⭕组合功能
+🔹车内散味
+🔹一键降温
+参考链接：https://zhuanlan.zhihu.com/p/566510816
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 1.2、智能电动汽车智能语音类产品调研" href="http://localhost:1313/posts/wiki/1.2%E6%99%BA%E8%83%BD%E7%94%B5%E5%8A%A8%E6%B1%BD%E8%BD%A6%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E7%B1%BB%E4%BA%A7%E5%93%81%E8%B0%83%E7%A0%94/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">1.4、虚拟人PTA形象装饰调研2.0
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 11. 背景 22. 调研产品 2.12.1. 国内虚拟人产品 2.22.2. 国外虚拟人产品 33. 产品体验报告 3.13.1. 形象资源分类 3.23.2. 虚拟人形象板块 3.33.3. 形象资源风格与款式 3.3.13.3.1. 发型风格与款式 3.3.23.3.2. 服饰风格与款式 44. 总结与思考 1. 背景 “人格化”和“规模化”是虚拟人的未来发展方向。中国的虚拟人形象从2012年“洛天依”二次元风格的诞生开始，到2019年的美型虚拟人的转变，然后到2021年的超写实虚拟人的爆发，中国的虚拟人制作技术发展相当迅速。相较之下，超写实虚拟人物有更好的代入感，也能更好地接入现实世界的商业信息。“Z世代”用他们希望在数字世界中表达自我，展示自我，对数字化身的外在服装和皮肤样貌也很在意，也更愿意投资在这些方面。同样地，影子虚拟人应用于智能家居领域，由于应用场景为较为私密的家庭空间，相对写实、拟真度高的PTA结果往往会更加容易得到家庭成员之间的认可，具有更广泛的用户接受度。
+机型：iphone13 pro、iphone12
+系统：ios15.5
+2. 调研产品 2.1. 国内虚拟人产品 产品名称
+产品简介
+...</p>
+  </div>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 1.4、虚拟人PTA形象装饰调研2.0" href="http://localhost:1313/posts/wiki/1.4%E8%99%9A%E6%8B%9F%E4%BA%BApta%E5%BD%A2%E8%B1%A1%E8%A3%85%E9%A5%B0%E8%B0%83%E7%A0%942.0/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/4/">
-      «&nbsp;上一页&nbsp;4/153
+      «&nbsp;上一页&nbsp;4/237
     </a>
-    <a class="next" href="http://localhost:1313/page/6/">下一页&nbsp;6/153&nbsp;»
+    <a class="next" href="http://localhost:1313/page/6/">下一页&nbsp;6/237&nbsp;»
     </a>
   </nav>
 </footer>

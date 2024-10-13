@@ -129,120 +129,135 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">为什么循环删除List元素会报错
+    <h2 class="entry-hint-parent">深入剖析Java逻辑运算符，解决日常开发难题
     </h2>
   </header>
   <div class="entry-content">
-    <p>描述 大家在工作中应该都会遇到从List集合中删除某一个或多个元素的业务场景
-相信大家都会避开在循环里面删除元素，使用其他方式处理
-很多面试官也都会问为什么循环里面不能删除元素？
-示例 JAVA
-代码解读
-复制代码
-public static void main(String[] args) { List&lt;String&gt; list = new ArrayList&lt;&gt;(); list.add(&#34;test0&#34;); list.add(&#34;test1&#34;); list.add(&#34;test2&#34;); list.add(&#34;test3&#34;); list.add(&#34;test4&#34;); list.add(&#34;test5&#34;); System.out.println(list); list.remove(3); System.out.println(list); list.remove(&#34;test1&#34;); System.out.println(list); for (int i = 0; i &lt; list.size(); i&#43;&#43;) { if (i == 2) { list.remove(i); } } System.out.println(list); Iterator&lt;String&gt; it = list.iterator(); while (it.hasNext()) { if (it.next().equals(&#34;test2&#34;)) { it.remove(); } } System.out.println(list); for (String s : list) { if (&#34;test5&#34;.equals(s)) { list.remove(s); } } System.out.println(list); } 打印结果 [test0, test1, test2, test3, test4, test5] [test0, test1, test2, test4, test5] [test0, test2, test4, test5] [test0, test2, test5] [test0, test5] Exception in thread &#34;main&#34; java.util.ConcurrentModificationException at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:909) at java.util.ArrayList$Itr.next(ArrayList.java:859) at com.fc.store.Test.main(Test.java:46)
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-11-01 00:00:00 +0000 UTC'>十一月 1, 2023</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;三火哥</footer>
-  <a class="entry-link" aria-label="post link to 为什么循环删除List元素会报错" href="http://localhost:1313/posts/juejin/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BE%AA%E7%8E%AF%E5%88%A0%E9%99%A4list%E5%85%83%E7%B4%A0%E4%BC%9A%E6%8A%A5%E9%94%99/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">【进阶之路】深入了解volatile、内存屏障与happens-before规则
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 大家好，我是练习java两年半时间的南橘，从一名连java有几种数据结构都不懂超级小白，到现在懂了一点点的进阶小白，学到了不少的东西。知识越分享越值钱，我这段时间总结（包括从别的大佬那边学习，引用）了一些平常学习和工作中的重点（自我认为），希望给大家带来一些帮助
-这是之前的三篇关于JVM的文章，没看过的同学可以一起看一下
-攻克JVM——JVM对象及对象的访问定位（一） 攻克JVM——JVM的垃圾回收机制（二） 攻克JVM——JVM的垃圾收集器（三） 有需要的同学可以加我的公众号，以后的最新的文章第一时间都在里面，也可以找我要思维导图 大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。 volatile关键字在 Java 中的作用是保证变量的可见性和防止指令重排。
-一、保证变量的可见性 在知道volatile是如何保证变量的可见性之前，我们先要知道内存不可见的两个原因：
-1、CPU的运行速度是远远高于内存的读写速度的，为了不让CPU等待读写内存数据，现代CPU和内存之间都存在一个高速缓存cache（实际上是一个多级寄存器），如下图：
-线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache中，其实就是访问自己的内部cache。如果线程B把数据加载进内部缓存cache中，线程A再修改了数据。即使重新写入主内存，但是线程B不会重新从主内存加载变量，看到的还是自己cache中的变量，所以线程B是读取不到线程A更新后的值。
-在多处理器下，为了保证各个处理器的缓存是一致的，就会实现缓存一致性协议，每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里。volatile变量通过这样的机制就使得每个线程都能获得该变量的最新值。 但是，我们也都知道volatile只能保证可见性，不能保证原子性。多个线程同时读取这个共享变量的值，就算保证其他线程修改的可见性，也不能保证线程之间读取到同样的值然后相互覆盖对方的值的情况。
-二、防止指令重排 我们再来看指令重排。
-1、定义 指令重排是指在程序执行过程中, 为了性能考虑, 编译器和CPU可能会对指令重新排序。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2020-10-26 00:00:00 +0000 UTC'>十月 26, 2020</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;南橘ryc</footer>
-  <a class="entry-link" aria-label="post link to 【进阶之路】深入了解volatile、内存屏障与happens-before规则" href="http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">面试官没想到一个ArrayList，我都能跟他扯半小时
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 点赞再看，Java进阶一大半
-南哥在stackoverflow社区看到14年前的这么一个问题：Java 的 Vector.add() 和 Vector.addElement() 有什么区别，大家有答案吗？
-它们实际上没有区别！！！1996年的JDK 1.0版本中，JDK就没有提供过系统的集合框架，当时老一辈程序员在集合处理上只能使用诸如Vector、Hashtable。
-而随着1998 年 12 月 4 日的JDK 1.2版本发布，Java终于提供了系统的集合框架支持。上面我们提到的Vector则作为List接口的实现之一，add方法是List的顶层方法，而Vector自带的addElement方法仍然保留，主要是为了向后兼容性。。。
-大家好，我是南哥。
-一个Java学习与进阶的领路人，相信对你通关面试进入心心念念的公司有所帮助。
-本文收录在我开源的《Java学习进阶指南》中，涵盖了在大厂工作的Javaer都不会不懂的核心知识、面试重点。相信能帮助到大家在Java成长路上不迷茫，南哥希望收到大家的 ⭐ Star ⭐支持我完善下去。GitHub地址：github.com/hdgaadd/Jav…。
-1. List集合 1.1 集合概述 面试官：List集合都知道哪些对象？
-作为四大集合之一的List，在业务开发中我们比较常见的是以下 3 种：ArrayList、Vector、LinkedList，业务开发我们接触最多就是容器类库了，容器类库可以说是面向对象语言最重要的类库。大家看看在工作里你比较熟悉的是哪个？
-这篇文章南哥打算专注于List集合，后面四大集合之Map、Queue、Set后续再来填坑，比心心♥。
-1.2 ArrayList 面试官：ArrayList为什么线程不安全？
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-29 00:00:00 +0000 UTC'>七月 29, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
-  <a class="entry-link" aria-label="post link to 面试官没想到一个ArrayList，我都能跟他扯半小时" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E6%B2%A1%E6%83%B3%E5%88%B0%E4%B8%80%E4%B8%AAarraylist%E6%88%91%E9%83%BD%E8%83%BD%E8%B7%9F%E4%BB%96%E6%89%AF%E5%8D%8A%E5%B0%8F%E6%97%B6/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">我们后端程序员不是操作MyBatis的CRUDBoy
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>大家好，我是南哥。
-一个Java学习与进阶的领路人，今天继续给大家带来新的一篇Java进阶指南。
-为啥都戏称后端是CRUD Boy？难道就因为天天怼着数据库CRUD吗？要我说，是这个岗位的位置要的就是你CRUD，你不得不CRUD。哪有公司天天能给你搭建高并发、高可用、大数据框架的活呢，一条业务线总要成长吧，慢慢成熟了就要装修工来缝缝补补、美化美化，也就是CRUD的活。
-不能妄自菲薄CRUD Boy，我们是后端工程师。今天来指南下操作数据库之MyBatis框架。
-本文收录在我开源的《Java学习进阶指南》中，一份涵盖了你学习Java、成为更好的Java选手所需掌握的核心知识、面试重点。相信能帮助到大家在Java成长路上不迷茫。南哥希望收到大家的 ⭐ Star ⭐支持，这是我创作的最大动力。GitHub地址：github.com/hdgaadd/Jav…。
-1. Mybatis概要 1.1 Mybatis理解 面试官：你说下对MyBatis的理解？
-如果没有MyBatis的支持，大家是怎么实现通过程序控制数据库的？首先我们需要为程序引入MySQL连接依赖mysql-connector.jar，加载数据库JDBC驱动，接着创建数据库连接对象Connection、SQL语句执行器Statement，再把SQL语句发送到MySQL执行，最后关闭SQL语句执行器和数据库连接对象。
-整个过程是比较繁琐的，这是通过JDBC操作MySQL必走的过程。可实际开发可给不了你那么多时间，如果大家非要用JDBC去写大量的冗余代码也可以，能抗住催你开发进度的压力就行。
-这是JDBC操作的过程。
+    <p> 哈喽，各位小伙伴们，你们好呀，我是喵手。
+今天我要给大家分享一些自己日常学习到的一些知识点，并以文字的形式跟大家一起交流，互相学习，一个人虽可以走的更快，但一群人可以走的更远。
+我是一名后端开发爱好者，工作日常接触到最多的就是Java语言啦，所以我都尽量抽业余时间把自己所学到所会的，通过文章的形式进行输出，希望以这种方式帮助到更多的初学者或者想入门的小伙伴们，同时也能对自己的技术进行沉淀，加以复盘，查缺补漏。
+小伙伴们在批阅的过程中，如果觉得文章不错，欢迎点赞、收藏、关注哦。三连即是对作者我写作道路上最好的鼓励与支持！
+深入剖析Java逻辑运算符，解决日常开发难题 前言 在日常的Java开发中，逻辑运算符是经常使用的一种运算符。但是，由于逻辑运算符的复杂性和使用频率高，经常会出现一些难以预料的问题，给开发带来不小的麻烦。本文将对Java逻辑运算符进行深入剖析，帮助开发者解决日常开发中遇到的难题。
+摘要 本文从源码解析、应用场景案例、优缺点分析等方面对Java逻辑运算符进行了详细剖析。同时，本文提供了测试用例，确保读者可以通过代码实践更好地掌握逻辑运算符的使用。
+简介 Java逻辑运算符主要包括与(&amp;&amp;)、或(||)、非(!)三种，它们通常用于两个或多个布尔表达式之间的运算。在Java中，逻辑运算符是从左到右进行运算的，运算结果为true或false。
+逻辑运算符在Java中的优先级如下：
+! &amp;&amp; || 源代码解析 与(&amp;&amp;)运算符 与(&amp;&amp;)运算符用于判断两个条件是否同时成立，只有当两个条件都为true时，才会返回true，否则返回false。下面是与运算符的源代码实现：
 java
 代码解读
 复制代码
-public class JDBCController { private static final String db_url = &#34;jdbc:mysql://localhost:3306/db_user&#34;; private static final String user = &#34;root&#34;; private static final String password = &#34;root&#34;; public static void main(String[] args) { Connection connection = null; Statement statement = null; String sql = &#34;select * from user order by id desc&#34;; try { connection = DriverManager.getConnection(db_url, user, password); statement = connection.createStatement(); int result = statement.executeUpdate(sql); System.out.println(result); } catch (SQLException e) { throw new RuntimeException(e); } finally { if (statement != null) { try { statement.close(); } catch (SQLException e) { throw new RuntimeException(e); } } if (connection != null) { try { connection.close(); } catch (SQLException e) { throw new RuntimeException(e); } } } } }
+public static boolean and(boolean a, boolean b) { return a &amp;&amp; b; }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-06-29 00:00:00 +0000 UTC'>六月 29, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
-  <a class="entry-link" aria-label="post link to 我们后端程序员不是操作MyBatis的CRUDBoy" href="http://localhost:1313/posts/juejin/%E6%88%91%E4%BB%AC%E5%90%8E%E7%AB%AF%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8D%E6%98%AF%E6%93%8D%E4%BD%9Cmybatis%E7%9A%84crudboy/"></a>
+  <footer class="entry-footer"><span title='2023-11-08 00:00:00 +0000 UTC'>十一月 8, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;喵手</footer>
+  <a class="entry-link" aria-label="post link to 深入剖析Java逻辑运算符，解决日常开发难题" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90java%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6%E8%A7%A3%E5%86%B3%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E9%9A%BE%E9%A2%98/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">可能是最漂亮的JavaI/O流详解
+    <h2 class="entry-hint-parent">不懂这些，简历上都不敢写自己熟悉Redis
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>无论大中小公司，只要隶属于互联网公司，那公司的服务器必定安装着一台Redis服务器。为啥这么多公司如此青睐Redis？难道是别人有部署Redis我就要跟着有嘛，肯定不是的。既然有那么多公司青睐Redis，那它的业务场景又是什么。跟着我一起来看看看Redis有什么引人入胜的吸引力~
+本文收录在我开源的《Java学习面试指南》中，一份覆盖Java程序员所需掌握的Java核心知识、面试重点。希望收到大家的 ⭐ Star ⭐支持。GitHub地址：github.com/hdgaadd/Jav…，相信你看了一定不会后悔。
+1. Redis快的秘密 面试官：Redis什么这么快？
+相信大部分Redis初学者都会忽略掉一个重要的知识点，Redis其实是单线程模型。我们按直觉来看应该是多线程比单线程更快、处理能力更强才对，比如单线程一次只可以做一件事情，而多线程却可以同时做十件事情。
+但Redis却可以做到每秒万级别的处理能力，主要是基于以下原因：
+（1）Redis是基于内存操作的，Redis所有的数据库状态都保存在内存中。而内存的响应时长是非常快速的，大约在100纳秒。大家可以对比下其他服务器磁盘，固态硬盘（SSD）、机械硬盘（HDD）响应时长大约几十微秒，很明显远远没有基于内存的响应时长快速。
+（2）Redis采用I/O多路复用技术，这种I/O模型是非阻塞I/O，应用程序在等待I/O操作完成的过程中不需要阻塞。
+（3）最后一点也是我开头提到的，Redis采用了单线程模型。单线程模型避免了多线程产生的线程切换和锁竞争带来的资源消耗，这两种消耗对性能影响是很大的。另外一点是单线程相比多线程来说实现更简单高效，如果引入多线程设计相信Redis实现起来会更加复杂不易优化。
+2. Redis数据类型 2.1 Redis五大基本数据类型 面试官：你说说Redis五大基本数据类型？
+Redis基本数据类型一共有五种，这也是面试官重点考查的基础，大家要重点关注下。
+（1）字符串。
+字符串是Redis最基础，也是业务开发中最常见的一种数据类型。在业务上一般使用MySQL作为实际存储层，而Redis字符串作为缓冲层对象。
+sh
+代码解读
+复制代码
+127.0.0.1:6379&gt; set name JavaGetOffer OK 127.0.0.1:6379&gt; get name &#34;JavaGetOffer&#34;
+（2）哈希。
+哈希的键值本身是一个键值对结构，类似于key = {{field, value}, {field, value}}。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-05-17 00:00:00 +0000 UTC'>五月 17, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
+  <a class="entry-link" aria-label="post link to 不懂这些，简历上都不敢写自己熟悉Redis" href="http://localhost:1313/posts/juejin/%E4%B8%8D%E6%87%82%E8%BF%99%E4%BA%9B%E7%AE%80%E5%8E%86%E4%B8%8A%E9%83%BD%E4%B8%8D%E6%95%A2%E5%86%99%E8%87%AA%E5%B7%B1%E7%86%9F%E6%82%89redis/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">作为后端开发，感受下接口带来的魅力！🔥🔥
     </h2>
   </header>
   <div class="entry-content">
     <p> 点赞再看，Java进阶一大半
-我在国外stackoverflow看到13年前的这么一个问题：如何使用 Java 逐行读取大型文本文件。大家有什么思路吗？评论区一起讨论讨论。
-I need to read a large text file of around 5-6 GB line by line using Java.
-我需要使用 Java 逐行读取大约 5-6 GB 的大型文本文件。
-How can I do this quickly?
-我怎样才能快速完成此操作？
-最高赞的回答是名为Peter Lawrey的老哥回答的。
-大家好，我是南哥。
-一个Java学习与进阶的领路人，今天指南的是Java I/O流，跟着南哥我们一起在Java之路上成长。
-本文收录在我开源的《Java学习进阶指南》中，涵盖了想要学习Java、成为更好的Java选手都在偷偷看的核心知识、面试重点。相信能帮助到大家在Java成长路上不迷茫，南哥希望收到大家的 ⭐ Star ⭐支持，这是我创作的最大动力。GitHub地址：github.com/hdgaadd/Jav…。
-1. Java I/O的理解 Java I/O有两个参与对象，一个是I/O源端，一个是想要和I/O源端通信的各种接收端，比如程序控制IDEA控制台输出、读取文件A写入文件B等，我们程序要保证的就是IO流的顺利读取和顺利写入。JDK把对Java IO的支持都放在了package java.io包下，南哥数了数，一个有86个类和接口。
+在一次某大厂面试中，小南（化名）被面试官问到：写代码你什么时候选择用接口，什么时候用抽象类？
+一位海外博客拥有24k粉丝的程序员博主是这么回答的，友们怎么看？
+Java 接口和抽象类之间的选择取决于您的特定要求。如果您需要定义多个不相关的类需要遵循的契约，请使用接口。但是，如果您想创建具有共享实现细节的可重用基类，请选择抽象类。在某些情况下，您甚至可以同时使用两者，使用抽象类实现接口来执行契约并为相关类提供通用基础。请记住考虑每个选项的优缺点，为您的软件设计做出最佳选择。
+精彩文章推荐
+面试官没想到一个ArrayList，我都能跟他扯半小时 《我们一起进大厂》系列-Zookeeper基础 再有人问你WebSocket为什么牛逼，就把这篇文章发给他！ 全网把Kafka概念讲的最透彻的文章，别无二家 可能是最漂亮的Java I/O流详解 大家好，我是南哥。
+一个Java学习与进阶的领路人，相信对你通关面试、拿下Offer进入心心念念的公司有所帮助。
+1. 抽象类 1.1 子类调用父类 现在有IDEA集成开发环境，可以给大家实时提醒哪个地方编译错误，但假如要大家用.txt文件编写程序呢。南哥问：现在这段代码错在了哪？
+java
+代码解读
+复制代码
+class Base { public Base(String s) { System.out.print(&#34;B&#34;); } } public class Derived extends Base { public Derived (String s) { System.out.print(&#34;D&#34;); } public static void main(String[] args) { new Derived(&#34;C&#34;); } }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-15 00:00:00 +0000 UTC'>七月 15, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
-  <a class="entry-link" aria-label="post link to 可能是最漂亮的JavaI/O流详解" href="http://localhost:1313/posts/juejin/%E5%8F%AF%E8%83%BD%E6%98%AF%E6%9C%80%E6%BC%82%E4%BA%AE%E7%9A%84javai/o%E6%B5%81%E8%AF%A6%E8%A7%A3/"></a>
+  <footer class="entry-footer"><span title='2024-08-06 00:00:00 +0000 UTC'>八月 6, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
+  <a class="entry-link" aria-label="post link to 作为后端开发，感受下接口带来的魅力！🔥🔥" href="http://localhost:1313/posts/juejin/%E4%BD%9C%E4%B8%BA%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91%E6%84%9F%E5%8F%97%E4%B8%8B%E6%8E%A5%E5%8F%A3%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%AD%85%E5%8A%9B/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">谁说后端不需要懂的-Nginx知识点
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 先赞后看，南哥助你Java进阶一大半
+他叫Igor Sysoev，一个俄罗斯程序员。就是他，着手开发了大名鼎鼎处理高并发、高负载网络请求的Nginx，同时他在2004年把Nginx作为开源软件发布。
+大家好，我是南哥。
+一个Java学习与进阶的领路人，相信对你通关面试、拿下Offer进入心心念念的公司有所帮助。
+⭐⭐⭐本文收录在《Java学习/进阶/面试指南》：github..JavaSouth
+精彩文章推荐
+面试官没想到一个ArrayList，我都能跟他扯半小时 《我们一起进大厂》系列-Zookeeper基础 再有人问你WebSocket为什么牛逼，就把这篇文章发给他！ 全网把Kafka概念讲的最透彻的文章，别无二家 可能是最漂亮的Java I/O流详解 1. Nginx必知必会 1.1 Nginx概要 面试官：说说你对Nginx的理解？
+一款Web服务器，它叫Nginx，碾压了Apache、Microsoft IIS、Tomact、Lighttpd等一众Web服务器。我们国内没有部署Nginx的科技业务公司，相信也没有多少。
+为什么呢？南哥认为和Nginx的出身有关！Nginx在2002年立项开发就是为了服务俄罗斯访问量位居首位的Rambler.ru站点。另外最重要一点，免费开源！让Nginx集结了全球的智慧，帮助它升级迭代、不断攀登宝座。
+在Java后端的每一个SpringBoot项目都集成了一个Tomcat服务器，那和Nginx有何区别？其实两者实际上都是提供互联网交互能力的一个节点，同样是Web服务器，不过主要的功能不同。
+Tomcat服务器设计小巧轻量，没有集成处理复杂业务场景的功能，更适合作为一个API Web服务器。Nginx提供的功能就很多了，像反向代理、负载均衡、Web缓存，我们企业面向用户的第一关卡便是Nginx，后面的链条才轮到微服务节点。下面我一一道来。
+1.2 Nginx反向代理、负载均衡 面试官：Nginx常用功能知道吧？
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-08-28 00:00:00 +0000 UTC'>八月 28, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
+  <a class="entry-link" aria-label="post link to 谁说后端不需要懂的-Nginx知识点" href="http://localhost:1313/posts/juejin/%E8%B0%81%E8%AF%B4%E5%90%8E%E7%AB%AF%E4%B8%8D%E9%9C%80%E8%A6%81%E6%87%82%E7%9A%84-nginx%E7%9F%A5%E8%AF%86%E7%82%B9/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">字符串值提取工具-08-java执行xml解析,xpath
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>值提取系列 字符串值提取工具-01-概览
+字符串值提取工具-02-java 调用 js
+字符串值提取工具-03-java 调用 groovy
+字符串值提取工具-04-java 调用 java? Janino 编译工具
+字符串值提取工具-05-java 调用 shell
+字符串值提取工具-06-java 调用 python
+字符串值提取工具-07-java 调用 go
+字符串值提取工具-08-java 通过 xml-path 解析 xml
+字符串值提取工具-09-java 执行 json 解析, json-path
+字符串值提取工具-10-java 执行表达式引擎
+场景 我们希望通过 java 执行 xml-path 解析 xml。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-08-18 00:00:00 +0000 UTC'>八月 18, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;老马啸西风</footer>
+  <a class="entry-link" aria-label="post link to 字符串值提取工具-08-java执行xml解析,xpath" href="http://localhost:1313/posts/juejin/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%80%BC%E6%8F%90%E5%8F%96%E5%B7%A5%E5%85%B7-08-java%E6%89%A7%E8%A1%8Cxml%E8%A7%A3%E6%9E%90xpath/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/java/page/8/">
-      «&nbsp;上一页&nbsp;8/16
+      «&nbsp;上一页&nbsp;8/17
     </a>
-    <a class="next" href="http://localhost:1313/tags/java/page/10/">下一页&nbsp;10/16&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/java/page/10/">下一页&nbsp;10/17&nbsp;»
     </a>
   </nav>
 </footer>

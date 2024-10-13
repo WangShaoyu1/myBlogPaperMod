@@ -131,116 +131,99 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Linux源码解读-启动过程（一）
+    <h2 class="entry-hint-parent">虚拟人调研和思考
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 之前接触过很多操作系统的概念，比如进程，内存、文件系统，但是没有看过操作系统的源码，总有种隔靴搔痒的感觉。想去看源码，又因为代码量太多，不知从何看起，今年重启了操作系统的学习计划，在搜索资料的过程中，大家都推荐《linux内核完全注释》这本书，果然非常经典，该书是以linux0.12版本来进行讲解，虽然是比较早期的版本，但是麻雀虽小，五脏俱全。后续又找到《Linux内核设计的艺术》这本书，从启动过程开始讲的，更加易懂，想学的朋友可以看看两本书，以下是本人的学习笔记
-从硬件开始 从我们使用计算机的经验得知：要想执行一个程序，必须在窗口中双击它，或者在命令行界面中输入相应的执行命令。但是，在开机加电的一瞬间，内存中什么程序也没有，BIOS是如何执行的呢？
-不难得出这样的结论，既然软件的路走不通，只能依靠硬件方法完成了，CPU硬件逻辑设计为加电瞬间强行将CS的值置为0xF000、IP的值置为0xFFF0，这样CS:IP就指向0xFFFF0这个地址位置，这个位置放置的便是操作系统的引导块程序（bootsect.s），如下图，bootsect.s与之后的setup模块、system模块合力为操作系统运行做了很多准备工作
-bootsect.s程序 bootsect.s代码是磁盘引导块程序，驻留在磁盘的第一个扇区中。在PC机加电ROM BIOS自检后，引导扇区由BIOS加载到内存0x07c00处，然后将自己移动到内存0x90000处。该程序的主要作用是首先将setup模块（由setup.s编译成）从磁盘加载到内存，紧接着bootsect的后面位置（0x90200），然后利用BIOS中断0x13取磁盘参数表中当前启动引导盘的参数，接着在屏幕上显示Loading system...字符串。再者将system模块从磁盘上加载到内存0x10000开始的地方。最后长跳转到setup程序的开始处（0x90200）执行setup程序
-这个代码块的迁移是怎么做的呢？我们来看看代码
-ini
-代码解读
-复制代码
-SETUPLEN = 4 ! nr of setup-sectors setup程序的扇区数（setup-sectors）值 BOOTSEG = 0x07c0 ! original address of boot-sector bootsect的原始地址 INITSEG = 0x9000 ! we move boot here - out of the way 将bootsect移到这里 SETUPSEG = 0x9020 ! setup starts here setup程序从这里开始 SYSSEG = 0x1000 ! system loaded at 0x10000 (65536). system模块加载到0x10000（64kB）处 ENDSEG = SYSSEG &#43; SYSSIZE ! where to stop loading 停止加载到段地址 entry start ! 告知链接程序，程序从start标号开始执行 start: mov ax,#BOOTSEG ！将ds段寄存器置为0x07c0 mov ds,ax mov ax,#INITSEG ！将es段寄存器置为0x9000 mov es,ax mov cx,#256 ！设置移动计数值为256字 sub si,si ！原地址 ds:si = 0x07c0:0x0000 sub di,di ！目标地址 es:di = 0x9000:0x0000 rep ！重复执行并递减cx的值，直到cx = 0为止 movw ！即movs指令。这里从内存[si]处移动cx个字到[di]处 jmpi go,INITSEG ！段间跳转（Jump Intersegment）。这里INITSEG指出跳转到的段地址，标号go是段内偏移地址 ​
+    <p> 1一、虚拟人产业发展背景 1.11.1 虚拟人发展历程 1.21.2 虚拟人发展市场现状 1.31.3 AI数字人等级 2二、虚拟人产业链和分类 2.12.1 AI 虚拟人产业链 2.22.2 虚拟人分类 3三、AIGC 赋能虚拟人产业 3.13.1 AIGC助力制作端降本增效 3.23.2 AI助力多模态交互能力提升 3.33.3 AIGC 技术为数字人的内容生成提供了强大的支持 4四、虚拟人在智能厨电行业的应用 4.1 4.1 厨电行业发展背景和趋势 4.2 4.2 虚拟人在智能厨电的应用案例 4.2.1 4.2.1 老板电器ROKI 4.2.2 4.2.2 方太“方拾壹” 5五、总结&amp;思考 6六、参考 一、虚拟人产业发展背景 1.1 虚拟人发展历程 虚拟人的发展方向在于交互能力的提升和形象呈现的进步，拟人化是发展的核心，表现为对真人的替代能力。虚拟人发展不同阶段应用受制于技术水平，AI 时代应用端有望迎来全面催化。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-22 00:00:00 +0000 UTC'>九月 22, 2024</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;Xiao镔</footer>
-  <a class="entry-link" aria-label="post link to Linux源码解读-启动过程（一）" href="http://localhost:1313/posts/juejin/linux%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E4%B8%80/"></a>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 虚拟人调研和思考" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E8%B0%83%E7%A0%94%E5%92%8C%E6%80%9D%E8%80%83/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">每个开发人员都应该知道的13个Nodejs库
+    <h2 class="entry-hint-parent">炉子安装NVIDIA驱动和配置CUDA环境
     </h2>
   </header>
   <div class="entry-content">
-    <p>Node.js，作为一种广受推崇的后端JavaScript环境，已成为众多网络开发者的首选。它不仅位列全球最流行编程语言之一，还通过JavaScript库的代码复用功能，极大地提升了项目开发效率。然而，面对众多选项，挑选合适的库以匹配项目需求无疑是一项挑战。
-高效的库能够显著提升开发速度，并赋予Web应用多项优势，如加速页面加载和缩减应用体积。在挑选库时，开发者需综合考量应用的复杂度、库的社区支持、更新周期及文档完善度等因素。
-Node.js的库通过其包管理器npm进行管理，npm为安装各类开源库提供了便利。接下来，将介绍13款精选的Node.js库，它们在简化Web开发流程方面各有千秋，希望能为您的项目带来助益。
-Node.js简介 Node.js是一个开源的、用于JavaScript编程的服务器端运行环境。它以异步I/O和事件驱动模型著称，这些特性使其在处理实时分布式系统中的大数据量时表现出色。此外，Node.js支持跨平台操作，进一步增强了其在Web开发中的吸引力。
-Node.js库概述 库，也被称作模块，是一段封装了常用功能的预编写代码。它们的存在旨在加快编码速度，促进代码复用，帮助开发者遵循“DRY”原则（Don’t Repeat Yourself，即避免重复劳动）。与提供程序结构框架不同，库通常提供特定的功能，可以在项目开发的任何阶段灵活运用。
-精选Node.js库介绍 以下是13款精选的Node.js库，它们各自具备独特的功能，助力简化Web开发流程。
-1. Sequelize Sequelize是一个基于Promise的ORM工具，旨在简化与关系型数据库的交互。它支持包括PostgreSQL、MySQL、MariaDB、SQLite在内的多种数据库系统。Sequelize通过JavaScript对象来映射数据库表结构，从而允许开发者无需编写原始SQL语句即可执行数据库操作，同时有效降低了SQL注入的风险，并与GraphQL兼容。
-2. CORS CORS是一个Node.js包，作为Connect/Express的中间件，实现跨域资源共享。它简化了Web应用中CORS的启用过程，允许开发者指定允许访问的域名，并提供了灵活的错误处理机制，帮助分析和防范安全风险。
-3. Nodemailer ...</p>
+    <p>以下是详细的步骤，记录了在 Ubuntu 22.04 上安装 NVIDIA JetPack、配置 CUDA 环境以及配置 Docker 以支持 GPU 的过程。
+1. 安装 JetPack 开发工具包 安装 JetPack 开发工具包：
+?
+sudo apt install nvidia-jetpack
+2. 检查 CUDA 版本和驱动程序版本 安装完成后，检查 CUDA 和驱动程序版本：
+?
+# 检查 CUDA 版本
+nvcc --version
+# 检查驱动程序版本
+nvidia-smi
+如果遇到 nvcc: command not found 错误，继续以下步骤。
+3. 配置 CUDA 环境 3.1 验证 CUDA 是否已安装 确认 CUDA 是否已安装在系统中。通常，JetPack 安装完成后，CUDA 会被安装在 /usr/local/cuda 目录中。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-17 00:00:00 +0000 UTC'>四月 17, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序员凌览</footer>
-  <a class="entry-link" aria-label="post link to 每个开发人员都应该知道的13个Nodejs库" href="http://localhost:1313/posts/juejin/%E6%AF%8F%E4%B8%AA%E5%BC%80%E5%8F%91%E4%BA%BA%E5%91%98%E9%83%BD%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E7%9A%8413%E4%B8%AAnodejs%E5%BA%93/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 炉子安装NVIDIA驱动和配置CUDA环境" href="http://localhost:1313/posts/wiki/%E7%82%89%E5%AD%90%E5%AE%89%E8%A3%85nvidia%E9%A9%B1%E5%8A%A8%E5%92%8C%E9%85%8D%E7%BD%AEcuda%E7%8E%AF%E5%A2%83/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">【安全漏洞】使用PetitPotam代替Printerbug
+    <h2 class="entry-hint-parent">炉端语音标签配置
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 Printerbug使得拥有控制域用户/计算机的攻击者可以指定域内的一台服务器，并使其对攻击者选择的目标进行身份验证。虽然不是一个微软承认的漏洞，但是跟Net-ntlmV1,非约束委派，NTLM_Relay,命名管道模拟这些手法的结合可以用来域内提权，本地提权，跨域等等利用。
-遗憾的是，在PrintNightmare爆发之后，很多企业会选择关闭spoolss服务，使得Printerbug失效。在Printerbug逐渐失效的今天，PetitPotam来了，他也可以指定域内的一台服务器，并使其对攻击者选择的目标进行身份验证。而且在低版本(16以下)的情况底下，可以匿名触发。原理 MS-EFSR里面有个函数EfsRpcOpenFileRaw(Opnum 0)
-c
-代码解读
-复制代码
-long EfsRpcOpenFileRaw( [in] handle_t binding_h, [out] PEXIMPORT_CONTEXT_HANDLE* hContext, [in, string] wchar_t* FileName, [in] long Flags );
-他的作用是打开服务器上的加密对象以进行备份或还原，服务器上的加密对象由FileName 参数指定,FileName的类型是UncPath。
-当指定格式为\IP\C$的时候，lsass.exe服务就会去访问\IP\pipe\srvsrv
-...</p>
+    <p>1.配置平台，影子运营中心，账号密码和域账号相同
+工作台 - 影子运营中心 (yingzi.com)
+2.配置模块-平台基础服务-参数配置，如没有权限可找开发李勇昌开通
+3.配置步骤
+选择对应的产品和应用 点击“新增配置组”进行新增配置组信息填写，填写完成后点击保存，此步骤也可进行配置组参数维护，详情见 4)配置组参数值维护 选中新建的配置组，切换到对应环境 配置组参数值维护：点击编辑可进行配置组参数编辑，点击新增创建参数值可创建多个，配置名称、配置KEY和类型为必填参数，填写示例参考下图，类型为单选。编辑好后点击保存 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-08-07 00:00:00 +0000 UTC'>八月 7, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;安全白板</footer>
-  <a class="entry-link" aria-label="post link to 【安全漏洞】使用PetitPotam代替Printerbug" href="http://localhost:1313/posts/juejin/%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E4%BD%BF%E7%94%A8petitpotam%E4%BB%A3%E6%9B%BFprinterbug/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 炉端语音标签配置" href="http://localhost:1313/posts/wiki/%E7%82%89%E7%AB%AF%E8%AF%AD%E9%9F%B3%E6%A0%87%E7%AD%BE%E9%85%8D%E7%BD%AE/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">使用PetitPotam代替Printerbug
+    <h2 class="entry-hint-parent">唐玮
     </h2>
   </header>
   <div class="entry-content">
-    <p>使用PetitPotam代替Printerbug 上帝关了一扇, 必定会再为你打开另一扇窗
-0x00 前言 Printerbug使得拥有控制域用户/计算机的攻击者可以指定域内的一台服务器，并使其对攻击者选择的目标进行身份验证。虽然不是一个微软承认的漏洞，但是跟Net-ntlmV1,非约束委派，NTLM_Relay,命名管道模拟这些手法的结合可以用来域内提权，本地提权，跨域等等利用。
-遗憾的是，在PrintNightmare爆发之后，很多企业会选择关闭spoolss服务，使得Printerbug失效。在Printerbug逐渐失效的今天，PetitPotam来了，他也可以指定域内的一台服务器，并使其对攻击者选择的目标进行身份验证。而且在低版本(16以下)的情况底下，可以匿名触发。
-0x01 原理 MS-EFSR里面有个函数EfsRpcOpenFileRaw(Opnum 0)
-c
-代码解读
-复制代码
-long EfsRpcOpenFileRaw( [in] handle_t binding_h, [out] PEXIMPORT_CONTEXT_HANDLE* hContext, [in, string] wchar_t* FileName, [in] long Flags );
-他的作用是打开服务器上的加密对象以进行备份或还原，服务器上的加密对象由FileName 参数指定,FileName的类型是UncPath。
-当指定格式为\\IP\C$的时候，lsass.exe服务就会去访问\\IP\pipe\srvsrv
-...</p>
+    <p>Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2021-08-24 00:00:00 +0000 UTC'>八月 24, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;中安网星</footer>
-  <a class="entry-link" aria-label="post link to 使用PetitPotam代替Printerbug" href="http://localhost:1313/posts/juejin/%E4%BD%BF%E7%94%A8petitpotam%E4%BB%A3%E6%9B%BFprinterbug/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 唐玮" href="http://localhost:1313/posts/wiki/%E5%94%90%E7%8E%AE/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">ClickHouse高性能数据仓库的构建与优化实践
+    <h2 class="entry-hint-parent">运行时故障排除
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 在大数据时代，企业和组织面临的数据量呈现爆炸式增长。传统的数据库在处理海量数据时，面临着性能瓶颈。ClickHouse作为一款高性能的列式数据库管理系统，专为在线分析处理（OLAP）场景设计，能够在多核CPU和SSD硬盘的支持下提供毫秒级的实时数据分析能力。本文将深入探讨如何在Java环境中构建和优化ClickHouse，实现数据处理的高效率和高可靠性。
-教程 环境准备 在开始之前，我们需要确保Java环境已经搭建完毕，这包括：
-Java Development Kit（JDK）安装，版本至少为1.8。 环境变量配置，确保java和javac命令可以在任意路径下使用。 ClickHouse的安装与配置 接下来，我们将在服务器上安装ClickHouse。本教程以Linux环境为例，进行以下步骤：
-添加ClickHouse的官方仓库。 shell
-代码解读
-复制代码
-sudo apt-get install apt-transport-https sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E0C56BD4 echo &#34;deb https://repo.clickhouse.tech/deb/stable/ main/&#34; | sudo tee /etc/apt/sources.list.d/clickhouse.list
-更新本地仓库并安装ClickHouse服务。 shell
-代码解读
-复制代码
-sudo apt-get update sudo apt-get install clickhouse-server clickhouse-client
-启动ClickHouse服务。 shell
+    <p>1.Module AvatarModule not found in the current environment
+验证 Docker 配置 确保 Docker 配置为默认使用 NVIDIA 运行时。可以通过将以下配置添加到 Docker 守护进程的 daemon.json 文件中来实现：
+?
+{
+&#34;default-runtime&#34;``: &#34;nvidia&#34;``,
+&#34;runtimes&#34;``: {
+&#34;nvidia&#34;``: {
+&#34;path&#34;``: &#34;nvidia-container-runtime&#34;``,
+&#34;runtimeArgs&#34;``: []
+}
+}
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-11-10 00:00:00 +0000 UTC'>十一月 10, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;李小熊</footer>
-  <a class="entry-link" aria-label="post link to ClickHouse高性能数据仓库的构建与优化实践" href="http://localhost:1313/posts/juejin/clickhouse%E9%AB%98%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E7%9A%84%E6%9E%84%E5%BB%BA%E4%B8%8E%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 运行时故障排除" href="http://localhost:1313/posts/wiki/%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/142/">
-      «&nbsp;上一页&nbsp;142/153
+      «&nbsp;上一页&nbsp;142/237
     </a>
-    <a class="next" href="http://localhost:1313/page/144/">下一页&nbsp;144/153&nbsp;»
+    <a class="next" href="http://localhost:1313/page/144/">下一页&nbsp;144/237&nbsp;»
     </a>
   </nav>
 </footer>

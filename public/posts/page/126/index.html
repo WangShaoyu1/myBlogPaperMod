@@ -144,120 +144,165 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">为什么要放弃使用useCallback(useCallback的缺点)
+    <h2 class="entry-hint-parent">表格问答实现技术调研
     </h2>
   </header>
   <div class="entry-content">
-    <p>下面是 useCallback 的基本用法：
-js
-代码解读
-复制代码
-const memoizedCallback = useCallback( () =&gt; { doSomething(a, b); }, [a, b], );
-在上面这段代码中，memoizedCallback 会在初始的时候生成一次，在后面的过程中，只有它的依赖 a 或 b 变化了才会重新生成。
-明白了 useCallback 的基本用法，我们把使用 useCallback 包裹的函数和不使用它包裹的函数放到一块对比一下：
-js
-代码解读
-复制代码
-function App() { const method1 = () =&gt; { // ... } const method2 = useCallback(() =&gt; { // 这是一个和 method1 功能一样的方法 }, [props.a, props.b]) return ( &lt;div&gt; &lt;div onClick={method1}&gt;button&lt;/div&gt; &lt;div onClick={method2}&gt;button&lt;/div&gt; &lt;/div&gt; ) }
+    <p> 11. 概述 1.11.1. 什么是表格问答？ 1.21.2. 表格问答支持的问题类型有哪些？ 1.31.3. 表格问答任务细分 1.41.4. 一种表格问答系统架构 22. 表格问答相关方法-学术界 2.12.1. 表格检索 (Table Retrieval) 2.1.12.1.1. 表格候选检索 2.1.22.1.2. 表格候选打分 2.22.2. 基于语义分析的方法 2.32.3. 基于非语义解析的方法 2.3.12.3.1. 生成式方法（Generative methods） 2.3.22.3.2. 提取式方法（Extractive methods） 2.3.32.3.3. 匹配式方法（Match-Based methods） 33. 表格问答常见实现方案 3.13.1. 端到端的 NL2SQL 3.23.2. 基于多轮对话形式的 SQL 关键字提取 3.33.3. 七鱼表格问答落地方案 3.43.4. FTT系统表格问答解决方案 44. 未来的技术展望 55. 参考文档 1. 概述 企业数据在很多情况下是以一种二维表形式保存在数据库中，如果针对二维表配置 FAQ，会导致 FAQ 数量剧增；若客户修改了其中某条记录，还需要去修改之前配置的 FAQ，不利于维护。如果问答系统具备从表格中直接提取信息进行问答的功能，则可以完美地解决此类问题，这就是表格问答的优势。表格问答实现方案有多种，大多数都集中在论文或者比赛范畴内，难以商业落地。本文参考网易七鱼客服场景，梳理表格问答落地方案。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-10-17 00:00:00 +0000 UTC'>十月 17, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;mysteryven</footer>
-  <a class="entry-link" aria-label="post link to 为什么要放弃使用useCallback(useCallback的缺点)" href="http://localhost:1313/posts/juejin/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%94%BE%E5%BC%83%E4%BD%BF%E7%94%A8usecallbackusecallback%E7%9A%84%E7%BC%BA%E7%82%B9/"></a>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 表格问答实现技术调研" href="http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">SpringAI她来了，真的来了
+    <h2 class="entry-hint-parent">开源对话中控模块USKit学习笔记
     </h2>
   </header>
   <div class="entry-content">
-    <p>写在前面 自从ChatGPT火了之后，各种产品都在不停的拥抱AI，在各自场景中接入AI，国内外各种大模型层出不穷。
-好像有点扯远了，言归正传，今天我们要说的是SpringAI，大家在逛Spring 官网（spring.io/） 应该发现了，在官网中多了SpringAI 模块
-一、SpringAI 简介 我们来看看官网是怎么介绍的
-Spring AI is an application framework for AI engineering. Its goal is to apply to the AI domain Spring ecosystem design principles such as portability and modular design and promote using POJOs as the building blocks of an application to the AI domain.
-Portable API support across AI providers for Chat, text-to-image, and Embedding models. Both synchronous and stream API options are supported. Dropping down to access model-specific features is also supported.
+    <p>1. 概述 对话机器人通常是多种技能的综合，这涉及到多个技能的管理、召回、排序和选择等策略，在具体的实现中，通常由一个统一调度对话中控 US (Unified Scheduler) 来提供这些能力。常见应用：Siri、小爱、小度、小冰。
+2. 主要功能 2.1. 核心概念 对话技能 (bot skill)：指某个特定场景下的对话能力，一个对话技能对应一个具体的对话场景，例如天气技能负责提供天气场景下的对话能力。 对话机器人 (bot service)：由多个对话技能整合而成的统一对话服务，可以同时支持多个对话场景的人机对话，一个对话机器人对应一个具体业务的整体解决方案，比如车载对话机器人、育儿对话机器人等。 2.2. 功能介绍 USKit 作为 UNIT 的开源中控模块，通过配置驱动和内置表达式运算支持，提供了以下能力：
+支持配置表达式运算，内置常用函数，提供丰富的表达能力，通过修改配置即可轻松实现策略的定制 支持定义后端服务的请求构造和接入策略 (后端服务泛指各种通过网络访问的远程服务，比如 UNIT 技能、DMKit 服务、Redis session 服务等)，支持的通信协议包括 HTTP 和 Redis 支持定义后端服务结果的抽取 (extract) 和变换 (transform) 策略 支持定义多种对话技能的排序 (ranking) 和选择策略 支持定义对话中控流程 (chatflow) 策略 内置 UNIT 技能协议请求构造和结果解析策略的配置支持，只需配置技能 ID 即可实现对话技能的快速接入 3. 架构 USKit 针对对话中控的能力做了抽象，抽取出不同对话场景中下中控的通用能力，避免不必要的重复开发。同时按照配置化驱动和高扩展性的思想进行整体架构的设计，方便开发者通过配置快速构建和定制适用于特定业务场景的对话中控。USKit的整体架构如下图：
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-15 00:00:00 +0000 UTC'>四月 15, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员晓凡</footer>
-  <a class="entry-link" aria-label="post link to SpringAI她来了，真的来了" href="http://localhost:1313/posts/juejin/springai%E5%A5%B9%E6%9D%A5%E4%BA%86%E7%9C%9F%E7%9A%84%E6%9D%A5%E4%BA%86/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 开源对话中控模块USKit学习笔记" href="http://localhost:1313/posts/wiki/%E5%BC%80%E6%BA%90%E5%AF%B9%E8%AF%9D%E4%B8%AD%E6%8E%A7%E6%A8%A1%E5%9D%97uskit%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">VisualStudioCode1.91发布
+    <h2 class="entry-hint-parent">屏端11月版本二细节查漏补缺清单
     </h2>
   </header>
   <div class="entry-content">
-    <p>Visual Studio Code 1.91 已发布，具体更新内容如下：
-预览：Incoming/Outgoing changes graph - 在 Source Control 视图中可视化 incoming 和 outgoing changes。 可以通过 scm.experimental.showHistoryGraph 设置新的可视化功能。
-Python 环境 推出一款新工具 python-environment-tools ，旨在显著提高检测全局 Python 安装和 Python 虚拟环境的速度。该工具使用 Rust 来确保快速、准确的发现过程。
-项目团队正在测试这项新功能，并将其与现有支持并行运行，以评估 Python 扩展中的新发现性能。用户将可以看到一个名为Python Locator的新日志通道，以显示使用这一新工具的发现时间。
-可访问 python-environment-tools repo 了解有关此功能和正在进行的工作的更多信息。
-Smart Send in native REPL - 在 native REPL 中流畅运行代码块。 现在，Shift&#43;Enter 可在非嵌套场景中发送最少的可执行代码，或在嵌套场景中发送 highest top-level 代码块。这使用户能够在整个文件中快速按住 Shift&#43;Enter，以最少的努力运行最大数量的可执行代码。
+    <p>问题描述
+优先级
+备注
+解决情况
+问题描述
+优先级
+备注
+解决情况
+1
+指令追问的交互逻辑——现在只有“查看具体商品”这条指令有设置追问
+p0
+现在在功能页，用户输入的所有内容在第一遍都会被拼接上功能页标志指令一并传到云端处理，所以当第一次用户输入了某个不在门店商品列表中的商品名称，由于词槽未填充则进入追问，返回追问话术：“请告诉我您要查找的商品名称”；这时用户又输入了一遍该商品名称，在追问轮次中则不拼接标志指令，直接传输入的内容，根据是否填充到词槽返回正向反馈话术或追问失败话术
+已解决
+2
+指令可用环境、负向反馈的实现
+p0
+消费流程页，输入“第9步”会走闲聊
+已解决（后续测试发现均走兜底：“等我学习一下”“这个领域我还不会”，基本符合要求）
+3
+“正在思考”状态显性展示
+p0
+现在FAQ返回时间较长，当虚拟人正在进行NLP处理的时候，没有状态展示，会给用户一种是不是卡机了的错觉
+已解决
+4
+品牌宣传页，应用层执行切换速度很快，但调a接口播报指令反馈话术稍慢
+p1
+增加切换过渡效果，在感知上尽量做到音画同频
+已解决
+5
+“问题反馈”指令的回复话术改为离线A&#43;资源，以及触屏点击主页右上角的图标时也加上A&#43;
+p1
+问题反馈的aplusid：1701253859669014302xdbeu
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-04 00:00:00 +0000 UTC'>七月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;嚣张农民</footer>
-  <a class="entry-link" aria-label="post link to VisualStudioCode1.91发布" href="http://localhost:1313/posts/juejin/visualstudiocode1.91%E5%8F%91%E5%B8%83/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 屏端11月版本二细节查漏补缺清单" href="http://localhost:1313/posts/wiki/%E5%B1%8F%E7%AB%AF11%E6%9C%88%E7%89%88%E6%9C%AC%E4%BA%8C%E7%BB%86%E8%8A%82%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA%E6%B8%85%E5%8D%95/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">老弟想自己做个微信，被我一个问题劝退了。。
+    <h2 class="entry-hint-parent">语音交互以及语音助手学习笔记-2022/12/02
     </h2>
   </header>
   <div class="entry-content">
-    <p>大家好，我是程序员鱼皮。最近老弟小阿巴放暑假，想找点事情做，于是就来问我：老鲏，我想做个练手项目，有没有什么好的建议？
-我说：练手项目的话，就做个自己感兴趣的呗，想加什么功能就加什么，做起来会更舒服~
-小阿巴：Emm，我感兴趣的太多了，有没有推荐啊？
-我说：那就想想自己经常使用的网站或 APP，选个对业务流程相对熟悉的。
-小阿巴思考片刻，一拍脑袋：对啊，我天天用微信，那我就做个微信吧！说不定之后大家都在用我做的软件聊天呢？
-我一听，不禁暗自惊叹，没想到小伙子年纪轻轻，野心很大啊！
-我说：想法不错，但想做个微信这样的 IM（即时通讯）项目，可没有那么简单，你有什么实现思路么？说来听听？
-小阿巴：微信的核心功能是收发消息，我可以把用户 A 发送的消息保存到数据库中，用户 B 进入聊天界面时，从数据库查询出发给他的消息就行。
-我一听这个回答，就知道以小阿巴目前的水平，想做出微信是不太可能了。。。
-我问：Emm，暂且不考虑用户体验和性能，我们就先实现基础功能吧，你会怎么让用户查看自己的历史消息呢？
-小阿巴思考片刻，然后嘴角微微上扬，露出狡黠的笑容：你是不是以为我会说一次性把所有历史消息全部查出来？可惜啊老鲏，你把我想的太天真了，用户可能有成百上千条历史消息，全量加载会很慢，所以我必然会使用 分页 来查询！
-我说：行，那你打算怎么分页呢？
-小阿巴：这还真难不倒我，这几年我苦练增删改查，分页写得很溜的！纸笔呈上来，看我给你手写 SQL：
-sql
-代码解读
-复制代码
-select * from message where user = &#39;鱼皮&#39; limit 0, 20;
+    <p>一、语音交互是什么？
+语音交互是一项人机交互技术，可以通过说话跟计算机交互来获取信息、服务等，语音交互也不是要替代触控交互，而是在一些场景中让人与计算机交互变的更简单、自然。
+二、做一款语音助手的难点是什么？
+用户预期与实际助手能力的 gap 过大，导致很多用户认为语音助手“智障”，而导致 gap 过大的难点是：
+当前语音助手的功能普遍太鸡肋，没有找到一个刚需场景并打透，用户都懒懒得去了解它； 单一场景要打通的链路很长、体验闭环难，且碎片化小需求太多；（场景的深度和广度） 某种程度上用户的预期过高，且语音交互难以设定交互边界。（用户需求无明确的边界，如何让用户的知道语音助手的能力边界，同时又保留一定的拓展性？） 三、可能的解决路径
+1.找到刚需场景，打造出显著的体验差
+2.规模化复制，带动服务者生态的建立
+3.打造每个属于用户自己的语音助手
+重点是打磨工具能力，让各种各样的服务提供方可以简单、高效的接入助手；进而促进更多的业务部门通过助手为需求方提供服务，实现业务价值，也进一步让助手具备了更多的能力去服务好需求方。
+4.最后，还有一个前提：对打磨技术细节的耐心和投入
+可以根据不同场景提供不同的基础服务包，让用户自己决定它应该拥有哪些的技能。
+1）语义的泛化需要打磨
+不同用户的表达方式多样，想让语音助手可以准确的响应用户个性化的表达，就需要不断的标注、分析用户的真实表达意图，去打磨语义理解模块。
+2）回复的话术、逻辑也需要打磨
+最好还能在不同场景给出不同的回复。如果一个语音助手的负责人，只谈行业趋势、产品架构、技术架构，我会觉得很难做成；因为一个语音助手在落地的时候，会有无穷多的细节问题需要把控，不仅要仰望星空，还要脚踏实地。
+四、重要概念理解
+槽位的概念 槽位其实是个特定概念，是系统需要向用户收集的关键信息。而填槽则是收集用户信息的过程，是用户将模糊或缺失的意图补全的过程，而槽位值就是用户表达的具体关键信息。
+槽位从宏观上讲有三大类：垂直槽位或叫递进槽位，平行槽位、组合槽位。
+1）垂直槽位
+系统通过某个话题设置多个槽位，并且按照其预设的路径引导用户一个个去填槽，同时给出相应的答案。这些槽位通常是引导用户深入话题的关键节点，垂直槽位以系统主动式对话为主。
+2**）平行槽位**
+通常以任务导向型对话为主，而且完成任务所需的槽位数基本上是固定的。一般由用户主动发起，系统根据用户问句判断缺少的槽位信息，再进一步通过对话搜集信息，最终帮助用户完成任务。
+比如订机票，包含时间、航班、目的地、出发地等槽位。用户在向系统发送问句可能会缺少部分槽位的槽位值，如“帮我订一张从杭州飞北京的机票”就缺少时间、航班等槽位信息。
+平行槽位之间通常没有先后顺序，因此填槽的过程也是不固定的。主要看用户提供的信息缺少哪些内容，再决定先问什么，再问什么。但有时候会给平行槽设置优先级，哪些槽位是必填，哪些是可填可不填。另外也会给平行槽排序，优先获取哪些信息。
+3**）组合槽位**
+既包含垂直槽位又包含平行槽位。流程中环节和环节之间的关键节点主要是垂直槽位，会决定每个分支的走向。某个流程环节内的是平行槽位，平行槽位不会决定路径的分支走向，而是决定了路径能否走通。
+比如“下单-填写收货信息”中，“确认下单”就是垂直槽位，提供的“确认下单”，“返回查看”两个槽位值会引导用户到不同的分支。用户选择“确认下单”就直接进到“填写收货信息”环节，选择“返回查看”则是回到上一轮对话。而“填写收货信息”环节内包含的姓名、地址、电话等都是平行槽位。
+槽位从微观上来说有三类：自定义槽位、词库槽位、接口槽位。
+1）自定义槽位
+从运营后台配置上看，自定义槽位就是运营可以自己编写的分支路径选项，选项作为前端推荐展示给用户。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-14 00:00:00 +0000 UTC'>八月 14, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序员鱼皮</footer>
-  <a class="entry-link" aria-label="post link to 老弟想自己做个微信，被我一个问题劝退了。。" href="http://localhost:1313/posts/juejin/%E8%80%81%E5%BC%9F%E6%83%B3%E8%87%AA%E5%B7%B1%E5%81%9A%E4%B8%AA%E5%BE%AE%E4%BF%A1%E8%A2%AB%E6%88%91%E4%B8%80%E4%B8%AA%E9%97%AE%E9%A2%98%E5%8A%9D%E9%80%80%E4%BA%86/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 语音交互以及语音助手学习笔记-2022/12/02" href="http://localhost:1313/posts/wiki/%E8%AF%AD%E9%9F%B3%E4%BA%A4%E4%BA%92%E4%BB%A5%E5%8F%8A%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2022/12/02/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">flex布局之美，以后就靠它来布局了
+    <h2 class="entry-hint-parent">屏端十一月份版本规划
     </h2>
   </header>
   <div class="entry-content">
-    <p>写在前面 在很久很久以前，网页布局基本上通过table 元素来实现。通过操作table 中单元格的align 和valign可以实现水平垂直居中等
-再后来，由于CSS 不断完善，便演变出了：标准文档流、浮动布局和定位布局 3种布局 来实现水平垂直居中等各种布局需求。
-下面我们来看看实现如下效果，各种布局是怎么完成的
-实现这样的布局方式很多，为了方便演示效果，我们在html代码种添加一个父元素，一个子元素，css样式种添加一个公共样式来设置盒子大小，背景颜色
-ini
-代码解读
-复制代码
-&lt;div class=&#34;parent&#34;&gt; &lt;div class=&#34;child&#34;&gt;我是子元素&lt;/div&gt; &lt;/div&gt;
-css
-代码解读
-复制代码
-/* css公共样式代码 */ .parent{ background-color: orange; width: 300px; height: 300px; } .child{ background-color: lightcoral; width: 100px; height: 100px; }
+    <p> 11. 屏端数字员工11月版本二： 22. 屏端数字员工11月版本一： 1. 屏端数字员工11月版本二： 版本号
+版本时间
+ued完成时间
+接口评审时间
+提测时间
+发布上线时间
+版本号
+版本时间
+ued完成时间
+接口评审时间
+提测时间
+发布上线时间
+11.21
+11.27
+11.30
+序号
+PDCA需求编码
+需求名称
+优先级
+所属项目
+状态
+产品
+内容
+UED
+前端
+后端
+测试
+需求责任人
+备注
+1
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-01-15 00:00:00 +0000 UTC'>一月 15, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;程序员晓凡</footer>
-  <a class="entry-link" aria-label="post link to flex布局之美，以后就靠它来布局了" href="http://localhost:1313/posts/juejin/flex%E5%B8%83%E5%B1%80%E4%B9%8B%E7%BE%8E%E4%BB%A5%E5%90%8E%E5%B0%B1%E9%9D%A0%E5%AE%83%E6%9D%A5%E5%B8%83%E5%B1%80%E4%BA%86/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 屏端十一月份版本规划" href="http://localhost:1313/posts/wiki/%E5%B1%8F%E7%AB%AF%E5%8D%81%E4%B8%80%E6%9C%88%E4%BB%BD%E7%89%88%E6%9C%AC%E8%A7%84%E5%88%92/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/125/">
-      «&nbsp;上一页&nbsp;125/152
+      «&nbsp;上一页&nbsp;125/237
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/127/">下一页&nbsp;127/152&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/127/">下一页&nbsp;127/237&nbsp;»
     </a>
   </nav>
 </footer>

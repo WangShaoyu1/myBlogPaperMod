@@ -74,8 +74,8 @@
   "keywords": [
     "Go", "爬虫"
   ],
-  "articleBody": "起因 是一个高并发的采集服务上线后，100m的上行很快就被打满了。\n因为这是一条专线，并且只有这一个服务在使用，所以可以确定就是它导致的。\n但是！这个请求只是一个 GET 请求，同时并没有很大的请求体，这是为什么呢？\n于是使用 charles 重新抓包后发现，一个 request 的请求居然要占用 1.68kb 的大小!\n其中TLS Handshake 就占了 1.27kb。\n这种情况下，需要的上行带宽就是：1.68*20000/1024*8=262.5mbps\n也就说明100mbps的上行为何被轻松打满\nTLS Handshake是什么来头，竟然如此大? 首先要知道HTTPS全称是：HTTP over TLS，每次建立新的TCP连接通常需要进行一次完整的TLS Handshake。在握手过程中，客户端和服务器需要交换证书、公钥、加密算法等信息，这些数据占用了较多的字节数。\nTLS Handshake的内容主要包括：\n客户端和服务器的随机数 支持的加密算法和TLS版本信息 服务器的数字证书（包含公钥） 用于生成对称密钥的“Pre-Master Secret” 这个过程不仅耗时，还会消耗带宽和CPU资源。\n因此想到最粗暴的解决方案也比较简单，就是直接使用 HTTP，省去TLS Handshake的过程，那么自然就不会有 TLS 的传输了。\n那么是否真的有效呢？验证一下就知道。\n将请求协议改成 http 后：\n可以看到请求头确实不包含 TLS Handshake了!\n整个请求只有 0.4kb，节省了 70% 的大小\n目标达成\n因此可以说明：在一些不是必须使用 https 的场景下，使用 http 会更加节省带宽。\n同时因为减少了加密的这个过程，可以观察到的是，在相同的并发下，服务器的负载有明显降低。\n那么问题来了 如果接口必须使用 https那怎么办呢?\n当然还有另外一个解决方案，那就使用使用 Keep-Alive。\nheaders 中添加 Connection: keep-alive 即可食用。\n通过启用 Keep-Alive，\n可以在同一TCP连接上发送多个HTTPS请求，\n而无需每次都进行完整的TLS Handshake，\n但第一次握手时仍然需要传输证书和完成密钥交换。\n对于高并发的场景也非常适用。\n要注意的是 keep-alive 是有超时时间的，超过时间连接会被关闭，再次请求需要重新建立链接。\nNginx 默认的 keep-alive 超时是 75 秒，\nApache HTTP 服务器 通常默认的 keep-alive 超时是 5 秒。\nps：\n如果你的采集程序使用了大量的代理 ip那么 keep-alive 的效果并不明显～～\n最好的还是使用 http\n",
-  "wordCount" : "97",
+  "articleBody": "起因 是一个高并发的采集服务上线后，100m的上行很快就被打满了。\n因为这是一条专线，并且只有这一个服务在使用，所以可以确定就是它导致的。\n但是！这个请求只是一个 GET 请求，同时并没有很大的请求体，这是为什么呢？\n于是使用 charles 重新抓包后发现，一个 request 的请求居然要占用 1.68kb 的大小!\n其中TLS Handshake 就占了 1.27kb。\n这种情况下，需要的上行带宽就是：1.68*20000/1024*8=262.5mbps\n也就说明100mbps的上行为何被轻松打满\nTLS Handshake是什么来头，竟然如此大? 首先要知道HTTPS全称是：HTTP over TLS，每次建立新的TCP连接通常需要进行一次完整的TLS Handshake。在握手过程中，客户端和服务器需要交换证书、公钥、加密算法等信息，这些数据占用了较多的字节数。\nTLS Handshake的内容主要包括：\n客户端和服务器的随机数 支持的加密算法和TLS版本信息 服务器的数字证书（包含公钥） 用于生成对称密钥的“Pre-Master Secret” 这个过程不仅耗时，还会消耗带宽和CPU资源。\n因此想到最粗暴的解决方案也比较简单，就是直接使用 HTTP，省去TLS Handshake的过程，那么自然就不会有 TLS 的传输了。\n那么是否真的有效呢？验证一下就知道。\n将请求协议改成 http 后：\n可以看到请求头确实不包含 TLS Handshake了!\n整个请求只有 0.4kb，节省了 70% 的大小\n目标达成\n因此可以说明：在一些不是必须使用 https 的场景下，使用 http 会更加节省带宽。\n同时因为减少了加密的这个过程，可以观察到的是，在相同的并发下，服务器的负载有明显降低。\n那么问题来了 如果接口必须使用 https那怎么办呢?\n当然还有另外一个解决方案，那就使用使用 Keep-Alive。\nheaders 中添加 Connection: keep-alive 即可食用。\n通过启用 Keep-Alive，\n可以在同一TCP连接上发送多个HTTPS请求，\n而无需每次都进行完整的TLS Handshake，\n但第一次握手时仍然需要传输证书和完成密钥交换。\n对于高并发的场景也非常适用。\n要注意的是 keep-alive 是有超时时间的，超过时间连接会被关闭，再次请求需要重新建立链接。\nNginx 默认的 keep-alive 超时是 75 秒，\nApache HTTP 服务器 通常默认的 keep-alive 超时是 5 秒。\nps：\n如果你的采集程序使用了大量的代理 ip那么 keep-alive 的效果并不明显～～\n最好的还是使用\n",
+  "wordCount" : "96",
   "inLanguage": "zh",
   "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-09-01T00:00:00Z",
   "dateModified": "2024-09-01T00:00:00Z",
@@ -202,17 +202,17 @@
     </details>
 </div>
 
-  <div class="post-content"><h3 id="起因">起因<a hidden class="anchor" aria-hidden="true" href="#起因">#</a></h3>
+  <div class="post-content"><h4 id="起因">起因<a hidden class="anchor" aria-hidden="true" href="#起因">#</a></h4>
 <p>是一个高并发的采集服务上线后，100m的上行很快就被打满了。<br>
 因为这是一条专线，并且只有这一个服务在使用，所以可以确定就是它导致的。</p>
 <p>但是！这个请求只是一个 GET 请求，同时并没有很大的请求体，这是为什么呢？</p>
 <p>于是使用 charles 重新抓包后发现，一个 request 的请求居然要占用 1.68kb 的大小!</p>
 <p>其中TLS Handshake 就占了 1.27kb。</p>
-<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/bff81f4bfe6f45739f0303d53a2a626d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6bqm6bqm6bqm6YCg:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727640887&amp;x-signature=xCAAXQgdumN6x4zhXG5AglUYg7g%3D" alt="图片.png"  />
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/bff81f4bfe6f45739f0303d53a2a626d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6bqm6bqm6bqm6YCg:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728817383&amp;x-signature=llJGM08YVmwicZu1oadn%2FVgrjAU%3D" alt="图片.png"  />
 </p>
 <p>这种情况下，需要的上行带宽就是：<code>1.68*20000/1024*8=262.5mbps</code></p>
 <p>也就说明100mbps的上行为何被轻松打满</p>
-<h3 id="tls-handshake是什么来头竟然如此大">TLS Handshake是什么来头，竟然如此大?<a hidden class="anchor" aria-hidden="true" href="#tls-handshake是什么来头竟然如此大">#</a></h3>
+<h4 id="tls-handshake是什么来头竟然如此大">TLS Handshake是什么来头，竟然如此大?<a hidden class="anchor" aria-hidden="true" href="#tls-handshake是什么来头竟然如此大">#</a></h4>
 <p>首先要知道HTTPS全称是：HTTP over TLS，每次建立新的TCP连接通常需要进行一次完整的TLS Handshake。在握手过程中，客户端和服务器需要交换证书、公钥、加密算法等信息，这些数据占用了较多的字节数。</p>
 <p>TLS Handshake的内容主要包括：</p>
 <ul>
@@ -225,13 +225,13 @@
 <p>因此想到最粗暴的解决方案也比较简单，就是直接使用 HTTP，省去TLS Handshake的过程，那么自然就不会有 TLS 的传输了。</p>
 <p>那么是否真的有效呢？验证一下就知道。</p>
 <p>将请求协议改成 http 后：</p>
-<p><img loading="lazy" src="https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/67bb9077a35c4d77a716f08862665ab9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6bqm6bqm6bqm6YCg:q75.awebp?rk3s=f64ab15b&amp;x-expires=1727640887&amp;x-signature=BCnw8n2FN%2BG74bah%2FeXhPJZ73%2BA%3D" alt="图片.png"  />
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/67bb9077a35c4d77a716f08862665ab9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg6bqm6bqm6bqm6YCg:q75.awebp?rk3s=f64ab15b&amp;x-expires=1728817383&amp;x-signature=234Jt%2BTaKbetDYTh66vnYpe5Y%2BU%3D" alt="图片.png"  />
  可以看到请求头确实不包含 TLS Handshake了!</p>
 <p>整个请求只有 0.4kb，节省了 70% 的大小</p>
 <p>目标达成</p>
 <p>因此可以说明：在一些不是必须使用 https 的场景下，使用 http 会更加节省带宽。</p>
 <p>同时因为减少了加密的这个过程，可以观察到的是，在相同的并发下，服务器的负载有明显降低。</p>
-<h3 id="那么问题来了">那么问题来了<a hidden class="anchor" aria-hidden="true" href="#那么问题来了">#</a></h3>
+<h4 id="那么问题来了">那么问题来了<a hidden class="anchor" aria-hidden="true" href="#那么问题来了">#</a></h4>
 <p>如果接口必须使用 https那怎么办呢?</p>
 <p>当然还有另外一个解决方案，那就使用使用 <code>Keep-Alive</code>。<br>
 headers 中添加 <code>Connection: keep-alive</code> 即可食用。</p>
@@ -240,14 +240,14 @@ headers 中添加 <code>Connection: keep-alive</code> 即可食用。</p>
 而无需每次都进行完整的TLS Handshake，<br>
 但第一次握手时仍然需要传输证书和完成密钥交换。</p>
 <p>对于高并发的场景也非常适用。</p>
-<h3 id="要注意的是">要注意的是<a hidden class="anchor" aria-hidden="true" href="#要注意的是">#</a></h3>
+<h4 id="要注意的是">要注意的是<a hidden class="anchor" aria-hidden="true" href="#要注意的是">#</a></h4>
 <p>keep-alive 是有超时时间的，超过时间连接会被关闭，再次请求需要重新建立链接。</p>
 <p><strong>Nginx</strong> 默认的 <code>keep-alive</code> 超时是 75 秒，<br>
 <strong>Apache HTTP 服务器</strong> 通常默认的 <code>keep-alive</code> 超时是 5 秒。</p>
 <blockquote>
 <p><strong>ps：</strong><br>
 如果你的采集程序使用了大量的代理 ip那么 keep-alive 的效果并不明显～～<br>
-最好的还是使用 http</p>
+最好的还是使用</p>
 </blockquote>
 
 
@@ -259,15 +259,15 @@ headers 中添加 <code>Connection: keep-alive</code> 即可食用。</p>
       <li><a href="http://localhost:1313/tags/%E7%88%AC%E8%99%AB/">爬虫</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="http://localhost:1313/posts/juejin/%E4%B8%80%E4%BB%BD%E4%B8%A4%E5%B9%B4%E5%89%8D%E7%AB%AF%E6%99%AE%E6%99%AE%E9%80%9A%E9%80%9A%E7%9A%842022%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/">
+  <a class="prev" href="http://localhost:1313/posts/wiki/%E5%89%8D%E6%88%98%E5%8F%8B%E4%BB%AC/">
     <span class="title">« 上一页</span>
     <br>
-    <span>一份两年前端普普通通的2022年终总结</span>
+    <span>前战友们</span>
   </a>
-  <a class="next" href="http://localhost:1313/posts/juejin/ffmpeg%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E9%AD%941%E5%88%9D%E6%8E%A2ffmpeg%E6%A1%86%E6%9E%B6/">
+  <a class="next" href="http://localhost:1313/posts/wiki/%E5%A4%B1%E6%8E%A7/">
     <span class="title">下一页 »</span>
     <br>
-    <span>FFmpeg从入门到入魔(1)：初探FFmpeg框架</span>
+    <span>《失控》</span>
   </a>
 </nav>
 

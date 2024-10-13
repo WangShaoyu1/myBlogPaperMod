@@ -144,140 +144,175 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">可视化埋点平台（三）：元素圈选器实现
+    <h2 class="entry-hint-parent">5、周会
     </h2>
   </header>
   <div class="entry-content">
-    <p>这是可视化埋点系列的第三篇文章，重点讲述元素圈选器的实现。本系列其他文章见下：
-可视化埋点平台（一）：从0到1搭建可视化埋点平台。主要是平台搭建的总览。 可视化埋点平台（二）：intersectionObserver 实战经验。介绍曝光埋点采集时的一些实战细节。 可视化埋点平台（三）：元素圈选器实现。主要讲述元素圈选器的实现。也就是本篇文章 可视化埋点平台（四）：如何维持 Xpath 稳定性，主要介绍 xpath 的边界条件及稳定性增强。 在实现可视化埋点的过程中，元素圈选是其功能中不可或缺的一环，其能力具备一定的通用性，故将其逻辑从 可视化埋点平台 中剥离出来，单独作为一个独立的工具方法暴露出来，源代码及演示可直接在 github仓库中 查看。本文主要是对其实现的拆解和其中关键点的记录。
-整体流程 整体的 demo 可以在此处查看。
-整体来讲，圈选器的功能在于：
-enable 前，用户可自由交互，此时点击、移动并不会被阻碍。
-而 enable 后，当用户移动鼠标/移动端移动手指，便会高亮当前选择的元素的大小、padding 及 margin 等。
-而当用户鼠标点击 / 移动端手指离开 后，将会触发选中的回调，可视化埋点平台在这一环节唤起 埋点录入表单。
-从整体的思路上来讲，整个 元素圈选器 的核心功能在于：
-计算元素的大小、位置，属性，并增加蒙层 列表元素的判定、多选 兼容 pc/mobile 除此之外需要具备 开关能力，以免影响用户正常交互。
-元素位置、大小及属性计算 首先是元素的位置计算，一个非常简单的方法是借助现成的 api: Element.getBoundingClientRect 。
-...</p>
+    <p>Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2023-01-03 00:00:00 +0000 UTC'>一月 3, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员芋仔</footer>
-  <a class="entry-link" aria-label="post link to 可视化埋点平台（三）：元素圈选器实现" href="http://localhost:1313/posts/juejin/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%E4%B8%89%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%99%A8%E5%AE%9E%E7%8E%B0/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 5、周会" href="http://localhost:1313/posts/wiki/5%E5%91%A8%E4%BC%9A/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">牛逼！Vue3.5的useTemplateRef让ref操作DOM更加丝滑
+    <h2 class="entry-hint-parent">科大讯飞各解决方案访问链接
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 vue3中想要访问DOM和子组件可以使用ref进行模版引用，但是这个ref有一些让人迷惑的地方。比如定义的ref变量到底是一个响应式数据还是DOM元素？还有template中ref属性的值明明是一个字符串，比如ref=&#34;inputEl&#34;，怎么就和script中同名的inputEl变量绑到一块了呢？所以Vue3.5推出了一个useTemplateRef函数，完美的解决了这些问题。
-加入欧阳的高质量vue源码交流群、欧阳平时写文章参考的多本vue源码电子书
-ref模版引用的问题 我们先来看一个react中使用ref访问DOM元素的例子，代码如下：
-javascript
-代码解读
-复制代码
-const inputEl = useRef&lt;HTMLInputElement&gt;(null); &lt;input type=&#34;text&#34; ref={inputEl} /&gt;
-使用useRef函数定义了一个名为inputEl的变量，然后将input元素的ref属性值设置为inputEl变量，这样就可以通过inputEl变量访问到input输入框了。
-inputEl因为是一个.current属性的对象，由于inputEl变量赋值给了ref属性，所以他的.current属性的值被更新为了input DOM元素，这个做法很符合编程直觉。
-再来看看vue3中的做法，相比之下就很不符合编程直觉了。
-不知道有多少同学和欧阳一样，最开始接触vue3时总是在template中像react一样给ref属性绑定一个ref变量，而不是ref变量的名称。比如下面这样的代码：
-javascript
-代码解读
-复制代码
-&lt;input type=&#34;text&#34; :ref=&#34;inputEl&#34; /&gt; const inputEl = ref&lt;HTMLInputElement&gt;();
-**更加要命的是这样写还不会报错！！！！**当我们使用inputEl变量去访问input输入框时始终拿到的都是undefined。
-经过多次排查发现原来ref属性接收的不是一个ref变量，而是ref变量的名称。正确的代码应该是这样的：
-javascript
-代码解读
-复制代码
-&lt;input type=&#34;text&#34; ref=&#34;inputEl&#34; /&gt; const inputEl = ref&lt;HTMLInputElement&gt;();
-还有就是如果我们将ref模版引用相关的逻辑抽成hooks后，那么必须将在vue组件中也要将ref属性对应的ref变量也定义才可以。
+    <p> 针对语雀上的文档，讯飞官方在去年2023年12月份改变了查看策略，没有文件夹的查看模式，只能够查看最末端的文章链接
+主要是针对AIUI相关，统计如下：
+方案名称
+访问链接
+备注
+方案名称
+访问链接
+备注
+AIUI文档中心
+https://aiui-doc.xf-yun.com/project-1/
+唤醒词定制及指标
+https://www.yuque.com/iflyaiui/zzoolv/bmkzg94zx8wity23#gSUJx
+效果优化
+https://www.yuque.com/iflyaiui/zzoolv/xf3mia#QP1H2%20
+硬件结构电路设计参考
+https://www.yuque.com/iflyaiui/zzoolv/cmm87e#LN0St
+错误码和解决方案
+https://www.yuque.com/iflyaiui/zzoolv/igbuol
+芯片性能风险评估
+https://www.yuque.com/iflyaiui/zzoolv/onq68e#BKPhv
+结构设计参考
+https://www.yuque.com/iflyaiui/zzoolv/nfbssn
+硬件整改参考
+https://www.yuque.com/iflyaiui/zzoolv/opg14g
+windows mp3音频合成工具
+https://www.yuque.com/iflyaiui/zzoolv/fcgc1an6co6y94gv
+频分析软件-Audition
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端欧阳</footer>
-  <a class="entry-link" aria-label="post link to 牛逼！Vue3.5的useTemplateRef让ref操作DOM更加丝滑" href="http://localhost:1313/posts/juejin/%E7%89%9B%E9%80%BCvue3.5%E7%9A%84usetemplateref%E8%AE%A9ref%E6%93%8D%E4%BD%9Cdom%E6%9B%B4%E5%8A%A0%E4%B8%9D%E6%BB%91/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 科大讯飞各解决方案访问链接" href="http://localhost:1313/posts/wiki/%E7%A7%91%E5%A4%A7%E8%AE%AF%E9%A3%9E%E5%90%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E8%AE%BF%E9%97%AE%E9%93%BE%E6%8E%A5/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">我们应该如何写好HTML&amp;CSS
+    <h2 class="entry-hint-parent">双屏英伟达炉子常用linux指令
     </h2>
   </header>
   <div class="entry-content">
-    <p>这应该是最容易让人忽略的一个问题，容易到很多工作几年的前端开发工程师都不太注意如何写好html及css
-HTML&amp;CSS 重要吗 相比于JavaScript,HTML&amp;CSS确实凸显不出它的重要性,因为HTML&amp;CSS不承载业务逻辑,具体来说他们不能称之为编程语言,那HTML&amp;CSS真的就那么简单到不起眼吗？
-布局是项目易维护的重要基础 当我们拿到项目ui图后,建议大家不要一行一行的去画页面，这样不经效率低而且写出来的页面代码比较臃肿,下面是Element-ui的栅格布局及布局容器图：
-一旦有了项目的大体架构，我们就可以做到手里有粮心中不慌了
-我们以京东首页为例，来说明下良好的布局应该是什么样子的
-可以看到，我在首页任意调换两个div,页面的布局也跟着调换过来而且没有乱,这就是一个良好的布局。你也可以在自己的项目这样试一试
-管理好CSS有助于提高项目性能 说到CSS我们是势必要说到两个概念：重绘&amp;重排
-重绘 重绘是指当 DOM 元素的属性发生变化 (如 color) 时, 浏览器会通知render 重新描绘相应的元素, 此过程称为重绘。 重排 重排是指某些元素变化涉及元素布局 (如width), 浏览器则抛弃原有属性, 重新计算，此过程称为重排。（重排一定会重绘，重绘不一定重排）。 页面渲染的一般过程为JS &gt; CSS &gt; 计算样式 &gt; 布局 &gt; 绘制 &gt; 渲染层合并而在这个过程中其中,重排和重绘是整个环节中最为耗时的两环,从重绘和重排的概念上看，重排比重绘更加的消耗性能,所以我们尽量避免着这两个环节。从性能方面考虑,最理想的渲染流水线是没有布局和绘制环节的,只需要做渲染层的合并即可。
+    <p>虚拟人目录
+cd /home/yingzi/workspace/yingzi-nvidia-vdh-dualscreen2
+获取虚拟人最新代码
+git pull origin
+编译并运行虚拟人进程
+./build_run.sh
+进入产测模式
+vim /data/work/DevInfo.ini （LaunchMode等于0、1分别代表工厂、用户模式）
+icaservice服务的日志路径
+/data/icaservice/logs/main.log
+杀掉虚拟人进程
+./kill.sh yingzi_vdh-temp
+查看虚拟人进程
+ps aux | grep yingzi_vdh-temp
+给某个文件夹下的文件授权
+find /opt/dw223_app -type f -exec chmod &#43;x {} \;
+查看虚拟人日志
+tail -f /home/yingzi/workspace/vdh/yingzi_vdh.log
+?
+2.1``、应用日志目录：/data/work
+2.2``、destktop.log、cloud-service.log、heatingserver.log
+2.3``、应用目录：/opt/dw223_app
+2.4``、查看应用进程：ps -ef|grep shuying
+2.5``、首次安装环境需要配置
+2.5``.``1``、dw223_fw.tar.gz （sudo tar -xvf dw223_fw.tar.gz）(这个找研发获取最新)
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-07-20 00:00:00 +0000 UTC'>七月 20, 2020</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;刘小灰</footer>
-  <a class="entry-link" aria-label="post link to 我们应该如何写好HTML&CSS" href="http://localhost:1313/posts/juejin/%E6%88%91%E4%BB%AC%E5%BA%94%E8%AF%A5%E5%A6%82%E4%BD%95%E5%86%99%E5%A5%BDhtmlcss/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 双屏英伟达炉子常用linux指令" href="http://localhost:1313/posts/wiki/%E5%8F%8C%E5%B1%8F%E8%8B%B1%E4%BC%9F%E8%BE%BE%E7%82%89%E5%AD%90%E5%B8%B8%E7%94%A8linux%E6%8C%87%E4%BB%A4/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">基于vue-router思考🕓实现一个简易版vue-router
+    <h2 class="entry-hint-parent">2023.01.07月会议~虚拟人项目周例会
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 单页面的兴起离不开前端路由,记得在小白时期刚接触SPA单页面应用这种概念时,我一度怀疑这种技术靠不靠谱,心中充满着很多不解,比如:把所有东西都写在一个页面上难道没有性能问题?如果某个地方报错了那页面是不是就崩了?
-后来随着做了一个又一个SPA项目,逐渐打消了这种顾虑。下面我们就来研究下单页面的灵魂，路由是怎么个实现逻辑吧。
-url中#(hash)的含义 拿 vue-router举例,vue-rouer有两种工作模式分别是hash和history,我们先来了解下#hash
-锚点 看到#最容易联想到的就是 锚点 了 , 就像看 掘金 文章一样,可以利用锚点实现点击跳转
-这应该是#(hash)最本质的用法了
-改变#不触发网页重载 # 还有一个重要特点就是改变#后面的内容后并不会导致页面刷新
-也就是这个特性使得使用#实现前端路由成为可能,我们在这里先进行大胆的假设:hash实现原理就是监听#后面内容的变化然后动态渲染出对应的组件
-History Api 从hash来看,我们可以浅浅的得出一个结论,要想实现前端路由,必须要满足 页面URL变化时,页面不能刷新 这一条件
-我们在History Api中发现 pushState 似乎也满足这一条件
+    <p>会议名称
+基于1-3周的工作安排工作进度的周例会
+会议时间
+2023年1月7日15:30-18:30
+会议地点
+小鱼会议：9006363736
+现场参会：广州24楼VIP会议室
+主持人
+韦玲
+会议记录
+廖鸿珍
+参会人员
+韦玲、王宇、朱志强、郑小涵、黄婷、秦路航、李明仙、周引凤、李梦阳、邹正清、廖鸿珍、范晓烽、廖志川、冯天凤、唐玮、杨团义、马冬颖
+会议主题
+1、基于影子c盘赛道的虚拟人业务术语的定义
+2、关键场景（创建~注销）内容
+3、关键场景识别
+4、应用端场景消费端的内容
+5、虚拟人能力清单的内容
+会议内容
+1、关键词定义（统一基本概念），侧重解析模糊概念、统一专业性强的相关概念（讲解人：韦玲）
+2、关键场景（创建~注销）内容汇报【能力交易过程歧义：交易的是能力还是整个虚拟人（整个虚拟人包括形象能力和对话技能）】（讲解人：郑小涵）
+3、关键场景识别内容汇报（场景识别划分到多细的场景）（讲解人：黄婷）
+4、应用场景消费端内容汇报（讲解人：唐玮）
+5、虚拟人能力清单的输出（形象管理能力设计、技能管理能力设计、虚拟人交易管理&#43;虚拟人互动管理）（讲解人：廖志川）
+决议项
+1、思考能力交易模式 @全员
+2、各小组按五大要素去思考应用场景的关键场景，下周需要完成初版
+3、对第三方公司交付的demo版虚拟人进行积极体验并反馈
+材料（附件）
+电子表格关键场景识别20230107-v2.drawio关键场景识别20230107-v2.xlsx角色识别20230107.xmind有虚拟人的万得厨闭环场景.xmind
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-01-18 00:00:00 +0000 UTC'>一月 18, 2021</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;刘小灰</footer>
-  <a class="entry-link" aria-label="post link to 基于vue-router思考🕓实现一个简易版vue-router" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Evue-router%E6%80%9D%E8%80%83%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E6%98%93%E7%89%88vue-router/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 2023.01.07月会议~虚拟人项目周例会" href="http://localhost:1313/posts/wiki/2023.01.07%E6%9C%88%E4%BC%9A%E8%AE%AE~%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%A1%B9%E7%9B%AE%E5%91%A8%E4%BE%8B%E4%BC%9A/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">当一个程序员决定脱下孔乙己的长衫
+    <h2 class="entry-hint-parent">双屏（阈值1300)与RK炉子误唤醒率测试对比
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 Hi 你好，我是东东拿铁，一个正在探索个人IP的后端程序员。
-在探索个人IP半年的时间里，自己利用业余时间学习写作，输出内容。
-为爱发电半年了，我认为是时候做出点改变了。
-行动、破除了一切焦虑 在起步之初，我就暗暗下定决心，在前半年的时间里，我不去思考如何变现，而是专注开阔眼界，锻炼写作能力。
-上半年接触了很多做自媒体的朋友，很多都在做知识付费，各种各样的项目让人眼花撩乱，更是可以付费和他们学习。看着他们朋友圈不断发出的日入xxx、月入xxx的信息，说实话很难让人不心动。
-当然，心动的同时，伴随你的一定还有焦虑。我加入了十几个群，群里面又不断的有着分享，一天需要看的消息内容可能有上千条。
-正是自己给自己定下的锻炼写作能力的目标，和前半年不去思考如何变现的决定，让我在日常生活中，需要花大量的时间阅读、思考、输出，加上下班后还要看娃、看书，因此时间有限，做完该做的事情后，剩下的时间所剩无几，很多群、朋友圈我几乎没有时间去看了。
-很庆幸自己给自己做了这个要求，不然我一定会在繁多的信息和项目中迷失自己。
-行动，能够破除很多焦虑。
-现在半年过去了，这段时间里，用心学习了不少东西，比如标题、框架、内容，最重要的是养成了持续输出的习惯，从自己过去的一些经历，到自己想要学习的东西，已经写了39篇文章，掘金的创作等级终于到了lv5，挺开心的。 复盘问题 半年时间，总结自己存在的问题，大概有两个点。
-内容缺乏深度，主要是阅历不足，这个短时间内很难提升。 更新速度较慢，最快也需要集中精力两天，才能打磨好一个自己满意的文章。 我对自己输出的文章，是有自己的一个要求在里面的，比如不能标题党，内容框架要好，要有深度，还不能只罗列知识，要有自己的经历与感悟。
-这导致我的输出速度较低，因为当你要讲明白一个观点、思维的时候，你一定会发现自己有不了解的地方，然后就要去重新学习、思考、整合。
-但个人的见识、思维在短时间内不可能有突破性的提升，所以写出来的东西，一定只停留在我当下的能力阶段，吸引到的人也有限。自媒体就是要不断增加自己的更新速度，才能在这个信息爆炸的时代，吸引到更多人的注意力。
-我还是蛮羡慕那些商业、技术大佬，能够吸引到几十万的粉丝，但如果按照目前的增长速度，错过平台红利期的我，或许几年后也无法积累这么多粉丝。
-没有用户，没有这么多认可我的人，我做自媒体的目的：成为一个自由职业者，也就无法达到了。
-现在，是时候去尝试一下，做一些能够赚钱的项目了。
-脱下孔乙己的长衫 我决定深度参与一个项目，去做之前我认为没有价值的，写公众号爆文。
-先介绍一下公众号爆文。
-项目很简单，就是在公众号发布用户喜欢的内容，比如热点、公众人物、情感等文章，公众号平台会推荐，如果被推荐了，阅读量提升，你可以开通流量主，文章会自动插入广告，那么文中的广告，就会给你带来收益。
-之前自己的一篇文章在1w左右阅读的情况下，收入大概在50元左右。文章在被推荐的情况下，如果达到10w&#43;，单篇文章收入会在5、600左右，是一个门槛比较低的副业。
-说实话，做这个决定很难，内心内耗的两个点：
-对流量文这件事情，并不是很认可。我之所以用心去写每一篇文章，就是因为看过太多靠标题、热点，写出的没营养的文章了，我认为这完全就是在浪费每一个读者的时间。 如果仅看单篇文章的收益，我之前1w&#43;阅读的文章，至少花费了我4、5天的业余时间，最终几十元的收益，对于一个程序员来讲，性价比极低，我瞧不上。 但我最近从思想上想清楚了上面的两个问题：
+    <p>1.测试地点
+办公室2415
+2.测试时间
+9/13 18：20——-9/14 18:20
+3.测试设备
+dw223双屏英伟达板子（非烹饪下阈值1300，烹饪中阈值1100），dw220 rk3588安卓板子
+4.测试方法
+非烹饪状态下在dw223和dw220两台设备前方0.5米左右，通过小度音箱持续播报电视剧《霞光》24小时，到设备处的分贝大概在75db。
+5.测试结果
+dw223双屏英伟达板子（非烹饪下阈值1300，烹饪中阈值1100）,误唤醒4次
+2024-09-14 03:45:53,xiao3 wan4 xiao3 wan4,1375
+2024-09-14 06:33:07,xiao3 wan4 xiao3 wan4,1300
+2024-09-14 11:31:18,xiao3 wan4 xiao3 wan4,1438
+2024-09-14 15:20:33,xiao3 wan4 xiao3 wan4,1349
+dw220 rk3588安卓板子，误唤醒6次
+唤醒 2024-09-13 20:58:27,xiao3 wan4 xiao3 wan4,1014
+唤醒 2024-09-14 02:30:01,xiao3 wan4 xiao3 wan4,1078
+唤醒 2024-09-14 07:24:18,xiao3 wan4 xiao3 wan4,1020
+唤醒 2024-09-14 11:36:48,xiao3 wan4 xiao3 wan4,1012
+唤醒 2024-09-14 11:45:23,xiao3 wan4 xiao3 wan4,1061
+唤醒 2024-09-14 13:53:08,xiao3 wan4 xiao3 wan4,1021
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-06-17 00:00:00 +0000 UTC'>六月 17, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;东东拿铁</footer>
-  <a class="entry-link" aria-label="post link to 当一个程序员决定脱下孔乙己的长衫" href="http://localhost:1313/posts/juejin/%E5%BD%93%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E5%86%B3%E5%AE%9A%E8%84%B1%E4%B8%8B%E5%AD%94%E4%B9%99%E5%B7%B1%E7%9A%84%E9%95%BF%E8%A1%AB/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 双屏（阈值1300)与RK炉子误唤醒率测试对比" href="http://localhost:1313/posts/wiki/%E5%8F%8C%E5%B1%8F%E9%98%88%E5%80%BC1300%E4%B8%8Erk%E7%82%89%E5%AD%90%E8%AF%AF%E5%94%A4%E9%86%92%E7%8E%87%E6%B5%8B%E8%AF%95%E5%AF%B9%E6%AF%94/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/94/">
-      «&nbsp;上一页&nbsp;94/152
+      «&nbsp;上一页&nbsp;94/237
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/96/">下一页&nbsp;96/152&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/96/">下一页&nbsp;96/237&nbsp;»
     </a>
   </nav>
 </footer>

@@ -131,117 +131,122 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">对于Docker和Podman的一点使用经验
+    <h2 class="entry-hint-parent">1、prd设计通用规则说明
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言：本文会以多个实际的线上例子，分享自己对于Docker和Podman的一点使用经验及踩过的坑，希望对读者有一点帮助。
-本文bash脚本初步加工后可直接使用（兼容mac和linux系统），对于关键点会有注重说明，但是对于一些细节需要读者自行去查阅相关文档，这里不会具体展开。
-一、部署Apollo 1、docker脚本 bash
-代码解读
-复制代码
-version=2.0.1 dbhost_port=host.docker.internal:3306 dbuser=root dbpwd=xxxx docker stop apollo-configservice &amp;&amp; docker rm apollo-configservice docker stop apollo-adminservice &amp;&amp; docker rm apollo-adminservice docker stop apollo-portal &amp;&amp; docker rm apollo-portal docker run -p 28080:8080 \ --init \ --add-host=host.docker.internal:host-gateway \ -v /etc/localtime:/etc/localtime:ro \ -e SPRING_DATASOURCE_URL=&#34;jdbc:mysql://$dbhost_port/ApolloConfigDB?characterEncoding=utf8&#34; \ -e SPRING_DATASOURCE_USERNAME=$dbuser \ -e SPRING_DATASOURCE_PASSWORD=$dbpwd \ -e ENV=dev \ -e JAVA_OPTS=&#39;-Xmx128m -Xms128m&#39; \ -d -v /tmp/logs:/opt/logs --name apollo-configservice apolloconfig/apollo-configservice:$version sleep 30s docker run -p 28090:8090 \ --init \ --add-host=host.docker.internal:host-gateway \ --link apollo-configservice:apollo-configservice \ -v /etc/localtime:/etc/localtime:ro \ -e SPRING_DATASOURCE_URL=&#34;jdbc:mysql://$dbhost_port/ApolloConfigDB?characterEncoding=utf8&#34; \ -e SPRING_DATASOURCE_USERNAME=$dbuser \ -e SPRING_DATASOURCE_PASSWORD=$dbpwd \ -e ENV=dev \ -e JAVA_OPTS=&#39;-Xmx128m -Xms128m&#39; \ -d -v /tmp/logs:/opt/logs --name apollo-adminservice apolloconfig/apollo-adminservice:$version sleep 30s docker run -p 28070:8070 \ --init \ --link apollo-configservice:apollo-configservice \ --add-host=host.docker.internal:host-gateway \ -v /etc/localtime:/etc/localtime:ro \ -e SPRING_DATASOURCE_URL=&#34;jdbc:mysql://$dbhost_port/ApolloPortalDB?characterEncoding=utf8&#34; \ -e SPRING_DATASOURCE_USERNAME=$dbuser \ -e SPRING_DATASOURCE_PASSWORD=$dbpwd \ -e APOLLO_PORTAL_ENVS=dev,prd \ -e DEV_META=http://host.docker.internal:28080 \ -e PRD_META=http://host.docker.internal:28080 \ -e ENV=dev \ -e JAVA_OPTS=&#39;-Xmx128m -Xms128m&#39; \ -d -v /tmp/logs:/opt/logs --name apollo-portal apolloconfig/apollo-portal:$version echo &#34;apollo启动完成&#34;
-...</p>
+    <p>Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2024-05-10 00:00:00 +0000 UTC'>五月 10, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;好看的HK</footer>
-  <a class="entry-link" aria-label="post link to 对于Docker和Podman的一点使用经验" href="http://localhost:1313/posts/juejin/%E5%AF%B9%E4%BA%8Edocker%E5%92%8Cpodman%E7%9A%84%E4%B8%80%E7%82%B9%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 1、prd设计通用规则说明" href="http://localhost:1313/posts/wiki/1prd%E8%AE%BE%E8%AE%A1%E9%80%9A%E7%94%A8%E8%A7%84%E5%88%99%E8%AF%B4%E6%98%8E/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">SpringCloudStream如何实现统一消息通信平台
+    <h2 class="entry-hint-parent">10、虚拟人模板管理
     </h2>
   </header>
   <div class="entry-content">
-    <p>Spring Cloud Stream是Spring家族提供的消息通信框架，而消息通信也是我们在分布式系统构建过程中的一个重要技术组件。然而，和普通的消息中间件不同，Spring Cloud Stream为开发人员提供的是一种跨消息中间件的统一消息通信平台。那么，它是如何做到这一点的呢？这是一个很好的话题，本文内容将围绕这一话题展开讨论。
-我们知道，在分布式系统设计和开发过程中，服务与服务之间可以通过RPC实现交互。但是，RPC虽然实现起来比较简单，但却是一种耦合度较高的实现技术。为了降低服务与服务之间的耦合度，有时候我们需要引入消息通信机制，采用异步的方式来完成不同服务之间的交互。讲到这里，你可能会说，这不就是消息中间件能解决的问题吗？答案是肯定的，但还不够。
-我们知道常见的消息通信规范以及中间件有很多种，代表性的规范有JMS和AMQP，对应的实现框架包括ActiveMQ和RabbitMQ等，而Kafka、RocketMQ等工具并不遵循特定的规范但也提供了消息通信的实现方案。显然，这些中间件的使用方式是完全不同的。那么，如何屏蔽这些中间件在使用上的差别，从而为开发人员提供了一套统一且高效的消息发送和接收API，这是我们今天要讨论的问题，如下图所示。
-围绕统一消息平台的设计和实现，我们需要明确的是所采用的技术体系。目前，针对这个主题，我们可以参考和借鉴的框架并不多，而Spring家族中的Spring Cloud Stream是其中的代表。Spring Cloud Stream对整个消息发布和消费过程做了高度抽象，并提供了一系列核心组件，包括Binder、Channel、Source和Sink等。
-让我们基于具体框架来分析底层的实现原理。在Spring Cloud Stream中，真正完成与对不同消息中间件之间的集成的是Binder组件。而不同的消息中间件具有不同的API，所以在Binder组件的设计和实现过程中，一方面需要考虑抽象，另一方面也需要针对不同中间件的特性来完成底层的交互过程。这部分内容是我们需要掌握的重点，值得深入进行学习，对于自身架构设计能力的提升有很大帮助。
-消息通信技术体系 Spring家族中的消息通信解决方案 在Spring家族中，与消息通信机制相关的框架有三个，分别是Spring Messaging、Spring Integration和Spring Cloud Steam。事实上，Spring Cloud中的Spring Cloud Stream是基于Spring Integration实现了消息发布和消费机制并提供了一层封装，很多关于消息发布和消费的概念和实现方法本质上都是依赖于Spring Integration。而在Spring Integration的背后，则依赖于Spring Messaging组件来实现消息处理机制的基础设施。这三个框架之间的依赖关系如下图所示。
-从依赖关系上讲，Spring Messaging 是Spring家族中处理消息通信的底层框架。而Spring Integration在定位上属于一种企业服务总线，依赖于Spring Messaging。因此，我们先来介绍Spring Messaging。
-Spring Messaging是Spring框架内置的一个模块，提供了最基本的消息通信API，其中，消息这个概念由Message接口进行表示，包括一个消息头Header和一个消息体Payload，如下所示。
-public interface Message {
-T getPayload();
+    <p> 11. 背景 22. 业务分析 2.12.1. 业务流程 2.22.2. 角色分析 2.2.12.2.1. 超级管理员 2.2.22.2.2. 应用管理员 33. 系统架构 44. 数据库设计 4.14.1. 应用表：vms_application 4.24.2. 虚拟人表：vms_avatar 4.34.3. 对话服务表：vms_chat_server 4.44.4. 知识库表：vms_knw 4.54.5. 知识库文件表：vms_knw_file 4.64.6. 知识插件表：vms_knw_plugin 4.74.7. 权限表：vms_auth 4.84.8. 超级管理员表：vms_admin 1. 背景 FTT管理后台，已经有了一套应用/虚拟人管理的工具，不过它的应用是以操作系统为单元的，例如 Android、IOS等。这种管理方式非常不适合我们，因为我们有很多产品，我们希望以产品的应用为单元。因此，我们开发新的一套应用，对应我们各个产品。例如 FPF、万得厨等，这些应用关联FTT的应用，并关联FTT的虚拟人。
+最终的关联关系是这样的：
+Android应用
+FTT
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-09 00:00:00 +0000 UTC'>四月 9, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;职略</footer>
-  <a class="entry-link" aria-label="post link to SpringCloudStream如何实现统一消息通信平台" href="http://localhost:1313/posts/juejin/springcloudstream%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0/"></a>
+  <footer class="entry-footer">5 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 10、虚拟人模板管理" href="http://localhost:1313/posts/wiki/10%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%A8%A1%E6%9D%BF%E7%AE%A1%E7%90%86/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">接口隔离原则在前端的应用
+    <h2 class="entry-hint-parent">10.1权限控制
     </h2>
   </header>
   <div class="entry-content">
-    <p>什么是接口隔离 接口隔离原则（ISP）是面向对象编程中的SOLID原则之一，它专注于设计接口。强调在设计接口时，应该确保一个类不必实现它不需要的方法。换句话说，接口应该尽可能地小，只包含一个类需要的方法，而不是一个庞大的接口，其中包含许多类不需要的方法。这样可以减少类之间的不必要依赖，提高模块化和代码的可维护性。
-如果一个大型接口包含许多函数，但一个类不需要所有这些函数，它仍然必须实现全部，即使有些是不必要的。ISP建议我们应该将这样的大型接口拆分成更小、更专注的接口。这样，每个类可以实现它实际需要的函数，避免实现不必要的函数。
-通过遵循这种方法，可以降低代码复杂性，使其更易于理解和维护。
-ISP的主要目标包括：
-将大型复杂接口拆分成更小、更具体的接口。 确保类不需要实现不必要的功能。 避免给类带来不必要的责任，从而产生更清晰、更易于理解的代码。 例如：
-如果一个接口有10个方法，但特定类只需要其中的2个，ISP建议拆分这个大型接口。这样，每个类可以实现它需要的方法，而不需要实现其他的。
-示例 1： 假设我们有一个用于所有类型任务的Worker接口：
-java
-代码解读
-复制代码
-public interface Worker { void work(); void eat(); }
-我们可以通过创建用于工作的Workable和用于吃的Eatable的单独接口来解决这个问题：
-java
-代码解读
-复制代码
-public interface Workable { void work(); } public interface Eatable { void eat(); }
-...</p>
+    <p>这里的权限管理有2个方式：
+第一个是超级管理员，超级管理员具备所有权限。超级管理员在 vms_admin 表登记。 第二个是普通管理员，每个普通管理员只能管理自己的数据，例如：应用管理员可以管理自己的应用，以及对应的虚拟人和自定义对话服务；知识库管理员可以管理自己的知识库；插件管理员可以管理自己的插件； 1. 前端界面的权限控制方式 前端界面不需要做任何控制，因为不控制菜单权限，只控制数据权限。后台会根据用户id来查询能够访问的数据。
+2. 后端的权限控制方式 后端有2个权限控制的点：
+Api鉴权：对于增、删、改、查询单条数据之类的接口，需要判断用户是否有权限。要么是超级管理员，要么是这条数据的管理员。关于这一点，需要后端开发一个Aspect统一拦截处理。 数据列表查询：根据用户id查询这个用户能访问的数据。 Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2024-10-03 00:00:00 +0000 UTC'>十月 3, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;叶知秋水</footer>
-  <a class="entry-link" aria-label="post link to 接口隔离原则在前端的应用" href="http://localhost:1313/posts/juejin/%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99%E5%9C%A8%E5%89%8D%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 10.1权限控制" href="http://localhost:1313/posts/wiki/10.1%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">RTMP、RTSP直播播放器的低延迟设计探讨
+    <h2 class="entry-hint-parent">2024~~九月份
     </h2>
   </header>
   <div class="entry-content">
-    <p>​技术背景 没有多少开发者会相信RTMP或RTSP播放器，延迟会做到150-300ms内，除非测试过大牛直播SDK的，以Android平台启动轻量级RTSP服务和推送RTMP，然后Windows分别播放RTSP和RTMP为例，整体延迟如下：
-大牛直播 SDK在保证超低延迟方面采取了多项技术措施。首先，其自有框架易于扩展，采用自适应算法，使得延迟更低、解码绘制效率更高。以 Windows 平台为例，海康摄像头 2560*1440 分辨率、8M 码率的 RTSP 流，SmartPlayer 延迟 200 毫秒左右，可满足平衡操控等低延迟场景。低延迟模式下，硬件性能无瓶颈的前提下，延迟可稳定在 150-300ms。
-此外，大牛直播 SDK 的 RTSP 播放器支持 TCP 和 UDP 模式的自动切换，提高了播放的兼容性和灵活性，能够更好地适应不同的网络环境，减少延迟。同时，支持设置缓冲时间，以应对网络抖动等不稳定情况，确保播放的流畅性，在保证流畅性的同时也有助于控制延迟。
-在技术实现上，底层原生模块把 RTSP|RTMP 流拉过来，做解析解码回调 YUV 或 RGB 数据到上层，在每个环节都做到极致，总体延迟可以达到 200 - 400ms。并且支持多实例播放，适用于需要同时监控多个视频源的场景，满足不同用户需求的同时也保证了低延迟性能。
-如何设计低延迟的直播播放器 大牛直播 SDK 通过自有框架、自适应算法、协议自动切换、缓冲时间设置以及优化的技术实现等多方面措施，保证了超低延迟的播放效果。
-自有框架如何降低延迟 大牛直播SDK的自有框架在降低延迟方面表现出色。它易于扩展，能够根据不同的应用场景进行灵活调整。这种自有框架在设计之初就以降低延迟为重要目标，通过优化各个模块之间的协作，提高数据处理效率。例如，在 RTMP 或 RTSP 直播播放器的设计中，从数据解析、解码、音视频数据同步到绘制等环节，自有框架能够确保数据传输的高效性，减少不必要的等待时间。同时，自有框架还能自适应不同的网络环境和硬件条件，自动调整参数以达到最佳的延迟效果。比如在网络状况不佳时，能够自动降低码率以保证流畅播放，同时尽量减少延迟的增加。此外，自有框架还通过优化内部算法，提高数据处理速度，进一步降低延迟。例如在解码过程中，采用高效的解码算法，充分利用硬件加速功能，如 GPU 加速，以快速处理大量的音视频数据。
-自适应算法如何实现 大牛直播SDK的自适应算法是实现超低延迟的关键之一。该算法能够根据网络状况动态调整码率，确保直播服务的流畅性。例如，当网络带宽充足时，自适应算法会提高码率，以提供更高质量的视频画面；而当网络带宽受限或出现波动时，算法会自动降低码率，以减少数据传输量，保证视频的流畅播放，同时降低延迟。此外，自适应算法还能根据不同的硬件性能进行调整。如果硬件性能强大，算法会充分利用硬件资源，提高数据处理速度，进一步降低延迟；如果硬件性能有限，算法会自动优化参数，以确保在不影响播放质量的前提下，尽量降低延迟。在实际应用中，自适应算法会不断监测网络状况和硬件性能，并实时调整参数，以实现最佳的延迟效果。
-RTSP播放器协议自动切换作用 大牛直播SDK的RTSP播放器支持 TCP 和 UDP 模式的自动切换，这在控制延迟方面起到了重要作用。不同的服务器可能支持不同的传输协议，自动切换功能可以提高播放的兼容性和灵活性。例如，在某些网络环境下，UDP 协议可能具有更低的延迟，但稳定性相对较差；而 TCP 协议则更加稳定，但延迟可能会稍高一些。通过自动切换功能，播放器可以根据实际情况选择最合适的传输协议，以达到平衡延迟和稳定性的目的。当网络状况良好时，播放器可以自动切换到 UDP 模式，以降低延迟；当网络出现抖动或不稳定时，播放器会自动切换到 TCP 模式，以保证播放的稳定性。这种自动切换功能使得播放器能够在不同的网络环境下都能保持较好的性能，为用户提供低延迟的播放体验。
+    <p>1. 国内双屏版万得厨2.0 类别
+内容
+备注
+类别
+内容
+备注
+产品设计/研发
+针对原828版本未实现功能 展会过程中优化版本 内部用户反馈内容 如上产品需求设计
+展会现场出现得闪退、黑背景、GPU服务器挂掉、连续对话优化、离线方案等 增强虚拟人应用程序稳定性； 改用生产环境FTT（目前生产环境FTT，客户端SDK无法调通nlp） 技术攻关
+Linux系统虚拟人SDK黑色背景问题
+一方面看虚拟人公司的方案；另一方面改用H5渲染方案
+技术攻关
+自定义接口，客户端播报逻辑调整
+目前的逻辑：
+query—&gt;自定义对话—&gt;文本返回-&gt;客户端立刻播报 修改为:
+query—&gt;自定义对话—&gt;文本返回-→客户端控制播报时机与播报内容
+主要修改的部分是SDK的处理逻辑，云端的接口不变（FTT接入协议）。Android、Linux、H5、Win、iOS各端的SDK需要针对性更换。 需反馈给虚拟人公司进行对应修改
+技术攻关
+英伟达平台，虚拟人渲染用H5方案，降低设备整体内存占用
+目前的逻辑：
+客户端：万得厨应用&lt;——&gt;虚拟人应用
+虚拟人应用：声学、指令逻辑、渲染、播报 调整为：
+客户端：万得厨应用&lt;——&gt;虚拟人应用&lt;——&gt;H5应用
+虚拟人应用：声学、指令逻辑、Webview渲染H5
+H5应用：渲染、播报 云端内容不变
+新增虚拟人应用与H5之间的信息传递协议（参考屏端实现，考虑到各种逆向场景与异常处理）
+2. HM团队联调版本双屏万得厨2.0 类别
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-28 00:00:00 +0000 UTC'>九月 28, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;音视频牛哥</footer>
-  <a class="entry-link" aria-label="post link to RTMP、RTSP直播播放器的低延迟设计探讨" href="http://localhost:1313/posts/juejin/rtmprtsp%E7%9B%B4%E6%92%AD%E6%92%AD%E6%94%BE%E5%99%A8%E7%9A%84%E4%BD%8E%E5%BB%B6%E8%BF%9F%E8%AE%BE%E8%AE%A1%E6%8E%A2%E8%AE%A8/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 2024~~九月份" href="http://localhost:1313/posts/wiki/2024~~%E4%B9%9D%E6%9C%88%E4%BB%BD/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">03开源任务管理系统：创建一个任务
+    <h2 class="entry-hint-parent">1.1、语音交互过程中各元素的显示与消失规则
     </h2>
   </header>
   <div class="entry-content">
-    <p> GitHub 地址：github.com/dom-bro/tas…
-虽说是一个任务管理系统，但简单地讲，其实就是任务的增删改查(CRUD)。
-其中最重要的又当属增，即创建任务，此为数据之源，删改查都依赖于它所产生的数据。
-交互设计 凭着程序员的直觉，最初做成了一个表单如下图，表单项也对应了数据库中的表的字段，简单直接。
-后来经过同事的建议，对比了 tower，teambition，worktile 这些成熟产品的交互设计。
-tower 看板如下图所示
-teambition 看板如下图所示
-worktile 看板如下图所示
+    <p>语音交互过程中，①对话框、②表示语音接收的组件，两者的显示与消失规则如下：
+1、用户唤醒时，①和②就出现，并且在用户输入语音指令的过程中一直显示；
+2、用户输入完指令后，虚拟人根据指令开始执行相应的行为：
+2.1、虚拟人执行的是语音回答（比如询问天气怎么样），在整个tts播报过程中，①和②一直显示；从tts播报结束开始计时，若无下一轮对话，3s后①消失，5s后②消失；
+2.2、虚拟人执行的是动作（比如让ta跳舞），开始做动作的时候①消失，②显示；从动作结束开始计时，若无下一轮对话，5s后②消失；
+3、用户唤醒后若没有输入语音指令，则从唤醒后开始计时，5s后②消失；
+4、当用户唤醒，①和②出现到自然消失的整个显示的过程中，只要用户触摸了屏幕上非意图标签文字以外的地方，就表示退出语音交互，这时①②立即消失，无论这时是否有tts播报在进行（后续应该是要做到触屏即打断tts播报）；
+5、以上有关①和②的规则适用于如下页面：【主页面——无烹饪任务】【烹饪进行中】【暂停烹饪】。
+【暂停烹饪】与前两者有一个不同点，多了③虚拟人本身以及虚拟人下方的蒙层，③的显示与消失规则与②同步。
+在用户输入语音指令的过程中，②组件的动效变化规则如下：
+1、刚唤醒且用户还没有开始输入语音指令时，呈球形；
+2、用户开始输入语音指令时，变成波浪线，波浪线上是ASR的文字内容，这时候对应的①里面的对话框内容是省略号；
+3、指令接收结束，又变成球形。
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-08-23 00:00:00 +0000 UTC'>八月 23, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;dombro</footer>
-  <a class="entry-link" aria-label="post link to 03开源任务管理系统：创建一个任务" href="http://localhost:1313/posts/juejin/03%E5%BC%80%E6%BA%90%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E4%BB%BB%E5%8A%A1/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 1.1、语音交互过程中各元素的显示与消失规则" href="http://localhost:1313/posts/wiki/1.1%E8%AF%AD%E9%9F%B3%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%90%84%E5%85%83%E7%B4%A0%E7%9A%84%E6%98%BE%E7%A4%BA%E4%B8%8E%E6%B6%88%E5%A4%B1%E8%A7%84%E5%88%99/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/33/">
-      «&nbsp;上一页&nbsp;33/153
+      «&nbsp;上一页&nbsp;33/237
     </a>
-    <a class="next" href="http://localhost:1313/page/35/">下一页&nbsp;35/153&nbsp;»
+    <a class="next" href="http://localhost:1313/page/35/">下一页&nbsp;35/237&nbsp;»
     </a>
   </nav>
 </footer>

@@ -131,131 +131,132 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">无敌的Arthas！
+    <h2 class="entry-hint-parent">VirtualFriend项目研究分析（一）
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言：Arthas 是一款线上监控诊断产品，通过全局视角实时查看应用 load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执行耗时，类加载信息等，大大提升线上问题排查效率。
-为了加深理解，本文准备了两个线上发生的实际例子，与大家一起分享（已做脱敏处理）。
-一、背景 通常，本地开发环境无法访问生产环境。如果在生产环境中遇到问题，则无法使用 IDE 远程调试。更糟糕的是，在生产环境中调试是不可接受的，因为它会暂停所有线程，导致服务暂停。
-开发人员可以尝试在测试环境或者预发环境中复现生产环境中的问题。但是，某些问题无法在不同的环境中轻松复现，甚至在重新启动后就消失了。
-如果您正在考虑在代码中添加一些日志以帮助解决问题，您将必须经历以下阶段：测试、预发，然后生产。这种方法效率低下，更糟糕的是，该问题可能无法解决，因为一旦 JVM 重新启动，它可能无法复现，如上文所述。
-Arthas 旨在解决这些问题。开发人员可以在线解决生产问题。无需 JVM 重启，无需代码更改。 Arthas 作为观察者永远不会暂停正在运行的线程。
-二、能为你做什么？ Arthas 是 Alibaba 开源的 Java 诊断工具，深受开发者喜爱。
-当你遇到以下类似问题而束手无策时，Arthas可以帮助你解决：
-这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？ 我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？ 遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？ 线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！ 是否有一个全局视角来查看系统的运行状况？ 有什么办法可以监控到 JVM 的实时运行状态？ 怎么快速定位应用的热点，生成火焰图？ 怎样直接从 JVM 内查找某个类的实例？ Arthas 支持 JDK 6&#43;，支持 Linux/Mac/Windows，采用命令行交互模式，同时提供丰富的 Tab 自动补全功能，进一步方便进行问题的定位和诊断。
-三、下载安装 bash
-代码解读
+    <p> 这是一个很有意思的项目，GitHub地址为：VirtualFriend，其也可以看作是一个基于大模型的AI原生应用，融入了角色VRM模型、声音ASR/TTS、
+1. 从项目结构上分析 1.1. Docker相关入口 入口文件为：“start.bat”，代码如下：
+installer/windows/start.bat
+?
+1
+2
+@``echo off
+docker-compose -f ..\docker-compose.yaml up -d
+分析为：这段代码的作用是在后台启动由 docker-compose.yaml 文件定义的 Docker 容器。通过禁用命令回显，它可以在执行过程中隐藏命令的输出。
+@echo off：这是一个特殊的命令，用于禁止在批处理脚本执行时显示命令本身。它会关闭命令的回显功能，使脚本在运行时不会显示每个命令的输出。 docker-compose -f ..\docker-compose.yaml up -d：这是一个 docker-compose 命令，用于启动 Docker 容器。 具体来说： docker-compose 是一个命令行工具，用于管理和运行基于 Docker 的多容器应用程序。 -f ..\docker-compose.yaml 指定了要使用的 Docker Compose 配置文件的路径。在这里，它指定了位于上级目录中的 docker-compose.yaml 文件。 up 是 docker-compose 命令的一个子命令，用于构建、创建和启动容器。 -d 参数表示以“后台模式”（detached mode）运行容器，即在后台运行容器而不阻塞命令提示符。 往下分析：
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-21 00:00:00 +0000 UTC'>七月 21, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;好看的HK</footer>
-  <a class="entry-link" aria-label="post link to 无敌的Arthas！" href="http://localhost:1313/posts/juejin/%E6%97%A0%E6%95%8C%E7%9A%84arthas/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to VirtualFriend项目研究分析（一）" href="http://localhost:1313/posts/wiki/virtualfriend%E9%A1%B9%E7%9B%AE%E7%A0%94%E7%A9%B6%E5%88%86%E6%9E%90%E4%B8%80/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">基于qiankun的微前端最佳实践-（同时加载多个微应用）
+    <h2 class="entry-hint-parent">技能管理能力设计
     </h2>
   </header>
   <div class="entry-content">
-    <p> 「本文已参与好文召集令活动，点击查看:后端、大前端双赛道投稿，2万元奖池等你挑战！
-大家好，我是 前端小菜鸡之菜鸡互啄,如果你喜欢我的文章，记得给我点个赞哦💪
-介绍 qiankun 在正式介绍 qiankun 之前，我们需要知道，qiankun 是一个基于 single-spa 的微前端实现库，旨在帮助大家能更简单、无痛的构建一个生产可用微前端架构系统。
-微前端的概念借鉴自后端的微服务，主要是为了解决大型工程在变更、维护、扩展等方面的困难而提出的。目前主流的微前端方案包括以下几个：
-iframe 基座模式，主要基于路由分发，qiankun 和 single-spa 就是基于这种模式 组合式集成，即单独构建组件，按需加载，类似 npm 包的形式 EMP，主要基于 Webpack5 Module Federation Web Components 严格来讲，这些方案都不算是完整的微前端解决方案，它们只是用于解决微前端中运行时容器的相关问题。
-本文我们主要对 qiankun 所基于的基座模式进行介绍。它的主要思路是将一个大型应用拆分成若干个更小、更简单，可以独立开发、测试和部署的微应用，然后由一个基座应用根据路由进行应用切换。
-qiankun 的核心设计理念 🥄 简单
-由于主应用微应用都能做到技术栈无关，qiankun 对于用户而言只是一个类似 jQuery 的库，你需要调用几个 qiankun 的 API 即可完成应用的微前端改造。同时由于 qiankun 的 HTML entry 及沙箱的设计，使得微应用的接入像使用 iframe 一样简单。
+    <p> 1一、模块背景介绍 2二、模块详细设计 2.11、专业名词解释 2.22、业务工作流程 2.33、业务功能具体细节 2.44、平台能力划分-技能管理 一、模块背景介绍 当一个虚拟人构建出来之后，平台需要提供给虚拟人一些简单的通用技能能力，为了做到可复制，当然我们不能把技能写死在虚拟人上，所以需要提供一个技能训练的平台，通过技能创建、集成到应用的方式让整个系统更加的
+灵活并突显价值，未来我们虚拟人做的是生态，涉及到生产-交易-消费一体化，我们从大方向上做出思考，让更多的用户、专业人士参与进来构建整个虚拟人的技能生态，用户通过发布技能，上线技能到商店，供需要该技能的人进行
+消费集成创造价值，所以构建一个开放平台也是很有必要的，提供了一个统一的创作入口。
+总结: 对于运营人员来讲，需要一个虚拟人运营平台更好的去做运营工作，还可以对数据进行分析，不断的迭代优化我们的产品，给用户更好的升级体验。
+对与企业价值扩大化来说，我们更需要一个开放平台提供一个生态发展的入口，打通生产-交易-消费全流程，让更多参与进来，做大做强。
+二、模块详细设计 1、专业名词解释 名词
+名词解释
+例子
+备注
+名词
+名词解释
+例子
+备注
+技能
+语音技能（Skill）是一种能力,用于解决一类用户需求。
+天猫精灵上面的天气就是其中一项技能,可以查到某天天气的温度、湿度等
+意图
+意图指一个明确的用户目的
+比如根据天气技能我们相应的意图可以是 查询今天广州的温度是多少
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-07-18 00:00:00 +0000 UTC'>七月 18, 2021</span>&nbsp;·&nbsp;11 分钟&nbsp;·&nbsp;前端开发爱好者</footer>
-  <a class="entry-link" aria-label="post link to 基于qiankun的微前端最佳实践-（同时加载多个微应用）" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Eqiankun%E7%9A%84%E5%BE%AE%E5%89%8D%E7%AB%AF%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5-%E5%90%8C%E6%97%B6%E5%8A%A0%E8%BD%BD%E5%A4%9A%E4%B8%AA%E5%BE%AE%E5%BA%94%E7%94%A8/"></a>
+  <footer class="entry-footer">3 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 技能管理能力设计" href="http://localhost:1313/posts/wiki/%E6%8A%80%E8%83%BD%E7%AE%A1%E7%90%86%E8%83%BD%E5%8A%9B%E8%AE%BE%E8%AE%A1/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">封装了一个腾讯云im的flutter插件
+    <h2 class="entry-hint-parent">20230807-20230818双周例会
     </h2>
   </header>
   <div class="entry-content">
-    <p>原文地址：地址 dim 封装的一个腾讯云im，以便于flutter开发者可以方便继承im到自己的应用中
-插件地址：pub.dartlang.org/packages/di…
-使用之前注意事项 开发者需要到腾讯云上申请一个appid，申请地址
-申请成功之后，平台会分配一个appid给到开发者。
-1、sig的获取，sig一般就是开发者自己的后台开发同学提供，可以参考腾讯云文档实现sig申请。
-2、都准备ok了，就可以登录imsdk了。
-android 端配置你的项目中，android 目录app下面的 AndroidManifest.xml，内容参考这里
-代码解读
-复制代码
-&lt;manifest xmlns:android=&#34;http://schemas.android.com/apk/res/android&#34; package=&#34;com.example.coinseast&#34;&gt; &lt;!-- The INTERNET permission is required for development. Specifically, flutter needs it to communicate with the running application to allow setting breakpoints, to provide hot reload, etc. --&gt; &lt;uses-permission android:name=&#34;android.permission.INTERNET&#34;/&gt; &lt;uses-permission android:name=&#34;android.permission.ACCESS_NETWORK_STATE&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.ACCESS_WIFI_STATE&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.CAMERA&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.CHANGE_NETWORK_STATE&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.GET_TASKS&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.INTERNET&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.MODIFY_AUDIO_SETTINGS&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.READ_LOGS&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.READ_PHONE_STATE&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.RECEIVE_BOOT_COMPLETED&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.RECORD_AUDIO&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.VIBRATE&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.WAKE_LOCK&#34; /&gt; &lt;uses-permission android:name=&#34;android.permission.WRITE_EXTERNAL_STORAGE&#34; /&gt; &lt;!-- io.flutter.app.FlutterApplication is an android.app.Application that calls FlutterMain.startInitialization(this); in its onCreate method. In most cases you can leave this as-is, but you if you want to provide additional functionality it is fine to subclass or reimplement FlutterApplication and put your custom class here. --&gt; &lt;application android:name=&#34;io.flutter.app.FlutterApplication&#34; android:label=&#34;coins_east&#34; android:icon=&#34;@mipmap/ic_launcher&#34;&gt; &lt;activity android:name=&#34;.MainActivity&#34; android:launchMode=&#34;singleTop&#34; android:theme=&#34;@style/LaunchTheme&#34; android:configChanges=&#34;orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density&#34; android:hardwareAccelerated=&#34;true&#34; android:windowSoftInputMode=&#34;adjustResize&#34;&gt; &lt;!-- This keeps the window background of the activity showing until Flutter renders its first frame. It can be removed if there is no splash screen (such as the default splash screen defined in @style/LaunchTheme). --&gt; &lt;meta-data android:name=&#34;io.flutter.app.android.SplashScreenUntilFirstFrame&#34; android:value=&#34;true&#34; /&gt; &lt;intent-filter&gt; &lt;action android:name=&#34;android.intent.action.MAIN&#34;/&gt; &lt;category android:name=&#34;android.intent.category.LAUNCHER&#34;/&gt; &lt;/intent-filter&gt; &lt;/activity&gt; &lt;!-- 【必须】消息收发service --&gt; &lt;service android:name=&#34;com.tencent.qalsdk.service.QalService&#34; android:exported=&#34;true&#34; android:process=&#34;:QALSERVICE&#34; &gt; &lt;/service&gt; &lt;service android:name=&#34;com.tencent.qalsdk.service.QalAssistService&#34; android:exported=&#34;false&#34; android:process=&#34;:QALSERVICE&#34; &gt; &lt;/service&gt; &lt;!-- 【必须】 离线消息广播接收器 --&gt; &lt;receiver android:name=&#34;com.tencent.qalsdk.QALBroadcastReceiver&#34; android:exported=&#34;false&#34;&gt; &lt;intent-filter&gt; &lt;action android:name=&#34;com.tencent.qalsdk.broadcast.qal&#34; /&gt; &lt;/intent-filter&gt; &lt;/receiver&gt; &lt;receiver android:name=&#34;com.tencent.qalsdk.core.NetConnInfoCenter&#34; android:process=&#34;:QALSERVICE&#34;&gt; &lt;intent-filter&gt; &lt;action android:name=&#34;android.intent.action.BOOT_COMPLETED&#34; /&gt; &lt;/intent-filter&gt; &lt;intent-filter&gt; &lt;action android:name=&#34;android.net.conn.CONNECTIVITY_CHANGE&#34; /&gt; &lt;/intent-filter&gt; &lt;intent-filter&gt; &lt;action android:name=&#34;android.intent.action.TIME_SET&#34; /&gt; &lt;/intent-filter&gt; &lt;intent-filter&gt; &lt;action android:name=&#34;android.intent.action.TIMEZONE_CHANGED&#34; /&gt; &lt;/intent-filter&gt; &lt;!-- ImSDK 3.0.2 后添加 --&gt; &lt;intent-filter&gt; &lt;action android:name=&#34;com.tencent.qalsdk.service.TASK_REMOVED&#34; /&gt; &lt;/intent-filter&gt; &lt;/receiver&gt; &lt;/application&gt; &lt;/manifest&gt;
+    <p>附：8月目标 *
+Save changes*
+Add filter
+Reset all filters
+Disable all filters
+Reset column sorting
+Modify Settings
+Copy the filter URL
+Export to PDF
+Export to CSV
+Export to Word
+Documentation
+What’s new
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-08-06 00:00:00 +0000 UTC'>八月 6, 2018</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;brzhang</footer>
-  <a class="entry-link" aria-label="post link to 封装了一个腾讯云im的flutter插件" href="http://localhost:1313/posts/juejin/%E5%B0%81%E8%A3%85%E4%BA%86%E4%B8%80%E4%B8%AA%E8%85%BE%E8%AE%AF%E4%BA%91im%E7%9A%84flutter%E6%8F%92%E4%BB%B6/"></a>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 20230807-20230818双周例会" href="http://localhost:1313/posts/wiki/20230807-20230818%E5%8F%8C%E5%91%A8%E4%BE%8B%E4%BC%9A/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">[一个程序员的成长之路]共勉
+    <h2 class="entry-hint-parent">虚拟人交易管理&#43;虚拟人互动管理
     </h2>
   </header>
   <div class="entry-content">
-    <p>偶尔间看到了一篇文章,应该是好几年前的了,主要说的是前端工程师的职业发展,看完感触颇多,整理出来分享给大家,共勉
-文章出处
-开篇 大家好，我是云龙，从2016年3月份开始，我参与到全民直播这个创业项目中，这两年一直在上海。关于我自己的成长历程，一直都很想找个时间跟前端的开发者们分享一下。通过剖析别人，也可以总结自己。我很害怕把这个主题讲的跟成功学一样，其实CTO这个职位现在多少有点“烂大街”，不算是什么成功，仅供参考。
-我是2010年毕业的，刚毕业即加入百度，当年我毕业的时候同一批入职的人后来成立一个微信群，那个群在8年后的今天，我们还会一起扯皮闲聊，分享彼此的际遇。我发现它可以作为参考——8年前一群有着相同能力，相同起点的人，在8年之间因为做出不同的选择，最后达成了不同的人生。有的创业，有的在大公司做高管，有的炒比特币财富自由。参考他们的选择会让你有一些感悟: “如果当初我选择了那样，我现在会怎么样”。我现在经历了职业生涯8年的时间，也想把自己的经历作为一个案例，分享给大家。
-在讲之前，先问一下在座的同学工作3年以下的举手。。。。emmm，剩下的都是三年以上的咯？我看了一下，比例差不多一半一半。
-我面试过许多前端工程师，发现大家在工作了3-4年的时候会遇到一个迷茫期，我问他们你们接下来想做什么，大多数人回答说想做一个开源项目，并且推广开来，成为前端“网红”，更长远的职业发展规划往往考虑的很少。
-今天，我希望把自己的工作经历完全拆解开呈现在大家面前，作为一个案例解答有关职业发展的困扰。
-程序员的中年危机。 我今年33岁，虽然有技术傍身，但是难免会有一些焦虑，这种焦虑来自对自己的能力质疑。在大公司的那些年，背靠大平台，做出的成绩80%是平台赋予我的，它有健全的体系，有优秀的同事，有完善的职级制度，还有优厚的薪资待遇。你在这样舒适的环境下做那么一小块事情，如果有一天你发现你这20%可以被替代的时候，这家公司会怎么思考？你有很多股票，开很高的工资，对于公司来说，你的成本很高，在新人的推动下，你会产生一种可被替代的压力，我大概在28岁，29岁技术水平还在上升期的时候就有这种焦虑。
-在大公司那些年，我感觉自己还像一个没毕业的学生，始终没有脱离“学生气”，无论说话做事都有这种感觉。其次技术的更新迭代速度特别快，尤其是前端领域，你会发现很少有能真正沉淀下来的东西。第三个焦虑点就是关于企业如何对待35岁以上员工，我当时在百度的时候团队有一个非常厉害的工程师，他在2010年技术职级很高，但技术思维还停留在上一个时代，随着技术的发展，渐渐不能指引团队进步，那个过程比较艰难，对我触动很大。最后一点，就是随着年龄的增长，选择的成本会越来越高，你会有家庭，即便公司觉得你没有价值，你也不能走了，走不动了。这些触动了我，开始要去思考。
-我们做技术，尤其是前端，很多时候我们做出的产品，看到的都是UI设计，交互设计 ，产品设计，即便我们做的产品非常成功，成功点在哪儿？可能是UI设计得漂亮，也可能是推荐算法精确，而前端的产出给产品带来了什么？还有前端技术深要深到什么程度？做久了技术就必须要转型管理吗？这些问题我当年没有答案，我可以坚持不懈得写页面，但是这个事情做5年，6年，10年不还是一样吗？现在我能做什么？未来我想做什么？
-带着这些疑问，用8年时间我走了3个城市，从北京、到广州，在到上海，在职业道路上寻求答案。
-最开始的3年我在北京，那个时候刚毕业，还不能决定自己的未来，加入百度算是比较运气。当时花了些精力准备一份漂亮的简历，这件事对我找工作帮助很大。在学校的时候，基本上对前端这块已经非常熟悉了，我的简历非常漂亮。最开始刚毕业的时候选择工作，简历会成为一个好门面。我把当时自己在前端的方向、学习深入的点，都花精力体现在简历上，当时在大公司招聘的时候已经占了一些优势，很荣幸的是被百度接收了。
-在百度三年时间里面，主要深入的在做技术。当时百度有一个很大的前端团队，一百多人，包括百度新闻，百度视频，百度知道，百度百科等等，整个团队为了解决开发效率问题，决定成立一个横向支撑的小组，做一款构建工具，就是fis，我当时还在CMS部门(一个内部的内容管理系统)，主动提出参与到fis项目中。做fis的过程让我学到了很多服务端技术，包括运维知识。在百度工作3年后，开始想着开始去脱离这个平台80%的支撑，我当时认为UC是一个中型的创业公司，我过去待了两年多，那个时候开始关注前端团队建设。把我在百度学习到的技术理念在UC结合nodejs重新实践一遍，其次是指导前端团队提高他们整体的技术水平。
-在广州UC工作2年后，来到了上海，参与全民直播这个项目。做全民直播的整个过程经历了比较多的坎坷，我最开始接手全民的时候，仅有两个全民自己招聘的研发同学，经过2年多的时间，组建了将近一百人的团队，包括服务端，前端，客户端，测试，运维，编解码，大数据等部门，感觉在上海这两年的成长，比前面在大公司所有5年的加起来还多。
-过去走过了一个这样的路线: 大型公司→中型公司→创业公司。专注的事情从技术到团队再到业务。今天我重点跟大家分享我总结的成长历程，当你后面工作到一定年限，碰到困惑的时候，可以拿这个模型参考一下，也算是一个方向。当然，这不是唯一的成长路线。
-我把整个职业生涯分三个阶段：
-第一阶段，一技之长。就是深耕你的专业技能，你的专业技术。 第二阶段，独立做事。当你的一技之长达到一定深度的时候，需要开始思考如何独立做事。 第三阶段，拥有事业。选择一份使命，带领团队实现它。 大致是这样的三个阶段，接下来我逐一拆解一下： 第一阶段：一技之长。 我把它分成五个层次：栈内技术、栈外技术、工程经验、带人做事、业界发声。
-所谓栈内技术，是指你的专业领域技术，对于前端工程师来说，就是那些我们熟悉的JS、CSS、HTML等基础，深入了解我们的程序所运行的宿主环境——浏览器，能掌握并灵活操纵在浏览器内发生的一切。前端没有秘密，所有可访问的页面都近似于开源，所以检验栈内技术的标准就是看你是否能最终形成技术上的“写轮眼”——那种看到任何前端产品都有能独立复刻和洞察它的自信。
-栈内技术是安身立命的根本，不要轻易“换方向”。
-虽然我现在在做技术管理，但始终不会放弃我作为前端这个一技之长的根本。遇到一些前端同学工作几年以后前端做得比较熟了，考虑转行到其他岗位。但是我想说，当你转行那一刻起，就把要转的领域变成了你新的“栈内技术”，然后又要重新走一遍技术沉淀的过程，匆匆几年，又过去了，所以不要轻易&#34;换方向&#34;，前端绝对是可以长时间坚持的领域，现在新型的软件生态，无论是小程序，快应用，甚至区块链，都会首先瞄准JS开发者，因为有庞大的开发者群体，工具链也比较完善，所以长期坚持从事前端工作，在可预见的未来都不会“过时”。
-栈外技术，是指栈内技术的上下游，领域外的相关专业知识，包括但不限于服务端技术、运维、CDN、测试，甚至UI设计、产品设计等等，扩展你栈内技术的周围领域，充分理解你的工作在整个技术研发体系中处于怎样的环节。工作之余多投入一份精力，把其他栈外技术不断纳入到你的知识体系中来，建立栈外能力。前端想要做的深入，往往会涉及到缓存、模板渲染、用户体验等知识，没有相当的栈外技术积累，你很难为自己的团队争取到足够的话语权。
-我个人非常推崇”大前端“的概念，有点类似”全栈工程师“，但不是要求一个人全面专家，而是以前端为根，展开上下游的栈外技术学习，一专多能。我能在全民做到CTO的角色，也得益于早年在百度和UC积累的栈外技术经验，了解两家公司大部分产品线的运维和架构体系。
-第三，工程经验。是指建设专业技术体系的“解决方案”，通俗的说，就是做事的“套路”，掌握从0到1，1到60，甚至60到100分阶段建设专业技术体系的过程。工程经验涉及到技术选型、架构设计、性能优化，CI/CD，日志监控、系统测试等，这些是跟工程相关的方法论。
-很多的工程师没有总结自己工程经验的能力，我面试经常会问，你们觉得自己工作了两年、三年、四年和刚毕业的学生有什么差别？面试者说掌握了某某技术，但其实往往说的只是一些知识点。那些“今晚查完明天就会了的”不叫技术。决定你比别人更有专业价值的，其实是领域工程经验。你看过再多的文章也没有用，没真正实操过都不能称之为“掌握”。所以我建议要想掌握足够丰富的工程经验，需要在业务中多争取实践的机会。
-工程经验才是技术水平的分水岭。
-第四，带人做事。之前三项都是个人专业技能方面的深度要求，带人做事是对团队协作能力的要求。我以前非常不理解一件事情，就是我自己明明做的很好，来了一个新人不能get到我的要求，怎么办？非常着急的时候，我说你别做了，我来吧。更有甚者，早年间在百度工作的时候，有同事白天辛辛苦苦写好的代码，晚上我codereview之后直接给重构掉了，没过几天那位同学就提了离职。带人做事，是把自己擅长的事情，良好的习惯传递给他人，实现1&#43;1&gt;2的生产力提升，让整个团队的产出高于自己。另外，这个阶段大家要特别注意『管』与『带』的区别。所谓『管』是&#34;我不懂某个领域，但我知道你懂，你必须给我做好&#34;，而『带』则是&#34;我特别懂这个领域，我知道你不懂，我要教你做得更好&#34;。有点授之以渔，甘当人梯，成就他人的意味。带好一个人或者带起一支有战斗力的团队，是做人做事成熟的表现。
-对技术有洁癖的人，往往缺乏耐心，带人容易走极端，如何引导新人成长，激发他人的能力，也是我在职业发展过程中要寻求的问题。管理上有一个特别好的方法，就是善于启发式的提问。提问的深度特别能体现一个人的能力水平，任何用于提要求的陈述句，都能转换成疑问句，在启发萌新的过程中植入对结果的约束。举一个例子，我想要老板给我加薪，如果直接说：『老板，我要加薪』，估计十之八九会被搪塞过去，但是转换一下，先问问『老板，我最近工作怎么样？』启发上司思考你的工作成果，引导他得出你应该被嘉奖的结论，或许是个不错的话术。当你让一个人做A的时候，他提出了方案B。你不要强行扭转对方的思路提出A，因为对于新人来讲，或许确实不能一步到位理解A方案，在他的能力约束下，只能想到B。你带人呢，要尽量尝试把A和B之间有差异的地方转换成提问，你问他遇到这个问题怎么解决，遇到那个问题怎么解决，一直问到形成A，他会带着思考去做事情。如果没有这个过程，没有让他思维演化的过程，虽然他收到了A的指令，但是他不理解，他会用别的方式做出来，最后得出来一个C，然后你又重构一遍，陷入一个怪圈不能自拔，这就是我以前的误区，所以我现在特别注重提问的艺术。
+    <p>一、模块介绍 本模块主要针对虚拟人交易管理和互动管理进行功能设计
+二、交易管理 我的作品
+作品列表
+作品名称、总下载量、累计赞赏数、当前状态、最后操作时间
+提交作品
+上传 选择标签 定价 提交
+审核
+审核列表，查看详情 审核通过 审核拒绝 备注
+作者资料
+艺术家名称、头像、艺术家介绍
+我的账户
+我的余额、明细、 提现
+三、互动管理 互动管理
+用户反馈列表
+查看反馈内容（标题、类别、电子邮箱、联系人、联系电话、问题描述）
+查看问题日志
+对话记录
+选择时间段过滤对话 ，标注听错了或者理解错了
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-11-07 00:00:00 +0000 UTC'>十一月 7, 2020</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;刘小灰</footer>
-  <a class="entry-link" aria-label="post link to [一个程序员的成长之路]共勉" href="http://localhost:1313/posts/juejin/%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%88%90%E9%95%BF%E4%B9%8B%E8%B7%AF%E5%85%B1%E5%8B%89/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 虚拟人交易管理&#43;虚拟人互动管理" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BA%A4%E6%98%93%E7%AE%A1%E7%90%86&#43;%E8%99%9A%E6%8B%9F%E4%BA%BA%E4%BA%92%E5%8A%A8%E7%AE%A1%E7%90%86/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">特效炸裂：小米SU7在线特效网站技术不完全揭秘！！！
+    <h2 class="entry-hint-parent">0518版本项目功能升级暨已实现能力简要说明文档
     </h2>
   </header>
   <div class="entry-content">
-    <p> 哈喽，大家好 我是 xy👨🏻‍💻。用 Three.js 实现 小米 SU7 在线体验，特效相当炸裂！！！
-前言 最近一位叫 @GameMCU的大佬用 Webgl、Three.js 等技术实现了一个 小米 SU7 在线体验网站：https://gamemcu.com/su7/被广大网友疯传，效果相当炸裂！
-网站首发当天由于访问量过大导致奔溃， 后来可能获得了某里云官方支持!!! 这一波真的要给某里云点赞！
-更有网友评论: 这效果和交互完全可以吊打官方和各种卖车的网站了啊
-并且 @小米汽车官方:求求了，收编了吧，这能极大提升小米su7的逼格，再用到公司其他产品，能提升整体公司的逼格
-废话不多说，直接上效果!!!
-效果展示 模拟在汽车在道路行驶特效，宛如身临其境 流线型车身设计，彰显速度与激情的完美融合。每一处细节都经过精心打磨，只为给你带来最纯粹的驾驶体验。 ...</p>
+    <p> 11. 引言 22. 升级内容 2.12.1. 新增功能 2.1.12.1.1. 语音执行食谱功能- 2.1.1.12.1.1.1. 语音查找食谱 2.1.1.22.1.1.2. 语音执行食谱详情页的相关操作 2.1.1.32.1.1.3. 语音按食材查找食谱 2.1.1.42.1.1.4. 语音食谱推荐功能（待上线、0530发布） 2.1.1.52.1.1.5. 语音按场景的食谱推荐功能（待上线、0530发布） 2.1.22.1.2. 语音执行商品方案功能 2.1.2.12.1.2.1. 语音查找商品烹饪方案 2.1.2.22.1.2.2. 语音查找无码商品 2.22.2. 优化功能 2.2.12.2.1. 语音交互支持one-shot一语即达功能 2.2.22.2.2. 语音交互支持类多轮功能 2.2.32.2.3. 支持快捷命令词功能 2.32.3. 修复问题 2.3.12.3.1. 烹饪过程中cpu负载过高，导致语音功能卡顿 2.3.22.3.2. 烹饪中机器内噪过大，语音识别率较低 33. 总结 44. 所有能力清单 1. 引言 本文档旨在向用户介绍我们所提供虚拟数字人最新功能升级。本次升级将为用户带来更加便捷、高效、安全的使用体验。完成多层级操作步骤到“一步到位”的转变。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-02 00:00:00 +0000 UTC'>四月 2, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;前端开发爱好者</footer>
-  <a class="entry-link" aria-label="post link to 特效炸裂：小米SU7在线特效网站技术不完全揭秘！！！" href="http://localhost:1313/posts/juejin/%E7%89%B9%E6%95%88%E7%82%B8%E8%A3%82%E5%B0%8F%E7%B1%B3su7%E5%9C%A8%E7%BA%BF%E7%89%B9%E6%95%88%E7%BD%91%E7%AB%99%E6%8A%80%E6%9C%AF%E4%B8%8D%E5%AE%8C%E5%85%A8%E6%8F%AD%E7%A7%98/"></a>
+  <footer class="entry-footer">3 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 0518版本项目功能升级暨已实现能力简要说明文档" href="http://localhost:1313/posts/wiki/0518%E7%89%88%E6%9C%AC%E9%A1%B9%E7%9B%AE%E5%8A%9F%E8%83%BD%E5%8D%87%E7%BA%A7%E6%9A%A8%E5%B7%B2%E5%AE%9E%E7%8E%B0%E8%83%BD%E5%8A%9B%E7%AE%80%E8%A6%81%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/105/">
-      «&nbsp;上一页&nbsp;105/153
+      «&nbsp;上一页&nbsp;105/237
     </a>
-    <a class="next" href="http://localhost:1313/page/107/">下一页&nbsp;107/153&nbsp;»
+    <a class="next" href="http://localhost:1313/page/107/">下一页&nbsp;107/237&nbsp;»
     </a>
   </nav>
 </footer>

@@ -129,6 +129,100 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">ClickHouse高性能数据仓库的构建与优化实践
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 在大数据时代，企业和组织面临的数据量呈现爆炸式增长。传统的数据库在处理海量数据时，面临着性能瓶颈。ClickHouse作为一款高性能的列式数据库管理系统，专为在线分析处理（OLAP）场景设计，能够在多核CPU和SSD硬盘的支持下提供毫秒级的实时数据分析能力。本文将深入探讨如何在Java环境中构建和优化ClickHouse，实现数据处理的高效率和高可靠性。
+教程 环境准备 在开始之前，我们需要确保Java环境已经搭建完毕，这包括：
+Java Development Kit（JDK）安装，版本至少为1.8。 环境变量配置，确保java和javac命令可以在任意路径下使用。 ClickHouse的安装与配置 接下来，我们将在服务器上安装ClickHouse。本教程以Linux环境为例，进行以下步骤：
+添加ClickHouse的官方仓库。 shell
+代码解读
+复制代码
+sudo apt-get install apt-transport-https sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E0C56BD4 echo &#34;deb https://repo.clickhouse.tech/deb/stable/ main/&#34; | sudo tee /etc/apt/sources.list.d/clickhouse.list
+更新本地仓库并安装ClickHouse服务。 shell
+代码解读
+复制代码
+sudo apt-get update sudo apt-get install clickhouse-server clickhouse-client
+启动ClickHouse服务。 shell
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-11-10 00:00:00 +0000 UTC'>十一月 10, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;李小熊</footer>
+  <a class="entry-link" aria-label="post link to ClickHouse高性能数据仓库的构建与优化实践" href="http://localhost:1313/posts/juejin/clickhouse%E9%AB%98%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E7%9A%84%E6%9E%84%E5%BB%BA%E4%B8%8E%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">基于TrueLicense的项目证书验证
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>基于 TrueLicense 的项目证书验证
+使用场景 1、 开发的软件产品在交付使用的时候，往往有一段时间的试用期，这期间我们不希望自己的代码被客户二次拷贝，这个时候 license 就派上用场了，license 的功能包括设定有效期、绑定 ip、绑定 mac 等。
+2、 授权方直接生成一个 license 给使用方使用，如果需要延长试用期，也只需要重新生成一份 license 即可，无需手动修改源代码。
+原理简介 1、TrueLicense 是一个开源的证书管理引擎，详细介绍见 https://truelicense.java.net/
+2、license 授权机制的原理
+生成密钥对，包含私钥和公钥。
+授权者保留私钥，使用私钥对授权信息诸如使用截止日期，mac 地址等内容生成 license 签名证书。
+公钥给使用者，放在代码中使用，用于验证 license 签名证书是否符合使用条件
+生成证书 利用jdk keytool工具制作证书 代码解读
+复制代码
+keytool -genkeypair -keysize 1024 -validity 3650 -alias &#34;privateKey&#34; -keystore &#34;privateKeys.keystore&#34; -storepass &#34;deepglint_store_pwd123&#34; -keypass &#34;deepglint_key_pwd123&#34; -dname &#34;CN=localhost, OU=localhost, O=localhost, L=SH, ST=SH, C=CN&#34;
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-11-25 00:00:00 +0000 UTC'>十一月 25, 2020</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;平凡人笔记</footer>
+  <a class="entry-link" aria-label="post link to 基于TrueLicense的项目证书验证" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Etruelicense%E7%9A%84%E9%A1%B9%E7%9B%AE%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">ELK搭建&amp;日志集成
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>ELK 搭建 &amp; 日志集成 背景 突然想自己搭建一个ELK
+只是ELK的搭建和日志的简单集成，并不涉及高端知识，大佬请绕道
+环境 CentoOS7
+前置工作 前提要一个干净的环境。只需要一个正常可以访问的网络。如果你搭建环境已经包含前置工作中的必要内容，那么可以直接跳过。
+更换系统源 更换的原因是： 无法获取镜像列表。
+1. 备份原有源文件 bash
+代码解读
+复制代码
+mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+2. 选择新的源 以腾讯源为例，你可以下载腾讯的 CentOS 7 源配置文件：
+bash
+代码解读
+复制代码
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos7_base.repo
+3. 更新 yum 缓存 bash
+代码解读
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-27 00:00:00 +0000 UTC'>九月 27, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;柯苏远</footer>
+  <a class="entry-link" aria-label="post link to ELK搭建&日志集成" href="http://localhost:1313/posts/juejin/elk%E6%90%AD%E5%BB%BA%E6%97%A5%E5%BF%97%E9%9B%86%E6%88%90/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">你知道怎么合理设置线程池参数吗？
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1.背景 在当下互联网时代中，硬件资源配置不再是系统瓶颈，因此为了最大程度化利用服务器CPU的多核性能，并行执行任务大势所趋。通过线程池管理线程实现异步操作和并发执行是一个非常常见的方式。线程池就是利用&#34;池化资源&#34;的技术思想降低资源消耗，提高响应速度。池化资源技术想必大家已经屡见不鲜了，线程池、数据库连接池、HTTP 连接池等等都是对这个思想的应用。池化技术的思想主要是为了减少每次获取资源的消耗，提高对资源的利用率。
+2.线程池的创建方式 Java中的线程池核心实现类是ThreadPoolExecutor，ThreadPoolExecutor实现的顶层接口是Executor，它定义了一种将任务提交与任务运行机制（包括线程使用、调度等的详细信息）分离的思想机制。
+平时在系统开发实战中线程池的使用示例：
+scss
+代码解读
+复制代码
+private ThreadFactory namedThreadFactory = new ThreadFactoryBuilder() .setNameFormat(&#34;letter-pool-%d&#34;).build(); private ExecutorService threadPoolExecutor = new ThreadPoolExecutor( Runtime.getRuntime().availableProcessors()*2, Runtime.getRuntime().availableProcessors() * 20, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue&lt;Runnable&gt;(Runtime.getRuntime().availableProcessors() * 100), namedThreadFactory);
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-25 00:00:00 +0000 UTC'>九月 25, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;Shepherd</footer>
+  <a class="entry-link" aria-label="post link to 你知道怎么合理设置线程池参数吗？" href="http://localhost:1313/posts/juejin/%E4%BD%A0%E7%9F%A5%E9%81%93%E6%80%8E%E4%B9%88%E5%90%88%E7%90%86%E8%AE%BE%E7%BD%AE%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%82%E6%95%B0%E5%90%97/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">线上API响应慢，该如何排查和解决？
     </h2>
   </header>
@@ -150,88 +244,12 @@ top 和 htop
   <footer class="entry-footer"><span title='2024-09-23 00:00:00 +0000 UTC'>九月 23, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;猿java</footer>
   <a class="entry-link" aria-label="post link to 线上API响应慢，该如何排查和解决？" href="http://localhost:1313/posts/juejin/%E7%BA%BF%E4%B8%8Aapi%E5%93%8D%E5%BA%94%E6%85%A2%E8%AF%A5%E5%A6%82%E4%BD%95%E6%8E%92%E6%9F%A5%E5%92%8C%E8%A7%A3%E5%86%B3/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Magician1.1.11发布
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>本次更新修复了一个小bug，在之前的版本中websocket的报文解析存在一些问题，会导致消息长度超过126个字节后就无法获取了，并且会引发之后发送的所有消息都解析不出来。 在1.1.11 中 这个bug得到了解决。
-除此之外还简化了一点点TCP服务创建的语法，真的只是一点点哦，加了个构造函数，使得在使用默认线程池的时候也可以指定EventRunner的数量了。
-使用默认线程池时指定EventRunner数量 java
-代码解读
-复制代码
-/* * EventGroup加了个构造函数，可以只指定EventRunner数量 * 以前是两个极端，要么连EventGroup都用默认，要么EventRunner的数量和线程池 全都自定义，不够灵活 */ EventGroup ioEventGroup = new EventGroup(1); EventGroup workerEventGroup = new EventGroup(10); workerEventGroup.setSteal(EventEnum.STEAL.YES); /* 创建TCP服务，默认采用http解码器 */ TCPServer tcpServer = Magician.createTCPServer(ioEventGroup, workerEventGroup) .soTimeout(3000) .handler(&#34;/&#34;, new DemoRequestHandler()) .bind(8080);
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-06-27 00:00:00 +0000 UTC'>六月 27, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;贝克街的天才</footer>
-  <a class="entry-link" aria-label="post link to Magician1.1.11发布" href="http://localhost:1313/posts/juejin/magician1.1.11%E5%8F%91%E5%B8%83/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">这样的SQL太吓人了
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>昨天松哥在朋友圈发了这样一张图：
-很多小伙伴看到了能够快速发现问题，当 company_id 为 null 的时候，会导致全表更新。
-但是也有小伙伴不解，自己平时就是这么写的呀，也没什么问题，如果有问题，那么上面的 SQL 该怎么改呢？
-松哥来和大家简单聊几句。
-一 防止全表更新 如果在生产环境中使用 UPDATE 语句更新表数据，此时如果忘记携带本应该添加的 WHERE 条件，那么后果不堪设想。
-那么怎么避免这个问题呢？
-二 sql_safe_updates sql_safe_updates 是 MySQL 数据库中的一个参数，它的作用是增强数据安全性，防止因误操作导致的数据丢失或破坏。
-具体来说，当 sql_safe_updates 设置为 ON（启用）时，MySQL 将阻止执行没有明确 WHERE 子句的 UPDATE 或 DELETE 语句。这意味着如果试图运行一个不包含 WHERE 条件来限定更新或删除范围的 DML 语句，MySQL 会抛出一个错误。而当 sql_safe_updates 设置为 OFF（禁用）时，MySQL 不会对此类无条件更新或删除操作进行特殊限制，允许它们按常规方式执行
-这个参数可以配置在会话级别或全局级别。
-在会话级别，可以通过执行 SET sql_safe_updates = 1; 命令来启用，这只对当前连接有效。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-09-25 00:00:00 +0000 UTC'>九月 25, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;江南一点雨</footer>
-  <a class="entry-link" aria-label="post link to 这样的SQL太吓人了" href="http://localhost:1313/posts/juejin/%E8%BF%99%E6%A0%B7%E7%9A%84sql%E5%A4%AA%E5%90%93%E4%BA%BA%E4%BA%86/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">腾讯云后端十五连问
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 大家好，我是捡田螺的小男孩，最近一位朋友（6年工作经验）面了腾讯云，以下是面试题和答案。加油，一起卷。
-聊聊项目，好的设计，好的代码 谈谈什么是零拷贝？ 一共有几种 IO 模型？NIO 和多路复用的区别？ Future 实现阻塞等待获取结果的原理？ ReentrantLock和 Synchronized 的区别？Synchronized 的原理？ 聊聊AOS？ReentrantLock的实现原理？ 乐观锁和悲观锁， 让你来写你怎么实现？ Paxos 协议了解？工作流程是怎么样的？ B&#43;树聊一下？B&#43;树是不是有序？B&#43;树和B-树的主要区别？B&#43;树索引，一次查找过程? TCP的拥塞机制 聊聊JVM调优 数据库分库分表的缺点是啥？ 分布式事务如何解决？TCC 了解？ RocketMQ 如何保证消息的准确性和安全性？ 算法题：三个数求和 公众号：捡田螺的小男孩： 我的github地址，感谢给个star 1.聊聊项目，好的设计，好的代码 项目的话，你可以聊聊你平时做的项目，尤其有亮点的项目。如果没有什么特别亮点的项目，也可以说说一些好的设计，或者你优化了什么接口，性能提升了多少，优化了什么慢SQL都可以。甚至是一些好的代码写法都可以。
-如果是讲优化接口的话，你可以看下我这篇文章哈：
-记一次接口性能优化实践总结：优化接口性能的八个建议
-如果是代码优化细节，可以看我这篇:
-工作四年，分享50个让你代码更好的小建议
-如果是慢SQL优化，可以看下我之前MySQL专栏系列文章哈：
-看一遍就理解：order by详解 看一遍就理解：group by详解 实战！聊聊如何解决MySQL深分页问题 后端程序员必备：书写高质量SQL的30条建议 阿里一面，给了几条SQL，问需要执行几次树搜索操作？ 生产问题分析！delete in子查询不走索引？！ 2. 谈谈什么是零拷贝？ 零拷贝是指计算机执行IO操作时，CPU不需要将数据从一个存储区域复制到另一个存储区域，从而可以减少上下文切换以及CPU的拷贝时间。它是一种I/O操作优化技术。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-03-15 00:00:00 +0000 UTC'>三月 15, 2022</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;捡田螺的小男孩</footer>
-  <a class="entry-link" aria-label="post link to 腾讯云后端十五连问" href="http://localhost:1313/posts/juejin/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%90%8E%E7%AB%AF%E5%8D%81%E4%BA%94%E8%BF%9E%E9%97%AE/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">字节国际支付十连问
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 大家好，我是田螺。
-之前有位读者去字节面试，面的是国际支付部门，他凭记忆，回忆被问到一些面试真题。于是，我整理了比较全的答案，希望对大家找工作有帮助呀，加油~
-公众号：捡田螺的小男孩 github地址，感谢每颗star：github 1. 聊聊工作中，你是如何设计数据库表的 命名规范 选择合适的字段类型 主键设计合理 选择合适的字段长度 优先考虑逻辑删除，而不是物理删除 每个表必备的几个字段（如create_time和update_time等） 一张表的字段不宜过多 尽可能使用not null定义字段 设计表时，评估哪些字段需要加索引 不需要严格遵守3NF，通过业务字段冗余来减少表关联 避免使用MySQL保留字 不搞外键关联，一般都在代码维护 一般都选择INNODB存储引擎 选择合适统一的字符集。 如果你的数据库字段是枚举类型的，需要在comment注释清楚 时间类型选择恰当 不建议使用Stored procedure(包括存储过程，触发器) 。 1:N关系的设计 大字段如何设计 考虑是否需要分库分表 索引的合理设计 我之前写过，做表的设计时，需要考虑哪些点，大家可以看下哈：21个MySQL表设计的经验准则
-2.什么是三范式？你做过违反三范式的设计嘛 第一范式：对属性的原子性，要求属性具有原子性，不可再分解； 第二范式：对记录的唯一性，要求记录有唯一标识，即实体的唯一性，即不存在部分依赖； 第三方式：对字段的冗余性，要求任何字段不能由其他字段派生出来，它要求字段没有冗余，即不存在传递依赖。 我们设计表及其字段之间的关系, 应尽量满足第三范式。但是有时候，可以适当冗余，来提高效率
-3. TCP的四次挥手？三次挥手行不行 ...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-12-28 00:00:00 +0000 UTC'>十二月 28, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;捡田螺的小男孩</footer>
-  <a class="entry-link" aria-label="post link to 字节国际支付十连问" href="http://localhost:1313/posts/juejin/%E5%AD%97%E8%8A%82%E5%9B%BD%E9%99%85%E6%94%AF%E4%BB%98%E5%8D%81%E8%BF%9E%E9%97%AE/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/java/page/14/">
-      «&nbsp;上一页&nbsp;14/16
+      «&nbsp;上一页&nbsp;14/17
     </a>
-    <a class="next" href="http://localhost:1313/tags/java/page/16/">下一页&nbsp;16/16&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/java/page/16/">下一页&nbsp;16/17&nbsp;»
     </a>
   </nav>
 </footer>

@@ -129,127 +129,134 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">ELK搭建&amp;日志集成
+    <h2 class="entry-hint-parent">SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析
     </h2>
   </header>
   <div class="entry-content">
-    <p>ELK 搭建 &amp; 日志集成 背景 突然想自己搭建一个ELK
-只是ELK的搭建和日志的简单集成，并不涉及高端知识，大佬请绕道
-环境 CentoOS7
-前置工作 前提要一个干净的环境。只需要一个正常可以访问的网络。如果你搭建环境已经包含前置工作中的必要内容，那么可以直接跳过。
-更换系统源 更换的原因是： 无法获取镜像列表。
-1. 备份原有源文件 bash
+    <p>一、简介 在实现邮箱验证码功能时，虽然表面上看只是发送一封带有验证码的邮件，但实际上背后涉及的细节远不止于此。本文将详细探讨如何利用Spring Email、Freemarker和Redis来构建一个高效的邮箱验证码系统。我们将深入分析验证码的时效管理，探讨为什么使用Redis的ZSet集合来存储验证码是更优的选择。同时，介绍如何通过异步操作来优化用户体验，确保邮件发送和验证码存储能够高效、可靠地完成,以及如何对接口进行限流。最后，我们将展示一个完整的实现示例，帮助你全面掌握这一关键功能的开发。
+二、验证码时效管理 有些平台在发送验证码时，会提示验证码在几分钟内有效，但当我因为网络问题多次收到几封邮件时，往往只有最后一封邮件的验证码是有效的，这波属实是搞不懂了。
+在讨论验证码时效管理时，传统的 Key-Value 存储方式确实容易引发一些问题。因为当一个邮箱多次请求验证码时，新生成的验证码会覆盖旧的验证码，从而导致前面收到的验证码变得无效。这违背了“验证码在几分钟内有效”的承诺，给用户带来了不好的体验。
+为了优化用户体验，我们可以考虑使用集合（Set 或 ZSet）来存储验证码信息，从而解决这个问题。以下为不同存储方式的介绍:
+Key-Value 存储方式 在最简单的 Key-Value 方式中，每个邮箱只与一个验证码对应。当新的验证码生成时，旧的验证码会被覆盖：
+Key
+Value
+过期时间
+email@example.com code
+60s
+这种方式的问题在于，旧的验证码会被覆盖，用户只能使用最新的验证码，尽管之前收到的验证码可能也在有效期内。
+使用Set集合存储方式 我们可以使用 Set 集合存储多次请求生成的验证码：
+Key
+Set
+过期时间
+email@example.com {code1, code2}
+60s
+这种方式虽然可以存储多个验证码，但它并不能记录每个验证码的生成时间。因此，过期管理变得复杂：所有验证码只能一起过期，无法单独控制每个验证码的有效期。
+使用ZSet进行存储 ZSet（有序集合）提供了一种更灵活的方式来管理验证码。我们可以将验证码和它的生成时间一起存储到 ZSet 中：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-01 00:00:00 +0000 UTC'>九月 1, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;翼飞</footer>
+  <a class="entry-link" aria-label="post link to SpringBoot优雅实现邮箱验证码功能：最佳实践与关键细节解析" href="http://localhost:1313/posts/juejin/springboot%E4%BC%98%E9%9B%85%E5%AE%9E%E7%8E%B0%E9%82%AE%E7%AE%B1%E9%AA%8C%E8%AF%81%E7%A0%81%E5%8A%9F%E8%83%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B8%8E%E5%85%B3%E9%94%AE%E7%BB%86%E8%8A%82%E8%A7%A3%E6%9E%90/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Spring中类解析神器：MetadataReader，熟悉ClassMetadata、AnnotationMetadata
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>@[TOC]
+一、认识MetadataReader 我们平时对一个类的解析，通常会用到反射的技术，比如：
+java
 代码解读
 复制代码
-mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
-2. 选择新的源 以腾讯源为例，你可以下载腾讯的 CentOS 7 源配置文件：
-bash
+Class&lt;?&gt; aClass = Class.forName(&#34;com.qstcloud.qcard.portal.context.domain.Test&#34;); aClass.getMethods(); aClass.getDeclaredFields(); // ...
+在Spring中需要去解析类的信息，比如类名、类中的方法、类上的注解，这些都可以称之为类的元数据，所以Spring中对类的元数据做了抽象，并提供了一些工具类。
+MetadataReader表示类的元数据读取器，默认实现类为SimpleMetadataReader。
+需要注意的是，SimpleMetadataReader去解析类时，使用的ASM技术。 我们都知道，Class.forName执行之后，就会将这个类加载到JVM中，哪怕我们根本用不到这个类，也会被加载。 ​ Spring启动的时候需要去扫描所有的类，如果指定的包路径比较宽泛，那么扫描的类是非常多的，那如果在Spring启动时就把这些类全部加载进JVM了，这样对应用非常不友好，所以使用了ASM技术。
+后续我们进一步分析MetadataReader的源码，就知道Spring的处理比我们自己处理到底高明在哪里了。
+二、使用MetadataReader java
 代码解读
 复制代码
-wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos7_base.repo
-3. 更新 yum 缓存 bash
-代码解读
+SimpleMetadataReaderFactory simpleMetadataReaderFactory = new SimpleMetadataReaderFactory(); // 构造一个MetadataReader MetadataReader metadataReader = simpleMetadataReaderFactory.getMetadataReader(&#34;com.test.Test&#34;); // 得到一个ClassMetadata，并获取了类名 ClassMetadata classMetadata = metadataReader.getClassMetadata(); System.out.println(classMetadata.getClassName()); // 获取一个AnnotationMetadata，并获取类上的注解信息 AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata(); for (String annotationType : annotationMetadata.getAnnotationTypes()) { System.out.println(annotationType); }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-27 00:00:00 +0000 UTC'>九月 27, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;柯苏远</footer>
-  <a class="entry-link" aria-label="post link to ELK搭建&日志集成" href="http://localhost:1313/posts/juejin/elk%E6%90%AD%E5%BB%BA%E6%97%A5%E5%BF%97%E9%9B%86%E6%88%90/"></a>
+  <footer class="entry-footer"><span title='2024-04-15 00:00:00 +0000 UTC'>四月 15, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;秃了也弱了</footer>
+  <a class="entry-link" aria-label="post link to Spring中类解析神器：MetadataReader，熟悉ClassMetadata、AnnotationMetadata" href="http://localhost:1313/posts/juejin/spring%E4%B8%AD%E7%B1%BB%E8%A7%A3%E6%9E%90%E7%A5%9E%E5%99%A8metadatareader%E7%86%9F%E6%82%89classmetadataannotationmetadata/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">开发小同学的骚操作，还好被我发现了
+    <h2 class="entry-hint-parent">面试官：单核服务器可以不加锁吗？
     </h2>
   </header>
   <div class="entry-content">
-    <p>大家好，我是程序员鱼皮。今天给朋友们还原一个我们团队真实的开发场景。
-开发现场 最近我们编程导航网站要开发 用户私信 功能，第一期要做的需求很简单：
-能让两个用户之间 1 对 1 单独发送消息 用户能够查看到消息记录 用户能够实时收到消息通知 这其实是一个双向实时通讯的场景，显然可以使用 WebSocket 技术来实现。
-团队的后端开发小 c 拿到需求后就去调研了，最后打算采用 Spring Boot Starter 快速整合 Websocket 来实现，接受前端某个用户传来的消息后，转发到接受消息的用户的会话，并在数据库中记录，便于用户查看历史。
-小 c 的代码写得还是不错的，用了一些设计模式（像策略模式、工厂模式）对代码进行了一些抽象封装。虽然在我看来对目前的需求来说稍微有点过度设计，但开发同学有自己的理由和想法，表示尊重~
-前端同学小 L 也很快完成了开发，并且通过了产品的验收。
-看似这个需求就圆满地完成了，但直到我阅读前端同学的代码时，才发现了一个 “坑”。
-这是前端同学小 L 提交的私信功能代码，看到这里我就已经发现问题了，朋友们能注意到么？
+    <p>今天有位同学问了磊哥一个问题，大概的意思是“单核服务器可以不加锁吗？”，我觉得很有意思，所以在这里就和各位探讨一下：
+1. 问题答案 先说我的理解，单核服务器仍然需要加锁。
+因为在单核服务器上也会有线程切换，如果不加锁，那么线程切换后，另一个线程就可以访问其他线程未操作完的共享变量，这就会导致操作的共享变量发生数据覆盖的问题，所以是需要加锁。
+例如，以下案例，线程 T1 和线程 T2 都要执行 i&#43;&#43; 操作，i 的初始值为 0，所以正确的执行结果应该是 2。但如果不加锁，即使在单核服务器下也会造成数据覆盖问题，最终的执行结果为 1 的情况，具体执行流程如下：
+2. 原因分析 因为 i&#43;&#43; 并不是原子操作，它的执行要分为以下 3 步：
+查询 i 的值。 执行 i&#43;1 修改操作。 将结果赋值给 i 变量。 如果是加锁操作，那么线程可以一个个执行，首先某一个线程先把 i 修改为 1，然后另一个线程再次基础上将结果修改为 2。
+但如果不加锁，那么就会导致下面的问题：
+线程 1
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-06-04 00:00:00 +0000 UTC'>六月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序员鱼皮</footer>
-  <a class="entry-link" aria-label="post link to 开发小同学的骚操作，还好被我发现了" href="http://localhost:1313/posts/juejin/%E5%BC%80%E5%8F%91%E5%B0%8F%E5%90%8C%E5%AD%A6%E7%9A%84%E9%AA%9A%E6%93%8D%E4%BD%9C%E8%BF%98%E5%A5%BD%E8%A2%AB%E6%88%91%E5%8F%91%E7%8E%B0%E4%BA%86/"></a>
+  <footer class="entry-footer"><span title='2024-09-18 00:00:00 +0000 UTC'>九月 18, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;Java中文社群</footer>
+  <a class="entry-link" aria-label="post link to 面试官：单核服务器可以不加锁吗？" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E5%8D%95%E6%A0%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%AF%E4%BB%A5%E4%B8%8D%E5%8A%A0%E9%94%81%E5%90%97/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">华为竟然发布了自己的编程语言“仓颉”，遥遥领先？！
+    <h2 class="entry-hint-parent">英伟达市值暴跌2万亿！一夜蒸发3个英特尔，创美国历史纪录
     </h2>
   </header>
   <div class="entry-content">
-    <p>大家好，我是程序员鱼皮。在 2024 年 6 月 21 日的华为开发者大会上，华为不仅官宣了下一代鸿蒙操作系统 HarmonyOS NEXT，而且还正式推出了自研的编程语言 仓颉 ，可谓是赚足了面子，遥遥领先！
-值得一提的是，HarmonyOS NEXT 是华为从内到外 全栈自研 的纯血鸿蒙。自研有什么意义呢？大会上有很多高大上的互联网黑话，什么采用端云垂直整合的系统架构、全场景、原生智能、原生安全等等。对于普通用户来说，咱不用理解这些，只需要关注这个操作系统可以使整机性能提升 30％、连接速度提升 3 倍、连接数量提升 4 倍、功耗降低 20％ 就够了，而且这是一个源自中国、自主可控的操作系统，会更安全。
-华为推出仓颉编程语言 下面咱重点来聊聊华为自研的编程语言 仓颉 。官方的定义是：仓颉编程语言是一款面向全场景智能的新一代编程语言，主打原生智能化、天生全场景、高性能、强安全。融入鸿蒙生态，为开发者提供良好的编程体验。
-好吧，又是一大堆 “黑话”，咱也不用关注。但有一点很关键，这个语言 “融入了鸿蒙生态”，换句话说，它就是为了鸿蒙应用的开发而推出的。
-有意思的是，其实华为 22 年的时候就已经推出过一门自研的鸿蒙应用开发语言 ArkTS，只不过该语言是在微软开源的 TypeScript 的基础上改进的。
-而这次，仓颉编程语言没有基于任何现有的编程语言演进，换句话说，是完全自研！
-完全自研编程语言毫无疑问是一件成本非常大的事情，连语法都要自己定义。华为从 2019 年就启动了仓颉项目，经过了整整 5 年的研发和沉淀，才正式对外官宣。不得不称赞一番华为的前瞻性和野心，从很早之前就已经布局了全链路的自研，誓要打造纯血鸿蒙。
+    <p>【新智元导读】 英伟达市值，一夜蒸发2790亿美元，创下美股史上单日最大跌幅！一天的损失，都赶上卖出的所有AI芯片了。「打倒英伟达垄断」的汹涌民意，终于有了具象化的一天。同时，英伟达已收到美国司法部传票，可谓噩耗连连。 一觉醒来，英伟达的市值竟蒸发了2790亿美元！而且，这次又破纪录了——市值暴跌9.5%，创下了美国公司有史以来最大的单日跌幅纪录。
+AI大佬马库斯调侃道：英伟达今天的市值损失，可能比他们向GenAI公司卖出的所有芯片总和还要多……
+要知道，OpenAI目前的估值也才刚达到1000亿美元，相当于英伟达一夜之间损失了将近3个OpenAI。如此惊人的股价大跌背后，究竟是什么原因？
+除了投资者对于AI更加谨慎之外，另一个原因，恐怕就是司法部升级了对英伟达的反垄断调查。据悉，美国司法部已经向英伟达发出传票，寻找这家芯片巨头违反反垄断法的证据。
+英伟达被怀疑有如下「罪名」：让客户更难转向其他供应商，且将不全部使用其AI芯片的买家置于不利地位。
+如今，司法部离正式向英伟达提出诉讼，又近了一步。屋漏偏逢连夜雨，如今的英伟达，是厄运连连。
+不得不说，老黄套现的时机，把握得是非常准了。
+市值一夜蒸发2790亿美元，创美国公司单日纪录 就在上周，英伟达公布财报，营收增长122%，净利润增长至168%至166亿美元。然而电话会议后，股价却一路暴跌，一度跌超8%，带垮整个美股科技股。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-06-25 00:00:00 +0000 UTC'>六月 25, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员鱼皮</footer>
-  <a class="entry-link" aria-label="post link to 华为竟然发布了自己的编程语言“仓颉”，遥遥领先？！" href="http://localhost:1313/posts/juejin/%E5%8D%8E%E4%B8%BA%E7%AB%9F%E7%84%B6%E5%8F%91%E5%B8%83%E4%BA%86%E8%87%AA%E5%B7%B1%E7%9A%84%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E4%BB%93%E9%A2%89%E9%81%A5%E9%81%A5%E9%A2%86%E5%85%88/"></a>
+  <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;新智元</footer>
+  <a class="entry-link" aria-label="post link to 英伟达市值暴跌2万亿！一夜蒸发3个英特尔，创美国历史纪录" href="http://localhost:1313/posts/juejin/%E8%8B%B1%E4%BC%9F%E8%BE%BE%E5%B8%82%E5%80%BC%E6%9A%B4%E8%B7%8C2%E4%B8%87%E4%BA%BF%E4%B8%80%E5%A4%9C%E8%92%B8%E5%8F%913%E4%B8%AA%E8%8B%B1%E7%89%B9%E5%B0%94%E5%88%9B%E7%BE%8E%E5%9B%BD%E5%8E%86%E5%8F%B2%E7%BA%AA%E5%BD%95/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">努力学计算机四年，终于进腾讯了！
+    <h2 class="entry-hint-parent">面试官：来，说说你对MySQLInnoDBBufferPool的理解
     </h2>
   </header>
   <div class="entry-content">
-    <p>大家好，我是鱼皮，20 届本科毕业，目前是鹅厂的一名全栈应用开发。
-前几天在某乎上看到一个问题：大学计算机系最努力的同学都是如何学习的？
-看了几个高赞回答后，真的是感同身受，也想和大家分享一下自己大学的学习经历，算是给自己一个继续前行的动力吧。
-与君共勉！
-我的大学四年 论努力，我不会输给任何人。
-认识我的朋友都知道，即使目前在鹅厂的高压下工作，我也依然坚持利用午休和下班后的时间创作，每晚都是接近 2 点才上床休息。
-朋友们总劝我，你别肝了，我说：大学的时候，可比这累多了。
-下面分享一下我通过自学，最终拿到大厂 offer 的故事。
-前言 我是上海一所 211 学校的本科生，网络工程专业，虽然学校不算太差，但在各种 985 面前，是没有竞争力的，只能说学历不拖后腿。
-我从小就对计算机很感兴趣（主要是喜欢打游戏），由于高考时失利严重，所以在进入大学前，就给自己定下了一定要进大厂的目标，决定要好好努力，不输其他名校的同学，我要证明自己不比他们差。
-不过现在回想起来，当时确实是年少轻狂啊，也没有想到零基础学习计算机，竟然需要那么漫长的努力。
-还好，虽然在追求目标时走了一些弯路，但总体还算顺利。
-下面分享我大学四年的学习和求职经历、方法、技巧经验，在最后精心总结，建议大家收藏，并定期和自己的现状来对比，按照我的经历，每位同学都可以进大厂！
-大一 其实，我的大一比较滑水，新鲜的事物太多，让我渐渐忘了入学前的目标，忽略了学习的重要性，不过这也应该是大多数同学的真实写照吧。刚入学时我加了很多社团，每天就是和兄弟姐妹们开心滴玩耍，完全不在意自己的成绩。但幸运的是，我加入了一个给学校开发网站的工作室，老大给我布置了一些学习网站开发的任务，因此上学期也学到了一点课本之外的知识，但专业课的成绩着实一般。
-寒假回家跟名校的朋友交流后，我意识到自己忘记了曾经的目标，于是决定洗心革面，发奋图强。和朋友的交流中，我意识到想要学好编程，仅通过学校的计算机课程是远远不够的。于是，我买了几本书，在大学的第一个寒假，学完了 Java 这门编程语言、数据库理论和 MySQL 数据库的使用。刚开始自学的确比较困难，所以整个寒假 每天早上 8 点钟爬起来就是学习，一直学到晚上，那段时间几乎是 闭门不出，所以感觉时间过的很快。自己对这个寒假也没有什么深刻的记忆了，有时 因为一个 bug 熬到半夜 的郁闷心情。
+    <p> 本文首发于公众号：托尼学长，立个写 1024 篇原创技术面试文章的flag，欢迎过来视察监督~
+说个比较经典的面试场景吧，不但很经典，还很有喜感。
+面试官：“可以说说，为什么Redis比MySQL快吗？”
+候选人听了之后略带不屑，说：“这个很简单啊，因为Redis中的数据都是存储在内存中的，而MySQL中的数据都是存储到磁盘上的，内存当然要比磁盘快啊。”
+面试官：“但MySQL InnoDB中不是也有一个大的Buffer Pool（缓冲池）吗？它不也是在内存中吗？”
+候选人听了有些懵逼，顿了顿说：“不好意思，我对您说的这个Buffer Pool不太了解。”
+面试官听了，故作失望地摇了摇头，心里则乐开了花。
+现在MySQL的高频面试题，基本上都集中在锁、索引、事务、分库分表、SQL优化等相关方向上。
+但Buffer Pool这块的知识点，是非常能能体现出一个工程师在数据库方向技术深度的，本文我们就来详细地聊一聊。
+InnoDB存储引擎结构 我们以MySQL 8.4版本为准，InnoDB存储引擎架构如下图所示：
+从图中我们可以看到，整体分为内存结构和磁盘结构两个部分，其中内存结构包括：Buffer Pool（缓冲池）、Change Buffer（写缓冲区）、Adaptive Hash Index（自适应Hash索引）和Log Buffer（日志缓冲区）。
+其中，Change Buffer 和 Adaptive Hash Index 也都是存在于 Buffer Pool 中的。
+一般情况下，我们会将数据库服务器80%的物理内存分配给Buffer Pool进行使用。
+初识Buffer Pool
+简而言之，Buffer Pool其实就是一块内存区域，InnoDB会将频繁访问的表记录数据和索引数据放到Buffer Pool中，旨在以此减少磁盘的IO操作，提升数据库的读写性能。
+Buffer Pool也是以Page（默认16k）作为最小IO单元的。通常情况下，一个Page可以容纳多行数据记录，各Page间使用链表进行组织串联，并通过改良后的LRU（最近最少使用）算法来执行内存淘汰策略。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-05-07 00:00:00 +0000 UTC'>五月 7, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员鱼皮</footer>
-  <a class="entry-link" aria-label="post link to 努力学计算机四年，终于进腾讯了！" href="http://localhost:1313/posts/juejin/%E5%8A%AA%E5%8A%9B%E5%AD%A6%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%9B%E5%B9%B4%E7%BB%88%E4%BA%8E%E8%BF%9B%E8%85%BE%E8%AE%AF%E4%BA%86/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">《有钱人和你想的不一样》阅读笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>作者哈维·艾克，世界顶级商业教练。
-作者从小家境窘困，十三岁就开始打工，曾经送报、卖冰淇淋、摆摊子卖货物，还到海滩上兜售防晒油。在约克大学读了一年之后，决定开始全心追求他致富的梦想。他辗转在美国西岸和东岸几个城市里做过许多工作，甚至自己当老板，创业十几次却都无法成功。
-多年的挫败没有把他打垮。他又开了一家贩售体育用品的公司，在两年半里快速成长为连锁企业，开设了十家分店。然后，他把这项事业卖给一家名列《财星》五百大的企业。他赚了一笔大钱。可是，由于他的错误投资和大肆挥霍，不到两年就把钱莫名其妙用光了。他又回到了起点。
-他痛定思痛，回顾自己的成长背景和金钱观，分析各种与致富有关的内在思惟，体会到许多与金钱、致富梦想和人生态度有关的道理。他发现，每一个人心里都有一张金钱蓝图，假如不修改这张蓝图，那么就算赚了大钱，这笔钱也不会留在身边太久。
-带着这样的信念，他彻底修改了自己的金钱蓝图，最后成为了超级大富翁，并且越来越有钱。
-成功之后，他致力于帮助更多人实现致富的梦想，超越现有生活，让人生变得不同。他的潜能开发公司红遍全美，以独特的平民气息吸引了来自世界各地的无数普罗大众，一堂课经常塞满了两千人。很多上过他课的人表示，这堂课大大改变了他们的人生，使他们开始累积财富，得到快乐与成功。
-现实社会 大多数人的现状：
-对其财政状况担忧而夜不能寐，早上睁眼起来，就去上班 怀抱希望，自己马上就能赚到可以付清账单的钱。而当他们收入提高时，开支又梦魇般地同步增多 唯一解决方法就是努力工作。希望通过多赚钱，最终变得节俭。但是生活水平同收入平行增长。负债日益增加。 这部分人就必须越来越努力而长时间地工作才能保持生活水平，以偿还债务和账单。
-像仓鼠的轮子：尽管他们尽全力，却没有进步。同理一些人不管多努力地工作，只要处于仓鼠的轮子中，他就是原地踏步，这种现象在《财务自由之路2》被称为仓鼠之轮。
-财富档案 书里讲了17个有钱人的思维习惯，其实书里有钱人17个思维习惯和大多数成功人士书籍所讲大同小异。我摘录几种我认为重要的：
-有钱人相信：“我创造我的人生”。穷人相信：“人生发生在我的身上”。必须相信，只有你能造成自己的成功，也只有你能造成你的平庸，只有你能造成自己为钱辛苦或是前途茫茫。不管出于自觉还是不自觉的原因，你的人生状态都是自己造成的。行动上远离负面能量的人，每天检视自己的行为 有钱人努力让自己有钱。穷人一直想着要变得有钱。如果你并没有达到你嘴巴上所说的很渴望达到的财富成就，很可能是1. 潜意识时并不真的想变得有钱；2. 并不想付出应有的代价去创造财富 有钱人专注于机会。穷人专注于障碍。有钱人冒的是经过计划的风险，他们会做研究，付出必要的努力，再根据具体的资讯和事实做出决定。穷人，他们期待失败。他们对于自己和自己的能力都没有信心。穷人相信，如果事情行不通，就像世界末日来临。而正因为他们总是看见阻碍，所以他们通常都不愿意冒险。 有钱人欣赏其他的有钱人和成功人士，穷人讨厌有钱人和成功人士。不论你现在什么状态，首先做到不讨厌其他人，积极从其他人身上学到优点或教训 有钱人乐意宣传自己和自己价值观，穷人把推销和宣传看成不好的事。敢于推销自己和自己的产品，学习推销能力，不会或不敢推销一定不会成功。 有钱人大于他们的问题，穷人小于他们的问题。遇到问题不要急于去抱怨和责怪，因为抱怨和责怪来自于恐惧，要明白如果遇到了一个很大的问题，说明自己很小，要么列出多条解决方案去解决问题，要么行动起来去将自己变大。不要专注于问题，而专注于目标。 有钱人选择根据结果拿酬劳。穷人选择根据时间拿酬劳。稳定的薪酬会阻碍你挣更多的钱。要么选择可以以自己的成果或者公司的运营来领薪的工作，要么自己当老板，可以从兼职做起。 有钱人专注于自己的净值。穷人专注于自己的工作收入。净值指你所拥有的所有东西，现金，不动产，股票等等可以转化成现金的东西。提高收入，不乱花钱增加存款，有了存款加强投资，简化不必要的花销。看理财类书籍 有钱人管理他们的钱，穷人很会搞丢他们的钱。不是等我拥有了很多钱后我再开始管理，而是我开始管理我的钱了以后，我才会拥有很多钱。所以会管理钱很重要，不要在乎他们的多少。 有钱人让钱帮他们工作。穷人幸苦工作挣钱。一开始你努力工作挣钱，之后就要让钱为你努力工作。被动收入很重要，一定要去培养和开发。被动收入大于你的支出时，你才算真正的财务自由 有钱人就算恐惧也会采取行动，穷人却会让恐惧阻止他们行动有些事一开始做起来是痛苦的，但是你坚持下去就可以穿过痛苦区到达舒适区，不断的扩大你的舒适区因为舒适区和财务区是成正比的，如果一直待在舒适区你是不会成长的 有钱人持续学习成长，穷人以为他们知道了一切。一件事只有你经历了才有资格说你知道，否则你只是听说过看到过或读到过。如果能学到一个知识或者有了一点进步就是值得的。 最后 行动比不行动好，只会YY没卵用 培养财商很重要，有点小钱绝对不是只有买！买！买！ 月光族没希望，劳碌命，学会储蓄，积累一笔初始资金 巴菲特说的：世界上最好的投资，就是投资你自己 如果我的文章对你有帮助，您的👍就是对我的最大支持^_^。
-更多文章：linglan01.cn/about
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-08-09 00:00:00 +0000 UTC'>八月 9, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序员凌览</footer>
-  <a class="entry-link" aria-label="post link to 《有钱人和你想的不一样》阅读笔记" href="http://localhost:1313/posts/juejin/%E6%9C%89%E9%92%B1%E4%BA%BA%E5%92%8C%E4%BD%A0%E6%83%B3%E7%9A%84%E4%B8%8D%E4%B8%80%E6%A0%B7%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"></a>
+  <footer class="entry-footer"><span title='2024-08-04 00:00:00 +0000 UTC'>八月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;托尼学长</footer>
+  <a class="entry-link" aria-label="post link to 面试官：来，说说你对MySQLInnoDBBufferPool的理解" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E6%9D%A5%E8%AF%B4%E8%AF%B4%E4%BD%A0%E5%AF%B9mysqlinnodbbufferpool%E7%9A%84%E7%90%86%E8%A7%A3/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/34/">
-      «&nbsp;上一页&nbsp;34/38
+      «&nbsp;上一页&nbsp;34/40
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/36/">下一页&nbsp;36/38&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/36/">下一页&nbsp;36/40&nbsp;»
     </a>
   </nav>
 </footer>

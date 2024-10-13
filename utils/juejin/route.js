@@ -7,7 +7,7 @@ import {
     removeDomTags,
     getRandomDelay,
     replaceDoubleWithSingleQuotes,
-    removeSpecialChars
+    removeSpecialChars, readJsonFilesFromFolder, readFile
 } from "../util.js"
 
 const turnDownService = new TurnDownService();  // 创建 Turndown 实例
@@ -18,21 +18,22 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
     log.debug(`Visiting detail page: ${request.url}`);
     let startTime = Date.now(), endTime;
     weight++
+    writeToFile(`${request.url}\n`, `./output/juejin/url/visitedUrls.txt`, true).then(() => console.log('visitedUrls.txt written successfully'));
 
     // 在每次请求之间添加人为的延迟，单位为毫秒
-    await new Promise(resolve => setTimeout(resolve, getRandomDelay(20, 120))); // n 秒间隔
+    await new Promise(resolve => setTimeout(resolve, getRandomDelay(2, 12))); // n 秒间隔
 
     try {
-        await page.waitForSelector('html', {timeout: 60000});
+        await page.waitForSelector('html', {timeout: 150000});
         // 并发获取页面元素的内容
         const [title, author, publishTime, readTime, metaTags, description, articleHtml] = await Promise.all([
-            page.locator(".article-title").textContent().then(removeSpaces).then(removeSpecialChars),
-            page.locator(".author-name .name").textContent().then(removeSpaces),
-            page.locator(".meta-box .time").textContent().then(removeSpaces),
-            page.locator(".meta-box .read-time").textContent().then(removeSpaces),
-            page.getAttribute("meta[name='keywords']", "content").then(removeSpaces),
-            page.getAttribute("meta[name='description']", "content").then(removeSpaces).then(replaceDoubleWithSingleQuotes).then(removeSpecialChars),
-            page.locator("#article-root").innerHTML()
+            page.locator(".article-title").textContent({timeout: 150000}).then(removeSpaces).then(removeSpecialChars),
+            page.locator(".author-name .name").textContent({timeout: 150000}).then(removeSpaces),
+            page.locator(".meta-box .time").textContent({timeout: 150000}).then(removeSpaces),
+            page.locator(".meta-box .read-time").textContent({timeout: 150000}).then(removeSpaces),
+            page.getAttribute("meta[name='keywords']", "content", {timeout: 150000}).then(removeSpaces),
+            page.getAttribute("meta[name='description']", "content", {timeout: 150000}).then(removeSpaces).then(replaceDoubleWithSingleQuotes).then(removeSpecialChars),
+            page.locator("#article-root").innerHTML({timeout: 150000})
         ]);
 
         // 处理 tags
@@ -75,10 +76,10 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
 router.addHandler('RECOMMEND', async ({page, enqueueLinks, request, log}) => {
     log.debug(`Enqueueing recommend for: ${request.url}`);
 
-    // We are now on a category page. We can use this to paginate through and enqueue all products,
-    // as well as any subsequent pages we find
+    // 在每次请求之间添加人为的延迟，单位为毫秒
+    await new Promise(resolve => setTimeout(resolve, getRandomDelay(20, 120))); // n 秒间隔
 
-    await page.waitForSelector('.main-container', {timeout: 60000});
+    await page.waitForSelector('.main-container', {timeout: 150000});
     await enqueueLinks({
         urls: [request.url],
         label: 'DETAIL',
@@ -96,18 +97,13 @@ router.addHandler('RECOMMEND', async ({page, enqueueLinks, request, log}) => {
 // This is a fallback route which will handle the start URL, as well as the LIST labeled URLs.
 router.addDefaultHandler(async ({request, page, enqueueLinks, log}) => {
     log.debug(`Enqueueing start from page: ${request.url}`);
-    // This means we're on the start page, with no label.
-    // On this page, we just want to enqueue all the category pages.
+    let allUrls = (await readJsonFilesFromFolder('../output/juejin/url'))[0].urls,
+        visitedUrls = await readFile('../output/juejin/url/visitedUrls.txt'),
+        urls = allUrls.filter(url => !visitedUrls.includes(url)).slice(0, 1)
 
-    await page.waitForSelector('.entry-list', {timeout: 60000});
-    const elements = (await page.$$('.entry-list .title-row a'));
-
-    for (const element of elements) {
-        const href = await element.getAttribute('href');
-        await enqueueLinks({
-            urls: [href],
-            label: 'RECOMMEND',
-        });
-    }
+    await enqueueLinks({
+        urls,
+        label: 'DETAIL',
+    })
 });
 

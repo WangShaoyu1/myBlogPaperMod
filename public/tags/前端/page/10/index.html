@@ -129,111 +129,128 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">vue3admin保姆教学指南｜后台管理系统的Layout实现
+    <h2 class="entry-hint-parent">内存泄漏：关于定时器的引用
     </h2>
   </header>
   <div class="entry-content">
-    <p>在上一篇文章中，我们已经实现了路由权限的功能，拿到了路由表和menu的列表。本节我们来实现一下Layout布局。
-布局分析 首先我们来分析一下整个页面：
-整体布局分为五大块：Logo、SubMenu、Header、Main、Footer。按照功能划分，我们的目录结构可以是下面这样的子：
-我们先来搭个主体结构，在sec/layouts下面新建index.vue文件：
-xml
+    <p>背景 javascript
 代码解读
 复制代码
-&lt;template&gt; &lt;div class=&#34;layout-admin-wrapper&#34;&gt; &lt;div class=&#34;layout-container-vertical fixed&#34;&gt; &lt;!-- SubMenu --&gt; &lt;LayoutSideBar /&gt; &lt;div class=&#34;layout-main&#34; :class=&#34;{ &#39;is-collapse&#39;: collapse }&#34;&gt; &lt;!-- Header --&gt; &lt;div class=&#34;layout-header fixed-header&#34; :class=&#34;{ &#39;is-collapse&#39;: collapse }&#34; &gt; &lt;LayoutNavBar /&gt; &lt;LayoutTabsBar /&gt; &lt;/div&gt; &lt;div class=&#34;app-main-container&#34;&gt; &lt;!-- Main --&gt; &lt;LayoutMain /&gt; &lt;!-- Footer --&gt; &lt;LayoutFooter /&gt; &lt;/div&gt; &lt;/div&gt; &lt;/div&gt; &lt;/div&gt; &lt;/template&gt;
+function demo() { const bigArrayBuffer = new ArrayBuffer(999_000_000); const id = setTimeout(() =&gt; { console.log(bigArrayBuffer.byteLength); }, 1000); return () =&gt; clearTimeout(id); } globalThis.cancelDemo = demo();
+使用上述代码，bigArrayBuffer 将永远泄漏。我没想到会这样，因为：
+一秒钟后，引用 bigArrayBuffer 的函数不再可调用。 返回的取消函数不引用 bigArrayBuffer。 关于垃圾回收 垃圾回收的基本原理 下面我们一起看看为什么。先来了解一下JavaScript中的垃圾回收（Garbage Collection, GC）是自动进行的，开发者无需手动管理内存。JavaScript引擎（如V8引擎）会自动检测不再使用的对象，并释放其占用的内存。为了了解和优化JavaScript应用的内存使用，理解垃圾回收的基本原理和机制是很重要的。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-03-27 00:00:00 +0000 UTC'>三月 27, 2023</span>&nbsp;·&nbsp;11 分钟&nbsp;·&nbsp;白哥学前端</footer>
-  <a class="entry-link" aria-label="post link to vue3admin保姆教学指南｜后台管理系统的Layout实现" href="http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84layout%E5%AE%9E%E7%8E%B0/"></a>
+  <footer class="entry-footer"><span title='2024-08-03 00:00:00 +0000 UTC'>八月 3, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;叶知秋水</footer>
+  <a class="entry-link" aria-label="post link to 内存泄漏：关于定时器的引用" href="http://localhost:1313/posts/juejin/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E5%85%B3%E4%BA%8E%E5%AE%9A%E6%97%B6%E5%99%A8%E7%9A%84%E5%BC%95%E7%94%A8/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">搭建后台管理系统的思路
+    <h2 class="entry-hint-parent">为什么大家越来越在意加班了
     </h2>
   </header>
   <div class="entry-content">
-    <p>从零开始搭建后台管理系统
-当然，这是一个简易版本的，你可以在这两个基础上加以改造
-搭建后台管理系统最基础的是什么呢？个人的体会是整体的基础框架，这个是指最基础的框架，比如根 router-view, 侧边栏以及侧边栏的router-view，以及顶部栏，等基础布局的控制。
-root 首先 App.vue 只有展示 rouer-view, 这个就是 root, 所谓的根。
-html
-代码解读
-复制代码
-&lt;template&gt; &lt;router-view&gt;&lt;/router-view&gt; &lt;/template&gt;
-ok 有了根之后，我们需要有一个 layout 页面，这个页面来承载我们的侧边栏，顶部栏
-layout 页面他是两栏布局的，一栏是我们的侧边导航栏，
-侧边栏 如何完成这个两栏布局
-可以使用 float 可以使用弹性布局 display: flex 也可以使用定位 侧边导航栏，可能我们需要来研究 element-ui 的组件 NavMenu 导航菜单
-侧边导航栏需要我们路由的一些信息，比如路由对应的组件，就像 router-link 对应的 router-view
-如果菜单是二级菜单，三级菜单，需要怎么处理
-如果需要折叠菜单，需要怎么处理，这里就需要阅读 折叠菜单组件
-...</p>
+    <p>前言 最近，我的 在数字马力工作的这五个月 文章小小火了一把。
+也有一些朋友来找我内推，内推之前大概都会问些关于公司的基本情况，其中有个必问的问题就是
+这个公司加班严重吗？
+其实问这无可厚非，毕竟以前我找别人内推的时候也会问类似的问题
+毕竟大家都不是刚毕业的小年轻了，如果找个工作还整天加班肯定不是什么长久之计。
+公平公正的回答这个问题 拿郑州数字马力来说，据我个人观察，大多数部门的大多数人都不怎么加班。当然这也可能只是表面现象。
+因为也有一些人是下班后，在家加班的（比如我），这是实话，但是次数不是很多，一般就是处理些告警问题，还有就是有些国际化的项目，因为时差问题，会晚上7点-8点开会，但这也不是常态。
+也有个别同事，白天摸摸鱼，晚上搞到十来点。
+也有个别同事，因为自身能力问题，每天都加班。
+但这些都是个例。
+在数马，不内卷，没人要求你加班，但给你分配的工作你要保质保量完成。
+那有的有会问？会不会给你安排的工作特别多，然后你被迫加班？
+反正我是没遇到过，实际情况确实有那种比较急的任务，需要法定节假日加班的，但是这些都是可遇不可求。因为3倍工资。
+钱给到位了，人自然没啥意见
+总结 总的来说，如果你是正常面试进来的（能面试进来的基本上都符合要求，工作能力不会差），那分配给你的工作你大概率可以搞定，那你大概率不会加班，工作和生活大概率可以平衡。
+回郑州工作不就是为了实现工作和生活平衡吗
+如果你想内推或了解郑州行情，可私信👀
+</p>
   </div>
-  <footer class="entry-footer"><span title='2021-04-30 00:00:00 +0000 UTC'>四月 30, 2021</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;ToolkitUse</footer>
-  <a class="entry-link" aria-label="post link to 搭建后台管理系统的思路" href="http://localhost:1313/posts/juejin/%E6%90%AD%E5%BB%BA%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%9D%E8%B7%AF/"></a>
+  <footer class="entry-footer"><span title='2024-10-08 00:00:00 +0000 UTC'>十月 8, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;刘小灰</footer>
+  <a class="entry-link" aria-label="post link to 为什么大家越来越在意加班了" href="http://localhost:1313/posts/juejin/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A4%A7%E5%AE%B6%E8%B6%8A%E6%9D%A5%E8%B6%8A%E5%9C%A8%E6%84%8F%E5%8A%A0%E7%8F%AD%E4%BA%86/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">推荐前端中后台Vue3&#43;ElementPlus&#43;JavaScript
+    <h2 class="entry-hint-parent">发现一个程序员最强外设，助你高效开发早日摸鱼！
     </h2>
   </header>
   <div class="entry-content">
-    <p>&#34; 🔥 ZHOUYI·ADMIN &#34; 基于 Vue3 &#43; ElementPlus &#43; JavaScript &#43; Pinia &#43;Vite.搭建
-在线演示： template.zhouyi.run 源码Gitee: gitee.com/Z568_568/ZH… 源码Github: github.com/ZHYI-source… 前言 ZHOUYI·ADMIN 是一个现代化的管理后台模板，提供了一系列功能丰富的组件和工具，帮助开发者快速搭建和开发前后台管理应用。 对快速构建Vue3全栈项目有很大的帮助，解决每次新建项目基础配置的烦恼.
-无论你是一个开发者寻找一个可靠的管理后台模板，还是一个学习者想要深入了解现代前端技术， ZHOUYI·ADMIN 都是一个非常有价值的项目。 因为它弥补了不习惯使用TypeScript开发的同学， 使用JavaScript版本就能更快上手熟悉 。
-截图 ...</p>
+    <p>简介 最近公司的副屏有点问题，经常屏闪，无意中和媳妇儿吐槽了几句。没想到，生日的时候，居然收到了她的礼物：
+看到程序员专用的时候，我很开心的对媳妇儿表示了感谢，但内心第一反应是：完蛋了，媳妇儿花钱买智商税了！
+但是，当我真正上手使用时，我才深切的知道是我错了。这块显示屏简直是程序员必备开发神器啊，节省了我非常多的开发时间！一个字：值！
+作为一个快7年的老前端，秉持着不断分享、共同进步的原则，这篇文章我将介绍：如何将一块优秀的副屏与实际工作结合，发挥其最大价值，实现高效开发、快速摸鱼！
+程序员与副屏 日常写bug中，副屏是我们每个程序员必备的一个工具，我们都希望拥有一个强大好用的显示器。
+我也不少折腾，买过一块约2000左右的高刷显示屏，但在日常开发中，感觉和公司配的屏幕差异不大。这让我觉得，大部分屏幕效果都大同小异，买贵一点的，那就纯纯智商税了。
+深度使用媳妇儿送的RD280U显示屏后，我意识到自己是井底之蛙了，「程序员专用」的显示屏和其他用途显示屏确实是有很大区别的：一个真正好用的屏幕，是可以真真切切提高我们工作效率的！
+明基RD280U 屏幕效果 就一个显示屏而言，它最重要的就是显示效果。相比我用的其他屏幕，我发现这款屏幕有几个不错的优点：
+屏占比 正常的显示屏都是16：9，但是这款屏幕是3：2，相比普通屏幕，它能够展示更多的代码，有效的减少了我们滚动代码的次数。
+色彩显示效果 作为一个前端美工师，我对屏幕的色彩显示效果极其关注！我通常用色域和色深来衡量一个屏幕的显示效果。
+色深代表着画面颜色的「细腻程度」，数值越大就越细腻，目前主流显示器的参数中色深一般是6 bit、8bit和10bit。
+色域指的是设备能够显示或捕捉的颜色范围。色域越广，设备能够呈现的颜色就越丰富和逼真。
+这款屏幕的色深为10-bit，色域为95% P3，色彩显示效果非常好，非常适合看电影用写代码用！
+防眩光 我的工位在窗户边靠东的位置，每天早晨阳光都会照射在我的屏幕上，非常刺眼难受。但当我在公司使用这块屏幕时，我惊奇的发现反光效果明显减弱了！
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-15 00:00:00 +0000 UTC'>八月 15, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;书中枫叶</footer>
-  <a class="entry-link" aria-label="post link to 推荐前端中后台Vue3&#43;ElementPlus&#43;JavaScript" href="http://localhost:1313/posts/juejin/%E6%8E%A8%E8%8D%90%E5%89%8D%E7%AB%AF%E4%B8%AD%E5%90%8E%E5%8F%B0vue3&#43;elementplus&#43;javascript/"></a>
+  <footer class="entry-footer"><span title='2024-08-29 00:00:00 +0000 UTC'>八月 29, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;石小石Orz</footer>
+  <a class="entry-link" aria-label="post link to 发现一个程序员最强外设，助你高效开发早日摸鱼！" href="http://localhost:1313/posts/juejin/%E5%8F%91%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E6%9C%80%E5%BC%BA%E5%A4%96%E8%AE%BE%E5%8A%A9%E4%BD%A0%E9%AB%98%E6%95%88%E5%BC%80%E5%8F%91%E6%97%A9%E6%97%A5%E6%91%B8%E9%B1%BC/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2022·年终总结·十年总结·多事之秋·当断则断
+    <h2 class="entry-hint-parent">小程序面试8问，你能接下几招？
     </h2>
   </header>
   <div class="entry-content">
-    <p>「回顾2022，展望2023，我正在参与2022年终总结征文大赛活动」
-大家好，我是嘿嘿。今年是我从业的第十年，也是最近几年发生事情最多的一年，借着活动也正好总结下自己工作的这十年。
-十年前端路 依稀记得 2012 年刚毕业时，我背着学校宿舍里收拾的行囊，跑去松江租了个房子。由于没钱搬家，自己来来回回通过地铁搬运了四五趟 - 从闵行到松江。搬到松江不是因为工作，而是因为没找到工作，只能在松江找了个最便宜的房子先住着。由于大学时期没有好好学习，导致找工作时根本不知道如何下手。然后找工作又被培训机构忽悠（没错就是某内，打着招聘的旗帜实则是搞培训），进去培训了两天发现教的内容实在是太浅，无奈的我只能找机构退费，过程也是波澜起伏，最终只退了一部分。然后我便回到出租屋，每天包子馒头、然后在屋子里找各种学习视频，开始学习 Java。
-然而学习过程中阴差阳错了解到了前端，当时的前端蒸蒸日上，各种 CSS3、HTML 5 撩拨了我的心，让我一下子沉迷，于是乎果断抛弃了枯燥的 Java 转头开始学习前端。终于在自学了两个月后找到了一份前端工作。工作单位很小，总共不过 20 来人，拿着 2700 块的工资，虽然有些可笑，但我却很开心，我的前端之路便由此开启。
-在第一份工作期间，单身的我每天就是研究各种 CSS3、HTML5、canvas、node.js，加上当时我的领导主要搞 flash，也跟着学了一点。自我感觉技术突飞猛进，颇有初生牛犊不怕虎的气势，虽然赚的少，但很充实。在那段时间颇喜欢写一些小游戏，比如俄罗斯方块、贪吃蛇、暗棋以及一直没有再完成的 SLG。之后这些都被我迁移到 GitHub 上，虽然现在看来代码可能有些堪忧。
-在工作一年半后，我发现一个人瞎折腾虽然自我感觉学习很快，但是却一直不太得劲，加上虽然领导一直帮着我让老板给加薪，连着提薪四次，最终才拿了 4000 一个月。于是乎我便开始了第一次跳槽，寻找人生的第二份工作。找工作的过程并不太顺利，却也意识到自己的很多薄弱点：知识不成体系、不懂性能优化、不懂底层原理等等，不过最终机缘巧合的拿到了鞋厂的 offer。进入鞋厂后，公司前端的各种技术栈、基建、工程化让我眼花撩乱，发现自己之前实在是井底之蛙。那段时间每天学习、搬砖，加之小团队氛围很棒，过的也十分充实，也是在那段时间，我结了婚，老婆怀了孕。然而在入职鞋厂约一年后，所在的部门解散，团队的同事大部分跳槽去了别处，我也没有选择留下，被另一位同事内推到了上家公司。
-截至今年八月底我从上家公司离开，我在上家公司呆了 7 年多，这是我目前人生最长的一份工作经历，以后也可能保持着这份记录。在这 7 年里，我从一个小菜鸟，慢慢成长，开始接手团队的核心开发任务，开发了团队的React 公共组件库、微前端库 RAPIOP、模块加载器 MOD、React 组件文档工具 RECODO ，以及团队内部的开发脚手架、性能优化、架构设计等等，商家公司给了我很多施展的机会，让我成长了很多。也是在这 7 年里，我的儿子出生了，买房、买车、落户，人生中的几项大事也一一落地。
+    <p>你在面试的时候有被问到过小程序吗？你答上来了吗？下面的这面试官8问你能接招吗？
+1、面试官：说说你对微信小程序的理解？优缺点？ 一、是什么 2017年，微信正式推出了小程序，允许外部开发者在微信内部运行自己的代码，开展业务
+截至目前，小程序已经成为国内前端的一个重要业务，跟 Web 和手机 App 有着同等的重要性
+小程序是一种不需要下载安装即可使用的应用，它实现了应用“触手可及”的梦想，用户扫一扫或者搜一下即可打开应用
+也体现了“用完即走”的理念，用户不用关心是否安装太多应用的问题。应用将无处不在，随时可用，但又无需安装卸载
+注意的是，除了微信小程序，还有百度小程序、微信小程序、支付宝小程序、抖音小程序，都是每个平台自己开发的，都是有针对性平台的应用程序
+二、背景 ⼩程序并⾮凭空冒出来的⼀个概念，当微信中的 WebView 逐渐成为移动 Web的⼀个重要⼊⼝时，微信就有相关的 JS-SDK
+JS-SDK 解决了移动⽹⻚能⼒不⾜的问题，通过暴露微信的接⼝使得 Web 开发者能够拥有更多的能⼒，然⽽在更多的能⼒之外，JS-SDK的模式并没有解决使⽤移动⽹⻚遇到的体验不良的问题
+因此需要设计⼀个⽐较好的系统，使得所有开发者在微信中都能获得⽐较好的体验：
+快速的加载 更强⼤的能⼒ 原⽣的体验 易⽤且安全的微信数据开放 ⾼效和简单的开发 这些是JS-SDK做不到的，需要设计一个全新的小程序系统
+对于小程序的开发，提供一个简单、高效的应用开发框架和丰富的组件及API，帮助开发者开发出具有原生体验的服务
+其中相比H5，小程序与其的区别有如下：
+运⾏环境：⼩程序基于浏览器内核重构的内置解析器 系统权限：⼩程序能获得更多的系统权限，如⽹络通信状态、数据缓存能⼒等 渲染机制：⼩程序的逻辑层和渲染层是分开的 小程序可以视为只能用微信打开和浏览的H5，小程序和网页的技术模型是一样的，用到的 JavaScript 语言和 CSS 样式也是一样的，只是网页的 HTML 标签被稍微修改成了 WXML 标签
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-12-26 00:00:00 +0000 UTC'>十二月 26, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;嘿嘿不务正业</footer>
-  <a class="entry-link" aria-label="post link to 2022·年终总结·十年总结·多事之秋·当断则断" href="http://localhost:1313/posts/juejin/2022%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93%E5%8D%81%E5%B9%B4%E6%80%BB%E7%BB%93%E5%A4%9A%E4%BA%8B%E4%B9%8B%E7%A7%8B%E5%BD%93%E6%96%AD%E5%88%99%E6%96%AD/"></a>
+  <footer class="entry-footer"><span title='2022-10-04 00:00:00 +0000 UTC'>十月 4, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;白哥学前端</footer>
+  <a class="entry-link" aria-label="post link to 小程序面试8问，你能接下几招？" href="http://localhost:1313/posts/juejin/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%9D%A2%E8%AF%958%E9%97%AE%E4%BD%A0%E8%83%BD%E6%8E%A5%E4%B8%8B%E5%87%A0%E6%8B%9B/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">基于React、MobX、Webpack和ReactRouter的项目模板
+    <h2 class="entry-hint-parent">建议收藏！这个程序员一身反骨，不愿写周报，于是做了个神器：轻松提取Git和Jira记录一键生成
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 自己利用业余时间，基于 React、Ant Design、Webpack、MobX、React Router、TS 写了一个后台管理模板，目前已在公司内部搭建了几套项目，并都已上线，希望帮助自己梳理各技术最新知识点，同时也希望对看到的人有所帮助。
-项目效果： 登录页：
-404 页：
-列表页：
-分支 main hooks &#43; ts
-class class &#43; ts
-js class &#43; js
-如何快上手 一个基本列表展示
-源码地址 Tristana
+    <p>前言 之前看到一个有趣的说法：从员工的工位状态可以判断其工作状态——工位越整洁、个人物品越少，员工随时准备“跑路”的概率越高。这个观点让我觉得颇有道理。
+那么同样的，从公司对待员工的态度和政策中，也可以看出一些东西，在公司上升期时，管理层的重心通常放在业务拓展上，专注于赚钱、做大蛋糕，因此对员工相对宽容，只要完成本职工作，不会过于苛责。但当公司发展遇到瓶颈或进入衰退期时，就开始苛求细节、抓考勤、缩减福利，各种压缩成本，卷形式主义，员工压力倍增。
+有时，员工在这些高压环境下，还要应对额外的任务，比如写日报、周报，想必这也是程序员最烦的一件事，明明工作产出已经在代码中体现了，却还要花大量时间去写 ppt，领导写写也就罢了，毕竟这是他们的工作之一，一线干活的程序员也要写，这就很烦人了，每天做不完的需求还要挤出来时间整理总结。
+为了解决这个痛点，今天我给大家介绍同事写的自动化写周报的脚本工具，能够一键抓取 git 提交记录，并按照你需要的格式生成日报、周报。
+功能介绍 效果如视频所示，只要把脚本运行文件当到项目所在文件夹下，用 node 环境执行，即可抓取该文件夹下的所有 git 仓库，并读取 .git 配置文件的内容，根据 commit 记录来生成简易工作报告，列出规定时间内做过的所有需求记录和耗时情况。
+同时如果你在 commit 时，填写了 jira 需求号，会根据 jira 需求号来抓取该需求详情，如对接人等信息，你可以根据自己公司的要求，稍微改下，填充更多需要的信息，使周报内容更丰富。
+关键步骤解读 查找 Git 仓库：
+findGitRepos 函数会递归地在指定目录下搜索包含 .git 目录的文件夹，识别出所有的 Git 仓库路径。为了优化性能，避免无关文件夹（如 node_modules）的搜索，函数在遇到它们时会直接跳过。 获取 JIRA 需求：
+getJIRA 函数利用 HTTP 请求调用 JIRA API，通过需求 ID 获取需求的详细信息，包括标题、优先级、描述和相关人员。它基于用户名和密码进行基础认证（Basic Auth），并返回解析后的需求详情。 获取 Git 日志：
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-03-16 00:00:00 +0000 UTC'>三月 16, 2020</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;野生程序猿江辰</footer>
-  <a class="entry-link" aria-label="post link to 基于React、MobX、Webpack和ReactRouter的项目模板" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Ereactmobxwebpack%E5%92%8Creactrouter%E7%9A%84%E9%A1%B9%E7%9B%AE%E6%A8%A1%E6%9D%BF/"></a>
+  <footer class="entry-footer"><span title='2024-09-19 00:00:00 +0000 UTC'>九月 19, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;Ethan_Zhou</footer>
+  <a class="entry-link" aria-label="post link to 建议收藏！这个程序员一身反骨，不愿写周报，于是做了个神器：轻松提取Git和Jira记录一键生成" href="http://localhost:1313/posts/juejin/%E5%BB%BA%E8%AE%AE%E6%94%B6%E8%97%8F%E8%BF%99%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%80%E8%BA%AB%E5%8F%8D%E9%AA%A8%E4%B8%8D%E6%84%BF%E5%86%99%E5%91%A8%E6%8A%A5%E4%BA%8E%E6%98%AF%E5%81%9A%E4%BA%86%E4%B8%AA%E7%A5%9E%E5%99%A8%E8%BD%BB%E6%9D%BE%E6%8F%90%E5%8F%96git%E5%92%8Cjira%E8%AE%B0%E5%BD%95%E4%B8%80%E9%94%AE%E7%94%9F%E6%88%90/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/9/">
-      «&nbsp;上一页&nbsp;9/74
+      «&nbsp;上一页&nbsp;9/77
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/11/">下一页&nbsp;11/74&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/11/">下一页&nbsp;11/77&nbsp;»
     </a>
   </nav>
 </footer>

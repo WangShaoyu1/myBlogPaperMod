@@ -129,6 +129,79 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">优化图片和视频的加载过程，提升用户体验
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>展示效果 （因为掘金不能上传视频，所以转成动图之后分辨率比较低，还望多包涵）
+展示都是基于 Slow 3G 弱网下的效果。
+优化前 这种体验交较差，在图片下载完之前，本应该展示图片的区域会长时间空白。
+优化后 图片下载过程中显示模糊的图片占位符，直到图片下载完成再切换展示。
+原理 首先先贴出页面的代码 index.html:
+html
+代码解读
+复制代码
+&lt;!DOCTYPE html&gt; &lt;html lang=&#34;en&#34;&gt; &lt;head&gt; &lt;meta charset=&#34;UTF-8&#34; /&gt; &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34; /&gt; &lt;title&gt;Document&lt;/title&gt; &lt;/head&gt; &lt;style&gt; html, body { margin: 0; padding: 0; } @keyframes pulse { 0% { opacity: 0; } 50% { opacity: 0.1; } 100% { opacity: 0; } } .container { width: 50vw; background-repeat: no-repeat; background-size: cover; } .container.loaded::before { animation: none; content: none; } .container::before { content: &#39;&#39;; position: absolute; inset: 0; opacity: 0; animation: pulse 2.5s infinite; background-color: var(--text-color); } .container img, .container video { opacity: 0; transition: opacity 250ms ease-in-out; } .container.loaded img, .container.loaded video { opacity: 1; } &lt;/style&gt; &lt;body&gt; &lt;!-- container容器加载一个体积非常小的低分辨率图片 --&gt; &lt;div class=&#34;container&#34; style=&#34;background-image: url(http://localhost:3000/uploads/10007/fox-small.jpeg);&#34;&gt; &lt;!-- 图片延时加载 loading: lazy --&gt; &lt;img src=&#34;http://localhost:3000/uploads/10007/fox.jpeg&#34; loading=&#34;lazy&#34; style=&#34;width: 50vw&#34; /&gt; &lt;/div&gt; &lt;br/&gt; &lt;video id=&#34;video&#34; autoplay controls=&#34;controls&#34; style=&#34;width: 50vw&#34; poster=&#34;http://localhost:3000/uploads/10007/big_buck_bunny-small.png&#34; src=&#34;http://localhost:3000/uploads/10007/big_buck_bunny.mp4&#34; &gt;&lt;/video&gt; &lt;/body&gt; &lt;script&gt; const blurredImageDiv = document.querySelector(&#39;.container&#39;); const img = blurredImageDiv.querySelector(&#39;img&#39;); function loaded() { // 图片下载完之后 再展示 blurredImageDiv.classList.add(&#39;loaded&#39;); } if (img.complete) { loaded(); } else { img.addEventListener(&#39;load&#39;, loaded); } var poster = new Image(); poster.onload = function () { // 加载完之后替换 poster url 不会重复请求 const video = document.querySelector(&#39;#video&#39;); video.poster = &#39;http://localhost:3000/uploads/10007/big_buck_bunny.png&#39;; }; poster.src = &#39;http://localhost:3000/uploads/10007/big_buck_bunny.png&#39;; &lt;/script&gt; &lt;/html&gt;
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-06-14 00:00:00 +0000 UTC'>六月 14, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;梦想很大很大</footer>
+  <a class="entry-link" aria-label="post link to 优化图片和视频的加载过程，提升用户体验" href="http://localhost:1313/posts/juejin/%E4%BC%98%E5%8C%96%E5%9B%BE%E7%89%87%E5%92%8C%E8%A7%86%E9%A2%91%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%E6%8F%90%E5%8D%87%E7%94%A8%E6%88%B7%E4%BD%93%E9%AA%8C/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">队列在前端中的使用
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>队列是一种常见的数据结构，可以看做一种特殊的列表。数据的插入与删除操作仅限于两端。
+队列与栈类似，不同点在于
+栈：后进先出 队列：先进先出 而在我们生活中常见的例子便是排队，比如我们排队上公交，排在前面的先上车，排在后面的后上，新来的人不允许插队，只能在队尾排队等待。
+图1. 队列示意图
+代码实现 队列常用的操作有：出队与入队。出队只能从队首操作，入队仅能从队尾操作。
+数组由于可以用 shift 删除第一个元素，push 在数组中添加新的元素，与队列的操作非常吻合，因此可作为队列的最佳实践。
+javascript
+代码解读
+复制代码
+class Queue { items = [] constructor() {} enqueue(element) { this.items.push(element); } dequeue() { this.items.shift(); } peek() { return this.items[0]; } size() { return this.items.length; } isEmpty() { return this.size() === 0; } }
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-03-29 00:00:00 +0000 UTC'>三月 29, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;陈佬昔的编程人生</footer>
+  <a class="entry-link" aria-label="post link to 队列在前端中的使用" href="http://localhost:1313/posts/juejin/%E9%98%9F%E5%88%97%E5%9C%A8%E5%89%8D%E7%AB%AF%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">国庆微信头像DIY：轻松打造个性化头像
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 国庆节马上要到了，今天就教你如何从0到1使用canvas生成国庆风微信头像。
+本文包含以下内容：
+vue3项目搭建，需求分析 canvas合成图片原理 github自动化部署 开发过程遇到的问题及解决方案 文末附源码及在线体验地址~
+搭建项目，分析需求 项目的话就直接使用脚手架生成一个 Vue3 &#43; TS项目
+shell
+代码解读
+复制代码
+npm create vue@latest
+为了方便，使用了Element PlusUI库
+shell
+代码解读
+复制代码
+npm install element-plus --save
+配置的话，可以查看文档，全局导入、按需导入都可以看自己的需求
+项目搭建完后，就可以来分析一下本次需求大概会涉及哪些功能了
+上传头像 这是一个合成微信头像的工具，那就必须得让用户上传自己的微信头像了
+合成模版 为了方便，我们当然还需要提供多种模版供用户自己选择
+用户自定义内容 为了让生成的头像更具独一无二性，我们还需要提供用户自定义内容的功能，比如：用户输入文字、选择文字颜色等
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-09-24 00:00:00 +0000 UTC'>九月 24, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;前端南玖</footer>
+  <a class="entry-link" aria-label="post link to 国庆微信头像DIY：轻松打造个性化头像" href="http://localhost:1313/posts/juejin/%E5%9B%BD%E5%BA%86%E5%BE%AE%E4%BF%A1%E5%A4%B4%E5%83%8Fdiy%E8%BD%BB%E6%9D%BE%E6%89%93%E9%80%A0%E4%B8%AA%E6%80%A7%E5%8C%96%E5%A4%B4%E5%83%8F/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Vue3&#43;Fabricjs定制国庆专属头像🌈
     </h2>
   </header>
@@ -172,81 +245,12 @@ html
   <footer class="entry-footer"><span title='2021-09-30 00:00:00 +0000 UTC'>九月 30, 2021</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;CUGGZ</footer>
   <a class="entry-link" aria-label="post link to 国庆节到了，实现一个生成国庆风头像小工具，详解实现过程！" href="http://localhost:1313/posts/juejin/%E5%9B%BD%E5%BA%86%E8%8A%82%E5%88%B0%E4%BA%86%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%94%9F%E6%88%90%E5%9B%BD%E5%BA%86%E9%A3%8E%E5%A4%B4%E5%83%8F%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AF%A6%E8%A7%A3%E5%AE%9E%E7%8E%B0%E8%BF%87%E7%A8%8B/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">性能优化之preload、prefetch、preconnect的区别与使用
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>今天讲的三个属性都是在 link 标签上使用的，使用形式如下：
-ini
-代码解读
-复制代码
-&lt;link rel=&#34;preload&#34; as=&#34;script&#34; src=&#34;./a.js&#34;&gt;
-初看起来，这三个属性设置起来比较简单，但是如果使用得当，效果却会非常棒。比如 奈飞 通过使用 prefetch 把 TTI ( Time-to-Interactive) 的时间减少了 30 %。
-preload、prefetch 都有助于优化 TTI、FCP ( First Content Paint ) 。为了让大家更好的理解 preload、prefetch 的好处，我们简单了解一下这两个指标代表的含义。
-为了直观的认识，可以打开一个 Chrome 的控制台，进入 LightHouse 跑跑分，下图就是我跑的 Github 的分数，可以看到，头两个指标就是 FCP（First Contentful Paint） 和 TTI ( Time to Interactive)。
-FCP 也叫做首次内容绘制，指的是从开始加载页面内容到任何部分的内容在屏幕上渲染出来了，这里的内容，可以是一个文本，也可以是一个图片（背景图片也算）。
-TTI 也叫做可交互时间，计算规则稍微有一点复杂，它是以 FCP 结束的时间作为起始，也就是有任何内容出现在屏幕上了，这个点就作为 TTI 的时间点。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-08-05 00:00:00 +0000 UTC'>八月 5, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;mysteryven</footer>
-  <a class="entry-link" aria-label="post link to 性能优化之preload、prefetch、preconnect的区别与使用" href="http://localhost:1313/posts/juejin/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8Bpreloadprefetchpreconnect%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E4%BD%BF%E7%94%A8/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">ES2019、ES2020、ES2021、ES2022特性大汇总【2021-12-10更新】
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>[本文持续更新，收藏不亏，最近一次于 2021-10-01 更新]
-在工作中，我们最常用的特性基本都包含在 ES 2015（ES 6）那个版本里面了，事实上，最近几年来，有很多实用的新语法加入到了 JavaScript 中来，今天我们从 ES 2019 开始，按照时间的顺序，一齐打包把他们都介绍了。
-ps: ES 2022 要发布的特性还没有完全确定，故 ES 2022 介绍的内容是截止自今天（2021年7月18日）。
-ES 2019 1. Optional catch binding 以前我们写 try...catch 需要这么写，不管我们需不需要变量 e，都得写上：
-js
-代码解读
-复制代码
-try { ... } catch(e) { console.log(e) }
-现在，catch 绑定变量是可选的了，可以简写成：
-js
-代码解读
-复制代码
-try { ... } catch { // catch 简写了 }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-07-18 00:00:00 +0000 UTC'>七月 18, 2021</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;mysteryven</footer>
-  <a class="entry-link" aria-label="post link to ES2019、ES2020、ES2021、ES2022特性大汇总【2021-12-10更新】" href="http://localhost:1313/posts/juejin/es2019es2020es2021es2022%E7%89%B9%E6%80%A7%E5%A4%A7%E6%B1%87%E6%80%BB2021-12-10%E6%9B%B4%E6%96%B0/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">初识React-Native——开发环境搭建、选择和坑点
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 （废话） 上次搞完小程序，老大说接下来有个项目，可能需要做 App 。我心想，先是管理后台、接着是 H5、再到 小程序，这回又搞 App 。要是这次搞完 App 那我岂不是也算多端通吃啦！？前端入职一年一个月，都摸了一遍，咱也算见过世面的人了🤣，你说是吧。顿时干劲十足！
-由于团队中没有专职做 Android/IOS 的小伙伴。自然就想到了跨端界的 「三大天王」 —— 「uni-app（内置weex）」、「React-Native」、「Flutter」。看到这三个框架，身体本能是选「uni-app」的，毕竟自己对 Vue 比较熟悉。人都是想偷懒的嘛。当我还在犹豫怎么选的时候，老大直接就拍板了，我们用「React-Native」。老大是搞后端的，之前团队基本都是用 Vue 的，也不知道他选择的原因。后来想想也无所谓，既然都没用过这三个框架开发 APP，反正都是要学，都行。毕竟技多不压身嘛！干就完事！
-发现网上关于 「React-Native」的文章有些少，决定把自己的一些踩坑经验分享，也许能帮到大家呢。
-下面是三个框架对比的文章，感兴趣可以看一下：
-ask.dcloud.net.cn/article/360…
-www.gushiciku.cn/pl/pA6U
-开发环境的选择 React Native 开发环境搭建对于没接触过 App 开发的朋友（我自己）来说是比较繁琐。有很多坑点，所以在搞事情之前，请做好心理准备。
-开发环境安装教程—— 「官方文档」
-常规方式 Andorid Windows 和 Mac 都可以安装 Android Studio 进行开发调试
-安装 Android Studio，并下载SDK、模拟器系统镜像、NDK等配置 安装 Java 并配置环境变量 安装 Node IOS 只有 Mac 能下载 Xcode。Windows 可以通过 VMware(虚拟机) 安装 Mac OS，再安装Xcode 理论上是可以实现的，本人没有试过，请自行踩坑
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-07-19 00:00:00 +0000 UTC'>七月 19, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;不是阿怪的阿怪</footer>
-  <a class="entry-link" aria-label="post link to 初识React-Native——开发环境搭建、选择和坑点" href="http://localhost:1313/posts/juejin/%E5%88%9D%E8%AF%86react-native%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E9%80%89%E6%8B%A9%E5%92%8C%E5%9D%91%E7%82%B9/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/javascript/page/22/">
-      «&nbsp;上一页&nbsp;22/26
+      «&nbsp;上一页&nbsp;22/27
     </a>
-    <a class="next" href="http://localhost:1313/tags/javascript/page/24/">下一页&nbsp;24/26&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/javascript/page/24/">下一页&nbsp;24/27&nbsp;»
     </a>
   </nav>
 </footer>

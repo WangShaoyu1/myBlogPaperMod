@@ -2,8 +2,8 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import https from 'https';
 import {fileURLToPath} from 'url';
-import {JSDOM} from 'jsdom'
 
 // 获取当前模块文件的目录
 const __filename = fileURLToPath(import.meta.url);
@@ -38,10 +38,20 @@ export async function writeToFile(content, relativeFilePath, append = false) {
 // 公共函数：读取文件内容
 export async function readFile(filePath) {
     try {
+        // 检查文件是否存在
+        await fs.access(filePath);
+
+        // 如果存在则读取文件内容
         const content = await fs.readFile(filePath, 'utf-8');
         return content
     } catch (error) {
-        console.error('Error reading file:', error);
+        // 处理文件不存在的情况
+        if (error.code === 'ENOENT') {
+            console.error(`File not found: ${filePath}`);
+        } else {
+            console.error('Error reading file:', error);
+        }
+        return ''
     }
 }
 
@@ -172,3 +182,102 @@ export function parseCookies(cookieString) {
         return {name, value, domain, path};
     });
 }
+
+// 去掉字符串中的 特殊字符，特别是出现如下这种，hugo解析会报错
+// pages/viewpage.action?pageId=91158375#id-3、Demo技术对接过程中的一些思考- 3%E3%80%81Demo%E6%8A%80%E6%9C
+export function removeSpecialCharacters(str) {
+    return str.replace(/(pages\/viewpage\.action\?pageId=[^#]*)#.*?(?=\))/, '$1');
+}
+
+// 从字符串中提取数字,例如：'1.2k' => 1200，‘1.2w’ => 12000
+export function extractNumber(input) {
+    const match = input.match(/(\d+(?:\.\d+)?)([kK]?|[wW]?)/);
+    if (!match) return 0; // 没有匹配到数字，返回 null
+
+    const number = parseFloat(match[1]) * (match[2].toLowerCase() === 'k' ? 1000 : match[2].toLowerCase() === 'w' ? 10000 : 1);
+    return Math.round(number); // 返回取整后的数字
+}
+
+// 下载图片
+export async function downloadImage(url, filepath, retries = 3) {
+    const fileStream = await fs.open(filepath, 'w');
+    const file = fileStream.createWriteStream();
+
+    return new Promise((resolve, reject) => {
+        https.get(url, (response) => {
+            if (response.statusCode !== 200) {
+                if (retries > 0) {
+                    console.log(`Retrying ${url} (${retries} retries left)`);
+                    return resolve(downloadImage(url, filepath, retries - 1)); // 重试
+                } else {
+                    return reject(new Error(`Failed to download: ${url}`));
+                }
+            }
+
+            response.pipe(file);
+            file.on('finish', () => {
+                file.close(() => resolve(filepath)); // 下载完成后关闭文件流
+            });
+        }).on('error', async (err) => {
+            await fs.unlink(filepath); // 出现错误时删除文件
+            if (retries > 0) {
+                console.log(`Retrying ${url} (${retries} retries left)`);
+                return resolve(downloadImage(url, filepath, retries - 1)); // 重试
+            } else {
+                return reject(err);
+            }
+        });
+    });
+};
+
+// 替换 Markdown 中的图片链接为本地路径
+export async function replaceMarkdownImages(markdownContent, downloadFolder, defaultImagePath) {
+    const imageRegex = /!\[.*?\]\((https?:\/\/[^\)]+)\)/g; // 匹配 Markdown 图片语法中的 URL
+    let match;
+
+    // 遍历所有匹配的图片链接
+    while ((match = imageRegex.exec(markdownContent)) !== null) {
+        const url = match[1]; // 获取图片的 URL
+        const imageName = path.basename(url).split('?')[0]; // 提取图片名
+        let localImagePath = path.join(downloadFolder, imageName);
+
+        try {
+            // 尝试下载图片
+            await downloadImage(url, localImagePath);
+            console.log(`Downloaded: ${url} -> ${localImagePath}`);
+        } catch (error) {
+            // 下载失败，使用默认图片
+            console.error(`Failed to download ${url}, using default image.`);
+            localImagePath = defaultImagePath;
+        }
+
+        // 替换 Markdown 中的图片链接为本地路径
+        markdownContent = markdownContent.replace(url, localImagePath);
+    }
+
+    return markdownContent;
+};
+
+// 处理 Markdown 文件
+export async function processMarkdownFile(markdownFilePath, downloadFolder, defaultImagePath) {
+    try {
+        // 读取 Markdown 文件内容
+        let markdownContent = await fs.readFile(markdownFilePath, 'utf-8');
+
+        // 确保图片下载文件夹存在
+        try {
+            await fs.access(downloadFolder);
+        } catch {
+            await fs.mkdir(downloadFolder);
+        }
+
+        // 替换 Markdown 中的图片链接
+        const updatedMarkdown = await replaceMarkdownImages(markdownContent, downloadFolder, defaultImagePath);
+
+        // 将更新后的内容保存回 Markdown 文件
+        await fs.writeFile(markdownFilePath, updatedMarkdown);
+        console.log('Markdown file updated with local images.');
+    } catch (error) {
+        console.error('Error processing Markdown file:', error);
+    }
+};

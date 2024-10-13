@@ -129,6 +129,91 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">JavaScript不建议直接声明undefined的原因，极致的严谨和仔细
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言： 很多人写JavaScript代码时习惯用var a = undefined 这种写法，其实这种写在某种情况下会产生意想不到的bug，又或者说undefined本身就是JavaScript的一个bug?? 为什么这么说呢， 因为undefined它应该是关健字才合理的，但undefined在JavaScript里面压根就不是关健字，它是window的一个属性即window.undefined, 没想到吧。
+为什么发现这个冷门知识点？？ 因为最近在拜读一些包的底层源码时，发现有一种很有意思的写法我不太理解var a = void 0; 然后我就去各方查资料，发现这种写法有两个好处，1、是能降低文件大小，2、秉承犀牛书的观点，任何时候都不主动声明undefined。
+任何时候都不主动声明undefined的原因 前面说到了undefined在JavaScript里面压根就不是关健字，而是一个属性，在控制台window.undefined就知道了
+但它是一个只读属性，我们是无法对undefined重新赋值的
+虽然是只读属性，但是在特定条件下还是会出现bug，如下所示
+javascript
+代码解读
+复制代码
+function test() { var undefined = &#39;我是test&#39;; var a = undefined; console.log(a) } test() // &#39;我是test&#39;
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-04-05 00:00:00 +0000 UTC'>四月 5, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
+  <a class="entry-link" aria-label="post link to JavaScript不建议直接声明undefined的原因，极致的严谨和仔细" href="http://localhost:1313/posts/juejin/javascript%E4%B8%8D%E5%BB%BA%E8%AE%AE%E7%9B%B4%E6%8E%A5%E5%A3%B0%E6%98%8Eundefined%E7%9A%84%E5%8E%9F%E5%9B%A0%E6%9E%81%E8%87%B4%E7%9A%84%E4%B8%A5%E8%B0%A8%E5%92%8C%E4%BB%94%E7%BB%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">移动端适配问题终极探讨(上)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>为什么要写这篇文章? 最近公司做了很多花里胡哨的H5活动,其实H5页面并不难每个前端都可以写,但细说下来有很多前端细节做的并不是那么完美,其实把H5页面做完善,适配完美也是件挺难的事(至少我觉得是这样),下面我们就来总结下关于H5适配的那些事
+说明 为了更好理解此篇文章,你可以先阅读为什么我们常说1px问题而不说2px 对设备独立像素,css像素,逻辑像素,设备像素比概念有基本的了解
+此文是适配系列文章的上
+普遍的解决方案 研究之前我们可以看看大厂都是如何适配H5
+淘宝 地址: main.m.taobao.com/
+方案: Flexible
+分析:值得聊的是,虽然Flexible是淘宝团队出的关于移动端适配的方案,但手机淘宝似乎并没有使用此方案,可以看下面几张图得出结论
+我们现在改变手机型号
+可以发现人家的适配单位直接是px根本没有使用rem,只不过px的值是通过手机屏幕的不同动态计算出来的,所以当我们改变苹果的大小时,网站就会刷新动态计算出对应的px值,从而达到适配的目的
+随便进去一个淘宝的内页,发现使用的适配方案是vw
+京东 地址：m.jd.com/ 方案:rem
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-11-19 00:00:00 +0000 UTC'>十一月 19, 2020</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;刘小灰</footer>
+  <a class="entry-link" aria-label="post link to 移动端适配问题终极探讨(上)" href="http://localhost:1313/posts/juejin/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E9%80%82%E9%85%8D%E9%97%AE%E9%A2%98%E7%BB%88%E6%9E%81%E6%8E%A2%E8%AE%A8%E4%B8%8A/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">vue超级强大渲染函数h()，各种业务场景都能用到
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 按照vue官方的介绍，h()渲染函数是用来创建虚拟 DOM 节点 vnode。我们在vue项目里面用HTML标签构建页面时最终会被转化成vnode，而h()是直接创建vnode，因此h()能以一种更灵活的方式在各种各样情景下构建组件的渲染逻辑，并且能带来性能方式的提升。下面介绍如何使用和列出具体的应用场景：
+一、 h()渲染函数使用语法 如下所示，主要有三个参数，其中第2第3个参数都是可选的 type: 要创建的节点类型，可以是HTML 标签、组件或函数（函数式组件）。 props（可选）: 节点的属性对象，传递的 prop。 children（可选）: 节点的子节点，可以是字符串、数组或其他 vnode。 php
+代码解读
+复制代码
+// 语法格式 function h( type: string | Component, props?: object | null, children?: Children | Slot | Slots ): VNode // 基本使用示例 h(&#39;div&#39;, { id: &#39;foo&#39; }, &#39;Hello我是天天鸭!&#39;);
+h 函数的参数详解 (1)type 参数: HTML 标签: 如果 type 是一个字符串，它会被识别解析为一个 HTML 标签。 组件: 如果 type 是一个对象或函数，那么会被解析为一个 Vue 的组件。 异步组件: type 还可以是一个返回 Promise 的函数， Promise 会被解析为组件。 (2)props 参数: props是可选参数，用来指定该节点的属性参数。如果传递了 props，侧应该是传递一个对象，里面包含传递给节点的属性名和值。 如果传递 props，可以传递 null。 (3)children 参数: children是可选参数，用于指定当前节点的子节点。子节点同理可以是字符串、数组或 vnode 对象。 如果子节点是数组，则数组中的每个元素都是该节点的子节点。 如果子节点是一个函数，则该函数会在渲染时被调用，并且其返回值将作为子节点。 二、具体应用示例 只看使用语法可能不太好理解什么时候应该使用h()函数，下面直接列举出真实项目中的几种适合使用h()的业务场景。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-08-05 00:00:00 +0000 UTC'>八月 5, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;天天鸭</footer>
+  <a class="entry-link" aria-label="post link to vue超级强大渲染函数h()，各种业务场景都能用到" href="http://localhost:1313/posts/juejin/vue%E8%B6%85%E7%BA%A7%E5%BC%BA%E5%A4%A7%E6%B8%B2%E6%9F%93%E5%87%BD%E6%95%B0h%E5%90%84%E7%A7%8D%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF%E9%83%BD%E8%83%BD%E7%94%A8%E5%88%B0/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">iframe嵌入页面实现免登录思路（以vue为例）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景： 最近实现一个功能需要使用iframe嵌入其它系统内部的一个页面，但嵌入后出现一个问题，就是一打开这个页面就会自动跳转到登录页，原因是被嵌入系统没有登录(没有token)肯定不让访问内部页面的，本文就是解决这个问题的。
+选择的技术方案： 本地系统使用iframe嵌入某个系统内部页面，那就证明被嵌入系统是安全的可使用的，所以可以通过通讯方式带一个token过去实现免登录，我用vue项目作为例子具体如下：
+方法一通过url传： javascript
+代码解读
+复制代码
+// 发送方（本地系统）： &lt;div&gt; &lt;iframe :src=&#34;url&#34; id=&#34;childFrame&#34; importance=&#34;high&#34; name=&#34;demo&#34; &gt;&lt;/iframe&gt; &lt;/div&gt; //被嵌入页面进行接收 url = `http://localhost:8080/dudu?mytoken={mytoken}` // 接收方：直接使用window.location.search接收，然后对接收到的进行处理
+注意：
+如果使用这个方法最好把token加密一下，要不然直接显示在url是非常危险的行为，所以我更推荐下面方法二 上面接收方要在在APP.vue文件的created生命周期接收，在嵌入页面接收是不行的，这里与VUE的执行流程有关就不多说了 方法二通过iframe的通讯方式传（推荐）： javascript
+代码解读
+复制代码
+// 发送方（本地系统）： var params = { type: &#34;setToken&#34;, token: &#34;这是伟过去的token&#34; } window.parent.postMessage(params, &#34;*&#34;); // 接收方（被嵌入系统）：在APP.vue文件的created生命周期接收 window.addEventListener( &#34;message&#34;, (e)=&gt;{ if(e.data.type === &#39;setToken&#39;){ //这里拿到token,然后放入缓存实在免登录即可 } }	false);
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-03-27 00:00:00 +0000 UTC'>三月 27, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
+  <a class="entry-link" aria-label="post link to iframe嵌入页面实现免登录思路（以vue为例）" href="http://localhost:1313/posts/juejin/iframe%E5%B5%8C%E5%85%A5%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0%E5%85%8D%E7%99%BB%E5%BD%95%E6%80%9D%E8%B7%AF%E4%BB%A5vue%E4%B8%BA%E4%BE%8B/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Vue内置指令v-once、v-memo和v-pre提升性能？
     </h2>
   </header>
@@ -146,111 +231,12 @@ xml
   <footer class="entry-footer"><span title='2024-08-27 00:00:00 +0000 UTC'>八月 27, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
   <a class="entry-link" aria-label="post link to Vue内置指令v-once、v-memo和v-pre提升性能？" href="http://localhost:1313/posts/juejin/vue%E5%86%85%E7%BD%AE%E6%8C%87%E4%BB%A4v-oncev-memo%E5%92%8Cv-pre%E6%8F%90%E5%8D%87%E6%80%A7%E8%83%BD/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">啊，富文本没做安全处理被XSS攻击了啊
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 相信很多前端小伙伴项目中都用到了富文本，但你们有没有做防XSS攻击处理？最近的项目由于比较紧急我也没有处理而是直接正常使用，但公司内部有专门的安全部门针对测试，然后测出来富文本被XSS攻击了，而且危险级别为高。
-啊这….，那我就去解决一下吧，顺便从XSS和解决方案两个角度记录到下来毕竟好久没更新文章了。
-先说说什么是XSS攻击？ 简述：XSS全称Cross-Site Scripting也叫跨站脚本攻击，是最最最常见的网络安全漏洞，其实就是攻击者在受害者的浏览器中注入恶意脚本执行。这种攻击通常发生在 Web 应用程序未能正确过滤用户输入的情况下，导致恶意脚本被嵌入到合法的网页中。 执行后会产生窃取信息、篡改网页、和传播病毒与木马等危害，后果相当严重。
-XSS又有三大类 1、存储型 XSS即Stored XSS 恶意的脚本被放置在目标服务器上面，通过正常的网页请求返回给用户端执行。
-例如 在观看某个私人博客评论中插入恶意脚本，当其他用户访问该页面时，脚本会执行危险操作。
-2、反射型 XSS即Reflected XSS 恶意的脚本通过 URL 参数或一些输入的字段传递给目标的服务器，用户在正常请求时会返回并且执行。
-例如 通过链接中的参数后面注入脚本，当用户点击此链接时，脚本就会在用户的浏览器中执行危险操作。
-3、DOM 基于的 XSS即DOM-based XSS 恶意的脚本利用 DOM（Document Object Model）操作来修改页面内容。 这种类型的 XSS 攻击不涉及服务器端的代码操作，仅仅是通过客户端插入 JavaScript 代码实现操作。
-富文本就是属于第一种，把脚本藏在代码中存到数据库，然后用户获取时会执行。
-富文本防XSS的方式？ 网上一大堆不明不白的方法还有各种插件可以用，但其实自己转义一下就行，根本不需要复杂化。
-当我们不做处理时传给后台的富文本数据是这样的。
-上面带有标签，甚至有src和script之类的操作，在里面放一些脚本真的太简单了。
-因此，我们创建富文本成功提交给后台的时候把各种&lt;&gt;/\之类危险符号转义成指定的字符就能防止脚本了。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-09-18 00:00:00 +0000 UTC'>九月 18, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;天天鸭</footer>
-  <a class="entry-link" aria-label="post link to 啊，富文本没做安全处理被XSS攻击了啊" href="http://localhost:1313/posts/juejin/%E5%95%8A%E5%AF%8C%E6%96%87%E6%9C%AC%E6%B2%A1%E5%81%9A%E5%AE%89%E5%85%A8%E5%A4%84%E7%90%86%E8%A2%ABxss%E6%94%BB%E5%87%BB%E4%BA%86%E5%95%8A/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>大家好，我是杨成功。
-我司使用钉钉考勤打卡，人事要求的比较严格，两次未打卡记缺勤一天。但我们组醉心于工作，老是上下班忘记打卡，每月的工资被扣到肉疼。
-开始的时候我们都设置了一个打卡闹铃，下班后准时提醒，但有的时候加班，加完班回家又忘记打卡了。还有的时候迷之自信的以为自己打卡了，第二天看考勤记录发现没打卡。
-为了彻底解决这个问题，守住我们的钱袋子，我开发了一款打卡提醒工具，让全组连续三个月全勤！
-下面介绍一下，这个小工具是如何实现的。
-小工具实现思路 首先思考一下：闹铃提醒为什么不能百分之百有用？
-机械的提醒 闹铃提醒很机械，每天一个点固定提醒，时间久了人就会免疫。就像起床闹铃用久了，慢慢的那个声音对你不起作用了，此时不得不换个铃声才行。
-不能重复提醒 闹铃只会在固定时间提醒一次，没有办法判断是否打卡，更不会智能地发现你没有打卡，再提醒一次。
-既然闹铃做不到，那我们就用程序来实现吧。按照上述两个原因，我们要实现的提醒工具必须包含两个功能：
-检测用户是否打卡，未打卡则提醒，已打卡不提醒。 对未打卡用户循环检测，重复提醒，直到打卡为止。 如果能实现这两个功能，那么忘记打卡的问题多半也就解决了。
-打卡数据需要从钉钉获取，并且钉钉有推送功能。因此我们的方案是：利用 Node.js &#43; 钉钉 API 来实现打卡状态检测和精准的提醒推送。
-认识钉钉 API 钉钉是企业版的即时通讯软件。与微信最大的区别是，它提供了开放能力，可以用 API 来实现创建群组，发送消息等功能，这意味使着用钉钉可以实现高度定制的通讯能力。
-我们这里用到的钉钉 API 主要有以下几个：
-获取凭证 获取用户 ID 检查打卡状态 群内消息推送 @某人推送 在使用钉钉 API 之前，首先要确认有公司级别的钉钉账号（使用过钉钉打卡功能一般就有公司账号），后面的步骤都是在这个账号下实现。
-申请开放平台应用 钉钉开发第一步，先去钉钉开放平台申请一个应用，拿到 appKey 和 appSecret。
-钉钉开放平台地址：open.dingtalk.com/developer
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-08-26 00:00:00 +0000 UTC'>八月 26, 2022</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;杨成功</footer>
-  <a class="entry-link" aria-label="post link to 组员老是忘记打卡，我开发了一款小工具，让全组三个月全勤！" href="http://localhost:1313/posts/juejin/%E7%BB%84%E5%91%98%E8%80%81%E6%98%AF%E5%BF%98%E8%AE%B0%E6%89%93%E5%8D%A1%E6%88%91%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E6%AC%BE%E5%B0%8F%E5%B7%A5%E5%85%B7%E8%AE%A9%E5%85%A8%E7%BB%84%E4%B8%89%E4%B8%AA%E6%9C%88%E5%85%A8%E5%8B%A4/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">现代配置指南——YAML比JSON高级在哪？
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>一直以来，前端工程中的配置大多都是 .js 文件或者 .json 文件，最常见的比如：
-package.json babel.config.js webpack.config.js 这些配置对前端非常友好，因为都是我们熟悉的 JS 对象结构。一般静态化的配置会选择 json 文件，而动态化的配置，涉及到引入其他模块，因此会选择 js 文件。
-还有现在许多新工具同时支持多种配置，比如 Eslint，两种格式的配置任你选择：
-.eslintrc.json .eslintrc.js 后来不知道什么时候，突然出现了一种以 .yaml 或 .yml 为后缀的配置文件。一开始以为是某个程序的专有配置，后来发现这个后缀的文件出现的频率越来越高，甚至 Eslint 也支持了第三种格式的配置 .eslintrc.yml。
-既然遇到了，那就探索它！
-下面我们从 YAML 的出现背景，使用场景，具体用法，高级操作四个方面，看一下这个流行的现代化配置的神秘之处。
-出现背景 一个新工具的出现避免不了有两个原因：
-旧工具在某些场景表现吃力，需要更优的替代方案 旧工具也没什么不好，只是新工具出现，比较而言显得它不太好 YAML 这种新工具就属于后者。其实在 yaml 出现之前 js&#43;json 用的也不错，也没什么特别难以处理的问题；但是 yaml 出现以后，开始觉得它好乱呀什么东西，后来了解它后，越用越喜欢，一个字就是优雅。
-很多文章说选择 yaml 是因为 json 的各种问题，json 不适合做配置文件，这我觉得有些言过其实了。我更愿意将 yaml 看做是 json 的升级，因为 yaml 在格式简化和体验上表现确实不错，这个得承认。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-12-13 00:00:00 +0000 UTC'>十二月 13, 2021</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;杨成功</footer>
-  <a class="entry-link" aria-label="post link to 现代配置指南——YAML比JSON高级在哪？" href="http://localhost:1313/posts/juejin/%E7%8E%B0%E4%BB%A3%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97yaml%E6%AF%94json%E9%AB%98%E7%BA%A7%E5%9C%A8%E5%93%AA/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">直接对比Vuex和Pinia在项目中的用法，5分钟就会用
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言： 我相信看这编文章的大部分都是会vuex和pinia其中一个状态管理的，想对比学习另一个。所以我将会从安装-&gt;使用-&gt;修改状态，每一步进行横向对比学习，这样会更加通俗易懂。如果有某一天忘记了某个地方的写法回头查看一下也起到了笔记的作用。
-一、pinia详细用法 （1）安装pinia csharp
-代码解读
-复制代码
-yarn add pinia 或者 npm npm install pinia
-（2）创建状态仓库 先得知道 pinia 是用 defineStore() 定义的，它的第一个参数要求是一个独一无二的名字 defineStore() 的第二个参数可接受两类值：Setup 函数或 Option 对象。 pinia传入Option对象的核心概念包括：
-state: 用来定义一些变量
-getters: 类似于计算属性
-actions：里面是一些方法，在里面可以请求接口操作
-javascript
-代码解读
-复制代码
-import {defineStore} from &#39;pinia&#39; const useUser = defineStore(&#34;user&#34;,{ state:() =&gt; ({ // 用来定义一些变量 mycount: 1, }), getters: { // 类似于计算属性 double: (state) =&gt; state.mycount * 2, }, actions: { // 里面是一些方法，在里面可以请求接口操作 increment() { this.mycount&#43;&#43; }, async registerUser(login, password) { // 异步操作 await api.post({ login, password }) } } }) export default useUser
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-04-08 00:00:00 +0000 UTC'>四月 8, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;天天鸭</footer>
-  <a class="entry-link" aria-label="post link to 直接对比Vuex和Pinia在项目中的用法，5分钟就会用" href="http://localhost:1313/posts/juejin/%E7%9B%B4%E6%8E%A5%E5%AF%B9%E6%AF%94vuex%E5%92%8Cpinia%E5%9C%A8%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E7%94%A8%E6%B3%955%E5%88%86%E9%92%9F%E5%B0%B1%E4%BC%9A%E7%94%A8/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/javascript/page/14/">
-      «&nbsp;上一页&nbsp;14/26
+      «&nbsp;上一页&nbsp;14/27
     </a>
-    <a class="next" href="http://localhost:1313/tags/javascript/page/16/">下一页&nbsp;16/26&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/javascript/page/16/">下一页&nbsp;16/27&nbsp;»
     </a>
   </nav>
 </footer>

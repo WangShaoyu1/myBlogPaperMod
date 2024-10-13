@@ -129,124 +129,129 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2023年终总结：我的一亩三分地，关你屁事
+    <h2 class="entry-hint-parent">Flutter进阶/最佳实践：自定义Flutter路由堆栈监听
     </h2>
   </header>
   <div class="entry-content">
-    <p>2023 年终总结：我的一亩三分地，关你屁事 2023年，伴随着疫情管控的消失，生活终于回归了正常。
-1 于是国庆假期，和老婆出国，去了一趟马来西亚。
-去之前，我是读了马来西亚华语作家黄锦树的《雨》的。那片湿漉漉的地域，总感觉有不少的阴霾。
-然后真正踏足之后，又是另一番感受。从酷似香港的吉隆坡 City Walk，到路过小桂林怡宝而不入，最后再到很少高楼大厦的槟城闲逛，一路走下来，算是浅浅地认识了一下马来西亚。
-这里虽有雨，但是雨常常是下一阵就停了。在广东人看来，整体感觉并没有很大的不同。然而往山上走着走着，便发现了不一样的地方，热带雨林气候尽显无疑。路旁不少高大的树木，雄壮的根茎，一个人抱也抱不住，抬起头来看，总感觉也望不到头。跟它合拍一张照片，人就显得渺小了，不再需要夜观星河，去感受宇宙的震撼。
-在这里，到处都是骑楼、中文字，总能与广东、福建、浙江等各地会馆不期而遇，熟悉又陌生。
-遇到一个年龄相近的同乡的女司机，只是20年前回过老家，记忆已经模糊；也在一个店里遇到一个福建的老大爷，他则只知道自己的家乡，但从来没有回去过。他写得一手不错的中文字，一笔一画都相当认真。
-在这里，没有了苦大愁深，有的只是平静的日常。想象这些人的先辈来到这里，最长的已经有一个多世纪了吧，在漫长的岁月中，一切都被冲刷干净了。
-其实华人也不一定要活在中国大陆。大家都晓得大陆就是故乡，但是在马来西亚，自有自的小天地。
-2 2023年快结束前几天，要给技术团队讲了前端，翻了翻前端历史，整理起来，突然发现，前端的屎事💩的确特别多。
-互联网诞生后，浏览器大战和互联网泡沫，导致前端被兼容浏览器工作拖累了好些年；手机时代，各家百花齐放，最后又是前端再次投入做兼容；这段时间如果有只做动画的朋友，可能中途因为乔布斯痛批 Flash，就被失业了；jQuery 激活 Ajax 之后，前端进入了 js 应用的时代，还没稳定几年，Nodejs 出来之后，又有一堆脚手架，和一堆的框架，如果选择稍有不慎，项目就烂尾了……
-后端 Java 一条路走到黑，但是前端折腾来折腾去，就过了20年，现在才略微回到正轨上。如果前端没有这些折腾，估计前端技术早已是另一番景象。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-01-07 00:00:00 +0000 UTC'>一月 7, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;陈佬昔的编程人生</footer>
-  <a class="entry-link" aria-label="post link to 2023年终总结：我的一亩三分地，关你屁事" href="http://localhost:1313/posts/juejin/2023%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93%E6%88%91%E7%9A%84%E4%B8%80%E4%BA%A9%E4%B8%89%E5%88%86%E5%9C%B0%E5%85%B3%E4%BD%A0%E5%B1%81%E4%BA%8B/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">优化图片和视频的加载过程，提升用户体验
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>展示效果 （因为掘金不能上传视频，所以转成动图之后分辨率比较低，还望多包涵）
-展示都是基于 Slow 3G 弱网下的效果。
-优化前 这种体验交较差，在图片下载完之前，本应该展示图片的区域会长时间空白。
-优化后 图片下载过程中显示模糊的图片占位符，直到图片下载完成再切换展示。
-原理 首先先贴出页面的代码 index.html:
-html
+    <p>一、需求来源 项目中需要判断路由堆栈是否包含哪个页面，如果包含就退回到此页面，如果没有就创建跳转。就是如此简单的需求困扰了半年多时间，今天看项目代码时偶然发现一种可能得实现方式，经过测试，完美解决此问题，可视为目前的最佳实践。
+二、寻找解决之道 1、之前知道sdk中有 RouteAware 的堆栈数组，但是 _listeners 是私有属性，此路不通。
+scala
 代码解读
 复制代码
-&lt;!DOCTYPE html&gt; &lt;html lang=&#34;en&#34;&gt; &lt;head&gt; &lt;meta charset=&#34;UTF-8&#34; /&gt; &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34; /&gt; &lt;title&gt;Document&lt;/title&gt; &lt;/head&gt; &lt;style&gt; html, body { margin: 0; padding: 0; } @keyframes pulse { 0% { opacity: 0; } 50% { opacity: 0.1; } 100% { opacity: 0; } } .container { width: 50vw; background-repeat: no-repeat; background-size: cover; } .container.loaded::before { animation: none; content: none; } .container::before { content: &#39;&#39;; position: absolute; inset: 0; opacity: 0; animation: pulse 2.5s infinite; background-color: var(--text-color); } .container img, .container video { opacity: 0; transition: opacity 250ms ease-in-out; } .container.loaded img, .container.loaded video { opacity: 1; } &lt;/style&gt; &lt;body&gt; &lt;!-- container容器加载一个体积非常小的低分辨率图片 --&gt; &lt;div class=&#34;container&#34; style=&#34;background-image: url(http://localhost:3000/uploads/10007/fox-small.jpeg);&#34;&gt; &lt;!-- 图片延时加载 loading: lazy --&gt; &lt;img src=&#34;http://localhost:3000/uploads/10007/fox.jpeg&#34; loading=&#34;lazy&#34; style=&#34;width: 50vw&#34; /&gt; &lt;/div&gt; &lt;br/&gt; &lt;video id=&#34;video&#34; autoplay controls=&#34;controls&#34; style=&#34;width: 50vw&#34; poster=&#34;http://localhost:3000/uploads/10007/big_buck_bunny-small.png&#34; src=&#34;http://localhost:3000/uploads/10007/big_buck_bunny.mp4&#34; &gt;&lt;/video&gt; &lt;/body&gt; &lt;script&gt; const blurredImageDiv = document.querySelector(&#39;.container&#39;); const img = blurredImageDiv.querySelector(&#39;img&#39;); function loaded() { // 图片下载完之后 再展示 blurredImageDiv.classList.add(&#39;loaded&#39;); } if (img.complete) { loaded(); } else { img.addEventListener(&#39;load&#39;, loaded); } var poster = new Image(); poster.onload = function () { // 加载完之后替换 poster url 不会重复请求 const video = document.querySelector(&#39;#video&#39;); video.poster = &#39;http://localhost:3000/uploads/10007/big_buck_bunny.png&#39;; }; poster.src = &#39;http://localhost:3000/uploads/10007/big_buck_bunny.png&#39;; &lt;/script&gt; &lt;/html&gt;
+class RouteObserver&lt;R extends Route&lt;dynamic&gt;&gt; extends NavigatorObserver { ... final Map&lt;R, Set&lt;RouteAware&gt;&gt; _listeners = &lt;R, Set&lt;RouteAware&gt;&gt;{}; ... }
+2、stackflow 上没找到。
+3、把 getx 的issues 都翻遍了也没有找到合适的解决办法。
+三、解决之道 当偶然看到同事用监听器只获取当前路由时，突然发现这不正是我苦苦寻找良久的路由堆栈监听的切入口嘛。官方不暴露堆栈我自己实现一个不就完了。
+dart
+代码解读
+复制代码
+class CustomRouteObserver extends RouteObserver&lt;PageRoute&lt;dynamic&gt;&gt; { @override void didPush(Route&lt;dynamic&gt; route, Route&lt;dynamic&gt;? previousRoute) { super.didPush(route, previousRoute); ... } @override void didPop(Route&lt;dynamic&gt; route, Route&lt;dynamic&gt;? previousRoute) { super.didPop(route, previousRoute); ... }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-06-14 00:00:00 +0000 UTC'>六月 14, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;梦想很大很大</footer>
-  <a class="entry-link" aria-label="post link to 优化图片和视频的加载过程，提升用户体验" href="http://localhost:1313/posts/juejin/%E4%BC%98%E5%8C%96%E5%9B%BE%E7%89%87%E5%92%8C%E8%A7%86%E9%A2%91%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%E6%8F%90%E5%8D%87%E7%94%A8%E6%88%B7%E4%BD%93%E9%AA%8C/"></a>
+  <footer class="entry-footer"><span title='2024-09-28 00:00:00 +0000 UTC'>九月 28, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;SoaringHeart</footer>
+  <a class="entry-link" aria-label="post link to Flutter进阶/最佳实践：自定义Flutter路由堆栈监听" href="http://localhost:1313/posts/juejin/flutter%E8%BF%9B%E9%98%B6/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%AE%9A%E4%B9%89flutter%E8%B7%AF%E7%94%B1%E5%A0%86%E6%A0%88%E7%9B%91%E5%90%AC/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">用真心打造一个沉淀知识的工具，为学渣如我的道友们，提供助力
+    <h2 class="entry-hint-parent">把黑神话悟空视频设置为vscode背景，真的太炫酷了。
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 今天在掘金热榜上看到VSCode 天命人：边打代码边体验黑神话悟空 ✨这篇文章，文章里说vscode里不能播放视频，我研究了一下，找到一个可以播放视频的方案，于是我写了一个vscode插件，把黑神话悟空宣传视频当前vscode背景，效果真的太炫酷了。
+效果展示 主题1 主题2 使用说明 可以到vscode插件市场中安装，也可以本地vscode插件市场中搜索wukong-background-video安装，安装可能比较慢，大家耐心等待一下。
+安装插件后，重启一下vscode，就能看到视频了。打开vscode会提示文件已损坏，修改修改了vscode源码，所以会有这个提示，可以不用管这个。
+如果想卸载插件，需要先在命令面板中搜索background-video.uninstall命令，命令执行成功后，再卸载插件，然后重启vscode。
+在设置里搜索 background-video,可以设置透明度(0-1)和显示视频，目前内置了两个视频，视频来源为www.wegame.com.cn/wukong。修改完成后，需要重启一下vscode。
+如果想加载自己的视频，找到vscode安装目录，把里面的两个视频替换掉就行了，名字需要保持一致，video1.mp4或video2.mp4。
+mac目录一般是/Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench
+windows我不清楚
+插件开发过程 原理 其实很简单，就是修改vscode的源码，大家应该都知道vscode是使用Electron开发的，所以前端页面都是使用html和js写的，找到对应的js源码，然后自己写一段js代码，这个js实现的功能就是动态创建一个video标签，设置一下样式，然后把这个js注入到源码中，vscode启动时会自动执行这段代码。
+这里有两种实现方式，一个是脚本，写一个脚本动态把js注入到vscode源码中，还有一种方式写一个vscode插件，运行插件时中往vscode源码中注入代码。
+这里我采用第二种方式，因为让其他人也可以方便使用，脚本方式不易传播。
+mac中可以往这个文件里写入js代码，/Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.js
+windows我不清楚
+实战 创建vscode插件项目 sh
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-08-21 00:00:00 +0000 UTC'>八月 21, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端小付</footer>
+  <a class="entry-link" aria-label="post link to 把黑神话悟空视频设置为vscode背景，真的太炫酷了。" href="http://localhost:1313/posts/juejin/%E6%8A%8A%E9%BB%91%E7%A5%9E%E8%AF%9D%E6%82%9F%E7%A9%BA%E8%A7%86%E9%A2%91%E8%AE%BE%E7%BD%AE%E4%B8%BAvscode%E8%83%8C%E6%99%AF%E7%9C%9F%E7%9A%84%E5%A4%AA%E7%82%AB%E9%85%B7%E4%BA%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Antd5一出，治好了我组件库选择内耗，我直接搭配React18&#43;Vite&#43;Ts做了一个管理后台
     </h2>
   </header>
   <div class="entry-content">
     <p> 本文为稀土掘金技术社区首发签约文章，14天内禁止转载，14天后未获授权禁止转载，侵权必究！
-学的快，忘得快，我要总结原因 没有第一时间的沉淀经验 编程是个经验活，搬砖能有多难么？但是不运用经验，那会相当累，这是肯定的，就算你曾经做过的功能，过一阵不用再捡起来，可能跟没做过差不多，而且往往还不如没做过，零星的记忆反而会让你麻痹大意，放弃了思考，从而陷入泥潭，所以经验的沉淀是相当重要的，对于我们这个工种。
-学的多，但是不成系统 见到啥学啥，本身没什么错，这是一种积累能量的办法，只不过，这些零散的能量如果不能及时内化形成自身实力，那么就会原模原样的还回去，风过无痕，所以一定要构筑自己的知识体系，这样便可以将知识网住。
-学习漫无目的，没有方向 学习没有目标，学一个东西，没坚持几天，又去学别的了，总是东一榔头西一棒槌，最后到头来一场空，样样学，样样瘟，问题出在哪？就出在你没有方向，你迷了，要“正”过来，所以需要时刻提醒自己，你的方向是啥，结硬寨打呆仗。
-说说我的解决方案 要有文章，但不能全是文章 首先肯定要有文章，但要全是文章的话，那直接做个静态Blog得了，不能是静止的东西，要“活”的，而且文章太线性了，知识是存在脑子里的，是线性的？我觉得更应该是立体发散的知识网才对。
-成果展示：
-要有知识体系，并且是自动生成的 要有一个知识体系，一个基于众多经验文章生成的，具象化的网，文章目录将脑海里发散的知识点串成了线，而知识体系需要采用一种非线性的方式，来把知识网表达出来。
-成果展示：
-em～～～这不是我心里的样子，我就是在antv上的多看了一眼，就选ta试试，颜值真不错。
-文章和知识体系进行关联 众多文章就如同物质，生发出来了知识体系，二者互为表里，相互关联，通过不断更新调整这个知识体系，不断的将脑海里的知识投射出来并具像化，方便推敲，又利于记忆。
-成果展示：
-可以在线编写代码块，并且可以预览 在描述一段代码的功用时，光用文字就会显得很苍白，相比之下，直接可以运行并能预览效果就显得更直观，整一个可以在线代码预览工具，就变得很有必要。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-11-01 00:00:00 +0000 UTC'>十一月 1, 2022</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;闲D阿强</footer>
-  <a class="entry-link" aria-label="post link to 用真心打造一个沉淀知识的工具，为学渣如我的道友们，提供助力" href="http://localhost:1313/posts/juejin/%E7%94%A8%E7%9C%9F%E5%BF%83%E6%89%93%E9%80%A0%E4%B8%80%E4%B8%AA%E6%B2%89%E6%B7%80%E7%9F%A5%E8%AF%86%E7%9A%84%E5%B7%A5%E5%85%B7%E4%B8%BA%E5%AD%A6%E6%B8%A3%E5%A6%82%E6%88%91%E7%9A%84%E9%81%93%E5%8F%8B%E4%BB%AC%E6%8F%90%E4%BE%9B%E5%8A%A9%E5%8A%9B/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">7步实现前端代码分层
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>视频讲解：【7步搞定前端代码分层-哔哩哔哩】 b23.tv/w8SWewc
-看一些资料，发现后端分层的思想很有意思。将代码拆分成多个层，定义好每个层做的事情，代码的职责划分清晰，代码的可维护性也有明显的提高。所以，后端甚至会将这些写到规范中。
-以下是阿里的代码分层规范图示：
-虽然前端项目架构没这么复杂，但是打开项目的文件夹看看，就能发现不少问题。
-以 vue 项目为例，我们大部份的文件都放在了 src/views 文件夹里，与 views 同级的其他文件夹的代码量还不如一个业务代码的组件代码量多。而子文件夹，往往又只有 .vue 文件和 components 文件夹。很显然，这样的项目都是在 vue 中一把梭的。
-那前端能不能借这个分层思想，把代码拆开呢？如之前的angularjs，把 MVC分层做好，然后大家跟着填相应的内容？最近，就尝试做一做这个代码分层。以下就分享一下实践的过程。
-假设项目中有一个订单页面，目录结构如下：
-views orders index.vue components index.vue 的代码如下：
-html
+Antd5最最最吸引我的点 Antd5 官网
+又好用，又能好看。
+没有Antd5之前，我是选Mui的 比如我要做一个对样式有很多需求的管理后台，或者一些官网主页，我都会选MUI
+MUI官网
+这个才是我认为最能变好看的组件库，MUI走在了Antd5之前，就搞CSS in JS了，定制主题那叫一个容易，但有一个点就是他不是很好用。。。。
+Antd5，几乎让我没理由不选，又好用，又能好看 MUI不怎么好用，组件功能不多，远没有Antd4好用，想用只能自己动手封装，但是能让我纠结MUI和Antd选谁的主要原因，就是MUI真好看，现在Antd5有了这么好用的自定义主题的本领，一下就根治精神内耗，直接Antd5，无脑入就对了。又好用，又能好看。
+ok，那么简单的介绍完我选Antd5的理由，接下来，我们就直奔主题，快速的过一下，使用React18&#43;Antd5&#43;Vite&#43;Ts搭建管理后台的全过程，并在文章结尾处贴出这个项目代码地址，供大家快速上手实操，体验一下Antd5的畅快。
+Antd5搭配React18&#43;Vite&#43;Ts开发管理后台全流程 配置vite和tsconfig准备工作 js
 代码解读
 复制代码
-&lt;template&gt; &lt;div class=&#34;search&#34;&gt; &lt;!--省略搜索表单--&gt; &lt;button click=&#34;getList&#34;&gt;搜索&lt;/button&gt; &lt;/div&gt; &lt;div class=&#34;list&#34; v-for=&#34;item in list&#34;&gt; &lt;!--省略列表内容--&gt; &lt;button click=&#34;handleDelete&#34;&gt;删除&lt;/button&gt; &lt;button click=&#34;edit&#34;&gt;编辑&lt;/button&gt; &lt;/div&gt; &lt;/template&gt; ​ &lt;script&gt; import api from &#39;@/api&#39;; export default { data() { return { loading: false, searchForm: {}, list: [], } }, methods: { async getList() { this.loading = true; const result = await api.getList(this.searchForm); this.list = result.data; this.loading = false; }, ​ handleDelete(item) ｛ // 做一些操作，然后更新列表 this.getList(); }, ​ edit(item) ｛ // 做一些操作，然后更新列表 this.getList(); }, } } &lt;/script&gt;
+import { fileURLToPath, URL } from &#34;node:url&#34;; import { defineConfig } from &#39;vite&#39; import react from &#39;@vitejs/plugin-react&#39; // https://vitejs.dev/config/ export default defineConfig({ server: { proxy: { &#39;/api&#39;: { target: &#39;http://localhost:3120/&#39;, changeOrigin: true, rewrite: (path) =&gt; path.replace(/^\/api/, &#39;&#39;) } } }, plugins: [react()], resolve: { alias: { &#34;@&#34;: fileURLToPath(new URL(&#34;./src&#34;, import.meta.url)), }, }, })
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-06-21 00:00:00 +0000 UTC'>六月 21, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;陈佬昔的编程人生</footer>
-  <a class="entry-link" aria-label="post link to 7步实现前端代码分层" href="http://localhost:1313/posts/juejin/7%E6%AD%A5%E5%AE%9E%E7%8E%B0%E5%89%8D%E7%AB%AF%E4%BB%A3%E7%A0%81%E5%88%86%E5%B1%82/"></a>
+  <footer class="entry-footer"><span title='2022-11-19 00:00:00 +0000 UTC'>十一月 19, 2022</span>&nbsp;·&nbsp;10 分钟&nbsp;·&nbsp;闲D阿强</footer>
+  <a class="entry-link" aria-label="post link to Antd5一出，治好了我组件库选择内耗，我直接搭配React18&#43;Vite&#43;Ts做了一个管理后台" href="http://localhost:1313/posts/juejin/antd5%E4%B8%80%E5%87%BA%E6%B2%BB%E5%A5%BD%E4%BA%86%E6%88%91%E7%BB%84%E4%BB%B6%E5%BA%93%E9%80%89%E6%8B%A9%E5%86%85%E8%80%97%E6%88%91%E7%9B%B4%E6%8E%A5%E6%90%AD%E9%85%8Dreact18&#43;vite&#43;ts%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E7%AE%A1%E7%90%86%E5%90%8E%E5%8F%B0/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">队列在前端中的使用
+    <h2 class="entry-hint-parent">强话一波hooks，这次咱们换个发力点
     </h2>
   </header>
   <div class="entry-content">
-    <p>队列是一种常见的数据结构，可以看做一种特殊的列表。数据的插入与删除操作仅限于两端。
-队列与栈类似，不同点在于
-栈：后进先出 队列：先进先出 而在我们生活中常见的例子便是排队，比如我们排队上公交，排在前面的先上车，排在后面的后上，新来的人不允许插队，只能在队尾排队等待。
-图1. 队列示意图
-代码实现 队列常用的操作有：出队与入队。出队只能从队首操作，入队仅能从队尾操作。
-数组由于可以用 shift 删除第一个元素，push 在数组中添加新的元素，与队列的操作非常吻合，因此可作为队列的最佳实践。
+    <p>首先hooks已经推出很久，想必大家或多或少都使用过或者了解过hooks，不知是否会和我一样都有一种感受，那就是hooks使用起来很简单，但总感觉像是一种魔法，并不是很清楚其内部如何实现的，很难得心应手，所以我觉得要想真正驾驭hooks，应该先从了解其内部原理开始，再讲使用，试着建立从原理到使用的一条细细的通路。
+hooks扭转了函数组件的橘势 hooks 之前 函数组件的基因限制 函数组件可以粗略的认为就是类组件的render函数，即一个返回jsx从而创建虚拟dom的函数。
+类组件有this，能够拥有自己的实例方法，变量，这样很容易就可以实现各种特性，比如state和生命周期函数，每一次渲染都可以认为是“曾经&#34;的自己在不断脱变，有延续性。
+反观函数组件就无法延续，每一次渲染都是“新”的自己，这就是函数组件的“基因限制”，有点像章鱼。
+函数组件和类组件一个“小差异” 首先一个组件可以分别用类组件和函数组件写出两个版本，对吧
+类组件：
+js
+代码解读
+复制代码
+class CompClass extends Component { showMessage = () =&gt; { console.log(&#34;点击的这一刻，props中info为 &#34; &#43; this.props.info); }; handleClick = () =&gt; { setTimeout(this.showMessage, 3000); console.log(`当前props中的info为${this.props.info},一致就说明准确的关联到了此时的render结果`) }; render() { return &lt;div onClick={this.handleClick}&gt; &lt;div&gt;点击类组件&lt;/div&gt; &lt;/div&gt;; } }
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-11-23 00:00:00 +0000 UTC'>十一月 23, 2021</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;闲D阿强</footer>
+  <a class="entry-link" aria-label="post link to 强话一波hooks，这次咱们换个发力点" href="http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2hooks%E8%BF%99%E6%AC%A1%E5%92%B1%E4%BB%AC%E6%8D%A2%E4%B8%AA%E5%8F%91%E5%8A%9B%E7%82%B9/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">浏览器节能机制导致Websocket断连的坑🕳️🔥🕳️
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>序言 你踩过吗？浏览器节能机制导致Websocket断连的坑~~~
+近期，在使用WebSocket（WS）连接时遇到了频繁断连的问题，这种情况在单个用户上每天发生数百次。尽管利用了socket.io的自动重连机制能够在断连后迅速恢复连接，但这并不保证每一次重连都能成功接收WS消息。因此，我们进行了一些的排查和测试工作。
+最终发现问题的根本原因：正是浏览器的节能机制，不经意间成为了这一问题的幕后黑手。
+浏览器节能机制简介 浏览器的节能机制逐渐成为前端开发者需要关注的问题。特别是这些节能机制可能会对定时器的精度产生影响，这直接关系到前端应用的用户体验，在某些场景下甚至影响到用户的使用。
+为了减少电能消耗，提高电池续航能力，现代浏览器都引入了节能机制。这些机制包括但不限于降低空闲标签页的CPU使用率、减少后台JavaScript的执行频率、限制定时器的精确度等。虽然这些措施显著提高了设备的能效，但也给前端开发带来了一些挑战。
+WS频繁断连原因分析 查阅socket.io官网服务端配置的pingTimeout和pingInterval两个参数发现WS心跳异常时会导致重连，具体说明：
+WS连接中服务端和客户端两端必须一直保持心跳。如果有一端停止，则满足如下条件之一就会自动断连：
+服务器发送 ping，如果客户端在毫秒内 pingTimeout 没有用 pong 应答，则服务器认为连接已关闭。 同样，如果客户端在毫秒内 pingInterval &#43; pingTimeout 未收到来自服务器的 ping，则客户端也会认为连接已关闭。 看文档发现其实高版本的socket.io是由服务端定时发起ping。而在socket.io 2.X的版本中内置的心跳机制是由客户端定时发起。而浏览器在后台运行时，即使你设置了一个每秒触发的定时器，它也只能每分钟触发一次，超过了pingInterval &#43; pingTimeout设置的时间，最后看到的日志是很有规律的每分钟重连一次。在之前写的这篇文章中也有相关的介绍《掌握Web Workers：彻底解锁前端多线程编程的潜力》
+WS频繁断连解决方法 @升级socket.io到最新版本 上面的截图其实就是最新版本（4.x）的，升级后由服务器定时发起心跳。在服务端定时运行，避开了浏览器节能机制对定时器的影响
+@自定义WS心跳事件 为了减小直接升级对已有业务的影响，目前使用的也是这种方案：在服务端自定义心跳事件，定时发送心跳custom-ping
 javascript
-代码解读
-复制代码
-class Queue { items = [] constructor() {} enqueue(element) { this.items.push(element); } dequeue() { this.items.shift(); } peek() { return this.items[0]; } size() { return this.items.length; } isEmpty() { return this.size() === 0; } }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-03-29 00:00:00 +0000 UTC'>三月 29, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;陈佬昔的编程人生</footer>
-  <a class="entry-link" aria-label="post link to 队列在前端中的使用" href="http://localhost:1313/posts/juejin/%E9%98%9F%E5%88%97%E5%9C%A8%E5%89%8D%E7%AB%AF%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/"></a>
+  <footer class="entry-footer"><span title='2024-04-28 00:00:00 +0000 UTC'>四月 28, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;tager</footer>
+  <a class="entry-link" aria-label="post link to 浏览器节能机制导致Websocket断连的坑🕳️🔥🕳️" href="http://localhost:1313/posts/juejin/%E6%B5%8F%E8%A7%88%E5%99%A8%E8%8A%82%E8%83%BD%E6%9C%BA%E5%88%B6%E5%AF%BC%E8%87%B4websocket%E6%96%AD%E8%BF%9E%E7%9A%84%E5%9D%91%EF%B8%8F%EF%B8%8F/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/61/">
-      «&nbsp;上一页&nbsp;61/74
+      «&nbsp;上一页&nbsp;61/77
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/63/">下一页&nbsp;63/74&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/63/">下一页&nbsp;63/77&nbsp;»
     </a>
   </nav>
 </footer>

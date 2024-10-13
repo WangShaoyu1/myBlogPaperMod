@@ -131,113 +131,123 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">为什么循环删除List元素会报错
+    <h2 class="entry-hint-parent">网络遇到证书问题定位排查分析
     </h2>
   </header>
   <div class="entry-content">
-    <p>描述 大家在工作中应该都会遇到从List集合中删除某一个或多个元素的业务场景
-相信大家都会避开在循环里面删除元素，使用其他方式处理
-很多面试官也都会问为什么循环里面不能删除元素？
-示例 JAVA
-代码解读
-复制代码
-public static void main(String[] args) { List&lt;String&gt; list = new ArrayList&lt;&gt;(); list.add(&#34;test0&#34;); list.add(&#34;test1&#34;); list.add(&#34;test2&#34;); list.add(&#34;test3&#34;); list.add(&#34;test4&#34;); list.add(&#34;test5&#34;); System.out.println(list); list.remove(3); System.out.println(list); list.remove(&#34;test1&#34;); System.out.println(list); for (int i = 0; i &lt; list.size(); i&#43;&#43;) { if (i == 2) { list.remove(i); } } System.out.println(list); Iterator&lt;String&gt; it = list.iterator(); while (it.hasNext()) { if (it.next().equals(&#34;test2&#34;)) { it.remove(); } } System.out.println(list); for (String s : list) { if (&#34;test5&#34;.equals(s)) { list.remove(s); } } System.out.println(list); } 打印结果 [test0, test1, test2, test3, test4, test5] [test0, test1, test2, test4, test5] [test0, test2, test4, test5] [test0, test2, test5] [test0, test5] Exception in thread &#34;main&#34; java.util.ConcurrentModificationException at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:909) at java.util.ArrayList$Itr.next(ArrayList.java:859) at com.fc.store.Test.main(Test.java:46)
+    <p>问题描述 当我们启动程序后遇到语音转换失败的问题，日志报错信息提示证书问题如下：
+[09:09:44][系统] [x] 原因: Cannot connect to host speech.platform.bing.com:443 ssl:True [SSLCertVerificationError: (1, ‘[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1129)’)]遇到这种问题第一时间想到向运维反馈一下情况，寻求帮助，沟通得知需要更换证书，运维提供了一个证书文件，并赋予Wiki操作步骤IDEA证书不受信任，但是根据文档操无法解决问题，同样遇到报错。
+于是，自己临时想到的办法是，通过域名去代码文件中搜索看下哪里调用这个网站，同时分析出获取证书的代码，根据这个思路去排查，如下：
+具体操作 拿到域名去代码文件查找，得到具体调用代码，进行代码分析
+通过代码分析，得到调用的函数
+查看函数的定义，发现参数文件名，从而得到调用参数文件路径
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-11-01 00:00:00 +0000 UTC'>十一月 1, 2023</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;三火哥</footer>
-  <a class="entry-link" aria-label="post link to 为什么循环删除List元素会报错" href="http://localhost:1313/posts/juejin/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BE%AA%E7%8E%AF%E5%88%A0%E9%99%A4list%E5%85%83%E7%B4%A0%E4%BC%9A%E6%8A%A5%E9%94%99/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 网络遇到证书问题定位排查分析" href="http://localhost:1313/posts/wiki/%E7%BD%91%E7%BB%9C%E9%81%87%E5%88%B0%E8%AF%81%E4%B9%A6%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D%E6%8E%92%E6%9F%A5%E5%88%86%E6%9E%90/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">FluttervsReactNative：选择最适合的跨平台移动应用开发框架
+    <h2 class="entry-hint-parent">虚拟人升级方案
     </h2>
   </header>
   <div class="entry-content">
-    <p>初学两者，如有错误请谅解！
-Flutter概述 Flutter是由Google开发的跨平台移动应用开发框架。它通过自定义渲染引擎和Widget树构建用户界面，使用Dart语言进行开发。Flutter具有出色的性能、渲染速度和用户体验，可以实现流畅的动画效果，并且支持热重载和一套代码同时在iOS和Android上运行的优势。 我个人认为，Flutter和RN最大的区别就是性能区别。咸鱼作为国内首款Flutter的大型应用，各位感兴趣的可以去尝试使用下。
-性能和用户体验优势： Flutter的渲染引擎直接绘制UI，减少了与操作系统的交互，因此具有卓越的性能和渲染速度。它可以实现流畅的动画和高性能的用户界面。 Flutter框架使用自定义的Skia渲染引擎，并且其布局和绘制过程高度优化，可以在60帧/秒的刷新率下实现平滑的滚动和动画效果。 由于Flutter应用程序不依赖原生控件，可以实现完全自定义的用户界面，从而获得更好的一致性和品牌传达。 Flutter还具备跨平台的优势，一套代码可以同时运行在iOS和Android平台上，并且提供了对平台特定功能的访问接口，使开发者能够灵活地应对不同平台的差异。 React Native概述 React Native是Facebook开发的跨平台移动应用开发框架，基于React技术，使用JavaScript和React的编程模型构建原生移动应用。它具有高性能和原生体验、声明式编程风格、组件化开发、丰富的组件库以及活跃的开发者社区等特点。开发者可以利用JavaScript生态系统和工具来进行开发和调试，同时也可以轻松获取扩展库和插件。 React Native在移动应用开发领域具有广泛的应用和快速的发展。
-我认为如果你选择RN作为移动端开发极有可能是因为它有JavaScript,生态系统，开发者社区等方面的优势。是非常适合前端开发者入门的。
-接下来我们看看两者代码的区别。
-Flutter的页面代码 dart
-代码解读
-复制代码
-import &#39;package:flutter/material.dart&#39;; void main() { runApp(MyApp()); } class MyApp extends StatelessWidget { @override Widget build(BuildContext context) { return MaterialApp( title: &#39;Flutter Demo&#39;, theme: ThemeData( primarySwatch: Colors.blue, ), home: MyHomePage(), ); } } class MyHomePage extends StatelessWidget { @override Widget build(BuildContext context) { return Scaffold( appBar: AppBar( title: Text(&#39;Flutter 我的页面标题&#39;), ), body: Center( child: Text( &#39;Hello, 我是Flutter!&#39;, style: TextStyle(fontSize: 24.0), ), ), ); } }
+    <p>虚拟人架构 虚拟人采用的是cs架构，由sdk和ftt后台组成。
+sdk
+FTT后台
+//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-b7dd76d1-ad38-48ca-8859-b2a6d3e5bb11’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ &#43; ‘/rest/drawio/1.0/diagram/crud/%46%54%54%E6%9E%B6%E6%9E%84/119680966?revision=2’; readerOpts.imageUrl = ’’ &#43; ‘/download/attachments/119680966/FTT架构.png’ &#43; ‘?version=2&amp;api=v2’; readerOpts.editUrl = ’’ &#43; ‘/plugins/drawio/addDiagram.action?ceoId=119680966&amp;owningPageId=119680966&amp;diagramName=%46%54%54%E6%9E%B6%E6%9E%84&amp;revision=2’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH &#43; ‘/reader’; readerOpts.border = true; readerOpts.width = ‘731’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE &#43; ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%46%54%54%E6%9E%B6%E6%9E%84’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘虚拟人升级方案’; readerOpts.attVer = ‘2’; readerOpts.attId = ‘119680972’; readerOpts.lastModifierName = ‘未知用户 (renpeng)’; readerOpts.lastModified = ‘2024-03-01 14:19:14.222’; readerOpts.creatorName = ‘未知用户 (renpeng)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-07-10 00:00:00 +0000 UTC'>七月 10, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;狗头大军之江苏分军</footer>
-  <a class="entry-link" aria-label="post link to FluttervsReactNative：选择最适合的跨平台移动应用开发框架" href="http://localhost:1313/posts/juejin/fluttervsreactnative%E9%80%89%E6%8B%A9%E6%9C%80%E9%80%82%E5%90%88%E7%9A%84%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%A7%BB%E5%8A%A8%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6/"></a>
+  <footer class="entry-footer">3 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 虚拟人升级方案" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%8D%87%E7%BA%A7%E6%96%B9%E6%A1%88/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">【进阶之路】深入了解volatile、内存屏障与happens-before规则
+    <h2 class="entry-hint-parent">讯飞开放平台服务调用情况了解与新增服务方案评估
     </h2>
   </header>
   <div class="entry-content">
-    <p> 大家好，我是练习java两年半时间的南橘，从一名连java有几种数据结构都不懂超级小白，到现在懂了一点点的进阶小白，学到了不少的东西。知识越分享越值钱，我这段时间总结（包括从别的大佬那边学习，引用）了一些平常学习和工作中的重点（自我认为），希望给大家带来一些帮助
-这是之前的三篇关于JVM的文章，没看过的同学可以一起看一下
-攻克JVM——JVM对象及对象的访问定位（一） 攻克JVM——JVM的垃圾回收机制（二） 攻克JVM——JVM的垃圾收集器（三） 有需要的同学可以加我的公众号，以后的最新的文章第一时间都在里面，也可以找我要思维导图 大家都知道，在阿里巴巴泰山版开发手册中有这一段，在并发情况下使用延迟初始化的方法实现单例模式时，需要将目标属性声明为volatile。 volatile关键字在 Java 中的作用是保证变量的可见性和防止指令重排。
-一、保证变量的可见性 在知道volatile是如何保证变量的可见性之前，我们先要知道内存不可见的两个原因：
-1、CPU的运行速度是远远高于内存的读写速度的，为了不让CPU等待读写内存数据，现代CPU和内存之间都存在一个高速缓存cache（实际上是一个多级寄存器），如下图：
-线程在运行的过程中会把主内存的数据拷贝一份到线程内部cache中，其实就是访问自己的内部cache。如果线程B把数据加载进内部缓存cache中，线程A再修改了数据。即使重新写入主内存，但是线程B不会重新从主内存加载变量，看到的还是自己cache中的变量，所以线程B是读取不到线程A更新后的值。
-在多处理器下，为了保证各个处理器的缓存是一致的，就会实现缓存一致性协议，每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里。volatile变量通过这样的机制就使得每个线程都能获得该变量的最新值。 但是，我们也都知道volatile只能保证可见性，不能保证原子性。多个线程同时读取这个共享变量的值，就算保证其他线程修改的可见性，也不能保证线程之间读取到同样的值然后相互覆盖对方的值的情况。
-二、防止指令重排 我们再来看指令重排。
-1、定义 指令重排是指在程序执行过程中, 为了性能考虑, 编译器和CPU可能会对指令重新排序。
+    <p>1. 背景 1.1. 基本概念 讯飞开放平台是基于科大讯飞的人工智能技术能力与大数据运营能力建设的人工智能技术与生态服务平台，成立于2010年，以“云&#43;端”的方式提供智能语音能力、计算机视觉能力、自然语言理解能力、人机交互能力等相关的技术和垂直场景解决方案。官网：https://www.xfyun.cn/。文档中心：https://www.xfyun.cn/doc/platform/xfyunreadme.html
+AIUI是科大讯飞在2015年推出的一套以语音技术为核心的人机交互解决方案。官网：https://aiui.xfyun.cn/。文档中心：https://aiui-doc.xf-yun.com/project-1/doc-1/
+iFLYOS是科大讯飞在2018年推出的一套基于云端的智能物联网操作系统。官网：https://www.iflyos.cn/。文档中心：https://doc.iflyos.cn/aiui/whitepaper/#%E4%BA%A7%E5%93%81%E5%AE%9A%E4%B9%89
+1.2. 关系 1.2.1. 共同点 三个平台使用的是同一套账号体系，可以用同一个账号密码登录。
+在讯飞开放平台与AIUI平台上，都有应用的概念，且同一账号下创建的应用是互通的。
+在AIUI平台和iFLYOS平台上，都有技能的概念，且同一账号下创建的技能是互通的。
+1.2.2. 差异点 【备注：由于目前我们并没有使用到iFLYOS平台，因此不对iFLYOS平台进行分析和方案评估】
+（1）概念上：
+讯飞开放平台主要提供的是某一种语音交互技术的单独服务（比如单独的语音识别、语音合成、语音扩展、自然语言理解、大模型等等），或者某一垂直应用场景的整体解决方案；而AIUI提供的是基于语音交互技术的全链路的解决方案，聚合了语音唤醒、语音识别、语义理解、内容（信源）平台、语音合成等多个模块。
+由于AIUI是将单独的多个语音交互技术服务整合打包起来，因此讯飞开放平台与AIUI可以说是包含的关系，即在讯飞开放平台上既可以购买单独的某一种语音交互技术服务，也可以购买完整的AIUI服务。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-10-26 00:00:00 +0000 UTC'>十月 26, 2020</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;南橘ryc</footer>
-  <a class="entry-link" aria-label="post link to 【进阶之路】深入了解volatile、内存屏障与happens-before规则" href="http://localhost:1313/posts/juejin/%E8%BF%9B%E9%98%B6%E4%B9%8B%E8%B7%AF%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8Ehappens-before%E8%A7%84%E5%88%99/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 讯飞开放平台服务调用情况了解与新增服务方案评估" href="http://localhost:1313/posts/wiki/%E8%AE%AF%E9%A3%9E%E5%BC%80%E6%94%BE%E5%B9%B3%E5%8F%B0%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E6%83%85%E5%86%B5%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%96%B0%E5%A2%9E%E6%9C%8D%E5%8A%A1%E6%96%B9%E6%A1%88%E8%AF%84%E4%BC%B0/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">基于腾讯地图定位组件实现周边公用厕所远近排序分布图
+    <h2 class="entry-hint-parent">虚拟人接入万得厨2.0种子用户反馈问题登记
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 地图应用非常广泛，目前地图服务，都提供地图操作、标注、地点搜索、出行规划、地址解析、街景等接口，功能非常丰富。在实际开发过程中，各有优劣。本次基于需求，使用腾讯位置服务作为一个公用厕所位置标注的H5页面开发。
-本次使用版本： JavaScript API 2.0版本。
-项目需求 1、项目需求 基于腾讯位置服务，实现微信扫描二维码后，在微信浏览器内，展示某县城的公用厕所分布图，按照用户当前定位与各个厕所之间的距离远近排序，点击标注点跳转到腾讯地图进行导航。
-2、需求分解 基于上述需求，对使用到的腾讯位置服务接口予以分解如下：
-scss
-代码解读
-复制代码
-腾讯地图加载； 自动定位； 信息点(POINTS)标注maker； 计算标注点之间的距离； 导航跳转链接API接口； 街道与卫星地图切换控件； 缩放控件；
-开发实战 1、引入功能库和附件库 ini
-代码解读
-复制代码
-`&lt;script charset=&#34;utf-8&#34; src=&#34;https://map.qq.com/api/js?v=2.exp&amp;libraries=drawing,geometry,autocomplete,convertor&amp;key={$appkey}&#34;&gt;&lt;/script&gt; &lt;script type=&#34;text/javascript&#34; src=&#34;https://3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js&#34;&gt;&lt;/script&gt;` ...</p>
+    <p> 11. 2024 22. 2023 1. 2024 问题发生时间
+问题类型
+问题描述
+附图
+提出人
+跟进人
+问题级别
+状态
+问题剖析
+解决方案
+问题发生时间
+问题类型
+问题描述
+附图
+提出人
+跟进人
+问题级别
+状态
+问题剖析
+解决方案
+2024.01.30
+系统bug
+神策埋点数据统计逻辑有误，理论上出现指令名称(instruction_name)为[未知]的，只有一种情况，就是唤醒后不识别，因此所对应的是否正常识别(instruction_recognition_scuess_flag)值应该为假，而现在出现了唤醒后不识别，但是值为真的情况
+李梦阳
+陆元伟 未知用户 (limengyang)
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-04-09 00:00:00 +0000 UTC'>四月 9, 2021</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;腾讯位置服务</footer>
-  <a class="entry-link" aria-label="post link to 基于腾讯地图定位组件实现周边公用厕所远近排序分布图" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8E%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E5%AE%9A%E4%BD%8D%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E5%91%A8%E8%BE%B9%E5%85%AC%E7%94%A8%E5%8E%95%E6%89%80%E8%BF%9C%E8%BF%91%E6%8E%92%E5%BA%8F%E5%88%86%E5%B8%83%E5%9B%BE/"></a>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 虚拟人接入万得厨2.0种子用户反馈问题登记" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%8E%A5%E5%85%A5%E4%B8%87%E5%BE%97%E5%8E%A82.0%E7%A7%8D%E5%AD%90%E7%94%A8%E6%88%B7%E5%8F%8D%E9%A6%88%E9%97%AE%E9%A2%98%E7%99%BB%E8%AE%B0/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">农村程序员&amp;独立开发者，在村里各处写代码的日常与一路走来的历程
+    <h2 class="entry-hint-parent">需求功能开发【文字交互增加语音播报】
     </h2>
   </header>
   <div class="entry-content">
-    <p>本文由 电鸭社区 https://eleduck.com 整理发布，本作者已获电鸭社区授权发布到掘金。
-大家好，我是前端之虎陈随易。
-目前是：
-农村程序员 (自 2021 年离职至今都在农村待着) 独立开发者 (有多个已经在盈利中的产品) 自由职业者 (睡到自然醒，困就马上睡) 个人创业者 (注册了自己的公司，为产品服务) 自驾爱好者 (目前自驾多次，边看风景边敲码) 小说写作者 (短篇、长篇作者，有缘就能看到我的作品) 开源推进者 (自 2019 年持续开源至今) 哈哈，标签很多，但是也确实是我目前的状态，因为我的爱好繁多，喜欢全面探索。
-欢迎跟我交朋友(微信)：chensuiyime
-我的个人网站：陈随易的个人网站 https://chensuiyi.me
-让我们一起积极向上，为自己而努力奋斗！
-往期文章 前端之虎陈随易 - 2024年1-2月折腾之路 前端之虎陈随易 2023 年终回顾与总结 前端之虎陈随易-5年接单经验分享 全职独立开发者陈随易 2023 年 6-7 月总结分享 2023最新最全vscode插件推荐 正文开始 介绍下你本人的经历及当前所做的事情吧 大家好，我是陈随易，目前是全职自由独立开发者，已经3年没上班了，一直待在农村。
+    <p>当前现状
+在控制台进行语音交互，当智能助理回复时没有tts播报，只是回复文字
+思考
+如果我能获取到输入内容给nlp处理之后返回的文本，那我就可以拿这个文本调用生成音频的方法，然后再调用某个播放的方法来实现tts播报
+操作
+在Fay控制台进行尝试输入聊天内容，观察日志打印信息
+有用的日志信息只有两条，然后通过全局搜索日志，来定位到打印相关日志的代码
+然后在该行代码打断点调试，分析得出输入内容经过调用selected_module.question(msg)方法，得到的文本信息text就是控制台回复的内容
+为了再次确认我们text就是控制台回复的信息，我们把这个text打印在日志里面，增加调试代码
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-10-28 00:00:00 +0000 UTC'>十月 28, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端之虎陈随易</footer>
-  <a class="entry-link" aria-label="post link to 农村程序员&独立开发者，在村里各处写代码的日常与一路走来的历程" href="http://localhost:1313/posts/juejin/%E5%86%9C%E6%9D%91%E7%A8%8B%E5%BA%8F%E5%91%98%E7%8B%AC%E7%AB%8B%E5%BC%80%E5%8F%91%E8%80%85%E5%9C%A8%E6%9D%91%E9%87%8C%E5%90%84%E5%A4%84%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E6%97%A5%E5%B8%B8%E4%B8%8E%E4%B8%80%E8%B7%AF%E8%B5%B0%E6%9D%A5%E7%9A%84%E5%8E%86%E7%A8%8B/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 需求功能开发【文字交互增加语音播报】" href="http://localhost:1313/posts/wiki/%E9%9C%80%E6%B1%82%E5%8A%9F%E8%83%BD%E5%BC%80%E5%8F%91%E6%96%87%E5%AD%97%E4%BA%A4%E4%BA%92%E5%A2%9E%E5%8A%A0%E8%AF%AD%E9%9F%B3%E6%92%AD%E6%8A%A5/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/80/">
-      «&nbsp;上一页&nbsp;80/153
+      «&nbsp;上一页&nbsp;80/237
     </a>
-    <a class="next" href="http://localhost:1313/page/82/">下一页&nbsp;82/153&nbsp;»
+    <a class="next" href="http://localhost:1313/page/82/">下一页&nbsp;82/237&nbsp;»
     </a>
   </nav>
 </footer>

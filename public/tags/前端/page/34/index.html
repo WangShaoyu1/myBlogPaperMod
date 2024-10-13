@@ -129,130 +129,112 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2022年终总结｜怎样写出一篇还不错的文章
+    <h2 class="entry-hint-parent">2024最新版：前端性能优化方案汇总
     </h2>
   </header>
   <div class="entry-content">
-    <p>掘金2022年度人气创作者打榜中，快来帮我打榜吧～
-前言 醒醒！醒醒！啪～ 小明啊，今天 28 号，全年可只剩 4 天了，你年初立的 flag 都实现了吗？
---
-思绪回到去年的春节，我不知道是不是每个老男孩都有这样的习惯，在某些特定的时刻给自己的人生按下暂停键，像一位 19 世纪罗马雕刻家或是文艺片导演一般，严肃而又深沉的凝视着自己这件作品，它还有哪些不完美的呢？（你算是有天赋的程序员吗？）
-啊 呸！我若像她一样自信倒也罢了，我看来看去，怎么身上没有一点拿得出手的地方呢，哎这个人算是废了。
---
-生活如一潭死水, 偶尔也会泛起一丝涟漪，我就是在这时给自己立下了这个 flag, 2022 年工作之余要认认真真的写博客，提升自己，在拿到 “优秀创作者” 之前，只在掘金更文。
---
-那么现在你达到 5 级账号了吗？拿到 “优秀创作者” 了吗？得到掘金的认可了吗？啪啪～又打脸了，我不想说话了，大家自己来看我的主页吧。
-不过我还没有放弃，在仅剩的 3 天时间里～。
-普通人如何写出一篇不错的文章 格式规整｜外在给人的第一印象 标题（和摘要）很重要，一个好的标题相当于人的第一张脸，我不是说让大家做标题党，而是你真的需要花时间好好思考这个问题，我就给你分享个最简单的方式，若你写的主题已经有很多人写过了，那你就搜索下，看看数据最好的几个是怎么起标题的，不说让你吵，起码是参考下吧；
-如果达到 4级号，正常情况下文章会被推送到首页，你可以从后台重点关注下展现量和阅读量的比率，怎样让更多的人打开你的文章而不是仅仅看了一眼你的标题，我自己的经验，第一天 展现数/阅读数 &lt;= 10 是一个比较理想的数值，意味着每 10 个看到你标题和摘要的人，有一个会打开看内容。
+    <p>Hello，大家好，我是 Sunday。
+前端性能优化一直是很多同学非常关注的问题，在日常的面试中也是经常会被问到的点。所以今天咱们就花一点时间来了解一下2024最新的前端性能优化方案，以此来助大家高效工作，面试顺利！
+一：页面渲染相关 01：减少页面重绘和回流 回流（reflow）：是指由于DOM结构或样式发生改变，浏览器需要重新计算元素的几何属性，然后重新布局页面的过程
+重绘（repaint）：是指当元素样式发生改变，但不影响布局时，浏览器只需要重新绘制受影响的部分，而不需要重新计算布局
+尽量减少使用 CSS 属性的快捷方式：例如，使用 border-width、border-style 和 border-color 而不是 border。CSS 属性的快捷方式会将所有值初始化为“初始值”，因此避免使用它们可以最小化重绘和回流（在实际工作中，CSS 快捷方式的性能影响微乎其微，并且使用快捷方式可以简化样式并解决一些样式覆盖问题）。 在 GPU 上渲染动画：浏览器已经优化了 CSS 动画，使其适用于触发动画属性的重绘（因此也包括回流）。为了提高性能，将具有动画效果的元素移动到 GPU 上。可以触发 GPU 硬件加速的 CSS 属性包括 transform、filter、will-change 和 position:fixed。动画将在 GPU 上处理，提高性能，特别是在移动设备上（但避免过度使用，因为可能会导致性能问题）。 使用 will-change CSS 属性来提高性能：它通知浏览器元素需要修改的属性，使浏览器能够在实际更改之前进行优化（但避免过度使用 will-change；在动画中遇到性能问题时考虑使用它）。 通过更改 className 批量修改元素样式。 将复杂的动画元素定位为 fixed 或 absolute 以防止回流。 避免使用表格布局：因为在表格元素上触发回流会导致其中所有其他元素的回流。 使用 translate 而不是修改 top 属性来上下移动 DOM 元素。 创建多个 DOM 节点时，使用 DocumentFragment 进行一次性创建。 必要时为元素定义高度或最小高度：没有显式高度，动态内容加载可能会导致页面元素移动或跳动，从而导致回流（例如，为图像定义宽度和高度以防止布局变化并减少回流）。 尽量减少深度嵌套或复杂选择器的使用，以提高 CSS 渲染效率。 对元素进行重大样式更改时，暂时使用 display:none 隐藏它们，进行更改，然后将它们设置回 display:block。这样可以最小化回流，只需两次即可。 使用 contain CSS 属性将元素及其内容与文档流隔离，防止其边界框外意外副作用的发生。 02：图像压缩、切片和精灵 图像压缩： 图像压缩至关重要。许多图像托管工具提供内置的压缩功能。如果需要手动压缩图像，可以使用像TinyPNG这样的工具来帮助。 图像切片： 当显示大型图像，例如实时渲染，并且UI设计师不允许压缩时，考虑将图像切片并使用CSS布局将其拼合在一起。 精灵图： 与图像切片不同，精灵图涉及将许多小图像合并成一个大图像。这样，在加载页面时，只需要获取一个图像来显示多个页面元素。这可以显著提高页面加载速度。然而，当调整页面布局时，精灵图可能难以维护。 03：字体文件压缩 在开发诸如特定活动的移动网页等项目时，通常会使用@font-face接口来导入字体文件以实现更丰富的排版效果。然而，完整的字体文件往往有 几M 大小。加载这样的文件可能会阻塞页面渲染，导致文字显示延迟。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-12-28 00:00:00 +0000 UTC'>十二月 28, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;Ethan_Zhou</footer>
-  <a class="entry-link" aria-label="post link to 2022年终总结｜怎样写出一篇还不错的文章" href="http://localhost:1313/posts/juejin/2022%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93%E6%80%8E%E6%A0%B7%E5%86%99%E5%87%BA%E4%B8%80%E7%AF%87%E8%BF%98%E4%B8%8D%E9%94%99%E7%9A%84%E6%96%87%E7%AB%A0/"></a>
+  <footer class="entry-footer"><span title='2024-03-02 00:00:00 +0000 UTC'>三月 2, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;程序员Sunday</footer>
+  <a class="entry-link" aria-label="post link to 2024最新版：前端性能优化方案汇总" href="http://localhost:1313/posts/juejin/2024%E6%9C%80%E6%96%B0%E7%89%88%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88%E6%B1%87%E6%80%BB/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">聊聊最近很火的13.11和13.8到底谁大？
+    <h2 class="entry-hint-parent">React第八章(初识组件)
     </h2>
   </header>
   <div class="entry-content">
-    <p>在最近我是歌手的排名统计中，出现了以下这一幕：
-部分网友提出质疑，说是13.11大于13.8：
-那么我们肉眼去看，根据我们12年义务教育去比对，肯定是13.8更大一些，但是这样一道简单的数学题还难倒了不少AI模型：
-AI和程序的“幻觉” 文心一言：
-很明显，他在回答这道数学题时出现了胡说八道的现象，后面本人又去问了其他AI模型，有不少AI模型是答错的， 还有一些AI在答题时出现了，时对时错的不稳定情况。
-那么为什么AI模型会出现那么低级的错误呢？
-因为大模型看到这样一组数字，意识不到应该做双精度浮点运算
-那么我们程序上会不会出现这种问题呢？
-就拿近年面试很流行的0.1 &#43; 0.2它为什么不等于 0.3 ？
-其实都是精度的问题，我们先来看看程序是怎么看待我们这段运算代码的：
-首先，我们需要理解浮点数在计算机中的表示方式。浮点数在计算机中是以二进制形式存储的，但并非所有的十进制小数都能精确地转换为有限长度的二进制小数。像0.1和0.2这样的十进制小数，在二进制表示下是无限循环小数。由于计算机的内存有限，这些无限循环小数在存储时会被截断到某个精度范围内，导致精度损失。
-当两个这样的近似值相加时，结果也会是一个近似的值，而不是精确的0.3。这就是为什么在程序中，0.1 &#43; 0.2的结果往往是一个接近但不等于0.3的数，如0.30000000000000004。
-破局 那么当我们遇到精度计算的问题时，该如何去解决？
-使用整数进行运算：
-如果可能的话，将问题转化为整数运算。例如，如果你在处理货币，可以将所有的金额乘以100（或1000，取决于你需要的精度），使用整数进行运算，最后再将结果转换回小数形式。 使用专门的库：
-对于需要高精度计算的场景，可以使用像decimal.js、bignumber.js或big.js这样的库。这些库提供了高精度的十进制数运算，可以精确表示和计算小数。 四舍五入或取整：
-在某些情况下，你可能不需要非常高的精度，这时可以使用Math.round()、Math.floor()或Math.ceil()函数对结果进行四舍五入或取整。 字符串处理：
-对于简单的场景，如果你只是需要显示结果给用户看，可以考虑将数字转换为字符串，然后进行字符串操作来避免精度问题。例如，你可以将两个小数相加后，使用toFixed(n)方法将结果保留到小数点后n位，然后再转换回字符串显示。 理解并接受精度限制：
-在某些情况下，理解并接受浮点数的精度限制可能是最实际的选择。了解你的应用场景对精度的要求，并据此设计你的算法和数据结构。 程序对于数值的计算，并非我们直观上看到的简单表面计算，而是涉及到底层的进制转换（如十进制与二进制之间的转换）、精确的或由于精度限制而近似的二进制运算，以及可能的结果转换过程。
+    <p>组件 什么是组件？ 此时App是一个单体，我们在真正做项目的时候，我们需要把它分解成可管理的，可描述的组件。 React 对于什么是组件和什么不是组件并没有任何硬性规定，这完全取决于你！
+React 优秀项目 win11.blueedge.me/
+定义第一个组件 如果你没有组件开发的经验，那你一定要记住我的准则:
+如果它在程序里是一个块，那么它就是一个组件 如果它在程序里面经常出现，那么也它也是组件 使用通用的 UI 元素作为组件，可以让你只更改一处，就能更改所有使用该组件的地方
+编写Card组件 例如项目中经常会用到一个卡片组件我们来编写一个卡片组件
+我们新建一个文件夹components
+目录结构：
+components Card index.tsx index.css index.css css
+代码解读
+复制代码
+.card { background: white; border-radius: 5px; border: 1px solid #ccc; max-width: 500px; box-shadow: 3px 3px 3px #ccc; header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding: 10px; div:last-child { color: #1677ff; } } main{ min-height: 200px; border-bottom: 1px solid #ccc; padding: 10px; } footer { display: flex; justify-content: flex-end; align-items: center; padding: 10px; button{ margin-left: 10px; padding: 3px 10px; } } }
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-24 00:00:00 +0000 UTC'>七月 24, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;大码猴</footer>
-  <a class="entry-link" aria-label="post link to 聊聊最近很火的13.11和13.8到底谁大？" href="http://localhost:1313/posts/juejin/%E8%81%8A%E8%81%8A%E6%9C%80%E8%BF%91%E5%BE%88%E7%81%AB%E7%9A%8413.11%E5%92%8C13.8%E5%88%B0%E5%BA%95%E8%B0%81%E5%A4%A7/"></a>
+  <footer class="entry-footer"><span title='2024-09-25 00:00:00 +0000 UTC'>九月 25, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;小满zs</footer>
+  <a class="entry-link" aria-label="post link to React第八章(初识组件)" href="http://localhost:1313/posts/juejin/react%E7%AC%AC%E5%85%AB%E7%AB%A0%E5%88%9D%E8%AF%86%E7%BB%84%E4%BB%B6/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">4Star!/狗头，让后台人员一键拥有自己系统的管理平台前端功能！
+    <h2 class="entry-hint-parent">我们发布了一个只有3MB的Electron——Niva
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 没错，是 4 Star /狗头。话不多说，做人后端开发人员，不爱写前端代码，但又不得不需要一个系统的管理端来配置些数据等等操作的时候，前端又木的人，那么怎么办。 别怕，可以自动生成啦！我来提供个免费快捷的一键生成前端功能的工具啦。前后分离开型，无侵入。可在线使用，可本地部署，高效快捷。
-开始 相信很多小伙伴开发后端的时候会经常碰到很多需要动态配置的功能，或者需要些增删改查的页面，自己又不会（爱）写前端。就会有个尴尬的处境，经常去直接手动改数据库这种危险操作。 所以我做了个可以一键生成这些功能的网站来生成前端项目，三五分钟就可以出来个这些功能的管理系统，又不需要理解，直接用就完事了，你还在等什么呢，快来给你的接口生成一个后台页面管理吧。
-方式一，根据数据库结构一键生成 导出我们的表结构，上传到工具中，配置一下接口地址，再配置一下接口路径，就可以一键生成系统，然后再手动配置下登录接口的入参数即可完成。
-访问网址：网站入口
-需要登录，输入邮件获取验证码即可登录，再无其它验证。
-点击 我的项目-AI智能创建项目 选择 数据库结构导入 上传我们导出的库结构（即创建表的sql，一个文件，支持多个创建语句）
-配置下接口的基地址（如：http://localhost:8080/test，注意：线上直接访问本地存在跨域问题，所以在本地调试的时候可以设置下允许任意域访问，如何设置此处不多介绍）
-选择或自动创建页面母版，自动创建的话现在只提供了一套 增删改查 模版已经够用的了，自定义较复杂暂不过问。母版即是一个没有元素（参数）的空功能，自动调用 增删改查 接口以及数据处理
-配置一下接口的路径以及参数变量, 比如我们查询接口都是 /${变量}/search, 添加或更新接口都是 /${变量}/saveOrUpdate。变量是什么呢？因为我们会生成多张页面，所以每个页面 的接口应该是不一样的（每个页面的前置变量是一样的），所以 ${fileName} 就是变量，也对应下一步的生成的页面名称。而参数变量则是接口入参与返回的数据结构，为了支持不一样的后端数据结构。 比如我们查询的时候的分页参数名，以及如果判定接口是成功的等等。
+    <p>背景 从 Electron 2013 年随着 Atom 编辑器一起面世开始到现在经过了十年， Electron 凭借其跨平台、简化开发、强大的扩展性和利用了前端和 Node.js 丰富的生态系统等优势，一举成为了最流行的跨端桌面应用开发框架。虽然 Electron 能力强大且便捷，但是也因其庞大的体积深受诟病。尤其是使用 Electron 开发的应用越来越多的今天，随便一个功能简单的应用都带着 100M&#43; 的庞大体积，所以也常常被吐槽成「电子垃圾」。
+既然 Electron 没办法尽善尽美，那么一定会有后来者和竞争者来挑战 Electron 的地位，比如 Tauri。Tauri 也是一个跨平台桌面应用框架，由于 Tauri 并没有带 Node.js runtime 以及使用了系统 Native Webview，所以能让使用 Tauri 构建出来的应用非常小。一个 Hello world 程序仅只有 6MB 左右。
+但是不同的是 Tauri 需要开发者使用 Rust 来开发应用，用前端技术来开发 UI。所以 Tauri 的定位更多是面向 Rust 开发者提供跨端桌面应用的解决方案，而对于普通不熟悉 Rust 的前端开发者来说，Rust 上手难度过高、生态也没有 Electron 丰富，并且由于 Rust 作为一个相对底层的语言需要开发者自行兼容多平台系统调用等问题。这些问题让 Tauri 一直处于不温不火的状态。
+Electron 功能强大生态丰富，却及其庞大和臃肿，如果项目本身功能简单则会显得非常不划算。而 Tauri 虽看上去精简轻量，但对于普通前端开发者还是过于不友好。那没有已没有可能在这中间找到一个折中呢？那么接下来有请我们的主角 Niva。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-09-07 00:00:00 +0000 UTC'>九月 7, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;杨幺幺</footer>
-  <a class="entry-link" aria-label="post link to 4Star!/狗头，让后台人员一键拥有自己系统的管理平台前端功能！" href="http://localhost:1313/posts/juejin/4star/%E7%8B%97%E5%A4%B4%E8%AE%A9%E5%90%8E%E5%8F%B0%E4%BA%BA%E5%91%98%E4%B8%80%E9%94%AE%E6%8B%A5%E6%9C%89%E8%87%AA%E5%B7%B1%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0%E5%89%8D%E7%AB%AF%E5%8A%9F%E8%83%BD/"></a>
+  <footer class="entry-footer"><span title='2023-05-17 00:00:00 +0000 UTC'>五月 17, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;brambles</footer>
+  <a class="entry-link" aria-label="post link to 我们发布了一个只有3MB的Electron——Niva" href="http://localhost:1313/posts/juejin/%E6%88%91%E4%BB%AC%E5%8F%91%E5%B8%83%E4%BA%86%E4%B8%80%E4%B8%AA%E5%8F%AA%E6%9C%893mb%E7%9A%84electronniva/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">JetBrains宣布：产品涨价！
+    <h2 class="entry-hint-parent">什么是electron，vue如何应用electron
     </h2>
   </header>
   <div class="entry-content">
-    <p>周末在家网上冲浪的时候，无意中看到了JetBrains宣布产品涨价的新闻。
-作为一个常年重度使用其IntelliJ IDEA产品的用户，出于好奇，于是便打开JetBrains官网瞅了一眼。
-果然，在JetBrains的官博里看到了这篇调价的公告新闻，标题是：IDE、.NET 工具和 All Products Pack 将上调订阅价格。
-公告称，此次价格调整涉及到其IDE、.NET 工具、dotUltimate 和 All Products Pack，并将于 2022 年 10 月 1 日生效，并且在新价格生效前按当前价格预付订阅。
-除此之外，在这篇文章公告里JetBrains称：
-“自七年前推出订阅以来，我们从未提高过 IDE、.NET 工具或 All Products Pack 的价格。 在此期间在推出新的产品时，所有 All Products Pack 用户无需额外付费即可使用加入其中的新产品。 我们同时也为用户提供最低至六折的续费优惠，这是业内少有的模式， 也是我们感激长期使用的忠实用户的一种方式。”
-并且：“调价实属无奈之举，未来将一如既往尽全力避免涨价，正如当初施行订阅价格的初衷”。
-好家伙，那调整之后的价格到底是多少呢？
-我看了一下平时用得比较多的IntelliJ IDEA，对比了一下调整前后的价格。
-首年的价格由目前的149美元，将上涨到169美元。
-另外All Products Pack，首年的价格由目前的249美元，将上涨到289美元。
+    <p>这里我就搬造官网的一句话：
+Electron是一个使用 JavaScript、HTML 和 CSS 构建桌面应用程序的框架。
+顾名思义就是为了开发桌面应用而生，现如今Electron现已被多个开源应用软件所使用，其中我们熟悉和使用的Atom和VsCode编辑器就是基于Electron实现的。
+我们为什么要使用electron 以Windows平台为例，大部分人会首先想到使用QT(C&#43;&#43;)，WPF(C#) 等语言去开发应用。不可否认的是，这些已经是非常成熟的开发方案了。但是，我们来看下如下两种场景：
+公司要做个全新的APP，但是技术人员构成大部分都是前端开发 公司原本就有在线的web应用，但是想包个壳能在桌面直接打开，同时增加一些与系统交互的功能 对于第一种场景，团队中开发人员对于C&#43;&#43;和C#并不熟悉，虽然可以现学，但是整个项目的技术管理和项目管理就会变得不可控。 对于第二种场景，对于应用的业务逻辑要求并不多，只是套一个具有浏览器的运行环境，单独为此配置一个C&#43;&#43;、C#开发人员划不来。
+对于这两种情况，如果现有的前端开发人员能直接搞定，那就非常完美了。
+Electron的诞生提供了这种可能性。它可以帮助前端开发者在不需要学习其他语言和技能的前提下，快速开发跨平台的桌面应用。
+怎么使用？ 接下来我会带领大家熟悉electron的一些基本语法
+创建一个文件，并在该文件目录下终端敲 npm init, 并且一直回车得到如下图
+接下来装electron
+css
+代码解读
+复制代码
+npm install --save-dev electron
+配置启动命令，并且启动应用
+报错，提示缺少主进程文件
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-07-05 00:00:00 +0000 UTC'>七月 5, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;CodeSheep</footer>
-  <a class="entry-link" aria-label="post link to JetBrains宣布：产品涨价！" href="http://localhost:1313/posts/juejin/jetbrains%E5%AE%A3%E5%B8%83%E4%BA%A7%E5%93%81%E6%B6%A8%E4%BB%B7/"></a>
+  <footer class="entry-footer"><span title='2021-06-18 00:00:00 +0000 UTC'>六月 18, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;大码猴</footer>
+  <a class="entry-link" aria-label="post link to 什么是electron，vue如何应用electron" href="http://localhost:1313/posts/juejin/%E4%BB%80%E4%B9%88%E6%98%AFelectronvue%E5%A6%82%E4%BD%95%E5%BA%94%E7%94%A8electron/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">uniapp开发鸿蒙，是前端新出路吗？
+    <h2 class="entry-hint-parent">独立开发者月入5位数的百宝箱
     </h2>
   </header>
   <div class="entry-content">
-    <p> 相信不少前端从业者一听uniapp支持开发鸿蒙Next后非常振奋。猫林老师作为7年前端er也是非常激动，第一时间体验了下。在这里也给大家分享一下我的看法
-uniapp开发鸿蒙优势 对于前端开发者而言，几乎无需增加额外的学习成本 一套代码，通用在Android、iOS、HarmonyOS，小公司狂喜（可以只招一位牛马完成所有工作） 能迅猛将现有项目移植到鸿蒙平台，迅速掌握鸿蒙用户流量以及争取政府补贴 以及更多猫林老师没想到的优点（抱歉，实在憋不出来了） uniapp开发鸿蒙缺点 这真的是可以大吐特吐的地方了，uniapp目前支持鸿蒙的方案是web渲染方案，也就是说相当于利用鸿蒙内部的webview显示一个网页
-那这有什么不好呢？
-首先是渲染性能达不到原生、其次是逻辑代码是JS实现，而JS引擎慢，这就导致启动速度和运行速度弱于原生 JS与原生UI层或者原生API通信可能会卡顿 其次是目前仅支持vue3，对于还在守着vue2的古早前端也不友好
-以上结论来自uniapp官网说明，如下图
-因此猫林老师不认为目前的uniapp适合鸿蒙开发，所以如果有志于抢占鸿蒙风口的同学，可以坚定信心了，还是得好好学习鸿蒙原生开发。 uniapp未来会好吗？ 上述缺点其实DCloud官方（uniapp所属）也意识到了，所以一直在打造新一代的uniapp，也即uni-app x
-这套新平台追求解决所有跨平台开发框架性能无法媲美原生的痛点，通过不同平台编译成不同语言来实现：在iOS平台编译为swift、在Android平台编译为kotlin、在Web和小程序平台编译为js、在鸿蒙next平台上编译为ArkTS。就相当于你用vue的语法写了原生的代码。
-因此，未来的uniapp还是非常值得期待的！
-但现阶段，虽然uni-app x也已经对外发布，但是对于鸿蒙的支持还在不断的完善。并且鸿蒙自身也在不断的升级迭代，所以现阶段的uni-app x暂时还是无法展现完整的鸿蒙开发之美。期望未来能越来越好，为鸿蒙生态提供强有效的生产力。
-总结 uniapp支持鸿蒙是一个好消息，未来也值得期待。但是现阶段用来作为找鸿蒙开发岗位的工作还是不太合适。
+    <p>嗨, 大家好, 我是徐小夕.
+之前一直在社区分享零代码&amp;低代码的技术实践，也陆陆续续设计并开发了多款可视化搭建产品，比如：
+H5-Dooring（页面可视化搭建平台） V6.Dooring（可视化大屏搭建平台） 橙子试卷（表单搭建引擎） Nocode/WEP 文档知识引擎 目前我们自研的产品月流水已经突破5位数(如H5-Dooring零代码搭建平台), 累计用户超过2万.
+做为一名独立开发者, 今天我就来分享一些能提高我们开发效率和产品质量的工具, 帮助大家低成本且更高效的开发高质量项目.
+1. 代码工具 之前研发产品的时候,我大部分还是会通过自己的思考来实现功能逻辑, 比如说一些格式化函数, 搜索算法, 树遍历, 还有一些UI逻辑的开发等, 这些基础功能会占据一部分的时间, 导致整个项目研发效率提不起来, 者对于独立开发者来说时间成本还是巨大的.
+好在这两年AI发展迅速, 我们可以用一些AI工具轻松帮我们实现代码逻辑. 我最近也一直在用一些AI工具来帮我做一些基础功能的开发, 这里和大家分享2个我常用的.
+1.1 MarsCode 我们可以使用它实现代码生成, 单元测试, 优化代码等功能, 同时它还提供了 vscode 插件, 可以和我们开发工具配合使用.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-31 00:00:00 +0000 UTC'>七月 31, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;猫林老师</footer>
-  <a class="entry-link" aria-label="post link to uniapp开发鸿蒙，是前端新出路吗？" href="http://localhost:1313/posts/juejin/uniapp%E5%BC%80%E5%8F%91%E9%B8%BF%E8%92%99%E6%98%AF%E5%89%8D%E7%AB%AF%E6%96%B0%E5%87%BA%E8%B7%AF%E5%90%97/"></a>
+  <footer class="entry-footer"><span title='2024-08-11 00:00:00 +0000 UTC'>八月 11, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;徐小夕</footer>
+  <a class="entry-link" aria-label="post link to 独立开发者月入5位数的百宝箱" href="http://localhost:1313/posts/juejin/%E7%8B%AC%E7%AB%8B%E5%BC%80%E5%8F%91%E8%80%85%E6%9C%88%E5%85%A55%E4%BD%8D%E6%95%B0%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/33/">
-      «&nbsp;上一页&nbsp;33/74
+      «&nbsp;上一页&nbsp;33/77
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/35/">下一页&nbsp;35/74&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/35/">下一页&nbsp;35/77&nbsp;»
     </a>
   </nav>
 </footer>

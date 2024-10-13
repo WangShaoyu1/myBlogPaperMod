@@ -129,127 +129,121 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">基于express-generator创建TypeScript&#43;Express&#43;MySQL后端项目
+    <h2 class="entry-hint-parent">网络穿透,实现本地开发环境测试微信公众号(1)
     </h2>
   </header>
   <div class="entry-content">
-    <p>1. 背景说明 最近由于自己的技术栈进步需要，我在将我的前端项目从原本的Vue2.0&#43;Vuex&#43;ElementUI&#43;JavaScript重构成了Vue3.0&#43;Pinia&#43;ElementPlus&#43;TypeScript之后，我打算趁刚刚熟练完TypeScript的机会，也将我原本使用JavaScript编写的Express后端代码也一并的进行TypeScript的重构。
-但是，众所周知，Express作为一个极其轻量级的Node.js后端框架，你只要安好express的依赖，就可以直接编写app.js然后往里面加接口、加监听，最后用node或者nodemon启动一下就好了；虽然简单易起服务，但是想要使其能够担起规范化、易维护的职责，还是需要有一套规范的框架、文件结构目录来创建。在这里，我选择了express官方提供的一套脚手架express-generator来完成初始项目的创建。但是官方貌似没有随着TypeScript的流行进一步的升级它们的脚手架，因此生成的目录结构还是JavaScript的。为了更好的配合前端接口的数据规范化，将其改造成TypeScript是大势所趋。
-鉴于目前网络上相关的教程较少，我决定自己总结一下我的项目创建历程，供大家参考。
-2. 项目创建&#43;改造流程说明 2.1 使用express-generator创建基本目录结构 首先，全局安装express-generator依赖（之前装过的就不用装了）：
-bash
-代码解读
-复制代码
-npm install express-generator -g
-安装完成之后，切到你想新建项目的文件夹里面，打开powershell，在里面输入如下命令：
-bash
-代码解读
-复制代码
-# 我这边用ts-express作为我的项目名称，实际创建时根据自身需要进行更改 express ts-express
-之后用vscode或者其他的IDE打开它，然后在终端输入npm install进行依赖的安装。
-最终初步通过express-generator创建的目录结构如下图所示：
-其中：
-bin/www：是整个项目的启动脚本，内部配置了很多和服务启动相关的选项。 public：公共资源，比如前端传给后端图片，后端拿到之后就放在public/images目录里面。 routes：路由模块，配置的就是你和前端相交互的接口。 views：视图模块，包括了一些基础的请求渲染视图。.jade文件是一种模板引擎文件，通常用于创建HTML文档。它以简洁、缩进层次分明的方式来表示HTML标记和结构，是一种被称为Jade的模板语言的源文件格式。当请求的接口不存在或者发生错误的时候，就会调用这些视图。 app.js：express的入口程序，也是整个express的核心模块。app的主要功能有： 注册第三方的Node.js插件。在创建express项目的时候，肯定要用到很多第三方的库里面提供的方法，这时候就需要先通过npm进行下载，之后在app.js里面进行引入，再通过app.use()进行注册。 注册路由模块。引入routes里面写好的路由接口文件，通过app.use()进行注册并指定请求的url。 配置全局错误中间件。一般发生请求错误的时候，可以直接通过在app.js里面配置全局错误中间件捕获错误并抛出，这样就不会因为请求错误而使得后端服务崩溃而自动关闭。 2.2 进行TypeScript改造 在进行TS改造之前，需要安装与TS相关的依赖（之前安装过的就不用装了）：
+    <p>持续创作，加速成长！这是我参与「掘金日新计划 · 6 月更文挑战」的第26天，点击查看活动详情
+1.写在前面 有些时候，我们需要开发一个微信公众号，可能需要用到微信的一些api（JS-SDK的能力）。
+例如：微信扫一扫、拍照或从手机相册中选图接口
+当然啦，还有很多JS-SDK的api，详情可查看微信公众号的文档：点击查看
+可以看到，在使用JS-SDK前，需要进行上面这5个步骤
+可以很多人，就很纳闷了，我一个本地开发环境，哪里搞域名绑定呢？
+这就导致了，很多时候，一个开发人员写好了功能代码，但是没有经过测试。只能部署到线上环境，才能进行测试。
+那这个开发人员，多少心里是没有底的，毕竟谁也不能保证，自己写的代码，是不会出现bug的吧。
+哈哈，反正，我也不太敢保证啦！！！T_T
+那我们今天，就来分享一个工具，可以让我们在本地开发环境，也能进行微信公众号的测试。
+那就是网络传统工具：natapp，可以将我们本地环境的服务向外暴露，使得微信服务器能访问到我们本地电脑的服务。
+来自百度百科的解析如下：
+内网穿透，也即 NAT 穿透，进行 NAT 穿透是为了使具有某一个特定源 IP 地址和源端口号的数据包不被 NAT 设备屏蔽而正确路由到内网主机。
+那就，开干吧！！！
+2.natapp使用 natapp官网：点击查看、官方使用文档：点击查看
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-07-31 00:00:00 +0000 UTC'>七月 31, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;non_hana</footer>
-  <a class="entry-link" aria-label="post link to 基于express-generator创建TypeScript&#43;Express&#43;MySQL后端项目" href="http://localhost:1313/posts/juejin/%E5%9F%BA%E4%BA%8Eexpress-generator%E5%88%9B%E5%BB%BAtypescript&#43;express&#43;mysql%E5%90%8E%E7%AB%AF%E9%A1%B9%E7%9B%AE/"></a>
+  <footer class="entry-footer"><span title='2022-06-19 00:00:00 +0000 UTC'>六月 19, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;llsydn</footer>
+  <a class="entry-link" aria-label="post link to 网络穿透,实现本地开发环境测试微信公众号(1)" href="http://localhost:1313/posts/juejin/%E7%BD%91%E7%BB%9C%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%B5%8B%E8%AF%95%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B71/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">自从有了这个工具，一键代码迁移不在话下
+    <h2 class="entry-hint-parent">好物周刊#7：炫酷的浏览器标签页
     </h2>
   </header>
   <div class="entry-content">
-    <p> ​​​​​​​​​​​​​​​​​​​​​​摘要：鲲鹏开发套件 Kunpeng DevKit 可实现两人天快速完成代码迁移，提供全栈开发工具，集代码迁移、编译调试、性能调优、异常诊断等工具和功能于一体。
-本文分享自华为云社区《【云驻共创】鲲鹏DevKit实现两人天高效迁移汇编代码》，原文作者：Victue。
-一、鲲鹏之志 1.1 鲲鹏平台 鲲鹏平台，为全世界的开发者提供了一种新的算力选择。从硬件的开放，到系统软件的开源，涵盖从底层硬件、基础软件到上层行业应用的全产业链条，在国计民生的各个行业取得了重大效果或者进展。工欲善其事必先利其器，鲲鹏开发套件 KunpengDevKit 是华为公司为了广大鲲鹏开发者打造的一把屠龙之刃，帮助开发者高效开发，一键迁移。
-1.2 Kunpeng DevKit 鲲鹏开发套件 KunpengDevKit 提供全栈开发工具，集代码迁移、编译调试、性能调优、异常诊断等工具和功能于一体。将开发者的工作各个环节一一串联，提供了一个方便、快捷和专业的工具包，通过鲲鹏 DevKit 可以帮助用户高效开发，一展宏图。
-真正的武林高手，内功很强，外功同样很强！DevKit 产品设计和用户体验同样优秀！
-时间有限，本文着重分享汇编翻译技术和 KunpengDevKit 产品体验。
-二、汇编自动翻译 2.1 汇编代码 众所周知，汇编语言历史悠久，上手难度较高，是任何一种计算机或其他可编程器件的低级语言。在不同的设备中，汇编语言对应着不同的机器语言指令集。
+    <p> 村雨遥的好物周刊，记录每周看到的有价值的信息，主要针对计算机领域，每周五发布。
+一、项目 1. Qexo 一个快速、强大、漂亮的在线 Hexo 编辑器，支持以下功能：
+自定义图床上传图片 在线配置编辑 在线页面管理 开放 API 自动检查更新 在线一键更新 快速接入友情链接 简单的说说短文 类似不算子的统计 自动填文章模板 2. Twikoo 一个简洁、安全、免费的静态网站评论系统，具有以下特点：
+简单 易用 安全 即时 个性 便捷管理 3. ILLA Builder ILLA 是一个强大的开源低代码平台，供开发人员构建内部工具。 通过使用 ILLA 的组件和操作库，开发人员可以节省大量构建工具的时间，具有以下特色功能：
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-06-22 00:00:00 +0000 UTC'>六月 22, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;华为云开发者联盟</footer>
-  <a class="entry-link" aria-label="post link to 自从有了这个工具，一键代码迁移不在话下" href="http://localhost:1313/posts/juejin/%E8%87%AA%E4%BB%8E%E6%9C%89%E4%BA%86%E8%BF%99%E4%B8%AA%E5%B7%A5%E5%85%B7%E4%B8%80%E9%94%AE%E4%BB%A3%E7%A0%81%E8%BF%81%E7%A7%BB%E4%B8%8D%E5%9C%A8%E8%AF%9D%E4%B8%8B/"></a>
+  <footer class="entry-footer"><span title='2023-09-21 00:00:00 +0000 UTC'>九月 21, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;村雨遥</footer>
+  <a class="entry-link" aria-label="post link to 好物周刊#7：炫酷的浏览器标签页" href="http://localhost:1313/posts/juejin/%E5%A5%BD%E7%89%A9%E5%91%A8%E5%88%8A%237%E7%82%AB%E9%85%B7%E7%9A%84%E6%B5%8F%E8%A7%88%E5%99%A8%E6%A0%87%E7%AD%BE%E9%A1%B5/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">华为仓颉开发语言“可能”明天正式面世（2024年6月20日写下）
+    <h2 class="entry-hint-parent">FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行
     </h2>
   </header>
   <div class="entry-content">
-    <p> 众多迹象表明，鸽了几次的华为仓颉开发语言，有望在2024华为开发者大会上正式面世，你的期待热情是否还在？
-1、“仓颉编程语言”公众号面世 最近，华为旗下的公众号“编程语言Lab”悄然改名为“仓颉编程语言”，这一举动似乎预示着重大消息的到来。 2、2024华为开发者大会：仓颉语言初露锋芒 在即将到来的2024华为开发者大会上，有一个引人注目的议程：“仓颉语言助力鸿蒙原生应用高效开发”。虽然目前尚不确定华为是否会放出仓颉语言的预览版，但可以预见的是，一些精彩的Demo必然会在大会上展示。考虑到华为过去的作风（最近几年都像在搞地下工作），这次的仓颉语言发布可能仍会保留一些神秘感，但Demo的出现无疑将揭开部分面纱。尽管如此，业内人士普遍预测，这次大会的主角仍将是鸿蒙Next，仓颉语言可能会选择低调亮相，为未来的发布埋下伏笔。最好的情况是，华为能够提供一个早期预览版，让我们一睹为快。
-3、大佬评测：仓颉语言能否打破“缝合怪”魔咒？ 此前，仓颉语言开放了测试账号申请，虽然很多人错过了这个机会，但签订保密协议的测试者们（勇士），已分享了部分代码片段。有大佬的评价是：“坏消息是，仓颉语言像是个缝合怪；好消息是，它已经缝合了许多强大的功能。”其实，华为的ArkUI也曾被称为缝合怪，但大家还是比较接受的。
-csharp
-代码解读
-复制代码
-let num = 8; let newNum = if (num&gt;0) {1} else {0}; //下面这段代码来自开发语言大佬，有内涵，懂得都懂，哈哈哈 private abstract class Cangjie extends Kotlin implements Rust, Go,Julia { //解读①：融合了Kotlin、Rust、Go和Julia的优势，甚至包括Python的eval函数和C的ffi调用 override match(){rust.match} override unsafe(){rust.ffi.unsafe} override attribute(){rust.macro.attribute} override macro(){julia.macro.quote} override inherit(){julia.inherit} override differentiable(){julia.differentiable} override spwae(){go.spwan} overload eval(args) { Python.eval (args)} overload eval(args) { unsafe (C.ffi(args))} //解读②：支持LLVM编译，linux支持优秀，MacOS和Windows支持拉跨 @when[backend==&#34;llvm&#34;] build(){LLVM. build()} @when[target==&#34;linux&#34;] build(){println(&#34;very good!&#34;)} @when[target==&#34;macos&#34;] buildOf throw FuckException(&#34;fuck u! macos!&#34;)} @when[target==&#34;windows&#34;] buildO f throw FuckException(&#34;fuck u! windows!&#34;)} }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-06-20 00:00:00 +0000 UTC'>六月 20, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;functionMC</footer>
-  <a class="entry-link" aria-label="post link to 华为仓颉开发语言“可能”明天正式面世（2024年6月20日写下）" href="http://localhost:1313/posts/juejin/%E5%8D%8E%E4%B8%BA%E4%BB%93%E9%A2%89%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80%E5%8F%AF%E8%83%BD%E6%98%8E%E5%A4%A9%E6%AD%A3%E5%BC%8F%E9%9D%A2%E4%B8%962024%E5%B9%B46%E6%9C%8820%E6%97%A5%E5%86%99%E4%B8%8B/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">华为仓颉编程语言的背后本质
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>文章转自北风微信公众号：原链接mp.weixin.qq.com/s?__biz=Mzg…
-详细视频：www.bilibili.com/video/BV1E4…
-在互联网后端或是前端任何编程语言编写的应用都是应用软件，都要运行在操作系统之上，操作系统都要运行在硬件之上。
-而互联网领域主要以linux 操作系统为服务器最多，同时用的硬件CPU主要是intel CPU为主。
-大家入职了公司可以在自家公司服务器运行如下命令大部分都是linux os/intel cpu
-最下面的如果你看过内功修炼课程自然熟悉MMX,SYSCALL,FPU,AVX,AVX512，SSE,SSE2,CPUID等指令。
-比如开源项目php AI框架 swoole java jvm mysql等都用到。
-没有操作系统，没有硬件CPU，我们的编程语言怎么运行？显然不行。
-而我们做应用层开发，其实很少关注操作系统和CPU的变化，我们的应用软件最终都是运行在操作系统上，所有的指令都要运行在CPU上，操作系统会提供一组接口给软件工程师去调用，即操作系统调用接口，系统调用接口是使用汇编实现的【同样在内功修炼课程里】，所有编程语言都要通过系统调用达成功能。
-同时系统调用接口是非常稳定的，所谓的稳定即函数功能不变，函数名字不变，掌握后能用到linux os和intel cpu退出市场为止，但linux 1991年到2024年它们的系统函数没有变化，x86 1985，x64从2000年到2024年架构还是那是那个架构，指令还是那个指令，只是增加了新的指令，对于应用层的软件工程师而言，没有什么变化，因为你平常很少关注到操作系统的变化和CPU架构的指令集变化。
-所以新出来的编程语言华为仓颉同样也是如此，它的底层还是几十年没有变的系统调用函数以及指令集。
-而互联网领域WEB项目的核心就是数据传输，数据传输的依赖就是TCP/IP协议，而TCP/IP的系统函数接口就是SOCKET API，掌握了它就掌握了web 应用，包括各种数据库，缓存，中间件，各种编程语言开发的应用的根。
-下面我们拿仓颉的网络程序演示看看它背后的东西
-javascript
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-13 00:00:00 +0000 UTC'>七月 13, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;heroic</footer>
-  <a class="entry-link" aria-label="post link to 华为仓颉编程语言的背后本质" href="http://localhost:1313/posts/juejin/%E5%8D%8E%E4%B8%BA%E4%BB%93%E9%A2%89%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%9A%84%E8%83%8C%E5%90%8E%E6%9C%AC%E8%B4%A8/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">赶快收藏！全网最佳Set集合详解：HashSet、TreeSet！
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 先赞后看，Java进阶马上一大半
-海外geeksforgeeks网站画了这么一张Set集合的层次结构图，基本把Set集合涉及的常用类关系给标明了。
-大家好，我是南哥。
-一个Java学习与进阶的领路人，相信对你通关面试、拿下Offer进入心心念念的公司有所帮助。
-⭐⭐⭐本文收录在全网独一份的《JavaProGuide》：github.com/hdgaadd/Jav…
-南哥精彩文章推荐
-面试官没想到一个ArrayList，我都能跟他扯半小时 《我们一起进大厂》系列-Zookeeper基础 再有人问你WebSocket为什么牛逼，就把这篇文章发给他！ 全网把Kafka概念讲的最透彻的文章，别无二家 可能是最漂亮的Java I/O流详解 1. Set集合 1.1 HashSet 面试官：你说说对HashSet的理解？
-Set集合区别于其他三大集合的重要特性就是元素具有唯一性，南友们记不住这个特性的话，有个易记的方法。Set集合为什么要叫Set呢？因为Set集合的命名取自于我们小学数学里的集合论（Set Theory），数学集合一个很重要的概念就是每个元素的值都互不相同。
-Set集合常见的有实例有：HashSet、LinkedHashSet、TreeSet，南哥先缕一缕HashSet。
+    <p> 首发公众号:【赵侠客】
+引言 在前面《释放你九成的带宽和内存：GZIP在解决Redis大Key方面的应用》一文中我使用GZIP算法对JSON格式数据进行了压缩，可以减小88%的空间，文中也提到了目前JSON格式在我们项目中应用的非常广泛几乎无处不在。压缩JSON格式数据可以大大降低我们的存储和带宽成本，我们知道数据格式的转换过程是需要消耗CPU计算资源的，JSON格式数据转换的快慢也会直接影响我们接口响应的快慢，甚至影响我们系统的吞吐量，所以本文针对市面上主流的5种JSON解析工具FastJson、FastJson2、JackSon、Gson、Hutool-JSON使用JAVA基准测试分别对小JSON、中JSON、大JSON的序列化和返序列化共6项指标进行测试，最后给出了测试排行榜，希望最后的排行榜能对您在做JSON工具选型时有一定的帮助。
+二、准备工作 2.1 JMH基准测试 平时我们做代码性能测试可能就是在代码执行前通过System.currentTimeMillis()获取一下当前时间，代码执行后再获取一个当前时间，然后两个时间相减得出代码的运行时间，这种测试是非常不准确的，包括获取时间的精度、JIT编译优化导致性能测试结果不稳定、系统当前的负载，包括CPU、内存、磁盘I/O等会影响测试结果、Java虚拟机（JVM）需要一段时间来预热也会影响测试结果。所以为了测试的准确性，本文使用JMH(Java Microbenchmark Harness)进行测试，JMH是由OpenJDK/Oracle维护的Java基准测试工具，它旨在帮助开发人员编写准确的基准测试，以避免常见的基准测试陷阱，并提供可靠的性能测试结果。因为使用的JMH基准测试所以测试结果应该是有说服力的。
+添加JMH Maven依赖：
 java
 代码解读
 复制代码
-// HashSet类源码 public class HashSet&lt;E&gt; extends AbstractSet&lt;E&gt; implements Set&lt;E&gt;, Cloneable, java.io.Serializable {...}
+&lt;dependency&gt; &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt; &lt;artifactId&gt;jmh-core&lt;/artifactId&gt; &lt;version&gt;1.36&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt; &lt;artifactId&gt;jmh-generator-annprocess&lt;/artifactId&gt; &lt;version&gt;1.36&lt;/version&gt; &lt;/dependency&gt;
+JMH测试代码：
+java
+代码解读
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-15 00:00:00 +0000 UTC'>八月 15, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;JavaSouth南哥</footer>
-  <a class="entry-link" aria-label="post link to 赶快收藏！全网最佳Set集合详解：HashSet、TreeSet！" href="http://localhost:1313/posts/juejin/%E8%B5%B6%E5%BF%AB%E6%94%B6%E8%97%8F%E5%85%A8%E7%BD%91%E6%9C%80%E4%BD%B3set%E9%9B%86%E5%90%88%E8%AF%A6%E8%A7%A3hashsettreeset/"></a>
+  <footer class="entry-footer"><span title='2024-09-09 00:00:00 +0000 UTC'>九月 9, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;赵侠客</footer>
+  <a class="entry-link" aria-label="post link to FastJson、Jackson、Gson、Hutool，JSON解析哪家强？JMH基准测试来排行" href="http://localhost:1313/posts/juejin/fastjsonjacksongsonhutooljson%E8%A7%A3%E6%9E%90%E5%93%AA%E5%AE%B6%E5%BC%BAjmh%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E6%9D%A5%E6%8E%92%E8%A1%8C/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">SQLite这么小众的数据库，到底是什么人在用
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 🍄 大家好，我是风筝
+🌍 个人博客：【古时的风筝】。
+本文目的为个人学习记录及知识分享。如果有什么不正确、不严谨的地方请及时指正，不胜感激。
+每一个赞都是我前进的动力。
+公众号：「古时的风筝」
+前几天在一个群里看到一位同学说：“SQLite这么小众的数据库，到底是什么人在用啊？”
+首先要说的是 SQLite 可不是小众的数据库，相反，SQLite 是世界上装机量最多的数据库，远超 MySQL，只不过比较低调而已。低调到我想在官网上找一个好看的用来当插图的图片都找不到，只能截一张官网首页来撑一撑，看起来十分朴素。
+我最早听说 SQLite 是刚毕业工作的时候，我们部门做微软内容管理产品的二次开发，其中有一个客户端即时沟通工具叫做 Lync，搭配上 LDAP 的组织架构，其功能就和现在的企业微信差不多。
+Lync 支持二次扩展，结合我们的产品需要在其中做一些功能拓展，负责这项工作的是一位厉害的 C&#43;&#43; 大佬。有一次我和他聊起来，我说客户端要记住用户自己的配置和数据，是不是要在目录下放一个配置文件啊，那数据量大了会不会很慢。他说，用配置文件也行，但是咱这个不用配置文件，用 SQLite。
+也是孤陋寡闻，那是我第一次听说 SQLite，才知道这也是个数据库，只不过多用在客户端而不是服务器上。
+SQLite SQLite是一个轻量级的嵌入式关系型数据库管理系统。它由D. Richard Hipp在2000年开发，它实现了一个小型、快速、独立、高可靠性、功能齐全的SQL数据库引擎。
+SQLite 用C语言开发，最开始的设计目标是嵌入式系统，它可以在不需要单独的服务器进程的情况下，直接嵌入到应用程序中。后来正好赶上智能手机等智能设备普及，正好契合 SQLite 的使用场景，于是大量的智能设备都在使用 SQLite 。这么说吧，你用的手机上，一定有 SQLite 存在。
+像 MySQL 一样，SQLite 也是开源且免费的，据官方统计，目前正在使用的 SQLite 数据库超过 1 万亿个。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-07-29 00:00:00 +0000 UTC'>七月 29, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;古时的风筝</footer>
+  <a class="entry-link" aria-label="post link to SQLite这么小众的数据库，到底是什么人在用" href="http://localhost:1313/posts/juejin/sqlite%E8%BF%99%E4%B9%88%E5%B0%8F%E4%BC%97%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88%E4%BA%BA%E5%9C%A8%E7%94%A8/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">拆解下技术大佬--程序员鱼皮
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>别人在真实的世界里做生意，你在虚幻的世界里打游戏 — 某p9黑眼圈产品
+大家好，我是程序员芋仔，今天这篇文章，主要拆解一下程序员鱼皮在掘金上的文章，试图看看这位在编程领域比较知名的知识分享者的成长轨迹和发文规律。
+概况 程序员鱼皮，2020-10-16 加入掘金。至今已有 4 年时间，共计发表 160&#43; 篇文章，8000&#43;粉丝，接近 9000&#43;的点赞，阅读量共计 110w 左右。
+高赞二八法则 根据二八法则，鱼皮大佬的点赞，也是纯纯的符合这个情况，百分之二十的文章，贡献了百分之八十的点赞阅读和收藏，截取点赞量前40篇文章的数据如下图：
+如下是二八法则的计算：
+基本符合二八法则，前40篇文章贡献了鱼皮大哥的百分之八十的阅读点赞。大约占比百分之二十。
+字数和阅读量的关系 根据数据能看出来，字数和点赞数基本无关，并不是长文更吸引点赞，反而短文，似乎更容易得到点赞和平台的推荐。这也基本符合碎片化阅读的情况，在这个时代，大家其实并不太愿意花费过多时间进行碎片化的阅读，又或者说，大家来掘金，可能更多的是看一些短文，而非进行深入的阅读和学习理解。
+这里罗列了一下前40篇文章，字数的一个分布图。
+字数在 800 - 2000 的文章，占据了百分之70的数量(ps: 喜欢写文章的各位，最优字数鱼皮老师已经教给你了哦)。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序员芋仔</footer>
+  <a class="entry-link" aria-label="post link to 拆解下技术大佬--程序员鱼皮" href="http://localhost:1313/posts/juejin/%E6%8B%86%E8%A7%A3%E4%B8%8B%E6%8A%80%E6%9C%AF%E5%A4%A7%E4%BD%AC--%E7%A8%8B%E5%BA%8F%E5%91%98%E9%B1%BC%E7%9A%AE/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/17/">
-      «&nbsp;上一页&nbsp;17/38
+      «&nbsp;上一页&nbsp;17/40
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/19/">下一页&nbsp;19/38&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/19/">下一页&nbsp;19/40&nbsp;»
     </a>
   </nav>
 </footer>

@@ -129,6 +129,49 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">iframe嵌入页面实现免登录思路（以vue为例）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景： 最近实现一个功能需要使用iframe嵌入其它系统内部的一个页面，但嵌入后出现一个问题，就是一打开这个页面就会自动跳转到登录页，原因是被嵌入系统没有登录(没有token)肯定不让访问内部页面的，本文就是解决这个问题的。
+选择的技术方案： 本地系统使用iframe嵌入某个系统内部页面，那就证明被嵌入系统是安全的可使用的，所以可以通过通讯方式带一个token过去实现免登录，我用vue项目作为例子具体如下：
+方法一通过url传： javascript
+代码解读
+复制代码
+// 发送方（本地系统）： &lt;div&gt; &lt;iframe :src=&#34;url&#34; id=&#34;childFrame&#34; importance=&#34;high&#34; name=&#34;demo&#34; &gt;&lt;/iframe&gt; &lt;/div&gt; //被嵌入页面进行接收 url = `http://localhost:8080/dudu?mytoken={mytoken}` // 接收方：直接使用window.location.search接收，然后对接收到的进行处理
+注意：
+如果使用这个方法最好把token加密一下，要不然直接显示在url是非常危险的行为，所以我更推荐下面方法二 上面接收方要在在APP.vue文件的created生命周期接收，在嵌入页面接收是不行的，这里与VUE的执行流程有关就不多说了 方法二通过iframe的通讯方式传（推荐）： javascript
+代码解读
+复制代码
+// 发送方（本地系统）： var params = { type: &#34;setToken&#34;, token: &#34;这是伟过去的token&#34; } window.parent.postMessage(params, &#34;*&#34;); // 接收方（被嵌入系统）：在APP.vue文件的created生命周期接收 window.addEventListener( &#34;message&#34;, (e)=&gt;{ if(e.data.type === &#39;setToken&#39;){ //这里拿到token,然后放入缓存实在免登录即可 } }	false);
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-03-27 00:00:00 +0000 UTC'>三月 27, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
+  <a class="entry-link" aria-label="post link to iframe嵌入页面实现免登录思路（以vue为例）" href="http://localhost:1313/posts/juejin/iframe%E5%B5%8C%E5%85%A5%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0%E5%85%8D%E7%99%BB%E5%BD%95%E6%80%9D%E8%B7%AF%E4%BB%A5vue%E4%B8%BA%E4%BE%8B/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Vue内置指令v-once、v-memo和v-pre提升性能？
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 Vue的内置指令估计大家都用过不少，例如v-for、v-if之类的就是最常用的内置指令，但今天给大家介绍几个平时用的比较少的内置指令。毕竟这几个Vue内置指令可用可不用，不用的时候系统正常跑，但在对的地方用了却能提升系统性能，下面将结合示例进行详细说明。
+一、v-once 作用：在标签上使用v-once能使元素或者表达式只渲染一次。首次渲染之后，后面数据再发生变化时使用了v-once的地方都不会更新，因此用在数据不需要变化的地方就能进行性能优化。
+v-once指令实现原理： Vue组件初始化时会标记上v-once，首次渲染会正常执行，后续再次渲染时如果看到有v-once标记则跳过二次渲染。
+示例代码： 直接作用在标签上，可以是普通标签也可以是图片标签，当2S后数据变化时标签上的值不会重新渲染更新。
+xml
+代码解读
+复制代码
+&lt;template&gt; &lt;div&gt; &lt;span v-once&gt;{{ message }}&lt;/span&gt; &lt;img v-once :src=&#34;imageUrl&#34;&gt;&lt;/img&gt; &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { ref } from &#39;vue&#39;; let message = ref(&#39;Vue指令!&#39;); let imageSrc = ref(&#39;/path/my/image.jpg&#39;); setTimeout(() =&gt; { message.value = &#39;修改内容!&#39;; imageUrl.value = &#39;/new/path/my/images.jpg&#39;; }, 2000); &lt;/script&gt;
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-08-27 00:00:00 +0000 UTC'>八月 27, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
+  <a class="entry-link" aria-label="post link to Vue内置指令v-once、v-memo和v-pre提升性能？" href="http://localhost:1313/posts/juejin/vue%E5%86%85%E7%BD%AE%E6%8C%87%E4%BB%A4v-oncev-memo%E5%92%8Cv-pre%E6%8F%90%E5%8D%87%E6%80%A7%E8%83%BD/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">啊，富文本没做安全处理被XSS攻击了啊
     </h2>
   </header>
@@ -195,55 +238,12 @@ vue2 的双向数据绑定是利用 ES5 的一个 API Object.definePropert()对�
   <footer class="entry-footer"><span title='2021-12-01 00:00:00 +0000 UTC'>十二月 1, 2021</span>&nbsp;·&nbsp;11 分钟&nbsp;·&nbsp;前端开发爱好者</footer>
   <a class="entry-link" aria-label="post link to Vite2&#43;Vue3&#43;TypeScript&#43;Pinia搭建一套企业级的开发脚手架【值得收藏】" href="http://localhost:1313/posts/juejin/vite2&#43;vue3&#43;typescript&#43;pinia%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E4%BC%81%E4%B8%9A%E7%BA%A7%E7%9A%84%E5%BC%80%E5%8F%91%E8%84%9A%E6%89%8B%E6%9E%B6%E5%80%BC%E5%BE%97%E6%94%B6%E8%97%8F/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">最详细的Vue3&#43;TypeScript使用教程【值得收藏】
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 哈喽,大家好 我是xy👨🏻‍💻。最近技术栈刚刚由之前的 React 转向 Vue3了，由于之前多多少少也接触过 Vue，所以这次只用了一个上午的时间就上手 Vue3 了，如果大家有关于vue或者react上的问题，欢迎来滴滴我，一起交流学习 💪
-至于技术栈为什么由 react 转向 vue3，也是因为今年换了新工作，公司技术栈以vue3为主，刚好前段时间又接手了一个项目，就直接采用 Vue3 script setup typescript 开发，于是今天就想给大家分享下 script setup 结合 typescript 使用的一些技巧，如果这些技巧能够帮助到你，记得给我点个赞呦 👍
-环境搭建 环境搭建这里就不详细介绍了，可以直接使用官方的方式创建
-sh
-代码解读
-复制代码
-npm init vue@latest
-这一指令将会安装并执行 create-vue，它是 Vue 官方的项目脚手架工具。你将会看到一些诸如 TypeScript 和测试支持之类的可选功能提示：
-sh
-代码解读
-复制代码
-✔ Project name: … &lt;your-project-name&gt; ✔ Add TypeScript? … No / Yes ✔ Add JSX Support? … No / Yes ✔ Add Vue Router for Single Page Application development? … No / Yes ✔ Add Pinia for state management? … No / Yes ✔ Add Vitest for Unit testing? … No / Yes ✔ Add Cypress for both Unit and End-to-End testing? … No / Yes ✔ Add ESLint for code quality? … No / Yes ✔ Add Prettier for code formatting? … No / Yes Scaffolding project in ./&lt;your-project-name&gt;... Done.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-07-17 00:00:00 +0000 UTC'>七月 17, 2022</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;前端开发爱好者</footer>
-  <a class="entry-link" aria-label="post link to 最详细的Vue3&#43;TypeScript使用教程【值得收藏】" href="http://localhost:1313/posts/juejin/%E6%9C%80%E8%AF%A6%E7%BB%86%E7%9A%84vue3&#43;typescript%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B%E5%80%BC%E5%BE%97%E6%94%B6%E8%97%8F/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">vue3响应式高阶用法，中高级前端必会的性能优化技巧
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言： 翻别人代码时，总结发现极大部分使用vue3的人只会用ref和reactive处理响应式数据无论什么场景都是，但vue官方针对某些应用场景有其它的更好用的响应式api实现响应式，从而达到更好的性能效果。例如深层的树状数据结构可以通过shallowRef实现浅层响应式，不会被深层递归地转为响应式。本文通过例子详细总结几种vue3响应式的高阶用法。
-一、 shallowRef() 简述：ref的浅层作用形式。shallowRef与普通的 ref 的区别在于，shallowRef 不会对对象进行深度的响应式处理，也就是 shallowRef 包含的对象内部的属性发生变化时，shallowRef 本身不会触发重新渲染或响应式更新，所以使用shallowRef时只关心顶层的引用变化。
-代码示例：
-ini
-代码解读
-复制代码
-&lt;script lang=&#34;ts&#34; setup&gt; import { shallowRef } from &#39;vue&#39;; const data = shallowRef({ name: &#39;天天鸭&#39;, age: 18 }); // 修改顶层引用会触发响应式更新 data.value = { name: &#39;Bob&#39;, age: 20 }; // 修改内部属性不会触发响应式更新 data.value.age = 30; &lt;/script&gt;
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-07-22 00:00:00 +0000 UTC'>七月 22, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;天天鸭</footer>
-  <a class="entry-link" aria-label="post link to vue3响应式高阶用法，中高级前端必会的性能优化技巧" href="http://localhost:1313/posts/juejin/vue3%E5%93%8D%E5%BA%94%E5%BC%8F%E9%AB%98%E9%98%B6%E7%94%A8%E6%B3%95%E4%B8%AD%E9%AB%98%E7%BA%A7%E5%89%8D%E7%AB%AF%E5%BF%85%E4%BC%9A%E7%9A%84%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/vue.js/page/8/">
-      «&nbsp;上一页&nbsp;8/14
+      «&nbsp;上一页&nbsp;8/15
     </a>
-    <a class="next" href="http://localhost:1313/tags/vue.js/page/10/">下一页&nbsp;10/14&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/vue.js/page/10/">下一页&nbsp;10/15&nbsp;»
     </a>
   </nav>
 </footer>

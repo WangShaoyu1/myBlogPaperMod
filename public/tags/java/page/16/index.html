@@ -129,6 +129,82 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Magician1.1.11发布
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>本次更新修复了一个小bug，在之前的版本中websocket的报文解析存在一些问题，会导致消息长度超过126个字节后就无法获取了，并且会引发之后发送的所有消息都解析不出来。 在1.1.11 中 这个bug得到了解决。
+除此之外还简化了一点点TCP服务创建的语法，真的只是一点点哦，加了个构造函数，使得在使用默认线程池的时候也可以指定EventRunner的数量了。
+使用默认线程池时指定EventRunner数量 java
+代码解读
+复制代码
+/* * EventGroup加了个构造函数，可以只指定EventRunner数量 * 以前是两个极端，要么连EventGroup都用默认，要么EventRunner的数量和线程池 全都自定义，不够灵活 */ EventGroup ioEventGroup = new EventGroup(1); EventGroup workerEventGroup = new EventGroup(10); workerEventGroup.setSteal(EventEnum.STEAL.YES); /* 创建TCP服务，默认采用http解码器 */ TCPServer tcpServer = Magician.createTCPServer(ioEventGroup, workerEventGroup) .soTimeout(3000) .handler(&#34;/&#34;, new DemoRequestHandler()) .bind(8080);
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-06-27 00:00:00 +0000 UTC'>六月 27, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;贝克街的天才</footer>
+  <a class="entry-link" aria-label="post link to Magician1.1.11发布" href="http://localhost:1313/posts/juejin/magician1.1.11%E5%8F%91%E5%B8%83/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">这样的SQL太吓人了
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>昨天松哥在朋友圈发了这样一张图：
+很多小伙伴看到了能够快速发现问题，当 company_id 为 null 的时候，会导致全表更新。
+但是也有小伙伴不解，自己平时就是这么写的呀，也没什么问题，如果有问题，那么上面的 SQL 该怎么改呢？
+松哥来和大家简单聊几句。
+一 防止全表更新 如果在生产环境中使用 UPDATE 语句更新表数据，此时如果忘记携带本应该添加的 WHERE 条件，那么后果不堪设想。
+那么怎么避免这个问题呢？
+二 sql_safe_updates sql_safe_updates 是 MySQL 数据库中的一个参数，它的作用是增强数据安全性，防止因误操作导致的数据丢失或破坏。
+具体来说，当 sql_safe_updates 设置为 ON（启用）时，MySQL 将阻止执行没有明确 WHERE 子句的 UPDATE 或 DELETE 语句。这意味着如果试图运行一个不包含 WHERE 条件来限定更新或删除范围的 DML 语句，MySQL 会抛出一个错误。而当 sql_safe_updates 设置为 OFF（禁用）时，MySQL 不会对此类无条件更新或删除操作进行特殊限制，允许它们按常规方式执行
+这个参数可以配置在会话级别或全局级别。
+在会话级别，可以通过执行 SET sql_safe_updates = 1; 命令来启用，这只对当前连接有效。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-25 00:00:00 +0000 UTC'>九月 25, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;江南一点雨</footer>
+  <a class="entry-link" aria-label="post link to 这样的SQL太吓人了" href="http://localhost:1313/posts/juejin/%E8%BF%99%E6%A0%B7%E7%9A%84sql%E5%A4%AA%E5%90%93%E4%BA%BA%E4%BA%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">腾讯云后端十五连问
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 大家好，我是捡田螺的小男孩，最近一位朋友（6年工作经验）面了腾讯云，以下是面试题和答案。加油，一起卷。
+聊聊项目，好的设计，好的代码 谈谈什么是零拷贝？ 一共有几种 IO 模型？NIO 和多路复用的区别？ Future 实现阻塞等待获取结果的原理？ ReentrantLock和 Synchronized 的区别？Synchronized 的原理？ 聊聊AOS？ReentrantLock的实现原理？ 乐观锁和悲观锁， 让你来写你怎么实现？ Paxos 协议了解？工作流程是怎么样的？ B&#43;树聊一下？B&#43;树是不是有序？B&#43;树和B-树的主要区别？B&#43;树索引，一次查找过程? TCP的拥塞机制 聊聊JVM调优 数据库分库分表的缺点是啥？ 分布式事务如何解决？TCC 了解？ RocketMQ 如何保证消息的准确性和安全性？ 算法题：三个数求和 公众号：捡田螺的小男孩： 我的github地址，感谢给个star 1.聊聊项目，好的设计，好的代码 项目的话，你可以聊聊你平时做的项目，尤其有亮点的项目。如果没有什么特别亮点的项目，也可以说说一些好的设计，或者你优化了什么接口，性能提升了多少，优化了什么慢SQL都可以。甚至是一些好的代码写法都可以。
+如果是讲优化接口的话，你可以看下我这篇文章哈：
+记一次接口性能优化实践总结：优化接口性能的八个建议
+如果是代码优化细节，可以看我这篇:
+工作四年，分享50个让你代码更好的小建议
+如果是慢SQL优化，可以看下我之前MySQL专栏系列文章哈：
+看一遍就理解：order by详解 看一遍就理解：group by详解 实战！聊聊如何解决MySQL深分页问题 后端程序员必备：书写高质量SQL的30条建议 阿里一面，给了几条SQL，问需要执行几次树搜索操作？ 生产问题分析！delete in子查询不走索引？！ 2. 谈谈什么是零拷贝？ 零拷贝是指计算机执行IO操作时，CPU不需要将数据从一个存储区域复制到另一个存储区域，从而可以减少上下文切换以及CPU的拷贝时间。它是一种I/O操作优化技术。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-03-15 00:00:00 +0000 UTC'>三月 15, 2022</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;捡田螺的小男孩</footer>
+  <a class="entry-link" aria-label="post link to 腾讯云后端十五连问" href="http://localhost:1313/posts/juejin/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%90%8E%E7%AB%AF%E5%8D%81%E4%BA%94%E8%BF%9E%E9%97%AE/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">字节国际支付十连问
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 大家好，我是田螺。
+之前有位读者去字节面试，面的是国际支付部门，他凭记忆，回忆被问到一些面试真题。于是，我整理了比较全的答案，希望对大家找工作有帮助呀，加油~
+公众号：捡田螺的小男孩 github地址，感谢每颗star：github 1. 聊聊工作中，你是如何设计数据库表的 命名规范 选择合适的字段类型 主键设计合理 选择合适的字段长度 优先考虑逻辑删除，而不是物理删除 每个表必备的几个字段（如create_time和update_time等） 一张表的字段不宜过多 尽可能使用not null定义字段 设计表时，评估哪些字段需要加索引 不需要严格遵守3NF，通过业务字段冗余来减少表关联 避免使用MySQL保留字 不搞外键关联，一般都在代码维护 一般都选择INNODB存储引擎 选择合适统一的字符集。 如果你的数据库字段是枚举类型的，需要在comment注释清楚 时间类型选择恰当 不建议使用Stored procedure(包括存储过程，触发器) 。 1:N关系的设计 大字段如何设计 考虑是否需要分库分表 索引的合理设计 我之前写过，做表的设计时，需要考虑哪些点，大家可以看下哈：21个MySQL表设计的经验准则
+2.什么是三范式？你做过违反三范式的设计嘛 第一范式：对属性的原子性，要求属性具有原子性，不可再分解； 第二范式：对记录的唯一性，要求记录有唯一标识，即实体的唯一性，即不存在部分依赖； 第三方式：对字段的冗余性，要求任何字段不能由其他字段派生出来，它要求字段没有冗余，即不存在传递依赖。 我们设计表及其字段之间的关系, 应尽量满足第三范式。但是有时候，可以适当冗余，来提高效率
+3. TCP的四次挥手？三次挥手行不行 ...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-12-28 00:00:00 +0000 UTC'>十二月 28, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;捡田螺的小男孩</footer>
+  <a class="entry-link" aria-label="post link to 字节国际支付十连问" href="http://localhost:1313/posts/juejin/%E5%AD%97%E8%8A%82%E5%9B%BD%E9%99%85%E6%94%AF%E4%BB%98%E5%8D%81%E8%BF%9E%E9%97%AE/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">从应用层到网络层排查Dubbo接口超时全记录
     </h2>
   </header>
@@ -147,63 +223,12 @@
   <footer class="entry-footer"><span title='2021-04-20 00:00:00 +0000 UTC'>四月 20, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;码海</footer>
   <a class="entry-link" aria-label="post link to 从应用层到网络层排查Dubbo接口超时全记录" href="http://localhost:1313/posts/juejin/%E4%BB%8E%E5%BA%94%E7%94%A8%E5%B1%82%E5%88%B0%E7%BD%91%E7%BB%9C%E5%B1%82%E6%8E%92%E6%9F%A5dubbo%E6%8E%A5%E5%8F%A3%E8%B6%85%E6%97%B6%E5%85%A8%E8%AE%B0%E5%BD%95/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">面试官问我HashMap哪里不安全，我支支吾吾的说了这些
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>小知识，大挑战！本文正在参与“ 程序员必备小知识 ”创作活动
-本文同时参与 「掘力星计划」 ，赢取创作大礼包，挑战创作激励金
-Code皮皮虾 一个沙雕而又有趣的憨憨少年，和大多数小伙伴们一样喜欢听歌、游戏，当然除此之外还有写作的兴趣，emm…，日子还很长，让我们一起加油努力叭🌈
-🔥前言——&gt;精选专栏 毛遂自荐，给大家推荐一下自己的专栏😁，欢迎小伙伴们收藏关注😊
-力扣算法题解专区
-小白学Java
-MybatisPlus专栏
-App爬虫专栏
-PC端爬虫专栏
-大厂面试题专栏
-JDK7 HashMap JDK7HashMap在多线程环境下会出现死循环问题。
-假如此时A、B线程同时对一个HashMap进行put操作，且HashMap刚号达到扩容条件需要进行扩容
-那么这两个线程都会取对HahsMap进行扩容（JDK7HashMap扩容调用 resize()方法，而resize()方法中需要调用transfer()方法将旧数组元素全部rehash到新数组中去==重点：这里在多线程环境下就会出现问题==）
-java
-代码解读
-复制代码
-void resize(int newCapacity) { Entry[] oldTable = table; int oldCapacity = oldTable.length; if (oldCapacity == MAXIMUM_CAPACITY) { threshold = Integer.MAX_VALUE; return; } Entry[] newTable = new Entry[newCapacity]; transfer(newTable, initHashSeedAsNeeded(newCapacity)); table = newTable; threshold = (int)Math.min(newCapacity * loadFactor, MAXIMUM_CAPACITY &#43; 1); } void transfer(Entry[] newTable, boolean rehash) { int newCapacity = newTable.length; //对数组的每一条链表遍历rehash for (Entry&lt;K,V&gt; e : table) { while(null != e) { //保留下一个节点 Entry&lt;K,V&gt; next = e.next; if (rehash) { e.hash = null == e.key ? 0 : hash(e.key); } //得到对应在新数组中的索引位置 int i = indexFor(e.hash, newCapacity); //尾插法 e.next = newTable[i]; newTable[i] = e; e = next; } } }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-10-09 00:00:00 +0000 UTC'>十月 9, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;Code皮皮虾</footer>
-  <a class="entry-link" aria-label="post link to 面试官问我HashMap哪里不安全，我支支吾吾的说了这些" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E9%97%AE%E6%88%91hashmap%E5%93%AA%E9%87%8C%E4%B8%8D%E5%AE%89%E5%85%A8%E6%88%91%E6%94%AF%E6%94%AF%E5%90%BE%E5%90%BE%E7%9A%84%E8%AF%B4%E4%BA%86%E8%BF%99%E4%BA%9B/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">【MySQL专题】MySQL百万级数据插入效率优化
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>携手创作，共同成长！这是我参与「掘金日新计划 · 8 月更文挑战」的第17天，点击查看活动详情
-场景 由于压力测试，您需要在数据库中检索大量数据，但数据库中没有太多数据。于是为了测试，就得往数据库里快速插入大量的临时数据。
-有两种方法可以快速插入大量数据：
-一种是使用Java代码实现； 另一种是使用数据库存储过程。 优化方向 直接使用foreach的方式，一条一条的直接插入数据到MySQL中，效率十分低下。大概10w数据量需要18秒左右，100w数据大概需要10多分钟甚至直接卡死了。因此，我们可以对数据插入过程进行优化，分为下面两个方面：
-数据提交方面：批量提交 数据库引擎方面：MyisAM 因为批量提交是分批次提交数据，因此一次创建少量的数据再分批次提交到数据库，这样既保证了数据传递的效率又不会一次占满内存；
-另外因为InnoDB的锁级别为行锁并且是事务性的，而MyisAM为表锁且无事务，因此MyisAM引擎对于频繁数据更新和插入的效率远大于InnoDB引擎。
-下面我们来进行代码实践：
-快速实践 1. 创建数据表 首先，你必须有一个数据表，注意数据表的引擎，在构建表时使用MyISAM引擎，MyISAM插入比InnoDB快得多，因为InnoDB的事务支持要好得多，并且在大多数情况下是default使用InnoDB，因此您可以在插入数据后将引擎从修改的MyISAM更换回为InnoDB。
-sql
-代码解读
-复制代码
-CREATE TABLE `tb_data` ( `id` int(11) DEFAULT NULL, `user_name` varchar(100) DEFAULT NULL, `create_time` datetime DEFAULT NULL, `random` double DEFAULT NULL ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-08-23 00:00:00 +0000 UTC'>八月 23, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;Java白羊</footer>
-  <a class="entry-link" aria-label="post link to 【MySQL专题】MySQL百万级数据插入效率优化" href="http://localhost:1313/posts/juejin/mysql%E4%B8%93%E9%A2%98mysql%E7%99%BE%E4%B8%87%E7%BA%A7%E6%95%B0%E6%8D%AE%E6%8F%92%E5%85%A5%E6%95%88%E7%8E%87%E4%BC%98%E5%8C%96/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/java/page/15/">
-      «&nbsp;上一页&nbsp;15/16
+      «&nbsp;上一页&nbsp;15/17
+    </a>
+    <a class="next" href="http://localhost:1313/tags/java/page/17/">下一页&nbsp;17/17&nbsp;»
     </a>
   </nav>
 </footer>

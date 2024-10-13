@@ -242,38 +242,6 @@ import requests headers = { &#39;User-Agent&#39;: &#39;Mozilla/5.0 (Windows NT 6
   <footer class="entry-footer"><span title='2021-08-20 00:00:00 +0000 UTC'>八月 20, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;架构漫谈</footer>
   <a class="entry-link" aria-label="post link to 来我公司写爬虫吗？会坐牢的那种!(一)" href="http://localhost:1313/posts/juejin/%E6%9D%A5%E6%88%91%E5%85%AC%E5%8F%B8%E5%86%99%E7%88%AC%E8%99%AB%E5%90%97%E4%BC%9A%E5%9D%90%E7%89%A2%E7%9A%84%E9%82%A3%E7%A7%8D%E4%B8%80/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">只因把https改成http，带宽减少了70%！
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>起因 是一个高并发的采集服务上线后，100m的上行很快就被打满了。
-因为这是一条专线，并且只有这一个服务在使用，所以可以确定就是它导致的。
-但是！这个请求只是一个 GET 请求，同时并没有很大的请求体，这是为什么呢？
-于是使用 charles 重新抓包后发现，一个 request 的请求居然要占用 1.68kb 的大小!
-其中TLS Handshake 就占了 1.27kb。
-这种情况下，需要的上行带宽就是：1.68*20000/1024*8=262.5mbps
-也就说明100mbps的上行为何被轻松打满
-TLS Handshake是什么来头，竟然如此大? 首先要知道HTTPS全称是：HTTP over TLS，每次建立新的TCP连接通常需要进行一次完整的TLS Handshake。在握手过程中，客户端和服务器需要交换证书、公钥、加密算法等信息，这些数据占用了较多的字节数。
-TLS Handshake的内容主要包括：
-客户端和服务器的随机数 支持的加密算法和TLS版本信息 服务器的数字证书（包含公钥） 用于生成对称密钥的“Pre-Master Secret” 这个过程不仅耗时，还会消耗带宽和CPU资源。
-因此想到最粗暴的解决方案也比较简单，就是直接使用 HTTP，省去TLS Handshake的过程，那么自然就不会有 TLS 的传输了。
-那么是否真的有效呢？验证一下就知道。
-将请求协议改成 http 后：
-可以看到请求头确实不包含 TLS Handshake了!
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-09-01 00:00:00 +0000 UTC'>九月 1, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;麦麦麦造</footer>
-  <a class="entry-link" aria-label="post link to 只因把https改成http，带宽减少了70%！" href="http://localhost:1313/posts/juejin/%E5%8F%AA%E5%9B%A0%E6%8A%8Ahttps%E6%94%B9%E6%88%90http%E5%B8%A6%E5%AE%BD%E5%87%8F%E5%B0%91%E4%BA%8670/"></a>
-</article>
-<footer class="page-footer">
-  <nav class="pagination">
-    <a class="next" href="http://localhost:1313/tags/%E7%88%AC%E8%99%AB/page/2/">下一页&nbsp;2/2&nbsp;»
-    </a>
-  </nav>
-</footer>
     </main>
     
 <footer class="footer">

@@ -129,6 +129,28 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">查询提升200倍，ClickHouse你值得拥有！
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>一、ClickHouse 是什么？ ClickHouse：是一个用于联机分析(OLAP)的列式数据库管理系统(DBMS)
+我们首先理清一些基础概念
+OLTP：是传统的关系型数据库，主要操作增删改查，强调事务一致性，比如银行系统、电商系统 OLAP：是仓库型数据库，主要是读取数据，做复杂数据分析，侧重技术决策支持，提供直观简单的结果 接着我们用图示，来理解一下列式数据库和行式数据库区别
+在传统的行式数据库系统中（MySQL、Postgres和MS SQL Server），数据按如下顺序存储： 在列式数据库系统中（ClickHouse），数据按如下的顺序存储： 两者在存储方式上对比： 以上是ClickHouse基本介绍，更多可以查阅官方手册
+二、业务问题 业务端现有存储在Mysql中，5000万数据量的大表及两个辅表，单次联表查询开销在3min&#43;，执行效率极低。经过索引优化、水平分表、逻辑优化，成效较低，因此决定借助ClickHouse来解决此问题
+最终通过优化，查询时间降低至1s内，查询效率提升200倍！
+希望通过本文，可以帮助大家快速掌握这一利器，并能在实践中少走弯路。
+三、ClickHouse实践 1.Mac下的Clickhouse安装 我是通过docker安装，查看教程。也可以下载CK编译安装，相对麻烦一些。
+2.数据迁移：从Mysql到ClickHouse ClickHouse支持Mysql大多数语法，迁移成本低，目前有五种迁移方案：
+create table engin mysql，映射方案数据还是在Mysql insert into select from，先建表，在导入 create table as select from，建表同时导入 csv离线导入 streamsets 选择第三种方案做数据迁移：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-08-21 00:00:00 +0000 UTC'>八月 21, 2020</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;起个帅的名</footer>
+  <a class="entry-link" aria-label="post link to 查询提升200倍，ClickHouse你值得拥有！" href="http://localhost:1313/posts/juejin/%E6%9F%A5%E8%AF%A2%E6%8F%90%E5%8D%87200%E5%80%8Dclickhouse%E4%BD%A0%E5%80%BC%E5%BE%97%E6%8B%A5%E6%9C%89/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">MaterializeMySQL引擎：MySQL到ClickHouse的高速公路
     </h2>
   </header>
@@ -215,26 +237,6 @@ InnoDB 使用行级锁，这大大提高了并发处理能力，多个事务可�
   </div>
   <footer class="entry-footer"><span title='2024-09-25 00:00:00 +0000 UTC'>九月 25, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;江南一点雨</footer>
   <a class="entry-link" aria-label="post link to 这样的SQL太吓人了" href="http://localhost:1313/posts/juejin/%E8%BF%99%E6%A0%B7%E7%9A%84sql%E5%A4%AA%E5%90%93%E4%BA%BA%E4%BA%86/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Mybatis-Plus批量插入数据太慢，使用rewriteBatchedStatements属性优化，堪称神速！
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 最近小编手上一堆项目，实在特别忙，每天一堆批量操作，更新、导入、新增、删除，公司使用的Mybatis-Plus操作SQL，用过Mybatis-Plus的小伙伴一定知道他有很多API提供给我们使用，真爽，再不用写那么多繁琐的SQL语句，saveBatch是Plus的批量插入函数，大家平时工作肯定都用过，下面我们就来一个案例进入今天的主题。
-一、rewriteBatchedStatements参数 MySQL的JDBC连接的url中要加rewriteBatchedStatements参数，并保证5.1.13以上版本的驱动，才能实现高性能的批量插入。MySQL JDBC驱动在默认情况下会无视executeBatch()语句，把我们期望批量执行的一组sql语句拆散，一条一条地发给MySQL数据库，批量插入实际上是单条插入，直接造成较低的性能。只有把rewriteBatchedStatements参数置为true, 驱动才会帮你批量执行SQL，另外这个选项对INSERT/UPDATE/DELETE都有效
-添加rewriteBatchedStatements=true这个参数后的执行速度比较：
-二、批量添加员工信息 1.普通saveBatch批量插入 我们循环1万次，把每个实例员工对象装到员工集合（List）中,然后调用Mybatis-Plus的saveBatch方法，传入List集合，实现批量员工的插入，然后我们在方法开始结束的地方，计算当前函数执行时长。
-java
-代码解读
-复制代码
-@PostMapping(&#34;/addBath&#34;) @ResponseBody public CommonResult&lt;Employee&gt; addBath(){ long startTime = System.currentTimeMillis(); List&lt;Employee&gt; list = new ArrayList&lt;&gt;(); // 循环批量添加1万条员工数据 for (int i = 0; i &lt; 10000; i&#43;&#43;) { Employee employee = new Employee(); employee.setName(&#34;DT测试&#34;&#43;i); employee.setAge(20); employee.setSalary(9000D); employee.setDepartmentId(i); list.add(employee); } boolean batch = employeeService.saveBatch(list); if(batch){ long endTime = System.currentTimeMillis(); System.out.println(&#34;函数执行时间：&#34; &#43; (endTime - startTime) &#43; &#34;ms&#34;); return CommonResult.success(); } return CommonResult.error(); }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-06-14 00:00:00 +0000 UTC'>六月 14, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;DT辰白</footer>
-  <a class="entry-link" aria-label="post link to Mybatis-Plus批量插入数据太慢，使用rewriteBatchedStatements属性优化，堪称神速！" href="http://localhost:1313/posts/juejin/mybatis-plus%E6%89%B9%E9%87%8F%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE%E5%A4%AA%E6%85%A2%E4%BD%BF%E7%94%A8rewritebatchedstatements%E5%B1%9E%E6%80%A7%E4%BC%98%E5%8C%96%E5%A0%AA%E7%A7%B0%E7%A5%9E%E9%80%9F/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

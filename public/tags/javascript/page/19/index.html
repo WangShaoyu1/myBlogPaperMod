@@ -129,6 +129,83 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">前端监控的搭建步骤，别再一头雾水了！
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>大家好，我是杨成功。
+上一篇介绍了，前端为什么要有监控系统？前端监控系统的意义何在？有小伙伴看完后留言想听些详细的实现。那么本篇我们就开始介绍前端监控如何实现。
+如果还不明白为什么，搞监控有什么用，建议先看上篇文章：为什么前端不能没有监控系统？
+在动手实现之前，首先脑子里要有一个整体脉络，明白搭建前端监控具体的流程步骤有哪些。因为前端监控系统实际上是一个完整的全栈项目，而并不仅仅是前端，甚至主要的实现都是围绕在 数据方面 的。
+当然了，还有一点说明，本篇的实现主要是面对普通业务，面向中小厂自研的方向。我看过大厂做的监控系统，非常复杂能力也非常强，动不动就是亿万级别的数据，最后整还到了大数据的方向。我只介绍如何实现主要功能，如何解决问题。
+前端监控的搭建流程分以下几个阶段：
+采集阶段：数据的采集 API 阶段：搭建 API 应用，接收采集到的数据 数据存储阶段：API 应用对接数据库，将采集到的数据存起来 查询统计阶段：对采集到的数据进行查询，统计，分析 可视化阶段：前端通过 API 查询统计数据，做可视化展示 报警阶段：API 对接报警通知服务，如钉钉 部署阶段：应用整体部署上线 下面我就梳理一下每个阶段的关键实现思路。
+采集阶段：要采集哪些数据？ 做监控的第一步就是采集数据，有了数据才是实现监控的前提。
+采集数据的意义就是记录用户在使用产品过程中的真实操作，结合上一篇我们的分析，真实操作产生的数据可以分两大类：异常数据 和 行为数据。
+我们先分析一下异常数据。项目中的异常总体可以分为两大类，一类是前端异常，一类是接口异常。
+前端异常 前端异常总结起来大概可以分为：
+JS 代码执行异常 Promise 异常 静态资源加载异常 console.error 异常 跨域异常 其中最重要的，也是我们遇到最多的，就是各种各样的 js 代码执行异常。比如类型错误，引用错误等等，这些异常大多是我们编码不严谨导致的，因此收集此类异常有利于我们改进编码质量。
+然后就是 Promise 异常，Promise 是 ES6 最重要的属性之一，考验我们的 js 异步编程能力，集中体现在接口请求上面，因此这两部分的异常捕获非常关键。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-05-22 00:00:00 +0000 UTC'>五月 22, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;杨成功</footer>
+  <a class="entry-link" aria-label="post link to 前端监控的搭建步骤，别再一头雾水了！" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E7%9B%91%E6%8E%A7%E7%9A%84%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4%E5%88%AB%E5%86%8D%E4%B8%80%E5%A4%B4%E9%9B%BE%E6%B0%B4%E4%BA%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">年终盘点：如何实现文件秒传？让用户体验开挂上传🚀
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 上传一个100MB的视频文件，只需要1~3秒，是真的吗？靠谱吗？
+此前，经常有用户反馈在正常网络下上传一个1GB的视频大约需要10分钟，感觉上传速度太慢。我们也只能回复：“其实这种情况和上传的网络以及文件大小有关”。
+在互联网高速发展的今天，文件上传已经成为网页应用中的一个基本功能。随着用户上传文件尺寸的不断增大、对质量清晰度的要求也越来越高。如何提高上传速度、优化用户体验成为了前端开发者必须面对的问题。
+在此之前，最常见的优化方案就是分块上传、断点续传，在用户因异常断开上传 或 刷新页面后，能继续在上一次的基础上继续上传。这的确能较好的提升用户上传体验，也是很有必要的优化手段，但无法实现文件秒传。
+什么是文件秒传？ 文件秒传指的是当用户上传文件时，如果服务器已存在完全相同的文件，那么无需用户再次上传，直接使用服务器上的文件副本，实现瞬间完成上传的过程。这种技术可以显著减少不必要的数据传输，节省时间和带宽资源。(服务器会根据有无hash的情况返回3种状态，下面会有详细说明)
+文件秒传的原理 文件秒传的核心原理是“文件指纹”。即文件唯一ID，通常是指文件的哈希值（如MD5、SHA-1等），它是通过哈希算法计算得出的一串固定长度的字符串，可以唯一标识文件的内容。即使文件非常庞大，其哈希值也能迅速计算出来，并且即便只是文件中的一个字节发生变化，所得到的哈希值也会完全不同。
+注📢：同一个资源下载链接在不同电脑下载🉐到的将是同一个资源，因此hash也会是同一个。
+当数据库视频等资源存量达到一定级别后能大幅提升上传体验，同时也能极大减少上传开销，避免重复视频上传，真正实现降本增效。
+秒传的三种状态处理说明 三种状态都需要将前端计算得出的文件hash传递给服务端查询获得
+状态一（notHash）：文件在服务器不存在
+此时正常分块上传，上传结束后返回上传结果
+状态二（hasHash）：文件在服务器存在
+根据文件hash查询到上传结果，直接返回（实现秒传）
+状态三（hashIng）：新文件第一次上传完，但后端任务未完成， 而该文件在前端又被上传。此时轮询后端接口，等待后端任务完成后直接拿到上传结果（该文件第二次或后续上传均已实现秒传）
+状态三中说的后端任务主要是：新文件上传完后，后端并不会直接拿前端的hash存到数据库，而是会自己在服务端根据上传完的视频生成hash（生成hash规则和前端一样）再和前端比对，以确保数据的准确性及唯一性。
+如何在前端页面实现文件秒传？ 关键技术点 文件分块hash计算 拿得到的hash到后端查询文件状态（确定文件是否在服务端存在） 根据服务端返回的上传状态，处理上传。 1. 计算文件hash 计算hash的方法封装，使用md5会有相对较大的概率出现重复hash，建议至少使用sha1的方式计算。
+js
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-01-07 00:00:00 +0000 UTC'>一月 7, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;tager</footer>
+  <a class="entry-link" aria-label="post link to 年终盘点：如何实现文件秒传？让用户体验开挂上传🚀" href="http://localhost:1313/posts/juejin/%E5%B9%B4%E7%BB%88%E7%9B%98%E7%82%B9%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E7%A7%92%E4%BC%A0%E8%AE%A9%E7%94%A8%E6%88%B7%E4%BD%93%E9%AA%8C%E5%BC%80%E6%8C%82%E4%B8%8A%E4%BC%A0/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Vue3.2新增指令v-memo用法详解，提高性能的又一利器！！！
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 哈喽,大家好 我是xy👨🏻‍💻。不少同学可能没有发现, Vue3.2 新增了一个指令 v-memo, 引入这个指令的目的是帮助大家更好的为我们的应用做性能优化💪
+v-memo 官方定义 「📚 期望的绑定值类型：」any[]
+「📚 详细信息」
+缓存一个模板的子树。在元素和组件上都可以使用。为了实现缓存，该指令需要传入一个固定长度的依赖值数组进行比较。如果数组里的每个值都与最后一次的渲染相同，那么整个子树的更新将被跳过。举例来说：
+erlang
+代码解读
+复制代码
+&lt;div v-memo=&#34;[valueA, valueB]&#34;&gt; ... &lt;/div&gt;
+当组件重新渲染，如果 valueA 和 valueB 都保持不变，这个 &lt;div&gt; 及其子项的所有更新都将被跳过。实际上，甚至虚拟 DOM 的 vnode 创建也将被跳过，因为缓存的子树副本可以被重新使用。
+正确指定缓存数组很重要，否则应该生效的更新可能被跳过。v-memo 传入空依赖数组 (v-memo=&#34;[]&#34;) 将与 v-once 效果相同。
+我对 v-memo 的理解 简单理解：v-memo 接受一个依赖的数组，依赖的数组变化，v-memo 所对应的 DOM 包括子集将会重新渲染，反过来说，如果依赖的数组不变，即使整组件重新渲染了，v-memo 所对应的 DOM 包括子集更新都将被跳过
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-09-20 00:00:00 +0000 UTC'>九月 20, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;前端开发爱好者</footer>
+  <a class="entry-link" aria-label="post link to Vue3.2新增指令v-memo用法详解，提高性能的又一利器！！！" href="http://localhost:1313/posts/juejin/vue3.2%E6%96%B0%E5%A2%9E%E6%8C%87%E4%BB%A4v-memo%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3%E6%8F%90%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E5%8F%88%E4%B8%80%E5%88%A9%E5%99%A8/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Uiverse.io：打造超炫酷界面的秘密武器！！！
     </h2>
   </header>
@@ -171,82 +248,12 @@ requestIdleCallback 只会在浏览器空闲的时候去调用，这意味着它
   <footer class="entry-footer"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;8 分钟&nbsp;·&nbsp;JinSo</footer>
   <a class="entry-link" aria-label="post link to 解析ReactScheduler原理，Solid竟也在使用！" href="http://localhost:1313/posts/juejin/%E8%A7%A3%E6%9E%90reactscheduler%E5%8E%9F%E7%90%86solid%E7%AB%9F%E4%B9%9F%E5%9C%A8%E4%BD%BF%E7%94%A8/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">「用前端重返童年🥤」为黑神话悟空定制红白机版游戏开始动画
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 大家好，我是寒草😈，一只草系码猿🐒。间歇性热血🔥，持续性沙雕🌟
-如果喜欢我的文章，可以关注➕点赞，与我一同成长吧～
-前言 — 背景介绍 国产 3A 游戏情怀 了解我的朋友都知道，我是一个很喜欢玩游戏的人，我甚至还六一儿童节发表过儿童节杂谈游戏记忆——《生化危机5》，小时候玩的游戏也不少，从插卡游戏机到ps3，ps4也都有经历过。
-我们这些玩着国外3A游戏长大的孩子一直有一个小小的愿望（其实是大大的梦想），就是玩到属于我们的国产3A游戏，并且不仅仅是由国人开发，国人制作，而是包含着中国的文化底蕴，我们有着五千年深厚的历史文化，我们的游戏应该做到文化输出，让世界的游戏玩家看到中国的游戏，中国的文化，中国的魅力。
-大家会不会觉得上面的话很熟悉，没错，国产动画同理，小时候看着日漫美漫长大的孩子们一直也是在期待着国产动画崛起，突然那一年，大圣归来，身穿虎虎生风黄金甲，身披炙热烈焰火红袍，手抡天河定底神珍铁。为国产动漫电影打开了新的道路，但是后面的大圣归来游戏不尽如人意，然而去年游戏科学出了黑神话悟空的预告，今年又出了虚幻5引擎的新版预告。看得我热血沸腾，上次是大圣，这是又是大圣，悟空要开辟我热爱的游戏产业的国产3A新道路了。「此处因为寒草🌿 太过热血沸腾，于是有了这篇文章，和这几百行代码」
-玩游戏的孩子长大了，成为了工程师 时间回到现在，没错，寒草看完演示视频久久不能平静的现在，现在的寒草🌿 褪去稚气，成为了一个在前端行业摸爬滚打一年的工程师，今天中午和朋友去吃好吃的（没错，周末一定要有好吃的啊～），和他我说了很多黑神话悟空的消息，我越说越激动，心想，那我用我的技术，来表达我那一份对国产游戏的期待与对游戏对前端行业的热爱吧。
-为大家带来有趣的前端内容，用前端去做更好玩的事情，一直是我的初心。一路以来，感谢有你们☀️
-正篇 — 用前端重返童年 我之前没有用过canvas，也是一点一点写的，代码质量不要吐槽哈～因为我知道这一次代码质量不行🌟
-Hancao present to Game Science in 2021. 既然要出的是一个有情怀的前端作品，我也是花了很长时间在设计上，也试了很多方法去体现我的创意，但是效果并不是很好，边coding边摸索，最终就出来了本次作品的设计，正如我的标题所说，梦回童年的前端作品，效仿的便是老一代插卡游戏机中游戏的开机动画，不知道现在从事前端行业的伙伴年纪如何，但是像我这样刚入行一年的新人都见过，大家应该，八成，或许，大概，也都见过吧…
-下面让我们一起见证，寒草用 前端技术 将 黑神话悟空 与 童年游戏经典开始动画结合的作品吧
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-08-23 00:00:00 +0000 UTC'>八月 23, 2021</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;寒草</footer>
-  <a class="entry-link" aria-label="post link to 「用前端重返童年🥤」为黑神话悟空定制红白机版游戏开始动画" href="http://localhost:1313/posts/juejin/%E7%94%A8%E5%89%8D%E7%AB%AF%E9%87%8D%E8%BF%94%E7%AB%A5%E5%B9%B4%E4%B8%BA%E9%BB%91%E7%A5%9E%E8%AF%9D%E6%82%9F%E7%A9%BA%E5%AE%9A%E5%88%B6%E7%BA%A2%E7%99%BD%E6%9C%BA%E7%89%88%E6%B8%B8%E6%88%8F%E5%BC%80%E5%A7%8B%E5%8A%A8%E7%94%BB/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">卧槽，牛逼！vue3的组件竟然还能“暂停”渲染！
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 有的时候我们想要从服务端拿到数据后再去渲染一个组件，为了实现这个效果我们目前有几种实现方式：
-将数据请求放到父组件去做，并且使用v-if控制拿到子组件后才去渲染子组件，然后将数据从父组件通过props传给子组件。
-在子组件的onMounted中请求数据，并且使用v-if在子组件的template最外层进行控制，只有拿到数据后才渲染子组件中的内容。
-上面这两种方案都有各自的缺点，不够完美。最理想的方案是将从服务端获取数据的逻辑放在子组件中，并且在获取数据的期间让子组件“暂停”一下，先不去渲染，等到数据请求完成后再第一次去渲染子组件。
-加入欧阳的高质量vue源码交流群、欧阳平时写文章参考的多本vue源码电子书
-完美的解决方案 第一种方法的缺点是：子组件虽然拿到数据后才开始渲染，但是数据请求的逻辑却放到了父组件上面，我们期望所有的逻辑都封装在子组件内部。
-第二种方法的缺点是：实际上是初始化时就渲染了一次子组件，此时我们还没从服务端拿到数据。所以不得不使用v-if在template的最外层控制，此时不渲染子组件中的内容。当从服务端拿到数据后再第二次渲染子组件，此时才将子组件中的内容渲染到页面上。这种方法明显子组件渲染了2次。
-那么有没有一种完美的方案，从服务端获取数据的逻辑放在子组件中，并且在获取数据的期间让子组件“暂停”一下，先不去渲染，等到数据请求完成后再第一次去渲染子组件呢？
-答案是：当然可以，vue3的Suspense组件&#43;在setup顶层使用await获取数据就能完美的实现这个需求！！！
-两个不完美的例子 为了让你更直观的看到完美方案的牛逼，我们先来看看前面讲的两个不够完美的例子。
-父组件中请求数据的例子 下面这个是父组件中请求数据的例子，父组件的代码如下：
-javascript
-代码解读
-复制代码
-&lt;template&gt; &lt;ChildDemo v-if=&#34;user&#34; :user=&#34;user&#34; /&gt; &lt;div v-else&gt; &lt;p&gt;loading...&lt;/p&gt; &lt;/div&gt; &lt;/template&gt; &lt;script setup lang=&#34;ts&#34;&gt; import { ref, onMounted } from &#34;vue&#34;; import ChildDemo from &#34;./Child.vue&#34;; const user = ref(null); async function fetchUser() { return new Promise((resolve) =&gt; { setTimeout(() =&gt; { resolve({ name: &#34;张三&#34;, phone: &#34;13800138000&#34;, }); }, 2000); }); } onMounted(async () =&gt; { user.value = await fetchUser(); }); &lt;/script&gt;
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-08-18 00:00:00 +0000 UTC'>八月 18, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端欧阳</footer>
-  <a class="entry-link" aria-label="post link to 卧槽，牛逼！vue3的组件竟然还能“暂停”渲染！" href="http://localhost:1313/posts/juejin/%E5%8D%A7%E6%A7%BD%E7%89%9B%E9%80%BCvue3%E7%9A%84%E7%BB%84%E4%BB%B6%E7%AB%9F%E7%84%B6%E8%BF%98%E8%83%BD%E6%9A%82%E5%81%9C%E6%B8%B2%E6%9F%93/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Javascript如何全面接管xhr请求
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>小知识，大挑战！本文正在参与「程序员必备小知识」创作活动
-本文已参与 「掘力星计划」 ，赢取创作大礼包，挑战创作激励金
-背景及思考 为什么需要接管xhr请求？这就需要我们了解它的一些应用场景。我们如何统一项目中xhr请求的行为，监控请求的整个生命周期、如何自定义拦截请求并返回mock数据、如何制定完全可控的控制台（如vconsole那样） 、如何监控所有api请求的健康状态 等等!
-有一种最常见的情况。比如项目中发起请求的方式不一，有的在js sdk或私有npm库中发起、有的在引入了第三方js cdn中发起、有的由项目中统一的ajax、axios发起。如果我们需要对项目中所有请求增加某些统一的行为该如何处理了？
-原生XMLHttpRequest 回顾 使用xhr发起请求 注：以下只针对xhr的处理，不考虑使用ActiveXObject来处理兼容性，不考虑使用fetch请求。
-javascript
-代码解读
-复制代码
-// 创建 XMLHttpRequest 对象 var xhr = new XMLHttpRequest (); // 建立连接 xhr.open(method, url, async, username, password); // 在open后，send前 可对报文进行处理,如设置请求头 xhr.setRequestHeader(&#39;customId&#39;, 666) // 对于异步请求，绑定响应状态事件监听函数 xhr.onreadystatechange = function () { //监听readyState状态、http状态码 if (xhr.readyState == 4 &amp;&amp; xhr.status == 200) { console.log(xhr.responseText); // 接收数据 } } // 使用 send() 方法发送请求 xhr.send(body); //对于同步请求，可直接接收数据 console.log(xhr.responseText); //中止请求 xhr.onreadystatechange = function () {}; //清理事件响应函数(IE、火狐兼容性处理) xhr.abort();
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-10-17 00:00:00 +0000 UTC'>十月 17, 2021</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;tager</footer>
-  <a class="entry-link" aria-label="post link to Javascript如何全面接管xhr请求" href="http://localhost:1313/posts/juejin/javascript%E5%A6%82%E4%BD%95%E5%85%A8%E9%9D%A2%E6%8E%A5%E7%AE%A1xhr%E8%AF%B7%E6%B1%82/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/javascript/page/18/">
-      «&nbsp;上一页&nbsp;18/26
+      «&nbsp;上一页&nbsp;18/27
     </a>
-    <a class="next" href="http://localhost:1313/tags/javascript/page/20/">下一页&nbsp;20/26&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/javascript/page/20/">下一页&nbsp;20/27&nbsp;»
     </a>
   </nav>
 </footer>

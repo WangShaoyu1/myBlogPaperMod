@@ -129,121 +129,130 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">强话一波原型吧，慢下来学明白，可能是反卷的唯一方法
+    <h2 class="entry-hint-parent">解析ReactScheduler原理，Solid竟也在使用！
     </h2>
   </header>
   <div class="entry-content">
-    <p>引言 我深知卷不赢众多大佬，一方面我足够平庸，另一方面我仅仅想把技术当乐趣。出于对美好生活的渴望和理解与如何能不卷还不被淘汰的现实着想，我要进行深刻的自省，起初分析应该是自己学的不够快，但欲速又不达，后来经过反复思考，我得出一个观点：
-我快不起来，是不是因为我慢不下去啊
-这么一想，我确实有种学啥都能学会，但不扎实还忘的快的毛病。
-而踏踏实实，慢慢悠悠的学，虽然看起来“不紧不慢”，但确实学的透，学的稳，忘的慢，相比之下实际上是快的。
-快就是慢，慢就是快
-em~~~ 我记得有句话
-高端的美味往往由最普通的食材造就
-那么“最普通的食材”首选就应该是红宝书了。
-理解对象 书中通过七个点来解析对象：
-属性的类型 定义多个属性 读取属性的特性 合并对象 对象标识及相等判定 增强的对象语法 对象解构 值得强调的是1,2,3是一组并层层推进的
-那我们挑干的说说，如果有容易忽视的点就强调一下
-【1】属性的类型 属性是啥？
-就是对象的属性，可以被对象访问的数据。（比如let obj = {a:1}a就是属性）。
-属性存在一个如影随形的描述符对象，可以通过调用指定函数获得它（【3】读取属性的特性）。
-属性的两种类型 数据属性：
-包含一个保存数据值的位置
-值从这个位置读取，也会写入这个位置，也就是下面的value特性
-有4个内部特性描述：
-lua
+    <p>对于 React Scheduler，它通过将任务切片并异步执行，避免了阻塞浏览器的主线程。
+很多人其实都看到过类似的文章了，甚至说去手写调度器，都写的很不错，所以本文将从一个新的角度探讨 React Scheduler，揭示它是如何利用几个简单的 API 实现这一壮举的。
+React Scheduler 解析 首先，让我们回顾一下浏览器的任务类型：宏任务和微任务，以及它们是如何在事件循环中执行的。
+图片来源：浏览器与Node事件循环机制解析_浏览器与node 的事件循环-CSDN博客
+在浏览器的一次事件循环中，包括宏任务、微任务和页面渲染三个部分。如果我们假设屏幕的刷新率是 60FPS，那么大约每 16ms 就会执行一次事件循环。
+这 16ms 内我们还要留些事件给浏览器处理页面渲染。而剩余的时间我们就需要尽可能的充分利用。
+那么我们怎么知道还剩多少空余时间呢，可以使用 requestIdleCallback 方法，它会插入一个函数，并在浏览器空闲的时候执行，同时传入一个参数包含剩下的空余时间。
+但是实际上并没有去使用 requestIdleCallback 去处理，为什么没有使用 requestIdleCallback 去实现呢？
+兼容性问题
+虽然大部分主流浏览器都支持该方法，但是 Safari 等部分浏览器却仍不支持。 requestIdleCallback - Web API | MDN
+不确定性
+requestIdleCallback 只会在浏览器空闲的时候去调用，这意味着它的执行有很大的不确定性，有可能会有较高的延迟。这对于一些高响应的任务，是没办法处理的。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;8 分钟&nbsp;·&nbsp;JinSo</footer>
+  <a class="entry-link" aria-label="post link to 解析ReactScheduler原理，Solid竟也在使用！" href="http://localhost:1313/posts/juejin/%E8%A7%A3%E6%9E%90reactscheduler%E5%8E%9F%E7%90%86solid%E7%AB%9F%E4%B9%9F%E5%9C%A8%E4%BD%BF%E7%94%A8/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">39岁前端程序员的年终总结
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>好多年都没写过个人年终总结（非公司要求的工作年终总结）了。以前会在 QQ 空间写，或年少轻狂，或逗逼搞怪。现在看起来都觉得挺有意思的。
+不写的原因，是因为有朋友说计划是赶不上变化，不如顺其自然。于是，我也跟着不再做任何的总结、计划了。
+这样一放就好多年了，没想到突然间就到了 39 岁。如果以自然年来算，明天我就 40 了。从 3 字头跨越到 4 字头，总觉得还是有必要写点什么的。
+关于健康 意料之外，情理之中。我的体检报告出现了 6-7 项异常指标。
+其中的“肾囊肿”是最严重的了，需要每隔 3-6 个月就去体检。也是因为这个，我去买保险的时候，保险公司反而会犹豫。
+肾囊肿很奇怪的病，不知道如何预防，也没法医治，只能等待其长大，然后再做刺穿手术。医生只在病例上留下了“注意饮食，注意休息”8个大字，除此之外没有任何有建设性的建议。朋友说，这就像你得了水痘，不过这水痘长在肾上。我才略有释怀。
+即便如此，这应该也是衰老的一种表现吧。看来，还是很有必要做好养生保健了。
+当然，今年在健康上，也做了很大的改变的。年中参加了公司举办的 21 天的跑步比赛，每天跑步 3 公里。我从刚开始的半跑半走，到最后一周 2 次完整 5 公里，21天坚持了下来。
+为什么是 21 天？因为科学验证 21 天能养成一个好习惯。
+那最后我有没有养成天天跑步的习惯？并没有。哈哈。
+不过我的确养成了跑步的习惯。后面休息一段时间之后，我开始了每周 2 次跑步时间，也一直坚持到年末。
+全年总跑步数 208 &#43; 30（11 月后未在 Keep 统计）
+大家可以在图上看到我的平均配速其实才 7:53，除了我开始半跑半走的情况，后续我的速度也是不快的。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-12-31 00:00:00 +0000 UTC'>十二月 31, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;陈佬昔的编程人生</footer>
+  <a class="entry-link" aria-label="post link to 39岁前端程序员的年终总结" href="http://localhost:1313/posts/juejin/39%E5%B2%81%E5%89%8D%E7%AB%AF%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">《黑神话：悟空》的爆火利好数字孪生
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 大家好，我是日拱一卒的攻城师不浪，专注可视化、数字孪生、前端提效、nodejs、AI学习、GIS等学习沉淀，这是2024年输出的第31/100篇文章。
+想必昨天大家的朋友圈都已经被《黑神话：悟空》给刷屏了吧，铺天盖地的都是请假玩游戏的圈友。
+截止发文时间，据国游畅销榜昨晚统计，《黑神话：悟空》在 Steam 上已售出超过 300 万份，加上 Wegame、Epic 和 PS 平台，目前总销量超过 450 万份，总销售额超过 15 亿元。
+为什么会这么爆火？ 在我看来，这款游戏爆火的原因真的是可以预见的。
+其实早在4年前，游戏团队就已经在预热了，当时发布了《悟空》的首个预告片，视觉冲击大为震撼，甚至很多人都认为国人搞不出来这么高级的游戏。
+为什么人们对《悟空》创始团队如此的不信任，其实也不无道理。
+《悟空》属于3A级游戏大作，这么多年来，我们自己从来没有产出过这种级别的游戏大作，大家还依然都游离在西方国家的《荒野大镖客2》、《使命召唤》、《刺客信条》等游戏的迷离艳羡之中。
+3A级游戏 3A（AAA）级大作游戏通常指的是那些由大型开发团队制作、拥有高预算、并且在技术、内容、市场推广上都有着极高标准的游戏。这些游戏通常以高质量的画面、庞大的世界观、丰富的玩法以及出色的叙事而闻名。
+所以，当《黑神话：悟空》发布首日，国产玩家都迫不及待的想体验一下，当初的创始团队画的饼，到底香不香？！
+发布当天，在各大自媒体平台上，给作者一种感觉，几乎1/3的主播都在玩《悟空》，甚至很多之前不是游戏主播的，也都在玩这款游戏，你可以想象它的受欢迎程度之高。
+可以看到这款游戏的视觉效果与当初宣传的如出一辙，甚至有过之而无不及，它的场景逼真度，打斗特效，人物效果都出神入化，甚至有种像在看电影一样的感觉。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-08-21 00:00:00 +0000 UTC'>八月 21, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;攻城师不浪</footer>
+  <a class="entry-link" aria-label="post link to 《黑神话：悟空》的爆火利好数字孪生" href="http://localhost:1313/posts/juejin/%E9%BB%91%E7%A5%9E%E8%AF%9D%E6%82%9F%E7%A9%BA%E7%9A%84%E7%88%86%E7%81%AB%E5%88%A9%E5%A5%BD%E6%95%B0%E5%AD%97%E5%AD%AA%E7%94%9F/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">「用前端重返童年🥤」为黑神话悟空定制红白机版游戏开始动画
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 大家好，我是寒草😈，一只草系码猿🐒。间歇性热血🔥，持续性沙雕🌟
+如果喜欢我的文章，可以关注➕点赞，与我一同成长吧～
+前言 — 背景介绍 国产 3A 游戏情怀 了解我的朋友都知道，我是一个很喜欢玩游戏的人，我甚至还六一儿童节发表过儿童节杂谈游戏记忆——《生化危机5》，小时候玩的游戏也不少，从插卡游戏机到ps3，ps4也都有经历过。
+我们这些玩着国外3A游戏长大的孩子一直有一个小小的愿望（其实是大大的梦想），就是玩到属于我们的国产3A游戏，并且不仅仅是由国人开发，国人制作，而是包含着中国的文化底蕴，我们有着五千年深厚的历史文化，我们的游戏应该做到文化输出，让世界的游戏玩家看到中国的游戏，中国的文化，中国的魅力。
+大家会不会觉得上面的话很熟悉，没错，国产动画同理，小时候看着日漫美漫长大的孩子们一直也是在期待着国产动画崛起，突然那一年，大圣归来，身穿虎虎生风黄金甲，身披炙热烈焰火红袍，手抡天河定底神珍铁。为国产动漫电影打开了新的道路，但是后面的大圣归来游戏不尽如人意，然而去年游戏科学出了黑神话悟空的预告，今年又出了虚幻5引擎的新版预告。看得我热血沸腾，上次是大圣，这是又是大圣，悟空要开辟我热爱的游戏产业的国产3A新道路了。「此处因为寒草🌿 太过热血沸腾，于是有了这篇文章，和这几百行代码」
+玩游戏的孩子长大了，成为了工程师 时间回到现在，没错，寒草看完演示视频久久不能平静的现在，现在的寒草🌿 褪去稚气，成为了一个在前端行业摸爬滚打一年的工程师，今天中午和朋友去吃好吃的（没错，周末一定要有好吃的啊～），和他我说了很多黑神话悟空的消息，我越说越激动，心想，那我用我的技术，来表达我那一份对国产游戏的期待与对游戏对前端行业的热爱吧。
+为大家带来有趣的前端内容，用前端去做更好玩的事情，一直是我的初心。一路以来，感谢有你们☀️
+正篇 — 用前端重返童年 我之前没有用过canvas，也是一点一点写的，代码质量不要吐槽哈～因为我知道这一次代码质量不行🌟
+Hancao present to Game Science in 2021. 既然要出的是一个有情怀的前端作品，我也是花了很长时间在设计上，也试了很多方法去体现我的创意，但是效果并不是很好，边coding边摸索，最终就出来了本次作品的设计，正如我的标题所说，梦回童年的前端作品，效仿的便是老一代插卡游戏机中游戏的开机动画，不知道现在从事前端行业的伙伴年纪如何，但是像我这样刚入行一年的新人都见过，大家应该，八成，或许，大概，也都见过吧…
+下面让我们一起见证，寒草用 前端技术 将 黑神话悟空 与 童年游戏经典开始动画结合的作品吧
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-08-23 00:00:00 +0000 UTC'>八月 23, 2021</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;寒草</footer>
+  <a class="entry-link" aria-label="post link to 「用前端重返童年🥤」为黑神话悟空定制红白机版游戏开始动画" href="http://localhost:1313/posts/juejin/%E7%94%A8%E5%89%8D%E7%AB%AF%E9%87%8D%E8%BF%94%E7%AB%A5%E5%B9%B4%E4%B8%BA%E9%BB%91%E7%A5%9E%E8%AF%9D%E6%82%9F%E7%A9%BA%E5%AE%9A%E5%88%B6%E7%BA%A2%E7%99%BD%E6%9C%BA%E7%89%88%E6%B8%B8%E6%88%8F%E5%BC%80%E5%A7%8B%E5%8A%A8%E7%94%BB/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">卧槽，牛逼！vue3的组件竟然还能“暂停”渲染！
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 有的时候我们想要从服务端拿到数据后再去渲染一个组件，为了实现这个效果我们目前有几种实现方式：
+将数据请求放到父组件去做，并且使用v-if控制拿到子组件后才去渲染子组件，然后将数据从父组件通过props传给子组件。
+在子组件的onMounted中请求数据，并且使用v-if在子组件的template最外层进行控制，只有拿到数据后才渲染子组件中的内容。
+上面这两种方案都有各自的缺点，不够完美。最理想的方案是将从服务端获取数据的逻辑放在子组件中，并且在获取数据的期间让子组件“暂停”一下，先不去渲染，等到数据请求完成后再第一次去渲染子组件。
+加入欧阳的高质量vue源码交流群、欧阳平时写文章参考的多本vue源码电子书
+完美的解决方案 第一种方法的缺点是：子组件虽然拿到数据后才开始渲染，但是数据请求的逻辑却放到了父组件上面，我们期望所有的逻辑都封装在子组件内部。
+第二种方法的缺点是：实际上是初始化时就渲染了一次子组件，此时我们还没从服务端拿到数据。所以不得不使用v-if在template的最外层控制，此时不渲染子组件中的内容。当从服务端拿到数据后再第二次渲染子组件，此时才将子组件中的内容渲染到页面上。这种方法明显子组件渲染了2次。
+那么有没有一种完美的方案，从服务端获取数据的逻辑放在子组件中，并且在获取数据的期间让子组件“暂停”一下，先不去渲染，等到数据请求完成后再第一次去渲染子组件呢？
+答案是：当然可以，vue3的Suspense组件&#43;在setup顶层使用await获取数据就能完美的实现这个需求！！！
+两个不完美的例子 为了让你更直观的看到完美方案的牛逼，我们先来看看前面讲的两个不够完美的例子。
+父组件中请求数据的例子 下面这个是父组件中请求数据的例子，父组件的代码如下：
+javascript
 代码解读
 复制代码
-1. [[Configurable]]：可配置 2. [[Enumerable]]：可枚举 3. [[Writable]]：可写 4. [[Value]]：值
+&lt;template&gt; &lt;ChildDemo v-if=&#34;user&#34; :user=&#34;user&#34; /&gt; &lt;div v-else&gt; &lt;p&gt;loading...&lt;/p&gt; &lt;/div&gt; &lt;/template&gt; &lt;script setup lang=&#34;ts&#34;&gt; import { ref, onMounted } from &#34;vue&#34;; import ChildDemo from &#34;./Child.vue&#34;; const user = ref(null); async function fetchUser() { return new Promise((resolve) =&gt; { setTimeout(() =&gt; { resolve({ name: &#34;张三&#34;, phone: &#34;13800138000&#34;, }); }, 2000); }); } onMounted(async () =&gt; { user.value = await fetchUser(); }); &lt;/script&gt;
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-03-08 00:00:00 +0000 UTC'>三月 8, 2022</span>&nbsp;·&nbsp;8 分钟&nbsp;·&nbsp;闲D阿强</footer>
-  <a class="entry-link" aria-label="post link to 强话一波原型吧，慢下来学明白，可能是反卷的唯一方法" href="http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2%E5%8E%9F%E5%9E%8B%E5%90%A7%E6%85%A2%E4%B8%8B%E6%9D%A5%E5%AD%A6%E6%98%8E%E7%99%BD%E5%8F%AF%E8%83%BD%E6%98%AF%E5%8F%8D%E5%8D%B7%E7%9A%84%E5%94%AF%E4%B8%80%E6%96%B9%E6%B3%95/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">ChromeAI：颠覆网页开发的全新黑科技
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Chrome AI 长啥样 废话不多说，让我们直接来看一个示例：
-js
-代码解读
-复制代码
-async function askAi(question) { if (!question) return &#34;你倒是输入问题啊&#34; // 检查模型是否已下载（模型只需下载一次，就可以供所有网站使用） const canCreate = await window.ai.canCreateTextSession() if (canCreate !== &#34;no&#34;) { // 创建一个会话进程 const session = await window.ai.createTextSession() // 向 AI 提问 const result = await session.prompt(question) // 销毁会话 session.destroy() return result }	return &#34;模型都还没下载好，你问个蛋蛋&#34; } askAi(&#34;玩梗来说，世界上最好的编程语言是啥&#34;).then(console.log) //打印： **Python 语言：程序员的快乐源泉！**
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-06-27 00:00:00 +0000 UTC'>六月 27, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;小明大白菜</footer>
-  <a class="entry-link" aria-label="post link to ChromeAI：颠覆网页开发的全新黑科技" href="http://localhost:1313/posts/juejin/chromeai%E9%A2%A0%E8%A6%86%E7%BD%91%E9%A1%B5%E5%BC%80%E5%8F%91%E7%9A%84%E5%85%A8%E6%96%B0%E9%BB%91%E7%A7%91%E6%8A%80/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">我帮一朋友重构了点代码，他直呼牛批，但基操勿六
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>一起养成写作习惯！这是我参与「掘金日新计划 · 4 月更文挑战」的第1天，点击查看活动详情。
-故事的后续
-首先事情是这样的 我一朋友，用 react 开发前端时间不长，一些简单的功能和页面没啥大问题。前不久React 18 发布了，他就用 create-react-app 创建了一个新项目，合计练练手，但谁成想遇到了种种问题，让我帮看看，于是就有了接下来要聊的一些看似简单，但是对新手却很绊脚的小问题。
-react都 18 了，但为啥还是 ReactDom.render？ create-react-app新创建的项目，还是用的ReactDom.render，如下：
-ts
-代码解读
-复制代码
-import React from &#39;react&#39; import ReactDOM from &#39;react-dom&#39; //《----------react 17使用的ReactDOM import App from &#39;./App&#39; import &#39;./index.css&#39; ReactDOM.render( &lt;React.StrictMode&gt; &lt;App /&gt; &lt;/React.StrictMode&gt;, document.getElementById(&#39;root&#39;) )
-语义大体上：ReactDOM 用 render 函数，把 JSX Elements 组件，渲染到 id 为’root‘的 dom 节点上。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-04-12 00:00:00 +0000 UTC'>四月 12, 2022</span>&nbsp;·&nbsp;8 分钟&nbsp;·&nbsp;闲D阿强</footer>
-  <a class="entry-link" aria-label="post link to 我帮一朋友重构了点代码，他直呼牛批，但基操勿六" href="http://localhost:1313/posts/juejin/%E6%88%91%E5%B8%AE%E4%B8%80%E6%9C%8B%E5%8F%8B%E9%87%8D%E6%9E%84%E4%BA%86%E7%82%B9%E4%BB%A3%E7%A0%81%E4%BB%96%E7%9B%B4%E5%91%BC%E7%89%9B%E6%89%B9%E4%BD%86%E5%9F%BA%E6%93%8D%E5%8B%BF%E5%85%AD/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">强话一波Taro3，用React开发小程序的首选框架
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>持续创作，加速成长！这是我参与「掘金日新计划 · 6 月更文挑战」的第1天，点击查看活动详情
-刚做好H5就要求做成小程序，咋办 首先你根本预料不到，需求会什么时候变，怎么变，比如这次，我刚用React开发完一个H5网页，就被要求做成小程序，这分明是两个很像但不一样的东西，不是说转成就能转成的，而且deadline越来越近，彻底从头用微信小程序原生写或用Vue写法的Uniapp写都不现实了，就算写的完，bug修复也够喝上一壶，所以我得想个办法，尽可能复用上刚用React写完的项目，这样才能让开发时间尽可能的快和稳。
-技术框架有不少，我需要找出符合我的 我先是上网找了些小程序框架的横向测评文章看了看，以“可以用React写小程序的”为标准，我选出了三个，分别是：
-taro3 remax rax 能不能痛快的用react开发，没什么枷锁限制 然后我又有了一个顾虑，那便是能不能痛快的使用react开发，没有条条框框束缚限制，于是我进行了一些相关调研，发现这些转换成小程序的框架，以实现方案划分，可以分为两类：
-编译时 运行时 怎么理解这些“时”呢？首先对于一个不是很了解并且暂时不需要特别了解实现原理的我来讲，我要确定我的目标，那便是：能够判断出哪个能更好的用react开发小程序，就够了，那么以此为指导思想，对这“二时”进行了必要的学习了解，得出初步结论：
-编译时可以简单理解为：开发完项目，直接编译成小程序，这样可以使用react语法开发，但是会有一定程度的限制，毕竟要通过babel转一下。
-优点：性能好。 缺点：react写法上会有一些限制，毕竟react编译成微信小程序，百分之百能转明白的编译器目前好像没有。 运行时简单理解为：根据开发完的项目，生成出一些数据，然后提供给一个比较重的运行时 JS 代码进行渲染。
-优点：react使用上几乎没有限制。 缺点：性能会有问题，毕竟运行的时候通过js渲染上去的，会好性能，（不过taro3提供了CustomWrapper组件来一定程度的优化）。 那么这么一看，运行时方案更适合我，因为我就想要一个“痛快开发react”的框架，毕竟项目不算大，性能要求不高。那么经过筛选，入围的都有：
-taro3：taro3是运行时方案，1&amp;2是编译时方案。 出品方：京东-凹凸实验室。 remax：运行时方案。 出品方：阿里。 rax：运行时方案和编译时方案，这个厉害啊。 出品方：阿里，自称内部应用最广泛的。 首先这三者基本都符合运行时方案，然后出品方还都不错，起初我以为rax是运行时方案，当我做完项目才知道可以选择编译时方案，所以就没考虑，是我草率了，然后我就在taro3和remax之间进行了比较。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-05-28 00:00:00 +0000 UTC'>五月 28, 2022</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;闲D阿强</footer>
-  <a class="entry-link" aria-label="post link to 强话一波Taro3，用React开发小程序的首选框架" href="http://localhost:1313/posts/juejin/%E5%BC%BA%E8%AF%9D%E4%B8%80%E6%B3%A2taro3%E7%94%A8react%E5%BC%80%E5%8F%91%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%9A%84%E9%A6%96%E9%80%89%E6%A1%86%E6%9E%B6/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">最新编程语言排行榜，C&#43;&#43;和Go成为新王？
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>大家好，我是程序员鱼皮。2024 年 6 月最新的 TIOBE 编程语言排行榜已经发布，如图：
-注意，TIOBE 编程语言排行榜是基于 全球 工程师的数量、课程、热门网站、第三方供应商综合计算出来的，只是一个编程语言流行度和趋势的反映，并不代表语言之间的优劣，也不能反映国内的就业情况。
-下面给大家本次排行几个重点的变化。
-24 年 6 月编程语言排行变化 1、Python 依然稳居第一 很早之前，Python 就已经稳坐排行榜第一的王位，这次更是上升了 2.93% 的比例。什么概念？本月上升的评分都比 Go 语言的总评分高！
-这是可预见的，Python 凭借其简单易学的语法和广泛的应用领域，如数据科学、机器学习、网络开发、爬虫等，吸引了大量开发者。近年来 AI 的爆发也再次让 Python 起飞~
-对于把编程语言当做兴趣学习的朋友，Python 是一个不错的选择。但考虑到国内就业的话，Python 做 web 开发的岗位比 Java 少了很多，更适合大数据 / 算法 / 产品方向的朋友学习。
-2、C&#43;&#43; 历史上首次超越 C 语言 这次排行最大的变化，就是 C&#43;&#43; 首次超越了 C 语言，跃居第二。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-06-20 00:00:00 +0000 UTC'>六月 20, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员鱼皮</footer>
-  <a class="entry-link" aria-label="post link to 最新编程语言排行榜，C&#43;&#43;和Go成为新王？" href="http://localhost:1313/posts/juejin/%E6%9C%80%E6%96%B0%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E6%8E%92%E8%A1%8C%E6%A6%9Cc&#43;&#43;%E5%92%8Cgo%E6%88%90%E4%B8%BA%E6%96%B0%E7%8E%8B/"></a>
+  <footer class="entry-footer"><span title='2024-08-18 00:00:00 +0000 UTC'>八月 18, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端欧阳</footer>
+  <a class="entry-link" aria-label="post link to 卧槽，牛逼！vue3的组件竟然还能“暂停”渲染！" href="http://localhost:1313/posts/juejin/%E5%8D%A7%E6%A7%BD%E7%89%9B%E9%80%BCvue3%E7%9A%84%E7%BB%84%E4%BB%B6%E7%AB%9F%E7%84%B6%E8%BF%98%E8%83%BD%E6%9A%82%E5%81%9C%E6%B8%B2%E6%9F%93/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/59/">
-      «&nbsp;上一页&nbsp;59/74
+      «&nbsp;上一页&nbsp;59/77
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/61/">下一页&nbsp;61/74&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/page/61/">下一页&nbsp;61/77&nbsp;»
     </a>
   </nav>
 </footer>

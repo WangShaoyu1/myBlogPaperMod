@@ -129,6 +129,61 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">牛逼！Vue3.5的useTemplateRef让ref操作DOM更加丝滑
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 vue3中想要访问DOM和子组件可以使用ref进行模版引用，但是这个ref有一些让人迷惑的地方。比如定义的ref变量到底是一个响应式数据还是DOM元素？还有template中ref属性的值明明是一个字符串，比如ref=&#34;inputEl&#34;，怎么就和script中同名的inputEl变量绑到一块了呢？所以Vue3.5推出了一个useTemplateRef函数，完美的解决了这些问题。
+加入欧阳的高质量vue源码交流群、欧阳平时写文章参考的多本vue源码电子书
+ref模版引用的问题 我们先来看一个react中使用ref访问DOM元素的例子，代码如下：
+javascript
+代码解读
+复制代码
+const inputEl = useRef&lt;HTMLInputElement&gt;(null); &lt;input type=&#34;text&#34; ref={inputEl} /&gt;
+使用useRef函数定义了一个名为inputEl的变量，然后将input元素的ref属性值设置为inputEl变量，这样就可以通过inputEl变量访问到input输入框了。
+inputEl因为是一个.current属性的对象，由于inputEl变量赋值给了ref属性，所以他的.current属性的值被更新为了input DOM元素，这个做法很符合编程直觉。
+再来看看vue3中的做法，相比之下就很不符合编程直觉了。
+不知道有多少同学和欧阳一样，最开始接触vue3时总是在template中像react一样给ref属性绑定一个ref变量，而不是ref变量的名称。比如下面这样的代码：
+javascript
+代码解读
+复制代码
+&lt;input type=&#34;text&#34; :ref=&#34;inputEl&#34; /&gt; const inputEl = ref&lt;HTMLInputElement&gt;();
+**更加要命的是这样写还不会报错！！！！**当我们使用inputEl变量去访问input输入框时始终拿到的都是undefined。
+经过多次排查发现原来ref属性接收的不是一个ref变量，而是ref变量的名称。正确的代码应该是这样的：
+javascript
+代码解读
+复制代码
+&lt;input type=&#34;text&#34; ref=&#34;inputEl&#34; /&gt; const inputEl = ref&lt;HTMLInputElement&gt;();
+还有就是如果我们将ref模版引用相关的逻辑抽成hooks后，那么必须将在vue组件中也要将ref属性对应的ref变量也定义才可以。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端欧阳</footer>
+  <a class="entry-link" aria-label="post link to 牛逼！Vue3.5的useTemplateRef让ref操作DOM更加丝滑" href="http://localhost:1313/posts/juejin/%E7%89%9B%E9%80%BCvue3.5%E7%9A%84usetemplateref%E8%AE%A9ref%E6%93%8D%E4%BD%9Cdom%E6%9B%B4%E5%8A%A0%E4%B8%9D%E6%BB%91/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">JavaScript不建议直接声明undefined的原因，极致的严谨和仔细
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言： 很多人写JavaScript代码时习惯用var a = undefined 这种写法，其实这种写在某种情况下会产生意想不到的bug，又或者说undefined本身就是JavaScript的一个bug?? 为什么这么说呢， 因为undefined它应该是关健字才合理的，但undefined在JavaScript里面压根就不是关健字，它是window的一个属性即window.undefined, 没想到吧。
+为什么发现这个冷门知识点？？ 因为最近在拜读一些包的底层源码时，发现有一种很有意思的写法我不太理解var a = void 0; 然后我就去各方查资料，发现这种写法有两个好处，1、是能降低文件大小，2、秉承犀牛书的观点，任何时候都不主动声明undefined。
+任何时候都不主动声明undefined的原因 前面说到了undefined在JavaScript里面压根就不是关健字，而是一个属性，在控制台window.undefined就知道了
+但它是一个只读属性，我们是无法对undefined重新赋值的
+虽然是只读属性，但是在特定条件下还是会出现bug，如下所示
+javascript
+代码解读
+复制代码
+function test() { var undefined = &#39;我是test&#39;; var a = undefined; console.log(a) } test() // &#39;我是test&#39;
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-04-05 00:00:00 +0000 UTC'>四月 5, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
+  <a class="entry-link" aria-label="post link to JavaScript不建议直接声明undefined的原因，极致的严谨和仔细" href="http://localhost:1313/posts/juejin/javascript%E4%B8%8D%E5%BB%BA%E8%AE%AE%E7%9B%B4%E6%8E%A5%E5%A3%B0%E6%98%8Eundefined%E7%9A%84%E5%8E%9F%E5%9B%A0%E6%9E%81%E8%87%B4%E7%9A%84%E4%B8%A5%E8%B0%A8%E5%92%8C%E4%BB%94%E7%BB%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">vue超级强大渲染函数h()，各种业务场景都能用到
     </h2>
   </header>
@@ -190,55 +245,12 @@ const props = withDefaults( defineProps&lt;{ count?: number msg?: string }&gt;()
   <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端博尔特</footer>
   <a class="entry-link" aria-label="post link to Vue3.5发布“天元突破：红莲螺岩”" href="http://localhost:1313/posts/juejin/vue3.5%E5%8F%91%E5%B8%83%E5%A4%A9%E5%85%83%E7%AA%81%E7%A0%B4%E7%BA%A2%E8%8E%B2%E8%9E%BA%E5%B2%A9/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">iframe嵌入页面实现免登录思路（以vue为例）
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>背景： 最近实现一个功能需要使用iframe嵌入其它系统内部的一个页面，但嵌入后出现一个问题，就是一打开这个页面就会自动跳转到登录页，原因是被嵌入系统没有登录(没有token)肯定不让访问内部页面的，本文就是解决这个问题的。
-选择的技术方案： 本地系统使用iframe嵌入某个系统内部页面，那就证明被嵌入系统是安全的可使用的，所以可以通过通讯方式带一个token过去实现免登录，我用vue项目作为例子具体如下：
-方法一通过url传： javascript
-代码解读
-复制代码
-// 发送方（本地系统）： &lt;div&gt; &lt;iframe :src=&#34;url&#34; id=&#34;childFrame&#34; importance=&#34;high&#34; name=&#34;demo&#34; &gt;&lt;/iframe&gt; &lt;/div&gt; //被嵌入页面进行接收 url = `http://localhost:8080/dudu?mytoken={mytoken}` // 接收方：直接使用window.location.search接收，然后对接收到的进行处理
-注意：
-如果使用这个方法最好把token加密一下，要不然直接显示在url是非常危险的行为，所以我更推荐下面方法二 上面接收方要在在APP.vue文件的created生命周期接收，在嵌入页面接收是不行的，这里与VUE的执行流程有关就不多说了 方法二通过iframe的通讯方式传（推荐）： javascript
-代码解读
-复制代码
-// 发送方（本地系统）： var params = { type: &#34;setToken&#34;, token: &#34;这是伟过去的token&#34; } window.parent.postMessage(params, &#34;*&#34;); // 接收方（被嵌入系统）：在APP.vue文件的created生命周期接收 window.addEventListener( &#34;message&#34;, (e)=&gt;{ if(e.data.type === &#39;setToken&#39;){ //这里拿到token,然后放入缓存实在免登录即可 } }	false);
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-03-27 00:00:00 +0000 UTC'>三月 27, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
-  <a class="entry-link" aria-label="post link to iframe嵌入页面实现免登录思路（以vue为例）" href="http://localhost:1313/posts/juejin/iframe%E5%B5%8C%E5%85%A5%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0%E5%85%8D%E7%99%BB%E5%BD%95%E6%80%9D%E8%B7%AF%E4%BB%A5vue%E4%B8%BA%E4%BE%8B/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Vue内置指令v-once、v-memo和v-pre提升性能？
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前言 Vue的内置指令估计大家都用过不少，例如v-for、v-if之类的就是最常用的内置指令，但今天给大家介绍几个平时用的比较少的内置指令。毕竟这几个Vue内置指令可用可不用，不用的时候系统正常跑，但在对的地方用了却能提升系统性能，下面将结合示例进行详细说明。
-一、v-once 作用：在标签上使用v-once能使元素或者表达式只渲染一次。首次渲染之后，后面数据再发生变化时使用了v-once的地方都不会更新，因此用在数据不需要变化的地方就能进行性能优化。
-v-once指令实现原理： Vue组件初始化时会标记上v-once，首次渲染会正常执行，后续再次渲染时如果看到有v-once标记则跳过二次渲染。
-示例代码： 直接作用在标签上，可以是普通标签也可以是图片标签，当2S后数据变化时标签上的值不会重新渲染更新。
-xml
-代码解读
-复制代码
-&lt;template&gt; &lt;div&gt; &lt;span v-once&gt;{{ message }}&lt;/span&gt; &lt;img v-once :src=&#34;imageUrl&#34;&gt;&lt;/img&gt; &lt;/div&gt; &lt;/template&gt; &lt;script setup&gt; import { ref } from &#39;vue&#39;; let message = ref(&#39;Vue指令!&#39;); let imageSrc = ref(&#39;/path/my/image.jpg&#39;); setTimeout(() =&gt; { message.value = &#39;修改内容!&#39;; imageUrl.value = &#39;/new/path/my/images.jpg&#39;; }, 2000); &lt;/script&gt;
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-08-27 00:00:00 +0000 UTC'>八月 27, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;天天鸭</footer>
-  <a class="entry-link" aria-label="post link to Vue内置指令v-once、v-memo和v-pre提升性能？" href="http://localhost:1313/posts/juejin/vue%E5%86%85%E7%BD%AE%E6%8C%87%E4%BB%A4v-oncev-memo%E5%92%8Cv-pre%E6%8F%90%E5%8D%87%E6%80%A7%E8%83%BD/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/vue.js/page/7/">
-      «&nbsp;上一页&nbsp;7/14
+      «&nbsp;上一页&nbsp;7/15
     </a>
-    <a class="next" href="http://localhost:1313/tags/vue.js/page/9/">下一页&nbsp;9/14&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/vue.js/page/9/">下一页&nbsp;9/15&nbsp;»
     </a>
   </nav>
 </footer>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>RxJS | PaperMod</title>
+<title>Rxjs | PaperMod</title>
 <meta name="keywords" content="">
 <meta name="description" content="Theme PaperMod - https://github.com/adityatelange/hugo-PaperMod">
 <meta name="author" content="Theme PaperMod">
@@ -29,7 +29,7 @@
         }
 
     </style>
-</noscript><meta property="og:title" content="RxJS" />
+</noscript><meta property="og:title" content="Rxjs" />
 <meta property="og:description" content="Theme PaperMod - https://github.com/adityatelange/hugo-PaperMod" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://localhost:1313/tags/rxjs/" />
@@ -39,7 +39,7 @@
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
-<meta name="twitter:title" content="RxJS"/>
+<meta name="twitter:title" content="Rxjs"/>
 <meta name="twitter:description" content="Theme PaperMod - https://github.com/adityatelange/hugo-PaperMod"/>
 
 </head>
@@ -115,7 +115,7 @@
 <main class="main"> 
 <header class="page-header"><div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/tags/">Tags</a></div>
   <h1>
-    RxJS
+    Rxjs
     <a href="/tags/rxjs/index.xml" title="RSS" aria-label="RSS">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" height="23">
@@ -129,25 +129,159 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">最简Rxjs入门教程--别再被Rxjs的概念淹没了
+    <h2 class="entry-hint-parent">学习rxjs自定义操作符
     </h2>
   </header>
   <div class="entry-content">
-    <p>最近一直在学习Rxjs，在学习过程中，踩了不少坑，也发现网上的文章都或多或少存在些问题，要么是内容过时了（现在已经Rxjs6），要么就是上来就讲原理（让我一脸懵逼），要么就是讲的不清楚，感觉踩了非常多的坑，学习曲线相对比较陡峭。理解基本概念之后再回头来看，其实并不难理解，但是确实走了很多弯路，所以整理下，同为打工人，能少踩点坑就少踩点坑把。
-学习姿势 在我学习的时候，主要就是看官方文档，对一些含糊的地方，没来得及及时验证，导致半懂不懂，遇到实际文档需要反复查看。
-最好的方法，就是边看边写，强烈推荐通过 stackblitz.com/ 中的Rxjs模版创建一个基础的版本，非常方便。下文的实例均是在此环境中运行。
-坑点预警 很多文章，会一上来就扯发布订阅、观察者模式，迭代器模式，增加学习成本也罢，关键是在实际学习中，总是想着这两个模式，反而会带来更高的理解成本。一个新玩意，你可能都还不会用，就开始尝试理解原理了，这怎么都讲不通。
-一个更常见的误解是认为 Rxjs 就是 addEventListener 那样的订阅者模式，subscribe 这个方法名也很有误导性。碰到subscribe，抛开脑子里的发布订阅，看实例，理解其本质即可，不要纠结于叫法。这一点让我久久不能入门，其实这时候，抛开已有知识，直接去学习新知识，才是最佳的方法。
-官网文档中提到了非常多的难以理解的概念，会着重将设计思路，什么pull， push，相信我，这些等你真正用了之后，再回过头来看，一目了然，但是一开始要是陷进去了，那就难过了
-纠结在操作符上，Rxjs可以看作是流的lodash库，总不能一开始就看懂lodash里面的所有方法吧，所以不要纠结在操作符上，遇到了，查一下，看一看理解了就好
-以上就是比较坑的点，在后续的学习中把避免这些坑，能少走很多弯路。
-Rxjs介绍 Rxjs官方是这样说的: Think of RxJS as Lodash for events. 把Rxjs想像成针对events的lodash，也就是说，Rxjs本质是个工具库，处理的是事件。这里的events，可以称之为流。
-那么流是指什么呢？举个例子，代码中每1s输出一个数字，用户每一次对元素的点击，就像是在时间这个维度上，产生了一个数据集。这个数据集不像数组那样，它不是一开始都存在的，而是随着时间的流逝，一个一个数据被输出出来。这种异步行为产生的数据，就可以被称之为一个流，在Rxjs中，称之为observalbe（抛开英文，本质其实就是一个数据的集合，只是这些数据不一定是一开始就设定好的，而是随着时间而不断产生的）。而Rxjs，就是为了处理这种流而产生的工具，比如流与流的合并，流的截断，延迟，消抖等等操作。
-理解基本定义: observable, observer, subscription 可以通过如下的方式构建一个最基础的流，500ms时输出一个数组[1,2,3]，1s时输出一个对象{a: 1000}， 3s时，输出’end’， 然后在第4s终止该流。
+    <p>实现一个英文字母转大写的操作符
+?
+const toUpperCase = () =&gt; source =&gt; Observable.create(subscriber =&gt; {
+const subscription = source.subscribe(
+value =&gt; {
+try {
+subscriber.next(value.toUpperCase());
+}``catch``(error) {
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2021-09-02 00:00:00 +0000 UTC'>九月 2, 2021</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;程序员芋仔</footer>
-  <a class="entry-link" aria-label="post link to 最简Rxjs入门教程--别再被Rxjs的概念淹没了" href="http://localhost:1313/posts/juejin/%E6%9C%80%E7%AE%80rxjs%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B--%E5%88%AB%E5%86%8D%E8%A2%ABrxjs%E7%9A%84%E6%A6%82%E5%BF%B5%E6%B7%B9%E6%B2%A1%E4%BA%86/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 学习rxjs自定义操作符" href="http://localhost:1313/posts/wiki/%E5%AD%A6%E4%B9%A0rxjs%E8%87%AA%E5%AE%9A%E4%B9%89%E6%93%8D%E4%BD%9C%E7%AC%A6/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">rxjs优化异步状态
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. 虚拟人拖动放手3秒后复位 难点：复位时间刚好到了，如果正在拖动也不能复位
+优化前
+?
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+let moving = false``,
+...</p>
+  </div>
+  <footer class="entry-footer">5 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to rxjs优化异步状态" href="http://localhost:1313/posts/wiki/rxjs%E4%BC%98%E5%8C%96%E5%BC%82%E6%AD%A5%E7%8A%B6%E6%80%81/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">基于rxjs的状态管理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>核心原理 利用BehaviorSubject多播
+核心class
+?
+import { BehaviorSubject } from &#39;rxjs&#39;
+import type { Subscription,Observer } from &#39;rxjs&#39;
+export class RxState {
+state
+private subject
+private subscription?: Subscription
+constructor(initialValue?: any) {
+this``.state = initialValue
+this``.subject = new BehaviorSubject(initialValue)
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 基于rxjs的状态管理" href="http://localhost:1313/posts/wiki/%E5%9F%BA%E4%BA%8Erxjs%E7%9A%84%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">rxjs里面Cold-Observables与Hot-Observables区别
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>由于异步场景十分复杂，web端这边的虚拟人项目都在不少的场景用上了rxjs
+在RxJS中，Observables分为两种：Cold Observables和Hot Observables。这两种类型在何时开始推送数据上存在显著的差异。
+Cold Observables，如其名，是冷的，它们在被订阅后才开始运行和推送数据。具体来说，只有一个订阅者订阅时，Cold Observable才会创建一个新的数据生产者并开始推送数据。每个订阅者接收到的数据都是从序列的第一个值开始的。例如，一些需要用户交互才能产生数据的事件，如点击事件，就是典型的冷Observable。
+相反，Hot Observables则会在被订阅之前就开始产生数据。无论有多少个订阅者，Hot Observable都只会创建一个数据生产者。所有的订阅者共享同一个数据生产者，即它们接收到的数据是一样的。最常见的Hot Observable例子就是鼠标移动事件，因为无论是否有订阅者，鼠标移动事件都会持续产生。
+Hot Observables Hot Observables 不管有没有被订阅都会产生值。是多播的，多个订阅共享同一个实例，是从订阅开始接受到值，每个订阅接收到的值是不同的，取决于它们是从什么时候开始订阅。
+这里有几种场景，我们可以逐一分析一下便于理解：
+“加热” 首先可以忽略代码中出现的陌生的函数，后面会细说。
+?
+const source = Rx.Observable.of(``1``, 2``).publish();
+source.connect();
+source.subscribe((value) =&gt; console.log(``&#39;A：&#39; &#43; value));
+setTimeout(() =&gt; {
+source.subscribe((value) =&gt; console.log(``&#39;B：&#39; &#43; value));
+}, 1000``);
+这里首先用Rx的操作符of创建了一个Observable，并且后面跟上了一个publish函数，在创建完之后调用connect函数进行开始数据发送。
+最终代码的执行结果就是没有任何数据打印出来，分析一下原因其实也比较好理解，由于开启数据发送的时候还没有订阅，并且这是一个Hot Observables，它是不会理会你是否有没有订阅它，开启之后就会直接发送数据，所以A和B都没有接收到数据。
+当然你这里如果把connect方法放到最后，那么最终的结果就是A接收到了，B还是接不到，因为A在开启发数据之前就订阅了，而B还要等一秒。
+更直观的场景 正如上述多播所描述的，其实我们更多想看到的现象是能够A和B两个观察者能够都有接收到数据，然后观察数据的差别，这样会方便理解。
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to rxjs里面Cold-Observables与Hot-Observables区别" href="http://localhost:1313/posts/wiki/rxjs%E9%87%8C%E9%9D%A2cold-observables%E4%B8%8Ehot-observables%E5%8C%BA%E5%88%AB/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">高阶Observable
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>高阶的Observable像是多维的概念
+mergeAll 2000
+2000
+1000
+1000
+1000
+1000
+Text
+1000
+1000
+1000
+1000
+0:0
+0:1
+0:2
+1:0
+0:3
+1:1
+1:2
+1:3
+interval(2000).pipe(
+take(2),
+map(x=&gt;interval(1000).pipe(
+map(y=&gt;`${x}: ${y}`),
+take(4)
+)),
+mergeAll()
+...</p>
+  </div>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 高阶Observable" href="http://localhost:1313/posts/wiki/%E9%AB%98%E9%98%B6observable/"></a>
 </article>
     </main>
     

@@ -129,125 +129,159 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Spring中类解析神器：MetadataReader，熟悉ClassMetadata、AnnotationMetadata
+    <h2 class="entry-hint-parent">再给你安利一款免费代码生成器
     </h2>
   </header>
   <div class="entry-content">
-    <p>@[TOC]
-一、认识MetadataReader 我们平时对一个类的解析，通常会用到反射的技术，比如：
-java
-代码解读
-复制代码
-Class&lt;?&gt; aClass = Class.forName(&#34;com.qstcloud.qcard.portal.context.domain.Test&#34;); aClass.getMethods(); aClass.getDeclaredFields(); // ...
-在Spring中需要去解析类的信息，比如类名、类中的方法、类上的注解，这些都可以称之为类的元数据，所以Spring中对类的元数据做了抽象，并提供了一些工具类。
-MetadataReader表示类的元数据读取器，默认实现类为SimpleMetadataReader。
-需要注意的是，SimpleMetadataReader去解析类时，使用的ASM技术。 我们都知道，Class.forName执行之后，就会将这个类加载到JVM中，哪怕我们根本用不到这个类，也会被加载。 ​ Spring启动的时候需要去扫描所有的类，如果指定的包路径比较宽泛，那么扫描的类是非常多的，那如果在Spring启动时就把这些类全部加载进JVM了，这样对应用非常不友好，所以使用了ASM技术。
-后续我们进一步分析MetadataReader的源码，就知道Spring的处理比我们自己处理到底高明在哪里了。
-二、使用MetadataReader java
-代码解读
-复制代码
-SimpleMetadataReaderFactory simpleMetadataReaderFactory = new SimpleMetadataReaderFactory(); // 构造一个MetadataReader MetadataReader metadataReader = simpleMetadataReaderFactory.getMetadataReader(&#34;com.test.Test&#34;); // 得到一个ClassMetadata，并获取了类名 ClassMetadata classMetadata = metadataReader.getClassMetadata(); System.out.println(classMetadata.getClassName()); // 获取一个AnnotationMetadata，并获取类上的注解信息 AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata(); for (String annotationType : annotationMetadata.getAnnotationTypes()) { System.out.println(annotationType); }
+    <p>写在前面 上一期文章中给小伙伴们推荐了一款不需要魔法，并且免费帮写代码的插件CodeGeex
+通过小伙伴的反馈，大家对AI辅助编程还是，挺感兴趣
+应大家的要求，这一期呢，再来给大家推荐一款类似的插件
+它也不需要魔法、免费而且具有安全代码扫描辅助工具
+它是AWS（亚马逊） 公司出品的，亚马逊大家应该不陌生了吧，小伙伴们可以放心食用
+一、CodeWhisperer 简介 ① 官网链接
+aws.amazon.com/cn/codewhis…
+② 官方介绍
+Amazon CodeWhisperer 是一款 AI 编码工具，可在您的集成式开发环境（IDE）中生成实时单行或全函数代码建议，以帮助您快速构建应用。
+使用 CodeWhisperer，您可以用自然语言编写注释，CodeWhisperer 直接在 IDE 中推荐一个或多个可以完成任务的代码片段。
+您可以快速轻松地接受排在首位的建议（Tab 键）、查看更多建议（箭头键）或继续编写自己的代码。
+CodeWhisperer 对个人是免费使用的，而且每月可以使用50次代码安全扫描功能（这个会在后面介绍具体使用）
+二 、CodeWhisperer 功能 ① 用自然语言编写注释，CodeWhisperer 帮你生成代码片段
+② 代码许可证排查功能
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-15 00:00:00 +0000 UTC'>四月 15, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;秃了也弱了</footer>
-  <a class="entry-link" aria-label="post link to Spring中类解析神器：MetadataReader，熟悉ClassMetadata、AnnotationMetadata" href="http://localhost:1313/posts/juejin/spring%E4%B8%AD%E7%B1%BB%E8%A7%A3%E6%9E%90%E7%A5%9E%E5%99%A8metadatareader%E7%86%9F%E6%82%89classmetadataannotationmetadata/"></a>
+  <footer class="entry-footer"><span title='2023-08-28 00:00:00 +0000 UTC'>八月 28, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序员晓凡</footer>
+  <a class="entry-link" aria-label="post link to 再给你安利一款免费代码生成器" href="http://localhost:1313/posts/juejin/%E5%86%8D%E7%BB%99%E4%BD%A0%E5%AE%89%E5%88%A9%E4%B8%80%E6%AC%BE%E5%85%8D%E8%B4%B9%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">面试官：单核服务器可以不加锁吗？
+    <h2 class="entry-hint-parent">2024入职AI公司三个月复盘感悟
     </h2>
   </header>
   <div class="entry-content">
-    <p>今天有位同学问了磊哥一个问题，大概的意思是“单核服务器可以不加锁吗？”，我觉得很有意思，所以在这里就和各位探讨一下：
-1. 问题答案 先说我的理解，单核服务器仍然需要加锁。
-因为在单核服务器上也会有线程切换，如果不加锁，那么线程切换后，另一个线程就可以访问其他线程未操作完的共享变量，这就会导致操作的共享变量发生数据覆盖的问题，所以是需要加锁。
-例如，以下案例，线程 T1 和线程 T2 都要执行 i&#43;&#43; 操作，i 的初始值为 0，所以正确的执行结果应该是 2。但如果不加锁，即使在单核服务器下也会造成数据覆盖问题，最终的执行结果为 1 的情况，具体执行流程如下：
-2. 原因分析 因为 i&#43;&#43; 并不是原子操作，它的执行要分为以下 3 步：
-查询 i 的值。 执行 i&#43;1 修改操作。 将结果赋值给 i 变量。 如果是加锁操作，那么线程可以一个个执行，首先某一个线程先把 i 修改为 1，然后另一个线程再次基础上将结果修改为 2。
-但如果不加锁，那么就会导致下面的问题：
-线程 1
+    <p>前言 时间过得很快，距离上一次发文求职上岸已经过了3个月，了解我的粉儿知道，我有比较强的时间观念，没几个月就是奔三的人儿，下面从工作内容、个人状态、方法论这几方面聊聊这段时间经历的三两事儿~
+动机 近2年以来，我一直专注提升自身认知，逐渐解锁了几条快速成长的隐形赛道，有些已经经过实践并取得了一定成果，比如利用时间的杠杆，已经完成了NestJS图书的创造，预计在中秋节后上架各大平台。
+其次，第二条赛道就是我目前正在做的：复盘。
+为什么要做这件事情？因为它能够让我感受到时间的存在。
+时间，是人赋予的概念。我们经常说：“这个人没有时间观念”，意味着这个人的行为通常没有加上时间这个维度，随心所欲，本质上来说，时间对对于他来说是：不存在的。
+时间不存在到底有怎么样的表现形式？我举个例子你就明白了。
+我：你昨天工作做了哪些事情？
+你：emmm，你让我想想…，哦，昨天我做了事项1，事项2。emmm，还有什么呢？哦！还做了事项3。。。
+我：好！算你能想起来。那前天呢？还有上周呢？
+你：前天？卧槽，前天是星期几来着？上周啊，哦，我记得上周被SB领导批了一顿。
+多么真实的场景！换做是我也没有办法讲清楚过去某个时间到底做了什么，做对了哪些事儿让我成长，又犯了哪些错误能作为我的前车之鉴。
+那怎么办？复盘！把时间凝固在日历上。
+不复盘的人是这样的：
+复盘的人是这样的：
+当然期间有几天是空白的，懒是人的天性，一不留神就会回到舒适区，这个过程是反人性的，而成长一直都是反人性的结果。
+还有其他正在实践的隐形赛道，如冥想，刻意练习等，有朋友感兴趣可以一起交流提升，我v：followJavaScript。
+开始的开始 业务是做海外AI产品，给我的定位是Nest全栈，但入职前期还是以React&#43;Next为框架的官网项目作为上手点。
+我的leader很nice，常驻厦门总部，第二周出差来深圳，我主动约他定试用期目标，详细给我介绍了项目和业务情况，期间没有给我太多压力，更多以主观能动性为主。
+他了解我的技术情况，薄弱的地方给我介绍了相关课程，于是我花了两周快速补了MySQL原理到实践知识，如索引、分表分库、调优手段等。
+此后有需求，前后端leader都会先跟我介绍清楚背景，给定方向并叮嘱需要留意的地方。
+其次，上线时需要代码review，真不是走形式，前端leader几乎每次都会问我相关代码背后的设计和场景，有几次还找出来bug，细，是真细！
+相比之下我前面几家放养式培养，成长速度快了不少，而且这种方式对应届生非常友好。
+通勤 公司离我住的地方需要30分钟通勤时间，经过多次测试，每天9点左右坐车是最合适的时间，这时候人最少，地铁不会中途停车，而且都有座位。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-18 00:00:00 +0000 UTC'>九月 18, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;Java中文社群</footer>
-  <a class="entry-link" aria-label="post link to 面试官：单核服务器可以不加锁吗？" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E5%8D%95%E6%A0%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%AF%E4%BB%A5%E4%B8%8D%E5%8A%A0%E9%94%81%E5%90%97/"></a>
+  <footer class="entry-footer"><span title='2024-09-14 00:00:00 +0000 UTC'>九月 14, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;元兮</footer>
+  <a class="entry-link" aria-label="post link to 2024入职AI公司三个月复盘感悟" href="http://localhost:1313/posts/juejin/2024%E5%85%A5%E8%81%8Cai%E5%85%AC%E5%8F%B8%E4%B8%89%E4%B8%AA%E6%9C%88%E5%A4%8D%E7%9B%98%E6%84%9F%E6%82%9F/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">英伟达市值暴跌2万亿！一夜蒸发3个英特尔，创美国历史纪录
+    <h2 class="entry-hint-parent">技术写作才一年，我能有什么收获…
     </h2>
   </header>
   <div class="entry-content">
-    <p>【新智元导读】 英伟达市值，一夜蒸发2790亿美元，创下美股史上单日最大跌幅！一天的损失，都赶上卖出的所有AI芯片了。「打倒英伟达垄断」的汹涌民意，终于有了具象化的一天。同时，英伟达已收到美国司法部传票，可谓噩耗连连。 一觉醒来，英伟达的市值竟蒸发了2790亿美元！而且，这次又破纪录了——市值暴跌9.5%，创下了美国公司有史以来最大的单日跌幅纪录。
-AI大佬马库斯调侃道：英伟达今天的市值损失，可能比他们向GenAI公司卖出的所有芯片总和还要多……
-要知道，OpenAI目前的估值也才刚达到1000亿美元，相当于英伟达一夜之间损失了将近3个OpenAI。如此惊人的股价大跌背后，究竟是什么原因？
-除了投资者对于AI更加谨慎之外，另一个原因，恐怕就是司法部升级了对英伟达的反垄断调查。据悉，美国司法部已经向英伟达发出传票，寻找这家芯片巨头违反反垄断法的证据。
-英伟达被怀疑有如下「罪名」：让客户更难转向其他供应商，且将不全部使用其AI芯片的买家置于不利地位。
-如今，司法部离正式向英伟达提出诉讼，又近了一步。屋漏偏逢连夜雨，如今的英伟达，是厄运连连。
-不得不说，老黄套现的时机，把握得是非常准了。
-市值一夜蒸发2790亿美元，创美国公司单日纪录 就在上周，英伟达公布财报，营收增长122%，净利润增长至168%至166亿美元。然而电话会议后，股价却一路暴跌，一度跌超8%，带垮整个美股科技股。
+    <p>前言 我从去年开始在掘金写下第一篇文章，这天也是中秋节，刚刚好一年，不同的是，我是在回深路上着手写了这篇文章。
+去年这天我儿子将近四个月大，我还能随心所欲在他面前打开电脑看视频、写文章，现在一岁三个月了，每次打开电脑，他高低得走过来在旁边指导（sao rao）我几回，毕竟对这个世界的一切都充满着好奇。
+说到写作，不少会朋友问到如何保持写作习惯？亦或者自己有很多想法，也看了一些技术源码，但是不知道如何用文字表达出来？
+对于这些问题，我想问自己为什么会开始写文章。
+准确来说分两个阶段。
+第一阶段 我是在2017年的时候就开始写技术文章了，依稀记得那时候我开始写的原因是有个学长告诉我：你可以尝试做这件事情，对未来求职会有好处。
+于是在CSDN注册了账号，早期爆发式输出了一堆文章，更多是记录学习过程中遇到的问题及解决措施。此外，还转载了一堆其他作者的文章，为的是增加账号访问量【狗头】。
+早期的写文章并没有太多的创作激励，其次是自身在这方面的动机不够清晰，于是在2018.6毕业上班后就停止了，直到2020年起了个公众号写了几篇文章，又因为要去带团队而搁浅了。
+第二阶段 第二个阶段是2023.9.29中秋节重启写作，那时候我在外面瞎折腾了一年后重回职场，有着对过去自己失败人生的不甘，也有着对未来不确定性的乐观，于是我开始用文字记录自己走过的每一个阶段，有低谷的时候，也有向好的一天。
+我想终有一日，甜筒他会看到他爸爸这折腾但有意义的一生，希望改变原生家庭的诟病做出的所有选择，为他以后的道路点亮几盏明灯。这是我写作的原因之一。
+为什么会萌生这种想法呢？其实跟我的背景有着很大的联系。
+我是个农村佬，我爸这辈子除了管我吃喝，似乎很多事情都是我自己做决定的，他经常跟我说的一句话：我没有文化，这些东西你比我懂的，靠你自己选择。那我妈呢？就更不用说了，打压式教育，说教式沟通，没有情绪管理这一说，现在还经常指点我们如何“育儿”。所以我们即使再辛苦，都把自己孩子留在身边，不会让他重走我儿时路。
+事实上，让一个认知尚浅的少年去做某些选择，我想其中就意味着他需要承受选择后的所有风险和结果，很多时候我也感觉无力。
+学习是靠自己的，遇到不会的先憋着，第二天去问老师同学；
+文理科是自己选的，这个倒不难，因为自己也很讨厌背书；
+高考志愿是自己填的，因为大学之前都没怎么摸过电脑，不敢选软件工程和计算机科学，凭着我爸认识了一个村里的，在移动电信公司上班，奢望毕业之后能够介绍一个稳定的工作，所以选了通信工程；
+写代码是自己选的，我是班上第一个做软件开发的，大学期间家里一直让我去当兵，依稀记得大四那年，我从外面实习回来准备再次求职，我爸听家里亲戚说叫我去考公务员，没有一个人支持我写代码，但这一次，我选择了走自己的路。
+买房是自己选的，听信他人，一起被中介忽悠，把自己的前半辈子搭了进去，这个坑，我还需要几十年填平。
+其次，第二个原因是构建自己的外脑系统。
+什么是外脑系统？
+通俗地说，我们普通人的大脑很多时候处理不了太多的信息，比如记忆很久之前的事情，但可以通过外部的工具和环境加以扩展。
+写作是我构建这个系统的途径之一，我们无法检索过去某个时间因为做某个事情而迸发出来的一个很好的灵感，也无法回忆起20岁那年我做了什么决定导致我25岁、30岁、现在的结果。记忆力无法丈量的地方，但文字可以！
+当然除了写作之外，个人笔记、个人思维导图、个人知识管理系统都可以作为你的外脑系统，它满足了当我们输入某个关键词，相应检索出想要的结果。
+比如我有建设个人知识体系图、人体医学体系图、思维框架导图等等，需要的时候随时拿出来用。
+【纯粹兴趣，很多没补充完~】 第三个原因是塑造另外的我来审查自己。
+如何理解呢？
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;新智元</footer>
-  <a class="entry-link" aria-label="post link to 英伟达市值暴跌2万亿！一夜蒸发3个英特尔，创美国历史纪录" href="http://localhost:1313/posts/juejin/%E8%8B%B1%E4%BC%9F%E8%BE%BE%E5%B8%82%E5%80%BC%E6%9A%B4%E8%B7%8C2%E4%B8%87%E4%BA%BF%E4%B8%80%E5%A4%9C%E8%92%B8%E5%8F%913%E4%B8%AA%E8%8B%B1%E7%89%B9%E5%B0%94%E5%88%9B%E7%BE%8E%E5%9B%BD%E5%8E%86%E5%8F%B2%E7%BA%AA%E5%BD%95/"></a>
+  <footer class="entry-footer"><span title='2024-09-19 00:00:00 +0000 UTC'>九月 19, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;元兮</footer>
+  <a class="entry-link" aria-label="post link to 技术写作才一年，我能有什么收获…" href="http://localhost:1313/posts/juejin/%E6%8A%80%E6%9C%AF%E5%86%99%E4%BD%9C%E6%89%8D%E4%B8%80%E5%B9%B4%E6%88%91%E8%83%BD%E6%9C%89%E4%BB%80%E4%B9%88%E6%94%B6%E8%8E%B7/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">面试官：来，说说你对MySQLInnoDBBufferPool的理解
+    <h2 class="entry-hint-parent">GitHub标星28W的超神项目，技术人必学！一个项目搞定所有技能（不收藏后悔！）
     </h2>
   </header>
   <div class="entry-content">
-    <p> 本文首发于公众号：托尼学长，立个写 1024 篇原创技术面试文章的flag，欢迎过来视察监督~
-说个比较经典的面试场景吧，不但很经典，还很有喜感。
-面试官：“可以说说，为什么Redis比MySQL快吗？”
-候选人听了之后略带不屑，说：“这个很简单啊，因为Redis中的数据都是存储在内存中的，而MySQL中的数据都是存储到磁盘上的，内存当然要比磁盘快啊。”
-面试官：“但MySQL InnoDB中不是也有一个大的Buffer Pool（缓冲池）吗？它不也是在内存中吗？”
-候选人听了有些懵逼，顿了顿说：“不好意思，我对您说的这个Buffer Pool不太了解。”
-面试官听了，故作失望地摇了摇头，心里则乐开了花。
-现在MySQL的高频面试题，基本上都集中在锁、索引、事务、分库分表、SQL优化等相关方向上。
-但Buffer Pool这块的知识点，是非常能能体现出一个工程师在数据库方向技术深度的，本文我们就来详细地聊一聊。
-InnoDB存储引擎结构 我们以MySQL 8.4版本为准，InnoDB存储引擎架构如下图所示：
-从图中我们可以看到，整体分为内存结构和磁盘结构两个部分，其中内存结构包括：Buffer Pool（缓冲池）、Change Buffer（写缓冲区）、Adaptive Hash Index（自适应Hash索引）和Log Buffer（日志缓冲区）。
-其中，Change Buffer 和 Adaptive Hash Index 也都是存在于 Buffer Pool 中的。
-一般情况下，我们会将数据库服务器80%的物理内存分配给Buffer Pool进行使用。
-初识Buffer Pool
-简而言之，Buffer Pool其实就是一块内存区域，InnoDB会将频繁访问的表记录数据和索引数据放到Buffer Pool中，旨在以此减少磁盘的IO操作，提升数据库的读写性能。
-Buffer Pool也是以Page（默认16k）作为最小IO单元的。通常情况下，一个Page可以容纳多行数据记录，各Page间使用链表进行组织串联，并通过改良后的LRU（最近最少使用）算法来执行内存淘汰策略。
+    <p>​大家好，我是大白，每天给大家分享IT前沿知识、代码、项目~
+今天给大家分享的是github上面的一个超神项目，项目几乎囊括了技术人所有的学习路线，一个项目搞定所有IT技术！
+项目名称：roadmap
+项目地址：github.com/kamranahmed…
+0 1
+roadmap项目介绍
+roadmap翻译过来是“路标”，即技术人的路线指引，我们学习IT可以根据该项目中列出的图谱来一步步规划学习。
+我们在README中点击View all Roadmaps即可进入基本界面
+在这里我们可以轻松找到：前端、后端、人工智能、游戏开发等技术的知识图谱
+0 2
+如何使用roadmap学习
+例如我们想学习前端方面的知识，我们点击前端，打开前端的知识图谱
+在这里根据路线指引，第一个要学的模块是HTML部分，我们点击HTML
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-04 00:00:00 +0000 UTC'>八月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;托尼学长</footer>
-  <a class="entry-link" aria-label="post link to 面试官：来，说说你对MySQLInnoDBBufferPool的理解" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E6%9D%A5%E8%AF%B4%E8%AF%B4%E4%BD%A0%E5%AF%B9mysqlinnodbbufferpool%E7%9A%84%E7%90%86%E8%A7%A3/"></a>
+  <footer class="entry-footer"><span title='2024-09-22 00:00:00 +0000 UTC'>九月 22, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;大白学技术</footer>
+  <a class="entry-link" aria-label="post link to GitHub标星28W的超神项目，技术人必学！一个项目搞定所有技能（不收藏后悔！）" href="http://localhost:1313/posts/juejin/github%E6%A0%87%E6%98%9F28w%E7%9A%84%E8%B6%85%E7%A5%9E%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E4%BA%BA%E5%BF%85%E5%AD%A6%E4%B8%80%E4%B8%AA%E9%A1%B9%E7%9B%AE%E6%90%9E%E5%AE%9A%E6%89%80%E6%9C%89%E6%8A%80%E8%83%BD%E4%B8%8D%E6%94%B6%E8%97%8F%E5%90%8E%E6%82%94/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Java开发面试题精选：Mysql一篇全搞定
+    <h2 class="entry-hint-parent">花了一天时间帮财务朋友开发了一个实用小工具
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 在高级Java开发工程师的面试中，MySQL作为常见的数据库技术，其掌握程度往往是评估候选人综合能力的重要组成部分。在这篇文章中，我精选了一些最可能被问到的与MySQL相关的面试题目，这些题目可以全面考察候选人的理论知识、实战经验和问题解决能力，不管你是准备求职的小伙伴，还是一名面试官，相信都能从这篇文章获取一些经验。
-阅读建议 掌握面试八股的最佳方法绝对不是死记硬背，而是理解内容。内容已经理解了，但是还记不住，怎么办？理解内容是第一步，第二步是牢记题目内容的关键词；记住关键词后，第三步，就是要能够根据关键词，试着能够把大概的意思口述出来。勤加练习，说不定还能成为演讲高手呢。
-面试焦虑、面试困难、面试迷茫….加V|ayi201010，带你一起飞！
-基础概念与原理 MySQL的存储引擎有哪些？它们之间的主要区别是什么？
-MySQL支持多种存储引擎，其中InnoDB与MyISAM最具有代表性：
-InnoDB：
-特点： 默认存储引擎（自MySQL 5.5版起）。支持事务处理、行级锁、外键约束，以及崩溃恢复。它使用聚簇索引组织表数据，能够提供良好的并发读写性能，适用于需要事务完整性和高并发读写的场景。 优势： 提供ACID兼容的事务处理，支持MVCC多版本并发控制，增强了数据安全性。 劣势： 相比MyISAM，InnoDB占用更多的磁盘空间和内存资源。 MyISAM：
-特点： 在MySQL早期版本中是默认存储引擎。不支持事务处理、行级锁和外键约束。适合读取密集型应用，因为它提供了较快的查询速度，尤其是对于只读或者大部分为读操作的表。 优势： 查询速度快，占用资源相对较少，支持全文索引。 MySQL的InnoDB和MyISAM是两种常见的存储引擎之间存在多方面的显著区别，主要包括：
-事务支持： InnoDB 支持事务处理，遵循ACID（原子性、一致性、隔离性、持久性）原则，适合需要高数据一致性的应用场景。这意味着它可以执行提交（commit）和回滚（rollback）操作，确保数据的完整性。 MyISAM 不支持事务处理，一旦数据被修改则立即写入磁盘，不提供事务的回滚或提交功能。 2. 锁机制：
-InnoDB 使用行级锁，这大大提高了并发处理能力，多个事务可以同时对不同的行进行操作，降低了锁冲突的可能性。 MyISAM 使用表级锁，当一个线程锁定整个表进行写操作时，其他线程无论是读还是写都必须等待，这可能导致在高并发场景下性能下降。 3. 数据存储结构：
-...</p>
+    <p>大家好，我是晓凡。
+写在前面 不知道大家有没有做财务的朋友，我就有这么一位朋友就经常跟我抱怨。一到月底简直就是噩梦，总有加不完的班，熬不完的夜，做不完的报表。
+一听到这儿，这不就一活生生的一个“大表哥”么，这加班跟我们程序员有得一拼了，忍不住邪恶一笑，心里平衡了很多。
+身为牛马，大家都不容易啊。我不羡慕你数钱数到手抽筋，你也别羡慕我整天写CRUD 写到手起老茧🤣
+吐槽归吐槽，饭还得吃，工作还得继续干。于是乎，真好赶上周末，花了一天的时间，帮朋友写了个小工具
+一、功能需求 跟朋友吹了半天牛，终于把需求确定下来了。就一个很简单的功能，通过名字，将表一和表二中相同名字的金额合计。
+具体数据整合如下图所示
+虽然一个非常简单的功能，但如果不借助工具，数据太多，人工来核对，整合数据，还是需要非常消耗时间和体力的。
+怪不得，这朋友到月底就消失了，原来时间都耗在这上面了。
+二、技术选型 由于需求比较简单，只有excel导入导出，数据整合功能。不涉及数据库相关操作。
+综合考虑之后选择了
+PowerBuilder Pbidea.dll 使用PowerBuilder开发桌面应用，虽然界面丑一点，但是开发效率挺高，简单拖拖拽拽就能完成界面（对于前端技术不熟的小伙伴很友好）
+其次，由于不需要数据库，放弃web开发应用，又省去了云服务器费用。最终只需要打包成exe文件即可跑起来
+Pbidea.dll 算是Powerbuilder最强辅助开发，没有之一。算是PBer们的福音吧
+三、简单界面布局 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-05-19 00:00:00 +0000 UTC'>五月 19, 2024</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;凡夫贩夫</footer>
-  <a class="entry-link" aria-label="post link to Java开发面试题精选：Mysql一篇全搞定" href="http://localhost:1313/posts/juejin/java%E5%BC%80%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98%E7%B2%BE%E9%80%89mysql%E4%B8%80%E7%AF%87%E5%85%A8%E6%90%9E%E5%AE%9A/"></a>
+  <footer class="entry-footer"><span title='2024-08-19 00:00:00 +0000 UTC'>八月 19, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员晓凡</footer>
+  <a class="entry-link" aria-label="post link to 花了一天时间帮财务朋友开发了一个实用小工具" href="http://localhost:1313/posts/juejin/%E8%8A%B1%E4%BA%86%E4%B8%80%E5%A4%A9%E6%97%B6%E9%97%B4%E5%B8%AE%E8%B4%A2%E5%8A%A1%E6%9C%8B%E5%8F%8B%E5%BC%80%E5%8F%91%E4%BA%86%E4%B8%80%E4%B8%AA%E5%AE%9E%E7%94%A8%E5%B0%8F%E5%B7%A5%E5%85%B7/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/32/">
-      «&nbsp;上一页&nbsp;32/38
+      «&nbsp;上一页&nbsp;32/40
     </a>
-    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/34/">下一页&nbsp;34/38&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/%E5%90%8E%E7%AB%AF/page/34/">下一页&nbsp;34/40&nbsp;»
     </a>
   </nav>
 </footer>

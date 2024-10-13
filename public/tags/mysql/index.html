@@ -129,6 +129,35 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">面试官：相比于MySQL，你觉得ClickHouse牛逼在哪儿？
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 本文首发于公众号：托尼学长，立个写 1024 篇原创技术面试文章的flag，欢迎过来视察监督~
+有时候真的挺替MySQL鸣不平的，被最广泛地应用在各个系统中，却当着Redis、ES、Oracle的背景板，挨着最狠地骂。
+嗯，今天又拿它跟OLAP数据库ClickHouse进行比较了。
+一般来讲，90%多的Java工程师是接触不到ClickHouse的，而用到它的最大原因，无非是拿MySQL硬抗海量数据的统计分析类的场景实在太吃力了，临战换将成ClickHouse之后，顿觉世界时如此美好。
+接下来我们就来说说，ClickHouse到底有多牛逼，以及牛逼在哪儿。
+对比数据 在一系列官方公布的基准测试对比中，ClickHouse都遥遥领先对手，这其中不乏一些我们耳熟能详的名字。
+所有用于对比的数据库都使用了相同配置的服务器，在单个节点的情况下，对一张拥有133个字段的数据表分别在1000万、1亿和10亿三种数据体量下执行基准测试，基准测试的范围涵盖43项SQL查询。
+在1亿数据集体量的情况下，ClickHouse的平均响应速度是Vertica的2.63倍、InfiniDB的17倍、MonetDB的27倍、Hive的126倍、MySQL的429倍以及Greenplum的10倍。
+下图也是ClickHouse官网上公布的测试数据：
+接下来我们具体分析一下，ClickHouse到底具备那些特性，以至于它比MySQL的性能高出如此之多。
+MPP架构 ClickHouse采用典型的MPP（Massively Parallel Processing）架构，直译为大规模并行处理架构，可将任务并行的分散到多个节点上，每个节点各自独立完成自己的计算任务，然后将各节点的处理结果进行二次加工汇总，形成最终的结果进行返回。
+如下图所示：
+MPP架构中的各个计算节点相互独立，具备高性能和易扩展的优点，可在海量数据下实现高吞吐量和低延迟的数据处理能力。
+而MySQL InnoDB本身是不具备分布式并行计算能力的，一般情况下都是用分库分表中间件进行实现的，也有少部分是直接在工程代码中进行实现。
+当然，从完善度和平滑性来讲，肯定是不如ClickHouse的一体化解决方案的。
+列式存储 假设这样的一个业务场景，一张有2000多万条记录的people表，我们需要计算出表中所有人的平均年龄。
+如下图所示：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-19 00:00:00 +0000 UTC'>九月 19, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;托尼学长</footer>
+  <a class="entry-link" aria-label="post link to 面试官：相比于MySQL，你觉得ClickHouse牛逼在哪儿？" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E7%9B%B8%E6%AF%94%E4%BA%8Emysql%E4%BD%A0%E8%A7%89%E5%BE%97clickhouse%E7%89%9B%E9%80%BC%E5%9C%A8%E5%93%AA%E5%84%BF/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">你写的每条SQL都是全表扫描吗
     </h2>
   </header>
@@ -205,28 +234,6 @@ sql
   </div>
   <footer class="entry-footer"><span title='2024-09-02 00:00:00 +0000 UTC'>九月 2, 2024</span>&nbsp;·&nbsp;6 分钟&nbsp;·&nbsp;元兮</footer>
   <a class="entry-link" aria-label="post link to 【Nest全栈之旅】第十章：数据库设计之第一、二、三、四、五、BC范式、反范式" href="http://localhost:1313/posts/juejin/nest%E5%85%A8%E6%A0%88%E4%B9%8B%E6%97%85%E7%AC%AC%E5%8D%81%E7%AB%A0%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E4%B9%8B%E7%AC%AC%E4%B8%80%E4%BA%8C%E4%B8%89%E5%9B%9B%E4%BA%94bc%E8%8C%83%E5%BC%8F%E5%8F%8D%E8%8C%83%E5%BC%8F/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">查询提升200倍，ClickHouse你值得拥有！
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>一、ClickHouse 是什么？ ClickHouse：是一个用于联机分析(OLAP)的列式数据库管理系统(DBMS)
-我们首先理清一些基础概念
-OLTP：是传统的关系型数据库，主要操作增删改查，强调事务一致性，比如银行系统、电商系统 OLAP：是仓库型数据库，主要是读取数据，做复杂数据分析，侧重技术决策支持，提供直观简单的结果 接着我们用图示，来理解一下列式数据库和行式数据库区别
-在传统的行式数据库系统中（MySQL、Postgres和MS SQL Server），数据按如下顺序存储： 在列式数据库系统中（ClickHouse），数据按如下的顺序存储： 两者在存储方式上对比： 以上是ClickHouse基本介绍，更多可以查阅官方手册
-二、业务问题 业务端现有存储在Mysql中，5000万数据量的大表及两个辅表，单次联表查询开销在3min&#43;，执行效率极低。经过索引优化、水平分表、逻辑优化，成效较低，因此决定借助ClickHouse来解决此问题
-最终通过优化，查询时间降低至1s内，查询效率提升200倍！
-希望通过本文，可以帮助大家快速掌握这一利器，并能在实践中少走弯路。
-三、ClickHouse实践 1.Mac下的Clickhouse安装 我是通过docker安装，查看教程。也可以下载CK编译安装，相对麻烦一些。
-2.数据迁移：从Mysql到ClickHouse ClickHouse支持Mysql大多数语法，迁移成本低，目前有五种迁移方案：
-create table engin mysql，映射方案数据还是在Mysql insert into select from，先建表，在导入 create table as select from，建表同时导入 csv离线导入 streamsets 选择第三种方案做数据迁移：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2020-08-21 00:00:00 +0000 UTC'>八月 21, 2020</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;起个帅的名</footer>
-  <a class="entry-link" aria-label="post link to 查询提升200倍，ClickHouse你值得拥有！" href="http://localhost:1313/posts/juejin/%E6%9F%A5%E8%AF%A2%E6%8F%90%E5%8D%87200%E5%80%8Dclickhouse%E4%BD%A0%E5%80%BC%E5%BE%97%E6%8B%A5%E6%9C%89/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

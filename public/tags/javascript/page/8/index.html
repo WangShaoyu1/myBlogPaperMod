@@ -129,6 +129,86 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">CDN底层原理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 笔者在近期秋招面试中，遇到了一位比较资深的开发者，他问的就相对于前面几轮面试更偏底层一些，其中聊到了 CDN 的底层原理，就这个问题讨论了很久。
+面试官：“你知道 CDN 的是怎么知道找到距离你最近的服务器，然后把资源分配给你的吗？”
+其实我在这个时候不太清楚，就凭印象想了一下之前学的东西，半猜半问的回答的：
+“是通过一个可以调度距离的服务器来做的？”
+面试官说不对，然后我灵机一动，从五层模型的角度聊了一下这个事情：
+五层模型 物理层和数据链路层我就不聊了，直接从最核心的网络层开始聊
+网络层：CDN通过智能DNS系统在网络层工作，将用户的请求重定向到最佳的边缘节点，从而减少了数据包需要穿越的网络距离，提高了传输效率。 传输层：。CDN在传输层通过使用像TCP（传输控制协议）这样的协议来确保数据的可靠传输。此外，CDN还涉及到会话的优化，例如通过压缩技术减少传输数据的大小，或者通过会话复用来提高效率。 应用层：CDN在应用层的作用最为明显，因为它直接处理用户请求的内容，如Web页面、图片、视频等。CDN通过缓存这些内容到边缘节点来减少延迟，提高用户访问速度，并提供负载均衡和故障转移能力。 IP-DNS-GSLB 通过这一段描述我们可以看到其实 CDN 的核心在于网络层这里，也就是“将用户的请求重定向到最佳的边缘节点”，我们展开聊聊：
+我们首先会在网络层进行 DNS 解析，在解析的过程中判断这个域名有没有使用 CDN 服务，如果使用了，我们会有一个 GSLB 系统来处理这个事情，那么这个系统是啥，原理是啥呢？我们举个例子来说：
+当用户发起对某个域名的请求时，该请求首先被发送到本地DNS服务器（Local DNS）。本地DNS服务器会向权威DNS服务器查询域名的IP地址。在GSLB的环境下，权威DNS服务器实际上是被GSLB系统所接管，它不再仅仅返回一个静态IP地址，而是根据一系列策略来决定返回哪个IP地址。
+（在 GSLB 前面那一段是不是很熟悉？没错，这就是 DNS 解析的过程，在这个过程中做了这个事情。）
+我在这里简单列出几个可能的策略：
+地理位置：GSLB会根据用户的地理位置信息，选择最近的服务器节点以减少延迟。 服务器健康状态：GSLB会检查各个服务器节点的健康状态，避免将请求分配到故障或性能低下的服务器。 负载情况：GSLB会考虑每个服务器节点的当前负载，将请求分配到负载较轻的服务器以平衡负载。 网络拥塞情况：GSLB会监测网络路径的拥塞情况，选择最佳的路由以避免网络瓶颈。 Ending 我和面试官聊完五层模型之后还是坚持说应该有一个可以调度的东西，然后面试官看我确实想不出来，就提示我 DNS 相关的东西，我答了和上述类似的一个东西，应该在他那里是算过关了，之前确实没听过.jpg
+那么这就是这篇文章的全部内容啦。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-24 00:00:00 +0000 UTC'>九月 24, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;阳树阳树</footer>
+  <a class="entry-link" aria-label="post link to CDN底层原理" href="http://localhost:1313/posts/juejin/cdn%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">向全栈靠齐的前端分享
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景与思考 前端在很多后端开发人员中，总是觉得没啥技术含量。尤其是在老java眼中，深深感觉存在严重的鄙视链。然后就是自己的职业规划，也不想一直做前端敲代码。毕竟自己的付出不少，也想收获属于自己的成就感。然后自己的横向发展就成了必然。
+后端技术首推Node 前后端编程环境和语法一致，上手非常快。 轻量级，部署简单。 生态丰富，文档颇多，碰到问题，百度查询方便。 高效的异步I/O模型，易处理大并发和连接。 Node框架推荐Koa 相对于express，Koa更加的轻便，上手主打一个简单易学好用。 语法上它的中间件和前端的模块化很像，开发思路一致。 前端熟悉的async await，promise方式，很好的解决了多层嵌套，地狱回调问题。 借助 co 和 generator，很好地解决了异步流程控制和异常捕获问题。 学习推荐 我当初学习也是想看了一下官网，发现确实如介绍般的简单，但是对于入门者来说，有点简单的过分了。在此推荐阮一峰老师的网络日志（不是打广告，确实是我当初前端起步阶段的老师之一，受益匪浅）。
+主要代码解析 项目结构 app.js源码 js
+代码解读
+复制代码
+const Koa = require(&#39;koa&#39;); const Router = require(&#39;koa-router&#39;); // 跨域模块 var cors = require(&#39;koa2-cors&#39;); //文件模块 const fs = require(&#39;fs&#39;); const { historyApiFallback } = require(&#39;koa2-connect-history-api-fallback&#39;); //静态文件加载 const serve = require(&#39;koa-static&#39;); //路径管理 const path = require(&#39;path&#39;); //koa-body对文件上传进行配置 const koaBody = require(&#39;koa-body&#39;) //实例化koa const app = new Koa(); app.use(historyApiFallback()); app.use(cors()); const router = new Router(); const bodyParser = require(&#39;koa-bodyparser&#39;); const controller = require(&#39;./controller&#39;); app.use(async (ctx, next) =&gt; { ctx.set(&#34;Access-Control-Allow-Origin&#34;, &#34;*&#34;) await next() }) app.use(bodyParser()); // 处理跨域 app.use(controller()); app.use(koaBody({ multipart:true, formidable:{ maxFileSize:50000*1024*1024, //设置上传文件大小最大限制，默认为2m，2000*1024*1024 keepExtensions: true // 保留文件拓展名 } })) // 1.主页静态网页 把静态页统一放到public中管理 const main = serve(path.join(__dirname) &#43; &#39;/build&#39;); //配置路由 app.use(router.routes()).use(router.allowedMethods()); const port = 5000; app.use(main) app.listen(port, () =&gt; { console.log(`server started on ${port}`) });
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-18 00:00:00 +0000 UTC'>九月 18, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;Kier</footer>
+  <a class="entry-link" aria-label="post link to 向全栈靠齐的前端分享" href="http://localhost:1313/posts/juejin/%E5%90%91%E5%85%A8%E6%A0%88%E9%9D%A0%E9%BD%90%E7%9A%84%E5%89%8D%E7%AB%AF%E5%88%86%E4%BA%AB/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如果你使用的第三方库有bug，你会怎么办
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>早上好，中午好，晚上好 在当今的前端工程化领域，第三方库的使用已经成为标配。然而，不可避免的是，这些库可能会存在bug，或者是库的一些功能并不能满足需要，需要修改库的某个功能，或添加功能。当遇到这种情况时，我们应该如何应对？本文将介绍三种解决第三方库bug的方法，并重点介绍使用patch-package库来修复bug的全过程。
+方法一：提issues给第三方库的作者，让作者修复 这个方式是比较常见的解决方式了，但有几个缺点：
+库作者不维护这个库了，那提issues自然就没有人close了，gg 库作者很忙，或者项目缺乏活跃的贡献者，导致问题可能长时间都不懂响应，那如果你这个项目很急的话，那gg bug或者功能的优先级不高，库作者先解决其他高优先级的，或者他不接受你的建议或者及时修复问题，那gg 还有可能出现的沟通成本，以确保库作者完全理解了问题的本质和重要性。 那如果库作者很勤奋，每天都在维护，对issues的问题，都满怀热情的进行解决，那我们可以按照以下流程进行提issues：
+发现bug：在使用第三方库时，发现了一个bug。 复现bug：在本地环境中尝试复现该bug，并记录详细的复现步骤。 提交issues：访问第三方库的GitHub仓库，点击“New issue”按钮，填写以下信息： 标题：简洁地描述bug现象。 描述：详细描述bug的复现步骤、预期结果和实际结果。 环境：列出你的操作系统、浏览器版本、库的版本等信息。 等待回复：作者可能会要求你提供更多信息，或者告诉你解决方案。耐心等待并积极配合。nice 方法二：fork第三方库，修复好bug后，发布到npm，项目下载自己发布的npm包 这个方式也有局限性：
+维护负担：一旦你fork了库，你需要负责维护这个分支，包括合并上游的更新和修复新出现的bug。 长期兼容性：随着时间的推移，原库和新fork的库可能会出现分歧，使得合并更新变得更加困难。 版本管理：需要管理自己发布的npm包版本，确保它与其他依赖的兼容性。 社区隔离：使用自己的fork可能会减少与原社区的合作机会，错过原库的其他改进和特性。 那如果你觉得这个方式很不错，那最佳实践是这样的：
+步骤 1: Fork 原始库 访问原始库的GitHub页面。 点击页面上的“Fork”按钮，将库复制到你的GitHub账户下。 步骤 2: 克隆你的Fork js
+代码解读
+复制代码
+git clone https://github.com/your-username/original-repo.git cd original-repo
+步骤 3: 设置上游仓库 js
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-09-27 00:00:00 +0000 UTC'>九月 27, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;_志哥_</footer>
+  <a class="entry-link" aria-label="post link to 如果你使用的第三方库有bug，你会怎么办" href="http://localhost:1313/posts/juejin/%E5%A6%82%E6%9E%9C%E4%BD%A0%E4%BD%BF%E7%94%A8%E7%9A%84%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E6%9C%89bug%E4%BD%A0%E4%BC%9A%E6%80%8E%E4%B9%88%E5%8A%9E/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">2023-01-30技术周刊第14期
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>记录一周所见所闻
+阅读与一句话 尽管他们老了，已经心平气和，但还是注意不去提它，因为那刚刚愈合的伤口会再次流血，仿如就发生在昨日。 —《霍乱时期的爱情》
+资讯 # TypeScript 5.0 Beta 测试版 # Deno 1.30 发布，内置了 Node 模块 # 价格暴涨，甲骨文推出全新 Java SE 定价模式 # astro 发布 v2 版本 # git 一家独大，GitHub 将于明年停止支持 Subversion（SVN） 文章推荐 # 在现代 JavaScript 中如何安全获取网络数据 # 聊聊 Cookie、Session、Token 背后的故事 实用工具 # notepad– 一个支持 windows/linux/mac 的文本编辑器，目标是要替换 notepad&#43;&#43;，来自中国。 # syllepsis Syllepsis 是一个开箱即用的富文本编辑器。 # color.js CSS 颜色规范编辑器的颜色转换和操作库。 # hyperformula Excel 公式的高级无头计算器和解析器。使用 TypeScript 构建。 # markdownlint Node.js 样式检查器和用于 Markdown/CommonMark 文件的 lint 工具。 # solid-start solid-start 用创建 solid app 的 框架。 开源与库 # viro ViroReact：React Native 📳🖤💙💛 的 AR 和 VR 库。 # salvo Salvo 是 Rust 世界中一个功能强大且最简单的 Web 服务器框架。 # leptos 使用 Rust 构建快速的 Web 应用程序。 # ultrahtml 一个对 html 增强的库。 # rakkasjs 由 Vite 提供支持的前沿 React 框架。 # browserless browserless 是与 Puppeteer 之上内置的无头浏览器进行交互的有效方式。 # yjs 用于构建协作软件的共享数据类型。 # kysely 类型安全的类型脚本 SQL 查询生成器。 # meilisearch 一个闪电般快速的搜索引擎，可以轻松地融入您的应用程序、网站和工作流程。 # typewind Typescript 的安全与 tailwind 的魔力。 # coco 一种使用 Datalog 并专注于图形数据和算法的事务性关系数据库。时间旅行能力强，速度快！ 往期推荐 # 2023-01-23 技术周刊第 13 期 # 2023-01-16 技术周刊第 12 期 # 2023-01-02 技术周刊第 11 期 更多 关注公踪号 进二开物，更多技术文章…
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-01-30 00:00:00 +0000 UTC'>一月 30, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;编程杂货铺</footer>
+  <a class="entry-link" aria-label="post link to 2023-01-30技术周刊第14期" href="http://localhost:1313/posts/juejin/2023-01-30%E6%8A%80%E6%9C%AF%E5%91%A8%E5%88%8A%E7%AC%AC14%E6%9C%9F/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">这样的Git规范，Leader看了都说好！
     </h2>
   </header>
@@ -144,101 +224,12 @@ vue3分支: element-plus分支： 分析这些开源项目的分支命名，不�
   <footer class="entry-footer"><span title='2024-09-18 00:00:00 +0000 UTC'>九月 18, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端下饭菜</footer>
   <a class="entry-link" aria-label="post link to 这样的Git规范，Leader看了都说好！" href="http://localhost:1313/posts/juejin/%E8%BF%99%E6%A0%B7%E7%9A%84git%E8%A7%84%E8%8C%83leader%E7%9C%8B%E4%BA%86%E9%83%BD%E8%AF%B4%E5%A5%BD/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">潮流前端周刊（第46期）-大阪夜景
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>封面图为一张18年的老图，摄于大阪的一个高楼透明玻璃往外望全城的夜景。
-记录每周看到的接地气的前端潮流技术，筛选后发布于此，觉得不错可关注此专栏，方便获取更新通知
-前端技术 如何防止他人恶意调试你的web程序
-juejin.cn/post/700078…
-只能说道高一尺，魔高一丈，永远会有比你更骚的。
-IO 多路复用是什么意思？
-www.zhihu.com/question/32…
-知乎上关于这个概念的一个很通俗的解释。
-美团外卖实时数仓建设实践
-tech.meituan.com/2021/08/26/…
-一个通用的实时生产平台跟一个通用交互式实时分析引擎相互配合，同时满足实时和准实时业务场景。
-潮流开源 NvChad：炫酷的 VIM IDE
-github.com/NvChad/NvCh…
-是IDE，而非编辑器，很漂亮。 zsh-z：快速跳到记忆目录
-github.com/agkozak/zsh…
-观察身边程序员居然只有1/10的人装了这个潮流工具 zsh-autosuggestions：帮助你自动联想命令
-github.com/zsh-users/z…
-比如你输入一个n，假如你之前输入过npm install -g npm，会自动提示你，和z是一对好兄弟。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-09-01 00:00:00 +0000 UTC'>九月 1, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;飞猪前端团队</footer>
-  <a class="entry-link" aria-label="post link to 潮流前端周刊（第46期）-大阪夜景" href="http://localhost:1313/posts/juejin/%E6%BD%AE%E6%B5%81%E5%89%8D%E7%AB%AF%E5%91%A8%E5%88%8A%E7%AC%AC46%E6%9C%9F-%E5%A4%A7%E9%98%AA%E5%A4%9C%E6%99%AF/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">js实现滑块验证功能
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>持续创作，加速成长！这是我参与「掘金日新计划 · 6 月更文挑战」的第10天，点击查看活动详情
-演示 前戏 滑块验证码是在网站、APP等应用中常见的一种验证方式，通过按照一定规则滑动滑块到指定位置完成验证，才可以进行下一步操作。滑块验证码有两种设计，一种是在滑动框内“一滑到底”即完成验证的，还有一种是滑动滑块拼合拼图完成验证的。由于拼图式的滑块验证码安全性更高，趣味性更强，所以多数网站或APP都选择了拼图式的滑块验证码。
-拼图式的滑块验证码在业务应用中有三种展现形式，触发式、嵌入式和弹出式。触发式即鼠标光标移入验证条后才显示验证拼图，不影响网页原有的排版。嵌入式即拼图验证区域直接嵌入展示在网页，清晰直观，便于用户使用。弹出式一般可以绑定自有验证方式，点击验证后才弹出滑动验证码，比如用户输入用户名和密码，点击登录后，页面弹出滑块验证码。
-源码介绍 主页样式设计 css
-代码解读
-复制代码
-.bxs-row { margin-bottom:12px; } .logo-box { width:404px; margin:120px auto; border:1px solid #e5e5e5; border-radius:4px; box-shadow:0 4px 18px rgba(0,0,0,0.2); position:relative; overflow:hidden; height:360px; } .login { position:absolute; width:320px;left:0; top:0; padding: 42px 42px 36px; transition:all 0.8s; } .username,.password,.btn { height: 44px; width: 100%; padding: 0 10px; border: 1px solid #9da3a6; background: #fff; text-overflow: ellipsis; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none; color: #000; font-size: 1em; font-family: Helvetica,Arial,sans-serif; font-weight: 400; direction: ltr; font-size:13px; } .submit { background-color: #0070ba; color:#fff; border:1px solid #0070ba; } .submit:hover { background-color:#005ea6; } .verBox { position:absolute; width:100%; text-align:center; left:404px; top:0; opacity:0; transition:all 0.8s; padding-top:55px; } .err { margin:12px 0 0; line-height:12px; height:12px; font-size:12px; color:red; }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2022-06-06 00:00:00 +0000 UTC'>六月 6, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;肥学</footer>
-  <a class="entry-link" aria-label="post link to js实现滑块验证功能" href="http://localhost:1313/posts/juejin/js%E5%AE%9E%E7%8E%B0%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E5%8A%9F%E8%83%BD/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Electron-egg，人人都会桌面软件开发
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>目前国内的开发者将近700万，桌面软件受限于学习门槛和移动化趋势，渐渐平庸。但我们日常工作中，又离不开桌面软件，因此希望有一个学习门槛低，支持多平台的软件框架。electron-egg就是在这种需求下，诞生的。
-electron-egg是一个简单、快速、功能丰富的JS跨平台桌面软件开发框架，您只需懂js语言就能开发。
-🏆 码云最有价值开源项目 地址：gitee.com/wallace5303… 特性 跨平台：一套代码，可以打包成windows版、Mac版、Linux版或者以web网站运行 简单高效：支持vue、react、ejs等前端技术 工程化：可以用服务端的开发思维，来编写桌面软件 高性能：可启动多个工作进程 功能丰富：服务端的技术场景都可以使用，如：路由、中间件、控制器、服务、定时任务、队列、插件等 功能demo：桌面软件常见功能，后续逐步集成并完善或提供demo 更多功能请看文档 最近更新 增加chrome扩展程序 增加web(html)内容嵌入 增加多窗口打开 增加桌面通知 增加电源监控 增加获取显示器信息 增加系统主题设置 修改功能分类 使用场景 1. 常规桌面软件 demo
-2. 游戏（h5相关技术开发） 忍者100层
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-10-18 00:00:00 +0000 UTC'>十月 18, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;哆啦好梦</footer>
-  <a class="entry-link" aria-label="post link to Electron-egg，人人都会桌面软件开发" href="http://localhost:1313/posts/juejin/electron-egg%E4%BA%BA%E4%BA%BA%E9%83%BD%E4%BC%9A%E6%A1%8C%E9%9D%A2%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">ES2024即将发布！5个可能大火的JS新方法
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Hello，大家好，我是 Sunday。
-ECMAScript 2024（ES15） 即将发布（2024年6月），新的版本带来了非常多全新的特性。其中有 5 个全新的 JS 方法，可以大幅度提升我们的工作效率，从而让我们得到更多的摸鱼时间。咱们一起来看看吧！
-01：Promise.withResolvers 这个功能引入了一个新方法来创建一个 promise，直接返回 resolve 和 reject 的回调。使用 Promise.withResolvers ，我们可以创建直接在其执行函数之外 resolve 和 reject
-js
-代码解读
-复制代码
-const [promise, resolve, reject] = Promise.withResolvers(); setTimeout(() =&gt; resolve(&#39;Resolved after 2 seconds&#39;), 2000); promise.then(value =&gt; console.log(value));
-02：Object.groupBy() Object.groupBy() 方法是一项新添加的功能，允许我们按照特定属性将数组中的 对象分组，从而使数据处理变得更加容易。
-js
-代码解读
-复制代码
-const pets = [ { gender: &#39;男&#39;, name: &#39;张三&#39; }, { gender: &#39;女&#39;, name: &#39;李四&#39; }, { gender: &#39;男&#39;, name: &#39;王五&#39; } ]; const res = Object.groupBy(pets, pet =&gt; pet.gender); console.log(res); // 输出: // { // 女: [{ gender: &#39;女&#39;, name: &#39;李四&#39; }] // 男: [{ gender: &#39;男&#39;, name: &#39;张三&#39; }, { gender: &#39;男&#39;, name: &#39;王五&#39; }], // }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-03-24 00:00:00 +0000 UTC'>三月 24, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员Sunday</footer>
-  <a class="entry-link" aria-label="post link to ES2024即将发布！5个可能大火的JS新方法" href="http://localhost:1313/posts/juejin/es2024%E5%8D%B3%E5%B0%86%E5%8F%91%E5%B8%835%E4%B8%AA%E5%8F%AF%E8%83%BD%E5%A4%A7%E7%81%AB%E7%9A%84js%E6%96%B0%E6%96%B9%E6%B3%95/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/javascript/page/7/">
-      «&nbsp;上一页&nbsp;7/26
+      «&nbsp;上一页&nbsp;7/27
     </a>
-    <a class="next" href="http://localhost:1313/tags/javascript/page/9/">下一页&nbsp;9/26&nbsp;»
+    <a class="next" href="http://localhost:1313/tags/javascript/page/9/">下一页&nbsp;9/27&nbsp;»
     </a>
   </nav>
 </footer>

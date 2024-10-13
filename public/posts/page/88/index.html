@@ -144,129 +144,120 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">大屏可视化落地
+    <h2 class="entry-hint-parent">万得厨cpu占用情况分析
     </h2>
   </header>
   <div class="entry-content">
-    <p>水一篇水一篇 公司的大佬同事们，不好意思，这一期我又要水一篇了，最近实在是没时间排出来写这个，虽然想写点我司呼声比较高的微前端技术分享、私有化组件库（storybook）落地技术分享这些，但是近期休息时间紧张那就讲下大屏可视化的一些方案吧，那些下一次一定（等娃大点的）！
-前因 我司某项目被乙方爸爸调戏讽刺，尽量多做些动画效果，没有动画效果是你们系统界面的通病！要多想想你们做的可是大屏呀，难道你们从来没做过大屏？整个页面都这么一个色调，五彩斑斓知不知道，这么low！
-纳尼？ 他想要五彩斑斓的黑？ 我听到这话，咋办？
-五彩斑斓 五彩斑斓的效果这里，我有几种不同的想法。这里我们先通过线性渐变实现其中一种。
-翻一下线性渐变linear-gradient的文档，很容易掌握它的用法。
-先简单配一下参数
-css
-代码解读
-复制代码
-:root { background-image: linear-gradient(45deg, aqua, blue, purple, red, orange, yellow, green); } 复制代码
+    <p>一、背景 当我们设备开启持续保存录音文件时，因为当前逻辑没有对存储语音做拆分或者定时删除逻辑，现在是往一个文件夹里面不断写入音频，当音频文件达到一定的大小（如十几G），设备就会明显的出现卡顿，语音唤醒比较慢，严重界面会报应用奔溃，已经影响到设备的正常使用。
+二、排查分析 1.通过连接设备查看设备资源使用情况
+同时结合软硬件工程师的分析，并不是因为内存暂用比较高导致，现0.9g，我设备是8g运行内存，最终定位原因是cpu快被占满，当音频文件很大时不断的写入会消耗非常的io性能，导致设备卡顿。
+结合以上分析，我们把储存的音频文件删除后，重启应用，设备运营正常，语音唤醒功能也正常了，设备没有出现卡顿的情况。此时连接设备查看资源消耗情况，发现消耗资源还是相对比较高，前三大头是我们应用和渲染动画和语音播放，如下图
+基于以上的分析，我们又尝试了在设备上单独安装虚拟人demo，把我们的应用卸载，再次连接设备排查资源消耗情况，发现单独虚拟人demo占用消耗的资源也不少，前面三大头是虚拟人和渲染动画和语音播放，如下图
+三、总结 基于以上分析情况，虚拟人接入到设备rk3568板子还是比较大的挑战，后续板子会升级选择性能更好的，但是虚拟人这块也需要优化，减少资源的占用，减少对整个设备负载。
+关于虚拟人占用资源较大的问题，已经发给第三方分析，等待他们回复。
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-10-28 00:00:00 +0000 UTC'>十月 28, 2022</span>&nbsp;·&nbsp;9 分钟&nbsp;·&nbsp;初心酱</footer>
-  <a class="entry-link" aria-label="post link to 大屏可视化落地" href="http://localhost:1313/posts/juejin/%E5%A4%A7%E5%B1%8F%E5%8F%AF%E8%A7%86%E5%8C%96%E8%90%BD%E5%9C%B0/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 万得厨cpu占用情况分析" href="http://localhost:1313/posts/wiki/%E4%B8%87%E5%BE%97%E5%8E%A8cpu%E5%8D%A0%E7%94%A8%E6%83%85%E5%86%B5%E5%88%86%E6%9E%90/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">JavaScript中如何拦截全局FetchAPI的请求和响应？
+    <h2 class="entry-hint-parent">基于“英伟达平台”JetsonNano系列主板同时运行2个虚拟人和声学AIUI整体性能占用情况分析
     </h2>
   </header>
   <div class="entry-content">
-    <p>本文翻译自 Intercepting JavaScript Fetch API requests and responses
-拦截器是可用于预处理或后处理 HTTP 请求的代码块，有助于全局错误处理、身份验证、日志记录等。在本文中，你将学习如何拦截 JavaScript Fetch API 请求。
-拦截 HTTP 请求一般有两种事件：请求和响应事件。请求拦截器应该在发送实际 HTTP 请求之前执行，而响应拦截器应该在到达发出请求的应用程序代码之前执行。
-在深入研究代码之前，我们需要了解一些重要的事情。首先，Fetch API 本身不支持拦截器。其次，在 Node.js 中使用 Fetch API 需要额外的包。
-JavaScript Fetch API 首先，让我们介绍一些 Fetch API 的基础，例如语法:
-js
-代码解读
-复制代码
-const fetchResponsePromise = fetch(resource [, init])
-resource 定义要获取的资源，该资源可以是 Request 对象，也可以是 URL。init 是一个可选对象，它将包含你想应用于此特定请求的任何自定义配置。
-Fetch API 是基于 Promise 的。因此，当你调用 Fetch 方法时，你将得到一个 Promise 响应。在这里，它被称为 fetchResponsePromise，如上面的示例所示。
+    <p> 11. 测试对象 22. 结论 33. 测试过程 3.13.1. 场景一：单独运行虚拟人功能 3.1.13.1.1. 数据统计 3.23.2. 场景二：单独运行AIUI声学功能 3.2.13.2.1. 数据统计 3.33.3. 场景三：运行AIUI声学&#43;虚拟人 3.3.13.3.1. 数据统计 1. 测试对象 硬件平台：
+型号：Jetson Nano系列 内存：8G 硬盘：128G CPU核心数：6核，600% 显卡：NVIDIA Tegra Orin (nvgpu)/integrated 应用软件：
+同时运行2个 虚拟人应用，同时一个声卡收音（咨询讯飞厂家后，讯飞声学AIUI支持一个主板，两块声卡、两个麦克风同时工作）
+2. 结论 结果：虚拟人形象渲染、声学都运行的情况下，平均整体占据CPU 13.4% ，占用不到一个核；平均内存为2.2G、占比为27.5%；
+数据类：
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-11-17 00:00:00 +0000 UTC'>十一月 17, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;我不吃饼干</footer>
-  <a class="entry-link" aria-label="post link to JavaScript中如何拦截全局FetchAPI的请求和响应？" href="http://localhost:1313/posts/juejin/javascript%E4%B8%AD%E5%A6%82%E4%BD%95%E6%8B%A6%E6%88%AA%E5%85%A8%E5%B1%80fetchapi%E7%9A%84%E8%AF%B7%E6%B1%82%E5%92%8C%E5%93%8D%E5%BA%94/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 基于“英伟达平台”JetsonNano系列主板同时运行2个虚拟人和声学AIUI整体性能占用情况分析" href="http://localhost:1313/posts/wiki/%E5%9F%BA%E4%BA%8E%E8%8B%B1%E4%BC%9F%E8%BE%BE%E5%B9%B3%E5%8F%B0jetsonnano%E7%B3%BB%E5%88%97%E4%B8%BB%E6%9D%BF%E5%90%8C%E6%97%B6%E8%BF%90%E8%A1%8C2%E4%B8%AA%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%92%8C%E5%A3%B0%E5%AD%A6aiui%E6%95%B4%E4%BD%93%E6%80%A7%E8%83%BD%E5%8D%A0%E7%94%A8%E6%83%85%E5%86%B5%E5%88%86%E6%9E%90/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">用Optional后代码变清爽多了
+    <h2 class="entry-hint-parent">虚拟人口型测试-20231226
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 编程路上风雨兼程，踩过的坑比喝过的奶茶还要多几分回味。今天，咱们深入浅出，探讨一个既平凡又深奥的操作——判空艺术，特别是那经典桥段 != null。在与臭名昭著的 NullPointerException（简称NPE，程序界的“空指针噩梦”）的持久战中，这招几乎是程序员的护身法宝。
-想当年，我还是编程界的新兵蛋子，对 null 敏感得像雷达，逢 null 必严谨判空，if (某物 != null)简直是开场白一般的存在。但随着时间的发酵，经验值蹭蹭上涨，我渐渐悟出：这频繁的判空虽是保险，却也像给代码穿上了一层又一层的秋衣，臃肿不说，还常常捂出些难以捉摸的Bug来。
-试想，代码里布满了迷宫般的 if-else 判空逻辑，别说一眼找出Bug，就算你瞪大眼睛外加放大镜，也得绕晕在那“是空非空”的哲学迷雾中。更别提，过度判空让程序员们变得草木皆兵，每行代码都藏着一颗“我到底有没有判空？”的忐忑心。这时候，修复Bug就像拆盲盒，刺激中带着一丝无奈：“我当初为啥要判这个空来着？”😢
-好在，Java 8 带来了救星——Optional，它简直就是判空界的清流，优雅地解决了我们的问题。使用 Optional，你可以把可能为 null 的对象包裹起来，通过一系列简洁的方法调用来避免直接触碰那令人头疼的 null，从而让代码更加清晰、安全，仿佛给代码做了一场瑜伽，柔韧且有力。
-所以，与其在判空的泥潭里越陷越深，不如拥抱 Optional，让我们的代码轻盈起舞，远离 “空指针”的阴霾，迈向更加优雅和健壮的编程新境界。🌟
-用 Optional 来拯救你的代码 Java 8 给我们带来了个神器——Optional。 简单来说，它就是个包装类，用来装那些可能为 null 的对象。用了 Optional，你就不用再到处写 != null 来判空了。举个例子，咱们看个传统的写法：
-java
-代码解读
-复制代码
-User user = getUserFromSomewhere(); if (user!= null) { Address address = user.getAddress(); if (address!= null) { String city = address.getCity(); if (city!= null) { System.out.println(city); } else { System.out.println(&#34;City not found.&#34;); } } else { System.out.println(&#34;Address not found.&#34;); } } else { System.out.println(&#34;User not found.&#34;); }
-...</p>
+    <p>虚拟人口型测试-20231226.xlsx
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-07 00:00:00 +0000 UTC'>九月 7, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;狼爷</footer>
-  <a class="entry-link" aria-label="post link to 用Optional后代码变清爽多了" href="http://localhost:1313/posts/juejin/%E7%94%A8optional%E5%90%8E%E4%BB%A3%E7%A0%81%E5%8F%98%E6%B8%85%E7%88%BD%E5%A4%9A%E4%BA%86/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 虚拟人口型测试-20231226" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%8F%A3%E5%9E%8B%E6%B5%8B%E8%AF%95-20231226/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">用ngrok实现内网穿透，一行命令就搞定！
+    <h2 class="entry-hint-parent">2023.02.28会议~万得厨2.0虚拟人相关界面优化需求终审与澄清
     </h2>
   </header>
   <div class="entry-content">
-    <p>最近在写支付的东西，调试时候需要让支付平台能够回调本地接口来更新支付成功的状态。但由于开发机器没有公网IP，所以需要使用内网穿透来让支付平台能够成功访问到本地开发机器，这样才能更高效率的进行调试。
-推荐内网穿透的文章已经很多很多，还有很多大合集的推荐，但也因为推荐的太多，也会让人眼花缭乱，不断尝试不断受挫。有的接受不了收费、有的配置繁琐，有的运行不稳定，还有的有病毒。
-这里不做过多推荐，只推荐一个个人认为最好用的，那就是：ngrok 。只需要一行命令就能帮你轻松实现内网穿透！
-下面你可以跟着我的操作来完成第一次使用：
-注册登录账号 从官网（ngrok.com/）右上角 Sign Up 进入，完成用户注册。如果您跟我一样是开发者的话，直接GitHub授权登录，快得很！
-完成注册并登录之后，可以看到Dashboard中就给出了使用的三个步骤：
-是不是超级简洁？接下来就来一起完成这三步！
-安装Ngrok 进入官网的下载页面：ngrok.com/download
-官方清晰地给出了各个系统的安装方法：
-个人推荐直接下载ZIP包，然后直接解压，这种方式最为迅速！
-配置账户 直接复制Dashboard中第二步的ngrok config add-authtoken xxxxx命令，然后打开终端，定位到之前解压ngrok的位置执行它！
-终端会输出为你保存的配置路径：
-bash
-代码解读
-复制代码
-Authtoken saved to configuration file: /Users/zhaiyongchao/Library/Application Support/ngrok/ngrok.yml
+    <p>会议名称
+万得厨2.0虚拟人相关界面优化需求终审与澄清
+会议时间
+2023年02月28日
+会议地点
+广州影子505，小鱼会议9006363736
+主持人
+郑小涵
+会议记录
+李梦阳
+参会人员
+袁书蒙、韦玲、王宇、王建明、陈子科、黄永世、雒兴晨、任鹏、卢一烨、钟华裕、吴家杰、林正、李梦阳、廖志川、郑小涵、马冬颖、冯天凤
+会议主题
+万得厨2.0虚拟人相关界面优化需求终审与澄清
+会议内容
+万得厨2.0虚拟人相关界面优化需求终审与澄清
+决议项
+1、猜你想问：初期阶段做不到根据场景推荐，先固定几个常用的意图询问，然后在用户唤醒时随机选择三个出现在下方
+2、涉及到英文语音交互界面需要同步去考虑 3、息屏转亮的时候的语音交互需要同步设计
+4、万得厨炉端界面（设置模式原有的菜篮形式的菜单）会有调整，当前版本我们暂时不考虑，后续待确定后我们再进行相应的调整
+5、通过语音追加命令的形式进行分阶段火力设置，需要下来调研可实现性
+6、烹饪过程中的界面描述需要细化一下
+7、背景图片的设置，要形成闭环，按角色去考虑，比如运营人员如何进行背景图片的设置
+8、暂停烹饪界面的返回键需要删掉
+9、二月遗留的工作继续进行，比如三听一反的相关内容
+10、按需求优先级，三月开始进入研发工作，需要在pdca上面体现
+11、两个虚拟人的切换逻辑需要思考
+材料（附件）
+https://pdca.yingzi.com/#/documentMgtView_1677548585585?type=prd&amp;prdVersionModuleId=1673&amp;prdVersionId=1111&amp;id=312&amp;iframeParam=
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-08-14 00:00:00 +0000 UTC'>八月 14, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序猿DD</footer>
-  <a class="entry-link" aria-label="post link to 用ngrok实现内网穿透，一行命令就搞定！" href="http://localhost:1313/posts/juejin/%E7%94%A8ngrok%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E4%B8%80%E8%A1%8C%E5%91%BD%E4%BB%A4%E5%B0%B1%E6%90%9E%E5%AE%9A/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 2023.02.28会议~万得厨2.0虚拟人相关界面优化需求终审与澄清" href="http://localhost:1313/posts/wiki/2023.02.28%E4%BC%9A%E8%AE%AE~%E4%B8%87%E5%BE%97%E5%8E%A82.0%E8%99%9A%E6%8B%9F%E4%BA%BA%E7%9B%B8%E5%85%B3%E7%95%8C%E9%9D%A2%E4%BC%98%E5%8C%96%E9%9C%80%E6%B1%82%E7%BB%88%E5%AE%A1%E4%B8%8E%E6%BE%84%E6%B8%85/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">键盘遮挡H5输入框解决方案
+    <h2 class="entry-hint-parent">20240109英文NLP横向对比结果
     </h2>
   </header>
   <div class="entry-content">
-    <p>小知识，大挑战！本文正在参与“程序员必备小知识”创作活动。
-本文已参与 「掘力星计划」 ，赢取创作大礼包，挑战创作激励金。
-前言 Hello 大家好！ 我是前端 无名
-问题 在开发H5活动界面的过程中，不可避免的要用到输入框，很多web前端开发人员一听到需求有输入框，就会想到一会评估工时的时候多评估点时间，因为输入框在移动端兼容会有一些问题。
-我们这次先说一个问题：移动端键盘弹起，输入框被遮挡，用户看不到输入的内容。
-解决方案 要解决问题，先问一下度娘：
-果不其然有一篇文章说的还不错：彻底解决H5中键盘遮挡输入框的问题
-方案1： 借助Element.scrollIntoView这个方法来解决，让当前元素滚动到浏览器的可视区域内。我们查看下兼容性：
-上面查询的兼容性还是比较好的，结果实际测试下来，android和ios许多机型都是无效。
-方案2： 度娘的方案不好使，那我们自己想想：
-Element.scrollIntoView 给了我们思路，Element.scrollIntoView 无效，我们不用scrollIntoView，我们采用采用scrollTo方法。
-步骤：
-我们给有input的页面设置为滑动界面。 在input所在页面同级底部加一个div input onFocus 的时候，我们给底部div 填充高度，然后延迟去让页面滚动到底部。 失去焦点的时候，我们把底部div的高度设置为0 这种方案按照实现步骤，理论上应该适配性很好。
-...</p>
+    <p>PDF
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2021-10-28 00:00:00 +0000 UTC'>十月 28, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;qyjandroid</footer>
-  <a class="entry-link" aria-label="post link to 键盘遮挡H5输入框解决方案" href="http://localhost:1313/posts/juejin/%E9%94%AE%E7%9B%98%E9%81%AE%E6%8C%A1h5%E8%BE%93%E5%85%A5%E6%A1%86%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 20240109英文NLP横向对比结果" href="http://localhost:1313/posts/wiki/20240109%E8%8B%B1%E6%96%87nlp%E6%A8%AA%E5%90%91%E5%AF%B9%E6%AF%94%E7%BB%93%E6%9E%9C/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/87/">
-      «&nbsp;上一页&nbsp;87/152
+      «&nbsp;上一页&nbsp;87/237
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/89/">下一页&nbsp;89/152&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/89/">下一页&nbsp;89/237&nbsp;»
     </a>
   </nav>
 </footer>

@@ -131,128 +131,123 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">深入探讨安全验证：OAuth2.0、Cookie与Session、JWT令牌、SSO与开放授权平台设计
+    <h2 class="entry-hint-parent">复盘
     </h2>
   </header>
   <div class="entry-content">
-    <p>什么是认证和授权？如何设计一个权限认证框架？ 认证和授权是安全验证中的两个重要概念。认证是确认身份的过程，用于建立双方之间的信任关系。只有在认证成功的情况下，双方才可以进行后续的授权操作。授权则是在认证的基础上，确定用户或系统对资源的访问权限。
-在设计一个权限认证框架时，可以考虑以下原则：资源、角色和主体。
-资源：定义系统中的各种功能、数据或服务，例如页面、API接口等。 角色：角色是对用户或系统进行逻辑分组的一种方式。一个主体（用户或系统）可以拥有一个或多个角色。每个角色可以被赋予不同的权限，即可以访问哪些资源。 主体：主体是指进行认证和授权的实体，可以是用户、系统或第三方应用程序。 在开发中，可以采用前端页面按钮权限控制和后台统一权限控制的方式来确保安全访问。前端页面按钮权限控制可以根据用户角色或权限配置显示或隐藏页面上的按钮，以限制用户的操作。后台统一权限控制可以通过中间件或拦截器来验证用户的认证信息和权限，确保用户只能访问其被授权的资源。
-Cookie和Session有什么区别？如果没有Cookie,Session还能进行身份验证吗？ Cookie和Session是用于进行身份验证和状态管理的两种机制，在实现上有一些区别。
-Cookie是由服务器在响应中生成并存储在客户端的一种小型文本文件。它可以包含一些状态信息，例如用户身份标识、过期时间等。每次客户端发送请求时，会自动携带相应的Cookie数据，以便服务器进行身份验证和状态管理。
-Session是在服务器端创建和管理的一种数据结构，用于存储每个用户的会话信息。服务器在接收到客户端请求后，为每个会话生成一个唯一的session id，并将其发送给客户端保存。客户端在后续的请求中会携带该session id，服务器根据id查找对应的会话信息，进行身份验证和状态管理。
-由于Session的实现依赖于Cookie来传递session id，如果没有Cookie，无法将会话信息与请求进行关联，从而无法进行有效的身份验证。
-在分布式部署的情况下，可以采取一些解决方案来处理Session的信息保存问题。常见的解决方案包括：
-调整负载均衡策略：通过配置负载均衡器，将特定的客户端请求固定发送到某个服务器上，以确保会话信息的一致性。但是当该服务器宕机或故障时，会话信息将丢失。 Session复制：在集群中的服务器之间复制会话信息，以保持一致性。但是在高并发环境下，如果复制过程未完成，就接收到了新的请求，会影响性能和一致性。 Session共享：使用第三方工具（如Redis）将会话信息存储在共享的缓存中，每个服务器都可以访问和更新该缓存，以实现会话信息在集群中的共享和同步。 什么是CSRF攻击？如何防止？ CSRF（Cross-Site Request Forgery）攻击是一种利用受害者在已经认证的状态下执行非意愿操作的攻击方式。攻击者通过诱使受害者访问恶意网站或点击恶意链接，来执行未经授权的操作，例如修改密码、进行转账等，简单来说就是，由于cookie是在浏览器共享的，所以一旦设置了cookie，那么当你打开另一个tab页的时候，也会携带过去，那么其他站点就可以使用cookie进行攻击，具体如下：
-比如：当你在浏览器中打开银行A的网页并成功登录后，你想要进行转账操作。你使用GET请求访问了一个URL：www.banka.com/transfer?ac…
-然而，同时你在另一个浏览器标签中打开了一个恶意网页，这个网页中包含了一个类似的URL：www.banka.com/transfer?ac…
-当你点击恶意网页中的链接时，银行A的服务器会收到这个请求，并且由于存在有效的Cookie，会误认为这是一个合法的请求，从而执行了转账操作，将10000的金额从你的账户中转出。
-为了防止CSRF攻击，可以采取以下措施：
-验证请求来源：在服务器端对请求进行验证，确保请求来自合法的来源。可以通过检查请求头中的Referer字段或使用自定义的Token进行验证。 使用CSRF令牌（Token）：在每个表单或敏感操作的请求中，包含一个随机生成的CSRF令牌。服务器在接收到请求时，验证令牌的有效性，确保请求是合法的。 限制敏感操作的权限：确保只有授权的用户才能进行敏感操作。这可以通过身份验证和授权机制来实现。 使用验证码：在某些敏感操作中，要求用户输入验证码，以提高安全性。验证码可以有效防止自动化攻击。 设置Cookie属性：将Cookie设置为httponly属性，防止JavaScript脚本获取和修改Cookie的值，减少攻击者的可能性。 定期更新令牌：为了增加攻击者破解令牌的难度，可以定期更新令牌，使其失效。 什么是OAuth2.0协议？有哪几种认证方式？什么是JWT令牌？和普通令牌有什么区别？ OAuth2.0是一种开放标准的授权协议，用于在第三方应用程序和服务之间进行安全的认证和授权。在OAuth2.0中，用户可以通过授权服务器将其身份验证信息与第三方应用程序共享。授权服务器会颁发一个访问令牌，该令牌将用于向资源服务器请求受保护资源。第三方应用程序使用访问令牌来获取用户授权的资源。
-OAuth2.0的授权过程通常涉及以下几个角色：
-用户：资源的所有者，可以授权第三方应用程序访问其资源。 第三方应用程序：需要访问用户资源的应用程序。 授权服务器：负责验证用户身份并颁发访问令牌。 资源服务器：存储和提供受保护资源的服务器。 OAuth2.0有以下几种认证方式：
-...</p>
+    <p> 古人说，四十不惑，五十知天命，六十耳顺…
+少掉的那十年里，有十个寒暑变化，有几千个日夜更替，有无数个事物的演化规律。都是省不得的。你一定要亲眼去看，亲耳去听，亲手去摸。
+这就是经验的价值，是你任凭多少钱都买不回来的。
+但是，只有经验且盲目依赖经验的人，叫：倚老卖老。能从经验里抽象出能力的人，才叫：智者。
+希望这篇文章，能给你一点点启发。祝你，成为智者。
+https://mp.weixin.qq.com/s/gpZk4AudcCIjV9LkGJe1jQ
+援引自刘润的《我最害怕的，就是那些经验丰富的人》
+只有能从经验里抽象出能力的人，才能称之为智者。
+如何去抽象能力，必须去阅读、学习、实践与复盘。一点都省不了。并且在复盘中，主要的目的是要找到“因”。
+我认为要做出正确的判断，需要依据一个公式：正确判断=本质&#43;环境。
+本质是事物的本质，人最基本的行为逻辑。比如人可能会选择去吃小龙虾，可能会去吃馒头，或者其他。但是本质是为了满足营养的需求。
+一家餐饮店满足了营养的需求，需要进行宣传的时候，其本质是要把能够满足的能力传达给目标客户。但是实际做的时候可能不能依据前面的经验，反而需要去知道现在的环境，比如顾客们通常待在哪里？哪个软件？做决策的依据有没有随着社会的变迁出现了变化？比如以前是用qq，现在用微信。如果现在还在qq投放广告那必定效果欠佳。如果观察了环境，就能知道更好的答案了。
+正确判断=本质&#43;环境。
+所以通常来说，在世界里，总结并且验证了模式的人，是你需要主动去靠近、拜其为师的人。
+经历了人，会发现，人虽平等（我也坚信平等），但是人的认知还是有层次的。这种认知我认为越往心、越善于思考，层次就越高。
+比例 我认为学习、实践与复盘的一个比例应该是这样的。在这里是写复盘的重要性，不过复盘的比例我仍然需要强调，并不需要那么高。
+学习（40%）、实践（50%）、复盘（10%）
+因为很多知识，如果没有花很多的时间，这个时间可能是几年或者几十年，没有这个功底，可能无法顿悟出事情背后的本质。看自己的定位。我的定位是偏向于实践，所以需要依靠很多智者的大脑，依靠他们所研究、顿悟出来的本质去实践。站在巨人的肩膀上去看世界，去读懂世界，去活得幸福。读了大师的著作，复盘时，就要依据这些原理去反思前面的行为、因和果。这样大师的顿悟，会慢慢变成自己的顿悟。
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2023-08-20 00:00:00 +0000 UTC'>八月 20, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;努力的小雨</footer>
-  <a class="entry-link" aria-label="post link to 深入探讨安全验证：OAuth2.0、Cookie与Session、JWT令牌、SSO与开放授权平台设计" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E6%8E%A2%E8%AE%A8%E5%AE%89%E5%85%A8%E9%AA%8C%E8%AF%81oauth2.0cookie%E4%B8%8Esessionjwt%E4%BB%A4%E7%89%8Csso%E4%B8%8E%E5%BC%80%E6%94%BE%E6%8E%88%E6%9D%83%E5%B9%B3%E5%8F%B0%E8%AE%BE%E8%AE%A1/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 复盘" href="http://localhost:1313/posts/wiki/%E5%A4%8D%E7%9B%98/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">📢vue3.5最新发布，这几个新用法还不快来学习一下！
+    <h2 class="entry-hint-parent">APPUIM&#43;android在电脑实现手机模拟操作及数据收集
     </h2>
   </header>
   <div class="entry-content">
-    <p>前言 就在昨天（2024-09-03），vue官方发布了vue.js3.5的稳定版本，在vue的官方英文文档上也已经能看到3.5版本更新的内容，该版本不包含重大更改，包括内部改进和实用的新功能。下文来了解几个比较有意思的改动。
-响应式 Props 解构 vue3.5前响应式解构props用法
-使用toRef()这个api对props的参数进行响应式解构，如下所示：
-js
-代码解读
-复制代码
-&lt;script setup lang=&#34;ts&#34;&gt; import { toRef } from &#39;vue&#39; const props = defineProps&lt;{ count: number }&gt;() // 响应式解构count属性 const count = toRef(props, &#39;count&#39;) // 测试count响应式，子组件按钮点击输出解构的count值 const log = () =&gt; { console.log(count.value) } &lt;/script&gt;
-vue3.5响应式解构props方法
-js
-代码解读
-复制代码
-&lt;script setup lang=&#34;ts&#34;&gt; // vue3.5可以直接响应式解构 const { count } = defineProps&lt;{ count: number }&gt;() // 测试count响应式，子组件按钮点击输出解构的count值 const log = () =&gt; { console.log(count) } &lt;/script&gt;
-...</p>
+    <p>连接模拟器/设备 第1步，在模拟器/手机设备中打开“开发者模式”→开启“USB调试”
+第2步，检查设备连接情况
+当出现cannot connect to daemon 即无法开启服务的提示时。这时一般是有其他的软件和abd用了同一个端口。所以可以在电脑环境变量中添加修改port端口的环境变量，以避免无法启动adb server。（参考：Android 修改adb端口的方法-腾讯云开发者社区-腾讯云 (tencent.com)）
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-04 00:00:00 +0000 UTC'>九月 4, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;vilan_微澜</footer>
-  <a class="entry-link" aria-label="post link to 📢vue3.5最新发布，这几个新用法还不快来学习一下！" href="http://localhost:1313/posts/juejin/vue3.5%E6%9C%80%E6%96%B0%E5%8F%91%E5%B8%83%E8%BF%99%E5%87%A0%E4%B8%AA%E6%96%B0%E7%94%A8%E6%B3%95%E8%BF%98%E4%B8%8D%E5%BF%AB%E6%9D%A5%E5%AD%A6%E4%B9%A0%E4%B8%80%E4%B8%8B/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to APPUIM&#43;android在电脑实现手机模拟操作及数据收集" href="http://localhost:1313/posts/wiki/appuim&#43;android%E5%9C%A8%E7%94%B5%E8%84%91%E5%AE%9E%E7%8E%B0%E6%89%8B%E6%9C%BA%E6%A8%A1%E6%8B%9F%E6%93%8D%E4%BD%9C%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%94%B6%E9%9B%86/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">ELK搭建&amp;日志集成
+    <h2 class="entry-hint-parent">chatGPT将是创新公司站上头部位置的新机会
     </h2>
   </header>
   <div class="entry-content">
-    <p>ELK 搭建 &amp; 日志集成 背景 突然想自己搭建一个ELK
-只是ELK的搭建和日志的简单集成，并不涉及高端知识，大佬请绕道
-环境 CentoOS7
-前置工作 前提要一个干净的环境。只需要一个正常可以访问的网络。如果你搭建环境已经包含前置工作中的必要内容，那么可以直接跳过。
-更换系统源 更换的原因是： 无法获取镜像列表。
-1. 备份原有源文件 bash
-代码解读
-复制代码
-mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
-2. 选择新的源 以腾讯源为例，你可以下载腾讯的 CentOS 7 源配置文件：
-bash
-代码解读
-复制代码
-wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos7_base.repo
-3. 更新 yum 缓存 bash
-代码解读
-...</p>
+    <p>副标题：基于“资源依赖理论”的chatGPT市场发展潜力推理
+1. chatGPT对于某些市场是具备破坏性潜力的。 1.1. 成熟企业在破坏性技术发展下的惨败历史 在《创新者的窘境》一书中，说明破坏性技术是一门在开始出现时并不能满足主流客户需求，但是可以通过技术发展满足主流客户需求的一门技术。因为成熟企业的优秀管理，即把客户需求当做第一位，而造成当这门破坏性技术刚推出时，不会被主流客户所认可，因为破坏性技术生产的产品不能满足主流客户的需求。但企业听取并执行了主流客户：“不投资破坏性技术，而发展延续性技术“的需求。
+当破坏性技术被创新企业所重用，通过创造/发现与主流客户不同的新市场，站稳了脚跟。创新企业将会发展这门技术。而这门技术如预想中的那样，创造的产品性能发展到能够满足主流客户的需求的地步。在这一瞬间，成熟企业会在突然间被创新企业所取代。主流客户市场被大面积蚕食。一家又一家的老牌企业倒闭。
+在种现象在几乎每一个行业中不断重演。硬盘行业、挖掘机行业、计算机行业、钢铁行业等等。
+1.2. chatGPT是一门破坏性技术 chatGPT是一门破坏性技术。观察现在的现象chatGPT横空出世，很多的人很多的企业都在讨论这个东西，同时很多人依旧在原有的发展轨迹上行走，而没有为chatGPT替代市场做强力的投资。
+以心理咨询行业为例：
+心理咨询是一门强调对话的技术。原来的市场是专家和人一对一进行咨询服务。这些目前专家占领着几乎大部分的市场。
+虽然未来的事具体是什么无法猜测。不过按照破坏性技术理论。智能语音产品会从一些小型的利润率低的市场切入手，而这些专家会不在乎这些市场的出现和蚕食。当智能语音产品越来越强，直到智能语音产品能够满足专家所服务的市场所要求的性能时，这些专家会发现自己一夜间失业，并且几乎没有翻身的可能。
+1.3. 如《创新者的窘境》一书中所描绘的那样，发展和应用chatGPT这门破坏性技术的创业公司，将会取代各行各业中的成熟企业，占领主流客户市场。 Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-27 00:00:00 +0000 UTC'>九月 27, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;柯苏远</footer>
-  <a class="entry-link" aria-label="post link to ELK搭建&日志集成" href="http://localhost:1313/posts/juejin/elk%E6%90%AD%E5%BB%BA%E6%97%A5%E5%BF%97%E9%9B%86%E6%88%90/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to chatGPT将是创新公司站上头部位置的新机会" href="http://localhost:1313/posts/wiki/chatgpt%E5%B0%86%E6%98%AF%E5%88%9B%E6%96%B0%E5%85%AC%E5%8F%B8%E7%AB%99%E4%B8%8A%E5%A4%B4%E9%83%A8%E4%BD%8D%E7%BD%AE%E7%9A%84%E6%96%B0%E6%9C%BA%E4%BC%9A/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">开发小同学的骚操作，还好被我发现了
+    <h2 class="entry-hint-parent">业务知识检索方案
     </h2>
   </header>
   <div class="entry-content">
-    <p>大家好，我是程序员鱼皮。今天给朋友们还原一个我们团队真实的开发场景。
-开发现场 最近我们编程导航网站要开发 用户私信 功能，第一期要做的需求很简单：
-能让两个用户之间 1 对 1 单独发送消息 用户能够查看到消息记录 用户能够实时收到消息通知 这其实是一个双向实时通讯的场景，显然可以使用 WebSocket 技术来实现。
-团队的后端开发小 c 拿到需求后就去调研了，最后打算采用 Spring Boot Starter 快速整合 Websocket 来实现，接受前端某个用户传来的消息后，转发到接受消息的用户的会话，并在数据库中记录，便于用户查看历史。
-小 c 的代码写得还是不错的，用了一些设计模式（像策略模式、工厂模式）对代码进行了一些抽象封装。虽然在我看来对目前的需求来说稍微有点过度设计，但开发同学有自己的理由和想法，表示尊重~
-前端同学小 L 也很快完成了开发，并且通过了产品的验收。
-看似这个需求就圆满地完成了，但直到我阅读前端同学的代码时，才发现了一个 “坑”。
-这是前端同学小 L 提交的私信功能代码，看到这里我就已经发现问题了，朋友们能注意到么？
-...</p>
+    <p> 11. 业务知识检索方案分析 22. DB_LLM 2.12.1. 指标含义 2.2[2.2. 通过修改SQL条件筛选方式为like，并配套相似度算法，则“SQL方向正确，同时匹配数据”能接近95.8%的准确率](#id-业务知识检索方案-通过修改SQL条件筛选方式为like，并配套相似度算法，则“SQL方向正确，同时匹配数据”能接近95.8% 的准确率) 2.32.3. 模型输出SQL审核 2.42.4. 其他问题 1. 业务知识检索方案分析 （1）知识检索召回、用户标签等高关联数据作为固定插入，？业务数据库（订单数据、实时商品食谱等业务数据）查询，将指令集中包含的每条各设置成一条函数通过function call选择调用，由大模型进行意图识别、任务规划、函数选择，应用层处理函数调用；
+一个场景即是一个SQL
+方案
+优
+劣
+方案
+优
+劣
+遍历各个场景，每个场景编写成一个function，配套场景的描述。
+比较自由的改进function的输入输出，和运行流程。
+控制SQL的安全性，防止系统发生异常。
+食谱18个字段，营养29个字段。场景多，编写困难。 场景多，可能会导致超出模型token限制。 场景多，可能会导致模型识别率下降 遍历各个场景，每个场景编写成一个function，配套场景的描述。基于知识库，检索出合理数量的相关function。
+如上的一个改进
+配一个 NL2SQL的function
+不用每个场景编写SQL。但是实际效果未知，或许可能需要采取合适的方法，如提示工程、RAG、微调等方式进一步优化准确率。或许可以引用邓丽辉的模型。
+安全性不是很好，需要花时间识别不良的SQL，禁止被执行或者修改为良好安全的SQL后，再执行。
+采用合适的方法，提高安全性
+设置大模型使用的数据库连接账户的权限范围为“SELECT&#34;，并且只能看到特定表。每次查询自动加上LIMIT限制语句。 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-06-04 00:00:00 +0000 UTC'>六月 4, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;程序员鱼皮</footer>
-  <a class="entry-link" aria-label="post link to 开发小同学的骚操作，还好被我发现了" href="http://localhost:1313/posts/juejin/%E5%BC%80%E5%8F%91%E5%B0%8F%E5%90%8C%E5%AD%A6%E7%9A%84%E9%AA%9A%E6%93%8D%E4%BD%9C%E8%BF%98%E5%A5%BD%E8%A2%AB%E6%88%91%E5%8F%91%E7%8E%B0%E4%BA%86/"></a>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 业务知识检索方案" href="http://localhost:1313/posts/wiki/%E4%B8%9A%E5%8A%A1%E7%9F%A5%E8%AF%86%E6%A3%80%E7%B4%A2%E6%96%B9%E6%A1%88/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">华为竟然发布了自己的编程语言“仓颉”，遥遥领先？！
+    <h2 class="entry-hint-parent">营养查询功能分析与设计构思
     </h2>
   </header>
   <div class="entry-content">
-    <p>大家好，我是程序员鱼皮。在 2024 年 6 月 21 日的华为开发者大会上，华为不仅官宣了下一代鸿蒙操作系统 HarmonyOS NEXT，而且还正式推出了自研的编程语言 仓颉 ，可谓是赚足了面子，遥遥领先！
-值得一提的是，HarmonyOS NEXT 是华为从内到外 全栈自研 的纯血鸿蒙。自研有什么意义呢？大会上有很多高大上的互联网黑话，什么采用端云垂直整合的系统架构、全场景、原生智能、原生安全等等。对于普通用户来说，咱不用理解这些，只需要关注这个操作系统可以使整机性能提升 30％、连接速度提升 3 倍、连接数量提升 4 倍、功耗降低 20％ 就够了，而且这是一个源自中国、自主可控的操作系统，会更安全。
-华为推出仓颉编程语言 下面咱重点来聊聊华为自研的编程语言 仓颉 。官方的定义是：仓颉编程语言是一款面向全场景智能的新一代编程语言，主打原生智能化、天生全场景、高性能、强安全。融入鸿蒙生态，为开发者提供良好的编程体验。
-好吧，又是一大堆 “黑话”，咱也不用关注。但有一点很关键，这个语言 “融入了鸿蒙生态”，换句话说，它就是为了鸿蒙应用的开发而推出的。
-有意思的是，其实华为 22 年的时候就已经推出过一门自研的鸿蒙应用开发语言 ArkTS，只不过该语言是在微软开源的 TypeScript 的基础上改进的。
-而这次，仓颉编程语言没有基于任何现有的编程语言演进，换句话说，是完全自研！
-完全自研编程语言毫无疑问是一件成本非常大的事情，连语法都要自己定义。华为从 2019 年就启动了仓颉项目，经过了整整 5 年的研发和沉淀，才正式对外官宣。不得不称赞一番华为的前瞻性和野心，从很早之前就已经布局了全链路的自研，誓要打造纯血鸿蒙。
+    <p>1. 用户群体分析 参考报告：https://www.vzkoo.com/read/202208252e00378b32b9b22e46012fd0.html
+老人：关注吃了健不健康、熟不熟 幼（父母）：关注好不好吃、好不好玩、能不能变得更强壮、更高，能不能让我赢得运动比赛，能不能让我学习更好；安不安全、孩子吃了好不好、能不能长高长大。 残： 其他用户（中低产）：想变得更好看；想用更少的时间，吃最好吃的饭、最好看的饭（颜值即正义）。想通过吃，克服容貌焦虑。想毫无压力的养生 2. 用户人群总结： 主动追求健康的人 想追求健康的人 吃什么能够长头发 吃什么能够让胃更舒服 吃什么养胃养肝养肾 想追求好看的人 吃什么美容养颜 虽然不追求健康，但是不代表不认可健康，而特意往不健康的方向主动去走。而是维持，在保证生活快乐的同时，能够毫不费力的去养生、保健。 3. 用户需求 主动追求健康的人 AI食疗（AI食疗列表 | 常见病食疗 | 养生 | 疾病 - 唤醒食物 (foodwake.com)） 我想减肥，吃这个能减肥吗？ 减肥的话，吃什么比较好呢？ 我想生发，吃什么比较好？ 热量查询 营养查询 不主动追求，但默认需要健康的人 4. 产品&amp;数据需求 4.1. AI食疗：根据 疾病/需求（如减肥、湿气重、高血压、抑郁症） 推荐有效的 食谱/食品/食材 爬取AI食疗列表 | 常见病食疗 | 养生 | 疾病 - 唤醒食物 (foodwake.com)网站的AI食疗数据，获取 疾病/需求 与营养素、食物的关系。将此关系映射到我们万得厨食谱和食品中，就能够提供根据疾病/需求，推荐有效的 食谱/食品/食材 的功能。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-06-25 00:00:00 +0000 UTC'>六月 25, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程序员鱼皮</footer>
-  <a class="entry-link" aria-label="post link to 华为竟然发布了自己的编程语言“仓颉”，遥遥领先？！" href="http://localhost:1313/posts/juejin/%E5%8D%8E%E4%B8%BA%E7%AB%9F%E7%84%B6%E5%8F%91%E5%B8%83%E4%BA%86%E8%87%AA%E5%B7%B1%E7%9A%84%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E4%BB%93%E9%A2%89%E9%81%A5%E9%81%A5%E9%A2%86%E5%85%88/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 营养查询功能分析与设计构思" href="http://localhost:1313/posts/wiki/%E8%90%A5%E5%85%BB%E6%9F%A5%E8%AF%A2%E5%8A%9F%E8%83%BD%E5%88%86%E6%9E%90%E4%B8%8E%E8%AE%BE%E8%AE%A1%E6%9E%84%E6%80%9D/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/145/">
-      «&nbsp;上一页&nbsp;145/153
+      «&nbsp;上一页&nbsp;145/237
     </a>
-    <a class="next" href="http://localhost:1313/page/147/">下一页&nbsp;147/153&nbsp;»
+    <a class="next" href="http://localhost:1313/page/147/">下一页&nbsp;147/237&nbsp;»
     </a>
   </nav>
 </footer>

@@ -131,119 +131,114 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">深入了解ReactNative新架构
+    <h2 class="entry-hint-parent">20231106FTT英文知识库能力测试报告
     </h2>
   </header>
   <div class="entry-content">
-    <p>深入了解React Native新架构 React Native团队宣布新架构将于2022年推出。点击这里查看他们的完整博客。
-“2022 is going to be the year of the New Architecture in open source”(2022将会是新架构开源之年)
-由于新版本发布在即，现在是个很好的机会去了解它的底层发生了哪些改变，以及这些改变会对我们的React Native App造成什么影响
-本文主要介绍这次重构变化最多的地方：
-JavaScript Interface(JSI) Fabric Turbo Modules CodeGen 当前架构 在学习新架构之前，让我们先回顾下当前的架构。
-此次仅列举一些和本文相关的知识点，如果想了解更多关于当前架构的内容，阅读Bianca Dragomir的这篇文章
-简而言之： 当我们运行RN应用时，所有的 javascript 代码会被打包到 JS Bundle，Native代码则被单独保存。
-RN有以下三个线程：
-JS thread：JS引擎使用该线程运行JS Bundle。 Native/UI thread: 运行原生能力(Native Modules)，处理UI渲染，用户手势事件等操作。 shadow thread：在元素渲染之前先计算布局。 JS和Native thread通过bridge进行通信，当通过bridge发送数据时，bridge会将数据排队批处理(优化)，并序列化成JSON，并且该通信只能是异步的。
-...</p>
+    <p>1、测试评估报告
+PDF
+2、详细数据
+https://alidocs.dingtalk.com/i/nodes/gwva2dxOW4KG0QOrIOOAKm6N8bkz3BRL?utm_scene=person_space
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2023-08-04 00:00:00 +0000 UTC'>八月 4, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;王负剑王负剑</footer>
-  <a class="entry-link" aria-label="post link to 深入了解ReactNative新架构" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3reactnative%E6%96%B0%E6%9E%B6%E6%9E%84/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 20231106FTT英文知识库能力测试报告" href="http://localhost:1313/posts/wiki/20231106ftt%E8%8B%B1%E6%96%87%E7%9F%A5%E8%AF%86%E5%BA%93%E8%83%BD%E5%8A%9B%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">深入理解React的Fiber架构
+    <h2 class="entry-hint-parent">运用python进行接口批测
     </h2>
   </header>
   <div class="entry-content">
-    <p>引言 React 是由 Facebook 开发并于 2013 年开源的前端库，最初的目的是为了解决当时复杂用户界面开发中的效率和性能问题。React 引入了组件化开发和虚拟 DOM（Virtual DOM）的概念，使得开发者可以以声明式的方式构建用户界面，并大幅提升了性能和开发体验。随着时间的推移，React 不断演进，加入了许多新的特性，如 Hooks、Context API 等，进一步提升了其灵活性和可维护性。
-尽管 React 在性能和开发效率方面取得了很大的成功，但随着应用规模和复杂度的增加，传统的 React 架构在处理高频更新和复杂组件树时开始暴露出一些性能瓶颈。例如，在用户交互频繁或者需要大规模更新时，界面的响应速度会受到影响。为了解决这些问题，React 团队在 2017 年（React v16）引入了全新的 Fiber 架构。这是一种全新的协调引擎，旨在提高 React 应用的性能，尤其是在复杂和高频更新的场景下。
-本文将深入探讨 React Fiber 架构，理解其设计理念和实现细节。
-Fiber 架构的背景 从上面两个图可以明显看出差别，上面的图是React 16以前的架构，下面的图是使用了fiber架构的。
-传统 React 架构的局限性 React 最初的架构在处理 UI 更新时采用了同步的、阻塞的方式。即一次更新会从根节点开始递归遍历整棵组件树，直至完成所有组件的渲染。这种方式在处理简单的 UI 时表现良好，但随着应用的复杂性增加，特别是在处理大量节点更新或频繁用户交互时，传统架构暴露出了以下几个主要局限性：
-单次渲染时间过长：当组件树较大时，一次完整的渲染更新可能会占用大量的时间，这会导致主线程被阻塞，无法响应用户的输入，进而影响用户体验。 缺乏优先级管理：传统架构无法根据任务的重要性分配优先级，所有更新一视同仁，这意味着关键任务（如用户输入处理）可能会被不重要的任务（如低优先级的动画或日志更新）阻塞。 中断和恢复困难：在传统架构中，一旦开始渲染更新，就无法中途中断并恢复，这使得在处理高优先级任务时非常不灵活。 为什么需要 Fiber？ 为了克服传统 React 架构的局限性，React 团队提出了 Fiber 架构。Fiber 是 React 的一种新的协调引擎，它通过将更新过程拆分为多个小任务来解决性能瓶颈和用户体验问题。
+    <p> 11. 背景 22. 工具 33. 编码 44. 测试演示 4.14.1. 测试集展示 4.24.2. 测试工具展示 4.34.3. 测试结果展示 55. 使用说明 1. 背景 FTT后台有一个地方测试应用的话术，前期针对话术的测试尤为关键，但是人工一个一个的输入去测试特别的慢，系统又没有批测导入的功能，便于提供效率于是有了通过python调接口的想法，获取excel表格的测试话术，根据返回结果提取对应字段。有了调接口的python代码后，其扩展性也比较大，后续调其他接口只需要切换对应的接口和提取对应的字段即可。
+系统现有测试界面如下：https://vdh-open.test.yingzi.com/userSpace/application/answer_editing
+2. 工具 pycharm
+3. 编码 ?
+import requests
+import pandas as pd
+from openpyxl import Workbook
+number_str = input(``&#34;请输入测试集总数: &#34;``)
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-25 00:00:00 +0000 UTC'>七月 25, 2024</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;洞窝技术</footer>
-  <a class="entry-link" aria-label="post link to 深入理解React的Fiber架构" href="http://localhost:1313/posts/juejin/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3react%E7%9A%84fiber%E6%9E%B6%E6%9E%84/"></a>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 运用python进行接口批测" href="http://localhost:1313/posts/wiki/%E8%BF%90%E7%94%A8python%E8%BF%9B%E8%A1%8C%E6%8E%A5%E5%8F%A3%E6%89%B9%E6%B5%8B/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">如何解决前端的“竞态问题”
+    <h2 class="entry-hint-parent">2023.12.19~第52周影子虚拟人项目汇报
     </h2>
   </header>
   <div class="entry-content">
-    <p>走过路过发现 bug 请指出，拯救一个辣鸡（但很帅）的少年就靠您啦！！！
-什么是竞态问题 竞争问题 race conditions 是并发编程的一种情况，其中两个并发线程或进程竞争资源，最终状态取决于谁先获得资源。
-在前端开发中，我们经常这种情况，当发送两个请求时，由于网络原因，如果第一次请求后返回，第二次请求先返回，会导致最后保存的结果是先发送的请求，第二次的请求结果会被覆盖。具体场景比如，我们在输入时查询待选项，又比如我们先点击分页2再点击分页3。
-解决思路 1、防抖 我们输入时如果先输入了 “A” 又删除输入了 “B”，如果我们最终展示的是 “A” 相关的待选项，肯定会给用户造成困扰。这是个非常典型的节流应用场景，我们可以等到用户停止输入再发送请求，防止了多次请求的发出也就避免了竞态问题。
-2、设置 loading 如果我们在点击分页后进行页面 loading 状态展示，无法再次点击分页，等到请求返回后再允许发送下一次请求，也同样可以避免分页问题。
-3、忽略过期请求 如果无法避免竞态问题，我们就需要直面问题并解决——忽略上一次请求的返回结果（当然也可以直接取消请求）。
-忽略过期请求，这个是我最开始想到的思路，当我们发送第二个请求时，上一次的请求就应该过期了，我们如果发现请求过期就取消操作。
-当然重点是如何判断过期。我们可以通过一个 id 保存最新的请求数，当返回结果后根据 id 判断是否为最新请求。
-js
-代码解读
-复制代码
-function mockFetch() { return new Promise((resolve) =&gt; { setTimeout(resolve, 300) }) } // 不断递加 用于记录最新的请求id let id = 0 // 请求函数 async function request() { const currentId = (id = id &#43; 1) console.log(&#39;request start&#39;, currentId) await mockFetch() if (currentId === id) { console.log(&#39;request end&#39;, currentId) } else { console.log(&#39;request expired&#39;, currentId, id) } } request() request() /* request start 1 request start 2 request expired 1 2 request end 2 */
+    <p>会议名称
+影子虚拟人项目第52周汇报
+会议时间
+2023年12月19日 北京时间8:30-9:50
+会议地点
+广州影子24楼会议室
+小鱼会议号：9006363736 主持人
+韦玲
+会议记录
+马冬颖
+参会人员
+Boss、monica、袁书蒙、王贤洋、黄振、卢光华、舒曼、宁建、陈子科、梁国辉、虚拟人项目组
+会议主题
+王宇——虚拟人产品能力与应用落地情况
+2024年一季度产品工作开展及产品展望
+任鹏——大模型与虚拟人结合的应用技术路线
+韦玲——数据与大模型实践
+与合作方对接工作 会议内容
+一、虚拟人产品能力与应用落地情况 1、影子虚拟人产品、技术落地开展思路
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-01-31 00:00:00 +0000 UTC'>一月 31, 2023</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;我不吃饼干</footer>
-  <a class="entry-link" aria-label="post link to 如何解决前端的“竞态问题”" href="http://localhost:1313/posts/juejin/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%89%8D%E7%AB%AF%E7%9A%84%E7%AB%9E%E6%80%81%E9%97%AE%E9%A2%98/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 2023.12.19~第52周影子虚拟人项目汇报" href="http://localhost:1313/posts/wiki/2023.12.19~%E7%AC%AC52%E5%91%A8%E5%BD%B1%E5%AD%90%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%A1%B9%E7%9B%AE%E6%B1%87%E6%8A%A5/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">又一开源神器面世，一键生成3D图&amp;代码
+    <h2 class="entry-hint-parent">20230216FTT系统能力培训
     </h2>
   </header>
   <div class="entry-content">
-    <p>Hi，大家好，我是扫地盲僧，时隔数年，我们又见面了。这次给大家带来有一个大礼品，标题党为：《扫地盲僧又一开源效率神器》
-炎热的夏天，疫情让技术内卷越来越严重。大家拼命的加班，爆肝，熬夜，为富裕的生活努力。作为一个多年被内卷的老程序员，给大家炎热的夏天解解暑，减少一半的加班时间，换来2倍的产出效率，让你空出时间欣赏欣赏日落，体验体验走在大街上的单身生活。
-2022年，3DD（3D Design），号称提高300%的产出效率，代码下高达80%的视觉还原度的调优神器。
-背景 随着3D、AR、VR等技术的兴起，很多技术团队面临新视觉和新创新的压力。对于中小型企业来说，高级的技术美术、图形工程师、Web前端等人才缺失尤为严重。对于Web前端来说，更是隔行如隔山，如果没有图形技术的基础很难在短时间涉足3D图形领域。
-为了保证交付和还原，即使在移动端，很多数团队也无奈选择加持庞大的动画渲染引擎。
-当前3D交互技术面临的问题：
-3D交互技术对前端不友好，兼容性差 技术资源稀缺，专业领域越来越细分 建模软件渲染时间长，交付周期长 软件代码还原度低，沟通成本高 资产复用困难，尤其是材质属性“因软件而异，因引擎而异” … 为了解决以上问题，我们在项目结束后，进行了无数次的脑暴和Search，最终也没有找到合适的方案。我们决定自己动手解决这个问题，无意间看到了五福背后的 Web 3D 引擎 Oasis Engine 正式开源 ，体验了一下，正是我们需要的效果，于是便开始了我们3D领域探索的征程。
-架构-设计 我们希望交互效果的验收不仅仅是技术和美术，还可以是UE，甚至PM。让团队所有人一起参与到3D交互设计的过程中来。
-针对以上问题，我们加持Oasis引擎，通过整合3D资产、在线材质调整、实时渲染等技术来提供问题的解决方案。
-3DD介绍 优势 移动端优先，轻量级框架 模型设计规范统一，3D资产复用 建模&#43;调优协同进行，降低沟通成本 JS自定义脚本，无缝调用3D视觉模型 提升还原度，代码还原下可以选择实时渲染，提高产出效率 … 技术框架 3DD，基于Vite&#43;TypeScript&#43;Vue3&#43;Ant-design等先进框架，加持蚂蚁技术团队强大的Oasis引擎，打造的一款3D资产调优工作台。
-...</p>
+    <p>培训材料：
+FTT training content-0215.pptx
+答疑记录：
+FTT培训答疑记录.xlsx
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2022-05-23 00:00:00 +0000 UTC'>五月 23, 2022</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;扫地盲僧</footer>
-  <a class="entry-link" aria-label="post link to 又一开源神器面世，一键生成3D图&代码" href="http://localhost:1313/posts/juejin/%E5%8F%88%E4%B8%80%E5%BC%80%E6%BA%90%E7%A5%9E%E5%99%A8%E9%9D%A2%E4%B8%96%E4%B8%80%E9%94%AE%E7%94%9F%E6%88%903d%E5%9B%BE%E4%BB%A3%E7%A0%81/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 20230216FTT系统能力培训" href="http://localhost:1313/posts/wiki/20230216ftt%E7%B3%BB%E7%BB%9F%E8%83%BD%E5%8A%9B%E5%9F%B9%E8%AE%AD/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">【评论-抽奖】Electron拓展屏的初步设计和实现
+    <h2 class="entry-hint-parent">万得厨1.5（dw201）接入语音性能评估
     </h2>
   </header>
   <div class="entry-content">
-    <p>在参加完8月更文的活动后，感觉整个人都被掏空了，本来打算好好的休养生息一波的，结果申请的掘金周边礼物活动竟然通过了，这真是“人在家中坐，喜从天上来”。
-很荣幸能成为首批名额中的一员，感谢社区的大力支持！
-这次的活动是作者可以获得两枚掘金徽章，在评论区通过抽奖的方式将这两枚徽章送给积极参与互动的朋友，这也算是借花献佛了 (￣▽￣)~*。
-所以，看完文章的你千万别忘了在评论区留下你的真知灼见，说不定中奖的那个人就是你哦！
-前言 我辈码猿，不是在做需求就是在接需求，让人不得不感慨一下：需求复需求，需求何其多！
-这不，本来之前开发出的 Electron 客户端，基本可以满足项目需求了，自以为可以好好放松一下了，谁知客户又给整出了幺蛾子——需要支持拓展屏。
-需求分析 所谓的拓展屏，相当于是从主屏窗口复制出一个窗口，显示在主屏幕之外的其他显示器上，并且这些分屏窗口除了一些控制功能（登录、登出、分屏、切换服务等）外，其余功能都和主屏窗口相同。
-因为我们的 Electron 客户端的作用是提供一个壳子，里面的加载的是其他服务提供的页面，所以这里需要考虑的就只有窗口控制了，相对来说比较简单。
-要点枚举 获取所有屏幕信息 程序一启动，首先获取屏幕个数及其属性：
-js
-代码解读
-复制代码
-const { screen } = require(&#34;electron&#34;); // 存储所有连接的显示器的信息 let displaysMap = new Map(); function getAllDisplays() { const allDisplays = screen.getAllDisplays(); for (let i = 0; i &lt; allDisplays.length; i&#43;&#43;) { const display = allDisplays[i]; displaysMap.set(display.id, display); } } function getBrowserOptsByDisplay(display) { const { bounds, workAreaSize } = display; const { x, y } = bounds; const { width, height } = workAreaSize; let isPrimary = false; if (display.id === screen.getPrimaryDisplay().id) { isPrimary = true; } return { x, y, width, height, isPrimary }; } function getBrowserOpts() { let opts = []; const displays = displaysMap.values(); for (const display of displays) { opts.push(getBrowserOptsByDisplay(display)); } return opts; } screen.on(&#34;display-added&#34;, (event, newDisplay) =&gt; { displaysMap.set(newDisplay.id, newDisplay); // 创建窗口的逻辑等 }); screen.on(&#34;display-removed&#34;, (event, oldDisplay) =&gt; { displaysMap.delete(oldDisplay.id); // 移除窗口的逻辑 });
-...</p>
+    <p>背景
+当前万得厨2.0和万得厨1.5P调整新架构后，以上两种设备性能足够支持虚拟人和语音功能，但是一直未在万得厨1.5设备上安装对应已经开发好的程序来真实评估炉子的性能。现安装对应最新代码程序来在万得厨1.5上运行验证。
+前期准备
+万得厨团队协助打包最新万得厨1.5设备的固件包，因为前期评估原因1.5设备嵌软部分功能暂未开发完成，大部分指令当前无法正常执行。并且打包出来的固件包不包括虚拟人这边的两个进程，需要后面手动安装。
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer"><span title='2021-09-09 00:00:00 +0000 UTC'>九月 9, 2021</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;编程三昧</footer>
-  <a class="entry-link" aria-label="post link to 【评论-抽奖】Electron拓展屏的初步设计和实现" href="http://localhost:1313/posts/juejin/%E8%AF%84%E8%AE%BA-%E6%8A%BD%E5%A5%96electron%E6%8B%93%E5%B1%95%E5%B1%8F%E7%9A%84%E5%88%9D%E6%AD%A5%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 万得厨1.5（dw201）接入语音性能评估" href="http://localhost:1313/posts/wiki/%E4%B8%87%E5%BE%97%E5%8E%A81.5dw201%E6%8E%A5%E5%85%A5%E8%AF%AD%E9%9F%B3%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/86/">
-      «&nbsp;上一页&nbsp;86/153
+      «&nbsp;上一页&nbsp;86/237
     </a>
-    <a class="next" href="http://localhost:1313/page/88/">下一页&nbsp;88/153&nbsp;»
+    <a class="next" href="http://localhost:1313/page/88/">下一页&nbsp;88/237&nbsp;»
     </a>
   </nav>
 </footer>
