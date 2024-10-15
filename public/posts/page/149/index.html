@@ -144,138 +144,139 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">chatgptfunctioncall实现天气预报
+    <h2 class="entry-hint-parent">LLM&#43;Plugins
     </h2>
   </header>
   <div class="entry-content">
-    <p>function_call和plugin区别是function_call是客户端调用，plugin是服务端调用
-https://platform.openai.com/docs/guides/function-calling
-https://platform.openai.com/docs/plugins/introduction
-1. 概述 Notebook 介绍了如何将 Chat Completions API 与外部函数结合使用，以扩展 GPT 模型的功能。包含以下2个部分：
-如何使用 functions 参数 如何使用 function_call 参数 本demo做一个天气预报查询，跑在jupyter
-首先需要配置环境变量OPENAI_API_KEY，值为gpt的key
-?
-1
-!pip install scipy tenacity tiktoken termcolor openai requests
-?
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
+    <p>1、由ChatGPT引入，介绍生成式AI大模型（3-5mins）
+2、国内大模型的发展情况（配视频）与应用场景探索（8-15mins）
+3、大模型插件应用介绍与演示（6-15mins）
+4、以当前大环境危险与机遇并存作为总结（3-5mins）
+内容框架，5~7分钟
+LLM&#43;plugins
+我们如何做借助chatGPT优化我们的业务的一些可能的设想
+准备进入大学，或者已经在大学中，还有已经毕业的。他们关心什么问题？
+LLM&#43;plugins介绍。（概念介绍、市场的应用场景介绍、市场趋势介绍） 像chatGPT这样的通用人工智能成为应用的操作系统，plugins即是应用程序。如同苹果和百度的关系。 plugins是如何实现的？（技术原理介绍）做2个案例。①使用embedding实现回答万得厨问答机器人。②LangChain实现万得厨的导购机器人。 扬翔基于LLM&#43;Plugins可能可以实现的应用思考。①服务养猪业务的养猪、猪病知识指导服务。②影子虚拟人的应用 我相信看完前面的内容，我知道你们肯定很关心，这些和我们公司有什么关系？我们能做什么？又如何去实现？回答这个问题，那就不得不提2个关键的东西：plugins插件和LangChain框架。
+1. LLM&#43;plugins介绍 你们现在在网页端的chatGPT上看到的插件，就是一个个应用。chatGPT和这些插件的关系，就如同苹果手机和facebook、微信的关系。一个是操作系统，一个是应用。
+比如chatGPT本身并不能使用google进行搜索，接入插件后，chatGPT就能去谷歌搜索答案，然后回复你。还有很多的插件，大家都可以去体验一下。
+但是这些插件的本质是一种**“大模型&#43;企业私有知识库/企业能力”的产品。这意味着未来会有更多拥有独有企业知识或者能力**的企业将会运用大模型去打造自己的产品。未来这些企业在像chatGPT网页或者手机端这样的一个入口提供能力。要么在自己原本的app中加入大模型的能力。甚至更直接的，就在使用的办公软件钉钉、微信这些地方更接近用户的地方，服务用户。
+2. 实现plugins的主流框架LangChain 但是这些东西是如何做到的呢？接下来就介绍LangChain，以及LangChain的基本功能。以及我知道可以通过这样一个介绍，让大家可以更多的发散思维，从我们扬翔股份服务的客户、以及我们业务为思考原点，去思考如何使用大模型，创造性的降低成本，或者解决客户更贵的问题。
+2.1. 什么是LangChain？ 我们现在看到的GPT4的插件市场，都是基于LangChain的框架。可能背后辅助一些embedding和fine-tuning进行微调。清楚的了解LangChain包含的功能是有好处的，因为LangChain的基本功能就像是一个个不同形状的积木，了解不同积木的形状和功能，可以让你知道它能够做什么。随后你要建欧式建筑还是中式的四合院，你就知道可不可以做，怎么做了。
+LangChain创建于2022年10月，是围绕LLMs（大语言模型）建立的一个框架，LLMs使用机器学习算法和海量数据来分析和理解自然语言，GPT3.5、GPT4是LLMs最先进的代表，国内百度的文心一言、阿里的通义千问也属于LLMs。LangChain自身并不开发LLMs，它的核心理念是为各种LLMs实现通用的接口，把LLMs相关的组件“链接”在一起，简化LLMs应用的开发难度，方便开发者快速地开发复杂的LLMs应用。
+简单说LangChain就是帮助企业创建基于大语言模型的应用的工具包
+LangChain框架本身有几大功能：
+model模型集成。LangChain可以快速的使用各种类型的模型。比如chatGPT3.5，GPT4等等，同时他也可以接入国内的大模型、企业自己研发的大模型。 prompts提示管理。因为不同的模型其定义的输入和输出的代码是不同的。LangChain把所有的输入和输出的代码进行了统一。 memory记忆。保存历史的对话数据。让大模型在回复的时候，能够依据你以前说的话进行推理 indexes索引。索引是指几种结构化文档的方式，以便可以与LLMs更好的交互。最常见的使用场景是文档检索，接收用户查询，返回最相关的文档。要注意的是索引也能用在除了检索外的其他场景，同样检索除了索引外也有其他的实现方式。 chain链。链主要的作用就是为不同模型生成不同的提示。 展开源码
 ...</p>
   </div>
-  <footer class="entry-footer">3 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to chatgptfunctioncall实现天气预报" href="http://localhost:1313/posts/wiki/chatgptfunctioncall%E5%AE%9E%E7%8E%B0%E5%A4%A9%E6%B0%94%E9%A2%84%E6%8A%A5/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to LLM&#43;Plugins" href="http://localhost:1313/posts/wiki/llm&#43;plugins/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">五大能力
+    <h2 class="entry-hint-parent">复盘
     </h2>
   </header>
   <div class="entry-content">
-    <p> 11. 定义 22. 学习 33. 虚拟人思考 1. 定义 智能烹饪能力
-虚拟人能力
-IOT连接能力
-DTC能力
-多面体能力
-2. 学习 1、智能烹饪
-万得厨智能烹饪主要通过以下三个层的智能化应用，来形成一个智能化应用的完整过程：
-第一层：用户感知智能化，在这里具体化为：“用户想要做的饭餐？需要的口感和口味？”
-第二层：食谱智能化，主要是结合第一层输出 &#43; 用户的年龄身体信息形成智能食谱
-第三层：烹饪智能化，用第二层的输出对接到智能烹饪算法，完成食谱到美食的“变现”
-实现过程；
--数据收集， 通过IoT等平台，尽可能收集到丰富的数据
-- 数据清洗/分析/标记，使收集到的数据变得更加有效
-- 算法建模，选择合适的模型用于算法训练
-- 算法训练，将模型和数据关联，开展模型训练，需要平台支持分布式训练，自监督和评价，自调整参数等
-- 算法部署，训练完成后的模型，能支持微服务架构，灵活部署
-- 算法强化，最后在实际运行中，持续反馈闭环和强化学习
-...</p>
-  </div>
-  <footer class="entry-footer">6 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 五大能力" href="http://localhost:1313/posts/wiki/%E4%BA%94%E5%A4%A7%E8%83%BD%E5%8A%9B/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">QT交叉编译及Linux环境配置
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1.1. 准备工作ssh服务配置及FTP文件传输服务 1.1.1. Linux启动ssh服务 ?
-sudo apt-get install openssh-server
-sudo /etc/init.d/ssh start
-设置开机自启动
-sudo systemctl enable ssh
-关闭ssh开机自动启动命令
-sudo systemctl disable ssh
-单次开启ssh
-sudo systemctl start ssh
-单次关闭ssh
-sudo systemctl stop ssh
-设置好后重启
-reboot
-1.1.2. Linux上启动FTP服务 ?
-sudo apt-get install vsftpd
-vi /etc/vsftpd.conf
-anonymous_enable=YES
-local_enable=YES
-write_enable=YES
-启动 vsftpd 服务
-...</p>
-  </div>
-  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to QT交叉编译及Linux环境配置" href="http://localhost:1313/posts/wiki/qt%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%8F%8Alinux%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">aigc-任鹏
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>定义： AIGC是一种新的人工智能技术，它的全称是Artificial Intelligence Generative Content，即人工智能生成内容。它的核心思想是利用人工智能模型，根据给定的主题、关键词、格式、风格等条件，自动生成各种类型的文本、图像、音频、视频等内容。
-内容生成方式发展 pgc专业创作-ugc用户创作-aiugc ai辅助制作-ai创作
-AIGC技术 在文本生成方面，AIGC技术通常使用基于神经网络的自然语言处理技术。这种技术可以通过输入大量的语料库来训练模型，模型可以学习语言的规则和模式，然后生成与训练数据相似的新文本。此外，还有一些新兴技术，如变换器网络（Transformer）的文本生成技术，可以生成更加复杂和逼真的文本内容。ChatGPT就是在Transformer模型上衍生出来的自然语言处理技术。它采用预训练的方式进行模型训练。预训练的目标是根据输入的一段文本，训练模型预测下一个单词或字符，这样模型就可以理解文本的语法和语义结构，从而生成合理的文本输出。
-在图像生成方面，AIGC技术通常使用基于深度学习的生成对抗网络（GAN）。GAN模型包括一个生成器和一个判别器，生成器通过学习真实图像，生成伪造的图像，判别器则负责判断生成器生成的图像是否真实。通过不断训练生成器和判别器，生成器可以生成逼真的图像。例如，谷歌公司的DeepDream算法可以将一张图片转换成一幅具有艺术感的画作。
-在音频和视频生成方面，AIGC技术也在逐步发展中。其中，音频生成技术通常使用类似于文本生成技术的方法，使用模型来生成人声、乐曲和其他声音。视频生成技术则更加复杂，需要涉及到图像处理、运动估计、图像分解和合成等多个方面的技术，以生成高质量、流畅的视频。例如，OpenAI的DALL-E算法可以将文字描述转换成真实的图像和视频。
-AIGC可以与自然语言处理（NLP）、计算机视觉（CV）、语音识别（ASR）、语音合成（TTS）等技术相融合，实现文本到图像、图像到文本、文本到语音、语音到文本等跨媒体内容生成。AIGC也可以与机器学习（ML）、深度学习（DL）、强化学习（RL）、对抗生成网络（GAN）等技术相结合，实现更自主和更灵活的内容生成。
+    <p> 古人说，四十不惑，五十知天命，六十耳顺…
+少掉的那十年里，有十个寒暑变化，有几千个日夜更替，有无数个事物的演化规律。都是省不得的。你一定要亲眼去看，亲耳去听，亲手去摸。
+这就是经验的价值，是你任凭多少钱都买不回来的。
+但是，只有经验且盲目依赖经验的人，叫：倚老卖老。能从经验里抽象出能力的人，才叫：智者。
+希望这篇文章，能给你一点点启发。祝你，成为智者。
+https://mp.weixin.qq.com/s/gpZk4AudcCIjV9LkGJe1jQ
+援引自刘润的《我最害怕的，就是那些经验丰富的人》
+只有能从经验里抽象出能力的人，才能称之为智者。
+如何去抽象能力，必须去阅读、学习、实践与复盘。一点都省不了。并且在复盘中，主要的目的是要找到“因”。
+我认为要做出正确的判断，需要依据一个公式：正确判断=本质&#43;环境。
+本质是事物的本质，人最基本的行为逻辑。比如人可能会选择去吃小龙虾，可能会去吃馒头，或者其他。但是本质是为了满足营养的需求。
+一家餐饮店满足了营养的需求，需要进行宣传的时候，其本质是要把能够满足的能力传达给目标客户。但是实际做的时候可能不能依据前面的经验，反而需要去知道现在的环境，比如顾客们通常待在哪里？哪个软件？做决策的依据有没有随着社会的变迁出现了变化？比如以前是用qq，现在用微信。如果现在还在qq投放广告那必定效果欠佳。如果观察了环境，就能知道更好的答案了。
+正确判断=本质&#43;环境。
+所以通常来说，在世界里，总结并且验证了模式的人，是你需要主动去靠近、拜其为师的人。
+经历了人，会发现，人虽平等（我也坚信平等），但是人的认知还是有层次的。这种认知我认为越往心、越善于思考，层次就越高。
+比例 我认为学习、实践与复盘的一个比例应该是这样的。在这里是写复盘的重要性，不过复盘的比例我仍然需要强调，并不需要那么高。
+学习（40%）、实践（50%）、复盘（10%）
+因为很多知识，如果没有花很多的时间，这个时间可能是几年或者几十年，没有这个功底，可能无法顿悟出事情背后的本质。看自己的定位。我的定位是偏向于实践，所以需要依靠很多智者的大脑，依靠他们所研究、顿悟出来的本质去实践。站在巨人的肩膀上去看世界，去读懂世界，去活得幸福。读了大师的著作，复盘时，就要依据这些原理去反思前面的行为、因和果。这样大师的顿悟，会慢慢变成自己的顿悟。
 Filter table dataCreate a pivot tableCreate a chart from data series
 Configure buttons visibility
 </p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to aigc-任鹏" href="http://localhost:1313/posts/wiki/aigc-%E4%BB%BB%E9%B9%8F/"></a>
+  <a class="entry-link" aria-label="post link to 复盘" href="http://localhost:1313/posts/wiki/%E5%A4%8D%E7%9B%98/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">vdh技术篇
+    <h2 class="entry-hint-parent">APPUIM&#43;android在电脑实现手机模拟操作及数据收集
     </h2>
   </header>
   <div class="entry-content">
-    <p>虚拟人技术篇
-虚拟人是一个技术的综合体，是人类用科技拟合自身的浪漫探索与想象。虚拟人本质上是对人的一种模拟，CG技术、人工智能技术等的不断发展。虚拟人是一个技术的综合体，是人类用科技拟合自身的浪漫探索与想象。
-Edit Edit Show Show Remove Remove //&lt;![CDATA[ jQuery(&#34;#06501&#34;).mousedown(function(e) { var parameters = {width: 700, height: 180, id: “remove-dialog”, closeOnOutsideClick: false}; var dialog = new AJS.Dialog(parameters); var originalPopupHide = dialog.popup.hide; dialog.popup.hide = function() { anyDialogVisible = false; originalPopupHide.apply(this, arguments); AJS.trigger(“hide.dialog”, {dialog: dialog}); }; dialog.addHeader(“Map remove confirmation”); dialog.addPanel(“Confirmation”, “Your map will be deleted from the page and from attachments. Do you really want to remove your map?
-...</p>
+    <p>连接模拟器/设备 第1步，在模拟器/手机设备中打开“开发者模式”→开启“USB调试”
+第2步，检查设备连接情况
+当出现cannot connect to daemon 即无法开启服务的提示时。这时一般是有其他的软件和abd用了同一个端口。所以可以在电脑环境变量中添加修改port端口的环境变量，以避免无法启动adb server。（参考：Android 修改adb端口的方法-腾讯云开发者社区-腾讯云 (tencent.com)）
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to vdh技术篇" href="http://localhost:1313/posts/wiki/vdh%E6%8A%80%E6%9C%AF%E7%AF%87/"></a>
+  <a class="entry-link" aria-label="post link to APPUIM&#43;android在电脑实现手机模拟操作及数据收集" href="http://localhost:1313/posts/wiki/appuim&#43;android%E5%9C%A8%E7%94%B5%E8%84%91%E5%AE%9E%E7%8E%B0%E6%89%8B%E6%9C%BA%E6%A8%A1%E6%8B%9F%E6%93%8D%E4%BD%9C%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%94%B6%E9%9B%86/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">chatGPT将是创新公司站上头部位置的新机会
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>副标题：基于“资源依赖理论”的chatGPT市场发展潜力推理
+1. chatGPT对于某些市场是具备破坏性潜力的。 1.1. 成熟企业在破坏性技术发展下的惨败历史 在《创新者的窘境》一书中，说明破坏性技术是一门在开始出现时并不能满足主流客户需求，但是可以通过技术发展满足主流客户需求的一门技术。因为成熟企业的优秀管理，即把客户需求当做第一位，而造成当这门破坏性技术刚推出时，不会被主流客户所认可，因为破坏性技术生产的产品不能满足主流客户的需求。但企业听取并执行了主流客户：“不投资破坏性技术，而发展延续性技术“的需求。
+当破坏性技术被创新企业所重用，通过创造/发现与主流客户不同的新市场，站稳了脚跟。创新企业将会发展这门技术。而这门技术如预想中的那样，创造的产品性能发展到能够满足主流客户的需求的地步。在这一瞬间，成熟企业会在突然间被创新企业所取代。主流客户市场被大面积蚕食。一家又一家的老牌企业倒闭。
+在种现象在几乎每一个行业中不断重演。硬盘行业、挖掘机行业、计算机行业、钢铁行业等等。
+1.2. chatGPT是一门破坏性技术 chatGPT是一门破坏性技术。观察现在的现象chatGPT横空出世，很多的人很多的企业都在讨论这个东西，同时很多人依旧在原有的发展轨迹上行走，而没有为chatGPT替代市场做强力的投资。
+以心理咨询行业为例：
+心理咨询是一门强调对话的技术。原来的市场是专家和人一对一进行咨询服务。这些目前专家占领着几乎大部分的市场。
+虽然未来的事具体是什么无法猜测。不过按照破坏性技术理论。智能语音产品会从一些小型的利润率低的市场切入手，而这些专家会不在乎这些市场的出现和蚕食。当智能语音产品越来越强，直到智能语音产品能够满足专家所服务的市场所要求的性能时，这些专家会发现自己一夜间失业，并且几乎没有翻身的可能。
+1.3. 如《创新者的窘境》一书中所描绘的那样，发展和应用chatGPT这门破坏性技术的创业公司，将会取代各行各业中的成熟企业，占领主流客户市场。 Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to chatGPT将是创新公司站上头部位置的新机会" href="http://localhost:1313/posts/wiki/chatgpt%E5%B0%86%E6%98%AF%E5%88%9B%E6%96%B0%E5%85%AC%E5%8F%B8%E7%AB%99%E4%B8%8A%E5%A4%B4%E9%83%A8%E4%BD%8D%E7%BD%AE%E7%9A%84%E6%96%B0%E6%9C%BA%E4%BC%9A/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">业务知识检索方案
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 11. 业务知识检索方案分析 22. DB_LLM 2.12.1. 指标含义 2.2[2.2. 通过修改SQL条件筛选方式为like，并配套相似度算法，则“SQL方向正确，同时匹配数据”能接近95.8%的准确率](#id-业务知识检索方案-通过修改SQL条件筛选方式为like，并配套相似度算法，则“SQL方向正确，同时匹配数据”能接近95.8% 的准确率) 2.32.3. 模型输出SQL审核 2.42.4. 其他问题 1. 业务知识检索方案分析 （1）知识检索召回、用户标签等高关联数据作为固定插入，？业务数据库（订单数据、实时商品食谱等业务数据）查询，将指令集中包含的每条各设置成一条函数通过function call选择调用，由大模型进行意图识别、任务规划、函数选择，应用层处理函数调用；
+一个场景即是一个SQL
+方案
+优
+劣
+方案
+优
+劣
+遍历各个场景，每个场景编写成一个function，配套场景的描述。
+比较自由的改进function的输入输出，和运行流程。
+控制SQL的安全性，防止系统发生异常。
+食谱18个字段，营养29个字段。场景多，编写困难。 场景多，可能会导致超出模型token限制。 场景多，可能会导致模型识别率下降 遍历各个场景，每个场景编写成一个function，配套场景的描述。基于知识库，检索出合理数量的相关function。
+如上的一个改进
+配一个 NL2SQL的function
+不用每个场景编写SQL。但是实际效果未知，或许可能需要采取合适的方法，如提示工程、RAG、微调等方式进一步优化准确率。或许可以引用邓丽辉的模型。
+安全性不是很好，需要花时间识别不良的SQL，禁止被执行或者修改为良好安全的SQL后，再执行。
+采用合适的方法，提高安全性
+设置大模型使用的数据库连接账户的权限范围为“SELECT&#34;，并且只能看到特定表。每次查询自动加上LIMIT限制语句。 ...</p>
+  </div>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 业务知识检索方案" href="http://localhost:1313/posts/wiki/%E4%B8%9A%E5%8A%A1%E7%9F%A5%E8%AF%86%E6%A3%80%E7%B4%A2%E6%96%B9%E6%A1%88/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/148/">
-      «&nbsp;上一页&nbsp;148/237
+      «&nbsp;上一页&nbsp;148/241
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/150/">下一页&nbsp;150/237&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/150/">下一页&nbsp;150/241&nbsp;»
     </a>
   </nav>
 </footer>

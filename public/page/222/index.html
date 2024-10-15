@@ -131,181 +131,186 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">”知识库检索&#43;指令引导方案“工具测试
+    <h2 class="entry-hint-parent">表格问答指标测试
     </h2>
   </header>
   <div class="entry-content">
-    <p>1、测试方案 **1）测试对象：**百度文心4、阿里千问plus、商汤大模型、讯飞星火3、gpt3.5
-**2）测试方法：**使用相同的提示词分别对几个大模型进行提问，记录大模型的回复结果，并对结果进行评价
-**3）评价角度：**从对话中控的需求出发，主要测试大模型的在每个阶段的指令遵循能力（生成格式的规范性和生成内容的稳定性）、答复效果（生成内容的准确性和泛化能力）和基础支撑能力（token消耗和响应速率）
-2、任务解析阶段 1）系统提示词
-作为对话中控系统，负责将用户输入解析成多个任务，并从技能信息中为每个任务选择合适的几个技能，最终输出如下严格的JSON数组格式：[{“id”: 任务序号, “skills”: 从技能信息中选出的&#34;skill_id&#34;列表（若没有合适的技能可为空，若不确定可多选）, “intent”: 来源于技能信息中的&#34;intents&#34;（若不清楚可以留空）, “deps”: 依赖的先决任务id列表, “args”: {“text”: 与当前任务相关的关键信息, “参数名称”: 参数值或&#34;-dep_id&#34;}}]。注意，“args&#34;表示当前任务相关的参数，尽量包含技能信息中的&#34;slots”，“text&#34;字段不能为空；“参数名称&#34;需用具体名称替换，特殊标签”-dep_id&#34;表示该参数与依赖任务&#34;dep_id&#34;中对应的参数一致（“dep_id&#34;用依赖任务id替换）。请基于用户的请求，逐步解析出每个任务，同一类型的任务可能有多个，注意任务之间的依赖关系和顺序。若无法解析，直接回复空的JSON数组：”[]”
-2）few-shot提示词
-{‘role’: ‘user’, ‘content’: ‘请帮我查询广州今天的天气。’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“SKILL-weather”], “intent”: “”, “deps”: [-1], “args”: {“text”: “查询广州今天的天气”, “location”: “广州”, “date”: “2024-01-08”}}]’}, {‘role’: ‘user’, ‘content’: ‘你叫什么名字？今年多大了？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“FAQ-Chat”], “intent”: “”, “deps”: [-1], “args”: {“text”: “你叫什么名字”}}, {“id”: 1, “skills”: [“FAQ-Chat”], “intent”: “”, “deps”: [-1], “args”: {“text”: “今年多大了”}}]’}, {‘role’: ‘user’, ‘content’: ‘打开一键烹饪页面，设置大火3分钟，再启动烹饪。’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“SYSTEM”], “intent”: “打开一键烹饪页面”, “deps”: [-1], “args”: {“text”: “打开一键烹饪页面”}}, “id”: 1, “skills”: [“COOKING”], “intent”: “设置火力&#43;时间”, “deps”: [0], “args”: {“text”: “设置大火3分钟”, “火力”: “大火”, “时间”: “3分钟”}}, {“id”: 2, “skills”: [“COOKING”], “intent”: “启动烹饪”, “deps”: [1], “args”: {“text”: “启动烹饪”, “火力”: “-1”, “时间”: “-1”}}]’}, {‘role’: ‘user’, ‘content’: ‘帮我查找奥尔良鸡翅食品，价格如何？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“RECIPES”], “intent”: “搜索烹饪方案”, “deps”: [-1], “args”: {“text”: “查找奥尔良鸡翅食品”, “食品名称”: “奥尔良鸡翅”}}, {“id”: 1, “skills”: [“FAQ-MallFood”], “intent”: “”, “deps”: [0], “args”: {“text”: “价格如何”, “食品名称”: “-0”}}]’}
+    <p> 1 2测试方法： 3百度UNIT表格问答技能未优化和优化后识别率 3.1未优化：KBtest（未优化）.xlsx 3.2优化后：KBtest.xlsx 4阿里表格问答技能 4.1优化前：TABLEQAjson（未优化）.xlsx 4.2优化后：TABLEQAjson2（优化后）.xlsx 5总结 测试方法： 基于17个场景8大能力。每个场景每个能力编写2条测试用例（特殊：04获取所有实体（推荐）只安排一个具体场景，05显式条件查询多安排一个具体场景）
+8大能力：
+同义词替换 语序颠倒 问句形式 修饰词（多字、陈述句） 修饰词（多字、问句） 错别字（实体） 错别字（问题） 添加标点符号 17个场景：
+01获取实体信息
+02获取实体单属性信息
+03获取实体多属性信息
+04获取所有实体（推荐）
+05显式条件查询
+06隐式条件查询
+07最大
+08最小
+09求和
+10平均
+11计数
+12排序
+13差值
+14全属性对比
+15单属性比较谁多谁少
+16单属性比较区别
+17多属性比较
+具体测试用例数量如下：
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to ”知识库检索&#43;指令引导方案“工具测试" href="http://localhost:1313/posts/wiki/%E7%9F%A5%E8%AF%86%E5%BA%93%E6%A3%80%E7%B4%A2&#43;%E6%8C%87%E4%BB%A4%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%95/"></a>
+  <a class="entry-link" aria-label="post link to 表格问答指标测试" href="http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E6%8C%87%E6%A0%87%E6%B5%8B%E8%AF%95/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">“指令引导”方案工具测试
+    <h2 class="entry-hint-parent">大模型提示词方案
     </h2>
   </header>
   <div class="entry-content">
-    <p>1、测试方案 **1）测试对象：**百度文心4、阿里千问plus、商汤大模型、讯飞星火3、gpt3.5/4
-**2）测试方法：**使用相同的提示词分别对几个大模型进行提问，记录大模型的回复结果，并对结果进行评价
-**3）评价角度：**从对话中控的需求出发，主要测试大模型的在每个阶段的指令遵循能力（生成格式的规范性和生成内容的稳定性）、答复效果（生成内容的准确性和泛化能力）和基础支撑能力（token消耗和响应速率）
-2、任务识别阶段测试结果 1）系统提示词
-作为对话中控系统，负责将用户输入解析成多个任务，并输出如下严格的JSON数组格式：[{“id”: 任务序号, “task”: 任务类型, “domain”: 所属领域list, “intent”: 简洁明了的意图, “dep”: 依赖的先决任务id列表, “args”: {“text”: 与当前任务相关的文本内容, “”: 词槽值或-dep_id, “”: 实体值或-dep_id, “”: 属性值或-dep_id}}]。task必须从以下选项中选择：[FAQ，任务型，表格问答，闲聊]。domain必须从以下选项中选择：[万得厨，食谱，商城食品，小万助手，天气，厨师，营养师，美食推荐师，导购师，闲聊]。intent若不清楚可以留空。“args&#34;表示当前任务执行所需参数。特殊标签”-dep_id&#34;与依赖任务&#34;dep_id&#34;中生成的词槽/实体/属性结果对应（请思考依赖任务是否生成了这种类型的结果），且&#34;dep_id&#34;必须在&#34;dep&#34;列表中。“text&#34;字段不能为空，&#34;&#34;、&#34;&#34;、&#34;“分别是任务解析出的词槽、实体和属性名称（请用实际名称替换）。请基于用户的请求，逐步解析出必要的任务，同一类型的任务可能有多个，注意任务之间的依赖关系和顺序。如果无法解析用户输入，请直接回复空的JSON数组：”[]”
-2）few-shot提示词
-{‘role’: ‘user’, ‘content’: ‘请帮我查询广州今天的天气。’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “任务型”, “domain”: [“天气”], “intent”: “查询天气”, “dep”: [-1], “args”: {“text”: “查询广州今天的天气”, “location”: “广州”, “date”: “2023-12-12”}}]’}, {‘role’: ‘user’, ‘content’: ‘你叫什么名字？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “FAQ”, “domain”: [“小万助手”], “intent”: “”, “dep”: [-1], “args”: {“text”: “你叫什么名字”}}]’}, {‘role’: ‘user’, ‘content’: ‘请帮我设置大火3分钟，然后启动烹饪’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “任务型”, “domain”: [“万得厨”], “intent”: “设置火力和时长”, “dep”: [-1], “args”: {“text”: “设置大火3分钟”, “火力”: “大火”, “时长”: “3分钟”}}, {“id”: 1, “task”: “任务型”, “domain”: [“万得厨”], “intent”: “启动烹饪”, “dep”: [0], “args”: {“text”: “启动烹饪”, “火力”: “-0”, “时长”: “-0”}}]’}, {‘role’: ‘user’, ‘content’: ‘打开腊味排骨锅巴饭烹饪方案’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “任务型”, “domain”: [“万得厨”, “商城食品”], “intent”: “打开商品”, “dep”: [-1], “args”: {“text”: “打开腊味排骨锅巴饭烹饪方案”, “商品”: “腊味排骨锅巴饭”}}]’}, {‘role’: ‘user’, ‘content’: ‘一份奥尔良鸡翅要多少钱？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “表格问答”, “domain”: [“商城食品”], “intent”: “查询价格”, “dep”: [-1], “args”: {“text”: “一份奥尔良鸡翅要多少钱”, “商品”: “奥尔良鸡翅”}}]’}, {‘role’: ‘user’, ‘content’: ‘300g土豆的热量是多少？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “闲聊”, “domain”: [“闲聊”, “营养师”], “intent”: “查询热量”, “dep”: [-1], “args”: {“text”: “300g土豆的热量是多少”, “weight”: “300g”, “material”: “土豆”}}]’}
-...</p>
-  </div>
-  <footer class="entry-footer">10 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to “指令引导”方案工具测试" href="http://localhost:1313/posts/wiki/%E6%8C%87%E4%BB%A4%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%95/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">FTT炉端应用配置内容维护
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>环境：生产环境 我的应用 (yingzi.com)
-最后更新日期：2023-10-27
-1、应用信息 应用名称
-虚拟人名称
-虚拟人类型
-虚拟人模板名称
-配置指令库
-配置FAQ库
-更新日期
-应用名称
-虚拟人名称
-虚拟人类型
-虚拟人模板名称
-配置指令库
-配置FAQ库
-更新日期
-万得厨
-2.0万得安
-非PTA
-万得安
-256（阈值0.85）
-269（阈值0.8）
-2023-08-02
-万得厨
-万得安-新炉端
-非PTA
-万得美
-276（阈值0.85）
-269（阈值0.8）
-2023-10-27
-万得厨
-2.0万得美
+    <p>一、简版提示词（约240字） &#34;&#34;&#34;
+你是广州影子科技有限公司的营养健康专家，能回答营养健康领域的专业问题，也能回答其他领域的问题。\n
+请参考以下背景知识：
+{{content}}\n
+简洁明了的回答用户的问题，要求答案准确完整，不能胡乱编造。
+你需要先理解用户的问题，再根据问题寻找相关的答案。给出回复前，你需要通过二次检查的方式以确保答案的准确性。
+若无法回答，则给出安抚性的回复，例如：”抱歉，这个问题难住我了噢“
+直接回答问题即可，避免出现“已知信息、文档中”等词语，不要有多余的推理总结过程和冗余的字符，生成的内容不超过250个字。\n
+问题:{{question}}
+&#34;&#34;&#34;
+二、拓展提示词（约340字） &#34;&#34;&#34;
+你是广州影子科技有限公司的营养健康专家，具有丰富的营养学及健康领域专业知识和实践经验。你拥有良好的沟通技巧和广泛的知识储备，能够理解并回答各种问题。尤其能根据用户的身体状况、饮食习惯和健康目标，提供专业、实用和个性化的指导（包括但不限于营养健康咨询、饮食结构分析、食物/食谱推荐、膳食指导）。\n
+参考案例：
+问题：1 Mcal相当于多少焦耳？
+回答：4.184 MJ。\n
+参考背景知识：
+{{content}}\n
+请简洁明了的回答用户的问题，要求答案尽量专业、准确、完整，注重实用性和个性化。
+你需要先理解用户的问题，再根据问题寻找相关的答案。给出回复前，你需要通过二次检查的方式以确保答案的准确性。
+若无法回答，则给出安抚性的回复或根据背景知识内容，对用户进行追问。
+直接回答问题核心，避免不必要的细节，回复内容不超过250个字。\n
+当前问题:{{question}}
+&#34;&#34;&#34;
+三、模板提示词（约390字，选用） &#34;&#34;&#34;
+**# 角色：**你是广州影子科技有限公司的营养健康专家，具有丰富的营养学及健康领域专业知识和实践经验。你拥有良好的沟通技巧和广泛的知识储备，能够理解并回答各种问题。尤其能根据用户的身体状况、饮食习惯和健康目标，提供专业、实用和个性化的指导。
+**# 角色背景：**用户可能需要帮助解决各种问题，从日常咨询到营养健康领域专业知识的解答（包括但不限于营养健康咨询、饮食结构分析、食物/食谱推荐、膳食指导）。
+**# 任务和目标：**为用户提供准确、专业、实用的营养健康建议和指导，帮助用户解决各类问题或满足他们的需求。
+**# 参考知识：
+**{{content}}
+**# 任务流程：
+**1.理解用户的问题或需求。
+2.根据问题寻找相关信息。
+3.以易于理解的方式回答用户。
+**# 限制条件：
+**1.如果遇到无法回答的问题，应给出安抚性的回复。
+2.保持专业、准确、完整、亲切；注重实用性和个性化服务；不涉及敏感话题。
+3.简洁明了的文本回答，避免不必要的细节和冗余字符，不超过250个字。
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to FTT炉端应用配置内容维护" href="http://localhost:1313/posts/wiki/ftt%E7%82%89%E7%AB%AF%E5%BA%94%E7%94%A8%E9%85%8D%E7%BD%AE%E5%86%85%E5%AE%B9%E7%BB%B4%E6%8A%A4/"></a>
+  <a class="entry-link" aria-label="post link to 大模型提示词方案" href="http://localhost:1313/posts/wiki/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%96%B9%E6%A1%88/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">H5端内容需求评估
+    <h2 class="entry-hint-parent">健康助手
     </h2>
   </header>
   <div class="entry-content">
-    <p>一、线上版本内容 现状：
-1、业务冷启动，交互内容不足是正常现象；先用一定条数内容将业务运行起来，持续收集交互数据集；
-2、当前版本FAQ与指令内容较深（标准问/相似问涉及业务内容过于细节、句子复杂），用户难触及，命中率低；
-3、手机端，用户可能更倾向于文本交互；在文本交互场景下，用户不一定输入完整句子，需要处理短句与短语的query；（0912使用40个业务关键词测试，命中率仅45%，未进一步评估内容关联正确率）
-4、配置讯飞闲聊库支持语音技能有限，开放性问题难以处理。
-处理方案：
-1、业务持续运行期间，根据会话记录，添加指令、FAQ，维护相似问；
-2、梳理出业务关联高频词与短语，添加到指定指令或FAQ的相似问，用高频词先将用户意图过滤一道，提高命中率；需要仔细维护关键词及对应命中query，处理与其他内容的误触；
-3、寻找NLP对话/闲聊数据集，暂时先用FAQ库进行训练后提供服务，处理短期的开放式闲聊需求；
-4、闲聊接第三方成熟大模型服务，处理开放性问题；或接入用自有业务数据集训练过的开源模型。
-内容版本概要： 1、干预内容：41个关键词及对应分发内容，详见干预内容-20230920
-2、FAQ分类及内容情况：
-2.1 基于截至0906的855条FAQ内容，重新分类、简要优化，截至20230925概要情况如下
-FAQ分类
-数量
-线上-万得厨的厨
-线下-自助美食餐厅
-FAQ分类
-数量
-线上-万得厨的厨
-线下-自助美食餐厅
-万得美角色属性
-40
-未调整
-配
-寒暄话术
-5
-待更新添加（用炉端版本）
-配
-美食知识
-312
-未调整
-配
-万得厨宣传
-12
-轻量修订
-配，少量需修改
+    <p>根据 万得厨虚拟人健康助手方案.docx 文件，总结健康助手所需的知识：
+所需数据类别
+当前已有数据情况
+预计工作
+所需数据类别
+当前已有数据情况
+预计工作
+食谱食材营养
+之前已收集的《食物营养成分数据》已囊括。已导入数据库。
+食材相生相克
+已有香哈网3360条食材相克、宜搭、影响数据。未导入数据库。
+与《食物营养成分数据》合并，导入vdh数据库
+食谱场景
+万得厨业务库已有。
+食材分类
+之前已收集的《食物营养成分数据》已囊括。已导入数据库。
+饮食目标
+已有唤醒食物网4021条食疗数据，包含86个疾病。这些数据只是其中一部分。未导入数据库。
+1.可以考虑是否购买唤醒食物食疗api获取完整食疗数据。该api包含食材、有利/不利疾病、有利/不利权重，3个数据。5450元一年，可用于给食谱增加“饮食目标”的标签信息。
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to H5端内容需求评估" href="http://localhost:1313/posts/wiki/h5%E7%AB%AF%E5%86%85%E5%AE%B9%E9%9C%80%E6%B1%82%E8%AF%84%E4%BC%B0/"></a>
+  <a class="entry-link" aria-label="post link to 健康助手" href="http://localhost:1313/posts/wiki/%E5%81%A5%E5%BA%B7%E5%8A%A9%E6%89%8B/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">算法接口设计
+    <h2 class="entry-hint-parent">万得厨个人信息查询场景调研
     </h2>
   </header>
   <div class="entry-content">
-    <p> 11. 领域通用检索服务接口 22. 知识插件检索服务接口 33. 知识库构建文件格式及限制 应用名(nacos注册的应用名)：yingzi-algorithm-rag
-开发环境： 172.18.64.37
-测试/预生产/生产环境：k8s
-算法服务错误码：
-错误码
-触发条件
-错误信息示例
-备注
-错误码
-触发条件
-错误信息示例
-备注
-100000000
-成功返回
-100100201
-数据越界
-数据越界：问题长度超出限制：[1, 750]
-100100203
-输入参数类型/格式错误。
-不支持的数据格式：app_type
-100100205
-输入字段缺失
-输入字段缺失：query
-100100206
-输入数据缺失
-输入数据缺失：knowledge_configs
-100600900
-算法服务未知错误/服务器内部错误
-未知错误，请联系算法管理员
+    <p>1. 场景需求 编号
+场景
+场景需求
+业务库
+sql
+编号
+场景
+场景需求
+业务库
+sql
+1
+个人万得厨设备数据
+用户id 归属家庭 所在房间 设备名称 设备状态 型号 型号编码 UUID MAC 软件版本 系统版本
+scene_mwd
+select
+de.id, – id
+de.device_id, – 设备id
+de.device_name, – 设备id
+de.bind_user_id, – 用户id
+de.bind_user_device_name, – 用户设置的设备名称
+de.bind_operate_time, – 用户绑定时间
+ds.device_online_status, – 设备在线状态
+de.enable_status， – 启用状态
+ds.cooking_status, – 设备烹饪状态
+ds.last_online_time, – 设备最后在线时间
+de.cooking_times, – 烹饪总次数
+de.qr_code_scan_times, – 扫码总次数
+de.qr_code_scan_start_times, – 扫码启动总次数
+de.device_model_name, – 设备型号
+de.iot_device_model_code, – 设备中心设备类型（型号编码）
+de.mac_address, – mac地址
+de.unique_code, – 设备唯一识别码UUID
+de.firmware_version, – 固件版本（硬件版本）
+de.app_version_code – app版本（软件版本）
+from
+mwd_device_info de
+left join mwd_device_status ds on de.device_id = ds.device_id
+where de.client_type = 2 and de.device_team_type = 10
 ...</p>
   </div>
-  <footer class="entry-footer">3 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 算法接口设计" href="http://localhost:1313/posts/wiki/%E7%AE%97%E6%B3%95%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/"></a>
+  <footer class="entry-footer">4 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 万得厨个人信息查询场景调研" href="http://localhost:1313/posts/wiki/%E4%B8%87%E5%BE%97%E5%8E%A8%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF%E6%9F%A5%E8%AF%A2%E5%9C%BA%E6%99%AF%E8%B0%83%E7%A0%94/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">大模型&#43;知识文档
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 大模型&#43;知识文档" href="http://localhost:1313/posts/wiki/%E5%A4%A7%E6%A8%A1%E5%9E%8B&#43;%E7%9F%A5%E8%AF%86%E6%96%87%E6%A1%A3/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/221/">
-      «&nbsp;上一页&nbsp;221/237
+      «&nbsp;上一页&nbsp;221/241
     </a>
-    <a class="next" href="http://localhost:1313/page/223/">下一页&nbsp;223/237&nbsp;»
+    <a class="next" href="http://localhost:1313/page/223/">下一页&nbsp;223/241&nbsp;»
     </a>
   </nav>
 </footer>

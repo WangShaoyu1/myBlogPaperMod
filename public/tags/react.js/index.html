@@ -129,31 +129,104 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">面试官：假如有几十个请求，如何去控制并发？
+    <h2 class="entry-hint-parent">从IslandsArchitecture看前端有多卷
     </h2>
   </header>
   <div class="entry-content">
-    <p>面试官：看你简历上做过图片或文件批量下载，那么假如我一次性下载几十个，如何去控制并发请求的？
-让我想想，额~， 选中ID，循环请求？，八嘎！肯定不是那么沙雕的做法，这样做服务器直接崩溃啦！突然灵光一现，请求池！！！
-我：利用Promise模拟任务队列，从而实现请求池效果。
-面试官：大佬！
-废话不多说，正文开始：
-众所周知，浏览器发起的请求最大并发数量一般都是6~8个，这是因为浏览器会限制同一域名下的并发请求数量，以避免对服务器造成过大的压力。
-首先让我们来模拟大量请求的场景
-javascript
-代码解读
-复制代码
-const ids = new Array(100).fill(&#39;&#39;) console.time() for (let i = 0; i &lt; ids.length; i&#43;&#43;) { console.log(i) } console.timeEnd()
-一次性并发上百个请求，要是配置低一点，又或者带宽不够的服务器，直接宕机都有可能，所以我们前端这边是需要控制的并发数量去为服务器排忧解难。
-什么是队列？ 先进先出就是队列，push一个的同时就会有一个被shift。我们看下面的动图可能就会更加的理解：
-我们接下来的操作就是要模拟上图的队列行为。
-定义请求池主函数函数 javascript
-代码解读
-复制代码
+    <p>大家好，我卡颂。
+最近，Remix团队的暴躁老哥Ryan Florence一连怼了好几个友商框架，比如：
+喷SolidStart抄Remix的文档 怼Next.js抄Remix的API设计 吐槽Astro、Qwik没有什么新鲜理念 当然，这些推文发出不到一天就被老哥删了 🤫 。
+我们今天不聊以上这些事儿的对错。
+我想问问不常关注前端新轮子发展的同学，此时你们的内心活动是不是：
+这TM都是些啥框架？我咋一个都不认识？
+今天，我们从被Ryan吐槽的Astro的理念 —— Islands Architecture出发，来看看前端到底有多卷。
+欢迎加入人类高质量前端框架研究群，带飞
+Islands Architecture是什么 Islands Architecture（孤岛架构）的概念最初是由Etsy的前端架构师 Katie Sylor-Miller 在 2019 年提出，并由Preact作者Jason Miller在islands-architecture一文中推广。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-12 00:00:00 +0000 UTC'>四月 12, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;大码猴</footer>
-  <a class="entry-link" aria-label="post link to 面试官：假如有几十个请求，如何去控制并发？" href="http://localhost:1313/posts/juejin/%E9%9D%A2%E8%AF%95%E5%AE%98%E5%81%87%E5%A6%82%E6%9C%89%E5%87%A0%E5%8D%81%E4%B8%AA%E8%AF%B7%E6%B1%82%E5%A6%82%E4%BD%95%E5%8E%BB%E6%8E%A7%E5%88%B6%E5%B9%B6%E5%8F%91/"></a>
+  <footer class="entry-footer"><span title='2022-08-12 00:00:00 +0000 UTC'>八月 12, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;魔术师卡颂</footer>
+  <a class="entry-link" aria-label="post link to 从IslandsArchitecture看前端有多卷" href="http://localhost:1313/posts/juejin/%E4%BB%8Eislandsarchitecture%E7%9C%8B%E5%89%8D%E7%AB%AF%E6%9C%89%E5%A4%9A%E5%8D%B7/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">React18不再依赖ConcurrentMode开启并发了
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>大家好，我卡颂。
+相信很多关注React进展的朋友都了解Concurrent Mode，他是渐进升级策略的产物。
+由于策略调整，根据What happened to concurrent mode?，在v18中将不会有Concurrent Mode了。
+没有Concurrent Mode，那该如何使用并发更新呢？
+一句话总结：在v18中，不再有三种模式，而是以是否使用并发特性作为是否开启并发更新的依据。
+更详细的解释，让我们一起从React渐进升级策略的演进过程中寻找答案。
+欢迎加入人类高质量前端框架研究群，带飞
+React有多少种架构？ 从最老的版本到当前的v18，市面上有多少个版本的React？
+可以从架构角度来概括下，当前一共有两种架构：
+采用不可中断的递归方式更新的Stack Reconciler（老架构）
+采用可中断的遍历方式更新的Fiber Reconciler（新架构）
+新架构可以选择是否开启并发更新，所以当前市面上所有React版本一定属于如下一种情况：
+老架构（v15及之前版本）
+新架构，未开启并发更新，与情况1行为一致（v16、v17默认属于这种情况）
+新架构，未开启并发更新，但是启用了一些新功能（比如Automatic Batching）
+新架构，开启并发更新
+理想与现实的差距 React团队的愿景是：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-11-17 00:00:00 +0000 UTC'>十一月 17, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;魔术师卡颂</footer>
+  <a class="entry-link" aria-label="post link to React18不再依赖ConcurrentMode开启并发了" href="http://localhost:1313/posts/juejin/react18%E4%B8%8D%E5%86%8D%E4%BE%9D%E8%B5%96concurrentmode%E5%BC%80%E5%90%AF%E5%B9%B6%E5%8F%91%E4%BA%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">form元素是React的未来
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>大家好，我卡颂。
+请思考一个问题：如果有一个HTML标签，React围绕他专门出了2个hook，那这个标签对React未来的发展一定非常重要，这没毛病吧？
+这个标签就是 —— form。
+React围绕form新出了如下2个hook：
+useOptimistic
+useFormStatus
+本文会聊聊React围绕form的布局与发展。
+欢迎加入人类高质量前端交流群，带飞
+Next.js的发展历程 说到React未来的发展，必须从Next.js聊起。毕竟，React团队成员不是加入Next团队，就是在加入的路上。
+web开发中涉及到前后端交互的部分主要包括：
+根据后端数据渲染前端页面
+根据前端用户输入保存数据到后端
+Next.js的发展主要围绕以上两点展开。
+根据后端数据渲染前端页面 前期，Next.js的主打特性是SSR、SSG。也就是把根据后端数据渲染前端页面的过程从前端挪到后端。
+这个时期的Next.js路由被称为Pages Router。
+时间来到Next.js v13，以RSC（React Server Component）为核心的App Router取代Pages Router成为默认配置。
+很多朋友不熟悉RSC，认为他是实验特性。实际上，RSC借由Next.js已经落地了。
+一句话理解RSC —— 客户端组件（在浏览器渲染的React组件）可以根据依赖分为两部分：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-05-31 00:00:00 +0000 UTC'>五月 31, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;魔术师卡颂</footer>
+  <a class="entry-link" aria-label="post link to form元素是React的未来" href="http://localhost:1313/posts/juejin/form%E5%85%83%E7%B4%A0%E6%98%AFreact%E7%9A%84%E6%9C%AA%E6%9D%A5/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">被diss性能差，Dan连夜优化React新文档
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>大家好，我卡颂。
+昨天在开源圈发生个小插曲。起因是有个用户表示：React新文档在文档结构、美观度、性能等各方面都达到很高的标准。
+尤雨溪对Vue新文档与React Beta文档做了测试后表示：在性能这块，Vue新文档更具优势。
+Dan表示：当前文档还处于Beta版本，现在有更重要的工作要完成，正式版上线前会优化性能。
+话虽这么说，Dan应该是通了个宵优化了一把性能：
+本篇文章我们来看看，Dan都做了哪些优化。
+欢迎加入人类高质量前端框架研究群，带飞
+优化效果 经过优化后的lightHouse跑分：
+作为对照，Vue文档的跑分：
+两者10次TTI跑分对比：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-05-27 00:00:00 +0000 UTC'>五月 27, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;魔术师卡颂</footer>
+  <a class="entry-link" aria-label="post link to 被diss性能差，Dan连夜优化React新文档" href="http://localhost:1313/posts/juejin/%E8%A2%ABdiss%E6%80%A7%E8%83%BD%E5%B7%AEdan%E8%BF%9E%E5%A4%9C%E4%BC%98%E5%8C%96react%E6%96%B0%E6%96%87%E6%A1%A3/"></a>
 </article>
     </main>
     

@@ -131,139 +131,87 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2023.5.25例会~虚拟人多面体组双周例会
+    <h2 class="entry-hint-parent">面试官：为什么忘记密码要重置而不是告诉你原密码？
     </h2>
   </header>
   <div class="entry-content">
-    <p>智能烹饪最小闭环PRD：智能烹饪.rp 补充的部分功能需求 和 自动识别意图算法、自动调节程序运行算法的具体使用场景 清单： 需求编号
-需求类型
-需求背景
-需求概述
-需求详情
-业务场景
-预定效果
-优先级
-需求支持方
-备注
-需求编号
-需求类型
-需求背景
-需求概述
-需求详情
-业务场景
-预定效果
-优先级
-需求支持方
-备注
-...</p>
+    <p>这是一个挺有意思的面试题，挺简单的，不知道大家平时在重置密码的时候有没有想过这个问题。回答这个问题其实就一句话：因为服务端也不知道你的原密码是什么。如果知道的话，那就是严重的安全风险问题了。 我们这里来简单分析一下。
+做过开发的应该都知道，服务端在保存密码到数据库的时候，绝对不能直接明文存储。如果明文存储的话，风险太大，且不说数据库的数据有被盗的风险，如果被服务端的相关人员特别是有数据库权限的恶意利用，那将是不可预估的风险。
+一般情况下，我们都是通过哈希算法来加密密码并保存。
+哈希算法也叫散列函数或摘要算法，它的作用是对任意长度的数据生成一个固定长度的唯一标识，也叫哈希值、散列值或消息摘要（后文统称为哈希值）。
+哈希算法可以简单分为两类：
+加密哈希算法：安全性较高的哈希算法，它可以提供一定的数据完整性保护和数据防篡改能力，能够抵御一定的攻击手段，安全性相对较高，但性能较差，适用于对安全性要求较高的场景。例如 SHA2、SHA3、SM3、RIPEMD-160、BLAKE2、SipHash 等等。 非加密哈希算法：安全性相对较低的哈希算法，易受到暴力破解、冲突攻击等攻击手段的影响，但性能较高，适用于对安全性没有要求的业务场景。例如 CRC32、MurMurHash3、SipHash 等等。 除了这两种之外，还有一些特殊的哈希算法，例如安全性更高的慢哈希算法。
+关于哈希算法的详细介绍，可以看我写的这篇文章：哈希算法和加密算法总结 。
+目前，比较常用的是通过 MD5 &#43; Salt 的方式来加密密码。盐（Salt）在密码学中，是指通过在密码任意固定位置插入特定的字符串，让哈希后的结果和使用原始密码的哈希结果不相符，这种过程称之为“加盐”。
+不过，这种方式已经不被推荐，因为 MD5 算法的安全性较低，抗碰撞性差。详细介绍可以阅读我写的这篇文章：简历别再写 MD5 加密密码了！ 。你可以使用安全性较高的加密哈希算法&#43; Salt（盐）（例如 SHA2、SHA3、SM3，更高的安全性更强的抗碰撞性）或者直接使用慢哈希（例如 Bcrypt，更推荐这种方式）。
+假如我们这里使用 SHA-256 &#43; Salt 这种方式。
+这里写了一个简单的示例代码：
+String password = &#34;123456&#34;; String salt = &#34;1abd1c&#34;; // 创建SHA-256摘要对象 MessageDigest messageDigest = MessageDigest.getInstance(&#34;SHA-256&#34;); messageDigest.update((password &#43; salt).getBytes()); // 计算哈希值 byte[] result = messageDigest.digest(); // 将哈希值转换为十六进制字符串 String hexString = new HexBinaryAdapter().marshal(result); System.out.println(&#34;Original String: &#34; &#43; password); System.out.println(&#34;SHA-256 Hash: &#34; &#43; hexString.toLowerCase()); ...</p>
   </div>
-  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 2023.5.25例会~虚拟人多面体组双周例会" href="http://localhost:1313/posts/wiki/2023.5.25%E4%BE%8B%E4%BC%9A~%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%A4%9A%E9%9D%A2%E4%BD%93%E7%BB%84%E5%8F%8C%E5%91%A8%E4%BE%8B%E4%BC%9A/"></a>
+  <footer class="entry-footer"><span title='2024-04-16 00:00:00 +0000 UTC'>四月 16, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;JavaGuide</footer>
+  <a class="entry-link" aria-label="post link to 面试官：为什么忘记密码要重置而不是告诉你原密码？" href="http://localhost:1313/posts/papermod/%E9%9D%A2%E8%AF%95%E5%AE%98%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BF%98%E8%AE%B0%E5%AF%86%E7%A0%81%E8%A6%81%E9%87%8D%E7%BD%AE%E8%80%8C%E4%B8%8D%E6%98%AF%E5%91%8A%E8%AF%89%E4%BD%A0%E5%8E%9F%E5%AF%86%E7%A0%81/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">炉端4月份技术任务分解
+    <h2 class="entry-hint-parent">split方法我算是白学了
     </h2>
   </header>
   <div class="entry-content">
-    <p> 11. 第一周（每日下午5:30更新） 22. 第二周（每日下午5:30更新） 33. 第三周（每日下午5:30更新） 44. 第四周（每日下午5:30更新） 55. 第五周（每日下午5:30更新） 月度任务项
-时间
-周任务完成详情
-**目标：**4.30之前，完成英伟达平台万得厨虚拟人模块准备工作（为批量接入指令做完准备工作）
-任务：
-4.25之前，完成主框架、QT开发框架、声学SDK、虚拟人SDK集成调试（不含具体业务开发） 4.30之前，完成与英伟达炉端对接对齐准备工作，包含：部分界面、部分交互逻辑、部分形象（按照之前的接口协议，这部分工作需要整理出来） 4.30，完成虚拟人与英伟达炉端界面应用集成、指令接通（至少1条系统指令、1条烹饪指令） 第一周
-第二周
-第三周
-第四周
-第五周
-1. 第一周（每日下午5:30更新） 陆元伟
-黄圆成
-备注
-周一
-今日重点工作：学习QT图片显示。颜色背景设置。弹框使用。定时器使用。模拟万得厨首页显示
-今日重点工作：虚拟人和声学demo集成，调试，运行。存在资源无法加载、打开音频失败问题，待排查。
-明日计划：基础库如存储。日志。网络库搭建
-明日计划：解决资源加载，优化交互效果。
-周二
-今日重点工作：存储库编写。
-今日重点工作：通过更新配置文件解决启动VTN失败，打开录音失败问题，完成虚拟人和AIUI集成，实现语音问答虚拟人回答问题。
-明日计划：日志库。网络库封装
-明日计划：集成工程优化及QT工程搭建。
-...</p>
+    <p>wc，同志们，javascript中字符串的split方法会用么。我最近发现我是白用这么多年了，导致我刷题时遇到一个问题死活没看出来是什么原因。今天必须要记录一下。如果你也和我一样，那在评论区留言，让我好受一点。
+在说问题之前先来看一下split 最基本的两种应用
+字符参数 split 方法是用来做字符串分割的，使用这个方法最常用的形式也是使用指定字符来对原字符串进行分割。比如下面的代码
+1 &#39;as:st:vii&#39;.split(&#39;:&#39;) // [&#39;as&#39;, &#39;st&#39;, &#39;vii&#39;] 使用 : 对原字符串进行分割，结果是一个数组，这应该是平时用的比较多的用法了
+正则参数 有时候用来的分割并不是特定的字符，而是一类字符，比如数字分割
+1 ...</p>
   </div>
-  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 炉端4月份技术任务分解" href="http://localhost:1313/posts/wiki/%E7%82%89%E7%AB%AF4%E6%9C%88%E4%BB%BD%E6%8A%80%E6%9C%AF%E4%BB%BB%E5%8A%A1%E5%88%86%E8%A7%A3/"></a>
+  <footer class="entry-footer"><span title='2024-10-08 00:00:00 +0000 UTC'>十月 8, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;柚子816</footer>
+  <a class="entry-link" aria-label="post link to split方法我算是白学了" href="http://localhost:1313/posts/juejin/split%E6%96%B9%E6%B3%95%E6%88%91%E7%AE%97%E6%98%AF%E7%99%BD%E5%AD%A6%E4%BA%86/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2.2、结合食品产业互联网网点管理分析屏端数字员工业务场景
+    <h2 class="entry-hint-parent">Markdown Syntax Guide
     </h2>
   </header>
   <div class="entry-content">
-    <p> 11. 了解食品产业互联网网点管理系统设计 1.11.1. 网点管理系统定位 1.21.2. 网点管理系统产品架构 1.2.11.2.1. 网点管理小程序 1.2.21.2.2. 网点运营平台（Web端） 1.2.31.2.3. 业务系统操作流程 22. 屏端数字员工与网点管理结合的业务落地性探讨 2.12.1. 屏端数字员工产品介绍 2.22.2. 屏端数字员工适用的网点场景 2.32.3. 屏端数字员工与网点管理结合的优势 2.3.12.3.1. 可以提供基础的功能服务，节省人力 2.3.22.3.2. 承担起网点服务员的工作，分工明确 2.3.32.3.3. 熟悉流程后使用快捷指令， 提高效率 2.3.42.3.4. 屏幕展示内容门店可自定，个性化运营 33. 具体业务闭环设计（待讨论） 3.13.1. 网点开设场景 3.23.2. 库存管理场景 3.33.3. 设备管理场景 3.43.4. 商品价格管理场景 3.53.5. 运营广告设置场景 3.63.6. 虚拟人相关设置场景 3.73.7. 留言反馈场景 3.83.8. 交互数据统计 1. 了解食品产业互联网网点管理系统设计 参考：
+    <p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.
 ...</p>
   </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 2.2、结合食品产业互联网网点管理分析屏端数字员工业务场景" href="http://localhost:1313/posts/wiki/2.2%E7%BB%93%E5%90%88%E9%A3%9F%E5%93%81%E4%BA%A7%E4%B8%9A%E4%BA%92%E8%81%94%E7%BD%91%E7%BD%91%E7%82%B9%E7%AE%A1%E7%90%86%E5%88%86%E6%9E%90%E5%B1%8F%E7%AB%AF%E6%95%B0%E5%AD%97%E5%91%98%E5%B7%A5%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF/"></a>
+  <footer class="entry-footer"><span title='2019-03-11 00:00:00 +0000 UTC'>三月 11, 2019</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;Hugo Authors</footer>
+  <a class="entry-link" aria-label="post link to Markdown Syntax Guide" href="http://localhost:1313/posts/markdown-syntax/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2023.11.30大模型相关内容讨论
+    <h2 class="entry-hint-parent">Code Syntax Guide
     </h2>
   </header>
   <div class="entry-content">
-    <p>会议名称
-大模型专题讨论
-会议时间
-2023年11月30日 下午13:45~15:30
-会议地点
-广州2408会议室
-主持人
-韦玲
-会议记录
-马冬颖
-参会人员
-韦玲、王宇、任鹏、黄婷、唐玮、郑小涵、李梦阳、马冬颖
-会议主题
-大模型相关内容方案讨论
-会议内容
-1、马冬颖介绍讯飞星火模型提示词方案和测试结果，从模糊意图、开放性意图、寒暄类意图、事实类意图四种问题类型，对无提示词和不同场景提示词下大模型生成的内容进行测试对比，结果显示不同场景的提示词可以强化大模型的生成内容
-2、唐玮介绍”大模型&#43;知识库“、”表格问答&#43;知识库“测试方案与结果；通过相同的测试用例在不同产品上的识别率和正确率对比，发现大模型在识别率和关键场景的准确率上都比较高，但是在涉及计算的场景准确率很差。至于哪个大模型比更优，重点在于“知识切片”的因素
-3、黄婷介绍大模型&#43;中控方案及demo，介绍三种大模型中控应用技术的调研结果和大模型中控的实现方案，结合HuggingGPT技术详细介绍指令引导方案的demo实现情况
-决议项
-1、提示词方案
-第一个版本先使用目前这版提示词，之后根据用户使用情况再进行优化， 考虑到没办法给大模型提供一个质量很好的示例，暂时不在提示词中添加示例 下个版本对提示词优化可以考虑添加角色名称 2、大模型知识问答、表格问答
-表格问答可获得较高的准确率，需要建立在优化程度较高的训练数据基础上，测试用例也需符合其算法支持范围；在专业第三方工具上能达到的最高准确率，基本也代表着此类技术能达到的水平情况；12月唐玮、马冬颖重新评估调整测试用例，对表格问答功能重新测试； excel及处理好格式的数据结构化强，还需要对不同的文件格式与数据结构进行效果评估（例如长文本类型）； 对导入多个知识库的方案进行测试，测试准确率和误触率 在知识库的基础上，对query添加提示词进行测试 3、大模型中控
-继续完成demo工作 demo跑出来后要有评价指标，需要进行一定的评估； 方案的选择最终是要落地，需要大致评估相关方案调用API的token消耗与成本、链路响应情况。 材料（附件）
-13、星火大模型提示词方案 - 虚拟数字人 - YZ Wiki (yingzi.com)
-...</p>
+    <p>Sample article showcasing basic code syntax and formatting for HTML elements.</p>
   </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 2023.11.30大模型相关内容讨论" href="http://localhost:1313/posts/wiki/2023.11.30%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9B%B8%E5%85%B3%E5%86%85%E5%AE%B9%E8%AE%A8%E8%AE%BA/"></a>
+  <footer class="entry-footer"><span title='2019-03-10 00:00:00 +0000 UTC'>三月 10, 2019</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;Aditya Telange</footer>
+  <a class="entry-link" aria-label="post link to Code Syntax Guide" href="http://localhost:1313/posts/code_syntax/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2024~~五月份
+    <h2 class="entry-hint-parent">Rich Content and Shortcodes
     </h2>
   </header>
   <div class="entry-content">
-    <p>Filter table dataCreate a pivot tableCreate a chart from data series
-Configure buttons visibility
-</p>
+    <p>Hugo ships with several Built-in Shortcodes for rich content, along with a Privacy Config and a set of Simple Shortcodes that enable static and no-JS versions of various social media embeds.
+...</p>
   </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 2024~~五月份" href="http://localhost:1313/posts/wiki/2024~~%E4%BA%94%E6%9C%88%E4%BB%BD/"></a>
+  <footer class="entry-footer"><span title='2019-03-10 00:00:00 +0000 UTC'>三月 10, 2019</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;Hugo Authors, PaperMod Contributors</footer>
+  <a class="entry-link" aria-label="post link to Rich Content and Shortcodes" href="http://localhost:1313/posts/rich-content/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/page/10/">
-      «&nbsp;上一页&nbsp;10/237
+      «&nbsp;上一页&nbsp;10/12
     </a>
-    <a class="next" href="http://localhost:1313/page/12/">下一页&nbsp;12/237&nbsp;»
+    <a class="next" href="http://localhost:1313/page/12/">下一页&nbsp;12/12&nbsp;»
     </a>
   </nav>
 </footer>

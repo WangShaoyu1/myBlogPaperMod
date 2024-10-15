@@ -144,105 +144,116 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">新的cssinjs方案-StyleX实践应用
+    <h2 class="entry-hint-parent">使用Nextjs加载虚拟人
     </h2>
   </header>
   <div class="entry-content">
-    <p>2023年几个虚拟人h5项目的css in js部分都是用styils这个库
-背景 StyleX 已成为 Meta 公司内的每个 Web 界面样式化组件的首选方案
-https://stylexjs.com/
-跟其他css in js方案区别 如styled-components,为了加个样式，就要写个组件
-而StyleX，直接写js
-安装使用问题 vite安装问题
-https://github.com/HorusGoul/vite-plugin-stylex/issues/29
-JS 核心 api stylex.create()：使用对象的形式 创建 静态和动态样式 stylex.props(): 使用对象的形式 设置 React 的 Props 对象 stylex.keyframes()： 创建 css 关键帧动画 stylex.firstThatWorks()： 定义样式回退方案 stylex.defineVars()： 定义变量 stylex.createTheme()： 定义主题 坑 ios低版本不兼容样式
+    <p>背景 想加快虚拟人渲染的速度
+吐槽 接口如（https://vdh-api.test.yingzi.com/haigate/api/v1/haiAtxt2Anim）原本是POST接口，用了GET方法居然报404，而不是405，搞到排查了挺久
+困难 1.导入 2.sdk内部资源路径 明明已经放进public文件夹，为什么还给我拼上了路径
+看源码，路径的生成有在这里执行过，看了下，居然在document.currentScript非空？
+currentScript是什么
+当 import(&#39;./haihuman.module.js&#39;) 被执行时，Next.js 会生成一个新的 JavaScript 文件，并将其放置在 /_next/static/chunks/ 目录中。document.currentScript.src 会指向这个动态加载的脚本，因此路径中会包含 /_next/static/chunks/
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 新的cssinjs方案-StyleX实践应用" href="http://localhost:1313/posts/wiki/%E6%96%B0%E7%9A%84cssinjs%E6%96%B9%E6%A1%88-stylex%E5%AE%9E%E8%B7%B5%E5%BA%94%E7%94%A8/"></a>
+  <a class="entry-link" aria-label="post link to 使用Nextjs加载虚拟人" href="http://localhost:1313/posts/wiki/%E4%BD%BF%E7%94%A8nextjs%E5%8A%A0%E8%BD%BD%E8%99%9A%E6%8B%9F%E4%BA%BA/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">微信小程序运行虚拟人方案
+    <h2 class="entry-hint-parent">WebAssembly
     </h2>
   </header>
   <div class="entry-content">
-    <p>背景 需要获取用户信息分析用户数据，需要跑在小程序，获取openId
-选型 1.小程序里嵌套web-view 通信成本 维护两个应用，小程序和h5 兼容问题 2.uniapp打包 本地调试麻烦，目前脚手架跑不起来https(用来调试语音) 兼容问题，可能跑不了(20230724构建失败) 3.直接小程序写 H5的sdk需要挂载dom节点初始化，但小程序不能操作dom
-问题 1.杀掉小程序，webview里的storage丢失 比较多功能涉及到storage能力，比较麻烦
-方案1 webview（H5）先读取小程序里的storage，同步到自己的localstorage，后面的所有localstorage操作同步到小程序的storage
-H5
-小程序
-挂载后赋值
-更新
-更新
-//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-98d8b561-d040-41c2-9454-5e08465c00ec’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ &#43; ‘/rest/drawio/1.0/diagram/crud/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE/105268443?revision=6’; readerOpts.imageUrl = ’’ &#43; ‘/download/attachments/105268443/未命名绘图.png’ &#43; ‘?version=6&amp;api=v2’; readerOpts.editUrl = ’’ &#43; ‘/plugins/drawio/addDiagram.action?ceoId=105268443&amp;owningPageId=105268443&amp;diagramName=%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE&amp;revision=6’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH &#43; ‘/reader’; readerOpts.border = true; readerOpts.width = ‘400’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE &#43; ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘微信小程序运行虚拟人方案’; readerOpts.attVer = ‘6’; readerOpts.attId = ‘109710023’; readerOpts.lastModifierName = ‘吴家杰’; readerOpts.lastModified = ‘2023-09-06 15:28:14.444’; readerOpts.creatorName = ‘吴家杰’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;
-...</p>
+    <p>Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer">3 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 微信小程序运行虚拟人方案" href="http://localhost:1313/posts/wiki/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E8%99%9A%E6%8B%9F%E4%BA%BA%E6%96%B9%E6%A1%88/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to WebAssembly" href="http://localhost:1313/posts/wiki/webassembly/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">图片延迟加载优化
+    <h2 class="entry-hint-parent">以配置思路优化项目
     </h2>
   </header>
   <div class="entry-content">
-    <p>图片主要以两种形式呈现img标签和background-image，分别以不同方式来做延迟请求资源来避免阻塞首屏渲染 1.img标签 增加lazy
+    <p>前言 项目以功能维度划分，有两部分：
+1.首页
+2.若干个功能页
+功能页入口在
+动手 1.主题 颜色
+2.功能页 功能页如果可配置，那主页到各自功能页的入口可能为0-3个 设计为grid布局，不会因为数量影响位置
 ?
-&lt;img :src=``&#34;item.value&#34; loading=``&#34;lazy&#34; /&gt;
-浏览器看到它会以自己优化的形式来做按需加载
-2.background-image 先定义个全局css，需要优化的class都加上img-lazy
-?
-.img-lazy {
-background-image``: none``!important``;
-}
-增加js，在需要时调用loadLazyImage
-原理带着img-lazy类名的元素进入视口后，移除img-lazy，background-image里的值得以解析，浏览器再去请求资源
-?
-export function isInViewPort(elm) {
-const viewWidth = window.innerWidth || document.documentElement.clientWidth;
-const viewHeight =
-window.innerHeight || document.documentElement.clientHeight;
-const { top, right, bottom, left } = elm.getBoundingClientRect();
+.modules-container {
+width``: 100%``;
+position``: absolute``;
+top``: 260px``;
+display``: grid;
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 图片延迟加载优化" href="http://localhost:1313/posts/wiki/%E5%9B%BE%E7%89%87%E5%BB%B6%E8%BF%9F%E5%8A%A0%E8%BD%BD%E4%BC%98%E5%8C%96/"></a>
+  <a class="entry-link" aria-label="post link to 以配置思路优化项目" href="http://localhost:1313/posts/wiki/%E4%BB%A5%E9%85%8D%E7%BD%AE%E6%80%9D%E8%B7%AF%E4%BC%98%E5%8C%96%E9%A1%B9%E7%9B%AE/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">话术数据结构
+    <h2 class="entry-hint-parent">临时问题记录
     </h2>
   </header>
   <div class="entry-content">
-    <p> 1 2FAQ 2.1转换的字符串代码 2.2生成效果 2.3注意： 3指令 3.1理想（严格JSON格式） 3.2现实 3.3方案 3.41.encodeURI和decodeURI 3.5...</p>
+    <p>成功执行话术
+失败执行话术
+成功执行话术
+失败执行话术
+按列表查看
+缺失
+上一页
+缺失
+下一页
+缺失
+上一个
+缺失
+下一个
+缺失
+展品介绍
+缺失
+缺失
+重新播放
+暂停播放
+开始播放
+公司发展历
+缺失
+缺失
+Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 话术数据结构" href="http://localhost:1313/posts/wiki/%E8%AF%9D%E6%9C%AF%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"></a>
+  <a class="entry-link" aria-label="post link to 临时问题记录" href="http://localhost:1313/posts/wiki/%E4%B8%B4%E6%97%B6%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">虚拟人SDK接入到万得触2.0屏端APP架构与代码细节分析
+    <h2 class="entry-hint-parent">工程化
     </h2>
   </header>
   <div class="entry-content">
-    <p> 11. 概述 22. 整体分析项目 2.12.1. 从构建出发 2.22.2. 从入口文件出发 2.2.12.2.1. 分析Activity 2.2.22.2.2. 程序入口点与程序入口点活动 2.32.3. 设计稿适配页面 2.42.4. 实现视图绑定 2.4.12.4.1. viewBinding 2.4.22.4.2. Butter Knife 2.52.5. 实现数据绑定 2.62.6. 实现路由跳转 2.72.7. 实现数据请求 2.82.8. Fragment生命周期 1. 概述 最近几天在查看git项目：http://gitlab.yingzi.com/yingzi/yxhealth-team/yingzi-android-wonder-kitchen-app.git 上分支：release-avatar上的代码，分析其中的总体架构、技术结构、代码细节等等，目前是从技术的角度看重新掌握一门技术达到用于简单实战程度到底有哪些工作是要做的。之前积累的技术架构思维，怎么应用到不同的技术体系、不同的编程语言上。同时也需要锻炼一种思维：以快速学习掌握一门新知识为目标，怎么锻炼好结构化思维。从一个技术项目落地的基本思路出发，将整个过程分解为几个步骤。
-...</p>
+    <p>Filter table dataCreate a pivot tableCreate a chart from data series
+Configure buttons visibility
+</p>
   </div>
-  <footer class="entry-footer">30 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 虚拟人SDK接入到万得触2.0屏端APP架构与代码细节分析" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BAsdk%E6%8E%A5%E5%85%A5%E5%88%B0%E4%B8%87%E5%BE%97%E8%A7%A62.0%E5%B1%8F%E7%AB%AFapp%E6%9E%B6%E6%9E%84%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 工程化" href="http://localhost:1313/posts/wiki/%E5%B7%A5%E7%A8%8B%E5%8C%96/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/194/">
-      «&nbsp;上一页&nbsp;194/237
+      «&nbsp;上一页&nbsp;194/241
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/196/">下一页&nbsp;196/237&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/196/">下一页&nbsp;196/241&nbsp;»
     </a>
   </nav>
 </footer>

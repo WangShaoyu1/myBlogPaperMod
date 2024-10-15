@@ -144,107 +144,149 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">虚拟人透明背景设置失效问题反馈文档
+    <h2 class="entry-hint-parent">虚拟人项目模块说明
     </h2>
   </header>
   <div class="entry-content">
-    <p>1. 背景信息 我们目前在使用虚拟人开发时，遇到了在设置透明背景时的一些问题。我们在自己的程序和杭州虚拟人团队提供的demo（`bin_linux/sample`）中，尝试了以下两种方法来设置虚拟人的透明背景，但均未成功：
-1.1. 通过 `haisdk_background_show_image` 方法传入透明图片路径： 使用该方法传入透明图片路径后，函数返回值为0（表示调用接口正确返回），但虚拟人背景仍然显示为黑色。
-1.2. 通过 `haisdk_background_show_color` 方法传入 RGBA 值 (0,0,0,0)： 使用该方法传入 RGBA 值后，函数返回值为0（表示调用接口正确返回），但虚拟人背景仍然显示为黑色。
-值得注意的是，当传入不带透明度的颜色值时，背景颜色设置生效。
-2. 问题描述 上述方法设置透明背景无效的现象引发了以下疑问：
-是否当前的方法是在黑色背景上叠加了一层背景，因此在设置透明背景时，黑色背景会透出来？
-2.1. 技术支持请求 为了更好地解决该问题，我们希望能够得到以下方面的技术支持：
-2.1.1. 确认当前背景设置方法的工作机制**： 请确认 `haisdk_background_show_image` 和 `haisdk_background_show_color` 方法在设置背景时，是否存在叠加层的情况。
-2.1.2. 提供解决透明背景设置问题的方案**： 如果当前背景设置方法确实存在上述问题，能否提供有效的解决方案或替代方法来实现透明背景设置？
-2.1.3. 示例代码或进一步的技术文档**： 如有可能，提供示例代码或进一步的技术文档，帮助我们正确地设置透明背景。
-3. 接口说明 以下是我们目前使用的接口方法：
+    <p>core:avatar:avatar_core_service：虚拟人控制服务端 虚拟人sdk的对外服务
+com.yingzi.oven.core.avatarservice.service.AvatarService
+客户端通过绑定该服务，即可获取虚拟人控制的一些方法调用，包括创建，缩放，播放动画等
+控制关键类的实现是AvatarControlImpl
+该模块依赖:core:voice:voiceclientproxy模块，以获取语音转文字的结果
+在AvatarService服务被绑定成功的时候初始化，并绑定VoiceService服务
+core:avatarclientproxy：虚拟人客户端辅助模块 用于绑定虚拟人服务器的辅助模块，封装了绑定虚拟人服务方法。
+core:avatar:avatarcommon模块 虚拟人对外aidl接口
+basefunction:avatar模块 虚拟人sdk调用封装
+basefunction:voice模块 科大讯飞sdk调用封装
+core:voice:voice_core_service模块 科大讯飞语音输入模块
+对外服务
+com.yingzi.oven.core.voiceservice.service.VoiceService
+绑定服务成功后，会调用YZAiui初始化科大讯飞sdk，
+app_avatarclient ：虚拟人客户端(相当于万得厨，或其他接入虚拟人的app)
+app_avatarservice ：虚拟人服务端
+绘制虚拟人
+1 直接添加到windowManager流程
+客户端通过AvatarClientControlProxy绑定AvatarService
+绑定成功后，获取一个虚拟人操作代理类IAvatarManager
+创建虚拟人后，虚拟人以悬浮窗形式展示
+客户端和服务器通讯流程
+客户端发送给服务端
+客户端通过AvatarServerManager绑定AvatarClientService服务
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 虚拟人项目模块说明" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%A1%B9%E7%9B%AE%E6%A8%A1%E5%9D%97%E8%AF%B4%E6%98%8E/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Dockerversion26.1.3安装，中科大源
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>cd /mnt ls sudo wget https://mirrors.ustc.edu.cn/docker-ce/linux/static/stable/aarch64/docker-26.1.3.tgz ls sudo tar -xvf docker-26.1.3.tgz ls #此处停止docker和容器，否则cp命令显示文件忙碌 sudo systemctl stop docker sudo systemctl stop containerd sudo cp ./docker/* /usr/bin/ sudo tee /etc/systemd/system/docker.service &gt; /dev/null &lt;&lt; &#39;EOF&#39; [Unit] Description=Docker Application Container Engine Documentation=http://docs.docker.io [Service] ExecStart=/usr/bin/dockerd ExecReload=/bin/kill -s HUP $MAINPID Restart=on-failure RestartSec=5 LimitNOFILE=infinity LimitNPROC=infinity LimitCORE=infinity Delegate=yes KillMode=process [Install] WantedBy=multi-user.target EOF cat docker.service systemctl start docker.service systemctl status docker.service Filter table dataCreate a pivot tableCreate a chart from data series
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to Dockerversion26.1.3安装，中科大源" href="http://localhost:1313/posts/wiki/dockerversion26.1.3%E5%AE%89%E8%A3%85%E4%B8%AD%E7%A7%91%E5%A4%A7%E6%BA%90/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">AzureIoTEdge第二步-设备部署
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. 在IOT中心，设备列表找到设备，点进来；我设置的是Avatar_WDM 点设置模块 2. 设置容器注册表（具体怎么获取后续展开) 添加IoT Edge模块（虚拟人命名为AvatarModule）
+3. 设置页面设置 4. 环境变量设置 5. 容器创建选项设置，将下面的Json填入到文本框内，然后点击添加； 容器创建选项Json 展开源码
+expand source?
+1
+2
+3
+4
+5
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to AzureIoTEdge第二步-设备部署" href="http://localhost:1313/posts/wiki/azureiotedge%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E8%AE%BE%E5%A4%87%E9%83%A8%E7%BD%B2/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Docker入门基础
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. Docker是什么 Docker是基于Go语言实现的开源容器项目。它诞生于2013年年初，最初发起者是dotCloud公司。Docker自开源后受到业界广泛的关注和参与，目前已有80多个相关开源组件项目（包括Containerd、Moby、Swarm等），逐渐形成了围绕Docker容器的完整的生态体系。
+dotCloud公司也随之快速发展壮大，在2013年年底直接改名为Docker Inc，并专注于Docker相关技术和产品的开发，目前已经成为全球最大的Docker容器服务提供商。
+2. What——什么是容器 容器是一种轻量级、可移植、自包含的软件打包技术，使应用程序可以在几乎任何地方以相同的方式运行。开发人员在自己笔记本上创建并测试好的容器，无须任何修改就能够在生产系统的虚拟机、物理服务器或公有云主机上运行。
+容器使软件应用程序与操作系统脱钩，从而为用户提供了一个干净而最小的Linux环境，同时在一个或多个隔离的“容器”中运行其他所有内容。容器的目的是启动一组有限的应用程序或服务（通常称为微服务），并使它们在独立的沙盒环境中运行。
+3. Why——为什么需要容器 在云时代，开发者创建的应用必须要能很方便地在网络上传播，也就是说应用必须脱离底层物理硬件的限制；同时必须是“任何时间任何地点”可获取的。因此，开发者们需要一种新型的创建分布式应用程序的方式，快速分发和部署，而这正是Docker容器所能够提供的最大优势。
+举个简单的例子，假设用户试图基于最常见的LAMP（Linux&#43;Apache&#43;MySQL&#43;PHP）组合来构建网站。按照传统的做法，首先需要安装Apache、MySQL和PHP以及它们各自运行所依赖的环境；之后分别对它们进行配置（包括创建合适的用户、配置参数等）
+更为可怕的是，一旦需要服务器迁移（例如从亚马逊云迁移到其他云），往往需要对每个应用都进行重新部署和调试。这些琐碎而无趣的“体力活”，极大地降低了用户的工作效率。究其根源，是这些应用直接运行在底层操作系统上，无法保证同一份应用在不同的环境中行为一致。
+使用容器技术将应用程序及其所有依赖关系打包到一个独立的运行环境中，形成一个可移植的容器。容器化使得应用程序在不同的环境中具备一致的运行行为，并且可以快速部署和扩展。
+容器和虚拟机有什么区别？
+传统来看，虚拟化既可以通过硬件模拟来实现，也可以通过操作系统软件来实现。而容器技术则更为优雅，它充分利用了操作系统本身已有的机制和特性，可以实现远超传统虚拟机的轻量级虚拟化。
+4. How——容器是如何工作的 1. Docker架构Docker的核心组件包括：
+● Docker客户端：Client
+● Docker服务器：Docker daemon
+● Docker镜像：Image
+● Registry：镜像仓库
+● Docker容器：Container
+Docker架构如图
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to Docker入门基础" href="http://localhost:1313/posts/wiki/docker%E5%85%A5%E9%97%A8%E5%9F%BA%E7%A1%80/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Docker环境手动运行容器
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. 编译和推送到云端 首先拉取代码，进入项目目录下运行脚本 image_build_and_push.sh
+?
+1
+2
+3
+# 进入目录/home/Onanouser/ftt-em-edge/modules/AvatarModule/
+# 参数说明： 参数1为Tag中 0.0.$VERSION-arm64v8 中的$VERSION，生成镜像为acrembeddedfttdeveastus2001.azurecr.io/avatarmodule:0.0.1-arm64v8
+.``/image_build_and_push``.sh 1
+如下为脚本
 ?
 1
 2
 3
 4
-...</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 虚拟人透明背景设置失效问题反馈文档" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E9%80%8F%E6%98%8E%E8%83%8C%E6%99%AF%E8%AE%BE%E7%BD%AE%E5%A4%B1%E6%95%88%E9%97%AE%E9%A2%98%E5%8F%8D%E9%A6%88%E6%96%87%E6%A1%A3/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">AI日报
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>2024/7/26
-1.法国初创AI公司Mistral AI，Mistral Large 2的发布预示着一个潜在的趋势，即AI模型要在高性能和成本效益间找到平衡。
-Mistral AI表示，Mistral Large 2是其在成本效益、生成速度和性能上的新尝试。在参数量1230亿的情况下，性能能接近4050亿的Llama 3.1405B，同时能快速提供简洁、准确的回答。几天前，三个小模型（Mistral Nemo、GPT-4omini、SmolLM）的陆续发布也表示，并不是参数量越大就越好。将来，我们期待更多更具成本效益的模型出现，提高AI生成模型生态的多元化。
-2.AI独角兽Stability AI推出其首个视频生视频（video-to-video）模型Stable Video 4D（SV4D），该模型能够将单个物体的视频输入，转换为8个不同视角的多个新视频，用户可任意指定摄像机角度。
-目前，SV4D可以通过一次推理，在约40秒内生成8个视图的各5帧视频，整个4D优化需要20-25分钟。该模型已在Hugging Face上开源，适用于游戏开发、视频编辑、虚拟现实（VR）等场景的应用，可免费用于研究、非商业用途。
-Filter table dataCreate a pivot tableCreate a chart from data series
-Configure buttons visibility
-</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to AI日报" href="http://localhost:1313/posts/wiki/ai%E6%97%A5%E6%8A%A5/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">李瑞
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Filter table dataCreate a pivot tableCreate a chart from data series
-Configure buttons visibility
-</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 李瑞" href="http://localhost:1313/posts/wiki/%E6%9D%8E%E7%91%9E/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">虚拟人调研和思考
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 1一、虚拟人产业发展背景 1.11.1 虚拟人发展历程 1.21.2 虚拟人发展市场现状 1.31.3 AI数字人等级 2二、虚拟人产业链和分类 2.12.1 AI 虚拟人产业链 2.22.2 虚拟人分类 3三、AIGC 赋能虚拟人产业 3.13.1 AIGC助力制作端降本增效 3.23.2 AI助力多模态交互能力提升 3.33.3 AIGC 技术为数字人的内容生成提供了强大的支持 4四、虚拟人在智能厨电行业的应用 4.1 4.1 厨电行业发展背景和趋势 4.2 4.2 虚拟人在智能厨电的应用案例 4.2.1 4.2.1 老板电器ROKI 4.2.2 4.2.2 方太“方拾壹” 5五、总结&amp;思考 6六、参考 一、虚拟人产业发展背景 1.1 虚拟人发展历程 虚拟人的发展方向在于交互能力的提升和形象呈现的进步，拟人化是发展的核心，表现为对真人的替代能力。虚拟人发展不同阶段应用受制于技术水平，AI 时代应用端有望迎来全面催化。
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
 ...</p>
   </div>
   <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 虚拟人调研和思考" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E8%B0%83%E7%A0%94%E5%92%8C%E6%80%9D%E8%80%83/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">炉子安装NVIDIA驱动和配置CUDA环境
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>以下是详细的步骤，记录了在 Ubuntu 22.04 上安装 NVIDIA JetPack、配置 CUDA 环境以及配置 Docker 以支持 GPU 的过程。
-1. 安装 JetPack 开发工具包 安装 JetPack 开发工具包：
-?
-sudo apt install nvidia-jetpack
-2. 检查 CUDA 版本和驱动程序版本 安装完成后，检查 CUDA 和驱动程序版本：
-?
-# 检查 CUDA 版本
-nvcc --version
-# 检查驱动程序版本
-nvidia-smi
-如果遇到 nvcc: command not found 错误，继续以下步骤。
-3. 配置 CUDA 环境 3.1 验证 CUDA 是否已安装 确认 CUDA 是否已安装在系统中。通常，JetPack 安装完成后，CUDA 会被安装在 /usr/local/cuda 目录中。
-...</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 炉子安装NVIDIA驱动和配置CUDA环境" href="http://localhost:1313/posts/wiki/%E7%82%89%E5%AD%90%E5%AE%89%E8%A3%85nvidia%E9%A9%B1%E5%8A%A8%E5%92%8C%E9%85%8D%E7%BD%AEcuda%E7%8E%AF%E5%A2%83/"></a>
+  <a class="entry-link" aria-label="post link to Docker环境手动运行容器" href="http://localhost:1313/posts/wiki/docker%E7%8E%AF%E5%A2%83%E6%89%8B%E5%8A%A8%E8%BF%90%E8%A1%8C%E5%AE%B9%E5%99%A8/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/141/">
-      «&nbsp;上一页&nbsp;141/237
+      «&nbsp;上一页&nbsp;141/241
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/143/">下一页&nbsp;143/237&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/143/">下一页&nbsp;143/241&nbsp;»
     </a>
   </nav>
 </footer>

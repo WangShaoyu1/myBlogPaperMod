@@ -5,6 +5,7 @@ import path from 'path';
 import axios from 'axios';
 import {fileURLToPath} from 'url';
 import {createWriteStream} from 'fs';
+import TurnDownService from "turndown";
 
 // 获取当前模块文件的目录
 const __filename = fileURLToPath(import.meta.url);
@@ -199,8 +200,8 @@ export function extractNumber(input) {
     return Math.round(number); // 返回取整后的数字
 }
 
-// 处理markdown中的图片问题、代码格式问题
-export async function processMarkdown(inputPath, outputDir, hugoSpecialPath) {
+// 处理markdown中的图片问题
+export async function processImageInMarkdown(inputPath, outputDir, hugoSpecialPath) {
     const defaultImagePath = 'https://t11.baidu.com/it/u=1683902884,1968350863&fm=58';
 
     // 辅助函数：处理文件名
@@ -310,7 +311,93 @@ export async function processMarkdown(inputPath, outputDir, hugoSpecialPath) {
     }
 };
 
-const inputPath = path.resolve(__dirname, '../', 'content/posts/jueJin');
-const outputDir = path.resolve(__dirname, '../', 'static/images/jueJin');
-const hugoSpecialPath = "/images/jueJin/"
-await processMarkdown(inputPath, outputDir, hugoSpecialPath);
+// 处理markdown中的代码问题
+export async function processCodeInMarkdown(inputPath) {
+    const convertCodeBlocks = (markdown) => {
+        const turnDownService = new TurnDownService({});  // 创建 Turndown 实例
+        // 添加自定义代码块转换规则
+        turnDownService.addRule('highlightedCodeBlocks', {
+            filter: function (node) {
+                // 匹配 <pre> 包含 <code> 以及语言类名的结构
+                return (
+                    node.nodeName === 'PRE' &&
+                    node.querySelector('code') &&
+                    node.querySelector('code').classList.contains('hljs')
+                );
+            },
+            replacement: function (content, node) {
+                // 提取代码语言
+                const languageElement = node.querySelector('.code-block-extension-lang');
+                const language = languageElement ? languageElement.textContent.trim() : '';
+
+                // 提取每一行代码并添加层级缩进
+                const codeLines = node.querySelectorAll('.code-block-extension-codeLine');
+                let indentLevel = 0; // 用于跟踪当前缩进级别
+                const codeContent = Array.from(codeLines)
+                    .map(line => {
+                        const lineText = line.textContent.trim();
+
+                        // 计算当前行的缩进层级
+                        if (lineText.endsWith('{') || lineText.endsWith('[')) {
+                            indentLevel++;
+                        } else if (lineText.endsWith('}') || lineText.endsWith(']')) {
+                            indentLevel--;
+                        }
+
+                        // 确保 indentLevel 不小于 0
+                        indentLevel = Math.max(indentLevel, 0);
+
+                        // 返回带有缩进的行
+                        return '    '.repeat(indentLevel) + lineText;
+                    })
+                    .join('\n'); // 用换行符连接每一行代码
+
+                // 返回格式化后的 Markdown 代码块
+                return `\`\`\`${language}\n${codeContent}\n\`\`\``;
+            }
+        });
+    }
+    // 异步函数：读取单个 Markdown 文件并转换内容
+    const processMarkdownFile = async (filePath) => {
+        try {
+            const markdown = await fs.readFile(filePath, 'utf-8');
+            const convertedMarkdown = convertCodeBlocks(markdown);
+            await fs.writeFile(filePath, convertedMarkdown, 'utf-8');
+            console.log(`Processed: ${filePath}`);
+        } catch (error) {
+            console.error(`Error processing file ${filePath}:`, error);
+        }
+    };
+
+    // 异步函数：处理文件夹中的所有 Markdown 文件
+    const processMarkdownFolder = async (folderPath) => {
+        try {
+            const files = await fs.readdir(folderPath);
+            for (const file of files) {
+                const fullPath = path.join(folderPath, file);
+                const stat = await fs.lstat(fullPath);
+                if (stat.isDirectory()) {
+                    await processMarkdownFolder(fullPath); // 递归处理子文件夹
+                } else if (path.extname(fullPath) === '.md') {
+                    await processMarkdownFile(fullPath); // 处理 Markdown 文件
+                }
+            }
+        } catch (error) {
+            console.error(`Error processing folder ${folderPath}:`, error);
+        }
+    };
+
+    // 根据输入路径判断是文件还是文件夹
+    try {
+        const stat = await fs.lstat(inputPath);
+        if (stat.isDirectory()) {
+            await processMarkdownFolder(inputPath); // 处理文件夹
+        } else if (path.extname(inputPath) === '.md') {
+            await processMarkdownFile(inputPath); // 处理单个 Markdown 文件
+        } else {
+            console.error('Input is not a Markdown file or a folder.');
+        }
+    } catch (error) {
+        console.error(`Error processing input ${inputPath}:`, error);
+    }
+}

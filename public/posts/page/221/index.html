@@ -144,139 +144,190 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">FAQ类短文本实践内容总结
+    <h2 class="entry-hint-parent">知识数据架构设计
     </h2>
   </header>
   <div class="entry-content">
-    <p>前段时间，以“春节活动内容”作为基础文本数据，实现了从文本处理、知识库构建、检索方案确定及大模型知识问答整个 rag 系统全链路的流程。因“春节活动内容”是经过人工处理的答案类短文本（最长723个字），故其处理方式与 FAQ 类短文本的处理方式相差无几，本文对相关实践内容做一个总结。
-1. 文本处理 FAQ 类短文本直接按照一问一答的粒度拆分，考虑到向量化模型的长度限制，要求拆分后的文本最长不能超过750个词，最短不能少于1个词（过短的内容去除）。
-因提供的文本数据只有答案无对应的问题，故未使用元数据，直接读取txt\docx文档并利用换行符进行切分，得到拆分后的文本列表。
-2. 知识库构建 向量化模型采用开源预训练的模型，本地 CPU 部署，未使用任何加速技术。
-3. 检索方案确定 测试发现，纯向量检索召回（阈值范围0-2）效果不太好，阈值为1的情况下测试结果如下：
-由此可见，当前场景下，bge-base-zh-v1.5 模型表现更好，故选用该模型构建向量库并用于向量检索。
-通过引入关键词召回，并调整相关权重和阈值（向量召回权重0.8，阈值1.4；关键词召回权重0.2，阈值6），再次使用春节活动测试用例测试后，模型效果有较大提升：
-由此可见，检索方案的确定并非一蹴而就的，需要基于具体的场景数据来测评。首先要初选向量化模型，敲定检索方式后，还需要多次测试来确定具体的权重和阈值。
-4. 大模型知识问答 本案例采用的是多次测试调整后的提示词和讯飞星火认知大模型完成知识问答，从测试结果来看，回答错误的用例中，有部分检索到了对应的知识，但大模型回答错误，可能与检索知识的顺序和无关内容的影响有关，由此可见检索效果对结果影响较大，但大模型本身的能力也很重要。所以后续大模型的选择、提示词的确认都需要基于具体的场景数据来测评抉择。
-Filter table dataCreate a pivot tableCreate a chart from data series
-Configure buttons visibility
+    <p>食谱营养知识问答训练数据食谱名称口味食材类型适宜人群适宜场景菜系（暂不）国别（暂不）烹饪用具食材清单用户是否有视频点赞数分享数收藏数阅读量评论步骤烹饪时长难度口感味道评分有利疾病不利疾病能量Kcal能量KJ蛋白质脂肪碳水化合物不熔性膳食纤维胆固醇灰分总维生素A胡萝卜素硫胺素核黄素尼克酸维生素C维生素E钙磷钾钠镁铁锌硒铜锰食材营养库food_materials_nutrition食材id食材名称食材分类单位有利疾病不利疾病别名大类小类比热容食部能量Kcal能量KJ蛋白质脂肪碳水化合物不熔性膳食纤维胆固醇灰分总维生素A胡萝卜素硫胺素核黄素尼克酸维生素C维生素E钙磷钾钠镁铁锌硒铜锰唤醒食物食疗数据PK关系id疾病类型（有利/不利）食物名称食物别名权重
+食材名称匹配
+食材名称匹配
+食物营养成分表food_materials_nutrition_outsidePK食物编码C食物名称食物标准名食物别名近似食材食物名合集大类小类…食谱营养知识问答宽表recipe_knowledge_nutritionPK食谱iddeleted是否删除create_time创建时间modify_time修改时间review_status审核状态publisher_status发布状态upper_lower_time上/下架时间食谱名称（从title提取食谱实体）食谱标题食谱介绍地址经度地址纬度地图地点名称渠道来源口味食材类型适宜人群适宜场景菜系（暂不）国别（暂不）烹饪用具食材清单用户是否有视频点赞数分享数收藏数阅读量评论步骤烹饪时长难度（需确定计算规则）口感（需确定计算规则）味道（需确定计算规则）评分（需确定计算规则）有利疾病不利疾病能量Kcal能量KJ蛋白质脂肪碳水化合物不熔性膳食纤维胆固醇灰分总维生素A胡萝卜素硫胺素核黄素尼克酸维生素C维生素E钙磷钾钠镁铁锌硒铜锰PK原始食材库PK食材id食材名称食材分类单位
+清洗食材名称：去除特殊字符、
+量词、异常数据
+业务数据库原始表
+recipe_information
+recipe_interactive_summary
+recipe_cooking_step
+recipe_classify
+food_classify
+food_category
+recipe_comment
+万得厨食谱对应食材表recipe_materials_nutritionrecipe_id食谱title食谱标题deleted是否删除review_status审核时间publisher_status发布时间marterials_id食材idclassify_name_original原始食材名称classify_name食材名称content_original原始数量content数量content_original原始单位unit单位unit_cov_rate单位转化率content_g以g为单位的数量classify1大类classify2小类specific_heat_capacity比热容edible食部water水分energy_kcal能量kcalenergy_kj能量kjproteinfatchodietary_fibercholesterolashvitamin_avt_carotenevt_retinolvt_thiaminvt_riboflavin
+//&lt;![CDATA[ (function() { $ = AJS.$; var graphContainer = document.getElementById(‘drawio-macro-content-d0843b77-e3dc-4604-85d7-e096a7e15051’); DrawioProperties = { contextPath : AJS.contextPath(), buildNumber : 8401 }; var readerOpts = {}; readerOpts.loadUrl = ’’ &#43; ‘/rest/drawio/1.0/diagram/crud/%E7%9F%A5%E8%AF%86%E6%9E%B6%E6%9E%84/109719776?revision=1’; readerOpts.imageUrl = ’’ &#43; ‘/download/attachments/109719776/知识架构.png’ &#43; ‘?version=1&amp;api=v2’; readerOpts.editUrl = ’’ &#43; ‘/plugins/drawio/addDiagram.action?ceoId=109719776&amp;owningPageId=109719776&amp;diagramName=%E7%9F%A5%E8%AF%86%E6%9E%B6%E6%9E%84&amp;revision=1’; readerOpts.editable = true; readerOpts.canComment = true; readerOpts.stylePath = STYLE_PATH; readerOpts.stencilPath = STENCIL_PATH; readerOpts.imagePath = IMAGE_PATH &#43; ‘/reader’; readerOpts.border = true; readerOpts.width = ‘1881’; readerOpts.simpleViewer = false; readerOpts.tbstyle = ’top’; readerOpts.links = ‘auto’; readerOpts.lightbox = true; readerOpts.resourcePath = ATLAS_RESOURCE_BASE &#43; ‘/resources/viewer’; readerOpts.disableButtons = false; readerOpts.zoomToFit = true; readerOpts.language = ‘zh’; readerOpts.licenseStatus = ‘OK’; readerOpts.contextPath = AJS.contextPath(); readerOpts.diagramName = decodeURIComponent(’%E7%9F%A5%E8%AF%86%E6%9E%B6%E6%9E%84’); readerOpts.diagramDisplayName = ‘’; readerOpts.aspect = ‘’; readerOpts.ceoName = ‘知识数据架构设计’; readerOpts.attVer = ‘1’; readerOpts.attId = ‘109719777’; readerOpts.lastModifierName = ‘未知用户 (tangwei)’; readerOpts.lastModified = ‘2023-10-07 15:48:31.03’; readerOpts.creatorName = ‘未知用户 (tangwei)’; //Embed macro specific info readerOpts.extSrvIntegType = ‘$extSrvIntegType’; readerOpts.gClientId = ‘$gClientId’; readerOpts.oClientId = ‘$oClientId’; readerOpts.service = ‘$service’; readerOpts.sFileId = ‘$sFileId’; readerOpts.odriveId = ‘$odriveId’; readerOpts.diagramUrl = ‘$diagramUrl’; readerOpts.csvFileUrl = ‘$csvFileUrl’; readerOpts.pageId = ‘$pageId’ || Confluence.getContentId(); readerOpts.aspectHash = ‘$aspectHash’; readerOpts.useExternalImageService = ‘$useExternalImageService’ == ’true’; readerOpts.isTemplate = ‘$isTemplate’ == ’true’; if (readerOpts.width == ‘’) { readerOpts.width = null; } // LATER: Check if delayed loading of resources can be used for image placeholder mode var viewerPromise = createViewer(graphContainer, readerOpts); if(readerOpts.editable) { $(graphContainer).data(‘viewerConfig’, readerOpts); $(graphContainer).on(‘drawioViewerUpdate’, updateDrawioViewer); } viewerPromise.done(function(viewer) { updateCachedDiagram(graphContainer, readerOpts, viewer); }); })(); //]]&gt;
 ...</p>
   </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to FAQ类短文本实践内容总结" href="http://localhost:1313/posts/wiki/faq%E7%B1%BB%E7%9F%AD%E6%96%87%E6%9C%AC%E5%AE%9E%E8%B7%B5%E5%86%85%E5%AE%B9%E6%80%BB%E7%BB%93/"></a>
+  <footer class="entry-footer">5 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 知识数据架构设计" href="http://localhost:1313/posts/wiki/%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">向量模型微调方案设计与实践总结
+    <h2 class="entry-hint-parent">养猪专家
     </h2>
   </header>
   <div class="entry-content">
-    <p>0、前言
-本文主要针对“养猪领域”知识向量化和向量检索所用模型进行微调，并总结8月份微调实践的经验。
-1**、模型选择**
-这是基于5月份构建的“养猪专家”知识库，选用了100条问题，使用3个开源向量模型统计的检出率情况。根据以上测评结果，对于“养猪领域”向量模型微调优先选择 m3e-base 模型，然后才是 bge-base 模型。
-2**、训练策略**
-FullParametersTraining：全参数微调，不进行任何修改，所有参数都参与训练。 BitFitTraining：只训练某些关键词参数，其他参数固定。通过 keywords 指定要训练的参数名。 PrefixTraining：只训练前缀 tokens 对应的 embedding 参数。通过 additional_special_tokens 指定前缀 tokens，并只训练这些 tokens 的 embedding。 这些策略可以平衡语料大小与模型大小，降低过拟合风险，帮助模型快速适应下游任务。通常先做全参数训练预热一下，再使用部分固定或前缀训练等策略微调到特定下游任务，具体策略选择应根据实际效果进行调整。训练是基于预训练的 embedding 模型，一般能让它在原来的基础上提升3%-10%的性能。
-3**、数据格式**
-通常，有以下三种训练样本格式:
-**Pair (句子对)：**每个样本包含一个正例句子对。用于学习区分正例和负例句子。 [{
-’text’: ‘第1胎次母猪的日粮饲喂量和赖氨酸含量是多少？’,
-‘positive_text’: ‘第1胎次母猪的日粮饲喂量为4.0lb(1.8kg)，含赖氨酸0.51%。’
-},
-{
-’text’: ‘对于群养在特定地板类型的母猪，温度可以如何调整？’,
-‘positive_text’: ‘群养在水泥地板的母猪，温度可以降低4°F(2.2°C)，而在铺有干草的圈舍中的母猪，温度可以降低8°F(4.4°C)。’
-}]
+    <p>教材选用计划汇总表.xls、2.动科动医（2022）.doc
+类型
+数据
+数据来源
+扬翔专家
+时限要求不高
+常见问题解答库
+扬翔
+一场一策
+扬翔
+养猪板块体系文件
+扬翔
+扬翔大学培训文件
+扬翔
+秀博育种师培训材料
+扬翔
+通用
+即时（当天）
+市场价格情况
+畜牧兽医局 (moa.gov.cn)
+中国养猪网-中国养猪行业门户网站 (zhuwang.cc)
+疫情
+畜牧兽医局 (moa.gov.cn)
+政策通告、指导意见
+畜牧兽医局 (moa.gov.cn)
+时限要求不高
+行业经验
+猪的信号系列：《育肥猪的信号》.pdf、猪的信号.pdf、仔猪的信号》.pdf、《母猪的信号》.pdf 《养猪学》养猪学_11890202.pdf 《猪病学 第9版》 《现代养猪生产技术》json gadd 《现代养猪生产技术》json gadd .doc 《猪病学 第10版》《猪海拾贝》《规模猪场生产管理手册》《怎样科学办好中小型猪场》《中小规模养猪创业实施方案》《消毒、免疫接种和药物保健技术》《猪饲料调制 加工与配方集萃》《育肥猪饲料配方设计技术》《养猪学》《养猪生产》《现代养猪关键技术精解》《实用养猪大全》《高效养猪技术》《猪的营养与饲料配置》《猪病鉴别诊断图谱与安全用药》
 ...</p>
   </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 向量模型微调方案设计与实践总结" href="http://localhost:1313/posts/wiki/%E5%90%91%E9%87%8F%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/"></a>
+  <footer class="entry-footer">2 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 养猪专家" href="http://localhost:1313/posts/wiki/%E5%85%BB%E7%8C%AA%E4%B8%93%E5%AE%B6/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">“手机端多角色场景判断”工具测试
+    <h2 class="entry-hint-parent">表格问答指标测试
     </h2>
   </header>
   <div class="entry-content">
-    <p>1. 测试方案 **1）测试对象：**百度文心4、阿里千问plus、商汤大模型、讯飞星火3、gpt3.5
-**2）测试方法：**使用相同的提示词分别对几个大模型进行提问，记录大模型的回复结果，并对结果进行评价
-**3）评价角度：**从业务需求出发，主要测试大模型的在每个阶段的答复效果
-2. 提示词 2.1. 场景选择阶段 2.1.1. 系统提示词 作为场景分类系统，负责从一系列场景中选出与用户请求最相关的一个场景，必须从以下选项中选择：[通用助手，厨师，营养师，美食推荐师，养生师，体重管理师，健身教练，运动顾问，健康顾问，睡眠分析师，装饰设计师，情感顾问，心理咨询师，职业顾问，其他]。注意：系统应该关注场景描述[ {{scenes}} ]和用户请求的关联
-其中场景描述（scenes）内容如下表所示：
-场景
-描述
-场景
-描述
-通用助手
-熟悉万得厨/微波炉，提供食谱、食品、笔记、智能客服等相关的问答和支持
-厨师
-精通各种菜系，根据口味、食材和烹饪需求推荐菜品，提供烹饪指导和方案
-营养师
-具备营养学知识，掌握不同人群的营养需求和食品营养成分。根据身体状况、饮食习惯和健康目标，提供营养分析和方案
-美食推荐师
-根据地理位置、口味等，推荐餐厅、美食等信息
-养生师
-掌握中医理论、养生知识和技能，根据生活习惯和体质，提供养生咨询和调理方案
-体重管理师
-根据体重、身高、年龄、疾病等提供体重管理和膳食方案
-健身教练
-熟悉健身器械的使用，根据个人情况和健身目标，提供健身咨询、指导和方案
-运动顾问
-具备运动活动知识，掌握运动方法，提供运动咨询和指导
-健康顾问
-具备健康管理知识，可进行健康评估和风险提醒，解答健康问题，提供保健方案
-睡眠分析师
-提供睡眠知识，分析睡眠质量，提供改善建议
+    <p> 1 2测试方法： 3百度UNIT表格问答技能未优化和优化后识别率 3.1未优化：KBtest（未优化）.xlsx 3.2优化后：KBtest.xlsx 4阿里表格问答技能 4.1优化前：TABLEQAjson（未优化）.xlsx 4.2优化后：TABLEQAjson2（优化后）.xlsx 5总结 测试方法： 基于17个场景8大能力。每个场景每个能力编写2条测试用例（特殊：04获取所有实体（推荐）只安排一个具体场景，05显式条件查询多安排一个具体场景）
+8大能力：
+同义词替换 语序颠倒 问句形式 修饰词（多字、陈述句） 修饰词（多字、问句） 错别字（实体） 错别字（问题） 添加标点符号 17个场景：
+01获取实体信息
+02获取实体单属性信息
+03获取实体多属性信息
+04获取所有实体（推荐）
+05显式条件查询
+06隐式条件查询
+07最大
+08最小
+09求和
+10平均
+11计数
+12排序
+13差值
+14全属性对比
+15单属性比较谁多谁少
+16单属性比较区别
+17多属性比较
+具体测试用例数量如下：
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to “手机端多角色场景判断”工具测试" href="http://localhost:1313/posts/wiki/%E6%89%8B%E6%9C%BA%E7%AB%AF%E5%A4%9A%E8%A7%92%E8%89%B2%E5%9C%BA%E6%99%AF%E5%88%A4%E6%96%AD%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%95/"></a>
+  <a class="entry-link" aria-label="post link to 表格问答指标测试" href="http://localhost:1313/posts/wiki/%E8%A1%A8%E6%A0%BC%E9%97%AE%E7%AD%94%E6%8C%87%E6%A0%87%E6%B5%8B%E8%AF%95/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">”知识库检索&#43;指令引导方案“工具测试
+    <h2 class="entry-hint-parent">大模型提示词方案
     </h2>
   </header>
   <div class="entry-content">
-    <p>1、测试方案 **1）测试对象：**百度文心4、阿里千问plus、商汤大模型、讯飞星火3、gpt3.5
-**2）测试方法：**使用相同的提示词分别对几个大模型进行提问，记录大模型的回复结果，并对结果进行评价
-**3）评价角度：**从对话中控的需求出发，主要测试大模型的在每个阶段的指令遵循能力（生成格式的规范性和生成内容的稳定性）、答复效果（生成内容的准确性和泛化能力）和基础支撑能力（token消耗和响应速率）
-2、任务解析阶段 1）系统提示词
-作为对话中控系统，负责将用户输入解析成多个任务，并从技能信息中为每个任务选择合适的几个技能，最终输出如下严格的JSON数组格式：[{“id”: 任务序号, “skills”: 从技能信息中选出的&#34;skill_id&#34;列表（若没有合适的技能可为空，若不确定可多选）, “intent”: 来源于技能信息中的&#34;intents&#34;（若不清楚可以留空）, “deps”: 依赖的先决任务id列表, “args”: {“text”: 与当前任务相关的关键信息, “参数名称”: 参数值或&#34;-dep_id&#34;}}]。注意，“args&#34;表示当前任务相关的参数，尽量包含技能信息中的&#34;slots”，“text&#34;字段不能为空；“参数名称&#34;需用具体名称替换，特殊标签”-dep_id&#34;表示该参数与依赖任务&#34;dep_id&#34;中对应的参数一致（“dep_id&#34;用依赖任务id替换）。请基于用户的请求，逐步解析出每个任务，同一类型的任务可能有多个，注意任务之间的依赖关系和顺序。若无法解析，直接回复空的JSON数组：”[]”
-2）few-shot提示词
-{‘role’: ‘user’, ‘content’: ‘请帮我查询广州今天的天气。’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“SKILL-weather”], “intent”: “”, “deps”: [-1], “args”: {“text”: “查询广州今天的天气”, “location”: “广州”, “date”: “2024-01-08”}}]’}, {‘role’: ‘user’, ‘content’: ‘你叫什么名字？今年多大了？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“FAQ-Chat”], “intent”: “”, “deps”: [-1], “args”: {“text”: “你叫什么名字”}}, {“id”: 1, “skills”: [“FAQ-Chat”], “intent”: “”, “deps”: [-1], “args”: {“text”: “今年多大了”}}]’}, {‘role’: ‘user’, ‘content’: ‘打开一键烹饪页面，设置大火3分钟，再启动烹饪。’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“SYSTEM”], “intent”: “打开一键烹饪页面”, “deps”: [-1], “args”: {“text”: “打开一键烹饪页面”}}, “id”: 1, “skills”: [“COOKING”], “intent”: “设置火力&#43;时间”, “deps”: [0], “args”: {“text”: “设置大火3分钟”, “火力”: “大火”, “时间”: “3分钟”}}, {“id”: 2, “skills”: [“COOKING”], “intent”: “启动烹饪”, “deps”: [1], “args”: {“text”: “启动烹饪”, “火力”: “-1”, “时间”: “-1”}}]’}, {‘role’: ‘user’, ‘content’: ‘帮我查找奥尔良鸡翅食品，价格如何？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “skills”: [“RECIPES”], “intent”: “搜索烹饪方案”, “deps”: [-1], “args”: {“text”: “查找奥尔良鸡翅食品”, “食品名称”: “奥尔良鸡翅”}}, {“id”: 1, “skills”: [“FAQ-MallFood”], “intent”: “”, “deps”: [0], “args”: {“text”: “价格如何”, “食品名称”: “-0”}}]’}
+    <p>一、简版提示词（约240字） &#34;&#34;&#34;
+你是广州影子科技有限公司的营养健康专家，能回答营养健康领域的专业问题，也能回答其他领域的问题。\n
+请参考以下背景知识：
+{{content}}\n
+简洁明了的回答用户的问题，要求答案准确完整，不能胡乱编造。
+你需要先理解用户的问题，再根据问题寻找相关的答案。给出回复前，你需要通过二次检查的方式以确保答案的准确性。
+若无法回答，则给出安抚性的回复，例如：”抱歉，这个问题难住我了噢“
+直接回答问题即可，避免出现“已知信息、文档中”等词语，不要有多余的推理总结过程和冗余的字符，生成的内容不超过250个字。\n
+问题:{{question}}
+&#34;&#34;&#34;
+二、拓展提示词（约340字） &#34;&#34;&#34;
+你是广州影子科技有限公司的营养健康专家，具有丰富的营养学及健康领域专业知识和实践经验。你拥有良好的沟通技巧和广泛的知识储备，能够理解并回答各种问题。尤其能根据用户的身体状况、饮食习惯和健康目标，提供专业、实用和个性化的指导（包括但不限于营养健康咨询、饮食结构分析、食物/食谱推荐、膳食指导）。\n
+参考案例：
+问题：1 Mcal相当于多少焦耳？
+回答：4.184 MJ。\n
+参考背景知识：
+{{content}}\n
+请简洁明了的回答用户的问题，要求答案尽量专业、准确、完整，注重实用性和个性化。
+你需要先理解用户的问题，再根据问题寻找相关的答案。给出回复前，你需要通过二次检查的方式以确保答案的准确性。
+若无法回答，则给出安抚性的回复或根据背景知识内容，对用户进行追问。
+直接回答问题核心，避免不必要的细节，回复内容不超过250个字。\n
+当前问题:{{question}}
+&#34;&#34;&#34;
+三、模板提示词（约390字，选用） &#34;&#34;&#34;
+**# 角色：**你是广州影子科技有限公司的营养健康专家，具有丰富的营养学及健康领域专业知识和实践经验。你拥有良好的沟通技巧和广泛的知识储备，能够理解并回答各种问题。尤其能根据用户的身体状况、饮食习惯和健康目标，提供专业、实用和个性化的指导。
+**# 角色背景：**用户可能需要帮助解决各种问题，从日常咨询到营养健康领域专业知识的解答（包括但不限于营养健康咨询、饮食结构分析、食物/食谱推荐、膳食指导）。
+**# 任务和目标：**为用户提供准确、专业、实用的营养健康建议和指导，帮助用户解决各类问题或满足他们的需求。
+**# 参考知识：
+**{{content}}
+**# 任务流程：
+**1.理解用户的问题或需求。
+2.根据问题寻找相关信息。
+3.以易于理解的方式回答用户。
+**# 限制条件：
+**1.如果遇到无法回答的问题，应给出安抚性的回复。
+2.保持专业、准确、完整、亲切；注重实用性和个性化服务；不涉及敏感话题。
+3.简洁明了的文本回答，避免不必要的细节和冗余字符，不超过250个字。
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to ”知识库检索&#43;指令引导方案“工具测试" href="http://localhost:1313/posts/wiki/%E7%9F%A5%E8%AF%86%E5%BA%93%E6%A3%80%E7%B4%A2&#43;%E6%8C%87%E4%BB%A4%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%95/"></a>
+  <a class="entry-link" aria-label="post link to 大模型提示词方案" href="http://localhost:1313/posts/wiki/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%96%B9%E6%A1%88/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">“指令引导”方案工具测试
+    <h2 class="entry-hint-parent">健康助手
     </h2>
   </header>
   <div class="entry-content">
-    <p>1、测试方案 **1）测试对象：**百度文心4、阿里千问plus、商汤大模型、讯飞星火3、gpt3.5/4
-**2）测试方法：**使用相同的提示词分别对几个大模型进行提问，记录大模型的回复结果，并对结果进行评价
-**3）评价角度：**从对话中控的需求出发，主要测试大模型的在每个阶段的指令遵循能力（生成格式的规范性和生成内容的稳定性）、答复效果（生成内容的准确性和泛化能力）和基础支撑能力（token消耗和响应速率）
-2、任务识别阶段测试结果 1）系统提示词
-作为对话中控系统，负责将用户输入解析成多个任务，并输出如下严格的JSON数组格式：[{“id”: 任务序号, “task”: 任务类型, “domain”: 所属领域list, “intent”: 简洁明了的意图, “dep”: 依赖的先决任务id列表, “args”: {“text”: 与当前任务相关的文本内容, “”: 词槽值或-dep_id, “”: 实体值或-dep_id, “”: 属性值或-dep_id}}]。task必须从以下选项中选择：[FAQ，任务型，表格问答，闲聊]。domain必须从以下选项中选择：[万得厨，食谱，商城食品，小万助手，天气，厨师，营养师，美食推荐师，导购师，闲聊]。intent若不清楚可以留空。“args&#34;表示当前任务执行所需参数。特殊标签”-dep_id&#34;与依赖任务&#34;dep_id&#34;中生成的词槽/实体/属性结果对应（请思考依赖任务是否生成了这种类型的结果），且&#34;dep_id&#34;必须在&#34;dep&#34;列表中。“text&#34;字段不能为空，&#34;&#34;、&#34;&#34;、&#34;“分别是任务解析出的词槽、实体和属性名称（请用实际名称替换）。请基于用户的请求，逐步解析出必要的任务，同一类型的任务可能有多个，注意任务之间的依赖关系和顺序。如果无法解析用户输入，请直接回复空的JSON数组：”[]”
-2）few-shot提示词
-{‘role’: ‘user’, ‘content’: ‘请帮我查询广州今天的天气。’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “任务型”, “domain”: [“天气”], “intent”: “查询天气”, “dep”: [-1], “args”: {“text”: “查询广州今天的天气”, “location”: “广州”, “date”: “2023-12-12”}}]’}, {‘role’: ‘user’, ‘content’: ‘你叫什么名字？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “FAQ”, “domain”: [“小万助手”], “intent”: “”, “dep”: [-1], “args”: {“text”: “你叫什么名字”}}]’}, {‘role’: ‘user’, ‘content’: ‘请帮我设置大火3分钟，然后启动烹饪’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “任务型”, “domain”: [“万得厨”], “intent”: “设置火力和时长”, “dep”: [-1], “args”: {“text”: “设置大火3分钟”, “火力”: “大火”, “时长”: “3分钟”}}, {“id”: 1, “task”: “任务型”, “domain”: [“万得厨”], “intent”: “启动烹饪”, “dep”: [0], “args”: {“text”: “启动烹饪”, “火力”: “-0”, “时长”: “-0”}}]’}, {‘role’: ‘user’, ‘content’: ‘打开腊味排骨锅巴饭烹饪方案’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “任务型”, “domain”: [“万得厨”, “商城食品”], “intent”: “打开商品”, “dep”: [-1], “args”: {“text”: “打开腊味排骨锅巴饭烹饪方案”, “商品”: “腊味排骨锅巴饭”}}]’}, {‘role’: ‘user’, ‘content’: ‘一份奥尔良鸡翅要多少钱？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “表格问答”, “domain”: [“商城食品”], “intent”: “查询价格”, “dep”: [-1], “args”: {“text”: “一份奥尔良鸡翅要多少钱”, “商品”: “奥尔良鸡翅”}}]’}, {‘role’: ‘user’, ‘content’: ‘300g土豆的热量是多少？’}, {‘role’: ‘assistant’, ‘content’: ‘[{“id”: 0, “task”: “闲聊”, “domain”: [“闲聊”, “营养师”], “intent”: “查询热量”, “dep”: [-1], “args”: {“text”: “300g土豆的热量是多少”, “weight”: “300g”, “material”: “土豆”}}]’}
+    <p>根据 万得厨虚拟人健康助手方案.docx 文件，总结健康助手所需的知识：
+所需数据类别
+当前已有数据情况
+预计工作
+所需数据类别
+当前已有数据情况
+预计工作
+食谱食材营养
+之前已收集的《食物营养成分数据》已囊括。已导入数据库。
+食材相生相克
+已有香哈网3360条食材相克、宜搭、影响数据。未导入数据库。
+与《食物营养成分数据》合并，导入vdh数据库
+食谱场景
+万得厨业务库已有。
+食材分类
+之前已收集的《食物营养成分数据》已囊括。已导入数据库。
+饮食目标
+已有唤醒食物网4021条食疗数据，包含86个疾病。这些数据只是其中一部分。未导入数据库。
+1.可以考虑是否购买唤醒食物食疗api获取完整食疗数据。该api包含食材、有利/不利疾病、有利/不利权重，3个数据。5450元一年，可用于给食谱增加“饮食目标”的标签信息。
 ...</p>
   </div>
-  <footer class="entry-footer">10 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to “指令引导”方案工具测试" href="http://localhost:1313/posts/wiki/%E6%8C%87%E4%BB%A4%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%95/"></a>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 健康助手" href="http://localhost:1313/posts/wiki/%E5%81%A5%E5%BA%B7%E5%8A%A9%E6%89%8B/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/220/">
-      «&nbsp;上一页&nbsp;220/237
+      «&nbsp;上一页&nbsp;220/241
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/222/">下一页&nbsp;222/237&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/222/">下一页&nbsp;222/241&nbsp;»
     </a>
   </nav>
 </footer>

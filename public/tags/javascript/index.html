@@ -129,31 +129,61 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">短信接口被爆破了，一晚上差点把公司干破产了
+    <h2 class="entry-hint-parent">split方法我算是白学了
     </h2>
   </header>
   <div class="entry-content">
-    <p>背景 某天夜里，你正睡着觉，与周公神游。
-老板打来电话：“小李，快看一下，系统出故障了，一个小时发了200条短信，再搞下去，我要破产了…&#34;
-巴拉巴拉…
-于是，你赶紧跳下床，查了一个后台日志，发送短信API接口10s发送一次，都已经发送了500条了。在达到每日限额后，自动终止了。很明显被黑客攻击了。
-500 * 0.1 * 8 = 400
-一晚上约干掉了400元人民币
-睡意全无，赶紧起来排查原因
-故障分析 我司是做国外业务的，用的短信厂家是RingRing, 没有阿里云那种自带的强悍的预警和封禁功能。黑客通过伪造IP地址和手机号然后攻破了APP的短信接口，然后顺藤摸瓜的拿到相关发布的全部应用。于是，一个晚上，单个APP的每日短信限额和全部短信限额都攻破了。
-APP使用的是https双向加密，黑客也不是单纯的爆破，没有大量的验证码错误日志。我们现在都不清楚黑客是通过什么方式绕过我们系统的，或者直接攻破了验证码
-可能有懂这方面的掘友，可以分享一下哈
-我们先上了一个临时方案，如果10分钟内，发送短信超过30条，且手机号超过60%都是同一个国家，我们关闭短信发送功能10分钟，并推送告警
-然后抓紧时间去升级验证码，提高安全标准
-验证码 文字验证码 我司最开始用的就是这种，简单易用。但是任你把噪点和线条铺满，整的面目全非，都防不住机器的识别，这种验证码直接pass了
-优点：简易，具有一定的防爆破功能
-缺点：防君子不防小人，在黑客面前，GG
-滑块验证码 我司对于滑块验证码有几点考虑：
-安全有待商榷， 背景图片需要符合国外市场和审美，需要UI介入，增加人工成本 不确定是否符合国外的习惯 基于这几点考虑，我司放弃了这个方案。但平心而论，国内用滑块验证码的是最多的，原因如下：
+    <p>wc，同志们，javascript中字符串的split方法会用么。我最近发现我是白用这么多年了，导致我刷题时遇到一个问题死活没看出来是什么原因。今天必须要记录一下。如果你也和我一样，那在评论区留言，让我好受一点。
+在说问题之前先来看一下split 最基本的两种应用
+字符参数 split 方法是用来做字符串分割的，使用这个方法最常用的形式也是使用指定字符来对原字符串进行分割。比如下面的代码
+javascript
+代码解读
+复制代码
+&#39;as:st:vii&#39;.split(&#39;:&#39;) // [&#39;as&#39;, &#39;st&#39;, &#39;vii&#39;]
+使用 : 对原字符串进行分割，结果是一个数组，这应该是平时用的比较多的用法了
+正则参数 有时候用来的分割并不是特定的字符，而是一类字符，比如数字分割
+javascript
+代码解读
+复制代码
+&#39;as2st3vii&#39;.split(/\d/) // [&#39;as&#39;, &#39;st&#39;, &#39;vii&#39;]
+正则\d 表示所有数字，只要是数字就认为是一个分割符，这就非常灵活了。
+问题一 以上就是基本的应用了，那怎么又说白学了呢。来看下面的代码，
+javascript
+代码解读
+复制代码
+`asabstcdvii`.split(/(ab|cd)/)
+思考一下结果是什么？用字符串ab或者cd分割，如果你觉得返回值是[&#39;as&#39;, &#39;st&#39;, &#39;vii&#39;]那请去评论区反省一下。
+javascript
+代码解读
+复制代码
+// [&#39;as&#39;, &#39;ab&#39;, &#39;st&#39;, &#39;cd&#39;, &#39;vii&#39;]
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-09-12 00:00:00 +0000 UTC'>九月 12, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;高志小鹏鹏</footer>
-  <a class="entry-link" aria-label="post link to 短信接口被爆破了，一晚上差点把公司干破产了" href="http://localhost:1313/posts/juejin/%E7%9F%AD%E4%BF%A1%E6%8E%A5%E5%8F%A3%E8%A2%AB%E7%88%86%E7%A0%B4%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%E5%B7%AE%E7%82%B9%E6%8A%8A%E5%85%AC%E5%8F%B8%E5%B9%B2%E7%A0%B4%E4%BA%A7%E4%BA%86/"></a>
+  <footer class="entry-footer"><span title='2024-10-08 00:00:00 +0000 UTC'>十月 8, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;柚子816</footer>
+  <a class="entry-link" aria-label="post link to split方法我算是白学了" href="http://localhost:1313/posts/juejin/split%E6%96%B9%E6%B3%95%E6%88%91%E7%AE%97%E6%98%AF%E7%99%BD%E5%AD%A6%E4%BA%86/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">尤雨溪成立VoidZero，Rust要一统JavaScript工具链？
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>尤雨溪在Vite Conf 2024上宣布成立公司Void Zero，目前已经完成$460万种子轮融资，由Accel领头，并且有Amplify以及在dev tools领域有丰富经验的创始人参与。 主要目标是搭建下一代JavaScript工具链，实现一套工具覆盖从源码到最终产物的中间过程，例如semantic analysis、transformer、linter、formatter、minifier、boundler等。
+好的工具链不外乎快、好用， 本文将结合尤雨溪在Vite Conf 2024上分享的内容来介绍什么是下一代JavaScript工具链， 以及快、好用体现在哪些方面， 最后再上手试验下相关工具看是否真的快。
+Vite工具现状 相信现在大多数前端开发人员的构建工具首选一定是Vite，Vite确实易上手并且快，涵盖了Vue、React、Preact等主流前端框架，也支持TypeScript、Nuxt等。Vite仅需简单的几个指令即可运行起项目:
+arduino
+代码解读
+复制代码
+// 运行create指令，选择前端框架和语言，例如Vue、TypeScript npm create vite@latest // Done. Now run: cd vite-project npm install npm run dev
+Vite为什么快？ 有对比才能体现快，几年前构建前端项目还是使用webpack、Rollup、Parcel等工具，当项目代码指数级增长，这些工具的性能瓶颈愈发明显，动不动需要几分钟才能启动dev server，即使是模块热更新(HMR)，文件修改后也需要几秒钟才能反馈到浏览器，这严重影响开发者工作幸福指数。
+浏览器的快速发展造就了Vite，Vite的优势在两个方面：首先是支持了Native ES Modules，其次是build过程接入了编译型语言(如go、rust)开发的工具。这些优势体现在服务器启动和热更新两个阶段：
+服务器启动： Vite将应用中的模块区分为依赖、源码两种，改进了开发服务器启动时间。
+依赖：开发时不会变动的纯JavaScript，或者是较大的依赖(上百个模块的组件库)，这些代码的处理代价比较高，Vite会使用esbuild预构建这些依赖，由于esbuild使用Go编写，因此比以JavaScript编写的打包器预构建快10-100倍。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-10-08 00:00:00 +0000 UTC'>十月 8, 2024</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;前端下饭菜</footer>
+  <a class="entry-link" aria-label="post link to 尤雨溪成立VoidZero，Rust要一统JavaScript工具链？" href="http://localhost:1313/posts/juejin/%E5%B0%A4%E9%9B%A8%E6%BA%AA%E6%88%90%E7%AB%8Bvoidzerorust%E8%A6%81%E4%B8%80%E7%BB%9Fjavascript%E5%B7%A5%E5%85%B7%E9%93%BE/"></a>
 </article>
     </main>
     

@@ -129,123 +129,38 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">vue3admin保姆教学指南｜登录和菜单权限的实现
+    <h2 class="entry-hint-parent">htmx：后端主导的前端框架是啥样的？
     </h2>
   </header>
   <div class="entry-content">
-    <p>做后台项目区别于做其它的项目，权限验证与安全性是非常重要的，可以说是一个后台项目一开始就必须考虑和搭建的基础核心功能。我们所要做到的是：不同的权限对应着不同的路由，同时侧边栏也需根据不同的权限，异步生成。这里先简单说一下，我实现登录和权限验证的思路。
-登录：当用户填写完账号和密码后向服务端验证是否正确，验证通过之后，服务端会返回一个token，拿到token之后（我会将这个token存贮到localStorage中，保证刷新页面后能记住用户登录状态），前端会根据token再去拉取一个 userInfo 的接口来获取用户的详细信息（如用户权限，用户名等等信息）。 权限验证：通过token获取用户对应的菜单权限列表和按钮去权限列表，动态算出其对应的权限路由，通过 router.addRoute动态挂载这些路由。 上面所有操作的数据我们都需要依赖pinia。下面我们一步步来实现一下。先从登陆入手。
-登陆篇 登陆流程分析 首先，我们梳理一下流程。输入用户名和密码，校验，然后请求登陆接口，获取到token，再用token去请求用户详细信息。做菜单权限校验，拼接好路由，成功跳钻到首页，这里如果有redirectUrl，就跳转到redirectUrl。获取到的token和用户信息我们需要使用strore持久化的能力缓存到localStorage中去。
-下面我们开始实现一下整个流程。
-定义userStore 首先我们把需要保存的数据提前定义好，这里我们需要把token和userInfo信息报错在localStorage中，获取用户信息和退出登陆的接口我们也在这里统一声明了。
-typescript
+    <p>大家好，我卡颂。
+前端领域这几年涌现了很多新兴的前端框架，比如Qwik、Svelte、Astro等。
+这些框架多以前端工程师作为受众。
+那么，以后端工程师作为受众的前端框架是啥样的，他与前者有什么区别呢？
+欢迎加入人类高质量前端框架研究群，带飞
+介绍htmx htmx是一款在Django技术栈最近比较热门的前端框架。
+他的理念是 —— 让网页回归HTML的本质，不再受JS束缚。是不是很有web1.0的风格？
+他是怎么做到的呢？答案是：通过大量预制的自定义HTML属性。
+当你在页面中引入htmx.org.js后，可以在HTML中书写以hx-开头的自定义属性。比如下面的代码：
+html
 代码解读
 复制代码
-import { defineStore } from &#39;pinia&#39; import { getUserInfo, logout } from &#39;@/api&#39; import type { UserState } from &#39;./model/userModel&#39; import type { UserInfo } from &#39;@/api/user/types&#39; import { useAuthStore } from &#39;./auth&#39; import { RESEETSTORE } from &#39;@/utils/reset&#39; export const useUserStore = defineStore({ id: &#39;app-user&#39;, state: (): UserState =&gt; ({ token: &#39;&#39;, userInfo: null, }), actions: { // setToken setToken(token: string) { this.token = token }, // setUserInfo setUserInfo(userInfo: UserInfo) { this.userInfo = userInfo }, async GetInfoAction() { const { data } = await getUserInfo() const { avatar, buttons, name, roles, routes } = data const authStore = useAuthStore() // 存储用户信息 this.setUserInfo({ avatar, name }) // 存储用户权限信息 authStore.setAuth({ buttons, roles, routes }) }, async Logout() { await logout() RESEETSTORE() }, }, // 设置为true，缓存state persist: true, })
+&lt;button hx-post=&#34;/data&#34; hx-trigger=&#34;click&#34; &gt; 点我请求data &lt;/button&gt;
+点击按钮（hx-trigger指定的click事件）后，会向data接口（hx-post指定）发起post请求。
+那请求返回的数据如何显示呢？我们再增加2个自定义属性：
+html
+代码解读
+复制代码
+&lt;button hx-post=&#34;/data&#34; hx-trigger=&#34;click&#34; hx-target=&#34;#parent-div&#34; hx-swap=&#34;outerHTML&#34; &gt; 点我请求data &lt;/button&gt;
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-03-27 00:00:00 +0000 UTC'>三月 27, 2023</span>&nbsp;·&nbsp;7 分钟&nbsp;·&nbsp;白哥学前端</footer>
-  <a class="entry-link" aria-label="post link to vue3admin保姆教学指南｜登录和菜单权限的实现" href="http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E7%99%BB%E5%BD%95%E5%92%8C%E8%8F%9C%E5%8D%95%E6%9D%83%E9%99%90%E7%9A%84%E5%AE%9E%E7%8E%B0/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Vue3，setup()函数与scriptsetup到底有什么本质区别❓
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>写在开头 作为一名 Vue 的骨灰级玩家（这里特别感谢一下尤大大祖师爷赏饭吃😋），自从 Vue3 横空出世，其革命性的 Composition API 就给我们带来了前所未有的开发体验。
-小编使用 Vue3 也有挺长一段时光了，然而，在 Vue3 的应用中，俺有时候发现团队项目中会发现存在 setup() 函数与 script setup 语法混合使用的情况；这个单文件（SFC）用一个形式，另一个单文件又换一种形式😬。初看之下，它们似乎只是在语法层面上有所差异，但并不会影响具体的功能逻辑。
-而，真是这样吗？相信在大多数人的印象里 script setup 仅是一个更加便捷的写法，并没有其他特别作用。但事实上，它们之间的区别远不止于此。
-下面，小编将分享两者更加细微的一些区别，咱从实战与源码的角度，通过两个功能相同的组件来展示它们的不同表现情况，Go!
-课前准备 先来做点准备，初始化一个 Vue3 项目，这过程…（此处省略xxx），再搞两个功能相同的组件耍耍。😁
-新建 FunctionSetup.vue 文件：
-javascript
-代码解读
-复制代码
-&lt;template&gt; &lt;h1&gt;{{ message }}&lt;/h1&gt; &lt;h2&gt;count：{{ count }}&lt;/h2&gt; &lt;button @click=&#34;handleClick&#34;&gt;点击&lt;/button&gt; &lt;/template&gt; &lt;script setup lang=&#34;ts&#34;&gt; import { ref } from &#39;vue&#39;; const message = ref(&#39;我是script setup形式&#39;); const count = ref(0); function handleClick() { count.value&#43;&#43;; } &lt;/script&gt;
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-10-02 00:00:00 +0000 UTC'>十月 2, 2024</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;橙某人</footer>
-  <a class="entry-link" aria-label="post link to Vue3，setup()函数与scriptsetup到底有什么本质区别❓" href="http://localhost:1313/posts/juejin/vue3setup%E5%87%BD%E6%95%B0%E4%B8%8Escriptsetup%E5%88%B0%E5%BA%95%E6%9C%89%E4%BB%80%E4%B9%88%E6%9C%AC%E8%B4%A8%E5%8C%BA%E5%88%AB/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">在vue3中，我是如何使用icon图标的
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>本文介绍三种使用icon的方案，分别是element-icon、svg-icon、@iconify/vue。
-1. element-icon Element Plus 提供了一套常用的图标集合。
-1.1. 安装 ruby
-代码解读
-复制代码
-# 选择一个你喜欢的包管理器 # NPM $ npm install @element-plus/icons-vue # Yarn $ yarn add @element-plus/icons-vue # pnpm $ pnpm install @element-plus/icons-vue# 选择一个你喜欢的包管理器
-1.2. 注册所有图标 从 @element-plus/icons-vue 中导入所有图标并进行全局注册。
-javascript
-代码解读
-复制代码
-// main.ts // 如果您正在使用CDN引入，请删除下面一行。 import * as ElementPlusIconsVue from &#39;@element-plus/icons-vue&#39; const app = createApp(App) for (const [key, component] of Object.entries(ElementPlusIconsVue)) { app.component(key, component) }
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-07-14 00:00:00 +0000 UTC'>七月 14, 2023</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;白哥学前端</footer>
-  <a class="entry-link" aria-label="post link to 在vue3中，我是如何使用icon图标的" href="http://localhost:1313/posts/juejin/%E5%9C%A8vue3%E4%B8%AD%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8icon%E5%9B%BE%E6%A0%87%E7%9A%84/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">vue3admin保姆教学指南｜项目规范集成教程，看完秒懂项目中各种奇怪的文件和配置
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>今天来带大家从0开始搭建一个vue3版本的后台管理系统。
-一个项目要有统一的规范，需要使用eslint&#43;stylelint&#43;prettier来对我们的代码质量做检测和修复，需要使用husky来做commit拦截，需要使用commitlint来统一提交规范，需要使用preinstall来统一包管理工具。
-下面我们就用这一套规范来初始化我们的项目，集成一个规范的模版。
-环境准备 node v16.17.0 pnpm 7.11.0 项目初始化 本项目使用vite进行构建，vite官方中文文档参考：cn.vitejs.dev/guide/
-项目初始化命令
-lua
-代码解读
-复制代码
-pnpm create vite
-我们这里选择使用vue&#43;typescript的方式进行初始化。
-Project name命名为guigu-sph-mall-admin,意为尚品汇商城管理系统。
-初始化完成以后进入guiug-sph-mall目录，安装依赖pnpm install,然后运行项目pnpm run dev，在浏览器打开http://localhost:5173/，即可看到预览效果：
-配置eslint eslint用来验证代码是否符合定义的规范
-首先安装eslint
-css
-代码解读
-复制代码
-pnpm i -D eslint
-生成配置文件
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-02-01 00:00:00 +0000 UTC'>二月 1, 2023</span>&nbsp;·&nbsp;5 分钟&nbsp;·&nbsp;白哥学前端</footer>
-  <a class="entry-link" aria-label="post link to vue3admin保姆教学指南｜项目规范集成教程，看完秒懂项目中各种奇怪的文件和配置" href="http://localhost:1313/posts/juejin/vue3admin%E4%BF%9D%E5%A7%86%E6%95%99%E5%AD%A6%E6%8C%87%E5%8D%97%E9%A1%B9%E7%9B%AE%E8%A7%84%E8%8C%83%E9%9B%86%E6%88%90%E6%95%99%E7%A8%8B%E7%9C%8B%E5%AE%8C%E7%A7%92%E6%87%82%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%90%84%E7%A7%8D%E5%A5%87%E6%80%AA%E7%9A%84%E6%96%87%E4%BB%B6%E5%92%8C%E9%85%8D%E7%BD%AE/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">🔥优秀的Vue3开源后台模板推荐
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Why 总能看见很多推荐开源项目的文章，但是发现其中推荐的项目质量参差不齐，甚至有些作者早就不维护了。所以打算写下这篇推荐文，文中将列出在时间点为2023年10月份时依旧很能打的开源 Vue3 模板项目！
-推荐依据 我从 2020 年 Vue3 发布后就开始在 GitHub 开源社区跟踪大量 Vue3 项目，将根据 维护频率、Issues、PR、代码质量、UI 质量、文档 等方面来做推荐，文章提到的模板均满足以下要求：
-维护频率：持续进行 Issues：处理的及时 PR：有一定社区参与度 代码质量：中上 UI 质量：中上 文档：有 二开：适合即可 参考示例：适合即可 避免出现较大的争议，文章做以下几点规定：
-我没有关注到的项目/不熟悉的项目，文章中不会体现出来，但欢迎评论区自己自荐！ 每个阵营推荐的项目顺序不代表其综合质量高低，只是按当前 GitHub Star 数量来排 收费或者有一些奇奇怪怪要求的项目，我几乎都不会关注，所以也不会推荐 每个项目的打分均是根据我本人观察得到的数据而来，尽量客观，但肯定有误差，请见谅 ❤️ 推荐列表 Element Plus 推荐三款：
-Vue Pure Admin 截止当前 10.9K Star V3 Admin Vite 截止当前 2.7K Star Vue Element Plus Admin 截止当前 1.7K Star Naive UI 推荐一款
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-10-19 00:00:00 +0000 UTC'>十月 19, 2023</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;前端连连看</footer>
-  <a class="entry-link" aria-label="post link to 🔥优秀的Vue3开源后台模板推荐" href="http://localhost:1313/posts/juejin/%E4%BC%98%E7%A7%80%E7%9A%84vue3%E5%BC%80%E6%BA%90%E5%90%8E%E5%8F%B0%E6%A8%A1%E6%9D%BF%E6%8E%A8%E8%8D%90/"></a>
+  <footer class="entry-footer"><span title='2022-10-24 00:00:00 +0000 UTC'>十月 24, 2022</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;魔术师卡颂</footer>
+  <a class="entry-link" aria-label="post link to htmx：后端主导的前端框架是啥样的？" href="http://localhost:1313/posts/juejin/htmx%E5%90%8E%E7%AB%AF%E4%B8%BB%E5%AF%BC%E7%9A%84%E5%89%8D%E7%AB%AF%E6%A1%86%E6%9E%B6%E6%98%AF%E5%95%A5%E6%A0%B7%E7%9A%84/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/tags/vue.js/">
-      «&nbsp;上一页&nbsp;1/15
-    </a>
-    <a class="next" href="http://localhost:1313/tags/vue.js/page/3/">下一页&nbsp;3/15&nbsp;»
+      «&nbsp;上一页&nbsp;1/2
     </a>
   </nav>
 </footer>

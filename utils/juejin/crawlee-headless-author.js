@@ -1,6 +1,6 @@
 import {chromium} from 'playwright'
 import {load} from 'cheerio'
-import {readFile, writeToFile, extractNumber, readJsonFilesFromFolder} from "../util.js"
+import {readFile, writeToFile, extractNumber, readJsonFilesFromFolder, getRandomDelay} from "../util.js"
 
 const baseUrl = 'https://juejin.cn'
 const browser = await chromium.launch({headless: false})
@@ -97,7 +97,7 @@ if (!hQAuthorList || isAuthorFolloweeListUpdate) {
     const followeeListArray = {};
     const startTime = Date.now(); // 开始时间
     const noVisitedAuthorFolloweeUrls = JSON.parse(hQAuthorList).hQAuthorList.filter(item => !visitedAuthorFolloweeUrls.includes(item));
-    
+
     for (const item of noVisitedAuthorFolloweeUrls) {
         const userNumber = url => url.match(/\/(\d+)/)?.[1] || null
         try {
@@ -126,7 +126,7 @@ if (!hQAuthorList || isAuthorFollowTeamUpdate) {
     const followTeamListArray = {};
     const startTime = Date.now(); // 开始时间
 
-    for (const item of JSON.parse(hQAuthorList).hQAuthorList.slice(0, 2)) {
+    for (const item of JSON.parse(hQAuthorList).hQAuthorList) {
         const userNumber = url => url.match(/\/(\d+)/)?.[1] || null
         try {
             await getFollowerOrFolloweeOrFollowTeamList(`${item}/following-teams`, 'follow-team').then(async (result) => {
@@ -140,7 +140,7 @@ if (!hQAuthorList || isAuthorFollowTeamUpdate) {
                     .then(() => console.log(`hQFollowTeamList written successfully`));
             })
         } catch (e) {
-            console.error(`Error getting all followTeam lis: ${item},Detail reason is: ${e}`);
+            console.error(`Error getting all followTeam list: ${item},Detail reason is: ${e}`);
         }
     }
 
@@ -248,7 +248,7 @@ async function getFollowerOrFolloweeOrFollowTeamList(href, type) {
                     teamCircleNumber.push(1);
                 }
                 // await page.waitForSelector('.tag-list', {timeout: 1500});
-                followList = await page.evaluate(({baseUrl}) => {
+                followList = await page.evaluate(({baseUrl, type}) => {
                     const followers = Array.from(document.querySelectorAll('.tag-list .item'));
                     const extractLevel = (text) => {
                         const match = text.match(/LV\.(\d+)/);
@@ -256,16 +256,30 @@ async function getFollowerOrFolloweeOrFollowTeamList(href, type) {
                     }
 
                     return followers
-                        .map(follower => ({
-                            name: follower.querySelector('.name')?.innerText.trim() || 'No Name',
-                            avatar: follower.querySelector('.avatar-img')?.getAttribute('src') || 'No Avatar',
-                            href: `${baseUrl}${follower.querySelector('.username').getAttribute('href')}` || '',
-                            level: {
-                                desc: follower.querySelector('.followerRank img')?.getAttribute('title') || 'No Level',
-                                rankNumber: extractLevel(follower.querySelector('.followerRank img')?.getAttribute('title') || 'No Rank'),
-                            },
-                        }))
-                }, {baseUrl});
+                        .map(follower => {
+                            if (type === 'follow-team') {
+                                return {
+                                    name: follower.querySelector('.title')?.innerText.trim() || 'No Name',
+                                    avatar: follower.querySelector('.avatar-img')?.getAttribute('src') || 'No Avatar',
+                                    href: `${baseUrl}${follower.querySelector('.link')?.getAttribute('href')}` || '',
+                                    level: {
+                                        desc: follower.querySelector('.followerRank img')?.getAttribute('title') || 'No Level',
+                                        rankNumber: 20,
+                                    },
+                                }
+                            } else {
+                                return {
+                                    name: follower.querySelector('.name')?.innerText.trim() || 'No Name',
+                                    avatar: follower.querySelector('.avatar-img')?.getAttribute('src') || 'No Avatar',
+                                    href: `${baseUrl}${follower.querySelector('.username')?.getAttribute('href')}` || '',
+                                    level: {
+                                        desc: follower.querySelector('.username img')?.getAttribute('title') || 'No Level',
+                                        rankNumber: extractLevel(follower.querySelector('.username img')?.getAttribute('title') || 'No Rank'),
+                                    },
+                                }
+                            }
+                        })
+                }, {baseUrl, type});
 
                 console.log(
                     type === 'follower' ? followInfo.followers : followInfo.following,
@@ -281,7 +295,7 @@ async function getFollowerOrFolloweeOrFollowTeamList(href, type) {
                 await page.waitForTimeout(1000);
             }
 
-            await page.waitForTimeout(2000);
+            await page.waitForTimeout(getRandomDelay(2, 12));
             resolve(followList);
         } catch (e) {
             console.error(`Error getting ${type} list for author: ${href};  Detail reason is: ${e}`);

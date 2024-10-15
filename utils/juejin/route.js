@@ -10,7 +10,23 @@ import {
     removeSpecialChars, readJsonFilesFromFolder, readFile
 } from "../util.js"
 
-const turnDownService = new TurnDownService();  // 创建 Turndown 实例
+const turnDownService = new TurnDownService({});  // 创建 Turndown 实例
+// 添加自定义代码块转换规则
+turnDownService.addRule('preCodeBlocks', {
+    filter: function (node) {
+        return (
+            node.nodeName === 'PRE' &&
+            node.firstChild &&
+            node.firstChild.nodeName === 'CODE'
+        );
+    },
+    replacement: function (content, node) {
+        const codeNode = node.firstChild;
+        const language = codeNode.getAttribute('class')?.split('-')[1]; // 获取代码语言
+        return `\`\`\`${language || ''}\n${codeNode.textContent}\n\`\`\``;
+    }
+});
+
 export const router = createPlaywrightRouter()
 let weight = 50;
 
@@ -102,7 +118,7 @@ router.addDefaultHandler(async ({request, page, enqueueLinks, log}) => {
         urls = allUrls.filter(url => !visitedUrls.includes(url)).slice(0, 1)
 
     await enqueueLinks({
-        urls,
+        urls: ['https://juejin.cn/post/7070723925973401608', 'https://juejin.cn/post/7425225508612407296'],
         label: 'DETAIL',
     })
 });

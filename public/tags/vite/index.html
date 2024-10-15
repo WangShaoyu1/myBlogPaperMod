@@ -129,24 +129,87 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">自定义vite插件，打包后替换成注释内容
+    <h2 class="entry-hint-parent">尤雨溪宣布成立VoidZero-下一代JavaScript工具链
     </h2>
   </header>
   <div class="entry-content">
-    <p>背景 希望开发的时候用的资源是mp4格式，方便调试，而打包后生产用的是m3u8，流式的体验比较好。
-为什么不都统一m3u8，因为windows的chrome原生不支持打开，需要用插件，懒得装第三方兼容，于是想到在vite打包流程上处理
-理想用法 代码加上 原理是暴力修改文件内容
-vite.config.ts
-?
-const replaceJJVideo = (mode) =&gt; {
-if (mode !== &#39;dev&#39;``) {
-return {
-async transform(src: string, file: string) {
-if (file.endsWith(``&#39;.vue&#39;``)) {
+    <p> Vue 作者尤雨溪宣布创立了 VoidZero 公司，该公司致力于为 JavaScript 生态系统构建开源、高性能和统一的开发工具链。该公司已获得由 Accel 领投的460万美元种子轮融资。
+以下是尤雨溪发布的原文翻译：
+15年前，当我开始用 JavaScript 构建应用时，它主要还是一种浏览器脚本语言。如今，它已发展成为世界上使用最广泛的语言，支持从网页和移动应用到游戏开发甚至物联网的各种场景。
+多年来，许多优秀的工具应运而生，以应对日益增长的 JavaScript 应用规模和复杂性。然而，生态系统一直是分散的：每个应用都依赖于众多第三方依赖，将它们配置在一起仍然是开发周期中最棘手的任务之一。
+作为一个被广泛使用的前端框架的作者，我花了大量精力研究 JavaScript 工具栈的每一层，组装了数百个依赖项，并在其上设计了复杂的抽象。目标始终是为最终用户提供一个连贯的、开箱即用的开发体验。这些努力最终导致了 2020 年 Vite 的诞生。
+四年后的今天，Vite 已经成为最受欢迎的 Web 开发构建工具之一，每周下载量超过 1500 万次，拥有庞大的生态系统。除了成为使用 React 和 Vue 构建单页应用的首选外，Vite 还为 Remix、Nuxt、Astro、SvelteKit、SolidStart、Qwik、Redwood 等元框架提供支持。它显然已经成为下一代 Web 框架的共享基础设施层。
+社区对 Vite 的信任让我深入思考了它的未来。虽然 Vite 大大改善了高层开发者体验，但在内部，它仍然依赖于各种依赖项，并采用抽象和变通方法来消除不一致性。从性能角度来看，它仍然受到不同工具之间重复解析和序列化成本的瓶颈，而且由于功能限制和可定制性有限，它无法充分利用 esbuild 等原生工具。
+我们开始设计一个新的打包工具 Rolldown，以专门解决 Vite 的需求。但当我深入研究打包工具底层时，我意识到 Vite 面临的挑战其实反映了 JavaScript 生态系统的普遍问题：碎片化、不兼容和低效。要从根本上改变这一点，需要一个统一的工具链。
+想象一下这样一个工具链:
 ...</p>
   </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 自定义vite插件，打包后替换成注释内容" href="http://localhost:1313/posts/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89vite%E6%8F%92%E4%BB%B6%E6%89%93%E5%8C%85%E5%90%8E%E6%9B%BF%E6%8D%A2%E6%88%90%E6%B3%A8%E9%87%8A%E5%86%85%E5%AE%B9/"></a>
+  <footer class="entry-footer"><span title='2024-10-04 00:00:00 +0000 UTC'>十月 4, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;程普</footer>
+  <a class="entry-link" aria-label="post link to 尤雨溪宣布成立VoidZero-下一代JavaScript工具链" href="http://localhost:1313/posts/juejin/%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AE%A3%E5%B8%83%E6%88%90%E7%AB%8Bvoidzero-%E4%B8%8B%E4%B8%80%E4%BB%A3javascript%E5%B7%A5%E5%85%B7%E9%93%BE/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Vite的介绍和发展状况
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>「这是我参与2022首次更文挑战的第13天，活动详情查看：2022首次更文挑战」。
+1. Vite 的介绍和发展状况 目前，Webpack 是整个前端使用最多的构建工具，但是除了 Webpack，还有一些其它的构建工具，比如 rollup（常用来打包框架）、parcel（号称零配置的工具，但是本身比较大，用得比较少一点）、gulp（一般用来做自动化的东西）、vite（尤雨溪 2020 年出的下一代前端工具） 等等。
+什么是 Vite 呢？
+官方的定位是：下一代前端（开发与构建）工具。
+“下一代”的意思是领先于当前这一代（Webpack、rollup 等工具）。
+如何定义下一代开发和构建工具呢？
+在实际开发中，我们编写的代码往往是不能被浏览器直接识别的，比如 ES6、TypeScript、Vue 文件等等； 所以我们必须通过构建工具来对代码进行转换（编译），类似的工具有 Webpack、rollup、parcel； 但是随着项目越来越大，需要处理的 JavaScript 代码越来越多，模块越来越多； 构建工具就需要很长的时间才能开启服务器，HMR 可能也需要几秒钟（官方的说法，但一般 1 秒钟内 HMR 就能生效了）才能在浏览器中反应出来； 总之，当项目比较大时，Webpack 等构建工具构建项目的时间是比较长的，再加上 Webpack 的配置比较复杂，有点难，所以也有这样的说法：天下苦 Webpack 久矣； 因此，尤雨溪开发了一个新的工具：Vite（法语意为 “快速的”，发音 /vit/），一种新型前端构建工具，能够显著提升前端开发体验。
+Vite 主要由两部分组成：
+一个开发服务器（即在开发阶段，Vite 本质上就是一个开发服务器），它基于原生 ES 模块提供了丰富的内建功能，HMR 的速度非常快速； 一套构建指令（即在打包阶段使用的一套构建命令），它使用 Rollup（Vite 已经内置了 Rollup）打包我们的代码，并且它是预配置的，可以输出生产环境的优化过的静态资源； 那么，既然 Vite 这么棒，我们现在是否就能放弃 Webpack，直接学习 Vite 了呢？
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-02-01 00:00:00 +0000 UTC'>二月 1, 2022</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;codersjj</footer>
+  <a class="entry-link" aria-label="post link to Vite的介绍和发展状况" href="http://localhost:1313/posts/juejin/vite%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%8F%91%E5%B1%95%E7%8A%B6%E5%86%B5/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">前端技术储备--vite
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>欢迎各位加入虾皮，15天带薪年假以及业内顶级的薪酬，每个人都可以参与做技术项目，不需要永远做一颗螺丝钉，你是否心动了呢？快联系我内推，加入亚洲市值第三的公司吧！
+春节期间，尤雨溪一连串的动作宣布了vite 2.0正式发布，那么赶紧来看看这个被尤雨溪号称为下一代的前端构建工具和现在的构建工具到底有哪里不一样？
+vite官方介绍地址: vitejs.dev/guide/why.h…
+首先我们要知道，vite为何而诞生？
+为什么需要打包工具？ 在前端工程化的今天，前端的技术栈越来越丰富，配套的工具也越来越多，为了提升前端的开发效率各种各样框架是层出不穷，
+但是，随着前端项目越来越大，造成了项目依赖越来越多，而这些依赖又会有着自己的依赖，这就造成了很大的一棵依赖树，打开一个项目的node_modules目录看看，随随便便就有上百个文件夹。加上之前JavaScript 一直没有模块（module）体系，社区为此制定了一些模块加载方法，但是不同的依赖项目使用不同的加载方法。而浏览器并不支持这些加载方法，因此我们的js代码只能打包后才能在浏览器运行，因此之前的前端开发一直需要打包工具。
+打包工具帮助我们实现了前端工程化，但是随着依赖越来越多，我们打包构建的速度越来越慢，并且开发中如果改动代码，热更新时还可以丢失当前正在进行的工作，vite就是为了解决这些问题而诞生的。
+毫无疑问，vite最诱人的特性有以下两点：
+极快的冷启动速度 极快的热更新速度 我们知道，es6中加入了模块这个特性，为的就是能有一个统一的文件加载标准，让浏览器能够根据这个标准去加载我们的代码，这样就可以提升前端开发的效率。
+为何vite在冷启动和热更新性能上面可以比现代的构建工具更优秀？
+冷启动 比如webpack，在我们往命令行中输入npm run命令把项目启动起来的时候，webpack需要把我们的依赖读出来，打包成一个一个浏览器可以识别的js文件，打包结束后，我们的服务器才真正可用。但是依赖是树状的，我们知道树的层级越深，遍历的开销就越大，这是造成webpack在热更新和冷启动上效率不高的主要原因。
+我们来看看vite官网的图，webpack需要根据我们提供的文件入口去搜集依赖(由于依赖树太深，因此webpack做了很多工作希望能实现按需加载)，然后打包输出浏览器可以识别的文件，打包结束后我们的前端服务器才真正开始工作
+根据vite官网的图，vite是通过接受浏览器的url，来识别所需的哪些依赖，由于vite是针对es module(下文统称esm)的，es module是可以直接被浏览器识别的，因此输入命令后，项目不需要打包就可用，而且可以根据url所需的文件去返回js代码，做到了真正的按需加载。而对于非esm标准的代码，vite则是转化成esm标准的代码。 由于webpack是把js代码打包好，当收到请求就直接返回跟浏览器(往往一个请求就可以拿到全部需要的js代码给浏览器执行，代码太多的时候则会拆分成几个文件)，而vite则是收到请求之后才去找代码，而依赖很多，可能会需要浏览器加载很多的js文件，这就可能要发很多个请求才能拿到全部的js代码，这会不会造成网络的波动？有木有可能造成页面加载的时间过长？
+vite针对这种情况,在收到请求时做了一个叫pre-bundle的优化，也就是
+把非esm的js代码转换成esm代码 把一个依赖打成一个一个js文件返回给前端(而不是每个文件独立返回，比如lodash-es这个依赖有600多个内部模块，最终只会返回lodash-es这一个文件，里面包含了全部的内部模块)，避免网络波动，过度占用网络端口(这里会把打包的代码放在node_modules/.vite/下) 在请求js代码时加入了缓存信息在http请求的头部，实现浏览器缓存 对于monorepo，vite会把依赖的项目也一起通过esm的方式引入进来 热更新 热更新时，webpack由于是树状的依赖，因此其中的每一个节点改变，其祖先节点都需要重新编译加载(其实在应用中感觉开销比想象中更大)。并且由于热更新导致页面重新加载，页面上原本的状态也会丢失。（具体的原理还需要深入学习一下）
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-03-07 00:00:00 +0000 UTC'>三月 7, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;OJAccepted</footer>
+  <a class="entry-link" aria-label="post link to 前端技术储备--vite" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%82%A8%E5%A4%87--vite/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Vite20正式发布，凭什么这么快？
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>相信随着尤雨溪卖力的吆呼，不少前端的小伙伴已经对 vite 有所耳熟了，这是一个伴随着着 Vue3.0 发布的下一代构建工具，其名字就是出自法语单 fast。可以看到尤雨溪近期的主要工作全部是在 vite 上，足以说明其重要之处 在这篇文章中，我们就来看看 vite 到底有何独到之处。
+天下苦 webpack 久矣 在前端这块混，肯定不能没有听说过 webpack，现代的大型前端应用一般都是用这玩意构建的，但是随着项目的增大，大家发现了 webpack 几个「难言之隐」
+随着项目大小增长，项目冷启动时间指数增长 热更新时间也会随着项目大小增大而增长 所以才有了我们常戏称的：npm run dev ，然后去上个厕所，喝杯咖啡，回来可能还没跑完，极大的影响了开发效率。虽然 webpack 提供了很多方法去做构建优化，在日益庞大的前端项目中仍然不太够用，能不能有一种方式一劳永逸的解决这个问题呢？答案就是 Vite ！
+Vite 横空出世 vite 是如何解决这个世纪难题的呢，答案是 native ES modules。在浏览器没有原生模块化支持的时代，我们往往需要通过 webpack 等构建工具将整个项目打包成一个 js 文件，方便浏览器进行调用。但是随着浏览器厂商的不断努力，现代浏览器基本已经全部支持了 import/ export 语法，下图可以看到具体的浏览器兼容情况。 大部分浏览器都已经可以解析 js 文件中的 import 语句，webpack 的打包过程是不是有点脱了裤子放屁的感觉了。 ​
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-02-21 00:00:00 +0000 UTC'>二月 21, 2021</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;AtomG</footer>
+  <a class="entry-link" aria-label="post link to Vite20正式发布，凭什么这么快？" href="http://localhost:1313/posts/juejin/vite20%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%87%AD%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E5%BF%AB/"></a>
 </article>
     </main>
     

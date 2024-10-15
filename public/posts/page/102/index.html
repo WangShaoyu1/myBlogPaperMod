@@ -144,192 +144,215 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2023.05.29~2023.06.02双周例会
+    <h2 class="entry-hint-parent">接入神策-业务方测试方法
     </h2>
   </header>
   <div class="entry-content">
-    <p>1.版本进度 2.工作汇报 序号
-小组
-本周计划工作
-本周关键工作内容（5.29-6.2）
-下周关键工作内容（6.3-6.7）
-风险项/问题项
-解决方案
-备注
-序号
-小组
-本周计划工作
-本周关键工作内容（5.29-6.2）
-下周关键工作内容（6.3-6.7）
-风险项/问题项
-解决方案
-备注
-1
-产品组
-1、0601版本需求验收。
-2、6月份需求设计与澄清，并完成排期。
-3、声学模块测试以及相关性能指标的拟定，并与深圳硬件团队、鱼亮科技做相应的沟通，商定下一步的工作方向和思路。
-5月份万得厨”烹饪中“场景声学模块性能测试
-4、与内容组沟通讨论平台端产品架构与FTT功能需求汇总。
-05.23~影子虚拟人创作平台（原服务商平台）产品架构与需求清单梳理
-5、给运营团队初步介绍虚拟人当前已建设的能力和对未来的初步规划，结合运营的工作情况明确一下工作的方向和需要协同的事宜。
-2023.5.31会议~虚拟人功能介绍及运营需求评估
-1、0609版本的需求研发进度跟进。
-2、整理万得厨2.0所有的关于声学模块的测试数据整理，含各关键指标（在不同声音场景、烹饪场景下）。
-3、准备虚拟人接入万得厨2.0产品的外部介绍文档以及内部运营操作文档（比如：科大讯飞配置相关）。
-4、PTA功能的初步设计。
-5、虚拟人在万得厨1.5p上的功能设计（基于新的架构）
-2
+    <p>1. 背景 为了在系统上更加直观的了解我们应用使用的情况，产品经理定义了一些指标和字段打算接入神策系统，开发通过埋点获取对应的业务信息并上报给神策，解决对业务数据的监控。
+2. 产品需求 3. 思考 方案一：通过在神策系统获取数据通过查询获取最新数据验证数据的准确性，然后检查上次数据的字段是否有遗漏。
+方案二：了解可以自行查询数据库检查数据源，思路立马转变，通过检查数据库数据的准确性，和字段是否齐全即可，确保数据对，界面的展示无非是查询获取数据的过程。
+对比分析：方案一可以采用，但是容易遗漏场景，通过图形检查数据，容易出现查看维度的缺失或者数据没有明显异常发现不了隐藏的bug。方案二直接检查数据源，可以更加高效的发现隐藏的bug，只要在炉端跑业务场景，检查数据上报的准确性和完整性即可。
+4. 测试方案（方案二） 4.1. 结合产品需求编写检查sql SELECT
+e.instruction_flag AS “指令标识”,
+e.instruction_name AS “指令名称”,
+e.instruction_content AS “文本内容”,
+from_unixtime(cast(e.instruction_wakeup_time/1000 as bigint),‘yyyy-MM-dd HH:mm:ss’) as “唤醒时间”,
+from_unixtime(cast(e.instruction_time/1000 as bigint),‘yyyy-MM-dd HH:mm:ss’) AS “指令使用时间”,
+e.instruction_form AS “指令触发形式”,
+from_unixtime(cast(e.instruction_asr_first_time/1000 as bigint),‘yyyy-MM-dd HH:mm:ss’) AS “识别到第一个字的时间点”,
+from_unixtime(cast(e.instruction_asr_end_time/1000 as bigint),‘yyyy-MM-dd HH:mm:ss’) AS “识别完整个文本的时间点”,
+from_unixtime(cast(e.instruction_asr2nlp_time/1000 as bigint),‘yyyy-MM-dd HH:mm:ss’) AS “文本传去nlp的时间点”,
+from_unixtime(cast(e.instruction_nlp2tts_time/1000 as bigint),‘yyyy-MM-dd HH:mm:ss’) AS “tts播报时间点”,
+e.instruction_response_time AS “指令响应时间ms”,
+e.instruction_avatar_id AS “虚拟人角色id”,
+e.instruction_avatar_name AS “虚拟人角色名称”,
+e.instruction_recognition_success_flag AS “是否正常识别,真或假”,
+u.user_name AS “用户名称”,
+u.phone_numb as “用户号码”,
+e.distinct_id AS “用户id”
+FROM
+events e LEFT JOIN users u on e.user_id = u.id
+WHERE
+e.event = ‘SpeechRecognition’ and e.instruction_wakeup_time IS NOT NULL
+ORDER BY
+e.instruction_wakeup_time DESC LIMIT 20;
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 2023.05.29~2023.06.02双周例会" href="http://localhost:1313/posts/wiki/2023.05.29~2023.06.02%E5%8F%8C%E5%91%A8%E4%BE%8B%E4%BC%9A/"></a>
+  <a class="entry-link" aria-label="post link to 接入神策-业务方测试方法" href="http://localhost:1313/posts/wiki/%E6%8E%A5%E5%85%A5%E7%A5%9E%E7%AD%96-%E4%B8%9A%E5%8A%A1%E6%96%B9%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">语音测试要点
+    <h2 class="entry-hint-parent">2023.03.18~2023.03.24产品技术单周例会
     </h2>
   </header>
   <div class="entry-content">
-    <p>测试场景：
-语音输入离拾音设备的距离：近距离、远距离
-拾音设备：移动端(安卓、IOS)原生麦克风、PC端原生麦克风、日常用耳机麦克风、专业设备麦克风(罗技等)
-语音输入与拾音设备的相对位置：正对拾音口，背对拾音口
-语音输入的环境：办公环境、会议室环境
-语音输入时的语速：正常语速、语速较快、语速较慢、时快时慢、断断续续
-语音输入时的音量：正常音量、音量较大、音量较小，时大时小
-语音输入时的音色：男声、女声
-语音输入的音频类型：自然人声、录音、广播、变声等
-测试识别内容，主要包括以下几个方面
-支持识别的语种：普通话、英文、方言等
-支持的应用场景：日常对话、尽职调查、娱乐访谈等
-支持的对话模式：单人对话，多人对话，同一时间只有一个人说话，同一时间多人一起说话
-覆盖的词库内容：根据应用场景，是否包含了应用场景(比如金融、娱乐领域)对应的词库训练
-**验证识别内容的准确性
-**统计识别文字的WER、SER指标
-关注语音识别耗时
-①短语音的识别耗时
-②长语音的识别耗时
+    <p>1.版本进度 1、版本规划
+【3.9号ued，3. 21提测，3.24 生产】
+2.工作汇报 序号
+小组
+本周计划工作
+本周关键工作内容（3.18-3.24）
+下周关键工作内容（3.25-3.31）
+上周风险问题项
+上周风险问题项
+备注
+序号
+小组
+本周计划工作
+本周关键工作内容（3.18-3.24）
+下周关键工作内容（3.25-3.31）
+上周风险问题项
+上周风险问题项
+备注
+1
+产品组
+1、参加0324版本的测试用例评审，做好24号版本验收的工作准备；
+2、根据指令库评审结果，明确4月份需要开发的内容，并分配产品设计任务；
+3、持续输出三款智能语音产品的调研报告；
+4、跟进声学模块的测试，找到影响语音识别率的原因并解决。
+1、完成0324版本的验收：3、0324版本产品需求验收标准；
+2、进行4月份需要开发内容的prd设计，完成80%，预计4.3终评；
+3、完成测试：3月份实验室环境–万得厨语音模块字准率性能；
+4、输出智能语音产品调研报告：1.7、智能语音语言公司调研——思必驰
+1、完成虚拟人平台运营管理后台与服务商运营管理平台的产品架构梳理与内部评审；
+2、完成prd V1.0.2版本内部初评；
+...</p>
+  </div>
+  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
+  <a class="entry-link" aria-label="post link to 2023.03.18~2023.03.24产品技术单周例会" href="http://localhost:1313/posts/wiki/2023.03.18~2023.03.24%E4%BA%A7%E5%93%81%E6%8A%80%E6%9C%AF%E5%8D%95%E5%91%A8%E4%BE%8B%E4%BC%9A/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">整机测试
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>一、设备调试使用说明：
+1、有线调试还是无线调试（尽可能有线调试，无线调试不稳定），线材是怎么样的？
+答：有线调试、usb线
+2、设备调试使用说明，如何调用声卡录音？
+答：可以使用tinycap 去调用mic 声卡节点(pcmC0D2c) 录音，目前支持的格式是16K,6ch,16bits。
+参考命令如下：
+adb shell “tinycap /data/a.wav -D 2 -r 16000 -c 6”
+adb pull /data/a.wav ./
+3、如何用设备播放指定音频？
+答：将一个.wav或.mp3导入到设备指定路径，系统播放器播放
+adb push test.wav /data/download
+如何播放这个音频？如何调整音量大小？
+二、声学测试
+1、可参考音频自测规范：
+https://www.yuque.com/iflyaiui/zzoolv/qlmtgh
+2、需要提供喇叭和mic规格说明书
+3、希望客户能够进行简单的自测，有问题可联系讯飞项目或技术同事协助，避免设备寄到讯飞后发现问题后需要回寄修复，声学测试不通过将无法进行效果测试
+三、效果测试
+客户需要进行声学测试且合格后才能进行效果测试
+1、客户需要测唤醒还是识别？应用场景是什么？主要噪声源是什么，大概多少db?是否可以录一段现场交互的原始音频？
+答：识别，主要是商场，公共场景近距离1m交互，环境噪声70db，提供交互音频如下。
+2、客户是否有识别测试音频？无测试音频需要提供测试文本（常用交互说法）
+答：无测试音频，就提供测试文本
+3、客户是否有唤醒测试音频，唤醒词是什么？
+答：无唤醒词音频，小飞小飞
 Filter table dataCreate a pivot tableCreate a chart from data series
 Configure buttons visibility
 </p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 语音测试要点" href="http://localhost:1313/posts/wiki/%E8%AF%AD%E9%9F%B3%E6%B5%8B%E8%AF%95%E8%A6%81%E7%82%B9/"></a>
+  <a class="entry-link" aria-label="post link to 整机测试" href="http://localhost:1313/posts/wiki/%E6%95%B4%E6%9C%BA%E6%B5%8B%E8%AF%95/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2023.06.12~2023.06.16双周例会
+    <h2 class="entry-hint-parent">2023.04.01~2023.04.07单周例会
     </h2>
   </header>
   <div class="entry-content">
-    <p>1.版本进度 2.工作汇报 序号
+    <p>1.版本进度 4月份版本计划
+【0418 0427 发布生产】
+2.工作汇报 序号
 小组
 本周计划工作
-本周关键工作内容（6.12-6.16）
-下周关键工作内容（6.19-6.21）
-风险项/问题项
-解决方案
+本周关键工作内容（4.1-4.7）
+下周关键工作内容（4.8-4.14）
+上周风险问题项
+上周风险问题项
 备注
 序号
 小组
 本周计划工作
-本周关键工作内容（6.12-6.16）
-下周关键工作内容（6.19-6.21）
-风险项/问题项
-解决方案
+本周关键工作内容（4.1-4.7）
+下周关键工作内容（4.8-4.14）
+上周风险问题项
+上周风险问题项
 备注
 1
 产品组
-1、参加广州办公区虚拟人产品体验与需求调研；
-2、继续完成万得厨APP手机端PTA功能产品设计。
-3、继续完成1.5PLUS产品设计，预计15.16评审
-4、虚拟数字人产品设计
-5、声学测试文档对外输出
-1、支持广州办公区虚拟人产品体验与需求调研活动。
-2、完成万得厨App手机端PTA功能产品设计。
-3、进行虚拟数字人需求调研和虚拟数字人产品设计。
-2023.06.05-06.06 &amp; 07.10~虚拟人导览行业现状调研
-4、完成1.5p产品设计，已完成初审。
-5、声学测试文档对外输出。
-6、对接神策系统完成基本的语音指标需求的发布上线(0614）。
-1、1.5p产品需求的终审。
-2、万得厨app手机端PTA功能产品的初审和终审。
+1、指令库产品设计需求终审并排期。
+2、梳理完成服务商运营管理平台、影子运营管理平台、消费者之间的架构与联系
+3、完成四月影子虚拟人平台运营管理、服务商运营管理的相关设计工作
+4、持续输出科大讯飞对接文档学习笔记
+5、跟进声学模块远场识别率性能不完美的问题
+1、在团队内进行智能语音产品调研报告分享；
+2、完成四月份产品需求版本规划；
+3、完成四月份产品需求澄清并排期；
+4、与UED对接设计内容。
+1、梳理四月两个版本新接入的指令内容给到杭州虚拟人公司；
+2、梳理五月的需求内容，制定产品设计任务；
+3、梳理虚拟人平台产品整体运作逻辑与架构，以及与消费者之间的关系，输出文档；
 ...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 2023.06.12~2023.06.16双周例会" href="http://localhost:1313/posts/wiki/2023.06.12~2023.06.16%E5%8F%8C%E5%91%A8%E4%BE%8B%E4%BC%9A/"></a>
+  <a class="entry-link" aria-label="post link to 2023.04.01~2023.04.07单周例会" href="http://localhost:1313/posts/wiki/2023.04.01~2023.04.07%E5%8D%95%E5%91%A8%E4%BE%8B%E4%BC%9A/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">22年12月虚拟数字人需求排期规划
+    <h2 class="entry-hint-parent">虚拟人常规主要的AI测试点
     </h2>
   </header>
   <div class="entry-content">
-    <p>12月份不安排研发版本，以需求调研、技术预研实现为主任务
-PRD状态：已完成、进行中、未设计
-版本ID
-版本名称
-产品线
-提测时间
-预发布
-生产发布
-开发负责人
-测试负责人
-产品负责人
-版本ID
-版本名称
-产品线
-提测时间
-预发布
-生产发布
-开发负责人
-测试负责人
-产品负责人
-1
-系统/模块
-功能点
-描述
-备注
-优先级
-PRD状态
-计划发布版本
-产品经理
-架构师
-Web开发
-App开发
-后端开发
-测试
-UED
-虚拟人账号模块
-...</p>
-  </div>
-  <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 22年12月虚拟数字人需求排期规划" href="http://localhost:1313/posts/wiki/22%E5%B9%B412%E6%9C%88%E8%99%9A%E6%8B%9F%E6%95%B0%E5%AD%97%E4%BA%BA%E9%9C%80%E6%B1%82%E6%8E%92%E6%9C%9F%E8%A7%84%E5%88%92/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">十六、好好学习，天天向上
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Filter table dataCreate a pivot tableCreate a chart from data series
+    <p>1、语音识别测试
+多人语音时，如何读取主要语音数据
+不同语言的语音如何读取识别数据
+语音停顿时如何识别
+声音大小不同，如何读取语音数据
+如何根据声音识别不同的对象
+……
+2、人脸识别测试
+3、虚拟人呈现
+模型测试
+不同情绪对应的表情
+不同的状态对应的呈现形式
+…
+4、错误识别
+用户操作失误，是否有错误提示
+自身出现问题，是否有出错提示
+外界干扰造成不稳定，是否有提示
+….
+5、性能测试
+长时间工作，观察cpu,内存等占用情况，模型是否仍然可以稳定工作
+结束工作后是否会释放空间
+模型的响应时间
+…..
+6、算法测试
+7、安全测试
+8、兼容性测试
+切换场景，是否仍然正常
+Filter table dataCreate a pivot tableCreate a chart from data series
 Configure buttons visibility
-</p>
+...</p>
   </div>
   <footer class="entry-footer">1 分钟&nbsp;·&nbsp;王宇</footer>
-  <a class="entry-link" aria-label="post link to 十六、好好学习，天天向上" href="http://localhost:1313/posts/wiki/%E5%8D%81%E5%85%AD%E5%A5%BD%E5%A5%BD%E5%AD%A6%E4%B9%A0%E5%A4%A9%E5%A4%A9%E5%90%91%E4%B8%8A/"></a>
+  <a class="entry-link" aria-label="post link to 虚拟人常规主要的AI测试点" href="http://localhost:1313/posts/wiki/%E8%99%9A%E6%8B%9F%E4%BA%BA%E5%B8%B8%E8%A7%84%E4%B8%BB%E8%A6%81%E7%9A%84ai%E6%B5%8B%E8%AF%95%E7%82%B9/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/101/">
-      «&nbsp;上一页&nbsp;101/237
+      «&nbsp;上一页&nbsp;101/241
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/103/">下一页&nbsp;103/237&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/103/">下一页&nbsp;103/241&nbsp;»
     </a>
   </nav>
 </footer>
