@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>前端技术储备--vite | PaperMod</title>
+<meta name="keywords" content="Vite">
+<meta name="description" content="vite作为2021年前端不可以忽视的新技术，主要从以下几个方面介绍为什么需要vite？vite的优势：热更新和冷启动vite的一些特性介绍vite与snowpack的对比">
+<meta name="author" content="OJAccepted">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%82%A8%E5%A4%87--vite/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%82%A8%E5%A4%87--vite/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="前端技术储备--vite" />
+<meta property="og:description" content="vite作为2021年前端不可以忽视的新技术，主要从以下几个方面介绍为什么需要vite？vite的优势：热更新和冷启动vite的一些特性介绍vite与snowpack的对比" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%82%A8%E5%A4%87--vite/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-03-07T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-03-07T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="前端技术储备--vite"/>
+<meta name="twitter:description" content="vite作为2021年前端不可以忽视的新技术，主要从以下几个方面介绍为什么需要vite？vite的优势：热更新和冷启动vite的一些特性介绍vite与snowpack的对比"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "前端技术储备--vite",
+      "item": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%82%A8%E5%A4%87--vite/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "前端技术储备--vite",
+  "name": "前端技术储备--vite",
+  "description": "vite作为2021年前端不可以忽视的新技术，主要从以下几个方面介绍为什么需要vite？vite的优势：热更新和冷启动vite的一些特性介绍vite与snowpack的对比",
+  "keywords": [
+    "Vite"
+  ],
+  "articleBody": "欢迎各位加入虾皮，15天带薪年假以及业内顶级的薪酬，每个人都可以参与做技术项目，不需要永远做一颗螺丝钉，你是否心动了呢？快联系我内推，加入亚洲市值第三的公司吧！\n春节期间，尤雨溪一连串的动作宣布了vite 2.0正式发布，那么赶紧来看看这个被尤雨溪号称为下一代的前端构建工具和现在的构建工具到底有哪里不一样？\nvite官方介绍地址: vitejs.dev/guide/why.h…\n首先我们要知道，vite为何而诞生？\n为什么需要打包工具？ 在前端工程化的今天，前端的技术栈越来越丰富，配套的工具也越来越多，为了提升前端的开发效率各种各样框架是层出不穷，\n但是，随着前端项目越来越大，造成了项目依赖越来越多，而这些依赖又会有着自己的依赖，这就造成了很大的一棵依赖树，打开一个项目的node_modules目录看看，随随便便就有上百个文件夹。加上之前JavaScript 一直没有模块（module）体系，社区为此制定了一些模块加载方法，但是不同的依赖项目使用不同的加载方法。而浏览器并不支持这些加载方法，因此我们的js代码只能打包后才能在浏览器运行，因此之前的前端开发一直需要打包工具。\n打包工具帮助我们实现了前端工程化，但是随着依赖越来越多，我们打包构建的速度越来越慢，并且开发中如果改动代码，热更新时还可以丢失当前正在进行的工作，vite就是为了解决这些问题而诞生的。\n毫无疑问，vite最诱人的特性有以下两点：\n极快的冷启动速度 极快的热更新速度 我们知道，es6中加入了模块这个特性，为的就是能有一个统一的文件加载标准，让浏览器能够根据这个标准去加载我们的代码，这样就可以提升前端开发的效率。\n为何vite在冷启动和热更新性能上面可以比现代的构建工具更优秀？\n冷启动 比如webpack，在我们往命令行中输入npm run命令把项目启动起来的时候，webpack需要把我们的依赖读出来，打包成一个一个浏览器可以识别的js文件，打包结束后，我们的服务器才真正可用。但是依赖是树状的，我们知道树的层级越深，遍历的开销就越大，这是造成webpack在热更新和冷启动上效率不高的主要原因。\n我们来看看vite官网的图，webpack需要根据我们提供的文件入口去搜集依赖(由于依赖树太深，因此webpack做了很多工作希望能实现按需加载)，然后打包输出浏览器可以识别的文件，打包结束后我们的前端服务器才真正开始工作\n根据vite官网的图，vite是通过接受浏览器的url，来识别所需的哪些依赖，由于vite是针对es module(下文统称esm)的，es module是可以直接被浏览器识别的，因此输入命令后，项目不需要打包就可用，而且可以根据url所需的文件去返回js代码，做到了真正的按需加载。而对于非esm标准的代码，vite则是转化成esm标准的代码。 由于webpack是把js代码打包好，当收到请求就直接返回跟浏览器(往往一个请求就可以拿到全部需要的js代码给浏览器执行，代码太多的时候则会拆分成几个文件)，而vite则是收到请求之后才去找代码，而依赖很多，可能会需要浏览器加载很多的js文件，这就可能要发很多个请求才能拿到全部的js代码，这会不会造成网络的波动？有木有可能造成页面加载的时间过长？\nvite针对这种情况,在收到请求时做了一个叫pre-bundle的优化，也就是\n把非esm的js代码转换成esm代码 把一个依赖打成一个一个js文件返回给前端(而不是每个文件独立返回，比如lodash-es这个依赖有600多个内部模块，最终只会返回lodash-es这一个文件，里面包含了全部的内部模块)，避免网络波动，过度占用网络端口(这里会把打包的代码放在node_modules/.vite/下) 在请求js代码时加入了缓存信息在http请求的头部，实现浏览器缓存 对于monorepo，vite会把依赖的项目也一起通过esm的方式引入进来 热更新 热更新时，webpack由于是树状的依赖，因此其中的每一个节点改变，其祖先节点都需要重新编译加载(其实在应用中感觉开销比想象中更大)。并且由于热更新导致页面重新加载，页面上原本的状态也会丢失。（具体的原理还需要深入学习一下）\n而vite由于基于esm，一个节点改变，大部分情况下那就只要重新请求这个节点就好了，我们知道算法中O(1)和O(n)区别还是很大的。并且vite热更新的时候，会在请求头中加入缓存的信息，服务器对于没有修改的文件返回304，极大程度的避免了不必要的重新加载\nvite的其他能力 typescript Vite仅执行.t 文件的转译工作，并不执行任何类型检查(请确保ts错误都已经处理完)。Vite 使用 esbuild 将 TypeScript 转译到 JavaScript，约是 tsc 速度的 20~30 倍\nssr/ssg vite的官网很明确的说vite对ssr(服务端渲染)和ssg(静态页面生成)的特性还不稳定，而且由于笔者对这两块都不怎么了解，因此暂不介绍\nsass/less vite支持css预处理器如less和sass，如果在css文件的后缀名中加入.module，vite会把css文件识别成模块，于是可以像使用对象由于使用css。\njs\n代码解读\n复制代码\n./index.js import style from './style.module.scss'; ./style.module.scss .home__title { color: red; }\n预构建 这里主要是两个目的\n性能：很多依赖，比如lodash里面有600+个js文件，如果一个一个文件请求，会产生http的开销(比如不必要的http头)，所以预构建的时候会合成一个请求。 2.转译cjs和UMD规范的代码。 文件缓存 为了优化开发时的性能，vite做了两个缓存。\n在预构建的时候，把预构建的产物存在本地文件系统，这样即使关掉电脑，下次重启也不需要重新预构建，节省了冷启动的时间。\n在浏览器请求js文件的时候，在请求头中加上缓存信息，只要js文件没有被改动，浏览器就无须重新请求文件，节省网络请求的时间。\nvite的生产构建 vite目前提供的生产构建方案是通过rollup来打包发布，也就是说，现在vite的优势只能发挥在开发的时候，vite不认为基于esm的构建方式适合在生产上使用。\nvite官网指出，esm应用到生产上个问题，那就是http请求开销问题。一个项目涉及的js文件很容易就几百上千个，用esm逐个请求的方式会带来不必要的开销。\n那么为什么不用esbuild来打生产的包？（esbuild是一个基于esm的打包根据，速度比webpack快）\nesbuild主要是处理js和ts文件的，在css处理方面存在问题，而且esbuild在代码分割方面也不如rollup，所以打包工作还是让更成熟的rollup来承担。\nvite对比snowpack snowpack是早于vite的一款基于es build的构建工具，vite有有一些设计是参考了snowpack的。但是青出于蓝而胜于蓝的vite有以下的优势:\n支持多出口输出，换言之vite可以同时打包输出多个文件，这在做多入口页面应用时非常有意义 可以打包成库的模式(毕竟不是所有的工程都是为了输出html，比如vue只是为了输出vuejs) 自动分割css代码 异步块加载优化 对旧浏览器的兼容 其中，vite的生产构建是基于rollup封装好了的，而snowpack则可以用户自己决定webpack、rollup还是其他构建工具，感觉尤玉溪是真的钟爱rollup，因为vue3也是用的这个，有机会需要学习一下。\n最后说一下自己的看法：vite和snowpack在我看来，区别真不算大。但是使用vite意味着现在webpack打包的那一套配置都得改，甚至可能要修改打包的流水线，某种程度上提高了使用vite的门槛，有可能会阻塞vite的推广。毕竟一项技术能否普及，首先要看市场的需要，其次是上车的门槛和社区生态。但是vite有一个天然的优势就是尤雨溪这个名字，可以让vite获得更高的曝光度，吸引更多人来关注，但是实际应用还是需要尤雨溪团队再推动一下才行。\n",
+  "wordCount" : "90",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2021-03-07T00:00:00Z",
+  "dateModified": "2021-03-07T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "OJAccepted"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%82%A8%E5%A4%87--vite/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      前端技术储备--vite
+    </h1>
+    <div class="post-description">
+      vite作为2021年前端不可以忽视的新技术，主要从以下几个方面介绍为什么需要vite？vite的优势：热更新和冷启动vite的一些特性介绍vite与snowpack的对比
+    </div>
+    <div class="post-meta"><span title='2021-03-07 00:00:00 +0000 UTC'>三月 7, 2021</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;OJAccepted&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e6%89%93%e5%8c%85%e5%b7%a5%e5%85%b7" aria-label="为什么需要打包工具？">为什么需要打包工具？</a></li>
+                <li>
+                    <a href="#%e5%86%b7%e5%90%af%e5%8a%a8" aria-label="冷启动">冷启动</a></li>
+                <li>
+                    <a href="#%e7%83%ad%e6%9b%b4%e6%96%b0" aria-label="热更新">热更新</a></li>
+                <li>
+                    <a href="#vite%e7%9a%84%e5%85%b6%e4%bb%96%e8%83%bd%e5%8a%9b" aria-label="vite的其他能力">vite的其他能力</a><ul>
+                        
+                <li>
+                    <a href="#typescript" aria-label="typescript">typescript</a></li>
+                <li>
+                    <a href="#ssrssg" aria-label="ssr/ssg">ssr/ssg</a></li>
+                <li>
+                    <a href="#sassless" aria-label="sass/less">sass/less</a></li>
+                <li>
+                    <a href="#%e9%a2%84%e6%9e%84%e5%bb%ba" aria-label="预构建">预构建</a></li>
+                <li>
+                    <a href="#%e6%96%87%e4%bb%b6%e7%bc%93%e5%ad%98" aria-label="文件缓存">文件缓存</a></li></ul>
+                </li>
+                <li>
+                    <a href="#vite%e7%9a%84%e7%94%9f%e4%ba%a7%e6%9e%84%e5%bb%ba" aria-label="vite的生产构建">vite的生产构建</a></li>
+                <li>
+                    <a href="#vite%e5%af%b9%e6%af%94snowpack" aria-label="vite对比snowpack">vite对比snowpack</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>欢迎各位加入虾皮，15天带薪年假以及业内顶级的薪酬，每个人都可以参与做技术项目，不需要永远做一颗螺丝钉，你是否心动了呢？快联系我内推，加入亚洲市值第三的公司吧！</strong></p>
+<p>春节期间，尤雨溪一连串的动作宣布了vite 2.0正式发布，那么赶紧来看看这个被尤雨溪号称为下一代的前端构建工具和现在的构建工具到底有哪里不一样？</p>
+<p>vite官方介绍地址: <a href="https://link.juejin.cn?target=https%3A%2F%2Fvitejs.dev%2Fguide%2Fwhy.html%23slow-server-start" title="https://vitejs.dev/guide/why.html#slow-server-start">vitejs.dev/guide/why.h…</a></p>
+<p>首先我们要知道，vite为何而诞生？</p>
+<h2 id="为什么需要打包工具">为什么需要打包工具？<a hidden class="anchor" aria-hidden="true" href="#为什么需要打包工具">#</a></h2>
+<p>在前端工程化的今天，前端的技术栈越来越丰富，配套的工具也越来越多，为了提升前端的开发效率各种各样框架是层出不穷，</p>
+<p>但是，随着前端项目越来越大，造成了项目依赖越来越多，而这些依赖又会有着自己的依赖，这就造成了很大的一棵依赖树，打开一个项目的node_modules目录看看，随随便便就有上百个文件夹。加上之前JavaScript 一直没有模块（module）体系，社区为此制定了一些模块加载方法，但是不同的依赖项目使用不同的加载方法。而浏览器并不支持这些加载方法，因此我们的js代码只能打包后才能在浏览器运行，因此之前的前端开发一直需要打包工具。</p>
+<p>打包工具帮助我们实现了前端工程化，但是随着依赖越来越多，我们打包构建的速度越来越慢，并且开发中如果改动代码，热更新时还可以丢失当前正在进行的工作，vite就是为了解决这些问题而诞生的。</p>
+<p>毫无疑问，vite最诱人的特性有以下两点：</p>
+<ul>
+<li>极快的冷启动速度</li>
+<li>极快的热更新速度</li>
+</ul>
+<p>我们知道，es6中加入了模块这个特性，为的就是能有一个统一的文件加载标准，让浏览器能够根据这个标准去加载我们的代码，这样就可以提升前端开发的效率。</p>
+<p>为何vite在冷启动和热更新性能上面可以比现代的构建工具更优秀？</p>
+<h2 id="冷启动">冷启动<a hidden class="anchor" aria-hidden="true" href="#冷启动">#</a></h2>
+<p>比如webpack，在我们往命令行中输入npm run命令把项目启动起来的时候，webpack需要把我们的依赖读出来，打包成一个一个浏览器可以识别的js文件，打包结束后，我们的服务器才真正可用。但是依赖是树状的，我们知道树的层级越深，遍历的开销就越大，这是造成webpack在热更新和冷启动上效率不高的主要原因。</p>
+<p>我们来看看vite官网的图，webpack需要根据我们提供的文件入口去搜集依赖(由于依赖树太深，因此webpack做了很多工作希望能实现按需加载)，然后打包输出浏览器可以识别的文件，打包结束后我们的前端服务器才真正开始工作</p>
+<p><img loading="lazy" src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7da53ccd112e4676a2c7db89afb40211~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>根据vite官网的图，vite是通过接受浏览器的url，来识别所需的哪些依赖，由于vite是针对es module(下文统称esm)的，es module是可以直接被浏览器识别的，因此输入命令后，项目不需要打包就可用，而且可以根据url所需的文件去返回js代码，做到了真正的按需加载。而对于非esm标准的代码，vite则是转化成esm标准的代码。 <img loading="lazy" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d3bfc28338f14f2ab6a25ba0f33c856c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" alt=""  />
+</p>
+<p>由于webpack是把js代码打包好，当收到请求就直接返回跟浏览器(往往一个请求就可以拿到全部需要的js代码给浏览器执行，代码太多的时候则会拆分成几个文件)，而vite则是收到请求之后才去找代码，而依赖很多，可能会需要浏览器加载很多的js文件，这就可能要发很多个请求才能拿到全部的js代码，这会不会造成网络的波动？有木有可能造成页面加载的时间过长？</p>
+<p>vite针对这种情况,在收到请求时做了一个叫pre-bundle的优化，也就是</p>
+<ul>
+<li>把非esm的js代码转换成esm代码</li>
+<li>把一个依赖打成一个一个js文件返回给前端(而不是每个文件独立返回，比如lodash-es这个依赖有600多个内部模块，最终只会返回lodash-es这一个文件，里面包含了全部的内部模块)，避免网络波动，过度占用网络端口(这里会把打包的代码放在node_modules/.vite/下)</li>
+<li>在请求js代码时加入了缓存信息在http请求的头部，实现浏览器缓存</li>
+<li>对于monorepo，vite会把依赖的项目也一起通过esm的方式引入进来</li>
+</ul>
+<h2 id="热更新">热更新<a hidden class="anchor" aria-hidden="true" href="#热更新">#</a></h2>
+<p>热更新时，webpack由于是树状的依赖，因此其中的每一个节点改变，其祖先节点都需要重新编译加载(其实在应用中感觉开销比想象中更大)。并且由于热更新导致页面重新加载，页面上原本的状态也会丢失。（具体的原理还需要深入学习一下）</p>
+<p>而vite由于基于esm，一个节点改变，大部分情况下那就只要重新请求这个节点就好了，我们知道算法中O(1)和O(n)区别还是很大的。并且vite热更新的时候，会在请求头中加入缓存的信息，服务器对于没有修改的文件返回304，极大程度的避免了不必要的重新加载</p>
+<h2 id="vite的其他能力">vite的其他能力<a hidden class="anchor" aria-hidden="true" href="#vite的其他能力">#</a></h2>
+<h3 id="typescript">typescript<a hidden class="anchor" aria-hidden="true" href="#typescript">#</a></h3>
+<p>Vite仅执行.t 文件的转译工作，并不执行任何类型检查(请确保ts错误都已经处理完)。Vite 使用 esbuild 将 TypeScript 转译到 JavaScript，约是 tsc 速度的 20~30 倍</p>
+<h3 id="ssrssg">ssr/ssg<a hidden class="anchor" aria-hidden="true" href="#ssrssg">#</a></h3>
+<p>vite的官网很明确的说vite对ssr(服务端渲染)和ssg(静态页面生成)的特性还不稳定，而且由于笔者对这两块都不怎么了解，因此暂不介绍</p>
+<h3 id="sassless">sass/less<a hidden class="anchor" aria-hidden="true" href="#sassless">#</a></h3>
+<p>vite支持css预处理器如less和sass，如果在css文件的后缀名中加入<code>.module</code>，vite会把css文件识别成模块，于是可以像使用对象由于使用css。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>./index.js import style from './style.module.scss'; &lt;div className={style['home__title']} /&gt; ./style.module.scss .home__title {     color: red; }</code></p>
+<h3 id="预构建">预构建<a hidden class="anchor" aria-hidden="true" href="#预构建">#</a></h3>
+<p>这里主要是两个目的</p>
+<ol>
+<li>性能：很多依赖，比如lodash里面有600+个js文件，如果一个一个文件请求，会产生http的开销(比如不必要的http头)，所以预构建的时候会合成一个请求。 2.转译cjs和UMD规范的代码。</li>
+</ol>
+<h3 id="文件缓存">文件缓存<a hidden class="anchor" aria-hidden="true" href="#文件缓存">#</a></h3>
+<p>为了优化开发时的性能，vite做了两个缓存。</p>
+<p>在预构建的时候，把预构建的产物存在本地文件系统，这样即使关掉电脑，下次重启也不需要重新预构建，节省了冷启动的时间。</p>
+<p>在浏览器请求js文件的时候，在请求头中加上缓存信息，只要js文件没有被改动，浏览器就无须重新请求文件，节省网络请求的时间。</p>
+<h2 id="vite的生产构建">vite的生产构建<a hidden class="anchor" aria-hidden="true" href="#vite的生产构建">#</a></h2>
+<p>vite目前提供的生产构建方案是通过rollup来打包发布，也就是说，现在vite的优势只能发挥在开发的时候，vite不认为基于esm的构建方式适合在生产上使用。</p>
+<p>vite官网指出，esm应用到生产上个问题，那就是http请求开销问题。一个项目涉及的js文件很容易就几百上千个，用esm逐个请求的方式会带来不必要的开销。</p>
+<p>那么为什么不用esbuild来打生产的包？（<a href="https://link.juejin.cn?target=https%3A%2F%2Fesbuild.github.io%2F" title="https://esbuild.github.io/">esbuild</a>是一个基于esm的打包根据，速度比webpack快）</p>
+<p>esbuild主要是处理js和ts文件的，在css处理方面存在问题，而且esbuild在代码分割方面也不如rollup，所以打包工作还是让更成熟的rollup来承担。</p>
+<h2 id="vite对比snowpack">vite对比snowpack<a hidden class="anchor" aria-hidden="true" href="#vite对比snowpack">#</a></h2>
+<p>snowpack是早于vite的一款基于es build的构建工具，vite有有一些设计是参考了snowpack的。但是青出于蓝而胜于蓝的vite有以下的优势:</p>
+<ul>
+<li>支持多出口输出，换言之vite可以同时打包输出多个文件，这在做多入口页面应用时非常有意义</li>
+<li>可以打包成库的模式(毕竟不是所有的工程都是为了输出html，比如vue只是为了输出vuejs)</li>
+<li>自动分割css代码</li>
+<li>异步块加载优化</li>
+<li>对旧浏览器的兼容</li>
+</ul>
+<p>其中，vite的生产构建是基于rollup封装好了的，而snowpack则可以用户自己决定webpack、rollup还是其他构建工具，感觉尤玉溪是真的钟爱rollup，因为vue3也是用的这个，有机会需要学习一下。</p>
+<p>最后说一下自己的看法：vite和snowpack在我看来，区别真不算大。但是使用vite意味着现在webpack打包的那一套配置都得改，甚至可能要修改打包的流水线，某种程度上提高了使用vite的门槛，有可能会阻塞vite的推广。毕竟一项技术能否普及，首先要看市场的需要，其次是上车的门槛和社区生态。但是vite有一个天然的优势就是尤雨溪这个名字，可以让vite获得更高的曝光度，吸引更多人来关注，但是实际应用还是需要尤雨溪团队再推动一下才行。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/vite/">Vite</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/vite%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%8F%91%E5%B1%95%E7%8A%B6%E5%86%B5/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Vite的介绍和发展状况</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E4%BB%8Eislandsarchitecture%E7%9C%8B%E5%89%8D%E7%AB%AF%E6%9C%89%E5%A4%9A%E5%8D%B7/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>从IslandsArchitecture看前端有多卷</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端技术储备--vite on x"
+            href="https://x.com/intent/tweet/?text=%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f&amp;hashtags=Vite">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端技术储备--vite on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f&amp;title=%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite&amp;summary=%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端技术储备--vite on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f&title=%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端技术储备--vite on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端技术储备--vite on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端技术储备--vite on telegram"
+            href="https://telegram.me/share/url?text=%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 前端技术储备--vite on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%89%8d%e7%ab%af%e6%8a%80%e6%9c%af%e5%82%a8%e5%a4%87--vite&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E5%2589%258D%25E7%25AB%25AF%25E6%258A%2580%25E6%259C%25AF%25E5%2582%25A8%25E5%25A4%2587--vite%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

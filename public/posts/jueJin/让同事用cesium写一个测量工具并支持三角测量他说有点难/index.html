@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 | PaperMod</title>
+<meta name="keywords" content="cesium, 前端">
+<meta name="description" content="前言最近在开发智慧城市的项目，产品想让同事基于Cesium开发一个测量工具，需要支持长度测量、面积测量以及三角测量，但同事挠了挠头，说做这个有点费劲，还反问了产品：做这功能有啥意义？产品经理：测量">
+<meta name="author" content="攻城师不浪">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/%E8%AE%A9%E5%90%8C%E4%BA%8B%E7%94%A8cesium%E5%86%99%E4%B8%80%E4%B8%AA%E6%B5%8B%E9%87%8F%E5%B7%A5%E5%85%B7%E5%B9%B6%E6%94%AF%E6%8C%81%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F%E4%BB%96%E8%AF%B4%E6%9C%89%E7%82%B9%E9%9A%BE/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/%E8%AE%A9%E5%90%8C%E4%BA%8B%E7%94%A8cesium%E5%86%99%E4%B8%80%E4%B8%AA%E6%B5%8B%E9%87%8F%E5%B7%A5%E5%85%B7%E5%B9%B6%E6%94%AF%E6%8C%81%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F%E4%BB%96%E8%AF%B4%E6%9C%89%E7%82%B9%E9%9A%BE/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。" />
+<meta property="og:description" content="前言最近在开发智慧城市的项目，产品想让同事基于Cesium开发一个测量工具，需要支持长度测量、面积测量以及三角测量，但同事挠了挠头，说做这个有点费劲，还反问了产品：做这功能有啥意义？产品经理：测量" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/%E8%AE%A9%E5%90%8C%E4%BA%8B%E7%94%A8cesium%E5%86%99%E4%B8%80%E4%B8%AA%E6%B5%8B%E9%87%8F%E5%B7%A5%E5%85%B7%E5%B9%B6%E6%94%AF%E6%8C%81%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F%E4%BB%96%E8%AF%B4%E6%9C%89%E7%82%B9%E9%9A%BE/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-14T00:00:00+00:00" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content="让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。"/>
+<meta name="twitter:description" content="前言最近在开发智慧城市的项目，产品想让同事基于Cesium开发一个测量工具，需要支持长度测量、面积测量以及三角测量，但同事挠了挠头，说做这个有点费劲，还反问了产品：做这功能有啥意义？产品经理：测量"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。",
+      "item": "http://localhost:1313/posts/juejin/%E8%AE%A9%E5%90%8C%E4%BA%8B%E7%94%A8cesium%E5%86%99%E4%B8%80%E4%B8%AA%E6%B5%8B%E9%87%8F%E5%B7%A5%E5%85%B7%E5%B9%B6%E6%94%AF%E6%8C%81%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F%E4%BB%96%E8%AF%B4%E6%9C%89%E7%82%B9%E9%9A%BE/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。",
+  "name": "让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。",
+  "description": "前言最近在开发智慧城市的项目，产品想让同事基于Cesium开发一个测量工具，需要支持长度测量、面积测量以及三角测量，但同事挠了挠头，说做这个有点费劲，还反问了产品：做这功能有啥意义？产品经理：测量",
+  "keywords": [
+    "cesium", "前端"
+  ],
+  "articleBody": " 大家好，我是日拱一卒的攻城师不浪，致力于技术与艺术的融合。这是2024年输出的第39/100篇文章。\n可视化\u0026Webgis交流群+V：brown_7778（备注来意）\n前言 最近在开发智慧城市的项目，产品想让同事基于Cesium开发一个测量工具，需要支持长度测量、面积测量以及三角测量，但同事挠了挠头，说做这个有点费劲，还反问了产品：做这功能有啥意义？\n产品经理：测量工具在智慧城市中发挥了重要的作用，通过对城市道路，地形，建筑物，场地等的精确测量，确保施工规划能够与现实场景精准吻合，节省人力以及施工成本。\n对桥梁、隧道、地铁、管网等城市基础设施进行结构健康监测，安装传感器，实时监测结构体震动以及结构体偏移量等数据，确保设施安全运行并能够提前发现问题，防患于未然。\n开发同事听完，觉得还蛮有道理，看向我：浪浪，如何应对？\n我：呐，拿走直接抄！下班请吃铜锅涮肉！\n三角测量 先来了解下三角测量：是一种基于三角形几何原理的测量方法，用于确定未知点的位置。它通过已知基线（即两个已知点之间的距离）和从这两个已知点测量的角度，计算出目标点的精确位置。\n例如在建筑施工中，工程师使用三角测量法来测量楼体高度、桥梁等结构的位置和角度，确保建筑的精准施工。\n代码解析 接下来看下这个MeasureTool类，主要包含以下功能：\n坐标转换：整理了地理坐标(WGS84)与笛卡尔坐标(Cartesian)之间的转换功能。 拾取功能：通过屏幕坐标拾取场景中的三维位置，并判断该位置是位于模型上、地形上还是椭球体表面。 距离测量：绘制线段，并在场景中显示起点和终点之间的距离。 面积测量：通过给定的一组坐标，计算它们组成的多边形面积。 三角测量：绘制一个三角形来测量水平距离、直线距离和高度差。 坐标转换功能 transformWGS84ToCartesian: 将WGS84坐标（经度、纬度、高度）转换为Cesium中的三维笛卡尔坐标。\ntransformCartesianToWGS84: 将Cesium的三维笛卡尔坐标转换为WGS84坐标。\n核心代码：\njs\n代码解读\n复制代码\ntransformWGS84ToCartesian(position, alt) { return position ? Cesium.Cartesian3.fromDegrees( position.lng || position.lon, position.lat, (position.alt = alt || position.alt), Cesium.Ellipsoid.WGS84 ) : Cesium.Cartesian3.ZERO; } transformCartesianToWGS84(cartesian) { var ellipsoid = Cesium.Ellipsoid.WGS84; var cartographic = ellipsoid.cartesianToCartographic(cartesian); return { lng: Cesium.Math.toDegrees(cartographic.longitude), lat: Cesium.Math.toDegrees(cartographic.latitude), alt: cartographic.height, }; }\nCesium的Cartesian3.fromDegrees和Ellipsoid.WGS84.cartesianToCartographic方法分别用于实现经纬度与笛卡尔坐标系的相互转换。\n拾取功能 拾取功能允许通过屏幕像素坐标来获取3D场景中的位置。主要依赖scene.pickPosition和scene.globe.pick来实现拾取。\n核心代码：\njs\n代码解读\n复制代码\ngetCatesian3FromPX(px) { var picks = this._viewer.scene.drillPick(px); var cartesian = this._viewer.scene.pickPosition(px); if (!cartesian) { var ray = this._viewer.scene.camera.getPickRay(px); cartesian = this._viewer.scene.globe.pick(ray, this._viewer.scene); } return cartesian; }\n这里首先尝试从3D模型或地形上拾取位置，如果未能拾取到模型或地形上的点，则尝试通过射线投射到椭球体表面。\n距离测量 通过拾取点并记录每个点的坐标，计算相邻两个点的距离，并显示在Cesium场景中。通过ScreenSpaceEventHandler来捕获鼠标点击和移动事件。\n核心代码：\njs\n代码解读\n复制代码\ndrawLineMeasureGraphics(options = {}) { var positions = []; var _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas); _handlers.setInputAction(function (movement) { var cartesian = this.getCatesian3FromPX(movement.position); positions.push(cartesian); }, Cesium.ScreenSpaceEventType.LEFT_CLICK); _handlers.setInputAction(function (movement) { var cartesian = this.getCatesian3FromPX(movement.endPosition); positions.pop(); positions.push(cartesian); }, Cesium.ScreenSpaceEventType.MOUSE_MOVE); _handlers.setInputAction(function () { _handlers.destroy(); }, Cesium.ScreenSpaceEventType.RIGHT_CLICK); }\n测距的基本思想是通过鼠标点击获取多个点的坐标，然后计算每两个相邻点的距离。\n面积测量 面积测量通过计算多个点围成的多边形的面积，基于Cesium的PolygonHierarchy实现多边形绘制。\n核心代码：\njs\n代码解读\n复制代码\ngetPositionsArea(positions) { let ellipsoid = Cesium.Ellipsoid.WGS84; let area = 0; positions.push(positions[0]); // 闭合多边形 for (let i = 1; i \u003c positions.length; i++) { let p1 = ellipsoid.cartographicToCartesian(this.transformWGS84ToCartographic(positions[i - 1])); let p2 = ellipsoid.cartographicToCartesian(this.transformWGS84ToCartographic(positions[i])); area += p1.x * p2.y - p2.x * p1.y; } return Math.abs(area) / 2.0; }\n这里通过一个简单的多边形面积公式（叉乘）来计算笛卡尔坐标下的面积。\n三角测量 三角测量通过拾取三个点，计算它们之间的直线距离、水平距离以及高度差，构建一个三角形并在场景中显示这些信息。\n核心代码：\njs\n代码解读\n复制代码\ndrawTrianglesMeasureGraphics(options = {}) { var _positions = []; var _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas); _handler.setInputAction(function (movement) { var position = this.getCatesian3FromPX(movement.position); _positions.push(position); if (_positions.length === 3) _handler.destroy(); }, Cesium.ScreenSpaceEventType.LEFT_CLICK); }\n该方法核心思想是获取三个点的坐标，通过高度差来构建水平线和垂线，然后显示相应的距离和高度差信息。\n使用 封装好，之后，使用起来就非常简单了。\njs\n代码解读\n复制代码\nimport MeasureTool from \"@/utils/cesiumCtrl/measure.js\"; const measure = new MeasureTool(viewer); ** * 测距 */ const onLineMeasure = () =\u003e { measure.drawLineMeasureGraphics({ clampToGround: true, callback: (e) =\u003e { console.log(\"----\", e); }, }); }; /** * 测面积 */ const onAreaMeasure = () =\u003e { measure.drawAreaMeasureGraphics({ clampToGround: true, callback: () =\u003e {}, }); }; /** * 三角量测 */ const onTrianglesMeasure = () =\u003e { measure.drawTrianglesMeasureGraphics({ callback: () =\u003e {}, }); };\n最后 这些测量工具都是依赖于Cesium提供的坐标转换、拾取以及事件处理机制，核心思路是通过ScreenSpaceEventHandler捕捉鼠标事件，获取坐标点，并通过几何算法计算距离、面积和高度。\n【完整源码地址】：github.com/tingyuxuan2…\n如果认为有帮助，希望可以给我们一个免费的star，激励我们持续开源更多代码。\n如果想系统学习Cesium，可以看下作者的Cesium系列教程《Cesium从入门到实战》，将Cesium的知识点进行串联，让不了解Cesium的小伙伴拥有一个完整的学习路线，学完后直接上手做项目，+作者：brown_7778（备注来意）了解课程细节。\n另外有需要进可视化\u0026Webgis交流群可以加我：brown_7778（备注来意），也欢迎数字孪生可视化领域的交流合作。\n",
+  "wordCount" : "318",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "2024-10-14T00:00:00Z",
+  "dateModified": "2024-10-14T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "攻城师不浪"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/%E8%AE%A9%E5%90%8C%E4%BA%8B%E7%94%A8cesium%E5%86%99%E4%B8%80%E4%B8%AA%E6%B5%8B%E9%87%8F%E5%B7%A5%E5%85%B7%E5%B9%B6%E6%94%AF%E6%8C%81%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F%E4%BB%96%E8%AF%B4%E6%9C%89%E7%82%B9%E9%9A%BE/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。
+    </h1>
+    <div class="post-description">
+      前言最近在开发智慧城市的项目，产品想让同事基于Cesium开发一个测量工具，需要支持长度测量、面积测量以及三角测量，但同事挠了挠头，说做这个有点费劲，还反问了产品：做这功能有啥意义？产品经理：测量
+    </div>
+    <div class="post-meta"><span title='2024-10-14 00:00:00 +0000 UTC'>十月 14, 2024</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;攻城师不浪&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82.md" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f" aria-label="三角测量">三角测量</a></li>
+                <li>
+                    <a href="#%e4%bb%a3%e7%a0%81%e8%a7%a3%e6%9e%90" aria-label="代码解析">代码解析</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9d%90%e6%a0%87%e8%bd%ac%e6%8d%a2%e5%8a%9f%e8%83%bd" aria-label="坐标转换功能">坐标转换功能</a></li>
+                <li>
+                    <a href="#%e6%8b%be%e5%8f%96%e5%8a%9f%e8%83%bd" aria-label="拾取功能">拾取功能</a></li>
+                <li>
+                    <a href="#%e8%b7%9d%e7%a6%bb%e6%b5%8b%e9%87%8f" aria-label="距离测量">距离测量</a></li>
+                <li>
+                    <a href="#%e9%9d%a2%e7%a7%af%e6%b5%8b%e9%87%8f" aria-label="面积测量">面积测量</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f-1" aria-label="三角测量">三角测量</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8" aria-label="使用">使用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%80%e5%90%8e" aria-label="最后">最后</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>大家好，我是日拱一卒的攻城师不浪，致力于技术与艺术的融合。这是2024年输出的第39/100篇文章。<br>
+可视化&amp;Webgis交流群+V：brown_7778（备注来意）</p>
+</blockquote>
+<h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<p>最近在开发智慧城市的项目，产品想让同事基于<code>Cesium</code>开发一个测量工具，需要支持<code>长度测量</code>、<code>面积测量</code>以及<code>三角测量</code>，但同事挠了挠头，说做这个有点费劲，还反问了产品：做这功能有啥意义？</p>
+<p>产品经理：测量工具在智慧城市中发挥了重要的作用，通过对城市道路，地形，建筑物，场地等的精确测量，确保施工规划能够与现实场景精准吻合，节省人力以及施工成本。</p>
+<p>对桥梁、隧道、地铁、管网等城市基础设施进行结构健康监测，安装传感器，实时监测结构体震动以及<code>结构体偏移量</code>等数据，确保设施安全运行并能够提前发现问题，防患于未然。</p>
+<p>开发同事听完，觉得还蛮有道理，看向我：浪浪，如何应对？</p>
+<p><strong>我：呐，拿走直接抄！下班请吃铜锅涮肉！</strong></p>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/eeeae6edb6f345f3bc323a3f727bebcd~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5pS75Z-O5biI5LiN5rWq:q75.awebp?rk3s=f64ab15b&amp;x-expires=1729474297&amp;x-signature=vfLLL9Owh6JhgqsJimVxDcZ0oBA%3D" alt=""  />
+</p>
+<h2 id="三角测量">三角测量<a hidden class="anchor" aria-hidden="true" href="#三角测量">#</a></h2>
+<p>先来了解下<code>三角测量</code>：是一种基于<code>三角形</code>几何原理的测量方法，用于确定未知点的位置。它通过已知基线（即两个已知点之间的距离）和从这两个已知点测量的<code>角</code>度，计算出目标点的精确位置。</p>
+<p>例如在建筑施工中，工程师使用三角测量法来测量楼体<code>高度</code>、桥梁等结构的<code>位置</code>和<code>角度</code>，确保建筑的精准施工。</p>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/265656ae451a42cfbaa8b83b6d74d6c9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5pS75Z-O5biI5LiN5rWq:q75.awebp?rk3s=f64ab15b&amp;x-expires=1729474297&amp;x-signature=SHjlcQnNkRtH6VK1mNiDpMNvn5g%3D" alt=""  />
+</p>
+<h2 id="代码解析">代码解析<a hidden class="anchor" aria-hidden="true" href="#代码解析">#</a></h2>
+<p>接下来看下这个<code>MeasureTool</code>类，主要包含以下功能：</p>
+<ol>
+<li><strong>坐标转换</strong>：整理了地理坐标(WGS84)与笛卡尔坐标(Cartesian)之间的转换功能。</li>
+<li><strong>拾取功能</strong>：通过屏幕坐标拾取场景中的三维位置，并判断该位置是位于模型上、地形上还是椭球体表面。</li>
+<li><strong>距离测量</strong>：绘制线段，并在场景中显示起点和终点之间的距离。</li>
+<li><strong>面积测量</strong>：通过给定的一组坐标，计算它们组成的多边形面积。</li>
+<li><strong>三角测量</strong>：绘制一个三角形来测量水平距离、直线距离和高度差。</li>
+</ol>
+<h3 id="坐标转换功能"><strong>坐标转换功能</strong><a hidden class="anchor" aria-hidden="true" href="#坐标转换功能">#</a></h3>
+<ul>
+<li>
+<p><code>transformWGS84ToCartesian</code>: 将WGS84坐标（经度、纬度、高度）转换为Cesium中的三维笛卡尔坐标。</p>
+</li>
+<li>
+<p><code>transformCartesianToWGS84</code>: 将Cesium的三维笛卡尔坐标转换为WGS84坐标。</p>
+</li>
+</ul>
+<p><strong>核心代码：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>transformWGS84ToCartesian(position, alt) {    return position      ? Cesium.Cartesian3.fromDegrees(          position.lng || position.lon,          position.lat,          (position.alt = alt || position.alt),          Cesium.Ellipsoid.WGS84        )      : Cesium.Cartesian3.ZERO;  } transformCartesianToWGS84(cartesian) {    var ellipsoid = Cesium.Ellipsoid.WGS84;    var cartographic = ellipsoid.cartesianToCartographic(cartesian);    return {      lng: Cesium.Math.toDegrees(cartographic.longitude),      lat: Cesium.Math.toDegrees(cartographic.latitude),      alt: cartographic.height,    };  }</code></p>
+<p>Cesium的<code>Cartesian3.fromDegrees</code>和<code>Ellipsoid.WGS84.cartesianToCartographic</code>方法分别用于实现经纬度与笛卡尔坐标系的相互转换。</p>
+<h3 id="拾取功能"><strong>拾取功能</strong><a hidden class="anchor" aria-hidden="true" href="#拾取功能">#</a></h3>
+<p>拾取功能允许通过屏幕像素坐标来获取3D场景中的位置。主要依赖<code>scene.pickPosition</code>和<code>scene.globe.pick</code>来实现拾取。</p>
+<p><strong>核心代码：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>getCatesian3FromPX(px) {    var picks = this._viewer.scene.drillPick(px);    var cartesian = this._viewer.scene.pickPosition(px);    if (!cartesian) {       var ray = this._viewer.scene.camera.getPickRay(px);       cartesian = this._viewer.scene.globe.pick(ray, this._viewer.scene);    }    return cartesian; }</code></p>
+<p>这里首先尝试从3D模型或地形上拾取位置，如果未能拾取到模型或地形上的点，则尝试通过射线投射到椭球体表面。</p>
+<h3 id="距离测量"><strong>距离测量</strong><a hidden class="anchor" aria-hidden="true" href="#距离测量">#</a></h3>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/9011c52f63a044be8c525ae863abd6d4~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5pS75Z-O5biI5LiN5rWq:q75.awebp?rk3s=f64ab15b&amp;x-expires=1729474297&amp;x-signature=2W97dtoPIPnUMDbjqhuVJH0r73M%3D" alt=""  />
+</p>
+<p>通过拾取点并记录每个点的坐标，计算相邻两个点的距离，并显示在Cesium场景中。通过<code>ScreenSpaceEventHandler</code>来捕获鼠标点击和移动事件。</p>
+<p><strong>核心代码：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>drawLineMeasureGraphics(options = {}) {    var positions = [];    var _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);    _handlers.setInputAction(function (movement) {      var cartesian = this.getCatesian3FromPX(movement.position);      positions.push(cartesian);    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);        _handlers.setInputAction(function (movement) {      var cartesian = this.getCatesian3FromPX(movement.endPosition);      positions.pop();      positions.push(cartesian);    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);    _handlers.setInputAction(function () {      _handlers.destroy();    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK); }</code></p>
+<p>测距的基本思想是通过鼠标点击获取多个点的坐标，然后计算每两个相邻点的距离。</p>
+<h3 id="面积测量"><strong>面积测量</strong><a hidden class="anchor" aria-hidden="true" href="#面积测量">#</a></h3>
+<p><img loading="lazy" src="https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/f22a19a7f11f43a5b99fce57b2080fea~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5pS75Z-O5biI5LiN5rWq:q75.awebp?rk3s=f64ab15b&amp;x-expires=1729474297&amp;x-signature=zxJQ9cCjWc3%2BFrMhhu6cRaVOC8c%3D" alt=""  />
+</p>
+<p>面积测量通过计算多个点围成的多边形的面积，基于Cesium的<code>PolygonHierarchy</code>实现多边形绘制。</p>
+<p><strong>核心代码：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>getPositionsArea(positions) {    let ellipsoid = Cesium.Ellipsoid.WGS84;    let area = 0;    positions.push(positions[0]); // 闭合多边形    for (let i = 1; i &lt; positions.length; i++) {       let p1 = ellipsoid.cartographicToCartesian(this.transformWGS84ToCartographic(positions[i - 1]));       let p2 = ellipsoid.cartographicToCartesian(this.transformWGS84ToCartographic(positions[i]));       area += p1.x * p2.y - p2.x * p1.y;    }    return Math.abs(area) / 2.0; }</code></p>
+<p>这里通过一个简单的多边形面积公式（叉乘）来计算笛卡尔坐标下的面积。</p>
+<h3 id="三角测量-1"><strong>三角测量</strong><a hidden class="anchor" aria-hidden="true" href="#三角测量-1">#</a></h3>
+<p>三角测量通过拾取三个点，计算它们之间的<code>直线距离</code>、<code>水平距离</code>以及<code>高度差</code>，构建一个三角形并在场景中显示这些信息。</p>
+<p><strong>核心代码：</strong></p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>drawTrianglesMeasureGraphics(options = {}) {    var _positions = [];    var _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);    _handler.setInputAction(function (movement) {       var position = this.getCatesian3FromPX(movement.position);       _positions.push(position);       if (_positions.length === 3) _handler.destroy();    }, Cesium.ScreenSpaceEventType.LEFT_CLICK); }</code></p>
+<p>该方法核心思想是获取三个点的坐标，通过高度差来构建水平线和垂线，然后显示相应的距离和高度差信息。</p>
+<h3 id="使用">使用<a hidden class="anchor" aria-hidden="true" href="#使用">#</a></h3>
+<p>封装好，之后，使用起来就非常简单了。</p>
+<p>js</p>
+<p>代码解读</p>
+<p>复制代码</p>
+<p><code>import MeasureTool from &quot;@/utils/cesiumCtrl/measure.js&quot;; const measure = new MeasureTool(viewer); **  * 测距  */ const onLineMeasure = () =&gt; {   measure.drawLineMeasureGraphics({     clampToGround: true,     callback: (e) =&gt; {       console.log(&quot;----&quot;, e);     },   }); }; /**  * 测面积  */ const onAreaMeasure = () =&gt; {   measure.drawAreaMeasureGraphics({     clampToGround: true,     callback: () =&gt; {},   }); }; /**  * 三角量测  */ const onTrianglesMeasure = () =&gt; {   measure.drawTrianglesMeasureGraphics({     callback: () =&gt; {},   }); };</code></p>
+<h2 id="最后">最后<a hidden class="anchor" aria-hidden="true" href="#最后">#</a></h2>
+<p>这些测量工具都是依赖于Cesium提供的坐标转换、拾取以及事件处理机制，核心思路是通过<code>ScreenSpaceEventHandler</code>捕捉鼠标事件，获取坐标点，并通过几何算法计算距离、面积和高度。</p>
+<p>【完整<code>源码</code>地址】：<strong><a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Ftingyuxuan2302%2Fcesium-vue3-vite" title="https://github.com/tingyuxuan2302/cesium-vue3-vite">github.com/tingyuxuan2…</a></strong></p>
+<p>如果认为有帮助，希望可以给我们一个<code>免费的star</code>，激励我们持续开源更多代码。</p>
+<blockquote>
+<p>如果想系统学习Cesium，可以看下作者的Cesium系列教程<code>《Cesium从入门到实战》</code>，将Cesium的知识点进行串联，让不了解Cesium的小伙伴拥有一个完整的学习路线，学完后直接上手做项目，+作者：brown_7778（备注来意）了解课程细节。</p>
+</blockquote>
+<blockquote>
+<p>另外有需要进<code>可视化&amp;Webgis交流群</code>可以加我：brown_7778（备注来意），也欢迎<code>数字孪生可视化领域</code>的交流合作。</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/cesium/">Cesium</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%89%8D%E7%AB%AF/">前端</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/juejin/%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86&#43;h5&#43;%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8F%88%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E8%BD%BB%E9%87%8F%E7%9A%84%E5%B0%8F%E5%95%86%E5%9F%8E/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>后台管理&#43;H5&#43;微信小程序！又一个开源轻量的小商城！</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/%E5%B0%A4%E9%9B%A8%E6%BA%AA%E6%88%90%E7%AB%8Bvoidzerorust%E8%A6%81%E4%B8%80%E7%BB%9Fjavascript%E5%B7%A5%E5%85%B7%E9%93%BE/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>尤雨溪成立VoidZero，Rust要一统JavaScript工具链？</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 on x"
+            href="https://x.com/intent/tweet/?text=%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f&amp;hashtags=cesium%2c%e5%89%8d%e7%ab%af">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f&amp;title=%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82&amp;summary=%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f&title=%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 on telegram"
+            href="https://telegram.me/share/url?text=%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 让同事用Cesium写一个测量工具并支持三角测量，他说有点难。。 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e8%ae%a9%e5%90%8c%e4%ba%8b%e7%94%a8Cesium%e5%86%99%e4%b8%80%e4%b8%aa%e6%b5%8b%e9%87%8f%e5%b7%a5%e5%85%b7%e5%b9%b6%e6%94%af%e6%8c%81%e4%b8%89%e8%a7%92%e6%b5%8b%e9%87%8f%ef%bc%8c%e4%bb%96%e8%af%b4%e6%9c%89%e7%82%b9%e9%9a%be%e3%80%82%e3%80%82&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2f%25E8%25AE%25A9%25E5%2590%258C%25E4%25BA%258B%25E7%2594%25A8cesium%25E5%2586%2599%25E4%25B8%2580%25E4%25B8%25AA%25E6%25B5%258B%25E9%2587%258F%25E5%25B7%25A5%25E5%2585%25B7%25E5%25B9%25B6%25E6%2594%25AF%25E6%258C%2581%25E4%25B8%2589%25E8%25A7%2592%25E6%25B5%258B%25E9%2587%258F%25E4%25BB%2596%25E8%25AF%25B4%25E6%259C%2589%25E7%2582%25B9%25E9%259A%25BE%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

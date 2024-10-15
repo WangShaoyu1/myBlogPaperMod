@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>PaperMod</title>
+<meta name="keywords" content="">
+<meta name="description" content="
+    
+        
+        
+        
+            本文作者是360奇舞团前端开发工程师 王文健">
+<meta name="author" content="Theme PaperMod">
+<link rel="canonical" href="http://localhost:1313/posts/juejin/compare/">
+<meta name="google-site-verification" content="XYZabc">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7b92bf4867c997b58ec50f63451b83777173d5bd5593376852abd85746d09d71.css" integrity="sha256-e5K/SGfJl7WOxQ9jRRuDd3Fz1b1VkzdoUqvYV0bQnXE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="apple-touch-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<link rel="mask-icon" href="http://localhost:1313/%3Clink%20/%20abs%20url%3E">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/juejin/compare/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:title" content="" />
+<meta property="og:description" content="
+    
+        
+        
+        
+            本文作者是360奇舞团前端开发工程师 王文健" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/juejin/compare/" />
+<meta property="og:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta property="article:section" content="posts" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="http://localhost:1313/images/papermod-cover.png" />
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="
+    
+        
+        
+        
+            本文作者是360奇舞团前端开发工程师 王文健"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "",
+      "item": "http://localhost:1313/posts/juejin/compare/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "name": "",
+  "description": "\r本文作者是360奇舞团前端开发工程师 王文健\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "\r本文作者是360奇舞团前端开发工程师 王文健\n前言\rHi，大家好！\n前段时间用Vue3搭建项目时看到同时推出的Vite，只当它是一个新打包工具或者vue-cli的升级版，仍然选择了用Webpack构建项目。最近看了尤雨溪在VueConf上的演讲视频：《Vue3\r生态进展和计划》，感觉它确实解决了现阶段前端工程化的一些痛点，也能体会到尤雨溪对Vite的重视和大力推广的决心，再加上Vue本身的庞大用户基数，Vite确实有可能成为下一代前端构建工具的突破口。\r本文将讨论下Vite出现的背景，解决的痛点，核心功能的实现，存在的意义和预期的未来。Vite本身并不复杂。中文官方文档非常清晰简洁，建议大家使用前仔细读下文档。\r大纲\r背景\r什么是Vite？\r基本用法\r实现原理\r源码分析\r优势与不足\r与传统构建工具对比\r兼容性\r未来\r背景\r这里的背景介绍会从与Vite紧密相关的两个概念的发展史说起，一个是JavaScript的模块化标准，另一个是前端构建工具。\r共存的模块化标准\r为什么JavaScript会有多种共存的模块化标准？因为js在设计之初并没有模块化的概念，随着前端业务复杂度不断提高，模块化越来越受到开发者的重视，社区开始涌现多种模块化解决方案，它们相互借鉴，也争议不断，形成多个派系，从CommonJS开始，到ES6正式推出ES\rModules规范结束，所有争论，终成历史，ES Modules也成为前端重要的基础设施。\nCommonJS：现主要用于Node.js（Node@13.2.0开始支持直接使用ES Module）\rAMD：require.js 依赖前置，市场存量不建议使用\rCMD：sea.js 就近执行，市场存量不建议使用\rES Module：ES语言规范，标准，趋势，未来\r对模块化发展史感兴趣的可以看下《前端模块化开发那点历史》@玉伯，而Vite的核心正是依靠浏览器对ES\rModule规范的实现。\n发展中的构建工具\r近些年前端工程化发展迅速，各种构建工具层出不穷，目前Webpack仍然占据统治地位，npm 每周下载量达到两千多万次。下面是我按\rnpm 发版时间线列出的开发者比较熟知的一些构建工具。\n当前工程化痛点\r现在常用的构建工具如Webpack，主要是通过抓取-编译-构建整个应用的代码（也就是常说的打包过程），生成一份编译、优化后能良好兼容各个浏览器的的生产环境代码。在开发环境流程也基本相同，需要先将整个应用构建打包后，再把打包后的代码交给dev\rserver（开发服务器）。\nWebpack等构建工具的诞生给前端开发带来了极大的便利，但随着前端业务的复杂化，js代码量呈指数增长，打包构建时间越来越久，dev\rserver（开发服务器）性能遇到瓶颈：\n缓慢的服务启动： 大型项目中dev server启动时间达到几十秒甚至几分钟。\n缓慢的HMR热更新： 即使采用了 HMR 模式，其热更新速度也会随着应用规模的增长而显著下降，已达到性能瓶颈，无多少优化空间。\r缓慢的开发环境，大大降低了开发者的幸福感，在以上背景下Vite应运而生。\n什么是Vite？\r基于esbuild与Rollup，依靠浏览器自身ESM编译功能， 实现极致开发体验的新一代构建工具！\n概念\r先介绍以下文中会经常提到的一些基础概念：\n依赖： 指开发不会变动的部分(npm包、UI组件库)，esbuild进行预构建。\r源码： 浏览器不能直接执行的非js代码(.jsx、.css、.vue等)，vite只在浏览器请求相关源码的时候进行转换，以提供ESM源码。\r开发环境\r利用浏览器原生的ES Module编译能力，省略费时的编译环节，直给浏览器开发环境源码，dev\rserver只提供轻量服务。\r浏览器执行ESM的import时，会向dev server发起该模块的ajax请求，服务器对源码做简单处理后返回给浏览器。\rVite中HMR是在原生 ESM 上执行的。当编辑一个文件时，Vite 只需要精确地使已编辑的模块失活，使得无论应用大小如何，HMR\r始终能保持快速更新。\r使用esbuild处理项目依赖，esbuild使用go编写，比一般node.js编写的编译器快几个数量级。\r生产环境\r集成Rollup打包生产环境代码，依赖其成熟稳定的生态与更简洁的插件机制。\r处理流程对比\rWebpack通过先将整个应用打包，再将打包后代码提供给dev server，开发者才能开始开发。\nVite直接将源码交给浏览器，实现dev server秒开，浏览器显示页面需要相关模块时，再向dev\rserver发起请求，服务器简单处理后，将该模块返回给浏览器，实现真正意义的按需加载。\r基本用法\r创建vite项目\rshell 代码解读复制代码$ npm create vite@latest\r选取模板\rVite 内置6种常用模板与对应的TS版本，可满足前端大部分开发场景，可以点击下列表格中模板直接在 StackBlitz 中在线试用，还有其他更多的 社区维护模板可以使用。\nJavaScript\rTypeScript\rvanilla\rvanilla-ts\rvue\rvue-ts\rreact\rreact-ts\rpreact\rpreact-ts\rlit\rlit-ts\rsvelte\rsvelte-ts\r启动\rjson 代码解读复制代码\r{\r\"scripts\": {\r\"dev\": \"vite\", // 启动开发服务器，别名：`vite dev`，`vite serve`\r\"build\": \"vite build\", // 为生产环境构建产物\r\"preview\": \"vite preview\" // 本地预览生产构建产物\r}\r}\r实现原理\rESbuild 编译\resbuild 使用go编写，cpu密集下更具性能优势，编译速度更快，以下摘自官网的构建速度对比：\n浏览器：“开始了吗？”\n服务器：“已经结束了。”\n开发者：“好快，好喜欢！！”\n依赖预构建\r模块化兼容： 如开头背景所写，现仍共存多种模块化标准代码，Vite在预构建阶段将依赖中各种其他模块化规范(CommonJS、UMD)转换\r成ESM，以提供给浏览器。\r性能优化：\rnpm包中大量的ESM代码，大量的import请求，会造成网络拥塞。Vite使用esbuild，将有大量内部模块的ESM关系转换成单个模块，以减少\rimport模块请求次数。\r按需加载\r服务器只在接受到import请求的时候，才会编译对应的文件，将ESM源码返回给浏览器，实现真正的按需加载。\r缓存\rHTTP缓存： 充分利用http缓存做优化，依赖（不会变动的代码）部分用max-age,immutable\r强缓存，源码部分用304协商缓存，提升页面打开速度。\r文件系统缓存： Vite在预构建阶段，将构建后的依赖缓存到node_modules/.vite\r，相关配置更改时，或手动控制时才会重新构建，以提升预构建速度。\r重写模块路径\r浏览器import只能引入相对/绝对路径，而开发代码经常使用npm包名直接引入node_module中的模块，需要做路径转换后交给浏览器。\res-module-lexer 扫描 import 语法\rmagic-string 重写模块的引入路径\rjs 代码解读复制代码// 开发代码\rimport { createApp } from 'vue'\r// 转换后\rimport { createApp } from '/node_modules/vue/dist/vue.js'\r源码分析\r与Webpack-dev-server类似Vite同样使用WebSocket与客户端建立连接，实现热更新，源码实现基本可分为两部分，源码位置在:\rvite/packages/vite/src/client client（用于客户端）\rvite/packages/vite/src/node server（用于开发服务器）\rclient 代码会在启动服务时注入到客户端，用于客户端对于WebSocket消息的处理（如更新页面某个模块、刷新页面）；server\r代码是服务端逻辑，用于处理代码的构建与页面模块的请求。\n简单看了下源码（vite@2.7.2），核心功能主要是以下几个方法（以下为源码截取，部分逻辑做了删减）：\n命令行启动服务npm run dev后，源码执行cli.ts，调用createServer方法，创建http服务，监听开发服务器端口。\rjs 代码解读复制代码// 源码位置 vite/packages/vite/src/node/cli.ts\rconst { createServer } = await import('./server')\rtry {\rconst server = await createServer({\rroot,\rbase: options.base,\r...\r})\rif (!server.httpServer) {\rthrow new Error('HTTP server not available')\r}\rawait server.listen()\r}\rcreateServer方法的执行做了很多工作，如整合配置项、创建http服务（早期通过koa创建）、创建WebSocket服务、创建源码的文件监听、插件执行、optimize优化等。下面注释中标出。\rjs 代码解读复制代码// 源码位置 vite/packages/vite/src/node/server/index.ts\rexport async function createServer(\rinlineConfig: InlineConfig = {}\r): Promise\u003cViteDevServer\u003e {\r// Vite 配置整合\rconst config = await resolveConfig(inlineConfig, 'serve', 'development')\rconst root = config.root\rconst serverConfig = config.server\r// 创建http服务\rconst httpServer = await resolveHttpServer(serverConfig, middlewares, httpsOptions)\r// 创建ws服务\rconst ws = createWebSocketServer(httpServer, config, httpsOptions)\r// 创建watcher，设置代码文件监听\rconst watcher = chokidar.watch(path.resolve(root), {\rignored: [\r'**/node_modules/**',\r'**/.git/**',\r...(Array.isArray(ignored) ? ignored : [ignored])\r],\r...watchOptions\r}) as FSWatcher\r// 创建server对象\rconst server: ViteDevServer = {\rconfig,\rmiddlewares,\rhttpServer,\rwatcher,\rws,\rmoduleGraph,\rlisten,\r...\r}\r// 文件监听变动，websocket向前端通信\rwatcher.on('change', async (file) =\u003e {\r...\rhandleHMRUpdate()\r})\r// 非常多的 middleware\rmiddlewares.use(...)\r// optimize\rconst runOptimize = async () =\u003e {...}\rreturn server\r}\r使用chokidar监听文件变化，绑定监听事件。\rjs 代码解读复制代码// 源码位置 vite/packages/vite/src/node/server/index.ts\rconst watcher = chokidar.watch(path.resolve(root), {\rignored: [\r'**/node_modules/**',\r'**/.git/**',\r...(Array.isArray(ignored) ? ignored : [ignored])\r],\rignoreInitial: true,\rignorePermissionErrors: true,\rdisableGlobbing: true,\r...watchOptions\r}) as FSWatcher\r通过 ws 来创建WebSocket服务，用于监听到文件变化时触发热更新，向客户端发送消息。\rjs 代码解读复制代码// 源码位置 vite/packages/vite/src/node/server/ws.ts\rexport function createWebSocketServer(...){\rlet wss: WebSocket\rconst hmr = isObject(config.server.hmr) \u0026\u0026 config.server.hmr\rconst wsServer = (hmr \u0026\u0026 hmr.server) || server\rif (wsServer) {\rwss = new WebSocket({ noServer: true })\rwsServer.on('upgrade', (req, socket, head) =\u003e {\r// 服务就绪\rif (req.headers['sec-websocket-protocol'] === HMR_HEADER) {\rwss.handleUpgrade(req, socket as Socket, head, (ws) =\u003e {\rwss.emit('connection', ws, req)\r})\r}\r})\r} else {\r...\r}\r// 服务准备就绪，就能在浏览器控制台看到熟悉的打印 [vite] connected.\rwss.on('connection', (socket) =\u003e {\rsocket.send(JSON.stringify({ type: 'connected' }))\r...\r})\r// 失败\rwss.on('error', (e: Error \u0026 { code: string }) =\u003e {\r...\r})\r// 返回ws对象\rreturn {\ron: wss.on.bind(wss),\roff: wss.off.bind(wss),\r// 向客户端发送信息\r// 多个客户端同时触发\rsend(payload: HMRPayload) {\rconst stringified = JSON.stringify(payload)\rwss.clients.forEach((client) =\u003e {\r// readyState 1 means the connection is open\rclient.send(stringified)\r})\r}\r}\r}\r在服务启动时会向浏览器注入代码，用于处理客户端接收到的WebSocket消息，如重新发起模块请求、刷新页面。\rjs 代码解读复制代码//源码位置 vite/packages/vite/src/client/client.ts\rasync function handleMessage(payload: HMRPayload) {\rswitch (payload.type) {\rcase 'connected':\rconsole.log(`[vite] connected.`)\rbreak\rcase 'update':\rnotifyListeners('vite:beforeUpdate', payload)\r...\rbreak\rcase 'custom': {\rnotifyListeners(payload.event as CustomEventName, payload.data)\r...\rbreak\r}\rcase 'full-reload':\rnotifyListeners('vite:beforeFullReload', payload)\r...\rbreak\rcase 'prune':\rnotifyListeners('vite:beforePrune', payload)\r...\rbreak\rcase 'error': {\rnotifyListeners('vite:error', payload)\r...\rbreak\r}\rdefault: {\rconst check: never = payload\rreturn check\r}\r}\r}\r优势\r快！快！非常快！！\r高度集成，开箱即用。\r基于ESM急速热更新，无需打包编译。\r基于esbuild的依赖预处理，比Webpack等node编写的编译器快几个数量级。\r兼容Rollup庞大的插件机制，插件开发更简洁。\r不与Vue绑定，支持React等其他框架，独立的构建工具。\r内置SSR支持。\r天然支持TS。\r不足\rVue仍为第一优先支持，量身定做的编译插件，对React的支持不如Vue强大。\r虽然已经推出2.0正式版，已经可以用于正式线上生产，但目前市场上实践少。\r生产环境集成Rollup打包，与开发环境最终执行的代码不一致。\r与 webpack 对比\r由于Vite主打的是开发环境的极致体验，生产环境集成Rollup，这里的对比主要是Webpack-dev-server与Vite-dev-server的对比：\r到目前很长时间以来Webpack在前端工程领域占统治地位，Vite推出以来备受关注，社区活跃，GitHub\rstar 数量激增，目前达到37.4K\rWebpack配置丰富使用极为灵活但上手成本高，Vite开箱即用配置高度集成\rWebpack启动服务需打包构建，速度慢，Vite免编译可秒开\rWebpack热更新需打包构建，速度慢，Vite毫秒响应\rWebpack成熟稳定、资源丰富、大量实践案例，Vite实践较少\rVite使用esbuild编译，构建速度比webpack快几个数量级\r兼容性\r默认目标浏览器是在script标签上支持原生 ESM 和 原生 ESM 动态导入\r可使用官方插件 @vitejs/plugin-legacy，转义成传统版本和相对应的polyfill\r未来探索\r传统构建工具性能已到瓶颈，主打开发体验的Vite，可能会受到欢迎。\r主流浏览器基本支持ESM，ESM将成为主流。\rVite在Vue3.0代替vue-cli，作为官方脚手架，会大大提高使用量。\rVite2.0推出后，已可以在实际项目中使用Vite。\r如果觉得直接使用Vite太冒险，又确实有dev\rserver速度慢的问题需要解决，可以尝试用Vite单独搭建一套dev server\r相关资源\r官方插件\r除了支持现有的Rollup插件系统外，官方提供了四个最关键的插件\n@vitejs/plugin-vue 提供 Vue3 单文件组件支持\r@vitejs/plugin-vue-jsx 提供 Vue3 JSX 支持（专用的 Babel 转换插件）\r@vitejs/plugin-react 提供完整的 React 支持\r@vitejs/plugin-legacy 为打包后的文件提供传统浏览器兼容性支持\rUI组件库\rElement UI：支持 vite 引入\r相关链接\rVite官网\rVue3 生态进展和计划-尤雨溪\rVite源码解析\rDevelop with Vite | Vite快速入门 - Anthony Fu • Vue北京聚会 Day\r13\r",
+  "wordCount" : "652",
+  "inLanguage": "zh",
+  "image": "http://localhost:1313/images/papermod-cover.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Theme PaperMod"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/juejin/compare/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PaperMod",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/%3Clink%20/%20abs%20url%3E"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Home (Alt + H)">
+                        
+                    <img src="http://localhost:1313/images/msg_hu15231257772499651944.png" alt="" aria-label="logo"
+                        height="20">Home</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/adityatelange/hugo-PaperMod/wiki/" title="WiKi">
+                    <span>WiKi</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      
+    </h1>
+    <div class="post-meta">4 分钟&nbsp;·&nbsp;Theme PaperMod&nbsp;|&nbsp;<a href="https://github.com/WangShaoyu1/myBlogPaperMod/tree/master/content/posts/jueJin/compare.html" rel="noopener noreferrer" target="_blank">Suggest Changes</a>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#heading-0" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#heading-1" aria-label="大纲">大纲</a></li>
+                <li>
+                    <a href="#heading-2" aria-label="背景">背景</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#heading-3" aria-label="共存的模块化标准">共存的模块化标准</a></li>
+                <li>
+                    <a href="#heading-4" aria-label="发展中的构建工具">发展中的构建工具</a></li>
+                <li>
+                    <a href="#heading-5" aria-label="当前工程化痛点">当前工程化痛点</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#heading-6" aria-label="什么是Vite？">什么是Vite？</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#heading-7" aria-label="概念">概念</a></li>
+                <li>
+                    <a href="#heading-8" aria-label="开发环境">开发环境</a></li>
+                <li>
+                    <a href="#heading-9" aria-label="生产环境">生产环境</a></li>
+                <li>
+                    <a href="#heading-10" aria-label="处理流程对比">处理流程对比</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#heading-11" aria-label="基本用法">基本用法</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#heading-12" aria-label="创建vite项目">创建vite项目</a></li>
+                <li>
+                    <a href="#heading-13" aria-label="选取模板">选取模板</a></li>
+                <li>
+                    <a href="#heading-14" aria-label="启动">启动</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#heading-15" aria-label="实现原理">实现原理</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#heading-16" aria-label="ESbuild 编译">ESbuild 编译</a></li>
+                <li>
+                    <a href="#heading-17" aria-label="依赖预构建">依赖预构建</a></li>
+                <li>
+                    <a href="#heading-18" aria-label="按需加载">按需加载</a></li>
+                <li>
+                    <a href="#heading-19" aria-label="缓存">缓存</a></li>
+                <li>
+                    <a href="#heading-20" aria-label="重写模块路径">重写模块路径</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#heading-21" aria-label="源码分析">源码分析</a></li>
+                <li>
+                    <a href="#heading-22" aria-label="优势">优势</a></li>
+                <li>
+                    <a href="#heading-23" aria-label="不足">不足</a></li>
+                <li>
+                    <a href="#heading-24" aria-label="与 webpack 对比">与 webpack 对比</a></li>
+                <li>
+                    <a href="#heading-25" aria-label="兼容性">兼容性</a></li>
+                <li>
+                    <a href="#heading-26" aria-label="未来探索">未来探索</a></li>
+                <li>
+                    <a href="#heading-27" aria-label="相关资源">相关资源</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#heading-28" aria-label="官方插件">官方插件</a></li>
+                <li>
+                    <a href="#heading-29" aria-label="UI组件库">UI组件库</a></li>
+                <li>
+                    <a href="#heading-30" aria-label="相关链接">相关链接</a>
+                </li>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><div id="article-root" itemprop="articleBody" class="main" data-v-1b901cdf="">
+    <div class="article-viewer markdown-body cache result">
+        <style>.markdown-body {
+            word-break: break-word;
+            line-height: 1.75;
+            font-weight: 400;
+            font-size: 16px;
+            overflow-x: hidden;
+            color: #252933
+        }
+
+        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+            line-height: 1.5;
+            margin-top: 35px;
+            margin-bottom: 10px;
+            padding-bottom: 5px
+        }
+
+        .markdown-body h1 {
+            font-size: 24px;
+            line-height: 38px;
+            margin-bottom: 5px
+        }
+
+        .markdown-body h2 {
+            font-size: 22px;
+            line-height: 34px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #ececec
+        }
+
+        .markdown-body h3 {
+            font-size: 20px;
+            line-height: 28px
+        }
+
+        .markdown-body h4 {
+            font-size: 18px;
+            line-height: 26px
+        }
+
+        .markdown-body h5 {
+            font-size: 17px;
+            line-height: 24px
+        }
+
+        .markdown-body h6 {
+            font-size: 16px;
+            line-height: 24px
+        }
+
+        .markdown-body p {
+            line-height: inherit;
+            margin-top: 22px;
+            margin-bottom: 22px
+        }
+
+        .markdown-body img {
+            max-width: 100%
+        }
+
+        .markdown-body hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin-top: 32px;
+            margin-bottom: 32px
+        }
+
+        .markdown-body code {
+            word-break: break-word;
+            border-radius: 2px;
+            overflow-x: auto;
+            background-color: #fff5f5;
+            color: #ff502c;
+            font-size: .87em;
+            padding: .065em .4em
+        }
+
+        .markdown-body code, .markdown-body pre {
+            font-family: Menlo, Monaco, Consolas, Courier New, monospace
+        }
+
+        .markdown-body pre {
+            overflow: auto;
+            position: relative;
+            line-height: 1.75
+        }
+
+        .markdown-body pre > code {
+            font-size: 12px;
+            padding: 15px 12px;
+            margin: 0;
+            word-break: normal;
+            display: block;
+            overflow-x: auto;
+            color: #333;
+            background: #f8f8f8
+        }
+
+        .markdown-body a {
+            text-decoration: none;
+            color: #0269c8;
+            border-bottom: 1px solid #d1e9ff
+        }
+
+        .markdown-body a:active, .markdown-body a:hover {
+            color: #275b8c
+        }
+
+        .markdown-body table {
+            display: inline-block !important;
+            font-size: 12px;
+            width: auto;
+            max-width: 100%;
+            overflow: auto;
+            border: 1px solid #f6f6f6
+        }
+
+        .markdown-body thead {
+            background: #f6f6f6;
+            color: #000;
+            text-align: left
+        }
+
+        .markdown-body tr:nth-child(2n) {
+            background-color: #fcfcfc
+        }
+
+        .markdown-body td, .markdown-body th {
+            padding: 12px 7px;
+            line-height: 24px
+        }
+
+        .markdown-body td {
+            min-width: 120px
+        }
+
+        .markdown-body blockquote {
+            color: #666;
+            padding: 1px 23px;
+            margin: 22px 0;
+            border-left: 4px solid #cbcbcb;
+            background-color: #f8f8f8
+        }
+
+        .markdown-body blockquote:after {
+            display: block;
+            content: ""
+        }
+
+        .markdown-body blockquote > p {
+            margin: 10px 0
+        }
+
+        .markdown-body ol, .markdown-body ul {
+            padding-left: 28px
+        }
+
+        .markdown-body ol li, .markdown-body ul li {
+            margin-bottom: 0;
+            list-style: inherit
+        }
+
+        .markdown-body ol li .task-list-item, .markdown-body ul li .task-list-item {
+            list-style: none
+        }
+
+        .markdown-body ol li .task-list-item ol, .markdown-body ol li .task-list-item ul, .markdown-body ul li .task-list-item ol, .markdown-body ul li .task-list-item ul {
+            margin-top: 0
+        }
+
+        .markdown-body ol ol, .markdown-body ol ul, .markdown-body ul ol, .markdown-body ul ul {
+            margin-top: 3px
+        }
+
+        .markdown-body ol li {
+            padding-left: 6px
+        }
+
+        .markdown-body .contains-task-list {
+            padding-left: 0
+        }
+
+        .markdown-body .task-list-item {
+            list-style: none
+        }
+
+        @media (max-width: 720px) {
+            .markdown-body h1 {
+                font-size: 24px
+            }
+
+            .markdown-body h2 {
+                font-size: 20px
+            }
+
+            .markdown-body h3 {
+                font-size: 18px
+            }
+        }</style>
+        <style data-highlight="" data-highlight-key="juejin">.markdown-body pre, .markdown-body pre > code.hljs {
+            color: #333;
+            background: #f8f8f8
+        }
+
+        .hljs-comment, .hljs-quote {
+            color: #998;
+            font-style: italic
+        }
+
+        .hljs-keyword, .hljs-selector-tag, .hljs-subst {
+            color: #333;
+            font-weight: 700
+        }
+
+        .hljs-literal, .hljs-number, .hljs-tag .hljs-attr, .hljs-template-variable, .hljs-variable {
+            color: teal
+        }
+
+        .hljs-doctag, .hljs-string {
+            color: #d14
+        }
+
+        .hljs-section, .hljs-selector-id, .hljs-title {
+            color: #900;
+            font-weight: 700
+        }
+
+        .hljs-subst {
+            font-weight: 400
+        }
+
+        .hljs-class .hljs-title, .hljs-type {
+            color: #458;
+            font-weight: 700
+        }
+
+        .hljs-attribute, .hljs-name, .hljs-tag {
+            color: navy;
+            font-weight: 400
+        }
+
+        .hljs-link, .hljs-regexp {
+            color: #009926
+        }
+
+        .hljs-bullet, .hljs-symbol {
+            color: #990073
+        }
+
+        .hljs-built_in, .hljs-builtin-name {
+            color: #0086b3
+        }
+
+        .hljs-meta {
+            color: #999;
+            font-weight: 700
+        }
+
+        .hljs-deletion {
+            background: #fdd
+        }
+
+        .hljs-addition {
+            background: #dfd
+        }
+
+        .hljs-emphasis {
+            font-style: italic
+        }
+
+        .hljs-strong {
+            font-weight: 700
+        }</style>
+        <blockquote>
+            <p>本文作者是360奇舞团前端开发工程师 王文健</p>
+        </blockquote>
+        <h1 data-id="heading-0">前言</h1>
+        <p>Hi，大家好！</p>
+        <p>
+            前段时间用<code>Vue3</code>搭建项目时看到同时推出的<code>Vite</code>，只当它是一个新打包工具或者<code>vue-cli</code>的升级版，仍然选择了用<code>Webpack</code>构建项目。最近看了尤雨溪在VueConf上的演讲视频：<a
+                href="https://link.juejin.cn?target=https%3A%2F%2Fwww.yuque.com%2Fvueconf%2Fmkwv0c%2Fxqyxix"
+                title="https://www.yuque.com/vueconf/mkwv0c/xqyxix" target="_blank" ref="nofollow noopener noreferrer">《Vue3
+            生态进展和计划》</a>，感觉它确实解决了现阶段前端工程化的一些痛点，也能体会到尤雨溪对<code>Vite</code>的重视和大力推广的决心，再加上<code>Vue</code>本身的庞大用户基数，<code>Vite</code>确实有可能成为下一代前端构建工具的突破口。
+        </p>
+        <p>本文将讨论下<code>Vite</code>出现的背景，解决的痛点，核心功能的实现，存在的意义和预期的未来。<code>Vite</code>本身并不复杂。中文官方文档非常清晰简洁，建议大家使用前仔细读下文档。
+        </p>
+        <hr>
+        <h1 data-id="heading-1">大纲</h1>
+        <ul>
+            <li>背景</li>
+            <li>什么是Vite？</li>
+            <li>基本用法</li>
+            <li>实现原理</li>
+            <li>源码分析</li>
+            <li>优势与不足</li>
+            <li>与传统构建工具对比</li>
+            <li>兼容性</li>
+            <li>未来</li>
+        </ul>
+        <hr>
+        <h1 data-id="heading-2">背景</h1>
+        <p>这里的背景介绍会从与<code>Vite</code>紧密相关的两个概念的发展史说起，一个是<code>JavaScript</code>的模块化标准，另一个是前端构建工具。
+        </p>
+        <h3 data-id="heading-3">共存的模块化标准</h3>
+        <p>为什么<code>JavaScript</code>会有多种共存的模块化标准？因为js在设计之初并没有模块化的概念，随着前端业务复杂度不断提高，模块化越来越受到开发者的重视，社区开始涌现多种模块化解决方案，它们相互借鉴，也争议不断，形成多个派系，从<code>CommonJS</code>开始，到<code>ES6</code>正式推出<code>ES
+            Modules</code>规范结束，所有争论，终成历史，<code>ES Modules</code>也成为前端重要的基础设施。</p>
+        <ul>
+            <li><strong>CommonJS</strong>：现主要用于Node.js（Node@13.2.0开始支持直接使用ES Module）</li>
+            <li><strong>AMD</strong>：<code>require.js</code> 依赖前置，市场存量不建议使用</li>
+            <li><strong>CMD</strong>：<code>sea.js</code> 就近执行，市场存量不建议使用</li>
+            <li><strong>ES Module</strong>：ES语言规范，标准，趋势，未来</li>
+        </ul>
+        <p>对模块化发展史感兴趣的可以看下<a
+                href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fseajs%2Fseajs%2Fissues%2F588"
+                title="https://github.com/seajs/seajs/issues/588" target="_blank" ref="nofollow noopener noreferrer">《前端模块化开发那点历史》@玉伯</a>，而<code>Vite</code>的核心正是依靠浏览器对ES
+            Module规范的实现。</p>
+        <h3 data-id="heading-4">发展中的构建工具</h3>
+        <p>近些年前端工程化发展迅速，各种构建工具层出不穷，目前<code>Webpack</code>仍然占据统治地位，npm 每周下载量达到两千多万次。下面是我按
+            npm 发版时间线列出的开发者比较熟知的一些构建工具。</p>
+        <p>
+            <img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4401a88bf0e04c668e6623d2134c60d7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?"
+                 alt="" loading="lazy" class="medium-zoom-image"></p>
+        <h3 data-id="heading-5">当前工程化痛点</h3>
+        <p>现在常用的构建工具如<code>Webpack</code>，主要是通过抓取-编译-构建整个应用的代码（也就是常说的打包过程），生成一份编译、优化后能良好兼容各个浏览器的的生产环境代码。在开发环境流程也基本相同，需要先将整个应用构建打包后，再把打包后的代码交给<code>dev
+            server</code>（开发服务器）。</p>
+        <p><code>Webpack</code>等构建工具的诞生给前端开发带来了极大的便利，但随着前端业务的复杂化，js代码量呈指数增长，打包构建时间越来越久，<code>dev
+            server</code>（开发服务器）性能遇到瓶颈：</p>
+        <ul>
+            <li>
+                <p><strong>缓慢的服务启动：</strong> 大型项目中<code>dev server</code>启动时间达到几十秒甚至几分钟。</p>
+            </li>
+            <li>
+                <p><strong>缓慢的HMR热更新：</strong> 即使采用了 HMR 模式，其热更新速度也会随着应用规模的增长而显著下降，已达到性能瓶颈，无多少优化空间。
+                </p>
+            </li>
+        </ul>
+        <p><strong>缓慢的开发环境，大大降低了开发者的幸福感，在以上背景下<code>Vite</code>应运而生。</strong></p>
+        <hr>
+        <h1 data-id="heading-6">什么是Vite？</h1>
+        <p><strong>基于esbuild与Rollup，依靠浏览器自身ESM编译功能， 实现极致开发体验的新一代构建工具！</strong></p>
+        <h3 data-id="heading-7">概念</h3>
+        <p>先介绍以下文中会经常提到的一些基础概念：</p>
+        <ul>
+            <li><strong>依赖：</strong> 指开发不会变动的部分(npm包、UI组件库)，esbuild进行预构建。</li>
+            <li><strong>源码：</strong> 浏览器不能直接执行的非js代码(.jsx、.css、.vue等)，vite只在浏览器请求相关源码的时候进行转换，以提供ESM源码。
+            </li>
+        </ul>
+        <h3 data-id="heading-8">开发环境</h3>
+        <ul>
+            <li>利用浏览器原生的<code>ES Module</code>编译能力，省略费时的编译环节，直给浏览器开发环境源码，<code>dev
+                server</code>只提供轻量服务。
+            </li>
+            <li>浏览器执行ESM的<code>import</code>时，会向<code>dev server</code>发起该模块的<code>ajax</code>请求，服务器对源码做简单处理后返回给浏览器。
+            </li>
+            <li><code>Vite</code>中HMR是在原生 ESM 上执行的。当编辑一个文件时，Vite 只需要精确地使已编辑的模块失活，使得无论应用大小如何，HMR
+                始终能保持快速更新。
+            </li>
+            <li>使用<code>esbuild</code>处理项目依赖，<code>esbuild</code>使用go编写，比一般<code>node.js</code>编写的编译器快几个数量级。
+            </li>
+        </ul>
+        <h3 data-id="heading-9">生产环境</h3>
+        <ul>
+            <li>集成<code>Rollup</code>打包生产环境代码，依赖其成熟稳定的生态与更简洁的插件机制。</li>
+        </ul>
+        <h3 data-id="heading-10">处理流程对比</h3>
+        <p><code>Webpack</code>通过先将整个应用打包，再将打包后代码提供给<code>dev server</code>，开发者才能开始开发。</p>
+        <p>
+            <img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/181a6bfe5e4d4857bd6bed63a573e2b3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?"
+                 alt="" loading="lazy" class="medium-zoom-image"></p>
+        <p><code>Vite</code>直接将源码交给浏览器，实现<code>dev server</code>秒开，浏览器显示页面需要相关模块时，再向<code>dev
+            server</code>发起请求，服务器简单处理后，将该模块返回给浏览器，实现真正意义的按需加载。
+            <img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e00801ede5b84abd9bdaadb720d63e53~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?"
+                 alt="" loading="lazy" class="medium-zoom-image"></p>
+        <hr>
+        <h1 data-id="heading-11">基本用法</h1>
+        <h3 data-id="heading-12">创建vite项目</h3>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">shell</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div><code
+                class="hljs language-shell code-block-extension-codeShowNum" lang="shell"><span
+                class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-meta prompt_">$ </span><span
+                class="bash">npm create vite@latest</span></span>
+</code></pre>
+        <h3 data-id="heading-13">选取模板</h3>
+        <p><code>Vite</code> 内置6种常用模板与对应的TS版本，可满足前端大部分开发场景，可以点击下列表格中模板直接在&nbsp;<a
+                href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2F" title="https://vite.new/" target="_blank"
+                ref="nofollow noopener noreferrer">StackBlitz</a>&nbsp;中在线试用，还有其他更多的 <a
+                href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvitejs%2Fawesome-vite%23templates"
+                title="https://github.com/vitejs/awesome-vite#templates" target="_blank"
+                ref="nofollow noopener noreferrer">社区维护模板</a>可以使用。</p>
+
+
+        <table>
+            <thead>
+            <tr>
+                <th>JavaScript</th>
+                <th>TypeScript</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fvanilla" target="_blank"
+                       title="https://vite.new/vanilla" ref="nofollow noopener noreferrer">vanilla</a></td>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fvanilla-ts" target="_blank"
+                       title="https://vite.new/vanilla-ts" ref="nofollow noopener noreferrer">vanilla-ts</a></td>
+            </tr>
+            <tr>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fvue" target="_blank"
+                       title="https://vite.new/vue" ref="nofollow noopener noreferrer">vue</a></td>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fvue-ts" target="_blank"
+                       title="https://vite.new/vue-ts" ref="nofollow noopener noreferrer">vue-ts</a></td>
+            </tr>
+            <tr>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Freact" target="_blank"
+                       title="https://vite.new/react" ref="nofollow noopener noreferrer">react</a></td>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Freact-ts" target="_blank"
+                       title="https://vite.new/react-ts" ref="nofollow noopener noreferrer">react-ts</a></td>
+            </tr>
+            <tr>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fpreact" target="_blank"
+                       title="https://vite.new/preact" ref="nofollow noopener noreferrer">preact</a></td>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fpreact-ts" target="_blank"
+                       title="https://vite.new/preact-ts" ref="nofollow noopener noreferrer">preact-ts</a></td>
+            </tr>
+            <tr>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Flit" target="_blank"
+                       title="https://vite.new/lit" ref="nofollow noopener noreferrer">lit</a></td>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Flit-ts" target="_blank"
+                       title="https://vite.new/lit-ts" ref="nofollow noopener noreferrer">lit-ts</a></td>
+            </tr>
+            <tr>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fsvelte" target="_blank"
+                       title="https://vite.new/svelte" ref="nofollow noopener noreferrer">svelte</a></td>
+                <td><a href="https://link.juejin.cn?target=https%3A%2F%2Fvite.new%2Fsvelte-ts" target="_blank"
+                       title="https://vite.new/svelte-ts" ref="nofollow noopener noreferrer">svelte-ts</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <h3 data-id="heading-14">启动</h3>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">json</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div>
+        <code class="hljs language-json code-block-extension-codeShowNum" lang="json">
+            <span class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-punctuation">{</span></span>
+            <span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-attr">"scripts"</span><span
+        class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span></span>
+        <span class="code-block-extension-codeLine" data-line-num="3">    <span class="hljs-attr">"dev"</span><span
+        class="hljs-punctuation">:</span> <span class="hljs-string">"vite"</span><span class="hljs-punctuation">,</span> <span
+        class="hljs-comment">// 启动开发服务器，别名：`vite dev`，`vite serve`</span></span>
+<span class="code-block-extension-codeLine" data-line-num="4">    <span class="hljs-attr">"build"</span><span
+        class="hljs-punctuation">:</span> <span class="hljs-string">"vite build"</span><span
+        class="hljs-punctuation">,</span> <span class="hljs-comment">// 为生产环境构建产物</span></span>
+<span class="code-block-extension-codeLine" data-line-num="5">    <span class="hljs-attr">"preview"</span><span
+        class="hljs-punctuation">:</span> <span class="hljs-string">"vite preview"</span> <span class="hljs-comment">// 本地预览生产构建产物</span></span>
+<span class="code-block-extension-codeLine" data-line-num="6">  <span class="hljs-punctuation">}</span></span>
+<span class="code-block-extension-codeLine" data-line-num="7"><span class="hljs-punctuation">}</span></span>
+</code>
+    </pre>
+        <hr>
+        <h1 data-id="heading-15">实现原理</h1>
+        <h3 data-id="heading-16">ESbuild 编译</h3>
+        <p><code>esbuild</code> 使用go编写，cpu密集下更具性能优势，编译速度更快，以下摘自官网的构建速度对比：<br>
+            <strong>浏览器：“开始了吗？”</strong><br>
+            <strong>服务器：“已经结束了。”</strong><br>
+            <strong>开发者：“好快，好喜欢！！”</strong></p>
+        <p>
+            <img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b6ab1cbe74ef49a9a601e0db0265453a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?"
+                 alt="image.png" loading="lazy" class="medium-zoom-image"></p>
+        <h3 data-id="heading-17">依赖预构建</h3>
+        <ul>
+            <li><strong>模块化兼容：</strong> 如开头背景所写，现仍共存多种模块化标准代码，<code>Vite</code>在预构建阶段将依赖中各种其他模块化规范(CommonJS、UMD)转换
+                成ESM，以提供给浏览器。
+            </li>
+            <li><strong>性能优化：</strong>
+                npm包中大量的ESM代码，大量的<code>import</code>请求，会造成网络拥塞。<code>Vite</code>使用<code>esbuild</code>，将有大量内部模块的ESM关系转换成单个模块，以减少
+                <code>import</code>模块请求次数。
+            </li>
+        </ul>
+        <h3 data-id="heading-18">按需加载</h3>
+        <ul>
+            <li>服务器只在接受到import请求的时候，才会编译对应的文件，将ESM源码返回给浏览器，实现真正的按需加载。</li>
+        </ul>
+        <h3 data-id="heading-19">缓存</h3>
+        <ul>
+            <li><strong>HTTP缓存：</strong> 充分利用<code>http</code>缓存做优化，依赖（不会变动的代码）部分用max-age,immutable
+                <strong>强缓存</strong>，源码部分用304<strong>协商缓存</strong>，提升页面打开速度。
+            </li>
+            <li><strong>文件系统缓存：</strong> <code>Vite</code>在预构建阶段，将构建后的依赖缓存到<code>node_modules/.vite</code>
+                ，相关配置更改时，或手动控制时才会重新构建，以提升预构建速度。
+            </li>
+        </ul>
+        <h3 data-id="heading-20">重写模块路径</h3>
+        <p>浏览器<code>import</code>只能引入相对/绝对路径，而开发代码经常使用<code>npm</code>包名直接引入<code>node_module</code>中的模块，需要做路径转换后交给浏览器。
+        </p>
+        <ul>
+            <li><code>es-module-lexer</code> 扫描 import 语法</li>
+            <li><code>magic-string</code> 重写模块的引入路径</li>
+        </ul>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">js</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div><code
+                class="hljs language-js code-block-extension-codeShowNum" lang="js"><span
+                class="code-block-extension-codeLine" data-line-num="1"><span
+                class="hljs-comment">// 开发代码</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span
+        class="hljs-keyword">import</span> { createApp } <span class="hljs-keyword">from</span> <span
+        class="hljs-string">'vue'</span></span>
+<span class="code-block-extension-codeLine" data-line-num="3"></span>
+<span class="code-block-extension-codeLine" data-line-num="4"><span class="hljs-comment">// 转换后</span></span>
+<span class="code-block-extension-codeLine" data-line-num="5"><span
+        class="hljs-keyword">import</span> { createApp } <span class="hljs-keyword">from</span> <span
+        class="hljs-string">'/node_modules/vue/dist/vue.js'</span></span>
+</code></pre>
+        <hr>
+        <h1 data-id="heading-21">源码分析</h1>
+        <p>与<code>Webpack-dev-server</code>类似<code>Vite</code>同样使用<code>WebSocket</code>与客户端建立连接，实现热更新，源码实现基本可分为两部分，源码位置在:
+        </p>
+        <ul>
+            <li><code>vite/packages/vite/src/client</code> client（用于客户端）</li>
+            <li><code>vite/packages/vite/src/node</code> server（用于开发服务器）</li>
+        </ul>
+        <p>client 代码会在启动服务时注入到客户端，用于客户端对于<code>WebSocket</code>消息的处理（如更新页面某个模块、刷新页面）；server
+            代码是服务端逻辑，用于处理代码的构建与页面模块的请求。</p>
+        <p>简单看了下源码（vite@2.7.2），核心功能主要是以下几个方法（以下为源码截取，部分逻辑做了删减）：</p>
+        <ol>
+            <li>命令行启动服务<code>npm run dev</code>后，源码执行<code>cli.ts</code>，调用<code>createServer</code>方法，创建http服务，监听开发服务器端口。
+            </li>
+        </ol>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">js</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div><code
+                class="hljs language-js code-block-extension-codeShowNum" lang="js"><span
+                class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-comment">// 源码位置 vite/packages/vite/src/node/cli.ts</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">const</span> { createServer } = <span
+        class="hljs-keyword">await</span> <span class="hljs-keyword">import</span>(<span
+        class="hljs-string">'./server'</span>)</span>
+<span class="code-block-extension-codeLine" data-line-num="3"><span class="hljs-keyword">try</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="4">    <span class="hljs-keyword">const</span> server = <span
+        class="hljs-keyword">await</span> <span class="hljs-title function_">createServer</span>({</span>
+<span class="code-block-extension-codeLine" data-line-num="5">        root,</span>
+<span class="code-block-extension-codeLine" data-line-num="6">        <span class="hljs-attr">base</span>: options.<span
+        class="hljs-property">base</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="7">        ...</span>
+<span class="code-block-extension-codeLine" data-line-num="8">    })</span>
+<span class="code-block-extension-codeLine" data-line-num="9">    <span class="hljs-keyword">if</span> (!server.<span
+        class="hljs-property">httpServer</span>) {</span>
+<span class="code-block-extension-codeLine" data-line-num="10">        <span class="hljs-keyword">throw</span> <span
+        class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">'HTTP server not available'</span>)</span>
+<span class="code-block-extension-codeLine" data-line-num="11">    }</span>
+<span class="code-block-extension-codeLine" data-line-num="12">    <span class="hljs-keyword">await</span> server.<span
+        class="hljs-title function_">listen</span>()</span>
+<span class="code-block-extension-codeLine" data-line-num="13">}</span>
+</code></pre>
+        <ol start="2">
+            <li><code>createServer</code>方法的执行做了很多工作，如整合配置项、创建http服务（早期通过koa创建）、创建<code>WebSocket</code>服务、创建源码的文件监听、插件执行、optimize优化等。下面注释中标出。
+            </li>
+        </ol>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">js</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div><code
+                class="hljs language-js code-block-extension-codeShowNum" lang="js"><span
+                class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-comment">// 源码位置 vite/packages/vite/src/node/server/index.ts</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">export</span> <span
+        class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">createServer</span>(<span
+        class="hljs-params"></span></span>
+<span class="code-block-extension-codeLine" data-line-num="3">    inlineConfig: InlineConfig = {}</span>
+<span class="code-block-extension-codeLine" data-line-num="4">): <span class="hljs-title class_">Promise</span>&lt;<span
+        class="hljs-title class_">ViteDevServer</span>&gt; {</span>
+<span class="code-block-extension-codeLine" data-line-num="5">    <span
+        class="hljs-comment">// Vite 配置整合</span></span>
+<span class="code-block-extension-codeLine" data-line-num="6">    <span class="hljs-keyword">const</span> config = <span
+        class="hljs-keyword">await</span> <span class="hljs-title function_">resolveConfig</span>(inlineConfig, <span
+        class="hljs-string">'serve'</span>, <span class="hljs-string">'development'</span>)</span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-keyword">const</span> root = config.<span
+        class="hljs-property">root</span></span>
+<span class="code-block-extension-codeLine" data-line-num="8">    <span class="hljs-keyword">const</span> serverConfig = config.<span
+        class="hljs-property">server</span></span>
+<span class="code-block-extension-codeLine" data-line-num="9"></span>
+<span class="code-block-extension-codeLine" data-line-num="10">    <span
+        class="hljs-comment">// 创建http服务</span></span>
+<span class="code-block-extension-codeLine" data-line-num="11">    <span class="hljs-keyword">const</span> httpServer = <span
+        class="hljs-keyword">await</span> <span class="hljs-title function_">resolveHttpServer</span>(serverConfig, middlewares, httpsOptions)</span>
+<span class="code-block-extension-codeLine" data-line-num="12"></span>
+<span class="code-block-extension-codeLine" data-line-num="13">    <span
+        class="hljs-comment">// 创建ws服务</span></span>
+<span class="code-block-extension-codeLine" data-line-num="14">    <span class="hljs-keyword">const</span> ws = <span
+        class="hljs-title function_">createWebSocketServer</span>(httpServer, config, httpsOptions)</span>
+<span class="code-block-extension-codeLine" data-line-num="15"></span>
+<span class="code-block-extension-codeLine" data-line-num="16">    <span
+        class="hljs-comment">// 创建watcher，设置代码文件监听</span></span>
+<span class="code-block-extension-codeLine" data-line-num="17">    <span class="hljs-keyword">const</span> watcher = chokidar.<span
+        class="hljs-title function_">watch</span>(path.<span class="hljs-title function_">resolve</span>(root), {</span>
+<span class="code-block-extension-codeLine" data-line-num="18">        <span class="hljs-attr">ignored</span>: [</span>
+<span class="code-block-extension-codeLine" data-line-num="19">            <span class="hljs-string">'**/node_modules/**'</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="20">            <span class="hljs-string">'**/.git/**'</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="21">            ...(<span
+        class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(ignored) ? ignored : [ignored])</span>
+<span class="code-block-extension-codeLine" data-line-num="22">        ],</span>
+<span class="code-block-extension-codeLine" data-line-num="23">        ...watchOptions</span>
+<span class="code-block-extension-codeLine" data-line-num="24">    }) <span class="hljs-keyword">as</span> <span
+        class="hljs-title class_">FSWatcher</span></span>
+<span class="code-block-extension-codeLine" data-line-num="25"></span>
+<span class="code-block-extension-codeLine" data-line-num="26">    <span
+        class="hljs-comment">// 创建server对象</span></span>
+<span class="code-block-extension-codeLine" data-line-num="27">    <span class="hljs-keyword">const</span> <span
+        class="hljs-attr">server</span>: <span class="hljs-title class_">ViteDevServer</span> = {</span>
+<span class="code-block-extension-codeLine" data-line-num="28">        config,</span>
+<span class="code-block-extension-codeLine" data-line-num="29">        middlewares,</span>
+<span class="code-block-extension-codeLine" data-line-num="30">        httpServer,</span>
+<span class="code-block-extension-codeLine" data-line-num="31">        watcher,</span>
+<span class="code-block-extension-codeLine" data-line-num="32">        ws,</span>
+<span class="code-block-extension-codeLine" data-line-num="33">        moduleGraph,</span>
+<span class="code-block-extension-codeLine" data-line-num="34">        listen,</span>
+<span class="code-block-extension-codeLine" data-line-num="35">        ...</span>
+<span class="code-block-extension-codeLine" data-line-num="36">    }</span>
+<span class="code-block-extension-codeLine" data-line-num="37"></span>
+<span class="code-block-extension-codeLine" data-line-num="38">    <span
+        class="hljs-comment">// 文件监听变动，websocket向前端通信</span></span>
+<span class="code-block-extension-codeLine" data-line-num="39">    watcher.<span class="hljs-title function_">on</span>(<span
+        class="hljs-string">'change'</span>, <span class="hljs-keyword">async</span> (file) =&gt; {</span>
+<span class="code-block-extension-codeLine" data-line-num="40">        ...</span>
+<span class="code-block-extension-codeLine" data-line-num="41">        <span class="hljs-title function_">handleHMRUpdate</span>()</span>
+<span class="code-block-extension-codeLine" data-line-num="42">    })</span>
+<span class="code-block-extension-codeLine" data-line-num="43"></span>
+<span class="code-block-extension-codeLine" data-line-num="44">    <span
+        class="hljs-comment">// 非常多的 middleware</span></span>
+<span class="code-block-extension-codeLine" data-line-num="45">    middlewares.<span
+        class="hljs-title function_">use</span>(...)</span>
+<span class="code-block-extension-codeLine" data-line-num="46">    </span>
+<span class="code-block-extension-codeLine" data-line-num="47">    <span class="hljs-comment">// optimize</span></span>
+<span class="code-block-extension-codeLine" data-line-num="48">    <span class="hljs-keyword">const</span> <span
+        class="hljs-title function_">runOptimize</span> = <span class="hljs-keyword">async</span> (<span
+        class="hljs-params"></span>) =&gt; {...}</span>
+<span class="code-block-extension-codeLine" data-line-num="49"></span>
+<span class="code-block-extension-codeLine" data-line-num="50">    <span
+        class="hljs-keyword">return</span> server</span>
+<span class="code-block-extension-codeLine" data-line-num="51">}</span>
+</code></pre>
+        <ol start="3">
+            <li>使用<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fchokidar"
+                       title="https://www.npmjs.com/package/chokidar" target="_blank"
+                       ref="nofollow noopener noreferrer">chokidar</a>监听文件变化，绑定监听事件。
+            </li>
+        </ol>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">js</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div><code
+                class="hljs language-js code-block-extension-codeShowNum" lang="js"><span
+                class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-comment">// 源码位置 vite/packages/vite/src/node/server/index.ts</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2">  <span class="hljs-keyword">const</span> watcher = chokidar.<span
+        class="hljs-title function_">watch</span>(path.<span class="hljs-title function_">resolve</span>(root), {</span>
+<span class="code-block-extension-codeLine" data-line-num="3">    <span class="hljs-attr">ignored</span>: [</span>
+<span class="code-block-extension-codeLine" data-line-num="4">      <span
+        class="hljs-string">'**/node_modules/**'</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="5">      <span
+        class="hljs-string">'**/.git/**'</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="6">      ...(<span
+        class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(ignored) ? ignored : [ignored])</span>
+<span class="code-block-extension-codeLine" data-line-num="7">    ],</span>
+<span class="code-block-extension-codeLine" data-line-num="8">    <span class="hljs-attr">ignoreInitial</span>: <span
+        class="hljs-literal">true</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="9">    <span class="hljs-attr">ignorePermissionErrors</span>: <span
+        class="hljs-literal">true</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="10">    <span class="hljs-attr">disableGlobbing</span>: <span
+        class="hljs-literal">true</span>,</span>
+<span class="code-block-extension-codeLine" data-line-num="11">    ...watchOptions</span>
+<span class="code-block-extension-codeLine" data-line-num="12">  }) <span class="hljs-keyword">as</span> <span
+        class="hljs-title class_">FSWatcher</span></span>
+</code></pre>
+        <ol start="4">
+            <li>通过 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fws"
+                        title="https://www.npmjs.com/package/ws" target="_blank"
+                        ref="nofollow noopener noreferrer">ws</a> 来创建<code>WebSocket</code>服务，用于监听到文件变化时触发热更新，向客户端发送消息。
+            </li>
+        </ol>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">js</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div><code
+                class="hljs language-js code-block-extension-codeShowNum" lang="js"><span
+                class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-comment">// 源码位置 vite/packages/vite/src/node/server/ws.ts</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">export</span> <span
+        class="hljs-keyword">function</span> <span class="hljs-title function_">createWebSocketServer</span>(<span
+        class="hljs-params">...</span>){</span>
+<span class="code-block-extension-codeLine" data-line-num="3">    <span class="hljs-keyword">let</span> <span
+        class="hljs-attr">wss</span>: <span class="hljs-title class_">WebSocket</span></span>
+<span class="code-block-extension-codeLine" data-line-num="4">    <span class="hljs-keyword">const</span> hmr = <span
+        class="hljs-title function_">isObject</span>(config.<span class="hljs-property">server</span>.<span
+        class="hljs-property">hmr</span>) &amp;&amp; config.<span class="hljs-property">server</span>.<span
+        class="hljs-property">hmr</span></span>
+<span class="code-block-extension-codeLine" data-line-num="5">    <span class="hljs-keyword">const</span> wsServer = (hmr &amp;&amp; hmr.<span
+        class="hljs-property">server</span>) || server</span>
+<span class="code-block-extension-codeLine" data-line-num="6"></span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span
+        class="hljs-keyword">if</span> (wsServer) {</span>
+<span class="code-block-extension-codeLine" data-line-num="8">        wss = <span class="hljs-keyword">new</span> <span
+        class="hljs-title class_">WebSocket</span>({ <span class="hljs-attr">noServer</span>: <span
+        class="hljs-literal">true</span> })</span>
+<span class="code-block-extension-codeLine" data-line-num="9">        wsServer.<span
+        class="hljs-title function_">on</span>(<span class="hljs-string">'upgrade'</span>, <span class="hljs-function">(<span
+        class="hljs-params">req, socket, head</span>) =&gt;</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="10">            <span class="hljs-comment">// 服务就绪</span></span>
+<span class="code-block-extension-codeLine" data-line-num="11">            <span
+        class="hljs-keyword">if</span> (req.<span class="hljs-property">headers</span>[<span class="hljs-string">'sec-websocket-protocol'</span>] === <span
+        class="hljs-variable constant_">HMR_HEADER</span>) {</span>
+<span class="code-block-extension-codeLine" data-line-num="12">                wss.<span class="hljs-title function_">handleUpgrade</span>(req, socket <span
+        class="hljs-keyword">as</span> <span class="hljs-title class_">Socket</span>, head, <span class="hljs-function">(<span
+        class="hljs-params">ws</span>) =&gt;</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="13">                    wss.<span
+        class="hljs-title function_">emit</span>(<span class="hljs-string">'connection'</span>, ws, req)</span>
+<span class="code-block-extension-codeLine" data-line-num="14">                })</span>
+<span class="code-block-extension-codeLine" data-line-num="15">            }</span>
+<span class="code-block-extension-codeLine" data-line-num="16">        })</span>
+<span class="code-block-extension-codeLine" data-line-num="17">    } <span class="hljs-keyword">else</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="18">        ...</span>
+<span class="code-block-extension-codeLine" data-line-num="19">    }</span>
+<span class="code-block-extension-codeLine" data-line-num="20">    <span class="hljs-comment">// 服务准备就绪，就能在浏览器控制台看到熟悉的打印 [vite] connected.</span></span>
+<span class="code-block-extension-codeLine" data-line-num="21">    wss.<span
+        class="hljs-title function_">on</span>(<span class="hljs-string">'connection'</span>, <span
+        class="hljs-function">(<span class="hljs-params">socket</span>) =&gt;</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="22">        socket.<span
+        class="hljs-title function_">send</span>(<span class="hljs-title class_">JSON</span>.<span
+        class="hljs-title function_">stringify</span>({ <span class="hljs-attr">type</span>: <span class="hljs-string">'connected'</span> }))</span>
+<span class="code-block-extension-codeLine" data-line-num="23">        ...</span>
+<span class="code-block-extension-codeLine" data-line-num="24">    })</span>
+<span class="code-block-extension-codeLine" data-line-num="25">    <span class="hljs-comment">// 失败</span></span>
+<span class="code-block-extension-codeLine" data-line-num="26">    wss.<span
+        class="hljs-title function_">on</span>(<span class="hljs-string">'error'</span>, <span
+        class="hljs-function">(<span class="hljs-params">e: <span class="hljs-built_in">Error</span> &amp; { code: string }</span>) =&gt;</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="27">        ...</span>
+<span class="code-block-extension-codeLine" data-line-num="28">    })</span>
+<span class="code-block-extension-codeLine" data-line-num="29">    <span
+        class="hljs-comment">// 返回ws对象</span></span>
+<span class="code-block-extension-codeLine" data-line-num="30">    <span class="hljs-keyword">return</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="31">        <span class="hljs-attr">on</span>: wss.<span
+        class="hljs-property">on</span>.<span class="hljs-title function_">bind</span>(wss),</span>
+<span class="code-block-extension-codeLine" data-line-num="32">        <span class="hljs-attr">off</span>: wss.<span
+        class="hljs-property">off</span>.<span class="hljs-title function_">bind</span>(wss),</span>
+<span class="code-block-extension-codeLine" data-line-num="33">        <span
+        class="hljs-comment">// 向客户端发送信息</span></span>
+<span class="code-block-extension-codeLine" data-line-num="34">        <span
+        class="hljs-comment">// 多个客户端同时触发</span></span>
+<span class="code-block-extension-codeLine" data-line-num="35">        <span
+        class="hljs-title function_">send</span>(<span class="hljs-params">payload: HMRPayload</span>) {</span>
+<span class="code-block-extension-codeLine" data-line-num="36">            <span class="hljs-keyword">const</span> stringified = <span
+        class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(payload)</span>
+<span class="code-block-extension-codeLine" data-line-num="37">            wss.<span
+        class="hljs-property">clients</span>.<span class="hljs-title function_">forEach</span>(<span
+        class="hljs-function">(<span class="hljs-params">client</span>) =&gt;</span> {</span>
+<span class="code-block-extension-codeLine" data-line-num="38">                <span class="hljs-comment">// readyState 1 means the connection is open</span></span>
+<span class="code-block-extension-codeLine" data-line-num="39">                client.<span
+        class="hljs-title function_">send</span>(stringified)</span>
+<span class="code-block-extension-codeLine" data-line-num="40">            })</span>
+<span class="code-block-extension-codeLine" data-line-num="41">        }</span>
+<span class="code-block-extension-codeLine" data-line-num="42">    }</span>
+<span class="code-block-extension-codeLine" data-line-num="43">}</span>
+</code></pre>
+        <ol start="5">
+            <li>在服务启动时会向浏览器注入代码，用于处理客户端接收到的<code>WebSocket</code>消息，如重新发起模块请求、刷新页面。
+            </li>
+        </ol>
+        <pre><div class="code-block-extension-header" style="background-color: rgb(248, 248, 248);"><div
+                class="code-block-extension-headerLeft"><div class="code-block-extension-foldBtn"><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path
+                d="M16.924 9.617A1 1 0 0 0 16 9H8a1 1 0 0 0-.707 1.707l4 4a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0 .217-1.09z"
+                data-name="Down"></path></svg></div><span class="code-block-extension-lang">js</span></div><div
+                class="code-block-extension-headerRight"><div data-v-159ebe90="" class="render"><svg data-v-159ebe90=""
+                                                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                                                     width="14"
+                                                                                                     height="14"
+                                                                                                     viewBox="0 0 14 14"
+                                                                                                     fill="none"
+                                                                                                     class="icon"><path
+                data-v-159ebe90="" fill-rule="evenodd" clip-rule="evenodd"
+                d="M9.53955 4.17189C9.68118 4.20855 9.79179 4.31915 9.82844 4.46078L10.1056 5.53143C10.2094 5.93276 10.7788 5.93412 10.8846 5.53329L11.1678 4.46028C11.2049 4.31949 11.3152 4.20973 11.4562 4.17324L12.5321 3.89478C12.9334 3.7909 12.9348 3.22149 12.5339 3.11571L11.4557 2.83116C11.3156 2.79418 11.2061 2.68474 11.1692 2.54461L10.8846 1.46639C10.7788 1.06556 10.2094 1.06691 10.1056 1.46824L9.82709 2.54413C9.7906 2.6851 9.68084 2.79538 9.54005 2.83254L8.46704 3.11571C8.06621 3.22149 8.06756 3.7909 8.46889 3.89478L9.53955 4.17189ZM6.85443 2.33317C6.93497 2.33317 7.00026 2.39846 7.00026 2.479V3.354C7.00026 3.43455 6.93497 3.49984 6.85443 3.49984H2.10026V12.2498H10.5586C10.7197 12.2498 10.8503 12.1193 10.8503 11.9582V7.14567C10.8503 7.06513 10.9156 6.99984 10.9961 6.99984H11.8711C11.9516 6.99984 12.0169 7.06513 12.0169 7.14567V12.8332C12.0169 13.1553 11.7558 13.4165 11.4336 13.4165H1.51693C1.19476 13.4165 0.933594 13.1553 0.933594 12.8332V2.9165C0.933594 2.59434 1.19476 2.33317 1.51693 2.33317H6.85443ZM8.30344 6.27272L9.43036 6.57467L8.22254 11.0823L7.09562 10.7804L8.30344 6.27272ZM6.56676 6.89146L5.7418 6.0665L3.26693 8.54137L3.35968 8.63404L3.35235 8.64146L5.62099 10.9101L6.44595 10.0851L4.9093 8.54858L6.56676 6.89146Z"
+                fill="url(#paint0_radial_370_13481)"></path><defs data-v-159ebe90=""><radialGradient data-v-159ebe90=""
+                                                                                                     id="paint0_radial_370_13481"
+                                                                                                     cx="0" cy="0" r="1"
+                                                                                                     gradientUnits="userSpaceOnUse"
+                                                                                                     gradientTransform="translate(12.8336 1.1665) rotate(134.17) scale(17.0784 23.5605)"><stop
+                data-v-159ebe90="" stop-color="#FF8A01"></stop><stop data-v-159ebe90="" offset="0.223725"
+                                                                     stop-color="#B051B9"></stop><stop
+                data-v-159ebe90="" offset="0.455423" stop-color="#672BFF"></stop><stop data-v-159ebe90=""
+                                                                                       offset="0.9999"
+                                                                                       stop-color="#0066FF"></stop></radialGradient></defs></svg> <span
+                data-v-159ebe90="" class="txt">代码解读</span></div><div
+                class="code-block-extension-copyCodeBtn">复制代码</div></div></div><code
+                class="hljs language-js code-block-extension-codeShowNum" lang="js"><span
+                class="code-block-extension-codeLine" data-line-num="1"><span class="hljs-comment">//源码位置 vite/packages/vite/src/client/client.ts</span></span>
+<span class="code-block-extension-codeLine" data-line-num="2"><span class="hljs-keyword">async</span> <span
+        class="hljs-keyword">function</span> <span class="hljs-title function_">handleMessage</span>(<span
+        class="hljs-params">payload: HMRPayload</span>) {</span>
+<span class="code-block-extension-codeLine" data-line-num="3">  <span class="hljs-keyword">switch</span> (payload.<span
+        class="hljs-property">type</span>) {</span>
+<span class="code-block-extension-codeLine" data-line-num="4">    <span class="hljs-keyword">case</span> <span
+        class="hljs-string">'connected'</span>:</span>
+<span class="code-block-extension-codeLine" data-line-num="5">      <span class="hljs-variable language_">console</span>.<span
+        class="hljs-title function_">log</span>(<span class="hljs-string">`[vite] connected.`</span>)</span>
+<span class="code-block-extension-codeLine" data-line-num="6">      <span class="hljs-keyword">break</span></span>
+<span class="code-block-extension-codeLine" data-line-num="7">    <span class="hljs-keyword">case</span> <span
+        class="hljs-string">'update'</span>:</span>
+<span class="code-block-extension-codeLine" data-line-num="8">      <span
+        class="hljs-title function_">notifyListeners</span>(<span class="hljs-string">'vite:beforeUpdate'</span>, payload)</span>
+<span class="code-block-extension-codeLine" data-line-num="9">      ...</span>
+<span class="code-block-extension-codeLine" data-line-num="10">      <span class="hljs-keyword">break</span></span>
+<span class="code-block-extension-codeLine" data-line-num="11">    <span class="hljs-keyword">case</span> <span
+        class="hljs-string">'custom'</span>: {</span>
+<span class="code-block-extension-codeLine" data-line-num="12">      <span
+        class="hljs-title function_">notifyListeners</span>(payload.<span class="hljs-property">event</span> <span
+        class="hljs-keyword">as</span> <span class="hljs-title class_">CustomEventName</span>&lt;any&gt;, payload.<span
+        class="hljs-property">data</span>)</span>
+<span class="code-block-extension-codeLine" data-line-num="13">      ...</span>
+<span class="code-block-extension-codeLine" data-line-num="14">      <span class="hljs-keyword">break</span></span>
+<span class="code-block-extension-codeLine" data-line-num="15">    }</span>
+<span class="code-block-extension-codeLine" data-line-num="16">    <span class="hljs-keyword">case</span> <span
+        class="hljs-string">'full-reload'</span>:</span>
+<span class="code-block-extension-codeLine" data-line-num="17">      <span
+        class="hljs-title function_">notifyListeners</span>(<span class="hljs-string">'vite:beforeFullReload'</span>, payload)</span>
+<span class="code-block-extension-codeLine" data-line-num="18">      ...</span>
+<span class="code-block-extension-codeLine" data-line-num="19">      <span class="hljs-keyword">break</span></span>
+<span class="code-block-extension-codeLine" data-line-num="20">    <span class="hljs-keyword">case</span> <span
+        class="hljs-string">'prune'</span>:</span>
+<span class="code-block-extension-codeLine" data-line-num="21">      <span
+        class="hljs-title function_">notifyListeners</span>(<span class="hljs-string">'vite:beforePrune'</span>, payload)</span>
+<span class="code-block-extension-codeLine" data-line-num="22">      ...</span>
+<span class="code-block-extension-codeLine" data-line-num="23">      <span class="hljs-keyword">break</span></span>
+<span class="code-block-extension-codeLine" data-line-num="24">    <span class="hljs-keyword">case</span> <span
+        class="hljs-string">'error'</span>: {</span>
+<span class="code-block-extension-codeLine" data-line-num="25">      <span
+        class="hljs-title function_">notifyListeners</span>(<span
+        class="hljs-string">'vite:error'</span>, payload)</span>
+<span class="code-block-extension-codeLine" data-line-num="26">      ...</span>
+<span class="code-block-extension-codeLine" data-line-num="27">      <span class="hljs-keyword">break</span></span>
+<span class="code-block-extension-codeLine" data-line-num="28">    }</span>
+<span class="code-block-extension-codeLine" data-line-num="29">    <span class="hljs-attr">default</span>: {</span>
+<span class="code-block-extension-codeLine" data-line-num="30">      <span class="hljs-keyword">const</span> <span
+        class="hljs-attr">check</span>: never = payload</span>
+<span class="code-block-extension-codeLine" data-line-num="31">      <span
+        class="hljs-keyword">return</span> check</span>
+<span class="code-block-extension-codeLine" data-line-num="32">    }</span>
+<span class="code-block-extension-codeLine" data-line-num="33">  }</span>
+<span class="code-block-extension-codeLine" data-line-num="34">}</span>
+</code></pre>
+        <hr>
+        <h1 data-id="heading-22">优势</h1>
+        <ul>
+            <li>快！快！非常快！！</li>
+            <li>高度集成，开箱即用。</li>
+            <li>基于ESM急速热更新，无需打包编译。</li>
+            <li>基于<code>esbuild</code>的依赖预处理，比<code>Webpack</code>等node编写的编译器快几个数量级。</li>
+            <li>兼容<code>Rollup</code>庞大的插件机制，插件开发更简洁。</li>
+            <li>不与<code>Vue</code>绑定，支持<code>React</code>等其他框架，独立的构建工具。</li>
+            <li>内置SSR支持。</li>
+            <li>天然支持TS。</li>
+        </ul>
+        <h1 data-id="heading-23">不足</h1>
+        <ul>
+            <li><code>Vue</code>仍为第一优先支持，量身定做的编译插件，对<code>React</code>的支持不如<code>Vue</code>强大。
+            </li>
+            <li>虽然已经推出2.0正式版，已经可以用于正式线上生产，但目前市场上实践少。</li>
+            <li>生产环境集成<code>Rollup</code>打包，与开发环境最终执行的代码不一致。</li>
+        </ul>
+        <hr>
+        <h1 data-id="heading-24">与 webpack 对比</h1>
+        <p>由于<code>Vite</code>主打的是开发环境的极致体验，生产环境集成<code>Rollup</code>，这里的对比主要是<code>Webpack-dev-server</code>与<code>Vite-dev-server</code>的对比：
+        </p>
+        <ul>
+            <li>到目前很长时间以来<code>Webpack</code>在前端工程领域占统治地位，<code>Vite</code>推出以来备受关注，社区活跃，GitHub
+                star 数量激增，目前达到37.4K
+                <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a13034f21bfc43499756af2ae85cdbbd~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp"
+                     alt="image.png" loading="lazy" class="medium-zoom-image"></li>
+            <li><code>Webpack</code>配置丰富使用极为灵活但上手成本高，<code>Vite</code>开箱即用配置高度集成</li>
+            <li><code>Webpack</code>启动服务需打包构建，速度慢，<code>Vite</code>免编译可秒开</li>
+            <li><code>Webpack</code>热更新需打包构建，速度慢，<code>Vite</code>毫秒响应</li>
+            <li><code>Webpack</code>成熟稳定、资源丰富、大量实践案例，<code>Vite</code>实践较少</li>
+            <li><code>Vite</code>使用<code>esbuild</code>编译，构建速度比<code>webpack</code>快几个数量级</li>
+        </ul>
+        <hr>
+        <h1 data-id="heading-25">兼容性</h1>
+        <ul>
+            <li>默认目标浏览器是在<code>script</code>标签上支持原生 ESM 和 原生 ESM 动态导入</li>
+            <li>可使用官方插件 <code>@vitejs/plugin-legacy</code>，转义成传统版本和相对应的<code>polyfill</code></li>
+        </ul>
+        <hr>
+        <h1 data-id="heading-26">未来探索</h1>
+        <ul>
+            <li>传统构建工具性能已到瓶颈，主打开发体验的<code>Vite</code>，可能会受到欢迎。</li>
+            <li>主流浏览器基本支持ESM，ESM将成为主流。</li>
+            <li><code>Vite</code>在<code>Vue3.0</code>代替<code>vue-cli</code>，作为官方脚手架，会大大提高使用量。</li>
+            <li><code>Vite2.0</code>推出后，已可以在实际项目中使用<code>Vite</code>。</li>
+            <li>如果觉得直接使用<code>Vite</code>太冒险，又确实有<code>dev
+                server</code>速度慢的问题需要解决，可以尝试用<code>Vite</code>单独搭建一套<code>dev server</code></li>
+        </ul>
+        <hr>
+        <h1 data-id="heading-27">相关资源</h1>
+        <h3 data-id="heading-28">官方插件</h3>
+        <p>除了支持现有的<code>Rollup</code>插件系统外，官方提供了四个最关键的插件</p>
+        <ul>
+            <li><code>@vitejs/plugin-vue</code> 提供 Vue3 单文件组件支持</li>
+            <li><code>@vitejs/plugin-vue-jsx</code> 提供 Vue3 JSX 支持（专用的 Babel 转换插件）</li>
+            <li><code>@vitejs/plugin-react</code> 提供完整的 React 支持</li>
+            <li><code>@vitejs/plugin-legacy</code> 为打包后的文件提供传统浏览器兼容性支持</li>
+        </ul>
+        <h3 data-id="heading-29">UI组件库</h3>
+        <ul>
+            <li>
+                <a href="https://link.juejin.cn?target=https%3A%2F%2Felement-plus.gitee.io%2Fzh-CN%2Fguide%2Fquickstart.html%23%25E6%258C%2589%25E9%259C%2580%25E5%25AF%25BC%25E5%2585%25A5"
+                   title="https://element-plus.gitee.io/zh-CN/guide/quickstart.html#%E6%8C%89%E9%9C%80%E5%AF%BC%E5%85%A5"
+                   target="_blank" ref="nofollow noopener noreferrer">Element UI</a>：支持 vite 引入
+            </li>
+        </ul>
+        <h3 data-id="heading-30">相关链接</h3>
+        <ul>
+            <li><a href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vitejs.dev%2F" title="https://cn.vitejs.dev/"
+                   target="_blank" ref="nofollow noopener noreferrer">Vite官网</a></li>
+            <li><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.yuque.com%2Fvueconf%2Fmkwv0c%2Fxqyxix"
+                   title="https://www.yuque.com/vueconf/mkwv0c/xqyxix" target="_blank"
+                   ref="nofollow noopener noreferrer">Vue3 生态进展和计划-尤雨溪</a></li>
+            <li><a href="https://link.juejin.cn?target=http%3A%2F%2Fvite.ssr-fc.com%2F" title="http://vite.ssr-fc.com/"
+                   target="_blank" ref="nofollow noopener noreferrer">Vite源码解析</a></li>
+            <li><a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Dxx8gEHet6n8"
+                   title="https://www.youtube.com/watch?v=xx8gEHet6n8" target="_blank"
+                   ref="nofollow noopener noreferrer">Develop with Vite | Vite快速入门 - Anthony Fu • Vue北京聚会 Day
+                13</a></li>
+        </ul>
+    </div> <!----></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/emoji-support/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Emoji Support</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/juejin/result/1/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span></span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on x"
+            href="https://x.com/intent/tweet/?text=&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f&amp;title=&amp;summary=&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f&title=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on whatsapp"
+            href="https://api.whatsapp.com/send?text=%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on telegram"
+            href="https://telegram.me/share/url?text=&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fjuejin%2fcompare%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span><a href="https://beian.miit.gov.cn/">粤ICP备2023039897号-1</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
