@@ -8,7 +8,7 @@ const page = await browser.newPage();
 const isTabUpdate = false; // 是否更新分类列表
 const isDetailListUpdate = false; // 是否更新分类列表下 优质作者列表（不同期数评选的作者是不同的）
 const isAuthorFollowerListUpdate = false; // 是否更新 优质作者被关注者列表
-const isAuthorFolloweeListUpdate = true // 是否更新 被优质作者关注的作者列表
+const isAuthorFolloweeListUpdate = false // 是否更新 被优质作者关注的作者列表
 const isAuthorFollowTeamUpdate = false; // 是否更新 被优质作者关注的团队列表
 
 const hQAuthorTabList = await readFile('../output/juejin/hQAuthorTabList.json');
@@ -61,7 +61,6 @@ if (!hQAuthorDetailList || isDetailListUpdate) {
     writeToFile(JSON.stringify({hQAuthorList}, null, 2), `./output/juejin/hQAuthorList.json`)
         .then(() => console.log('hQAuthorList.json written successfully'));
 }
-
 
 //------------- 3、优质作者榜详情，获取其关注者列表 -------------
 if (!hQAuthorList || isAuthorFollowerListUpdate) {

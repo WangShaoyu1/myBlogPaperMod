@@ -55,7 +55,7 @@ Hi，大家好！
 
 近些年前端工程化发展迅速，各种构建工具层出不穷，目前`Webpack`仍然占据统治地位，npm 每周下载量达到两千多万次。下面是我按 npm 发版时间线列出的开发者比较熟知的一些构建工具。
 
-![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4401a88bf0e04c668e6623d2134c60d7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+![](/images/jueJin/4401a88bf0e04c6.png)
 
 ### 当前工程化痛点
 
@@ -99,9 +99,9 @@ Hi，大家好！
 
 `Webpack`通过先将整个应用打包，再将打包后代码提供给`dev server`，开发者才能开始开发。
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/181a6bfe5e4d4857bd6bed63a573e2b3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+![](/images/jueJin/181a6bfe5e4d485.png)
 
-`Vite`直接将源码交给浏览器，实现`dev server`秒开，浏览器显示页面需要相关模块时，再向`dev server`发起请求，服务器简单处理后，将该模块返回给浏览器，实现真正意义的按需加载。 ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e00801ede5b84abd9bdaadb720d63e53~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+`Vite`直接将源码交给浏览器，实现`dev server`秒开，浏览器显示页面需要相关模块时，再向`dev server`发起请求，服务器简单处理后，将该模块返回给浏览器，实现真正意义的按需加载。 ![](/images/jueJin/e00801ede5b84ab.png)
 
 * * *
 
@@ -149,8 +149,14 @@ TypeScript
 ### 启动
 
 ```json
-{   "scripts": {     "dev": "vite", // 启动开发服务器，别名：
-```vite dev`，`vite serve`     "build": "vite build", // 为生产环境构建产物     "preview": "vite preview" // 本地预览生产构建产物   } }``
+    {
+        "scripts": {
+        "dev": "vite", // 启动开发服务器，别名：`vite dev`，`vite serve`
+        "build": "vite build", // 为生产环境构建产物
+        "preview": "vite preview" // 本地预览生产构建产物
+    }
+}
+```
 
 * * *
 
@@ -164,7 +170,7 @@ TypeScript
 **服务器：“已经结束了。”**  
 **开发者：“好快，好喜欢！！”**
 
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b6ab1cbe74ef49a9a601e0db0265453a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+![image.png](/images/jueJin/b6ab1cbe74ef49a.png)
 
 ### 依赖预构建
 
@@ -187,13 +193,13 @@ TypeScript
 *   `es-module-lexer` 扫描 import 语法
 *   `magic-string` 重写模块的引入路径
 
-js
+```js
+// 开发代码
+import { createApp } from 'vue'
 
- 代码解读
-
-复制代码
-
-`// 开发代码 import { createApp } from 'vue' // 转换后 import { createApp } from '/node_modules/vue/dist/vue.js'`
+// 转换后
+import { createApp } from '/node_modules/vue/dist/vue.js'
+```
 
 * * *
 
@@ -211,53 +217,181 @@ client 代码会在启动服务时注入到客户端，用于客户端对于`Web
 
 1.  命令行启动服务`npm run dev`后，源码执行`cli.ts`，调用`createServer`方法，创建http服务，监听开发服务器端口。
 
-js
-
- 代码解读
-
-复制代码
-
-`// 源码位置 vite/packages/vite/src/node/cli.ts const { createServer } = await import('./server') try {     const server = await createServer({         root,         base: options.base,         ...     })     if (!server.httpServer) {         throw new Error('HTTP server not available')     }     await server.listen() }`
+```js
+// 源码位置 vite/packages/vite/src/node/cli.ts
+const { createServer } = await import('./server')
+    try {
+        const server = await createServer({
+        root,
+        base: options.base,
+        ...
+        })
+            if (!server.httpServer) {
+            throw new Error('HTTP server not available')
+        }
+        await server.listen()
+    }
+```
 
 2.  `createServer`方法的执行做了很多工作，如整合配置项、创建http服务（早期通过koa创建）、创建`WebSocket`服务、创建源码的文件监听、插件执行、optimize优化等。下面注释中标出。
 
-js
-
- 代码解读
-
-复制代码
-
-`// 源码位置 vite/packages/vite/src/node/server/index.ts export async function createServer(     inlineConfig: InlineConfig = {} ): Promise<ViteDevServer> {     // Vite 配置整合     const config = await resolveConfig(inlineConfig, 'serve', 'development')     const root = config.root     const serverConfig = config.server     // 创建http服务     const httpServer = await resolveHttpServer(serverConfig, middlewares, httpsOptions)     // 创建ws服务     const ws = createWebSocketServer(httpServer, config, httpsOptions)     // 创建watcher，设置代码文件监听     const watcher = chokidar.watch(path.resolve(root), {         ignored: [             '**/node_modules/**',             '**/.git/**',             ...(Array.isArray(ignored) ? ignored : [ignored])         ],         ...watchOptions     }) as FSWatcher     // 创建server对象     const server: ViteDevServer = {         config,         middlewares,         httpServer,         watcher,         ws,         moduleGraph,         listen,         ...     }     // 文件监听变动，websocket向前端通信     watcher.on('change', async (file) => {         ...         handleHMRUpdate()     })     // 非常多的 middleware     middlewares.use(...)          // optimize     const runOptimize = async () => {...}     return server }`
+```js
+// 源码位置 vite/packages/vite/src/node/server/index.ts
+export async function createServer(
+inlineConfig: InlineConfig = {}
+    ): Promise<ViteDevServer> {
+    // Vite 配置整合
+    const config = await resolveConfig(inlineConfig, 'serve', 'development')
+    const root = config.root
+    const serverConfig = config.server
+    
+    // 创建http服务
+    const httpServer = await resolveHttpServer(serverConfig, middlewares, httpsOptions)
+    
+    // 创建ws服务
+    const ws = createWebSocketServer(httpServer, config, httpsOptions)
+    
+    // 创建watcher，设置代码文件监听
+        const watcher = chokidar.watch(path.resolve(root), {
+            ignored: [
+            '**/node_modules/**',
+            '**/.git/**',
+            ...(Array.isArray(ignored) ? ignored : [ignored])
+            ],
+            ...watchOptions
+            }) as FSWatcher
+            
+            // 创建server对象
+                const server: ViteDevServer = {
+                config,
+                middlewares,
+                httpServer,
+                watcher,
+                ws,
+                moduleGraph,
+                listen,
+                ...
+            }
+            
+            // 文件监听变动，websocket向前端通信
+                watcher.on('change', async (file) => {
+                ...
+                handleHMRUpdate()
+                })
+                
+                // 非常多的 middleware
+                middlewares.use(...)
+                
+                // optimize
+            const runOptimize = async () => {...}
+            
+            return server
+        }
+```
 
 3.  使用[chokidar](https://link.juejin.cn?target=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fchokidar "https://www.npmjs.com/package/chokidar")监听文件变化，绑定监听事件。
 
-js
-
- 代码解读
-
-复制代码
-
-`// 源码位置 vite/packages/vite/src/node/server/index.ts   const watcher = chokidar.watch(path.resolve(root), {     ignored: [       '**/node_modules/**',       '**/.git/**',       ...(Array.isArray(ignored) ? ignored : [ignored])     ],     ignoreInitial: true,     ignorePermissionErrors: true,     disableGlobbing: true,     ...watchOptions   }) as FSWatcher`
+```js
+// 源码位置 vite/packages/vite/src/node/server/index.ts
+    const watcher = chokidar.watch(path.resolve(root), {
+        ignored: [
+        '**/node_modules/**',
+        '**/.git/**',
+        ...(Array.isArray(ignored) ? ignored : [ignored])
+        ],
+        ignoreInitial: true,
+        ignorePermissionErrors: true,
+        disableGlobbing: true,
+        ...watchOptions
+        }) as FSWatcher
+```
 
 4.  通过 [ws](https://link.juejin.cn?target=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fws "https://www.npmjs.com/package/ws") 来创建`WebSocket`服务，用于监听到文件变化时触发热更新，向客户端发送消息。
 
-js
-
- 代码解读
-
-复制代码
-
-`// 源码位置 vite/packages/vite/src/node/server/ws.ts export function createWebSocketServer(...){     let wss: WebSocket     const hmr = isObject(config.server.hmr) && config.server.hmr     const wsServer = (hmr && hmr.server) || server     if (wsServer) {         wss = new WebSocket({ noServer: true })         wsServer.on('upgrade', (req, socket, head) => {             // 服务就绪             if (req.headers['sec-websocket-protocol'] === HMR_HEADER) {                 wss.handleUpgrade(req, socket as Socket, head, (ws) => {                     wss.emit('connection', ws, req)                 })             }         })     } else {         ...     }     // 服务准备就绪，就能在浏览器控制台看到熟悉的打印 [vite] connected.     wss.on('connection', (socket) => {         socket.send(JSON.stringify({ type: 'connected' }))         ...     })     // 失败     wss.on('error', (e: Error & { code: string }) => {         ...     })     // 返回ws对象     return {         on: wss.on.bind(wss),         off: wss.off.bind(wss),         // 向客户端发送信息         // 多个客户端同时触发         send(payload: HMRPayload) {             const stringified = JSON.stringify(payload)             wss.clients.forEach((client) => {                 // readyState 1 means the connection is open                 client.send(stringified)             })         }     } }`
+```js
+// 源码位置 vite/packages/vite/src/node/server/ws.ts
+    export function createWebSocketServer(...){
+    let wss: WebSocket
+    const hmr = isObject(config.server.hmr) && config.server.hmr
+    const wsServer = (hmr && hmr.server) || server
+    
+        if (wsServer) {
+        wss = new WebSocket({ noServer: true })
+            wsServer.on('upgrade', (req, socket, head) => {
+            // 服务就绪
+                if (req.headers['sec-websocket-protocol'] === HMR_HEADER) {
+                    wss.handleUpgrade(req, socket as Socket, head, (ws) => {
+                    wss.emit('connection', ws, req)
+                    })
+                }
+                })
+                    } else {
+                    ...
+                }
+                // 服务准备就绪，就能在浏览器控制台看到熟悉的打印 [vite] connected.
+                    wss.on('connection', (socket) => {
+                    socket.send(JSON.stringify({ type: 'connected' }))
+                    ...
+                    })
+                    // 失败
+                        wss.on('error', (e: Error & { code: string }) => {
+                        ...
+                        })
+                        // 返回ws对象
+                            return {
+                            on: wss.on.bind(wss),
+                            off: wss.off.bind(wss),
+                            // 向客户端发送信息
+                            // 多个客户端同时触发
+                                send(payload: HMRPayload) {
+                                const stringified = JSON.stringify(payload)
+                                    wss.clients.forEach((client) => {
+                                    // readyState 1 means the connection is open
+                                    client.send(stringified)
+                                    })
+                                }
+                            }
+                        }
+```
 
 5.  在服务启动时会向浏览器注入代码，用于处理客户端接收到的`WebSocket`消息，如重新发起模块请求、刷新页面。
 
-js
-
- 代码解读
-
-复制代码
-
-``//源码位置 vite/packages/vite/src/client/client.ts async function handleMessage(payload: HMRPayload) {   switch (payload.type) {     case 'connected':       console.log(`[vite] connected.`)       break     case 'update':       notifyListeners('vite:beforeUpdate', payload)       ...       break     case 'custom': {       notifyListeners(payload.event as CustomEventName<any>, payload.data)       ...       break     }     case 'full-reload':       notifyListeners('vite:beforeFullReload', payload)       ...       break     case 'prune':       notifyListeners('vite:beforePrune', payload)       ...       break     case 'error': {       notifyListeners('vite:error', payload)       ...       break     }     default: {       const check: never = payload       return check     }   } }``
+```js
+//源码位置 vite/packages/vite/src/client/client.ts
+    async function handleMessage(payload: HMRPayload) {
+        switch (payload.type) {
+        case 'connected':
+        console.log(`[vite] connected.`)
+        break
+        case 'update':
+        notifyListeners('vite:beforeUpdate', payload)
+        ...
+        break
+            case 'custom': {
+            notifyListeners(payload.event as CustomEventName<any>, payload.data)
+            ...
+            break
+        }
+        case 'full-reload':
+        notifyListeners('vite:beforeFullReload', payload)
+        ...
+        break
+        case 'prune':
+        notifyListeners('vite:beforePrune', payload)
+        ...
+        break
+            case 'error': {
+            notifyListeners('vite:error', payload)
+            ...
+            break
+        }
+            default: {
+            const check: never = payload
+            return check
+        }
+    }
+}
+```
 
 * * *
 
@@ -287,7 +421,7 @@ js
 
 由于`Vite`主打的是开发环境的极致体验，生产环境集成`Rollup`，这里的对比主要是`Webpack-dev-server`与`Vite-dev-server`的对比：
 
-*   到目前很长时间以来`Webpack`在前端工程领域占统治地位，`Vite`推出以来备受关注，社区活跃，GitHub star 数量激增，目前达到37.4K ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a13034f21bfc43499756af2ae85cdbbd~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   到目前很长时间以来`Webpack`在前端工程领域占统治地位，`Vite`推出以来备受关注，社区活跃，GitHub star 数量激增，目前达到37.4K ![image.png](/images/jueJin/a13034f21bfc434.png)
 *   `Webpack`配置丰富使用极为灵活但上手成本高，`Vite`开箱即用配置高度集成
 *   `Webpack`启动服务需打包构建，速度慢，`Vite`免编译可秒开
 *   `Webpack`热更新需打包构建，速度慢，`Vite`毫秒响应
