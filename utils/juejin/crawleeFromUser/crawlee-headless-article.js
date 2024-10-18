@@ -41,7 +41,7 @@ await page.setExtraHTTPHeaders({
     'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)],
 });
 const isArticleUpdate = true; // 是否更新 作者下的文章
-const userLevel = 6;
+const userLevel = 5;
 
 async function readCombineData() {
     return await readFile(`../../output/juejin/followerRank/combineSepLevelData/${userLevel}_combine_data.json`);
@@ -52,11 +52,12 @@ if (isArticleUpdate) {
     const articleListFromOneAuthor = {};
     const startTime = Date.now(); // 开始时间
 
-    for (const item of JSON.parse(await readCombineData()).allData) {
+    for (const [index, item] of (JSON.parse(await readCombineData()).allData).entries()) {
         if (item.articleList && item.articleList.length) {
             continue
         }
         try {
+            await createTimer(index, getRandomDelay(100, 200))
             await getArticleList(item).then(async (result) => {
                 const existingData = JSON.parse(await readCombineData());
 
@@ -93,7 +94,7 @@ async function getArticleList(item) {
 
             while (true) {
                 await page.mouse.wheel(0, 1000);
-                await page.waitForTimeout(getRandomDelay(1, 10));
+                await page.waitForTimeout(getRandomDelay(10, 20));
 
                 const isBottom = await page.evaluate(({startTime}) => {
                     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
@@ -124,6 +125,19 @@ async function getArticleList(item) {
             reject(e);
         } finally {
             console.log(`This Time taken to get ${item.name}\`s articleList is: ${((Date.now() - startTime) / 1000).toFixed(2)} seconds`);
+        }
+    });
+}
+
+//
+async function createTimer(index, duration) {
+    return new Promise(resolve => {
+        if (index % 20 === 8) {
+            setTimeout(() => {
+                resolve(`Timer completed,index:${index}`);
+            }, duration);
+        } else {
+            resolve(`Timer completed, index:${index}`);
         }
     });
 }
