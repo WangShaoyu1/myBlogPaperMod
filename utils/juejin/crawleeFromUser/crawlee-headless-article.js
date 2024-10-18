@@ -41,7 +41,7 @@ await page.setExtraHTTPHeaders({
     'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)],
 });
 const isArticleUpdate = true; // 是否更新 作者下的文章
-const userLevel = 7;
+const userLevel = 6;
 
 async function readCombineData() {
     return await readFile(`../../output/juejin/followerRank/combineSepLevelData/${userLevel}_combine_data.json`);
@@ -71,13 +71,12 @@ if (isArticleUpdate) {
                 await writeToFile(JSON.stringify(existingData, null, 2), `./output/juejin/followerRank/combineSepLevelData/${userLevel}_combine_data.json`)
                     .then(() => console.log(`${item.name}\`s article list written successfully`));
 
-                await writeToFile(`${result.join("\n")}`, `./output/juejin/followerRank/combineSepLevelData/visitedUrls/level_${userLevel}_articleList.txt`, true).then(() => console.log(`level_${item.level.rankNumber}_articleList.txt written successfully`));
+                await writeToFile(`${result.join("\n")}\n`, `./output/juejin/followerRank/combineSepLevelData/visitedUrls/level_${userLevel}_articleList.txt`, true).then(() => console.log(`level_${item.level.rankNumber}_articleList.txt written successfully`));
             })
         } catch (e) {
             console.error(`Error getting all article list,Detail reason is: ${e.message}`);
         }
     }
-
 
     console.log(`All articleList above ${userLevel} cost time taken: ${((Date.now() - startTime) / 1000).toFixed(2)} seconds`);
 }
@@ -94,7 +93,7 @@ async function getArticleList(item) {
 
             while (true) {
                 await page.mouse.wheel(0, 1000);
-                await page.waitForTimeout(getRandomDelay(1, 40));
+                await page.waitForTimeout(getRandomDelay(1, 10));
 
                 const isBottom = await page.evaluate(({startTime}) => {
                     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
