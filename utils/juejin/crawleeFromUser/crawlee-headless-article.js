@@ -41,7 +41,7 @@ await page.setExtraHTTPHeaders({
     'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)],
 });
 const isArticleUpdate = true; // 是否更新 作者下的文章
-const userLevel = 5;
+const userLevel = 4;
 
 async function readCombineData() {
     return await readFile(`../../output/juejin/followerRank/combineSepLevelData/${userLevel}_combine_data.json`);
