@@ -94,7 +94,7 @@ async function getArticleList(item) {
 
             while (true) {
                 await page.mouse.wheel(0, 1000);
-                await page.waitForTimeout(getRandomDelay(10, 20));
+                await page.waitForTimeout(getRandomDelay(5, 10));
 
                 const isBottom = await page.evaluate(({startTime}) => {
                     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
