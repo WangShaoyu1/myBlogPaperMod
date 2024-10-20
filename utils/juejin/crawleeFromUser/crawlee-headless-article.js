@@ -57,7 +57,7 @@ if (isArticleUpdate) {
             continue
         }
         try {
-            await createTimer(index, getRandomDelay(100, 200))
+            await createTimer(index, getRandomDelay(60, 120))
             await getArticleList(item).then(async (result) => {
                 const existingData = JSON.parse(await readCombineData());
 
