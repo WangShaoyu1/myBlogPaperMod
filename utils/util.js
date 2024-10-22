@@ -59,7 +59,7 @@ export async function readFile(filePath) {
 }
 
 // 组合markdown内容
-export async function mergeContentMarkdown({author, title, date, readTime, description, tags, weight, articleContent}) {
+export async function mergeContentMarkdown({author, title, date, readTime, description, tags, weight, articleContent,likes, comments, collects, views}) {
     const preface = `---
 author: "${author}"
 title: "${title}"
@@ -68,6 +68,7 @@ description: "${description}"
 tags: ${tags}
 ShowReadingTime: "${readTime}"
 weight: ${weight}
+selfDefined:"likes:${likes},comments:${comments},collects:${collects},likes:${views},"
 ---\n`
     return preface + articleContent;
 }
