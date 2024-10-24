@@ -1,10 +1,10 @@
 {
-	"title": "",
-	"author": "",
-	"publishTime": "",
-	"readTime": "",
-	"tags": [],
-	"description": "",
-	"article": "",
-	"selfDefined": "likes:0,comments:0,collects:0,likes:0"
+	"title": "栈内存只有984KiB，如果一个字符串超级长，能存的下吗？",
+	"author": "Sunshine_Lin",
+	"publishTime": "2022-01-17",
+	"readTime": "阅读3分钟",
+	"tags": "[\"前端\",\"JavaScript\",\"浏览器中文技术社区\",\"前端开发社区\",\"前端技术交流\",\"前端框架教程\",\"JavaScript 学习资源\",\"CSS 技巧与最佳实践\",\"HTML5 最新动态\",\"前端工程师职业发展\",\"开源前端项目\",\"前端技术趋势\"]",
+	"description": "前言 大家好，我是林三心，用最通俗易懂的话讲最难的知识点是我的座右铭，基础是进阶的前提是我的初心。 在我们的认知里：基础类型存栈内存，引用数据类型存堆内存。 超长字符串 大家都知道，字符串属于基础类型",
+	"article": "前言\n--\n\n大家好，我是林三心，**用最通俗易懂的话讲最难的知识点**是我的座右铭，**基础是进阶的前提**是我的初心。\n\n在我们的认知里：基础类型存栈内存，引用数据类型存堆内存。\n\n```js\nconst a = '林三心'\n    const b = {\n    age: 18,\n    height: 180\n}\n```\n\n![截屏2022-01-17 下午10.23.11.png](/images/jueJin/51e12603c2b0445.png)\n\n超长字符串\n-----\n\n大家都知道，`字符串`属于`基础类型`，所以大家会觉得`字符串`是存在`栈内存`中的，但是大家要知道，V8默认栈内存是`984Kib`，那如果一个`超长字符串 > 984Kib`能装的进`栈内存`吗？这也就是一个比较经典的问题——**大象装箱问题**，试问：一头大象能装进一个小箱子里吗？\n\n![截屏2022-01-17 下午10.35.52.png](/images/jueJin/431ec71a303b4d7.png)\n\n一探究竟\n----\n\n### 堆快照\n\n先来看一段代码\n\n```js\n    const func = function() {\n    this.str1 = '林三心'\n    this.str2 = 'Sunshine_Lin'\n}\n\nconst a = new func()\nconst b = new func()\n```\n\n然后咱们来看看`堆快照`的详情\n\n![WeChat9db795005f91b874bb0097857cb6f7a3.png](/images/jueJin/615fdcf8e03e420.png)\n\n上面的结果可以看出：\n\n*   a 和 b的`str1`都指向同一个地址\n*   a 和 b的`str2`都指向同一个地址\n\n那我们可不可以猜测出一个结论：**字符串的内容存于堆内存中，指针存于栈内存中，且相同的字符串指向同一个堆内存地址**\n\n### 修改和新增字符串\n\n我们稍微修改下代码\n\n```js\n    const func = function() {\n    this.str1 = '林三心'\n    this.str2 = 'Sunshine_Lin'\n}\n\nconst a = new func()\nconst b = new func()\n\n// 修改str1\na.str1 = '哈哈哈哈哈哈哈哈哈哈'\n// 新增str3，跟str2一样\na.str3 = 'Sunshine_Lin'\n```\n\n再来看看现阶段的`堆快照`的详情\n\n![WeChat40be5ddc2bb160cdba3258fc98825136.png](/images/jueJin/4a57ffd4a5be4ff.png)\n\n上面的结果可以看出：\n\n*   `str1`修改成一个新的字符串后，重新开辟了一个内存空间（新地址）\n*   `str3`新增之后，指针指向已有的`Sunshine_Lin`的内存空间\n\n那我们可不可以猜测出一个结论：**新增或者修改字符串后，如果是一个之前不存在的字符串，则新开辟内存空间，如果是已有的，则直接使用已有的内存空间**\n\n### 源码分析\n\n当我们声明一个字符串时：\n\n*   1、v8内部有一个名为`stringTable`的`hashmap`缓存了所有字符串，在V8阅读我们的代码，转换抽象语法树时，每遇到一个字符串，会根据其特征换算为一个`hash值`，插入到`hashmap`中。在之后如果遇到了`hash值`一致的字符串，会优先从里面取出来进行比对，一致的话就不会生成新字符串类。\n*   2、缓存字符串时，根据字符串不同采取不同`hash`方式。\n\n![截屏2022-01-17 下午11.06.30.png](/images/jueJin/34348a2059dd4a5.png)\n\n### 源码\n\n![image.png](/images/jueJin/4d21f78ab6d3482.png)\n\n![image.png](/images/jueJin/4245d4192ab246d.png)\n\n### 通俗易懂总结\n\n字符串数据存于`堆内存`中，`栈内存`中只存其`地址指针`\n\n当我们新建一个字符串时，V8会从内存中查找一下是否已经有存在的一样的字符串，找到的话直接复用。如果找不到的话，则开辟一块新的内存空间来存这个字符串，并把地址赋给变量。\n\n大家有没有想过，为什么字符串不能通过下标索引来进行修改呢？因为字符串的修改本质上只能是通过整个的修改，而不能局部修改。\n\n参考文章\n----\n\n*   [JS中变量存储在堆中还是栈中？（深入内存原理）](https://link.juejin.cn?target=https%3A%2F%2Fblog.csdn.net%2Fxgangzai%2Farticle%2Fdetails%2F120755491 \"https://blog.csdn.net/xgangzai/article/details/120755491\")\n\n结语\n--\n\n我是林三心，一个热心的前端菜鸟程序员。如果你上进，喜欢前端，想学习前端，那咱们可以交朋友，一起摸鱼哈哈，摸鱼群，点这个 --> [摸鱼沸点](https://juejin.cn/pin/7035153948126216206 \"https://juejin.cn/pin/7035153948126216206\")\n\n![image.png](/images/jueJin/2d1d43ebae0c47c.png)",
+	"selfDefined": "likes:47,comments:0,collects:23,likes:4302"
 }

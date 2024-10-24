@@ -1,10 +1,10 @@
 {
-	"title": "",
-	"author": "",
-	"publishTime": "",
-	"readTime": "",
-	"tags": [],
-	"description": "",
-	"article": "",
-	"selfDefined": "likes:0,comments:0,collects:0,likes:0"
+	"title": "直接改node_modules？你不太优雅啊！",
+	"author": "Sunshine_Lin",
+	"publishTime": "2022-09-04",
+	"readTime": "阅读3分钟",
+	"tags": "[\"前端中文技术社区\",\"前端开发社区\",\"前端技术交流\",\"前端框架教程\",\"JavaScript 学习资源\",\"CSS 技巧与最佳实践\",\"HTML5 最新动态\",\"前端工程师职业发展\",\"开源前端项目\",\"前端技术趋势\"]",
+	"description": "前言 大家好，我是林三心，用最通俗易懂的话讲最难的知识点是我的座右铭，基础是进阶的前提是我的初心。 为啥要改node_modules？ 在平常的开发中，其实是很少需要改node_modules里的代码",
+	"article": "前言\n--\n\n大家好，我是林三心，**用最通俗易懂的话讲最难的知识点**是我的座右铭，**基础是进阶的前提**是我的初心。\n\n![](/images/jueJin/d569b4f7c477424.png)\n\n为啥要改node\\_modules？\n------------------\n\n在平常的开发中，其实是很少需要改`node_modules`里的代码的，但是也有很多情况需要修改。\n\n就比如我上次遇到一个场景，我使用了一个中间件的包，用来做接口转发的，但是呢，我遇到了一个问题：**这个包限制了上传的文件格式**\n\n但是其实我是要**放开所有文件格式的上传**的，所以我被迫需要修改`node_modules`中这个包的代码，放开他的限制，这样才能实现我想要的效果\n\n那我该怎么改呢？这是个问题。或者说，我应该怎么改才能是最好的呢？\n\n第一种：直接改\n-------\n\n这种很好懂，就是直接进`node_modules`中，找到那个包的代码，并修改对应的地方的代码，然后重启项目，就能达到我想要的效果。\n\n但是其实这种做法弊端太多啦！\n\n*   1、只能是你自己本地用你修改的代码，你同事用不了\n*   2、下次`npm i`之后那个包的代码又恢复原状\n\n所以应该没人这么做吧？？？\n\n第二种：独立维护一个包\n-----------\n\n我使用了一个包A，它限制了上传文件的格式，但是我不想，我想要放开限制，所以我怎么办呢？\n\n我可以这样，我写一个新包B，这个新包B其实是对包A的Copy，并且Copy之后，我将包B中的格式限制给放开了，然后把包B推送到npm上\n\n这时候我项目中不需要用到包A了，只需要安装我自己维护的包B就行了。这其实也能达到效果，但是这样会增加维护的成本。。。\n\n第三种：patch-package\n-----------------\n\n这是一个专门用来修改`node_modules`中包的代码的工具，使用起来也很简单。\n\n### 1、安装patch-package\n\n```js\nnpm i patch-package\n```\n\n### 2、修改node\\_modules\n\n比如我想修改包A，那么我直接进`node_modules`中修改，然后执行\n\n```js\nnpx patch-package A\n```\n\n这个时候你的项目根目录下会出现`patches`这个目录，里面会出现一个包A的补丁文件，这个文件可大有用处！！\n\n> 注意：记得要把`patches`这个目录提交到git或者svn\n\n其实这个时候你本地已经使用到了你修改后的代码了，但问题是怎么让你的同事也同步到你的修改后的代码。。\n\n### 3、\"postinstall\": \"patch-package\"\n\n在`package.json`的`script`中增加\n\n```js\n\"postinstall\": \"patch-package\"\n```\n\n这个命令的作用就是：当你的同事去执行`npm i`的时候，会自动执行`npm run postinstall`这个命令，也就是执行`patch-package`，这时候就回去读取刚刚的`patches`目录，并将那些补丁达到对应的包里。\n\n比如我刚刚修改了包A并提交了补丁文件。那么我同事`npm i`的时候，就会自动执行`npm run postinstall`这个命令，然后去`pacthes`目录中找到对应的包A的补丁文件，并将补丁打到`node_modules`的包A中，达到同步修改代码的效果！！！\n\n结语\n--\n\n我是林三心，一个热心的前端菜鸟程序员。如果你上进，喜欢前端，想学习前端，那咱们可以交朋友，一起摸鱼哈哈，摸鱼群，点这个，有5000多名前端小伙伴在等着一起学习哦 --> [摸鱼沸点](https://juejin.cn/pin/7035153948126216206 \"https://juejin.cn/pin/7035153948126216206\")\n\n![image.png](/images/jueJin/43a5272e47f943f.png)",
+	"selfDefined": "likes:69,comments:0,collects:70,likes:3056"
 }
