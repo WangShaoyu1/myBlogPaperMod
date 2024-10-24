@@ -6,9 +6,9 @@ log.debug('Setting up crawler.');
 
 const crawler = new PlaywrightCrawler({
     requestHandler: router,
-    maxConcurrency: 10,
-    minConcurrency: 1,
-    maxRequestsPerCrawl: 100,
+    maxConcurrency: 20,
+    minConcurrency: 2,
+    maxRequestsPerCrawl: Infinity,
     requestHandlerTimeoutSecs: 200,
 })
 

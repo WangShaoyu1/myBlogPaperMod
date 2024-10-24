@@ -6,37 +6,43 @@ import {
     removeDomTags,
     getRandomDelay,
     replaceDoubleWithSingleQuotes,
-    removeSpecialChars, readJsonFilesFromFolder, readFile, processElementInHtml
+    removeSpecialChars, readJsonFilesFromFolder, readFile, processElementInHtml,convertToNumber
 } from "../../util.js"
-
+import {logError,logMessage} from "../../log.js"
 export const router = createPlaywrightRouter()
-let weight = 50;
-
+let weight = 1;
+let authorLevel =8;
 router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
     log.debug(`Visiting detail page: ${request.url}`);
     let startTime = Date.now(), endTime;
-    weight++
-
+    logMessage('info',`start:${new Date().toLocaleString()} ${request.url}`)
     // 在每次请求之间添加人为的延迟，单位为毫秒
-    await new Promise(resolve => setTimeout(resolve, getRandomDelay(2, 12))); // n 秒间隔
+    await new Promise(resolve => setTimeout(resolve, getRandomDelay(2, 30))); // n 秒间隔
 
     try {
         await page.waitForSelector('html', {timeout: 150000});
-        // 并发获取页面元素的内容
-        const [title, author, publishTime, readTime, metaTags, description, articleHtml, likes, comments, collects, views] = await Promise.all([
-            page.locator(".article-title").textContent({timeout: 150000}).then(removeSpaces).then(removeSpecialChars),
-            page.locator(".author-name .name").textContent({timeout: 150000}).then(removeSpaces),
-            page.locator(".meta-box .time").textContent({timeout: 150000}).then(removeSpaces),
-            page.locator(".meta-box .read-time").textContent({timeout: 150000}).then(removeSpaces),
-            page.getAttribute("meta[name='keywords']", "content", {timeout: 150000}).then(removeSpaces),
-            page.getAttribute("meta[name='description']", "content", {timeout: 150000}).then(removeSpaces).then(replaceDoubleWithSingleQuotes).then(removeSpecialChars),
-            page.locator("#article-root").innerHTML({timeout: 150000}),
-            page.getAttribute(".article-suspended-panel .with-badge:nth-child(1)","content",{timeout:"150000"}).then(removeSpaces),
-            page.getAttribute(".article-suspended-panel .with-badge:nth-child(2)","content",{timeout:"150000"}).then(removeSpaces),
-            page.getAttribute(".article-suspended-panel .with-badge:nth-child(3)","content",{timeout:"150000"}).then(removeSpaces),
-            page.locator(".meta-box .views-count").textContent({timeout: 150000}).then(removeSpaces),
-        ]);
-
+        // 并发获取页面元素的内容,page.evaluate不能传递函数，智能通过字符串传递函数逻辑，也不失为一个好方法
+        const {
+            title, author, publishTime, readTime, metaTags, description, articleHtml, likes, comments,
+            collects, views
+        } = await page.evaluate(({a,b,c}) => {
+            removeSpecialChars = new Function('return '+a)();
+            replaceDoubleWithSingleQuotes = new Function('return '+b)();
+            convertToNumber = new Function('return '+c)();
+            return {
+                title: removeSpecialChars(document.querySelector(".article-title")?.innerText || ''),
+                author: document.querySelector(".author-name .name")?.innerText || '',
+                publishTime: document.querySelector(".meta-box .time")?.innerText || '',
+                readTime: document.querySelector(".meta-box .read-time")?.innerText || '',
+                metaTags: document.querySelector("meta[name='keywords']")?.content || '',
+                description: replaceDoubleWithSingleQuotes(removeSpecialChars(document.querySelector("meta[name='description']")?.content||'')),
+                articleHtml: document.querySelector("#article-root")?.innerHTML || '',
+                likes: convertToNumber(document.querySelectorAll(".article-suspended-panel .with-badge:nth-of-type(1)")[0]?.getAttribute("badge") || ''),
+                comments: convertToNumber(document.querySelectorAll(".article-suspended-panel .with-badge:nth-of-type(2)")[0]?.getAttribute("badge") || ''),
+                collects: convertToNumber(document.querySelectorAll(".article-suspended-panel .with-badge:nth-of-type(3)")[0]?.getAttribute("badge") || ''),
+                views: convertToNumber(document.querySelector(".meta-box .views-count")?.innerText || ''),
+            }
+        }, {a:removeSpecialChars.toString(), b:replaceDoubleWithSingleQuotes.toString(),c:convertToNumber.toString()})
         // 处理 tags
         const tags = metaTags ? JSON.stringify(metaTags.split(',')) : [];
         log.debug(`tags: ${tags}`);
@@ -46,7 +52,8 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
         const rmDomArticle = removeDomTags(articleHtml, 'style');
         const cleanedArticle = await processElementInHtml(rmDomArticle);
 
-        const results = {title, author, publishTime, readTime, tags, description, article: cleanedArticle}
+        const results = {title, author, publishTime, readTime, tags, description, article: cleanedArticle,
+            selfDefined:`likes:${likes},comments:${comments},collects:${collects},likes:${views}`}
 
         await Dataset.pushData(results);
 
@@ -67,11 +74,14 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
 
         // 并行写入 markdown 文件和已爬取的链接
         await Promise.all([
-            writeToFile(mdContent, `./output/jueJin/posts/${title}.md`),
-            writeToFile(`${title} ${request.url}\n`, './output/juejin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt')
+            writeToFile(mdContent, `./output/jueJin/posts/${authorLevel}/${title}.md`),
+            writeToFile(`${request.url} ${title} \n`, './output/juejin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt',true)
         ]);
+        // 写入日志系统
+        logMessage('info',`end:${new Date().toLocaleString()} ${request.url}`)
     } catch (error) {
         log.error(`Error processing detail page: ${error}`);
+        logError(`${request.url} ${new Date().toLocaleString()} ${error}`)
     }
     endTime = Date.now();
     console.log(`总共花费的时间为：${(endTime - startTime) / 1000}秒`);
@@ -79,12 +89,13 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
 // This is a fallback route which will handle the start URL, as well as the LIST labeled URLs.
 router.addDefaultHandler(async ({request, page, enqueueLinks, log}) => {
     log.debug(`Enqueueing start from page: ${request.url}`);
-    // let allUrls = (await readJsonFilesFromFolder('../output/juejin/followerRank/combineSepLevelData/visitedUrls/splitLevelUrl/level_20/level_20_articleList_part_1.txt'))[0].urls,
-    //     visitedUrls = await readFile('../output/juejin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt'),
-    //     urls = allUrls.filter(url => !visitedUrls.includes(url)).slice(0, 1)
+    let willVisitUrls = (await readFile(`../../output/jueJin/followerRank/combineSepLevelData/visitedUrls/level_${authorLevel}_articleList.txt`)).split("\n"),
+        visitedUrl =   await readFile('../../output/jueJin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt'),
+        urls = willVisitUrls.filter(url => !visitedUrl.includes(url))
 
     await enqueueLinks({
-        urls: ['https://juejin.cn/post/7109652073402073102'],
+        // urls:["https://juejin.cn/post/7109652073402073102"],
+        urls,
         label: 'DETAIL',
     })
 });

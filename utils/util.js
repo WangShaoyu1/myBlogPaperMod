@@ -68,7 +68,7 @@ description: "${description}"
 tags: ${tags}
 ShowReadingTime: "${readTime}"
 weight: ${weight}
-selfDefined:"likes:${likes},comments:${comments},collects:${collects},likes:${views},"
+selfDefined:"likes:${likes},comments:${comments},collects:${collects},views:${views},"
 ---\n`
     return preface + articleContent;
 }
@@ -198,6 +198,31 @@ export function extractNumber(input) {
 
     const number = parseFloat(match[1]) * (match[2].toLowerCase() === 'k' ? 1000 : match[2].toLowerCase() === 'w' ? 10000 : 1);
     return Math.round(number); // 返回取整后的数字
+}
+export function convertToNumber(value) {
+    if (typeof value !== 'string') {
+        throw new Error('Input must be a string');
+    }
+
+    // 处理空字符串
+    if (value.trim() === '') {
+        return 0;
+    }
+
+    // 去除逗号
+    value = value.replace(/,/g, '');
+
+    // 检查是否以 'k'、'm' 或 'w' 结尾
+    if (value.endsWith('k')) {
+        return parseFloat(value) * 1000;
+    } else if (value.endsWith('m')) {
+        return parseFloat(value) * 1000000;
+    } else if (value.endsWith('w')) {
+        return parseFloat(value) * 10000;
+    } else {
+        // 解析普通数字
+        return parseFloat(value);
+    }
 }
 
 // 处理markdown中的图片问题
