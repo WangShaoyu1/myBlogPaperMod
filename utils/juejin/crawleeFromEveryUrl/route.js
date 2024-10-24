@@ -12,13 +12,13 @@ import {logError, logMessage} from "../../log.js"
 
 export const router = createPlaywrightRouter()
 let weight = 1;
-let authorLevel = 8;
+let authorLevel = 20;
 router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
     log.debug(`Visiting detail page: ${request.url}`);
     let startTime = Date.now(), endTime;
     logMessage('info', `start:${new Date().toLocaleString()} ${request.url}`)
     // 在每次请求之间添加人为的延迟，单位为毫秒
-    await new Promise(resolve => setTimeout(resolve, getRandomDelay(2, 30))); // n 秒间隔
+    await new Promise(resolve => setTimeout(resolve, getRandomDelay(12, 30))); // n 秒间隔
 
     try {
         await page.waitForSelector('html', {timeout: 150000});
@@ -82,7 +82,7 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
             // 并行写入 markdown 文件和已爬取的链接
             await Promise.all([
                 writeToFile(mdContent, `./output/jueJin/posts/${authorLevel}/${title}.md`),
-                writeToFile(`${request.url} ${title} \n`, './output/juejin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt', true)
+                writeToFile(`${request.url} ${title} \n`, './output/jueJin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt', true)
             ]);
         }
         // 写入日志系统
