@@ -12,13 +12,13 @@ import {logError, logMessage} from "../../log.js"
 
 export const router = createPlaywrightRouter()
 let weight = 1;
-let authorLevel = 7;
+let authorLevel = 20;
 router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
     log.debug(`Visiting detail page: ${request.url}`);
     let startTime = Date.now(), endTime;
     logMessage('info', `start:${new Date().toLocaleString()} ${request.url}`)
     // 在每次请求之间添加人为的延迟，单位为毫秒
-    await new Promise(resolve => setTimeout(resolve, getRandomDelay(10, 40))); // n 秒间隔
+    await new Promise(resolve => setTimeout(resolve, getRandomDelay(12, 30))); // n 秒间隔
 
     try {
         await page.waitForSelector('html', {timeout: 150000});
@@ -82,11 +82,8 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
             // 并行写入 markdown 文件和已爬取的链接
             await Promise.all([
                 writeToFile(mdContent, `./output/jueJin/posts/${authorLevel}/${title}.md`),
-                writeToFile(`${request.url} ${title} \n`, `./output/juejin/followerRank/combineSepLevelData/visitedUrls/done/${authorLevel}/crawled_links.txt`, true)
+                writeToFile(`${request.url} ${title} \n`, './output/jueJin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt', true)
             ]);
-        }else{
-            // 本次爬虫暂停，半小时到一小时之后再开始
-            await new Promise(resolve => setTimeout(resolve, getRandomDelay(1800, 3600))); // n 秒间隔
         }
         // 写入日志系统
         logMessage('info', `${title ? 'success' : 'failed'}:${new Date().toLocaleString()} ${request.url}`)
@@ -101,7 +98,7 @@ router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
 router.addDefaultHandler(async ({request, page, enqueueLinks, log}) => {
     log.debug(`Enqueueing start from page: ${request.url}`);
     let willVisitUrls = (await readFile(`../../output/jueJin/followerRank/combineSepLevelData/visitedUrls/level_${authorLevel}_articleList.txt`)).split("\n"),
-        visitedUrl = await readFile(`../../output/jueJin/followerRank/combineSepLevelData/visitedUrls/done/${authorLevel}/crawled_links.txt`),
+        visitedUrl = await readFile('../../output/jueJin/followerRank/combineSepLevelData/visitedUrls/done/crawled_links.txt'),
         urls = willVisitUrls.filter(url => !visitedUrl.includes(url))
 
     await enqueueLinks({
@@ -110,3 +107,4 @@ router.addDefaultHandler(async ({request, page, enqueueLinks, log}) => {
         label: 'DETAIL',
     })
 });
+

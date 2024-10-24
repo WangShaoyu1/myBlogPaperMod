@@ -102,7 +102,7 @@ export function replaceDoubleWithSingleQuotes(input) {
 
 // 去掉特殊字符
 export function removeSpecialChars(str) {
-    return str.replace(/[\/\\:*"<>|\.]/g, '');
+    return str.replace(/[\/\\:*"<>|?？]/g, '').replace(/\.+$/, '');
 }
 
 // 匹配并移除所有 <tagName> 标签及其内容
