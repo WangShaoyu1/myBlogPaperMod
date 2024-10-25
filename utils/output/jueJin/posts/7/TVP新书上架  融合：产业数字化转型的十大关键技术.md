@@ -6,7 +6,7 @@ description: "新书速递 近期，在腾讯云 TVP 联合出书计划中，腾
 tags: ["程序员","前端框架中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读10分钟"
 weight: 1
-selfDefined:"likes:0,comments:0,collects:2,views:2606,"
+selfDefined:"likes:0,comments:0,collects:2,views:2598,"
 ---
 **新书速递**
 --------

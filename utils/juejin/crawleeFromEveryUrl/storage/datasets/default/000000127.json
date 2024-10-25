@@ -1,10 +1,10 @@
 {
-	"title": "看似简单的题，席卷几十个前端群，王红元老师都亲自出面解答",
-	"author": "Sunshine_Lin",
-	"publishTime": "2021-11-14",
-	"readTime": "阅读3分钟",
-	"tags": "[\"前端\",\"JavaScript\",\"面试中文技术社区\",\"前端开发社区\",\"前端技术交流\",\"前端框架教程\",\"JavaScript 学习资源\",\"CSS 技巧与最佳实践\",\"HTML5 最新动态\",\"前端工程师职业发展\",\"开源前端项目\",\"前端技术趋势\"]",
-	"description": "前言 大家好，我是林三心，用最通俗易懂的话讲最难的知识点是我的座右铭，基础是进阶的前提是我的初心。 首先说明这不是标题党，是真的，这道题席卷了几十个群，能回答出来的人是微乎其微，最后连王红元老师都亲自",
-	"article": "前言\n--\n\n大家好，我是林三心，**用最通俗易懂的话讲最难的知识点**是我的座右铭，**基础是进阶的前提**是我的初心。\n\n首先说明这不是标题党，是真的，这道题席卷了几十个群，能回答出来的人是微乎其微，最后连**王红元老师**都亲自出面解答了这道题。\n\n![image.png](/images/jueJin/1357ff571d3f469.png)\n\n题目\n--\n\n先来看看这道题长什么样吧\n\n```js\nvar x = 1;\n    function f(x, y = function () { x = 3; console.log(x); }) {\n    console.log(x)\n    var x = 2\n    y()\n    console.log(x)\n}\nf()\nconsole.log(x)\n// //1、上面的代码输出的是什么？\n// //2、如果把var x = 2注释掉，输出的又是什么？\n// //3、如果把f函数第一个参数x改成xx，输出的又是什么？\n// //4、如果把f函数第一个参数x设置了默认值为4，输出的又是什么？\n```\n\n第一题\n---\n\n其实第一题就已经有很多同学答错了，可能同学们会得出两种答案\n\n*   1、`undefined、3、3、1`\n*   2、`undefined、3、2、3`\n\n其实通俗点就是两种想法\n\n*   1、参数y这个函数里的`x = 3`改变的是`全局`的`x`\n*   2、参数y这个函数里的`x = 3`改变的是`函数f内部`的`x`\n\n但其实这两种想法都是错的，因为大部分同学只看到了两个`x`\n\n*   1、全局的`x`\n*   2、f函数内部的`x`\n\n但其实忽视还有另一个`x`\n\n*   3、f函数的参数`x`\n\n这是解题的关键，来看看**王红元老师**的讲解吧\n\n![image.png](/images/jueJin/b6b8146349ca444.png)\n\n也就是其实`参数y函数`里`x = 3`其实改变的是`f函数`的 `参数x`，而不是`全局x`或者`f函数内部x`\n\n所以正确的输出应该是`undefined、3、2、1`\n\n```js\nvar x = 1;\n    function f(x, y = function () { x = 3; console.log(x); }) {\n    console.log(x) // 参数x没有默认值，所以：undefined\n    var x = 2\n    y() // 改变的是参数x，且输出参数x，所以：3\n    console.log(x) // 输出的是局部x，所以：2\n}\nf()\nconsole.log(x) // 全局x无影响，所以：1\n```\n\n第二题\n---\n\n第二题就简单多了，去掉`var x = 2`之后，那`f函数`内部就是有一个`x`，那就是`参数x`，所以`f函数`内部`console.log(x)`都是根据`参数x`实时的值来输出的\n\n```js\nvar x = 1;\n    function f(x, y = function () { x = 3; console.log(x); }) {\n    console.log(x) // 参数没有默认值，所以：undefined\n    // var x = 2\n    y() // 改变参数x = 3，且输出参数x，所以：3\n    console.log(x) // 实时参数x的值，所以：3\n}\nf()\nconsole.log(x) // 全局x无影响，所以：1\n```\n\n第三题\n---\n\n第三题，把`参数x`改成了`参数xx`，那么`参数y函数`的`x = 3`改变的就是`全局x`，因为`参数x`没了，又因为就近原则，`y函数`里的`x`就是指向`全局x`\n\n```js\nvar x = 1;\n    function f(xx, y = function () { x = 3; console.log(x); }) {\n    console.log(x) // var变量提升但未赋值，所以：undefined\n    var x = 2\n    y() // x = 3改变的是全局x，且输出全局x，所以：3\n    console.log(x) // x = 3改变的是全局x，与局部x无关，所以：2\n}\nf()\nconsole.log(x) // 全局x被y函数改变了，所以：3\n```\n\n第四题\n---\n\n第四题，是让`参数x`默认等于`4`，那其实跟第一题的差别就是`参数x`有无默认值\n\n```js\nvar x = 1;\n    function f(x = 4, y = function () { x = 3; console.log(x); }) {\n    console.log(x) // 参数x默认值，所以：4\n    var x = 2\n    y() // 改变的是参数x = 3，且输出参数x，所以：3\n    console.log(x) // 输出的是局部x，所以：2\n}\nf()\nconsole.log(x) // 全局x无影响，所以：1\n```\n\n结语\n--\n\n如果你觉得此文对你有一丁点帮助，点个赞，鼓励一下林三心哈哈。\n\n**如果你想一起学习前端或者摸鱼，那你可以加我，加入我的摸鱼学习群，点击这里** ---> [摸鱼沸点](https://juejin.cn/pin/7035153948126216206 \"https://juejin.cn/pin/7035153948126216206\")\n\n**如果你是有其他目的的，别加我，我不想跟你交朋友，我只想简简单单学习前端，不想搞一些有的没的！！！**",
-	"selfDefined": "likes:249,comments:109,collects:257,likes:38797"
+	"title": "",
+	"author": "",
+	"publishTime": "",
+	"readTime": "",
+	"tags": [],
+	"description": "",
+	"article": "",
+	"selfDefined": "likes:0,comments:0,collects:0,likes:0"
 }

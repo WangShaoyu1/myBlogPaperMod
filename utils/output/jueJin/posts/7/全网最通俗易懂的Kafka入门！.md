@@ -6,7 +6,7 @@ description: "众所周知，消息队列的产品有好几种，这里我选择
 tags: ["Java","Java EE中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读9分钟"
 weight: 1
-selfDefined:"likes:191,comments:0,collects:294,views:12320,"
+selfDefined:"likes:191,comments:20,collects:294,views:12321,"
 ---
 前言
 --

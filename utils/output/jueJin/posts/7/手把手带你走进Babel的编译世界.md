@@ -6,7 +6,7 @@ description: "本文将对AST结构、Babel工作原理等方面作介绍，结�
 tags: ["前端","Babel中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读9分钟"
 weight: 1
-selfDefined:"likes:160,comments:6,collects:261,views:5827,"
+selfDefined:"likes:160,comments:6,collects:261,views:5828,"
 ---
 > 作者：[BoBoooooo](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FBoBoooooo "https://github.com/BoBoooooo")
 

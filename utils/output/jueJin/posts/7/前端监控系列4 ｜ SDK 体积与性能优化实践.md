@@ -6,7 +6,7 @@ description: "随着业务不断迭代，功能变得越来越多，对监控的
 tags: ["前端","监控中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读18分钟"
 weight: 1
-selfDefined:"likes:23,comments:0,collects:49,views:6603,"
+selfDefined:"likes:23,comments:2,collects:49,views:6572,"
 ---
 背景
 ==

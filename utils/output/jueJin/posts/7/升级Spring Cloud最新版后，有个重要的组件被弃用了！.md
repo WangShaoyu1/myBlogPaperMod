@@ -6,7 +6,7 @@ description: "前不久，我把Mall微服务版本全面升级了，在通过�
 tags: ["Java","后端","Spring Cloud中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读4分钟"
 weight: 1
-selfDefined:"likes:28,comments:0,collects:50,views:5260,"
+selfDefined:"likes:28,comments:3,collects:50,views:5256,"
 ---
 > 前不久，我把[Mall微服务版本全面升级了](https://juejin.cn/post/7127085801871474695 "https://juejin.cn/post/7127085801871474695") ，在通过Gateway网关调用其他服务的时候，出现了`Service Unavailable`的问题。排查原因时发现作为负载均衡组件的Ribbon被弃用了，作为Netflix开源的一个组件，Ribbon早已进入维护状态。现在推荐使用的是Loadbalancer，今天我们就来聊聊Loadbalancer的使用！
 

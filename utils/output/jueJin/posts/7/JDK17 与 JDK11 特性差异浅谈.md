@@ -2,11 +2,11 @@
 author: "政采云技术"
 title: "JDK17 与 JDK11 特性差异浅谈"
 date: 2024-01-25
-description: "11 switch 表达式语法变化 在 JDK12 之前如果 switch 忘记写 break 将导致贯穿，在 JDK12 中对 switch 的这一贯穿性做了改进。你只要将 case 后面的冒号改"
+description: "1.1 switch 表达式语法变化 在 JDK12 之前如果 switch 忘记写 break 将导致贯穿，在 JDK12 中对 switch 的这一贯穿性做了改进。你只要将 case 后面的冒号改"
 tags: ["后端中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读17分钟"
 weight: 1
-selfDefined:"likes:7,comments:3,collects:11,views:8843,"
+selfDefined:"likes:7,comments:3,collects:10,views:8728,"
 ---
 ![文章顶部.png](/images/jueJin/b637793da67b4e0.png) ![](/images/jueJin/3556a291eb2948e.png)
 

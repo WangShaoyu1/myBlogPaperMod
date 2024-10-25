@@ -2,11 +2,11 @@
 author: "MacroZheng"
 title: "Nginx的这些妙用，你肯定有不知道的！"
 date: 2019-12-10
-description: "此时访问旧域名docsmacrozhengcom会直接跳转到wwwmacrozhengcom去。 mall项目全套学习教程连载中，关注公众号第一时间获取。"
+description: "此时访问旧域名docs.macrozheng.com会直接跳转到www.macrozheng.com去。 mall项目全套学习教程连载中，关注公众号第一时间获取。"
 tags: ["Java中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读5分钟"
 weight: 1
-selfDefined:"likes:139,comments:19,collects:202,views:11267,"
+selfDefined:"likes:139,comments:19,collects:202,views:11268,"
 ---
 > SpringBoot实战电商项目mall（25k+star）地址：[github.com/macrozheng/…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmacrozheng%2Fmall "https://github.com/macrozheng/mall")
 

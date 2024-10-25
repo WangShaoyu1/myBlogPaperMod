@@ -2,11 +2,11 @@
 author: "Gaby"
 title: "在Linux阿里云服务器上部署Nextjs项目"
 date: 2021-08-06
-description: "部署Nextjs项目到阿里云Linux服务器，但是网上大部分文章描述的并不清晰，而且大部分为 Copy 转载，对新手并不友好，因此针对服务器部署进行了整理，方便有需求的朋友使用"
+description: "部署Next.js项目到阿里云Linux服务器，但是网上大部分文章描述的并不清晰，而且大部分为 Copy 转载，对新手并不友好，因此针对服务器部署进行了整理，方便有需求的朋友使用"
 tags: ["前端","Linux中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读2分钟"
 weight: 1
-selfDefined:"likes:22,comments:3,collects:27,views:4714,"
+selfDefined:"likes:22,comments:3,collects:27,views:4565,"
 ---
 ### 概述
 

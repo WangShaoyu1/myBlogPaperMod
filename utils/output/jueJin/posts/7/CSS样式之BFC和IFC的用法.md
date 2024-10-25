@@ -6,7 +6,7 @@ description: "BFC 1、BFC的布局规则 2、触发BFC的元素 3、BFC的作用
 tags: ["前端","CSS中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读4分钟"
 weight: 1
-selfDefined:"likes:7,comments:1,collects:2,views:810,"
+selfDefined:"likes:7,comments:0,collects:2,views:800,"
 ---
 目录
 --

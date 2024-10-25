@@ -2,11 +2,11 @@
 author: "Gaby"
 title: "React Router 全面整理"
 date: 2021-08-24
-description: "1 使用说明 React router 只是一个核心库，在具体使用时应该基于不同的平台要使用不同的绑定库。比如：我们要在浏览器中使用"
+description: "1. 使用说明 React router 只是一个核心库，在具体使用时应该基于不同的平台要使用不同的绑定库。比如：我们要在浏览器中使用"
 tags: ["前端","React.js中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读8分钟"
 weight: 1
-selfDefined:"likes:6,comments:0,collects:7,views:1154,"
+selfDefined:"likes:6,comments:0,collects:7,views:1155,"
 ---
 **这是我参与8月更文挑战的第22天，活动详情查看：[8月更文挑战](https://juejin.cn/post/6987962113788493831 "https://juejin.cn/post/6987962113788493831")**
 

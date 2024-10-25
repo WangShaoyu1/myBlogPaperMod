@@ -2,11 +2,11 @@
 author: "Gaby"
 title: "细说前端路由的hash模式和 history模式"
 date: 2021-08-08
-description: "前端路由实现方式 1hash模式 2history模式 为什么要用 AJAX局部刷新，导致浏览器的URL不会发生任何变化。"
+description: "前端路由实现方式 1.hash模式 2.history模式 为什么要用 AJAX局部刷新，导致浏览器的URL不会发生任何变化。"
 tags: ["前端中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读7分钟"
 weight: 1
-selfDefined:"likes:41,comments:7,collects:48,views:9759,"
+selfDefined:"likes:41,comments:0,collects:47,views:9552,"
 ---
 **这是我参与8月更文挑战的第6天，活动详情查看：[8月更文挑战](https://juejin.cn/post/6987962113788493831 "https://juejin.cn/post/6987962113788493831")**
 

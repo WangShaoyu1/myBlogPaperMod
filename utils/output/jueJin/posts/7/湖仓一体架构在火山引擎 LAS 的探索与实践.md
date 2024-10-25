@@ -6,7 +6,7 @@ description: "从基础概念、数据库内核特性优化、数据服务化、
 tags: ["大数据中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读19分钟"
 weight: 1
-selfDefined:"likes:10,comments:0,collects:13,views:21113,"
+selfDefined:"likes:10,comments:0,collects:12,views:21060,"
 ---
 火山引擎湖仓一体分析服务 LAS（Lakehouse Analytics Service），是面向湖仓一体架构的 Serverless 数据处理分析服务，提供字节跳动最佳实践的一站式 EB 级海量数据存储计算和交互分析能力，兼容 Spark、Presto 生态，帮助企业轻松构建智能实时湖仓。
 

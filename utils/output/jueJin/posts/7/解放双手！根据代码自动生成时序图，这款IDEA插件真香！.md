@@ -6,7 +6,7 @@ description: "在我们平时看代码的时候，往往会遇到一些流程比
 tags: ["Java","后端","IntelliJ IDEA中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读2分钟"
 weight: 1
-selfDefined:"likes:49,comments:6,collects:104,views:12716,"
+selfDefined:"likes:0,comments:0,collects:0,views:12311,"
 ---
 > 在我们平时看代码的时候，往往会遇到一些流程比较复杂的方法，此时画个时序图有助于我们理解方法的执行过程。不过这些方法执行过程往往比较长，手绘时序图实在太麻烦了！今天给大家推荐一款IDEA插件，能直接根据方法生成时序图，极大提高效率！
 

@@ -1,10 +1,10 @@
 {
-	"title": "简单说说 tree-shaking 有啥鸟用吧！",
-	"author": "Sunshine_Lin",
-	"publishTime": "2022-02-08",
-	"readTime": "阅读3分钟",
-	"tags": "[\"前端\",\"JavaScript\",\"Webpack中文技术社区\",\"前端开发社区\",\"前端技术交流\",\"前端框架教程\",\"JavaScript 学习资源\",\"CSS 技巧与最佳实践\",\"HTML5 最新动态\",\"前端工程师职业发展\",\"开源前端项目\",\"前端技术趋势\"]",
-	"description": "前言 大家好，我是林三心，用最通俗易懂的话讲最难的知识点是我的座右铭，基础是进阶的前提是我的初心 背景 大家平时在查 webpack构建体积优化 ，可能都会查到 tree-shaking 这个东西，很",
-	"article": "前言\n--\n\n大家好，我是林三心，**用最通俗易懂的话讲最难的知识点**是我的座右铭，**基础是进阶的前提**是我的初心\n\n背景\n--\n\n大家平时在查 **webpack构建体积优化** ，可能都会查到 **tree-shaking** 这个东西，很多人看到这个东西，就会把它背下来，用来应付以后面试官可能会问到的情况。\n\n但是，又有多少人去真的了解一下 **tree-shaking** 呢？自己去实践一下看 **tree-shaking** 到底起了哪些作用？对于我们的打包体积的优化又有多少呢？\n\n![](/images/jueJin/6014e2ee792444c.png)\n\n有啥用？\n----\n\n`Tree Shaking`中文含义是摇树，在webpack中指的是打包时把无用的代码摇掉，以优化打包结果。\n\n而`webpack5`已经自带了这个功能了，当打包环境为`production`时，默认开启`tree-shaking`功能。\n\n实践\n--\n\n### 前置准备\n\n准备两个文件`main.js、util.js`\n\n*   `util.js`\n\n```js\n    function a () {\n    console.log('a')\n}\n    function b () {\n    console.log('b')\n}\n    export default {\n    a, b\n}\n```\n\n*   `main.js`\n\n```js\nimport a from './util'\n\n// 使用a变量，调用文件里面的a函数，不使用b函数\nconsole.log(a.a())\nconsole.log('hello world')\n\n// 不可能执行的代码\n    if (false) {\n    console.log('haha')\n}\n\n// 定义了但是没用的变量\nconst m = 1\n```\n\n### 打包\n\n前面说了`webpack5`在环境`production`下打包的话，默认开启`tree-shaking`，那我们运行`npm run build`进行一下打包，看看打包后的代码长啥样：\n\n```js\n(()=>{\"use strict\";\nconst o=function(){console.log(\"a\")};\nconsole.log(o())\nconsole.log(\"hello world\")}\n)();\n```\n\n> 结论：可以看到打包后，把`b函数、不可能执行的代码、定义未用的变量`通通都剔除了，这在一个项目中，能减少很多的代码量，进而减少打包后的文件体积。\n\nsideEffects\n-----------\n\n### 副作用\n\n先来讲讲一个东西——`副作用`，是什么东西呢？`副作用`指的是：除了导出成员之外所做的事情，我举个例子，下面的`a.js`是没副作用的，`b.js`是有副作用的：\n\n*   `a.js`\n\n```js\n    function console () {\n    console.log('console')\n}\n    export default {\n    console\n}\n```\n\n*   `b.js`\n\n```js\n    function console () {\n    console.log('console')\n}\n\n// 这个就是副作用，会影响全局的数组\nArray.prototype.func = () => {}\n\n    export default {\n    console\n}\n```\n\n有无`副作用`的判断，可以决定`tree-shaking`的优化程度，举个例子：\n\n*   我现在引入`a.js`但是我不用他的`console`函数，那么在优化阶段我完全可以不打包`a.js`这个文件。\n*   我现在引入`b.js`但是我不用他的`console`函数，但是我不可以不打包`b.js`这个文件，因为他有`副作用`，不能不打包。\n\n### sideEffects的使用\n\n`sideEffects`可以在`package.json`中设置：\n\n```js\n// 所有文件都有副作用，全都不可 tree-shaking\n    {\n    \"sideEffects\": true\n}\n// 没有文件有副作用，全都可以 tree-shaking\n    {\n    \"sideEffects\": false\n}\n// 只有这些文件有副作用，\n// 所有其他文件都可以 tree-shaking，\n// 但会保留这些文件\n    {\n        \"sideEffects\": [\n        \"./src/file1.js\",\n        \"./src/file2.js\"\n    ]\n}\n```\n\n### 优化体积\n\n当我把`sideEffects`设置成`true`之后，整个打包体积增加了`100k`，说明默认的`false`还是有用的。。\n\n![](/images/jueJin/6b4ea0bd788547e.png)\n\n结语\n--\n\n我是林三心，一个热心的前端菜鸟程序员。如果你上进，喜欢前端，想学习前端，那咱们可以交朋友，一起摸鱼哈哈，摸鱼群，点这个 --> [摸鱼沸点](https://juejin.cn/pin/7035153948126216206 \"https://juejin.cn/pin/7035153948126216206\")\n\n![image.png](/images/jueJin/2d1d43ebae0c47c.png)",
-	"selfDefined": "likes:94,comments:19,collects:87,likes:8982"
+	"title": "",
+	"author": "",
+	"publishTime": "",
+	"readTime": "",
+	"tags": [],
+	"description": "",
+	"article": "",
+	"selfDefined": "likes:0,comments:0,collects:0,likes:0"
 }

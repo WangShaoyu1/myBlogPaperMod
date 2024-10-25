@@ -6,7 +6,7 @@ description: "本文主要讲解如何在IDEA中创建、启动SpringBoot应用�
 tags: ["Spring Boot中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读2分钟"
 weight: 1
-selfDefined:"likes:12,comments:0,collects:21,views:12529,"
+selfDefined:"likes:12,comments:1,collects:21,views:12530,"
 ---
 > SpringBoot实战电商项目mall（20k+star）地址：[github.com/macrozheng/…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmacrozheng%2Fmall "https://github.com/macrozheng/mall")
 

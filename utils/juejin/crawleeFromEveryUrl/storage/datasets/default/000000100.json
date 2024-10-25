@@ -1,10 +1,10 @@
 {
-	"title": "你敢信？区区一个Input标签让我抓破头皮~",
-	"author": "Sunshine_Lin",
-	"publishTime": "2022-04-17",
-	"readTime": "阅读3分钟",
-	"tags": "[\"前端\",\"JavaScript\",\"React.js中文技术社区\",\"前端开发社区\",\"前端技术交流\",\"前端框架教程\",\"JavaScript 学习资源\",\"CSS 技巧与最佳实践\",\"HTML5 最新动态\",\"前端工程师职业发展\",\"开源前端项目\",\"前端技术趋势\"]",
-	"description": "前言 大家好，我是林三心，用最通俗易懂的话讲最难的知识点是我的座右铭，基础是进阶的前提是我的初心 自动校验 事情是这样的，上个星期，接到了一个需求，要求去除掉项目中的输入框的自动拼写检查功能，也就是下",
-	"article": "前言\n--\n\n大家好，我是林三心，**用最通俗易懂的话讲最难的知识点**是我的座右铭，**基础是进阶的前提**是我的初心\n\n自动校验\n----\n\n> 注：以下**输入框**包含`input、textarea`\n\n事情是这样的，上个星期，接到了一个需求，要求去除掉项目中的输入框的**自动拼写检查**功能，也就是下图出现的红线，这个检查是浏览器自带的\n\n![](/images/jueJin/d3f5cd9e9079484.png)\n\n解决方法\n----\n\n其实是有解决方法的，而且也不难，很简单，只需要在**输入框**标签上加上一个属性`spellcheck=false`即可，也就是：\n\n```html\n<input spellcheck=false />\n<textarea spellcheck=false />\n\n```\n\n解决思路\n----\n\n但是问题来了，我需要给全局的**输入框**标签都加上才行，由于本项目是使用了antd-design这个组件库，那我们来看看整个项目都有哪些组件包含了**输入框**标签呢？\n\n*   1、Input：包含input\n*   2、Select：包含input\n*   3、InputNumber：包含input\n*   4、Textarea：包含textarea\n\n多种解决方法\n------\n\n### 1、ConfigProvider\n\n![](/images/jueJin/2f102de7b1bd4bd.png)\n\nant-design官方提供了一个组件，可以用来为全局的组件进行统一配置，这个组件可以传入一个`input`的参数，即可配置全局的**Input**标签\n\n![](/images/jueJin/333f8a345b8c420.png)\n\n也就是：\n\n```html\n<ConfigProvider\ninput={{spellCheck: false}}>\n</ConfigProvider>\n```\n\n由于这个配置只针对全局的**Input**，所以结果都有哪些组件成功去掉了拼写校验功能呢：\n\n*   1、Input：✅\n*   2、Select：❌\n*   3、InputNumber：❌\n*   4、Textarea：❌\n\n### 2、修改defaultProps\n\n大概的思路就是，修改ant-design的源码中的**input**这一部分，给`Input、Textarea`这些组件加上一个defaultProps，这个defaultProps长这样：\n\n```js\n    const defaultProps = {\n    spellCheck: false\n}\n```\n\n所以具体实现为以下代码\n\n```js\n// Input\nimport Input from 'antd/es/input';\n\n    Input.defaultProps = {\n    ...Input.defaultProps,\n    ...defaultProps,\n    };\n    \n    export default Input\n    \n    \n    // Textarea\n    import TextArea from 'antd/es/input/TextArea';\n    \n        TextArea.defaultProps = {\n        ...TextArea.defaultProps,\n        ...defaultProps,\n        };\n        \n        export default Textarea\n```\n\n结果就是，全局的**Input、Textarea**都去除了拼接检查了，但是**Select、InputNumber**却没有去除，因为他们是依赖了**RCSelect、RCInputNumber**这两个另外的组件，所以想改这两个，就得去改他们两依赖的组件，所以结果就是：\n\n*   1、Input：✅\n*   2、Select：❌\n*   3、InputNumber：❌\n*   4、Textarea：✅\n\n### 3、拦截React.createElement\n\n我们都知道在React中，只要涉及到**JSX**语法，最终在解析时都会通过**React.createElement**方法来创建标签\n\n![](/images/jueJin/4aacd896ef9d474.png)\n\n所以思路就是在最终调用**React.createElement**时，判断如果是`input、textarea`这两个类型的话，就给标签加上`spellCheck: false`这个属性，具体代码为\n\n![](/images/jueJin/d392a7af9c7a4c0.png)\n\n这样做的结果是：\n\n*   1、Input：✅\n*   2、Select：✅\n*   3、InputNumber：✅\n*   4、Textarea：✅\n\n但是总是觉得直接涉及到React自带方法的修改，有点不太好。。\n\n### 4、全局监听input事件\n\n思路就是全局监听`input`这个事件，并在这个事件里去给触发事件的DOM节点增加**spellCheck: false**，具体代码为：\n\n![](/images/jueJin/51a1013278ca4e8.png)\n\n这样做的结果是：\n\n*   1、Input：✅\n*   2、Select：✅\n*   3、InputNumber：✅\n*   4、Textarea：✅\n\n### 5、MutationObserver\n\n兼容性比较差，所以不考虑了吧~~~\n\n![](/images/jueJin/9b01afeecf9c4a8.png)\n\n结语\n--\n\n我是林三心，一个热心的前端菜鸟程序员。如果你上进，喜欢前端，想学习前端，那咱们可以交朋友，一起摸鱼哈哈，摸鱼群，点这个 --> [摸鱼沸点](https://juejin.cn/pin/7035153948126216206 \"https://juejin.cn/pin/7035153948126216206\")\n\n![image.png](/images/jueJin/643eeecf2b0d4a3.png)",
-	"selfDefined": "likes:79,comments:0,collects:82,likes:6396"
+	"title": "",
+	"author": "",
+	"publishTime": "",
+	"readTime": "",
+	"tags": [],
+	"description": "",
+	"article": "",
+	"selfDefined": "likes:0,comments:0,collects:0,likes:0"
 }

@@ -1,12 +1,12 @@
 ---
-author: "冴羽"
+author: ""
 title: "预测最近面试会考 Cookie 的 SameSite 属性"
-date: 2020-03-18
+date: 
 description: "2 月份发布的 Chrome 80 版本中默认屏蔽了第三方的 Cookie，在灰度期间，就导致了阿里系的很多应用都产生了问题，为此还专门成立了小组，推动各 BU 进行改造，目前阿里系基本已经改造完成。所有的前端团队估计都收到过通知，也着实加深了一把大家对于 Cookie 的理解…"
 tags: ["Chrome","面试中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
-ShowReadingTime: "阅读10分钟"
+ShowReadingTime: ""
 weight: 1
-selfDefined:"likes:873,comments:100,collects:885,views:43394,"
+selfDefined:"likes:0,comments:0,collects:0,views:0,"
 ---
 前言
 --
@@ -84,8 +84,8 @@ Cookie
 
 Expires 用于设置 Cookie 的过期时间。比如：
 
-```ini
-Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT;
+```
+
 ```
 
 当 Expires 属性缺省时，表示是会话性 Cookie，像上图 Expires 的值为 Session，表示的就是会话性 Cookie。当为会话性 Cookie 的时候，值保存在客户端内存中，并在用户关闭浏览器时失效。需要注意的是，有些浏览器提供了会话恢复功能，这种情况下即使关闭了浏览器，会话期 Cookie 也会被保留下来，就好像浏览器从来没有关闭一样。
@@ -96,8 +96,8 @@ Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT;
 
 Max-Age 用于设置在 Cookie 失效之前需要经过的秒数。比如：
 
-```ini
-Set-Cookie: id=a3fWa; Max-Age=604800;
+```
+
 ```
 
 Max-Age 可以为正数、负数、甚至是 0。
@@ -118,8 +118,8 @@ Domain 指定了 Cookie 可以送达的主机名。假如没有指定，那么�
 
 在这里注意的是，不能跨域设置 Cookie，比如阿里域名下的页面把 Domain 设置成百度是无效的：
 
-```js
-Set-Cookie: qwerty=219ffwef9w0f; Domain=baidu.com; Path=/; Expires=Wed, 30 Aug 2020 00:00:00 GMT
+```
+
 ```
 
 #### Path

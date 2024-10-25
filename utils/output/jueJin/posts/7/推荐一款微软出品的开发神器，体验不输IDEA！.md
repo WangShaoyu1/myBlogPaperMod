@@ -2,11 +2,11 @@
 author: "MacroZheng"
 title: "推荐一款微软出品的开发神器，体验不输IDEA！"
 date: 2022-08-16
-description: "最近微软的开发工具VSCode频繁更新Java支持，又是支持SpringBoot，又是支持Lombok，让我不禁好奇它是不是也能胜任Java开发了？今天带大家体验下，不输IDEA！"
+description: "最近微软的开发工具VSCode频繁更新Java支持，又是支持SpringBoot，又是支持Lombok，让我不禁好奇它是不是也能胜任Java开发了今天带大家体验下，不输IDEA！"
 tags: ["Java","后端","Spring Boot中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读5分钟"
 weight: 1
-selfDefined:"likes:219,comments:228,collects:276,views:45790,"
+selfDefined:"likes:219,comments:228,collects:276,views:45725,"
 ---
 > 最近微软的开发工具VSCode频繁更新Java支持，又是支持SpringBoot，又是支持Lombok，让我不禁好奇VSCode是不是也能胜任Java开发了？于是抽空体验了一把，确实完全可以胜任，Java开发者又有了新选择，不仅好用而且开源！今天带大家体验下VSCode，体验超越Eclipse，不输IDEA！
 

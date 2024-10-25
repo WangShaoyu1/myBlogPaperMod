@@ -6,7 +6,7 @@ description: "本文讲述了安卓中 React Native 的通信原理，解释了�
 tags: ["React Native中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读12分钟"
 weight: 1
-selfDefined:"likes:56,comments:6,collects:102,views:7243,"
+selfDefined:"likes:56,comments:6,collects:102,views:7244,"
 ---
 > 图片来源：[unsplash.com/photos/gy08…](https://link.juejin.cn?target=https%3A%2F%2Funsplash.com%2Fphotos%2Fgy08FXeM2L4 "https://unsplash.com/photos/gy08FXeM2L4")
 

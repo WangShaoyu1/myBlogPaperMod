@@ -1,10 +1,10 @@
 {
-	"title": "想知道一个20k级别前端在项目中是怎么使用LocalStorage的吗？",
-	"author": "Sunshine_Lin",
-	"publishTime": "2021-11-23",
-	"readTime": "阅读4分钟",
-	"tags": "[\"前端\",\"JavaScript\",\"架构中文技术社区\",\"前端开发社区\",\"前端技术交流\",\"前端框架教程\",\"JavaScript 学习资源\",\"CSS 技巧与最佳实践\",\"HTML5 最新动态\",\"前端工程师职业发展\",\"开源前端项目\",\"前端技术趋势\"]",
-	"description": "前言 大家好，我是林三心，用最通俗的话，讲最难的知识点是我的座右铭，基础是进阶的前提是我的初心，今天就给大家唠一下嗑，讲一下，怎么样使用localStorage、sessionStorage，才能更规",
-	"article": "前言\n--\n\n大家好，我是林三心，**用最通俗的话，讲最难的知识点**是我的座右铭，**基础是进阶的前提**是我的初心，今天就给大家唠一下嗑，讲一下，怎么样使用`localStorage、sessionStorage`，才能更规范，更高大上，更能让人眼前一亮。\n\n用处\n--\n\n在平时的开发中，`localStorage、sessionStorage`的用途是非常的多的，在我们的开发中发挥着非常重要的作用：\n\n*   1、登录完成后`token`的存储\n*   2、用户部分信息的存储，比如`昵称、头像、简介`\n*   3、一些项目通用参数的存储，例如`某个id、某个参数params`\n*   4、项目状态管理的持久化，例如`vuex的持久化、redux的持久化`\n*   5、项目整体的切换状态存储，例如`主题颜色、icon风格、语言标识`\n*   6、等等、、、、、、、、、、、、、、、、、、、、、、、、、、\n\n普通使用\n----\n\n那么，相信我们各位平时使用都是这样的（拿`localStorage`举例）\n\n### 1、基础变量\n\n```js\n// 当我们存基本变量时\nlocalStorage.setItem('基本变量', '这是一个基本变量')\n// 当我们取值时\nlocalStorage.getItem('基本变量')\n// 当我们删除时\nlocalStorage.removeItem('基本变量')\n```\n\n### 2、引用变量\n\n```js\n// 当我们存引用变量时\nlocalStorage.setItem('引用变量', JSON.stringify(data))\n// 当我们取值时\nconst data = JSON.parse(localStorage.getItem('引用变量'))\n// 当我们删除时\nlocalStorage.removeItem('引用变量')\n```\n\n### 3、清空\n\n```js\nlocalStorage.clear()\n```\n\n暴露出什么问题？\n--------\n\n### 1、命名过于简单\n\n*   1、比如我们存用户信息会使用`user`作为 key 来存储\n*   2、存储主题的时候用`theme` 作为 key 来存储\n*   3、存储令牌时使用`token`作为 key 来存储 其实这是很有问题的，咱们都知道，同源的两个项目，它们的`localStorage`是互通的。\n\n我举个例子吧比如我现在有两个项目，它们在同源`https://www.sunshine.com`下，这两个项目都需要往`localStorage`中存储一个 key 为`name`的值，那么这就会造成两个项目的`name`互相顶替的现象，也就是`互相污染现象`：\n\n![截屏2021-11-10 下午10.19.09.png](/images/jueJin/879c95834b8f434.png)\n\n### 2、时效性\n\n咱们都知道`localStorage、sessionStorage`这两个的生命周期分别是\n\n*   localStorage：除非手动清除，否则一直存在\n*   sessionStorage：生命结束于当前标签页的关闭或浏览器的关闭\n\n其实平时普通的使用时没什么问题的，但是给某些指定缓存加上特定的时效性，是非常重要的！比如某一天：\n\n*   后端：”兄弟，你一登录我就把token给你“\n*   前端：”好呀，那你应该会顺便判断token过期没吧？“\n*   后端：”不行哦，放在你前端判断过期呗“\n*   前端：”行吧。。。。。“\n\n那这时候，因为需要在前端判断过期，所以咱们就得给`token`设置一个时效性，或者是`1天`，或者是`7天`\n\n![截屏2021-11-10 下午10.48.50.png](/images/jueJin/41eea679dc2e480.png)\n\n### 3、隐秘性\n\n其实这个好理解，你们想想，当咱们把咱们想缓存的东西，存在`localStorage、sessionStorage`中，在开发过程中，确实有利于咱们的开发，咱们想看的时候也是一目了然，点击`Application`就可以看到。\n\n但是，一旦产品上线了，用户也是可以看到缓存中的东西的，而咱们肯定是会想：有些东西可以让用户看到，但是有些东西我不想让你看到\n\n![截屏2021-11-10 下午11.02.24.png](/images/jueJin/e1799be2e9b147b.png)\n\n或者咱们在做`状态管理持久化`时，需要把数据先存在`localStorage`中，这个时候就很有必要对缓存进行加密了。\n\n解决方案\n----\n\n### 1、命名规范\n\n我个人的看法是`项目名 + 当前环境 + 项目版本 + 缓存key`，如果大家有其他规则的，可以评论区告诉林三心，让林三心学学\n\n![截屏2021-11-11 下午9.12.32.png](/images/jueJin/057e37f866584e4.png)\n\n### 2、expire定时\n\n思路：设置缓存`key`时，将`value`包装成一个对象，对象中有相应的`时效时段`，当下一次想获取缓存值时，判断有无超时，不超时就获取`value`，超时就删除这个缓存\n\n![截屏2021-11-11 下午9.33.00.png](/images/jueJin/b37ee69c79b148b.png)\n\n### 3、crypto加密\n\n加密很简单，直接使用`crypto-js`进行对数据的加密，使用这个库里的`encrypt、decrypyt`进行`加密、解密`\n\n![截屏2021-11-11 下午9.43.16.png](/images/jueJin/89c39b095b934e2.png)\n\n实践\n--\n\n其实实践的话比较简单啦，无非就是四步\n\n*   1、与团队商讨一下`key`的格式\n*   2、与团队商讨一下`expire`的长短\n*   3、与团队商讨一下使用哪个库来对缓存进行加密（个人建议`crypto-js`）\n*   4、代码实施（不难，我这里就不写了）\n\n结语\n--\n\n有人可能觉得没必要，但是严格要求自己其实是很有必要的，平时严格要求自己，才能做到每到一个公司都能更好的做到向下兼容难度。\n\n如果你觉得此文对你有一丁点帮助，点个赞，鼓励一下林三心哈哈。\n\n**如果你想一起学习前端或者摸鱼，那你可以加我，加入我的摸鱼学习群，点击这里** --->[摸鱼沸点](https://juejin.cn/pin/7035153948126216206 \"https://juejin.cn/pin/7035153948126216206\")\n\n**如果你是有其他目的的，别加我，我不想跟你交朋友，我只想简简单单学习前端，不想搞一些有的没的！！！**",
-	"selfDefined": "likes:785,comments:159,collects:957,likes:61423"
+	"title": "",
+	"author": "",
+	"publishTime": "",
+	"readTime": "",
+	"tags": [],
+	"description": "",
+	"article": "",
+	"selfDefined": "likes:0,comments:0,collects:0,likes:0"
 }

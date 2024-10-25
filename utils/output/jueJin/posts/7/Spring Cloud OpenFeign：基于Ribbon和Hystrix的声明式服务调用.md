@@ -6,7 +6,7 @@ description: "Spring Cloud OpenFeign 是声明式的服务调用工具，它整�
 tags: ["Java中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读6分钟"
 weight: 1
-selfDefined:"likes:19,comments:0,collects:31,views:12285,"
+selfDefined:"likes:19,comments:3,collects:31,views:12286,"
 ---
 > SpringBoot实战电商项目mall（20k+star）地址：[github.com/macrozheng/…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmacrozheng%2Fmall "https://github.com/macrozheng/mall")
 

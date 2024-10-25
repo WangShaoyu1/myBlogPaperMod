@@ -2,11 +2,11 @@
 author: ""
 title: "npm 私库从搭建到数据迁移最后容灾备份的一些解决方案"
 date: 2020-12-09
-description: "按照国际惯例，正文开始之前，我们先简单介绍下目前市面上的 npm 私库开源框架。 Verdaccio 是 sinopia 开源框架的一个分支。它提供了自己的小数据库，以及代理其他注册中心的能力（例如。npmjsorg 网站)，配置以及部署相对简单，一步到胃。如果公司的私包…"
+description: "按照国际惯例，正文开始之前，我们先简单介绍下目前市面上的 npm 私库开源框架。 Verdaccio 是 sinopia 开源框架的一个分支。它提供了自己的小数据库，以及代理其他注册中心的能力（例如。npmjs.org 网站)，配置以及部署相对简单，一步到胃。如果公司的私包…"
 tags: ["前端中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读9分钟"
 weight: 1
-selfDefined:"likes:113,comments:11,collects:119,views:4843,"
+selfDefined:"likes:113,comments:11,collects:119,views:4807,"
 ---
 ![](/images/jueJin/390e29834bd5468.png)
 

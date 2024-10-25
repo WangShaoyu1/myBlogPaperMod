@@ -2,11 +2,11 @@
 author: "Gaby"
 title: "深入了解 JavaScript 内存泄露"
 date: 2021-08-07
-description: "这篇文章是针对浏览器的 JavaScript 脚本，Nodejs 大同小异，这里不涉及到 Nodejs 的场景。"
+description: "这篇文章是针对浏览器的 JavaScript 脚本，Node.js 大同小异，这里不涉及到 Node.js 的场景。"
 tags: ["前端","JavaScript中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读8分钟"
 weight: 1
-selfDefined:"likes:7,comments:0,collects:3,views:1140,"
+selfDefined:"likes:7,comments:0,collects:3,views:1121,"
 ---
 **这是我参与8月更文挑战的第5天，活动详情查看：[8月更文挑战](https://juejin.cn/post/6987962113788493831 "https://juejin.cn/post/6987962113788493831")**
 

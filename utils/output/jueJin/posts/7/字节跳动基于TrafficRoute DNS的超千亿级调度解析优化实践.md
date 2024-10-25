@@ -2,11 +2,11 @@
 author: "字节跳动技术团队"
 title: "字节跳动基于TrafficRoute DNS的超千亿级调度解析优化实践"
 date: 2024-07-15
-description: "「摘要：」 本文介绍了火山引擎TRDNS在泛CDN场景中的实践经验和优化措施。内容从能力出发，详细介绍了遇到的挑战、TRDNS的优化措施、取得的效果。"
+description: "「摘要：」 本文介绍了火山引擎TRDNS在泛CDN场景中的实践经验和优化措施。内容从能力出发，详细介绍了遇到的挑战、TRDNS的优化措施、取得的效果。「摘要：」 本文介绍了火山引擎TRDNS在泛CDN场景中的实践经验和优化措施。内容从能力出发，详细介绍了遇到的挑战、TRDNS的优化措施、取得的效果。主要能力为以下2部分"
 tags: ["前端中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读13分钟"
 weight: 1
-selfDefined:"likes:4,comments:0,collects:1,views:2094,"
+selfDefined:"likes:4,comments:0,collects:1,views:2097,"
 ---
 **「摘要：」** 本文介绍了火山引擎TRDNS在泛CDN场景中的实践经验和优化措施。内容从能力出发，详细介绍了遇到的挑战、TRDNS的优化措施、取得的效果。主要能力为以下2部分：
 

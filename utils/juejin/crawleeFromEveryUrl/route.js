@@ -12,7 +12,7 @@ import {logError, logMessage} from "../../log.js"
 
 export const router = createPlaywrightRouter()
 let weight = 1;
-let authorLevel = 20;
+let authorLevel = 7;
 router.addHandler('DETAIL', async ({page, request, enqueueLinks, log}) => {
     log.debug(`Visiting detail page: ${request.url}`);
     let startTime = Date.now(), endTime;

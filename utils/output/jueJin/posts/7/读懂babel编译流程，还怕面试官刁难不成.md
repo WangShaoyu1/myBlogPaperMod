@@ -6,7 +6,7 @@ description: "Babel 是一个 JavaScript 编译器。（把浏览器不认识的
 tags: ["前端","面试中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读14分钟"
 weight: 1
-selfDefined:"likes:6,comments:0,collects:8,views:732,"
+selfDefined:"likes:6,comments:0,collects:8,views:689,"
 ---
 **这是我参与8月更文挑战的第14天，活动详情查看：[8月更文挑战](https://juejin.cn/post/6987962113788493831 "https://juejin.cn/post/6987962113788493831")**
 

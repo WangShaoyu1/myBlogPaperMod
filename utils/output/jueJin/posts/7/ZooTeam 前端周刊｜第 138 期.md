@@ -2,11 +2,11 @@
 author: "政采云技术"
 title: "ZooTeam 前端周刊｜第 138 期"
 date: 2021-06-29
-description: "Nodejs之fs用法详解 - 知乎 深入浅出webpack之externals的使用 webpack externals 深入理解 - SegmentFault 思否 React 18 发布计划 "
+description: "Node.js之fs用法详解 - 知乎 深入浅出webpack之externals的使用 webpack externals 深入理解 - SegmentFault 思否 React 18 发布计划 "
 tags: ["前端中文技术社区","前端开发社区","前端技术交流","前端框架教程","JavaScript 学习资源","CSS 技巧与最佳实践","HTML5 最新动态","前端工程师职业发展","开源前端项目","前端技术趋势"]
 ShowReadingTime: "阅读3分钟"
 weight: 1
-selfDefined:"likes:7,comments:0,collects:1,views:1791,"
+selfDefined:"likes:7,comments:0,collects:1,views:1792,"
 ---
 > [ZooTeam 前端周刊｜第 138 期](https://link.juejin.cn?target=https%3A%2F%2Fweekly.zoo.team%2Fdetail%2F138 "https://weekly.zoo.team/detail/138")
 > 
